@@ -6,7 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 type NavItem = { to: string; label: string; icon: typeof LayoutDashboard; exact?: boolean };
 
 const portalNav: NavItem[] = [
-  { to: "/portal", label: "Overview", icon: LayoutDashboard, exact: true },
+  { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard, exact: true },
   { to: "/portal/projects", label: "Projects", icon: FolderOpen },
   { to: "/portal/inspections", label: "Inspections", icon: ClipboardCheck },
   { to: "/portal/new-permit", label: "Submit permit", icon: FilePlus2 },
