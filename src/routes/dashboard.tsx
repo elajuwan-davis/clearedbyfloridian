@@ -32,20 +32,9 @@ const stats = [
   { label: "Messages Unread", value: 5, icon: MessageSquare, accent: false },
 ];
 
-type ProjectStatus =
-  | "submitted"
-  | "in_review"
-  | "corrections_required"
-  | "approved"
-  | "permit_issued";
+import { projectStatusMeta as statusMeta, type BadgeTone } from "@/lib/status-badges";
+type ProjectStatus = keyof typeof statusMeta;
 
-const statusMeta: Record<ProjectStatus, { label: string; tone: "neutral" | "sky" | "warn" | "ok" }> = {
-  submitted: { label: "Submitted", tone: "neutral" },
-  in_review: { label: "In review", tone: "sky" },
-  corrections_required: { label: "Corrections required", tone: "warn" },
-  approved: { label: "Approved", tone: "ok" },
-  permit_issued: { label: "Permit issued", tone: "ok" },
-};
 
 const projects: Array<{
   id: string;
