@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { MarketingShell, PageHeader } from "@/components/marketing-shell";
+import { ArrowRight } from "lucide-react";
 
 export const Route = createFileRoute("/process")({
   head: () => ({

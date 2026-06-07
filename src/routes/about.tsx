@@ -56,7 +56,7 @@ function AboutPage() {
 
       <section className="border-y hairline bg-secondary/40">
         <div className="mx-auto max-w-7xl px-6 py-24">
-          <div className="label-eyebrow">§ Team</div>
+          <div className="label-eyebrow">Team</div>
           <h2 className="mt-4 font-display text-4xl tracking-tight">Reviewers & inspectors</h2>
           <div className="mt-12 grid sm:grid-cols-2 lg:grid-cols-3 gap-px bg-border border hairline">
             {team.map((m) => (
