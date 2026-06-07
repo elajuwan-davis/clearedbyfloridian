@@ -1,40 +1,102 @@
 // Payment authorization storage + helpers.
-// Currently persists to localStorage. When Lovable Cloud is enabled,
-// swap save/load to a `payment_authorizations` Supabase table.
+// Persists to the `payment_authorizations` table in Supabase.
+// Card numbers and CVV are NEVER stored — only brand + last 4 + expiry.
+
+import { supabase } from "@/integrations/supabase/client";
 
 export type PaymentAuthRecord = {
   cardholder: string;
   billingAddress: string;
   cardType: "Credit" | "Debit" | "ACH";
-  brand: string; // Visa, Mastercard, Amex, Discover, ACH, Unknown
+  brand: string;
   last4: string;
   expiry: string; // MM/YY, empty for ACH
   authorizedAt: string; // ISO timestamp
-  authorizationDate: string; // YYYY-MM-DD from form
+  authorizationDate: string; // YYYY-MM-DD
   signatureDataUrl: string;
 };
 
-const KEY = "cleared.payment-auth";
+type Row = {
+  id: string;
+  user_id: string;
+  cardholder_name: string;
+  billing_address: string;
+  card_type: string;
+  card_last_four: string;
+  card_brand: string;
+  expiry_month: number | null;
+  expiry_year: number | null;
+  authorized_at: string;
+  created_at: string;
+};
 
-export function savePaymentAuth(record: PaymentAuthRecord): void {
-  if (typeof window === "undefined") return;
-  localStorage.setItem(KEY, JSON.stringify(record));
+function rowToRecord(row: Row): PaymentAuthRecord {
+  const mm = row.expiry_month ? String(row.expiry_month).padStart(2, "0") : "";
+  const yy = row.expiry_year ? String(row.expiry_year).slice(-2) : "";
+  return {
+    cardholder: row.cardholder_name,
+    billingAddress: row.billing_address,
+    cardType: (row.card_type as PaymentAuthRecord["cardType"]) ?? "Credit",
+    brand: row.card_brand,
+    last4: row.card_last_four,
+    expiry: mm && yy ? `${mm}/${yy}` : "",
+    authorizedAt: row.authorized_at,
+    authorizationDate: row.authorized_at.slice(0, 10),
+    signatureDataUrl: "",
+  };
 }
 
-export function loadPaymentAuth(): PaymentAuthRecord | null {
-  if (typeof window === "undefined") return null;
-  try {
-    const raw = localStorage.getItem(KEY);
-    if (!raw) return null;
-    return JSON.parse(raw) as PaymentAuthRecord;
-  } catch {
-    return null;
+export async function savePaymentAuth(record: PaymentAuthRecord): Promise<void> {
+  const { data: auth } = await supabase.auth.getUser();
+  const userId = auth?.user?.id;
+  if (!userId) throw new Error("You must be signed in to save a payment authorization.");
+
+  let expiryMonth: number | null = null;
+  let expiryYear: number | null = null;
+  if (record.cardType !== "ACH" && /^\d{2}\/\d{2}$/.test(record.expiry)) {
+    const [mm, yy] = record.expiry.split("/");
+    expiryMonth = Number(mm);
+    expiryYear = 2000 + Number(yy);
   }
+
+  const payload = {
+    user_id: userId,
+    cardholder_name: record.cardholder,
+    billing_address: record.billingAddress,
+    card_type: record.cardType,
+    card_last_four: record.last4,
+    card_brand: record.brand,
+    expiry_month: expiryMonth,
+    expiry_year: expiryYear,
+    authorized_at: record.authorizedAt,
+  };
+
+  const { error } = await supabase
+    .from("payment_authorizations")
+    .upsert(payload, { onConflict: "user_id" });
+  if (error) throw error;
 }
 
-export function clearPaymentAuth(): void {
-  if (typeof window === "undefined") return;
-  localStorage.removeItem(KEY);
+export async function loadPaymentAuth(): Promise<PaymentAuthRecord | null> {
+  const { data: auth } = await supabase.auth.getUser();
+  const userId = auth?.user?.id;
+  if (!userId) return null;
+  const { data, error } = await supabase
+    .from("payment_authorizations")
+    .select("*")
+    .eq("user_id", userId)
+    .order("authorized_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (error || !data) return null;
+  return rowToRecord(data as Row);
+}
+
+export async function clearPaymentAuth(): Promise<void> {
+  const { data: auth } = await supabase.auth.getUser();
+  const userId = auth?.user?.id;
+  if (!userId) return;
+  await supabase.from("payment_authorizations").delete().eq("user_id", userId);
 }
 
 export function detectCardBrand(num: string): string {
