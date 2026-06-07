@@ -17,14 +17,6 @@ export const Route = createFileRoute("/about")({
   component: AboutPage,
 });
 
-const team = [
-  { name: "Maritza Alvarez, P.E.", role: "Principal · Structural Review", bio: "20+ years on South Florida residential. Former plans examiner, Palm Beach County." },
-  { name: "Rohan Chen, AIA", role: "Principal · Architectural Review", bio: "Florida-registered architect, HVHZ specialist, ICC plans examiner." },
-  { name: "Julian Pereira, P.E.", role: "MEP & Energy", bio: "Mechanical engineer, FBC Energy Conservation lead reviewer." },
-  { name: "Dana Ortiz", role: "Inspections Lead", bio: "ICC-certified residential combination inspector. Former municipal inspector." },
-  { name: "Sasha Whitfield", role: "Permit Coordinator", bio: "Tracks every file from intake to CO. Knows every counter clerk in Palm Beach County by name." },
-  { name: "Esteban Ruiz", role: "Founder", bio: "Licensed CGC. Built Flōridian to deliver pools and hardscape the way they should be built." },
-];
 
 function AboutPage() {
   return (
