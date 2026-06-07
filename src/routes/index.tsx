@@ -201,9 +201,9 @@ function Process() {
 function Coverage() {
   const counties: Array<{ name: string; cities: string[] }> = [
     { name: "Broward", cities: ["Fort Lauderdale", "Hollywood", "Pembroke Pines", "Miramar", "Coral Springs", "Pompano Beach", "Davie", "Deerfield Beach", "Weston", "Hallandale Beach"] },
-    { name: "Palm Beach", cities: ["West Palm Beach", "Boca Raton", "Delray Beach", "Boynton Beach", "Jupiter", "Palm Beach Gardens", "Wellington", "Lake Worth", "North Palm Beach"] },
+    { name: "Palm Beach", cities: ["West Palm Beach", "Boca Raton", "Delray Beach", "Boynton Beach", "Jupiter", "Palm Beach Gardens", "Wellington", "Lake Worth", "North Palm Beach", "City of Palm Beach", "City of Westlake"] },
     { name: "Martin", cities: ["Stuart", "Hobe Sound", "Jensen Beach", "Palm City"] },
-    { name: "St. Lucie", cities: ["Port St. Lucie", "Fort Pierce", "Tradition"] },
+    { name: "St. Lucie", cities: ["Port St. Lucie", "Fort Pierce"] },
     { name: "Indian River", cities: ["Vero Beach", "Sebastian"] },
   ];
   return (
