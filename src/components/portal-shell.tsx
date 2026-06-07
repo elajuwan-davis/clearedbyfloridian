@@ -9,10 +9,12 @@ import {
   Receipt,
   Sparkle,
   BookOpen,
+  Calculator,
   LogOut,
   Menu,
   User,
 } from "lucide-react";
+
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { supabase } from "@/integrations/supabase/client";
 
