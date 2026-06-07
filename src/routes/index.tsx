@@ -171,7 +171,7 @@ function ServicesPreview() {
 
 function Process() {
   const steps = [
-    { n: "01", t: "Intake", d: "Your GC submits drawings, structural calcs, energy & product approvals through the Cleared portal." },
+    { n: "01", t: "Intake", d: "Submit drawings, structural calcs, energy & product approvals through the Cleared portal." },
     { n: "02", t: "Plan Review", d: "A licensed reviewer red-lines the set — usually within a week." },
     { n: "03", t: "Affidavit & Permit", d: "We file the private provider affidavit; the AHJ issues the permit." },
     { n: "04", t: "Inspections", d: "Our inspectors meet the crew on site, document everything, deliver reports same-day." },
