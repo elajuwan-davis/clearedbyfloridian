@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import { PortalShell } from "@/components/portal-shell";
 import { Button } from "@/components/ui/button";
 import {
@@ -142,6 +143,52 @@ function MessagesPage() {
   const [draft, setDraft] = useState("");
   const [pending, setPending] = useState<Attachment[]>([]);
   const fileRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const { data, error } = await supabase
+        .from("messages")
+        .select("id, project_id, sender_role, body, created_at, projects(project_name, address, county, status)")
+        .order("created_at", { ascending: true });
+      if (cancelled || error || !data || data.length === 0) return;
+      const byProject = new Map<string, Thread>();
+      for (const m of data as Array<Record<string, unknown>>) {
+        const pid = String(m.project_id ?? "");
+        if (!pid) continue;
+        const proj = (m.projects as Record<string, unknown> | null) ?? {};
+        if (!byProject.has(pid)) {
+          byProject.set(pid, {
+            id: pid,
+            permit_no: `CLR-${pid.slice(0, 8)}`,
+            name: String(proj.project_name ?? "Project"),
+            address: String(proj.address ?? ""),
+            county: String(proj.county ?? ""),
+            status: (String(proj.status ?? "submitted") as ProjectStatus),
+            unread: 0,
+            lastAt: "",
+            messages: [],
+          });
+        }
+        const t = byProject.get(pid)!;
+        const isAdmin = String(m.sender_role ?? "") !== "builder";
+        t.messages.push({
+          id: String(m.id),
+          author: isAdmin ? "Cleared" : "You",
+          fromAdmin: isAdmin,
+          body: String(m.body ?? ""),
+          at: m.created_at ? new Date(String(m.created_at)).toLocaleString() : "",
+        });
+        t.lastAt = t.messages[t.messages.length - 1].at;
+      }
+      const next = Array.from(byProject.values());
+      if (next.length === 0) return;
+      setThreads(next);
+      setActiveId(next[0].id);
+    })();
+    return () => { cancelled = true; };
+  }, []);
+
 
   const filtered = useMemo(() => {
     const q = query.toLowerCase().trim();
