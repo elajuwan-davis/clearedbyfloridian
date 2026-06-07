@@ -92,7 +92,7 @@ const PROJECTS: Record<string, Project> = {
     gc: "Coastline Builders Group",
     value_cents: 412_500_000,
     permit_types: ["Building", "Electrical", "Plumbing"],
-    status: { label: "In review", tone: "sky" },
+    status: { label: "In review", tone: "amber" },
     submitted_at: "May 28, 2026",
     documents: [
       { id: "d1", label: "Construction Plans", filename: "ocean-ridge-plans-r3.pdf", size_kb: 18420, uploaded_at: "May 28, 2026" },
