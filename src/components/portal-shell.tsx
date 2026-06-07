@@ -23,11 +23,9 @@ export function PortalShell({ children }: { children: ReactNode }) {
               <span className="relative font-display text-base leading-none">C</span>
               <span className="absolute -top-1 -right-1 h-1.5 w-1.5 bg-accent rounded-full" />
             </div>
-            <div className="leading-none">
-              <div className="font-display text-base">Cleared</div>
-              <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground mt-1">
-                by Flōridian
-              </div>
+            <div className="leading-[1]">
+              <div className="wordmark text-2xl">Cleared</div>
+              <div className="wordmark-subline mt-1">by Flōridian · Exclusive to GC Clients</div>
             </div>
           </Link>
         </div>
