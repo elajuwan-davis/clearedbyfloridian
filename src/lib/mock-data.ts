@@ -190,7 +190,7 @@ export const services = [
     code: "04",
     title: "Pre-Construction Code Review",
     summary:
-      "Engaged early with the Flōridian design team and your GC to surface code issues while they are still pencil edits, not field changes.",
+      "Engaged early with your design team to surface code issues while they are still pencil edits, not field changes.",
     bullets: [
       "Constructibility and code red-line",
       "High-velocity hurricane zone (HVHZ) detailing",
