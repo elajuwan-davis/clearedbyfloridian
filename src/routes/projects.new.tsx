@@ -99,7 +99,7 @@ function NewProjectPage() {
 
   return (
     <PortalShell>
-      <form onSubmit={handleSubmit} className="mx-auto max-w-5xl px-8 py-12">
+      <form onSubmit={handleSubmit} className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
         {/* Header */}
         <div className="border-b border-obsidian/10 pb-8">
           <Link
