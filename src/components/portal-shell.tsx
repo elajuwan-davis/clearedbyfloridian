@@ -9,10 +9,12 @@ import {
   Receipt,
   Sparkle,
   BookOpen,
+  Calculator,
   LogOut,
   Menu,
   User,
 } from "lucide-react";
+
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -26,7 +28,9 @@ const portalNav: NavItem[] = [
   { to: "/forms", label: "Forms", icon: FileText },
   { to: "/invoices", label: "Invoices", icon: Receipt },
   { to: "/ask-victoria", label: "Ask Victoria", icon: Sparkle },
+  { to: "/fee-calculator", label: "Fee Calculator", icon: Calculator },
   { to: "/project-guides", label: "Project Guides", icon: BookOpen },
+
   { to: "/profile", label: "Profile", icon: User },
 ];
 
