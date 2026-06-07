@@ -1,5 +1,7 @@
 // Payment authorization storage + helpers.
-// Persists to the `payment_authorizations` table in Supabase.
+// Primary store: Supabase `payment_authorizations` table (per-user upsert).
+// Fallback: localStorage — used when the user isn't signed in OR the table
+// doesn't exist yet (e.g. migration not yet run). Never crashes the app.
 // Card numbers and CVV are NEVER stored — only brand + last 4 + expiry.
 
 import { supabase } from "@/integrations/supabase/client";
@@ -11,13 +13,12 @@ export type PaymentAuthRecord = {
   brand: string;
   last4: string;
   expiry: string; // MM/YY, empty for ACH
-  authorizedAt: string; // ISO timestamp
-  authorizationDate: string; // YYYY-MM-DD
+  authorizedAt: string;
+  authorizationDate: string;
   signatureDataUrl: string;
 };
 
 type Row = {
-  id: string;
   user_id: string;
   cardholder_name: string;
   billing_address: string;
@@ -27,8 +28,9 @@ type Row = {
   expiry_month: number | null;
   expiry_year: number | null;
   authorized_at: string;
-  created_at: string;
 };
+
+const LS_KEY = "cleared.payment-auth";
 
 function rowToRecord(row: Row): PaymentAuthRecord {
   const mm = row.expiry_month ? String(row.expiry_month).padStart(2, "0") : "";
@@ -46,57 +48,108 @@ function rowToRecord(row: Row): PaymentAuthRecord {
   };
 }
 
-export async function savePaymentAuth(record: PaymentAuthRecord): Promise<void> {
-  const { data: auth } = await supabase.auth.getUser();
-  const userId = auth?.user?.id;
-  if (!userId) throw new Error("You must be signed in to save a payment authorization.");
-
-  let expiryMonth: number | null = null;
-  let expiryYear: number | null = null;
-  if (record.cardType !== "ACH" && /^\d{2}\/\d{2}$/.test(record.expiry)) {
-    const [mm, yy] = record.expiry.split("/");
-    expiryMonth = Number(mm);
-    expiryYear = 2000 + Number(yy);
+function lsLoad(): PaymentAuthRecord | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = localStorage.getItem(LS_KEY);
+    return raw ? (JSON.parse(raw) as PaymentAuthRecord) : null;
+  } catch {
+    return null;
   }
+}
 
-  const payload = {
-    user_id: userId,
-    cardholder_name: record.cardholder,
-    billing_address: record.billingAddress,
-    card_type: record.cardType,
-    card_last_four: record.last4,
-    card_brand: record.brand,
-    expiry_month: expiryMonth,
-    expiry_year: expiryYear,
-    authorized_at: record.authorizedAt,
-  };
+function lsSave(r: PaymentAuthRecord): void {
+  if (typeof window === "undefined") return;
+  try { localStorage.setItem(LS_KEY, JSON.stringify(r)); } catch { /* ignore */ }
+}
 
-  const { error } = await supabase
-    .from("payment_authorizations")
-    .upsert(payload, { onConflict: "user_id" });
-  if (error) throw error;
+function lsClear(): void {
+  if (typeof window === "undefined") return;
+  try { localStorage.removeItem(LS_KEY); } catch { /* ignore */ }
+}
+
+// True when the Supabase error indicates a missing table / schema cache miss.
+function isMissingTable(err: unknown): boolean {
+  const e = err as { code?: string; message?: string } | null;
+  if (!e) return false;
+  return e.code === "42P01" || e.code === "PGRST205" || /does not exist|schema cache/i.test(e.message ?? "");
+}
+
+export async function savePaymentAuth(record: PaymentAuthRecord): Promise<void> {
+  try {
+    const { data: auth } = await supabase.auth.getUser();
+    const userId = auth?.user?.id;
+    if (!userId) {
+      lsSave(record);
+      return;
+    }
+    let expiryMonth: number | null = null;
+    let expiryYear: number | null = null;
+    if (record.cardType !== "ACH" && /^\d{2}\/\d{2}$/.test(record.expiry)) {
+      const [mm, yy] = record.expiry.split("/");
+      expiryMonth = Number(mm);
+      expiryYear = 2000 + Number(yy);
+    }
+    const { error } = await supabase
+      .from("payment_authorizations")
+      .upsert({
+        user_id: userId,
+        cardholder_name: record.cardholder,
+        billing_address: record.billingAddress,
+        card_type: record.cardType,
+        card_last_four: record.last4,
+        card_brand: record.brand,
+        expiry_month: expiryMonth,
+        expiry_year: expiryYear,
+        authorized_at: record.authorizedAt,
+      }, { onConflict: "user_id" });
+    if (error) {
+      if (isMissingTable(error)) {
+        lsSave(record);
+        return;
+      }
+      throw error;
+    }
+  } catch (err) {
+    if (isMissingTable(err)) { lsSave(record); return; }
+    // Network / unexpected: keep a local copy so the user doesn't lose input.
+    lsSave(record);
+    throw err;
+  }
 }
 
 export async function loadPaymentAuth(): Promise<PaymentAuthRecord | null> {
-  const { data: auth } = await supabase.auth.getUser();
-  const userId = auth?.user?.id;
-  if (!userId) return null;
-  const { data, error } = await supabase
-    .from("payment_authorizations")
-    .select("*")
-    .eq("user_id", userId)
-    .order("authorized_at", { ascending: false })
-    .limit(1)
-    .maybeSingle();
-  if (error || !data) return null;
-  return rowToRecord(data as Row);
+  try {
+    const { data: auth } = await supabase.auth.getUser();
+    const userId = auth?.user?.id;
+    if (!userId) return lsLoad();
+    const { data, error } = await supabase
+      .from("payment_authorizations")
+      .select("*")
+      .eq("user_id", userId)
+      .order("authorized_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (error) {
+      if (isMissingTable(error)) return lsLoad();
+      return lsLoad();
+    }
+    return data ? rowToRecord(data as Row) : lsLoad();
+  } catch {
+    return lsLoad();
+  }
 }
 
 export async function clearPaymentAuth(): Promise<void> {
-  const { data: auth } = await supabase.auth.getUser();
-  const userId = auth?.user?.id;
-  if (!userId) return;
-  await supabase.from("payment_authorizations").delete().eq("user_id", userId);
+  lsClear();
+  try {
+    const { data: auth } = await supabase.auth.getUser();
+    const userId = auth?.user?.id;
+    if (!userId) return;
+    await supabase.from("payment_authorizations").delete().eq("user_id", userId);
+  } catch {
+    /* table may not exist — local copy already cleared */
+  }
 }
 
 export function detectCardBrand(num: string): string {
