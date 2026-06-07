@@ -20,6 +20,7 @@ import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as PortalIndexRouteImport } from './routes/portal.index'
 import { Route as ProjectsNewRouteImport } from './routes/projects.new'
+import { Route as ProjectsIdRouteImport } from './routes/projects.$id'
 import { Route as PortalProjectsRouteImport } from './routes/portal.projects'
 import { Route as PortalNewPermitRouteImport } from './routes/portal.new-permit'
 import { Route as PortalInspectionsRouteImport } from './routes/portal.inspections'
@@ -79,6 +80,11 @@ const ProjectsNewRoute = ProjectsNewRouteImport.update({
   path: '/new',
   getParentRoute: () => ProjectsRoute,
 } as any)
+const ProjectsIdRoute = ProjectsIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => ProjectsRoute,
+} as any)
 const PortalProjectsRoute = PortalProjectsRouteImport.update({
   id: '/projects',
   path: '/projects',
@@ -108,6 +114,7 @@ export interface FileRoutesByFullPath {
   '/portal/inspections': typeof PortalInspectionsRoute
   '/portal/new-permit': typeof PortalNewPermitRoute
   '/portal/projects': typeof PortalProjectsRoute
+  '/projects/$id': typeof ProjectsIdRoute
   '/projects/new': typeof ProjectsNewRoute
   '/portal/': typeof PortalIndexRoute
 }
@@ -123,6 +130,7 @@ export interface FileRoutesByTo {
   '/portal/inspections': typeof PortalInspectionsRoute
   '/portal/new-permit': typeof PortalNewPermitRoute
   '/portal/projects': typeof PortalProjectsRoute
+  '/projects/$id': typeof ProjectsIdRoute
   '/projects/new': typeof ProjectsNewRoute
   '/portal': typeof PortalIndexRoute
 }
@@ -140,6 +148,7 @@ export interface FileRoutesById {
   '/portal/inspections': typeof PortalInspectionsRoute
   '/portal/new-permit': typeof PortalNewPermitRoute
   '/portal/projects': typeof PortalProjectsRoute
+  '/projects/$id': typeof ProjectsIdRoute
   '/projects/new': typeof ProjectsNewRoute
   '/portal/': typeof PortalIndexRoute
 }
@@ -158,6 +167,7 @@ export interface FileRouteTypes {
     | '/portal/inspections'
     | '/portal/new-permit'
     | '/portal/projects'
+    | '/projects/$id'
     | '/projects/new'
     | '/portal/'
   fileRoutesByTo: FileRoutesByTo
@@ -173,6 +183,7 @@ export interface FileRouteTypes {
     | '/portal/inspections'
     | '/portal/new-permit'
     | '/portal/projects'
+    | '/projects/$id'
     | '/projects/new'
     | '/portal'
   id:
@@ -189,6 +200,7 @@ export interface FileRouteTypes {
     | '/portal/inspections'
     | '/portal/new-permit'
     | '/portal/projects'
+    | '/projects/$id'
     | '/projects/new'
     | '/portal/'
   fileRoutesById: FileRoutesById
@@ -284,6 +296,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProjectsNewRouteImport
       parentRoute: typeof ProjectsRoute
     }
+    '/projects/$id': {
+      id: '/projects/$id'
+      path: '/$id'
+      fullPath: '/projects/$id'
+      preLoaderRoute: typeof ProjectsIdRouteImport
+      parentRoute: typeof ProjectsRoute
+    }
     '/portal/projects': {
       id: '/portal/projects'
       path: '/projects'
@@ -326,10 +345,12 @@ const PortalRouteWithChildren =
   PortalRoute._addFileChildren(PortalRouteChildren)
 
 interface ProjectsRouteChildren {
+  ProjectsIdRoute: typeof ProjectsIdRoute
   ProjectsNewRoute: typeof ProjectsNewRoute
 }
 
 const ProjectsRouteChildren: ProjectsRouteChildren = {
+  ProjectsIdRoute: ProjectsIdRoute,
   ProjectsNewRoute: ProjectsNewRoute,
 }
 

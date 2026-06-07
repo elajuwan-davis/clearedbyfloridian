@@ -131,13 +131,15 @@ function ProjectsPage() {
                       <td className="px-6 py-5 font-mono text-xs tabular-nums text-obsidian/65">{p.submitted_at}</td>
                       <td className="px-6 py-5 text-right">
                         <Link
-                          to="/projects"
+                          to="/projects/$id"
+                          params={{ id: p.id }}
                           className="inline-flex items-center gap-1 font-mono text-[10px] font-medium uppercase tracking-[0.14em] text-sky transition-opacity hover:opacity-70"
                         >
                           View
                           <ArrowUpRight className="h-3 w-3" />
                         </Link>
                       </td>
+
                     </tr>
                   );
                 })}
