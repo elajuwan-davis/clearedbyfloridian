@@ -27,6 +27,7 @@ import { Route as ProjectsIdRouteImport } from './routes/projects.$id'
 import { Route as PortalProjectsRouteImport } from './routes/portal.projects'
 import { Route as PortalNewPermitRouteImport } from './routes/portal.new-permit'
 import { Route as PortalInspectionsRouteImport } from './routes/portal.inspections'
+import { Route as AdminBuildersRouteImport } from './routes/admin.builders'
 
 const ServicesRoute = ServicesRouteImport.update({
   id: '/services',
@@ -118,11 +119,16 @@ const PortalInspectionsRoute = PortalInspectionsRouteImport.update({
   path: '/inspections',
   getParentRoute: () => PortalRoute,
 } as any)
+const AdminBuildersRoute = AdminBuildersRouteImport.update({
+  id: '/builders',
+  path: '/builders',
+  getParentRoute: () => AdminRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
-  '/admin': typeof AdminRoute
+  '/admin': typeof AdminRouteWithChildren
   '/contact': typeof ContactRoute
   '/dashboard': typeof DashboardRoute
   '/login': typeof LoginRoute
@@ -132,6 +138,7 @@ export interface FileRoutesByFullPath {
   '/process': typeof ProcessRoute
   '/projects': typeof ProjectsRouteWithChildren
   '/services': typeof ServicesRoute
+  '/admin/builders': typeof AdminBuildersRoute
   '/portal/inspections': typeof PortalInspectionsRoute
   '/portal/new-permit': typeof PortalNewPermitRoute
   '/portal/projects': typeof PortalProjectsRoute
@@ -142,7 +149,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
-  '/admin': typeof AdminRoute
+  '/admin': typeof AdminRouteWithChildren
   '/contact': typeof ContactRoute
   '/dashboard': typeof DashboardRoute
   '/login': typeof LoginRoute
@@ -151,6 +158,7 @@ export interface FileRoutesByTo {
   '/process': typeof ProcessRoute
   '/projects': typeof ProjectsRouteWithChildren
   '/services': typeof ServicesRoute
+  '/admin/builders': typeof AdminBuildersRoute
   '/portal/inspections': typeof PortalInspectionsRoute
   '/portal/new-permit': typeof PortalNewPermitRoute
   '/portal/projects': typeof PortalProjectsRoute
@@ -162,7 +170,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
-  '/admin': typeof AdminRoute
+  '/admin': typeof AdminRouteWithChildren
   '/contact': typeof ContactRoute
   '/dashboard': typeof DashboardRoute
   '/login': typeof LoginRoute
@@ -172,6 +180,7 @@ export interface FileRoutesById {
   '/process': typeof ProcessRoute
   '/projects': typeof ProjectsRouteWithChildren
   '/services': typeof ServicesRoute
+  '/admin/builders': typeof AdminBuildersRoute
   '/portal/inspections': typeof PortalInspectionsRoute
   '/portal/new-permit': typeof PortalNewPermitRoute
   '/portal/projects': typeof PortalProjectsRoute
@@ -194,6 +203,7 @@ export interface FileRouteTypes {
     | '/process'
     | '/projects'
     | '/services'
+    | '/admin/builders'
     | '/portal/inspections'
     | '/portal/new-permit'
     | '/portal/projects'
@@ -213,6 +223,7 @@ export interface FileRouteTypes {
     | '/process'
     | '/projects'
     | '/services'
+    | '/admin/builders'
     | '/portal/inspections'
     | '/portal/new-permit'
     | '/portal/projects'
@@ -233,6 +244,7 @@ export interface FileRouteTypes {
     | '/process'
     | '/projects'
     | '/services'
+    | '/admin/builders'
     | '/portal/inspections'
     | '/portal/new-permit'
     | '/portal/projects'
@@ -244,7 +256,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
-  AdminRoute: typeof AdminRoute
+  AdminRoute: typeof AdminRouteWithChildren
   ContactRoute: typeof ContactRoute
   DashboardRoute: typeof DashboardRoute
   LoginRoute: typeof LoginRoute
@@ -384,8 +396,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PortalInspectionsRouteImport
       parentRoute: typeof PortalRoute
     }
+    '/admin/builders': {
+      id: '/admin/builders'
+      path: '/builders'
+      fullPath: '/admin/builders'
+      preLoaderRoute: typeof AdminBuildersRouteImport
+      parentRoute: typeof AdminRoute
+    }
   }
 }
+
+interface AdminRouteChildren {
+  AdminBuildersRoute: typeof AdminBuildersRoute
+}
+
+const AdminRouteChildren: AdminRouteChildren = {
+  AdminBuildersRoute: AdminBuildersRoute,
+}
+
+const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
 interface PortalRouteChildren {
   PortalInspectionsRoute: typeof PortalInspectionsRoute
@@ -421,7 +450,7 @@ const ProjectsRouteWithChildren = ProjectsRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
-  AdminRoute: AdminRoute,
+  AdminRoute: AdminRouteWithChildren,
   ContactRoute: ContactRoute,
   DashboardRoute: DashboardRoute,
   LoginRoute: LoginRoute,
