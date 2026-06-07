@@ -30,14 +30,14 @@ function AboutPage() {
   return (
     <MarketingShell>
       <PageHeader
-        eyebrow="◇ About"
+        eyebrow="About"
         title="Built by people who actually run jobsites."
         intro="Flōridian started in a trailer in Coconut Grove in 2019. A GC, a structural engineer, and an architect were tired of watching permits sit in a queue. They got licensed as a private provider and started doing the work themselves."
       />
 
       <section className="mx-auto max-w-6xl px-6 py-24 grid md:grid-cols-12 gap-12">
         <div className="md:col-span-5">
-          <div className="label-eyebrow">§ Principles</div>
+          <div className="label-eyebrow">Principles</div>
         </div>
         <div className="md:col-span-7 space-y-12">
           {[

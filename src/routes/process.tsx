@@ -59,7 +59,7 @@ function ProcessPage() {
   return (
     <MarketingShell>
       <PageHeader
-        eyebrow="◇ Process"
+        eyebrow="Process"
         title="From submittal to CO. Five phases. No surprises."
         intro="Every Flōridian project follows the same documented workflow under Florida Statute 553.791. Here is exactly what to expect and when."
       />
@@ -74,8 +74,8 @@ function ProcessPage() {
                   <div className="font-mono text-xs text-accent">{s.n} · {s.day}</div>
                   <h3 className="mt-3 font-display text-3xl tracking-tight">{s.t}</h3>
                   <p className="mt-4 text-muted-foreground text-pretty">{s.d}</p>
-                  <div className="mt-5 inline-block border hairline bg-card px-3 py-2 font-mono text-[11px] uppercase tracking-wider">
-                    → {s.out}
+                  <div className="mt-5 inline-flex items-center gap-2 border hairline bg-card px-3 py-2 font-mono text-[11px] uppercase tracking-wider">
+                    <ArrowRight className="h-3 w-3 text-accent" /> {s.out}
                   </div>
                 </div>
                 <div className="hidden md:block" />
