@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useRef, useState } from "react";
+import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
 import { PortalShell } from "@/components/portal-shell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -309,116 +309,104 @@ type SignaturePadHandle = {
   isEmpty: () => boolean;
 };
 
-const SignaturePad = (() => {
-  const Component = (
-    props: { onChange?: (empty: boolean) => void },
-    ref: React.Ref<SignaturePadHandle>,
-  ) => {
-    const canvasRef = useRef<HTMLCanvasElement>(null);
-    const drawing = useRef(false);
-    const empty = useRef(true);
-    const last = useRef<{ x: number; y: number } | null>(null);
+const SignaturePad = forwardRef<
+  SignaturePadHandle,
+  { onChange?: (empty: boolean) => void }
+>(function SignaturePad({ onChange }, ref) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const drawing = useRef(false);
+  const empty = useRef(true);
+  const last = useRef<{ x: number; y: number } | null>(null);
 
-    useEffect(() => {
-      const canvas = canvasRef.current;
-      if (!canvas) return;
-      const dpr = window.devicePixelRatio || 1;
-      const rect = canvas.getBoundingClientRect();
-      canvas.width = rect.width * dpr;
-      canvas.height = rect.height * dpr;
-      const ctx = canvas.getContext("2d");
-      if (!ctx) return;
-      ctx.scale(dpr, dpr);
-      ctx.lineWidth = 1.8;
-      ctx.lineCap = "round";
-      ctx.lineJoin = "round";
-      ctx.strokeStyle = "#16161a";
-    }, []);
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const dpr = window.devicePixelRatio || 1;
+    const rect = canvas.getBoundingClientRect();
+    canvas.width = rect.width * dpr;
+    canvas.height = rect.height * dpr;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+    ctx.scale(dpr, dpr);
+    ctx.lineWidth = 1.8;
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+    ctx.strokeStyle = "#16161a";
+  }, []);
 
-    const getPos = (e: React.PointerEvent<HTMLCanvasElement>) => {
-      const rect = canvasRef.current!.getBoundingClientRect();
-      return { x: e.clientX - rect.left, y: e.clientY - rect.top };
-    };
-
-    const start = (e: React.PointerEvent<HTMLCanvasElement>) => {
-      e.preventDefault();
-      drawing.current = true;
-      last.current = getPos(e);
-      canvasRef.current?.setPointerCapture(e.pointerId);
-    };
-
-    const move = (e: React.PointerEvent<HTMLCanvasElement>) => {
-      if (!drawing.current) return;
-      const ctx = canvasRef.current?.getContext("2d");
-      if (!ctx || !last.current) return;
-      const pos = getPos(e);
-      ctx.beginPath();
-      ctx.moveTo(last.current.x, last.current.y);
-      ctx.lineTo(pos.x, pos.y);
-      ctx.stroke();
-      last.current = pos;
-      if (empty.current) {
-        empty.current = false;
-        props.onChange?.(false);
-      }
-    };
-
-    const end = (e: React.PointerEvent<HTMLCanvasElement>) => {
-      drawing.current = false;
-      last.current = null;
-      canvasRef.current?.releasePointerCapture(e.pointerId);
-    };
-
-    const clear = () => {
-      const canvas = canvasRef.current;
-      if (!canvas) return;
-      const ctx = canvas.getContext("2d");
-      if (!ctx) return;
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      empty.current = true;
-      props.onChange?.(true);
-    };
-
-    (ref as React.MutableRefObject<SignaturePadHandle | null>).current = {
-      clear,
-      isEmpty: () => empty.current,
-    };
-
-    return (
-      <div className="mt-4 relative border border-obsidian/20 bg-paper-warm/30">
-        {/* Signature line */}
-        <div
-          aria-hidden
-          className="pointer-events-none absolute left-6 right-6 bottom-9 border-t border-obsidian/25 border-dashed"
-        />
-        <span
-          aria-hidden
-          className="pointer-events-none absolute left-6 bottom-3 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/35"
-        >
-          Sign Above
-        </span>
-        <span
-          aria-hidden
-          className="pointer-events-none absolute right-6 bottom-3 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/35"
-        >
-          X
-        </span>
-        <canvas
-          ref={canvasRef}
-          onPointerDown={start}
-          onPointerMove={move}
-          onPointerUp={end}
-          onPointerCancel={end}
-          className="block h-48 w-full cursor-crosshair touch-none"
-        />
-      </div>
-    );
+  const clear = () => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    empty.current = true;
+    onChange?.(true);
   };
-  // forwardRef
-  return Object.assign(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (require("react") as any).forwardRef(Component) as React.ForwardRefExoticComponent<
-      { onChange?: (empty: boolean) => void } & React.RefAttributes<SignaturePadHandle>
-    >,
+
+  useImperativeHandle(ref, () => ({ clear, isEmpty: () => empty.current }));
+
+  const getPos = (e: React.PointerEvent<HTMLCanvasElement>) => {
+    const rect = canvasRef.current!.getBoundingClientRect();
+    return { x: e.clientX - rect.left, y: e.clientY - rect.top };
+  };
+
+  const start = (e: React.PointerEvent<HTMLCanvasElement>) => {
+    e.preventDefault();
+    drawing.current = true;
+    last.current = getPos(e);
+    canvasRef.current?.setPointerCapture(e.pointerId);
+  };
+
+  const move = (e: React.PointerEvent<HTMLCanvasElement>) => {
+    if (!drawing.current) return;
+    const ctx = canvasRef.current?.getContext("2d");
+    if (!ctx || !last.current) return;
+    const pos = getPos(e);
+    ctx.beginPath();
+    ctx.moveTo(last.current.x, last.current.y);
+    ctx.lineTo(pos.x, pos.y);
+    ctx.stroke();
+    last.current = pos;
+    if (empty.current) {
+      empty.current = false;
+      onChange?.(false);
+    }
+  };
+
+  const end = (e: React.PointerEvent<HTMLCanvasElement>) => {
+    drawing.current = false;
+    last.current = null;
+    canvasRef.current?.releasePointerCapture(e.pointerId);
+  };
+
+  return (
+    <div className="mt-4 relative border border-obsidian/20 bg-paper-warm/30">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute left-6 right-6 bottom-9 border-t border-obsidian/25 border-dashed"
+      />
+      <span
+        aria-hidden
+        className="pointer-events-none absolute left-6 bottom-3 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/35"
+      >
+        Sign Above
+      </span>
+      <span
+        aria-hidden
+        className="pointer-events-none absolute right-6 bottom-3 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/35"
+      >
+        X
+      </span>
+      <canvas
+        ref={canvasRef}
+        onPointerDown={start}
+        onPointerMove={move}
+        onPointerUp={end}
+        onPointerCancel={end}
+        className="block h-48 w-full cursor-crosshair touch-none"
+      />
+    </div>
   );
-})();
+});
+
