@@ -67,14 +67,14 @@ function ServicesPage() {
       <section className="mx-auto max-w-7xl px-4 sm:px-6 pb-32">
         <div className="border hairline bg-secondary/40 p-10 md:p-14 grid md:grid-cols-2 gap-10 items-center">
           <div>
-            <div className="label-eyebrow">Working with Flōridian?</div>
+            <div className="label-eyebrow">For licensed GCs</div>
             <h3 className="mt-4 font-display text-3xl tracking-tight">
-              Your GC can be Cleared in 48 hours.
+              Get cleared in 48 hours.
             </h3>
             <p className="mt-4 text-muted-foreground">
-              If your project is already on Flōridian's books, your general
-              contractor qualifies for Cleared. We'll vet credentials, sign a
-              master services agreement, and start your permit the same week.
+              Credential vetting, master services agreement, and your first
+              permit moving the same week. Built by builders, for builders —
+              so your projects keep moving while municipal queues sit still.
             </p>
           </div>
           <div className="md:text-right">

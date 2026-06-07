@@ -54,7 +54,7 @@ function Hero() {
               <em className="italic font-light text-muted-foreground">Elite General Contractors.</em>
             </h1>
             <p className="mt-10 max-w-xl font-display text-lg md:text-xl leading-relaxed text-foreground/80 text-pretty">
-              White-shoe counsel for expedited plan review and inspections —
+              White-glove service for expedited plan review and inspections —
               built inside a luxury construction firm, extended to the GCs
               delivering South Florida's most considered residential work.
             </p>
@@ -122,7 +122,7 @@ function ServicesPreview() {
         <div className="md:col-span-4">
           <div className="label-eyebrow">Services</div>
           <h2 className="mt-4 display-serif text-4xl md:text-6xl tracking-tight text-balance">
-            What we do<br />for your GC.
+            What we do<br />for your team.
           </h2>
         </div>
         <p className="md:col-span-7 md:col-start-6 self-end text-lg text-muted-foreground text-pretty">
@@ -171,7 +171,7 @@ function ServicesPreview() {
 
 function Process() {
   const steps = [
-    { n: "01", t: "Intake", d: "Your GC submits drawings, structural calcs, energy & product approvals through the Cleared portal." },
+    { n: "01", t: "Intake", d: "Submit drawings, structural calcs, energy & product approvals through the Cleared portal." },
     { n: "02", t: "Plan Review", d: "A licensed reviewer red-lines the set — usually within a week." },
     { n: "03", t: "Affidavit & Permit", d: "We file the private provider affidavit; the AHJ issues the permit." },
     { n: "04", t: "Inspections", d: "Our inspectors meet the crew on site, document everything, deliver reports same-day." },
@@ -201,9 +201,9 @@ function Process() {
 function Coverage() {
   const counties: Array<{ name: string; cities: string[] }> = [
     { name: "Broward", cities: ["Fort Lauderdale", "Hollywood", "Pembroke Pines", "Miramar", "Coral Springs", "Pompano Beach", "Davie", "Deerfield Beach", "Weston", "Hallandale Beach"] },
-    { name: "Palm Beach", cities: ["West Palm Beach", "Boca Raton", "Delray Beach", "Boynton Beach", "Jupiter", "Palm Beach Gardens", "Wellington", "Lake Worth", "North Palm Beach"] },
+    { name: "Palm Beach", cities: ["West Palm Beach", "Boca Raton", "Delray Beach", "Boynton Beach", "Jupiter", "Palm Beach Gardens", "Wellington", "Lake Worth", "North Palm Beach", "City of Palm Beach", "City of Westlake"] },
     { name: "Martin", cities: ["Stuart", "Hobe Sound", "Jensen Beach", "Palm City"] },
-    { name: "St. Lucie", cities: ["Port St. Lucie", "Fort Pierce", "Tradition"] },
+    { name: "St. Lucie", cities: ["Port St. Lucie", "Fort Pierce"] },
     { name: "Indian River", cities: ["Vero Beach", "Sebastian"] },
   ];
   return (

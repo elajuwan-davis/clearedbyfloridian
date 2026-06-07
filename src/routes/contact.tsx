@@ -16,10 +16,10 @@ export const Route = createFileRoute("/contact")({
       {
         name: "description",
         content:
-          "Active Flōridian client? Request Cleared private-provider permitting access for your GC. West Palm Beach, all of South Florida.",
+          "Licensed Florida general contractor? Request Cleared private-provider permitting access. West Palm Beach, all of South Florida.",
       },
       { property: "og:title", content: "Request Cleared access" },
-      { property: "og:description", content: "Private-provider permitting, by invitation, for Flōridian's GCs." },
+      { property: "og:description", content: "Private-provider permitting for South Florida's elite general contractors." },
     ],
   }),
   component: ContactPage,

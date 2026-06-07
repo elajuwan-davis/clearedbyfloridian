@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
 import {
   LayoutDashboard,
@@ -152,11 +152,48 @@ export function PortalShell({ children }: { children: ReactNode }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
+  const [authState, setAuthState] = useState<"checking" | "authed" | "anon">("checking");
+
+  useEffect(() => {
+    let cancelled = false;
+    supabase.auth.getSession().then(({ data }) => {
+      if (cancelled) return;
+      if (!data.session) {
+        navigate({ to: "/login", replace: true });
+        setAuthState("anon");
+      } else {
+        setAuthState("authed");
+      }
+    });
+    const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (!session) {
+        setAuthState("anon");
+        navigate({ to: "/login", replace: true });
+      } else {
+        setAuthState("authed");
+      }
+    });
+    return () => {
+      cancelled = true;
+      sub.subscription.unsubscribe();
+    };
+  }, [navigate]);
 
   async function handleSignOut() {
     await supabase.auth.signOut();
     navigate({ to: "/", replace: true });
   }
+
+  if (authState !== "authed") {
+    return (
+      <div className="min-h-screen grid place-items-center bg-background">
+        <div className="font-mono text-[11px] tracking-[0.15em] uppercase text-muted-foreground">
+          {authState === "checking" ? "Verifying session…" : "Redirecting to sign in…"}
+        </div>
+      </div>
+    );
+  }
+
 
   return (
     <div className="min-h-screen bg-background">
