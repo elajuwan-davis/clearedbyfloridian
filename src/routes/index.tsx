@@ -54,7 +54,7 @@ function Hero() {
               <em className="italic font-light text-muted-foreground">Elite General Contractors.</em>
             </h1>
             <p className="mt-10 max-w-xl font-display text-lg md:text-xl leading-relaxed text-foreground/80 text-pretty">
-              White-shoe counsel for expedited plan review and inspections —
+              White-glove service for expedited plan review and inspections —
               built inside a luxury construction firm, extended to the GCs
               delivering South Florida's most considered residential work.
             </p>
