@@ -100,13 +100,27 @@ function ProfilePage() {
     setEmails((list) => list.filter((x) => x !== e));
   }
 
-  function saveProfile() {
+  async function saveProfile() {
+    if (!userId) { toast.success("Profile saved (sign in to persist)"); return; }
+    const { error } = await supabase.from("profiles").update({
+      display_name: displayName,
+      avatar_url: avatar,
+      company_name: company.name,
+      website: company.website,
+      phone: company.phone,
+      address: company.address,
+      language,
+      notification_emails: emails,
+    }).eq("id", userId);
+    if (error) { toast.error("Save failed: " + error.message); return; }
     toast.success("Profile saved");
   }
 
-  function changePassword() {
+  async function changePassword() {
     if (pwd.next.length < 8) return toast.error("Password must be 8+ characters");
     if (pwd.next !== pwd.confirm) return toast.error("Passwords do not match");
+    const { error } = await supabase.auth.updateUser({ password: pwd.next });
+    if (error) return toast.error(error.message);
     setPwd({ current: "", next: "", confirm: "" });
     toast.success("Password updated");
   }
