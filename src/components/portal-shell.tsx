@@ -28,7 +28,9 @@ const portalNav: NavItem[] = [
   { to: "/forms", label: "Forms", icon: FileText },
   { to: "/invoices", label: "Invoices", icon: Receipt },
   { to: "/ask-victoria", label: "Ask Victoria", icon: Sparkle },
+  { to: "/fee-calculator", label: "Fee Calculator", icon: Calculator },
   { to: "/project-guides", label: "Project Guides", icon: BookOpen },
+
   { to: "/profile", label: "Profile", icon: User },
 ];
 
