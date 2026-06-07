@@ -51,7 +51,7 @@ type Row = {
   permit_no: string;
   name: string;
   gc: string;
-  county: "Palm Beach" | "Martin" | "St. Lucie" | "Indian River";
+  county: "Broward" | "Palm Beach" | "Martin" | "St. Lucie" | "Indian River";
   value_cents: number;
   status: Status;
   assignee: string | null;
@@ -125,8 +125,8 @@ function AdminPage() {
             Operations <em>Desk</em>
           </h1>
           <p className="mt-2 max-w-2xl text-sm text-obsidian/60">
-            Portfolio-wide queue across Palm Beach + Treasure Coast. Triage corrections, assign
-            reviewers, monitor float on invoiced fees.
+            Portfolio-wide queue across Broward, Palm Beach, and the Treasure Coast. Triage
+            corrections, assign reviewers, monitor float on invoiced fees.
           </p>
         </div>
 
@@ -186,7 +186,7 @@ function AdminPage() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All counties</SelectItem>
-                {(["Palm Beach", "Martin", "St. Lucie", "Indian River"] as const).map((c) => (
+                {(["Broward", "Palm Beach", "Martin", "St. Lucie", "Indian River"] as const).map((c) => (
                   <SelectItem key={c} value={c}>{c}</SelectItem>
                 ))}
               </SelectContent>

@@ -31,7 +31,7 @@ export const Route = createFileRoute("/projects/new")({
   component: NewProjectPage,
 });
 
-const COUNTIES = ["Palm Beach", "Martin", "St. Lucie", "Indian River"];
+const COUNTIES = ["Broward", "Palm Beach", "Martin", "St. Lucie", "Indian River"];
 const LICENSE_TYPES = [
   { value: "CGC", label: "CGC — Certified General Contractor" },
   { value: "CBC", label: "CBC — Certified Building Contractor" },

@@ -1,14 +1,22 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { createFileRoute } from "@tanstack/react-router";
+import { useMemo, useRef, useState } from "react";
 import { PortalShell } from "@/components/portal-shell";
 import { Button } from "@/components/ui/button";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   Search,
-  MessageSquare,
-  AlertTriangle,
-  ShieldCheck,
-  Inbox,
+  Paperclip,
+  Send,
   ArrowUpRight,
+  Inbox,
+  FileText,
+  X,
 } from "lucide-react";
 
 export const Route = createFileRoute("/messages")({
@@ -21,354 +29,380 @@ export const Route = createFileRoute("/messages")({
   component: MessagesPage,
 });
 
-type Tone = "neutral" | "sky" | "warn" | "ok";
-const toneClass: Record<Tone, string> = {
-  neutral: "bg-paper-warm text-obsidian/70 border-obsidian/15",
-  sky: "bg-sky/10 text-sky border-sky/30",
-  warn: "bg-oxblood/10 text-oxblood border-oxblood/30",
-  ok: "bg-emerald-600/10 text-emerald-700 border-emerald-600/30",
+const PROJECT_STATUSES = [
+  "submitted",
+  "in_review",
+  "corrections_required",
+  "correction_response_under_review",
+  "resubmitted_to_county",
+  "approved",
+  "inspection_scheduled",
+  "inspection_complete",
+  "permit_issued",
+  "cancelled",
+] as const;
+type ProjectStatus = (typeof PROJECT_STATUSES)[number];
+
+const STATUS_LABEL: Record<ProjectStatus, string> = {
+  submitted: "Submitted",
+  in_review: "In Review",
+  corrections_required: "Corrections Required",
+  correction_response_under_review: "Correction Response Under Review",
+  resubmitted_to_county: "Resubmitted to County",
+  approved: "Approved",
+  inspection_scheduled: "Inspection Scheduled",
+  inspection_complete: "Inspection Complete",
+  permit_issued: "Permit Issued",
+  cancelled: "Cancelled",
 };
 
-type Channel = "plan_review" | "corrections" | "inspections" | "general";
-const channelMeta: Record<Channel, { label: string; tone: Tone }> = {
-  plan_review: { label: "Plan Review", tone: "sky" },
-  corrections: { label: "Corrections", tone: "warn" },
-  inspections: { label: "Inspections", tone: "neutral" },
-  general: { label: "General", tone: "neutral" },
-};
-
-type Message = {
+type Attachment = { name: string; size: string };
+type Msg = {
   id: string;
-  project_id: string;
-  permit_no: string;
-  project_name: string;
   author: string;
-  role: string;
-  from_cleared: boolean;
-  channel: Channel;
-  preview: string;
+  fromAdmin: boolean;
+  body: string;
   at: string;
-  at_iso: string;
-  unread: boolean;
-  has_action?: boolean;
+  attachments?: Attachment[];
 };
 
-const MESSAGES: Message[] = [
-  {
-    id: "m1",
-    project_id: "1",
-    permit_no: "CLR-2026-0142",
-    project_name: "Ocean Ridge Estate",
-    author: "Cleared",
-    role: "Plan Review",
-    from_cleared: true,
-    channel: "corrections",
-    preview:
-      "Plan review complete. Minor structural notation on Sheet S-201 — see Correction Round 1. 48-hour response clock running.",
-    at: "Today · 2:48 PM",
-    at_iso: "2026-06-07T14:48",
-    unread: true,
-    has_action: true,
-  },
-  {
-    id: "m2",
-    project_id: "2",
-    permit_no: "CLR-2026-0138",
-    project_name: "Jupiter Island Residence",
-    author: "Cleared",
-    role: "Plan Review",
-    from_cleared: true,
-    channel: "corrections",
-    preview:
-      "Round 1 opened — 4 items requiring response. Sheet A-101 dimension string, M-201 schedule mismatch, FL-ECC signature, ASCE 7-22 confirmation.",
-    at: "Today · 11:14 AM",
-    at_iso: "2026-06-07T11:14",
-    unread: true,
-    has_action: true,
-  },
-  {
-    id: "m3",
-    project_id: "3",
-    permit_no: "CLR-2026-0131",
-    project_name: "Manalapan Bayfront",
-    author: "Cleared",
-    role: "Permitting",
-    from_cleared: true,
-    channel: "general",
-    preview:
-      "Permit issued by Palm Beach County. Packet attached — recorded permit number PB-2026-04812.",
-    at: "Yesterday · 4:22 PM",
-    at_iso: "2026-06-06T16:22",
-    unread: true,
-  },
-  {
-    id: "m4",
-    project_id: "6",
-    permit_no: "CLR-2026-0112",
-    project_name: "Stuart Riverhouse",
-    author: "Cleared",
-    role: "Inspections",
-    from_cleared: true,
-    channel: "inspections",
-    preview:
-      "Footer inspection scheduled — Friday, June 12 at 9:00 AM. Virtual walkthrough link will be sent 30 minutes prior.",
-    at: "Yesterday · 10:01 AM",
-    at_iso: "2026-06-06T10:01",
-    unread: false,
-  },
-  {
-    id: "m5",
-    project_id: "1",
-    permit_no: "CLR-2026-0142",
-    project_name: "Ocean Ridge Estate",
-    author: "Marcus Hale",
-    role: "GC · Coastline Builders Group",
-    from_cleared: false,
-    channel: "corrections",
-    preview:
-      "Atelier returning revised S-201 tomorrow. Will upload upon receipt.",
-    at: "Jun 3 · 8:22 AM",
-    at_iso: "2026-06-03T08:22",
-    unread: false,
-  },
-  {
-    id: "m6",
-    project_id: "4",
-    permit_no: "CLR-2026-0127",
-    project_name: "Hobe Sound Compound",
-    author: "Cleared",
-    role: "Plan Review",
-    from_cleared: true,
-    channel: "plan_review",
-    preview:
-      "Plan review complete — no corrections. Affidavit of compliance prepared. Awaiting GC sign-off before filing CO request with Martin County.",
-    at: "Jun 2 · 1:30 PM",
-    at_iso: "2026-06-02T13:30",
-    unread: false,
-  },
-  {
-    id: "m7",
-    project_id: "7",
-    permit_no: "CLR-2026-0104",
-    project_name: "Palm Beach Landmark",
-    author: "Cleared",
-    role: "Permitting",
-    from_cleared: true,
-    channel: "general",
-    preview:
-      "Resubmittal package delivered to Palm Beach County. Statutory clock reset — permit or written citation due by June 15.",
-    at: "Jun 1 · 9:45 AM",
-    at_iso: "2026-06-01T09:45",
-    unread: false,
-  },
-  {
-    id: "m8",
-    project_id: "5",
-    permit_no: "CLR-2026-0119",
-    project_name: "Vero Beach Oceanfront",
-    author: "Cleared",
-    role: "Permitting",
-    from_cleared: true,
-    channel: "general",
-    preview:
-      "Affidavit filed with Indian River County. 10 business day clock started — permit or written citation due by May 13.",
-    at: "Apr 29 · 3:18 PM",
-    at_iso: "2026-04-29T15:18",
-    unread: false,
-  },
-];
+type Thread = {
+  id: string;
+  permit_no: string;
+  name: string;
+  address: string;
+  county: string;
+  status: ProjectStatus;
+  unread: number;
+  lastAt: string;
+  messages: Msg[];
+};
 
-const FILTERS: Array<{ key: "all" | "unread" | Channel; label: string }> = [
-  { key: "all", label: "All" },
-  { key: "unread", label: "Unread" },
-  { key: "corrections", label: "Corrections" },
-  { key: "plan_review", label: "Plan Review" },
-  { key: "inspections", label: "Inspections" },
-  { key: "general", label: "General" },
+const SEED: Thread[] = [
+  {
+    id: "1",
+    permit_no: "CLR-2026-0142",
+    name: "Ocean Ridge Estate",
+    address: "1247 Banyan Trail, Ocean Ridge",
+    county: "Palm Beach",
+    status: "corrections_required",
+    unread: 2,
+    lastAt: "2:48 PM",
+    messages: [
+      { id: "a", author: "Maritza Alvarez, P.E.", fromAdmin: true, at: "Jun 5 · 10:12 AM", body: "Plan review opened. Reviewing structural set S-100 through S-401 first." },
+      { id: "b", author: "You", fromAdmin: false, at: "Jun 5 · 1:40 PM", body: "Thanks — let us know when corrections are issued." },
+      { id: "c", author: "Maritza Alvarez, P.E.", fromAdmin: true, at: "Today · 2:48 PM", body: "Round 1 issued. One structural notation on S-201, plus a missing FL product approval citation on the impact glazing schedule. 48-hour clock running.", attachments: [{ name: "Round1-Corrections.pdf", size: "342 KB" }] },
+    ],
+  },
+  {
+    id: "2",
+    permit_no: "CLR-2026-0138",
+    name: "Jupiter Island Residence",
+    address: "88 Beach Rd, Jupiter Island",
+    county: "Martin",
+    status: "in_review",
+    unread: 1,
+    lastAt: "11:14 AM",
+    messages: [
+      { id: "a", author: "Sasha Whitfield", fromAdmin: true, at: "Today · 11:14 AM", body: "Intake complete. Assigned to R. Chen for architectural and J. Pereira for MEP." },
+    ],
+  },
+  {
+    id: "3",
+    permit_no: "CLR-2026-0131",
+    name: "Manalapan Bayfront",
+    address: "1812 S Ocean Blvd, Manalapan",
+    county: "Palm Beach",
+    status: "permit_issued",
+    unread: 0,
+    lastAt: "Yesterday",
+    messages: [
+      { id: "a", author: "Sasha Whitfield", fromAdmin: true, at: "Yesterday · 4:22 PM", body: "Permit issued by Palm Beach County. PB-2026-04812. Packet attached.", attachments: [{ name: "Permit-Packet.pdf", size: "1.2 MB" }] },
+    ],
+  },
+  {
+    id: "4",
+    permit_no: "CLR-2026-0112",
+    name: "Stuart Riverhouse",
+    address: "320 SW St Lucie Cres, Stuart",
+    county: "Martin",
+    status: "inspection_scheduled",
+    unread: 0,
+    lastAt: "Mon",
+    messages: [
+      { id: "a", author: "Dana Ortiz", fromAdmin: true, at: "Mon · 10:01 AM", body: "Footer inspection scheduled Friday Jun 12 at 9:00 AM. Virtual walkthrough link sent 30 min prior." },
+    ],
+  },
 ];
 
 function MessagesPage() {
-  const [filter, setFilter] = useState<(typeof FILTERS)[number]["key"]>("all");
+  const [threads, setThreads] = useState<Thread[]>(SEED);
+  const [activeId, setActiveId] = useState<string>(SEED[0].id);
   const [query, setQuery] = useState("");
+  const [draft, setDraft] = useState("");
+  const [pending, setPending] = useState<Attachment[]>([]);
+  const fileRef = useRef<HTMLInputElement>(null);
 
   const filtered = useMemo(() => {
-    return MESSAGES.filter((m) => {
-      if (filter === "unread" && !m.unread) return false;
-      if (filter !== "all" && filter !== "unread" && m.channel !== filter) return false;
-      if (query.trim()) {
-        const q = query.toLowerCase();
-        if (
-          !m.preview.toLowerCase().includes(q) &&
-          !m.project_name.toLowerCase().includes(q) &&
-          !m.permit_no.toLowerCase().includes(q) &&
-          !m.author.toLowerCase().includes(q)
-        ) {
-          return false;
-        }
-      }
-      return true;
-    });
-  }, [filter, query]);
+    const q = query.toLowerCase().trim();
+    if (!q) return threads;
+    return threads.filter((t) =>
+      `${t.name} ${t.permit_no} ${t.address}`.toLowerCase().includes(q),
+    );
+  }, [threads, query]);
 
-  const unreadCount = MESSAGES.filter((m) => m.unread).length;
-  const actionCount = MESSAGES.filter((m) => m.has_action).length;
+  const active = threads.find((t) => t.id === activeId) ?? threads[0];
+
+  function openThread(id: string) {
+    setActiveId(id);
+    setThreads((prev) => prev.map((t) => (t.id === id ? { ...t, unread: 0 } : t)));
+  }
+
+  function sendMessage() {
+    if (!draft.trim() && pending.length === 0) return;
+    const m: Msg = {
+      id: `m${Date.now()}`,
+      author: "You",
+      fromAdmin: false,
+      body: draft.trim(),
+      at: "Just now",
+      attachments: pending.length ? pending : undefined,
+    };
+    setThreads((prev) =>
+      prev.map((t) => (t.id === active.id ? { ...t, messages: [...t.messages, m], lastAt: "Just now" } : t)),
+    );
+    setDraft("");
+    setPending([]);
+  }
+
+  function onFiles(files: FileList | null) {
+    if (!files) return;
+    const next: Attachment[] = Array.from(files).map((f) => ({
+      name: f.name,
+      size: `${Math.max(1, Math.round(f.size / 1024))} KB`,
+    }));
+    setPending((p) => [...p, ...next]);
+    if (fileRef.current) fileRef.current.value = "";
+  }
+
+  function changeStatus(s: ProjectStatus) {
+    setThreads((prev) => prev.map((t) => (t.id === active.id ? { ...t, status: s } : t)));
+  }
 
   return (
     <PortalShell>
-      <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
-        {/* Header */}
-        <div className="flex flex-col gap-6 border-b border-obsidian/10 pb-8 md:flex-row md:items-end md:justify-between">
-          <div>
-            <div className="eyebrow text-obsidian/50">Portfolio · All Channels</div>
-            <h1 className="display-serif mt-3 text-5xl text-obsidian">Messages</h1>
-            <p className="mt-2 text-sm text-obsidian/60">
-              Every thread between your firm and Cleared, across every active permit.
-            </p>
-          </div>
-          <div className="flex flex-wrap gap-3">
-            <Stat label="Unread" value={unreadCount} tone="sky" />
-            <Stat label="Needs response" value={actionCount} tone="warn" />
-          </div>
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6 lg:py-10">
+        <div className="border-b border-obsidian/10 pb-6 mb-6">
+          <div className="eyebrow text-obsidian/50">Portfolio Messaging</div>
+          <h1 className="display-serif mt-3 text-4xl sm:text-5xl text-obsidian">Messages</h1>
         </div>
 
-        {/* Toolbar */}
-        <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex flex-wrap gap-1.5">
-            {FILTERS.map((f) => {
-              const active = filter === f.key;
-              return (
-                <button
-                  key={f.key}
-                  type="button"
-                  onClick={() => setFilter(f.key)}
-                  className={`border px-3 py-1.5 font-mono text-[10px] font-medium uppercase tracking-[0.14em] transition-colors ${
-                    active
-                      ? "border-obsidian bg-obsidian text-paper"
-                      : "border-obsidian/15 bg-white text-obsidian/65 hover:border-obsidian/40 hover:text-obsidian"
-                  }`}
-                >
-                  {f.label}
-                </button>
-              );
-            })}
-          </div>
-          <div className="relative w-full sm:w-80">
-            <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-obsidian/40" />
-            <input
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search by project, permit no., text…"
-              className="block w-full border border-obsidian/15 bg-white pl-9 pr-3 py-2 text-sm text-obsidian placeholder:text-obsidian/40 focus:border-obsidian/40 focus:outline-none"
-            />
-          </div>
-        </div>
-
-        {/* List */}
-        <div className="mt-6 border border-obsidian/10 bg-white">
-          {filtered.length === 0 ? (
-            <div className="flex flex-col items-center justify-center px-6 py-20 text-center">
-              <Inbox className="h-7 w-7 text-obsidian/30" />
-              <div className="display-serif mt-4 text-2xl text-obsidian">Inbox clear</div>
-              <p className="mt-2 max-w-sm text-sm text-obsidian/55">
-                No messages match this filter. Try widening the channel or clearing your search.
-              </p>
+        <div className="grid grid-cols-1 lg:grid-cols-[300px_1fr] gap-0 border border-obsidian/15 bg-white min-h-[600px]">
+          {/* LEFT — project list */}
+          <aside className="border-b lg:border-b-0 lg:border-r border-obsidian/10 flex flex-col">
+            <div className="p-3 border-b border-obsidian/10">
+              <div className="relative">
+                <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-obsidian/40" />
+                <input
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder="Search by address or permit number…"
+                  className="block w-full border border-obsidian/15 bg-paper-warm pl-9 pr-3 py-2 text-sm text-obsidian placeholder:text-obsidian/40 focus:border-obsidian/40 focus:outline-none rounded-[3px]"
+                />
+              </div>
             </div>
-          ) : (
-            <ul className="divide-y divide-obsidian/5">
-              {filtered.map((m) => {
-                const ch = channelMeta[m.channel];
-                return (
-                  <li key={m.id}>
-                    <Link
-                      to="/projects/$id"
-                      params={{ id: m.project_id }}
-                      className={`group flex items-start gap-5 px-6 py-5 transition-colors hover:bg-paper-warm/60 ${
-                        m.unread ? "bg-paper-warm/30" : ""
-                      }`}
-                    >
-                      {/* Unread dot */}
-                      <span
-                        aria-hidden
-                        className={`mt-2 h-2 w-2 shrink-0 rounded-full ${
-                          m.unread ? "bg-sky" : "bg-transparent"
+            <ul className="flex-1 overflow-y-auto max-h-[600px]">
+              {filtered.length === 0 ? (
+                <li className="p-8 text-center text-obsidian/45 text-sm">
+                  <Inbox className="h-5 w-5 mx-auto mb-2 opacity-50" />
+                  No projects.
+                </li>
+              ) : (
+                filtered.map((t) => {
+                  const last = t.messages[t.messages.length - 1];
+                  const isActive = t.id === active.id;
+                  return (
+                    <li key={t.id}>
+                      <button
+                        type="button"
+                        onClick={() => openThread(t.id)}
+                        className={`block w-full text-left px-4 py-3 border-b border-obsidian/5 transition-colors ${
+                          isActive ? "bg-paper-warm" : "hover:bg-paper-warm/60"
                         }`}
-                      />
-
-                      {/* Body */}
-                      <div className="min-w-0 flex-1">
-                        <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-                          <span className={`text-sm ${m.unread ? "font-medium text-obsidian" : "text-obsidian/85"}`}>
-                            {m.author}
+                      >
+                        <div className="flex items-center justify-between gap-2">
+                          <span className={`text-sm truncate ${t.unread ? "font-medium text-obsidian" : "text-obsidian/85"}`}>
+                            {t.name}
                           </span>
-                          {m.from_cleared && (
-                            <span className="border border-sky/30 bg-sky/10 px-1.5 py-0.5 font-mono text-[9px] font-medium uppercase tracking-[0.12em] text-sky">
-                              Cleared
-                            </span>
-                          )}
-                          <span className={`inline-flex items-center border px-2 py-0.5 font-mono text-[9px] font-medium uppercase tracking-[0.12em] ${toneClass[ch.tone]}`}>
-                            {ch.label}
-                          </span>
-                          {m.has_action && (
-                            <span className="inline-flex items-center gap-1 border border-oxblood/30 bg-oxblood/10 px-1.5 py-0.5 font-mono text-[9px] font-medium uppercase tracking-[0.12em] text-oxblood">
-                              <AlertTriangle className="h-2.5 w-2.5" />
-                              Action
+                          {t.unread > 0 && (
+                            <span className="ml-auto inline-flex h-4 min-w-[16px] items-center justify-center bg-sky text-paper font-mono text-[10px] font-medium px-1 rounded-full">
+                              {t.unread}
                             </span>
                           )}
                         </div>
-
-                        <div className="mt-1.5 flex flex-wrap items-center gap-x-3 font-mono text-[10px] uppercase tracking-[0.12em] text-obsidian/45">
-                          <span className="text-obsidian/65">{m.project_name}</span>
-                          <span>·</span>
-                          <span>{m.permit_no}</span>
-                          <span>·</span>
-                          <span>{m.role}</span>
+                        <div className="mt-0.5 font-mono text-[10px] uppercase tracking-[0.12em] text-obsidian/45 truncate">
+                          {t.permit_no} · {t.county}
                         </div>
-
-                        <p className={`mt-3 text-sm leading-relaxed ${m.unread ? "text-obsidian/85" : "text-obsidian/65"}`}>
-                          {m.preview}
-                        </p>
-                      </div>
-
-                      {/* Right column */}
-                      <div className="flex shrink-0 flex-col items-end gap-3">
-                        <time
-                          dateTime={m.at_iso}
-                          className="font-mono text-[10px] uppercase tracking-[0.12em] text-obsidian/45"
-                        >
-                          {m.at}
-                        </time>
-                        <ArrowUpRight className="h-3.5 w-3.5 text-obsidian/30 transition-opacity group-hover:text-sky" />
-                      </div>
-                    </Link>
-                  </li>
-                );
-              })}
+                        <p className="mt-1.5 text-xs text-obsidian/60 line-clamp-2">{last?.body}</p>
+                        <div className="mt-1 font-mono text-[10px] uppercase tracking-[0.12em] text-obsidian/40">
+                          {t.lastAt}
+                        </div>
+                      </button>
+                    </li>
+                  );
+                })
+              )}
             </ul>
-          )}
-        </div>
+          </aside>
 
-        <div className="mt-6 flex items-center justify-between font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/40">
-          <span>
-            Showing {filtered.length} of {MESSAGES.length} messages
-          </span>
-          <span className="inline-flex items-center gap-1.5">
-            <ShieldCheck className="h-3 w-3 text-sky/70" />
-            All messages encrypted at rest
-          </span>
+          {/* RIGHT — thread */}
+          <section className="flex flex-col min-h-[600px]">
+            {/* Thread header */}
+            <div className="flex flex-wrap items-start justify-between gap-4 p-4 border-b border-obsidian/10 bg-paper-warm/40">
+              <div className="min-w-0">
+                <div className="display-serif text-2xl text-obsidian">{active.name}</div>
+                <div className="mt-1 text-xs text-obsidian/55">{active.address}</div>
+                <div className="mt-1 font-mono text-[10px] uppercase tracking-[0.12em] text-obsidian/45">
+                  {active.permit_no} · {active.county} County
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <Select value={active.status} onValueChange={(v) => changeStatus(v as ProjectStatus)}>
+                  <SelectTrigger className="h-9 w-[230px] rounded-[3px] border-obsidian/15 bg-white text-xs">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {PROJECT_STATUSES.map((s) => (
+                      <SelectItem key={s} value={s}>
+                        {STATUS_LABEL[s]}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Button asChild variant="ghost" size="sm" className="rounded-[3px] gap-1">
+                  <a href={`/projects/${active.id}`}>
+                    Details <ArrowUpRight className="h-3 w-3" />
+                  </a>
+                </Button>
+              </div>
+            </div>
+
+            {/* Messages */}
+            <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 bg-paper">
+              {active.messages.map((m) => (
+                <div key={m.id} className={`flex ${m.fromAdmin ? "justify-start" : "justify-end"}`}>
+                  <div className={`max-w-[80%] ${m.fromAdmin ? "" : "items-end"}`}>
+                    <div className="flex items-baseline gap-2 mb-1">
+                      <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-obsidian/60">
+                        {m.author}
+                      </span>
+                      {m.fromAdmin && (
+                        <span className="border border-obsidian/30 bg-obsidian text-paper px-1.5 py-0.5 font-mono text-[8px] font-medium uppercase tracking-[0.12em] rounded-[2px]">
+                          Admin
+                        </span>
+                      )}
+                      <span className="font-mono text-[10px] text-obsidian/40">{m.at}</span>
+                    </div>
+                    <div
+                      className="px-4 py-3 text-sm leading-relaxed rounded-[3px]"
+                      style={
+                        m.fromAdmin
+                          ? { backgroundColor: "var(--obsidian)", color: "var(--paper)" }
+                          : { backgroundColor: "color-mix(in oklab, var(--sky) 22%, white)", color: "var(--obsidian)" }
+                      }
+                    >
+                      {m.body}
+                      {m.attachments && m.attachments.length > 0 && (
+                        <div className="mt-3 space-y-1.5">
+                          {m.attachments.map((a) => (
+                            <div
+                              key={a.name}
+                              className="flex items-center gap-2 px-2 py-1.5 text-xs"
+                              style={{
+                                backgroundColor: m.fromAdmin
+                                  ? "color-mix(in oklab, var(--paper) 12%, transparent)"
+                                  : "color-mix(in oklab, var(--obsidian) 8%, transparent)",
+                                borderRadius: "2px",
+                              }}
+                            >
+                              <FileText className="h-3 w-3 shrink-0" />
+                              <span className="font-mono truncate">{a.name}</span>
+                              <span className="font-mono opacity-60 ml-auto">{a.size}</span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Composer */}
+            <div className="border-t border-obsidian/10 bg-white p-3">
+              {pending.length > 0 && (
+                <div className="flex flex-wrap gap-2 mb-2">
+                  {pending.map((a, i) => (
+                    <div
+                      key={`${a.name}-${i}`}
+                      className="flex items-center gap-2 border border-obsidian/15 bg-paper-warm px-2 py-1 text-xs rounded-[3px]"
+                    >
+                      <FileText className="h-3 w-3" />
+                      <span className="font-mono truncate max-w-[200px]">{a.name}</span>
+                      <button
+                        type="button"
+                        onClick={() => setPending((p) => p.filter((_, idx) => idx !== i))}
+                        className="text-obsidian/40 hover:text-oxblood"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+              <div className="flex items-end gap-2">
+                <input
+                  ref={fileRef}
+                  type="file"
+                  multiple
+                  onChange={(e) => onFiles(e.target.files)}
+                  className="hidden"
+                />
+                <button
+                  type="button"
+                  onClick={() => fileRef.current?.click()}
+                  className="h-10 w-10 grid place-items-center border border-obsidian/15 bg-paper-warm hover:bg-paper-warm/70 rounded-[3px] text-obsidian/65"
+                  aria-label="Attach file"
+                >
+                  <Paperclip className="h-4 w-4" strokeWidth={1.75} />
+                </button>
+                <textarea
+                  value={draft}
+                  onChange={(e) => setDraft(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && !e.shiftKey) {
+                      e.preventDefault();
+                      sendMessage();
+                    }
+                  }}
+                  rows={1}
+                  placeholder="Type a message... (Enter to send, Shift+Enter for new line)"
+                  className="flex-1 resize-none border border-obsidian/15 bg-paper-warm px-3 py-2.5 text-sm text-obsidian placeholder:text-obsidian/40 focus:border-obsidian/40 focus:outline-none rounded-[3px] min-h-[40px] max-h-32"
+                />
+                <Button
+                  type="button"
+                  onClick={sendMessage}
+                  variant="dark"
+                  className="h-10 rounded-[3px] gap-1.5"
+                >
+                  <Send className="h-3.5 w-3.5" strokeWidth={1.75} />
+                  Send
+                </Button>
+              </div>
+            </div>
+          </section>
         </div>
       </div>
     </PortalShell>
-  );
-}
-
-function Stat({ label, value, tone }: { label: string; value: number; tone: Tone }) {
-  return (
-    <div className={`flex items-center gap-2.5 border px-3 py-2 ${toneClass[tone]}`}>
-      <MessageSquare className="h-3.5 w-3.5" />
-      <div className="leading-tight">
-        <div className="font-mono text-xl tabular-nums">{value}</div>
-        <div className="font-mono text-[9px] uppercase tracking-[0.14em] opacity-80">{label}</div>
-      </div>
-    </div>
   );
 }

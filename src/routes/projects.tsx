@@ -133,7 +133,7 @@ function ProjectsPage() {
         </div>
 
         <p className="mt-6 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/40">
-          {projects.length} projects · Palm Beach County + Treasure Coast
+          {projects.length} projects · Broward through the Treasure Coast
         </p>
       </div>
     </PortalShell>

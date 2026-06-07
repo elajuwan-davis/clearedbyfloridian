@@ -399,8 +399,8 @@ function BuildersPage() {
               Verify <em className="italic text-oxblood">{verifying?.firm}</em>
             </DialogTitle>
             <DialogDescription className="text-obsidian/65">
-              Confirm Florida DBPR license, current COI naming Flōridian LLC as additional insured, and
-              executed Limited Power of Attorney before this firm can submit under FL 553.791.
+              Confirm Florida DBPR license, current COI, and executed Limited Power of Attorney
+              before this firm can submit under FL 553.791.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-3 py-2">
@@ -444,14 +444,14 @@ function BuildersPage() {
         <DialogContent className="rounded-[3px] border-obsidian/20 bg-paper-warm">
           <DialogHeader>
             <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-obsidian/55">
-              By invitation only
+              Onboarding
             </p>
             <DialogTitle className="display-serif text-3xl text-obsidian">
               Invite <em className="italic text-oxblood">{inviting?.firm}</em>
             </DialogTitle>
             <DialogDescription className="text-obsidian/65">
-              Sends a credentialed onboarding link. Restricted to GCs on active Flōridian projects building
-              $1M+ custom residential within Palm Beach County or the Treasure Coast.
+              Sends a credentialed onboarding link so this firm can verify their license, upload
+              their COI, and sign an LPOA before filing under FL 553.791.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-3 py-2">
@@ -467,7 +467,7 @@ function BuildersPage() {
                 Personal note (optional)
               </Label>
               <Input
-                placeholder="Reference the Flōridian project tying this invitation"
+                placeholder="Reference the project tied to this invitation"
                 className="rounded-[3px] border-obsidian/20 bg-paper"
               />
             </div>
