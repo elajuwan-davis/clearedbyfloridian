@@ -152,4 +152,15 @@
     text-transform: uppercase;
     color: var(--muted-foreground);
   }
+  /* Editorial display — Cormorant for long-form headlines (hero, section H2) */
+  .display-serif {
+    font-family: var(--font-wordmark);
+    font-weight: 400;
+    letter-spacing: -0.015em;
+    font-feature-settings: "liga", "dlig", "swsh";
+  }
+  .display-serif em, .display-serif .italic {
+    font-style: italic;
+    font-weight: 300;
+  }
 }
