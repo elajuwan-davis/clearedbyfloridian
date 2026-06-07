@@ -89,7 +89,7 @@ function PaymentAuthPage() {
     setSigned(false);
   }
 
-  async function submit() {
+  function submit() {
     if (!form.cardholder.trim()) return toast.error("Cardholder Name is required");
     if (!form.billingAddress.trim()) return toast.error("Billing Address is required");
     const digits = form.cardNumber.replace(/\s/g, "");
@@ -112,7 +112,7 @@ function PaymentAuthPage() {
       signatureDataUrl: sigDataUrl,
     };
     try {
-      await savePaymentAuth(record);
+      savePaymentAuth(record);
       toast.success("Payment authorization saved and on file.");
       navigate({ to: "/profile" });
     } catch (err) {

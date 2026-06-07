@@ -35,15 +35,15 @@ function lsClear(): void {
   try { localStorage.removeItem(LS_KEY); } catch { /* ignore */ }
 }
 
-export async function savePaymentAuth(record: PaymentAuthRecord): Promise<void> {
+export function savePaymentAuth(record: PaymentAuthRecord): void {
   lsSave(record);
 }
 
-export async function loadPaymentAuth(): Promise<PaymentAuthRecord | null> {
+export function loadPaymentAuth(): PaymentAuthRecord | null {
   return lsLoad();
 }
 
-export async function clearPaymentAuth(): Promise<void> {
+export function clearPaymentAuth(): void {
   lsClear();
 }
 
