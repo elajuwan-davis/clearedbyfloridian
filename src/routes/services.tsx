@@ -6,14 +6,14 @@ import { services } from "@/lib/mock-data";
 export const Route = createFileRoute("/services")({
   head: () => ({
     meta: [
-      { title: "Services — Flōridian Private Provider" },
+      { title: "Services — Cleared by Flōridian" },
       {
         name: "description",
         content:
-          "Private plan review, third-party inspections, permit coordination, and pre-construction code review for South Florida residential builders.",
+          "Private plan review, third-party inspections, permit coordination, and pre-construction code review — offered exclusively to the licensed GCs building Flōridian projects.",
       },
-      { property: "og:title", content: "Flōridian Services" },
-      { property: "og:description", content: "Plan review, inspections, coordination, and pre-construction code review." },
+      { property: "og:title", content: "Cleared Services" },
+      { property: "og:description", content: "Plan review, inspections, coordination, and pre-construction code review for Flōridian's GCs." },
     ],
   }),
   component: ServicesPage,
@@ -23,9 +23,9 @@ function ServicesPage() {
   return (
     <MarketingShell>
       <PageHeader
-        eyebrow="◇ Services"
-        title="Four services. One contract. Built for residential GCs."
-        intro="Florida Statute 553.791 lets us act in place of the building official for plan review and inspections. Pick the scope that fits your project."
+        eyebrow="Services"
+        title="Four services. One contract. For the GCs we build with."
+        intro="Florida Statute 553.791 lets us act in place of the building official for plan review and inspections. We do that exclusively for the licensed general contractors delivering Flōridian's luxury pool and hardscape projects."
       />
 
       <section className="mx-auto max-w-7xl px-6 py-24 space-y-px bg-border border-x hairline">
@@ -67,18 +67,19 @@ function ServicesPage() {
       <section className="mx-auto max-w-7xl px-6 pb-32">
         <div className="border hairline bg-secondary/40 p-10 md:p-14 grid md:grid-cols-2 gap-10 items-center">
           <div>
-            <div className="label-eyebrow">◇ Already mid-permit?</div>
+            <div className="label-eyebrow">Working with Flōridian?</div>
             <h3 className="mt-4 font-display text-3xl tracking-tight">
-              We can take over a stalled file.
+              Your GC can be Cleared in 48 hours.
             </h3>
             <p className="mt-4 text-muted-foreground">
-              If your project is parked in plan review at the AHJ, we can pull it
-              private under FS 553.791 and have a reviewer on it the same week.
+              If your project is already on Flōridian's books, your general
+              contractor qualifies for Cleared. We'll vet credentials, sign a
+              master services agreement, and start your permit the same week.
             </p>
           </div>
           <div className="md:text-right">
             <Button asChild size="lg" className="rounded-sm h-12">
-              <Link to="/contact">Talk to a reviewer</Link>
+              <Link to="/contact">Request access</Link>
             </Button>
           </div>
         </div>
