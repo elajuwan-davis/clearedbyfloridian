@@ -35,6 +35,9 @@ import { Route as ProjectsIdRouteImport } from './routes/projects.$id'
 import { Route as PortalProjectsRouteImport } from './routes/portal.projects'
 import { Route as PortalNewPermitRouteImport } from './routes/portal.new-permit'
 import { Route as PortalInspectionsRouteImport } from './routes/portal.inspections'
+import { Route as FormsSubcontractorIntakeRouteImport } from './routes/forms.subcontractor-intake'
+import { Route as FormsPermitIntakeRouteImport } from './routes/forms.permit-intake'
+import { Route as FormsPaymentAuthorizationRouteImport } from './routes/forms.payment-authorization'
 import { Route as AdminBuildersRouteImport } from './routes/admin.builders'
 
 const ServicesRoute = ServicesRouteImport.update({
@@ -167,6 +170,23 @@ const PortalInspectionsRoute = PortalInspectionsRouteImport.update({
   path: '/inspections',
   getParentRoute: () => PortalRoute,
 } as any)
+const FormsSubcontractorIntakeRoute =
+  FormsSubcontractorIntakeRouteImport.update({
+    id: '/subcontractor-intake',
+    path: '/subcontractor-intake',
+    getParentRoute: () => FormsRoute,
+  } as any)
+const FormsPermitIntakeRoute = FormsPermitIntakeRouteImport.update({
+  id: '/permit-intake',
+  path: '/permit-intake',
+  getParentRoute: () => FormsRoute,
+} as any)
+const FormsPaymentAuthorizationRoute =
+  FormsPaymentAuthorizationRouteImport.update({
+    id: '/payment-authorization',
+    path: '/payment-authorization',
+    getParentRoute: () => FormsRoute,
+  } as any)
 const AdminBuildersRoute = AdminBuildersRouteImport.update({
   id: '/builders',
   path: '/builders',
@@ -182,7 +202,7 @@ export interface FileRoutesByFullPath {
   '/contact': typeof ContactRoute
   '/dashboard': typeof DashboardRoute
   '/fee-calculator': typeof FeeCalculatorRoute
-  '/forms': typeof FormsRoute
+  '/forms': typeof FormsRouteWithChildren
   '/invoices': typeof InvoicesRoute
   '/login': typeof LoginRoute
   '/lpoa-signing': typeof LpoaSigningRoute
@@ -195,6 +215,9 @@ export interface FileRoutesByFullPath {
   '/projects': typeof ProjectsRouteWithChildren
   '/services': typeof ServicesRoute
   '/admin/builders': typeof AdminBuildersRoute
+  '/forms/payment-authorization': typeof FormsPaymentAuthorizationRoute
+  '/forms/permit-intake': typeof FormsPermitIntakeRoute
+  '/forms/subcontractor-intake': typeof FormsSubcontractorIntakeRoute
   '/portal/inspections': typeof PortalInspectionsRoute
   '/portal/new-permit': typeof PortalNewPermitRoute
   '/portal/projects': typeof PortalProjectsRoute
@@ -211,7 +234,7 @@ export interface FileRoutesByTo {
   '/contact': typeof ContactRoute
   '/dashboard': typeof DashboardRoute
   '/fee-calculator': typeof FeeCalculatorRoute
-  '/forms': typeof FormsRoute
+  '/forms': typeof FormsRouteWithChildren
   '/invoices': typeof InvoicesRoute
   '/login': typeof LoginRoute
   '/lpoa-signing': typeof LpoaSigningRoute
@@ -223,6 +246,9 @@ export interface FileRoutesByTo {
   '/projects': typeof ProjectsRouteWithChildren
   '/services': typeof ServicesRoute
   '/admin/builders': typeof AdminBuildersRoute
+  '/forms/payment-authorization': typeof FormsPaymentAuthorizationRoute
+  '/forms/permit-intake': typeof FormsPermitIntakeRoute
+  '/forms/subcontractor-intake': typeof FormsSubcontractorIntakeRoute
   '/portal/inspections': typeof PortalInspectionsRoute
   '/portal/new-permit': typeof PortalNewPermitRoute
   '/portal/projects': typeof PortalProjectsRoute
@@ -240,7 +266,7 @@ export interface FileRoutesById {
   '/contact': typeof ContactRoute
   '/dashboard': typeof DashboardRoute
   '/fee-calculator': typeof FeeCalculatorRoute
-  '/forms': typeof FormsRoute
+  '/forms': typeof FormsRouteWithChildren
   '/invoices': typeof InvoicesRoute
   '/login': typeof LoginRoute
   '/lpoa-signing': typeof LpoaSigningRoute
@@ -253,6 +279,9 @@ export interface FileRoutesById {
   '/projects': typeof ProjectsRouteWithChildren
   '/services': typeof ServicesRoute
   '/admin/builders': typeof AdminBuildersRoute
+  '/forms/payment-authorization': typeof FormsPaymentAuthorizationRoute
+  '/forms/permit-intake': typeof FormsPermitIntakeRoute
+  '/forms/subcontractor-intake': typeof FormsSubcontractorIntakeRoute
   '/portal/inspections': typeof PortalInspectionsRoute
   '/portal/new-permit': typeof PortalNewPermitRoute
   '/portal/projects': typeof PortalProjectsRoute
@@ -284,6 +313,9 @@ export interface FileRouteTypes {
     | '/projects'
     | '/services'
     | '/admin/builders'
+    | '/forms/payment-authorization'
+    | '/forms/permit-intake'
+    | '/forms/subcontractor-intake'
     | '/portal/inspections'
     | '/portal/new-permit'
     | '/portal/projects'
@@ -312,6 +344,9 @@ export interface FileRouteTypes {
     | '/projects'
     | '/services'
     | '/admin/builders'
+    | '/forms/payment-authorization'
+    | '/forms/permit-intake'
+    | '/forms/subcontractor-intake'
     | '/portal/inspections'
     | '/portal/new-permit'
     | '/portal/projects'
@@ -341,6 +376,9 @@ export interface FileRouteTypes {
     | '/projects'
     | '/services'
     | '/admin/builders'
+    | '/forms/payment-authorization'
+    | '/forms/permit-intake'
+    | '/forms/subcontractor-intake'
     | '/portal/inspections'
     | '/portal/new-permit'
     | '/portal/projects'
@@ -358,7 +396,7 @@ export interface RootRouteChildren {
   ContactRoute: typeof ContactRoute
   DashboardRoute: typeof DashboardRoute
   FeeCalculatorRoute: typeof FeeCalculatorRoute
-  FormsRoute: typeof FormsRoute
+  FormsRoute: typeof FormsRouteWithChildren
   InvoicesRoute: typeof InvoicesRoute
   LoginRoute: typeof LoginRoute
   LpoaSigningRoute: typeof LpoaSigningRoute
@@ -556,6 +594,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PortalInspectionsRouteImport
       parentRoute: typeof PortalRoute
     }
+    '/forms/subcontractor-intake': {
+      id: '/forms/subcontractor-intake'
+      path: '/subcontractor-intake'
+      fullPath: '/forms/subcontractor-intake'
+      preLoaderRoute: typeof FormsSubcontractorIntakeRouteImport
+      parentRoute: typeof FormsRoute
+    }
+    '/forms/permit-intake': {
+      id: '/forms/permit-intake'
+      path: '/permit-intake'
+      fullPath: '/forms/permit-intake'
+      preLoaderRoute: typeof FormsPermitIntakeRouteImport
+      parentRoute: typeof FormsRoute
+    }
+    '/forms/payment-authorization': {
+      id: '/forms/payment-authorization'
+      path: '/payment-authorization'
+      fullPath: '/forms/payment-authorization'
+      preLoaderRoute: typeof FormsPaymentAuthorizationRouteImport
+      parentRoute: typeof FormsRoute
+    }
     '/admin/builders': {
       id: '/admin/builders'
       path: '/builders'
@@ -575,6 +634,20 @@ const AdminRouteChildren: AdminRouteChildren = {
 }
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
+
+interface FormsRouteChildren {
+  FormsPaymentAuthorizationRoute: typeof FormsPaymentAuthorizationRoute
+  FormsPermitIntakeRoute: typeof FormsPermitIntakeRoute
+  FormsSubcontractorIntakeRoute: typeof FormsSubcontractorIntakeRoute
+}
+
+const FormsRouteChildren: FormsRouteChildren = {
+  FormsPaymentAuthorizationRoute: FormsPaymentAuthorizationRoute,
+  FormsPermitIntakeRoute: FormsPermitIntakeRoute,
+  FormsSubcontractorIntakeRoute: FormsSubcontractorIntakeRoute,
+}
+
+const FormsRouteWithChildren = FormsRoute._addFileChildren(FormsRouteChildren)
 
 interface PortalRouteChildren {
   PortalInspectionsRoute: typeof PortalInspectionsRoute
@@ -616,7 +689,7 @@ const rootRouteChildren: RootRouteChildren = {
   ContactRoute: ContactRoute,
   DashboardRoute: DashboardRoute,
   FeeCalculatorRoute: FeeCalculatorRoute,
-  FormsRoute: FormsRoute,
+  FormsRoute: FormsRouteWithChildren,
   InvoicesRoute: InvoicesRoute,
   LoginRoute: LoginRoute,
   LpoaSigningRoute: LpoaSigningRoute,
