@@ -1,89 +1,160 @@
 import type { ReactNode } from "react";
-import { Link, useRouterState } from "@tanstack/react-router";
-import { Button } from "@/components/ui/button";
+import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
+import { LayoutDashboard, FolderOpen, ClipboardCheck, FilePlus2, LogOut } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
-type NavItem = { to: string; label: string; exact?: boolean };
+type NavItem = { to: string; label: string; icon: typeof LayoutDashboard; exact?: boolean };
+
 const portalNav: NavItem[] = [
-  { to: "/portal", label: "Overview", exact: true },
-  { to: "/portal/projects", label: "Projects" },
-  { to: "/portal/inspections", label: "Inspections" },
-  { to: "/portal/new-permit", label: "Submit permit" },
+  { to: "/portal", label: "Overview", icon: LayoutDashboard, exact: true },
+  { to: "/portal/projects", label: "Projects", icon: FolderOpen },
+  { to: "/portal/inspections", label: "Inspections", icon: ClipboardCheck },
+  { to: "/portal/new-permit", label: "Submit permit", icon: FilePlus2 },
 ];
+
+// Mock until auth wired — shape matches profiles row
+const mockUser = {
+  full_name: "J. Mendez",
+  initials: "JM",
+  role: "builder" as "builder" | "staff" | "admin",
+  company_name: "Coastline Builders Group",
+};
+
+const roleLabel: Record<typeof mockUser.role, string> = {
+  builder: "Builder",
+  staff: "Staff",
+  admin: "Admin",
+};
 
 export function PortalShell({ children }: { children: ReactNode }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const navigate = useNavigate();
+
+  async function handleSignOut() {
+    await supabase.auth.signOut();
+    navigate({ to: "/", replace: true });
+  }
 
   return (
-    <div className="min-h-screen grid grid-cols-1 md:grid-cols-[260px_1fr] bg-background">
-      <aside className="border-r hairline md:sticky md:top-0 md:h-screen flex flex-col">
-        <div className="p-6 border-b hairline">
-          <Link to="/" className="flex items-center gap-3">
-            <div className="relative h-9 w-9 border hairline bg-card flex items-center justify-center">
-              <div className="absolute inset-1 border hairline opacity-60" />
-              <span className="relative font-display text-base leading-none">C</span>
-              <span className="absolute -top-1 -right-1 h-1.5 w-1.5 bg-accent rounded-full" />
-            </div>
-            <div className="leading-[1]">
-              <div className="wordmark text-2xl">Cleared</div>
-              <div className="wordmark-subline mt-1">by Flōridian · Exclusive to GC Clients</div>
+    <div className="min-h-screen bg-background">
+      {/* Obsidian sidebar — fixed left, 256px */}
+      <aside
+        className="fixed inset-y-0 left-0 z-40 hidden md:flex flex-col text-paper"
+        style={{ width: "256px", backgroundColor: "var(--obsidian)" }}
+      >
+        {/* Wordmark */}
+        <div
+          className="px-6 py-6 border-b"
+          style={{ borderColor: "color-mix(in oklab, var(--paper) 10%, transparent)" }}
+        >
+          <Link to="/" className="block leading-[1]">
+            <div className="wordmark text-3xl text-paper">Cleared</div>
+            <div
+              className="wordmark-subline mt-1.5"
+              style={{ color: "color-mix(in oklab, var(--paper) 55%, transparent)" }}
+            >
+              by Flōridian
             </div>
           </Link>
         </div>
 
-        <nav className="flex-1 p-4 space-y-1">
+        {/* Nav */}
+        <nav className="flex-1 px-3 py-5 space-y-0.5 overflow-y-auto">
           {portalNav.map((item) => {
+            const Icon = item.icon;
             const isActive = item.exact
               ? pathname === item.to
-              : pathname.startsWith(item.to);
+              : pathname === item.to || pathname.startsWith(item.to + "/");
             return (
               <Link
                 key={item.to}
                 to={item.to as never}
-                className={`flex items-center justify-between rounded-sm px-3 py-2 text-sm transition-colors ${
-                  isActive
-                    ? "bg-secondary text-foreground"
-                    : "text-muted-foreground hover:bg-secondary/60 hover:text-foreground"
-                }`}
+                className="group relative flex items-center gap-3 pl-5 pr-3 py-2.5 text-[13px] font-subline tracking-wide transition-colors"
+                style={{
+                  color: isActive
+                    ? "var(--paper)"
+                    : "color-mix(in oklab, var(--paper) 60%, transparent)",
+                  backgroundColor: isActive
+                    ? "color-mix(in oklab, var(--sky) 8%, transparent)"
+                    : "transparent",
+                }}
               >
+                {/* Sky left border on active */}
+                <span
+                  aria-hidden
+                  className="absolute left-0 top-0 bottom-0 w-[3px] transition-opacity"
+                  style={{
+                    backgroundColor: "var(--sky)",
+                    opacity: isActive ? 1 : 0,
+                  }}
+                />
+                <Icon className="h-4 w-4 shrink-0" strokeWidth={1.5} />
                 <span>{item.label}</span>
-                {isActive && <span className="h-1.5 w-1.5 rounded-full bg-accent" aria-hidden />}
               </Link>
             );
           })}
         </nav>
 
-        <div className="p-4 border-t hairline space-y-3">
-          <div className="rounded-sm border hairline bg-card p-3">
-            <div className="label-eyebrow mb-2">Demo mode</div>
-            <p className="text-xs text-muted-foreground leading-relaxed">
-              The portal is running on mock data. Enable Lovable Cloud to wire real
-              accounts, database, and file uploads.
-            </p>
-          </div>
-          <div className="flex items-center gap-3 px-1">
-            <div className="h-8 w-8 rounded-full bg-primary text-primary-foreground grid place-items-center font-mono text-xs">
-              JM
+        {/* User footer */}
+        <div
+          className="px-4 py-4 border-t space-y-3"
+          style={{ borderColor: "color-mix(in oklab, var(--paper) 10%, transparent)" }}
+        >
+          <div className="flex items-center gap-3">
+            <div
+              className="h-9 w-9 grid place-items-center font-mono text-[11px] shrink-0"
+              style={{
+                backgroundColor: "color-mix(in oklab, var(--paper) 12%, transparent)",
+                color: "var(--paper)",
+                borderRadius: "3px",
+              }}
+            >
+              {mockUser.initials}
             </div>
-            <div className="leading-tight">
-              <div className="text-sm">J. Mendez</div>
-              <div className="text-[11px] text-muted-foreground">Coastline Builders Group</div>
+            <div className="leading-tight min-w-0 flex-1">
+              <div className="text-[13px] text-paper truncate">{mockUser.full_name}</div>
+              <div
+                className="inline-block mt-0.5 px-1.5 py-0.5 font-mono text-[9px] tracking-[0.18em] uppercase"
+                style={{
+                  color: "var(--sky)",
+                  backgroundColor: "color-mix(in oklab, var(--sky) 10%, transparent)",
+                  border: "1px solid color-mix(in oklab, var(--sky) 25%, transparent)",
+                  borderRadius: "2px",
+                }}
+              >
+                {roleLabel[mockUser.role]}
+              </div>
             </div>
           </div>
+          <button
+            onClick={handleSignOut}
+            className="w-full flex items-center gap-2 px-3 py-2 text-[12px] font-subline tracking-wide transition-colors"
+            style={{
+              color: "color-mix(in oklab, var(--paper) 65%, transparent)",
+              borderRadius: "3px",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor =
+                "color-mix(in oklab, var(--paper) 8%, transparent)";
+              e.currentTarget.style.color = "var(--paper)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = "transparent";
+              e.currentTarget.style.color =
+                "color-mix(in oklab, var(--paper) 65%, transparent)";
+            }}
+          >
+            <LogOut className="h-3.5 w-3.5" strokeWidth={1.5} />
+            <span>Sign out</span>
+          </button>
         </div>
       </aside>
 
-      <div className="flex flex-col min-h-screen">
-        <header className="h-16 border-b hairline flex items-center justify-between px-8 sticky top-0 bg-background/85 backdrop-blur z-30">
-          <div className="font-mono text-xs text-muted-foreground">
+      {/* Main column */}
+      <div className="md:pl-[256px] min-h-screen flex flex-col">
+        <header className="h-14 border-b hairline flex items-center justify-between px-8 sticky top-0 bg-background/85 backdrop-blur z-30">
+          <div className="font-mono text-[11px] tracking-[0.15em] uppercase text-muted-foreground">
             {pathname}
-          </div>
-          <div className="flex items-center gap-2">
-            <Button asChild variant="ghost" size="sm">
-              <Link to="/">Back to site</Link>
-            </Button>
-            <Button asChild size="sm" className="rounded-sm">
-              <Link to="/portal/new-permit">+ New permit</Link>
-            </Button>
           </div>
         </header>
         <div className="flex-1 px-8 py-10">{children}</div>
