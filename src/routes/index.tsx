@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { motion } from "framer-motion";
+
 import { MarketingShell } from "@/components/marketing-shell";
 import { Button } from "@/components/ui/button";
 import { services } from "@/lib/mock-data";
@@ -41,99 +41,38 @@ function HomePage() {
 
 function Hero() {
   return (
-    <section className="relative border-b hairline overflow-hidden">
-      <div className="absolute inset-0 blueprint-grid opacity-70" />
-      <div className="absolute inset-y-0 right-0 w-1/2 bg-gradient-to-l from-secondary/40 to-transparent pointer-events-none" />
-      <div className="relative mx-auto max-w-7xl px-6 pt-28 pb-32 md:pt-36 md:pb-40">
-        <div className="grid md:grid-cols-12 gap-12 items-end">
-          <div className="md:col-span-8">
-            <motion.div
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              className="label-eyebrow"
-            >
-              By invitation · FL Statute 553.791
-            </motion.div>
-            <motion.h1
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: 0.05 }}
-              className="mt-8 font-display text-[clamp(2.75rem,7vw,6.25rem)] leading-[0.95] tracking-tight text-balance"
-            >
-              Permits in days.<br />
-              <span className="text-muted-foreground">Not weeks.</span>
-            </motion.h1>
-            <motion.p
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="mt-8 max-w-xl text-lg text-muted-foreground text-pretty"
-            >
-              Cleared is the private-provider permitting arm of Flōridian LLC —
-              offered exclusively to the licensed general contractors building
-              Flōridian's luxury pool and hardscape projects. Twenty-eight years
-              of South Florida residential construction, applied to your permit.
-            </motion.p>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.6, delay: 0.35 }}
-              className="mt-10 flex flex-wrap gap-3"
-            >
-              <Button asChild size="lg" className="rounded-sm h-12 px-6">
-                <Link to="/contact">Request access</Link>
-              </Button>
-              <Button asChild size="lg" variant="outline" className="rounded-sm h-12 px-6">
-                <Link to="/services">See services</Link>
-              </Button>
-            </motion.div>
-          </div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-            className="md:col-span-4"
-          >
-            <div className="border hairline bg-card p-6 shadow-[0_1px_0_rgba(0,0,0,0.04)]">
-              <div className="label-eyebrow">Project · CLR-2026-0184</div>
-              <div className="mt-4 font-display text-xl leading-tight">
-                1217 S Ocean Blvd<br />Manalapan
-              </div>
-              <div className="mt-6 space-y-3 font-mono text-xs">
-                <Row k="Submitted" v="2026.05.22" />
-                <Row k="Review" v="In progress · 3d" />
-                <Row k="Reviewer" v="M. Alvarez, P.E." />
-                <Row k="Jurisdiction" v="Palm Beach County" />
-              </div>
-              <div className="mt-6">
-                <div className="h-1 bg-secondary overflow-hidden">
-                  <div className="h-full bg-accent" style={{ width: "42%" }} />
-                </div>
-                <div className="mt-2 flex justify-between font-mono text-[10px] text-muted-foreground">
-                  <span>INTAKE</span>
-                  <span>REVIEW</span>
-                  <span>APPROVED</span>
-                  <span>CLOSED</span>
-                </div>
-              </div>
+    <section className="relative border-b hairline">
+      <div className="mx-auto max-w-7xl px-6 pt-28 pb-32 md:pt-40 md:pb-44">
+        <div className="grid md:grid-cols-12 gap-12">
+          <div className="md:col-span-10">
+            <div className="font-mono text-[11px] uppercase tracking-[0.22em] text-accent">
+              Florida Statute 553.791
             </div>
-          </motion.div>
+            <h1 className="mt-10 display-serif text-[clamp(2.25rem,7.5vw,7rem)] leading-[1.04] tracking-tight text-balance">
+              Private-provider<br />
+              permitting for the<br />
+              <em className="italic font-light text-muted-foreground">Treasure Coast.</em>
+            </h1>
+            <p className="mt-10 max-w-xl font-display text-lg md:text-xl leading-relaxed text-foreground/80 text-pretty">
+              White-shoe counsel for expedited plan review and inspections —
+              extended by Flōridian LLC to the licensed general contractors
+              building our luxury pool and hardscape projects.
+            </p>
+            <div className="mt-14 flex items-center gap-4">
+              <div className="w-12 h-px bg-accent" />
+              <span className="font-subline text-[11px] uppercase tracking-[0.22em] font-bold">
+                By invitation only
+              </span>
+            </div>
+          </div>
         </div>
       </div>
     </section>
   );
 }
 
-function Row({ k, v }: { k: string; v: string }) {
-  return (
-    <div className="flex justify-between gap-4">
-      <span className="text-muted-foreground uppercase tracking-wider">{k}</span>
-      <span className="text-foreground">{v}</span>
-    </div>
-  );
-}
+
+
 
 function Lineage() {
   return (
@@ -185,8 +124,8 @@ function ServicesPreview() {
       <div className="grid md:grid-cols-12 gap-12 mb-16">
         <div className="md:col-span-4">
           <div className="label-eyebrow">Services</div>
-          <h2 className="mt-4 font-display text-4xl md:text-5xl tracking-tight text-balance">
-            What we do for your GC.
+          <h2 className="mt-4 display-serif text-4xl md:text-6xl tracking-tight text-balance">
+            What we do<br />for your GC.
           </h2>
         </div>
         <p className="md:col-span-7 md:col-start-6 self-end text-lg text-muted-foreground text-pretty">
@@ -206,7 +145,7 @@ function ServicesPreview() {
                 SERVICE
               </span>
             </div>
-            <h3 className="mt-6 font-display text-2xl tracking-tight">{s.title}</h3>
+            <h3 className="mt-6 display-serif text-3xl tracking-tight">{s.title}</h3>
             <p className="mt-3 text-sm text-muted-foreground leading-relaxed">{s.summary}</p>
             <ul className="mt-6 space-y-2 text-sm">
               {s.bullets.map((b) => (
@@ -219,6 +158,16 @@ function ServicesPreview() {
           </article>
         ))}
       </div>
+
+      <figure className="mt-20 max-w-3xl">
+        <div className="w-12 h-px bg-accent mb-6" />
+        <blockquote className="display-serif italic text-2xl md:text-3xl leading-snug text-foreground/85 text-pretty">
+          “The priority is keeping the sub-trades moving without municipal lag.”
+        </blockquote>
+        <figcaption className="mt-6 font-mono text-[11px] uppercase tracking-[0.22em] text-muted-foreground">
+          M. Alvarez, P.E. · Cleared Plan Review
+        </figcaption>
+      </figure>
     </section>
   );
 }
@@ -235,8 +184,8 @@ function Process() {
     <section className="border-y hairline bg-secondary/40">
       <div className="mx-auto max-w-7xl px-6 py-28">
         <div className="label-eyebrow">Process</div>
-        <h2 className="mt-4 font-display text-4xl md:text-5xl tracking-tight max-w-2xl">
-          A workflow your superintendents will actually use.
+        <h2 className="mt-4 display-serif text-4xl md:text-6xl tracking-tight max-w-3xl">
+          A workflow your superintendents <em className="italic font-light text-muted-foreground">will actually use.</em>
         </h2>
         <div className="mt-16 grid md:grid-cols-5 gap-px bg-border border hairline">
           {steps.map((s) => (
@@ -257,8 +206,8 @@ function Coverage() {
     <section className="mx-auto max-w-7xl px-6 py-28 grid md:grid-cols-12 gap-12">
       <div className="md:col-span-5">
         <div className="label-eyebrow">Coverage</div>
-        <h2 className="mt-4 font-display text-4xl md:text-5xl tracking-tight">
-          Palm Beach<br />and the Treasure Coast.
+        <h2 className="mt-4 display-serif text-4xl md:text-6xl tracking-tight">
+          Palm Beach<br />and the <em className="italic font-light text-muted-foreground">Treasure Coast.</em>
         </h2>
         <p className="mt-6 text-muted-foreground max-w-md">
           Anchored in West Palm Beach. We work the HVHZ amendments, the
@@ -285,24 +234,25 @@ function Coverage() {
 
 function CTA() {
   return (
-    <section className="border-t hairline bg-primary text-primary-foreground">
-      <div className="mx-auto max-w-7xl px-6 py-24 md:py-28 grid md:grid-cols-12 gap-8 items-end">
-        <div className="md:col-span-8">
-          <div className="font-mono text-xs uppercase tracking-[0.22em] opacity-60">
-            By invitation
-          </div>
-          <h2 className="mt-6 font-display text-4xl md:text-6xl tracking-tight text-balance">
-            Building with Flōridian? Get your GC Cleared.
-          </h2>
+    <section className="border-t hairline bg-foreground text-background">
+      <div className="mx-auto max-w-7xl px-6 py-24 md:py-32">
+        <div className="font-mono text-[11px] uppercase tracking-[0.22em] opacity-60">
+          By invitation
         </div>
-        <div className="md:col-span-4 flex md:justify-end">
+        <h2 className="mt-8 display-serif text-4xl md:text-7xl tracking-tight text-balance max-w-4xl">
+          Building with Flōridian?<br />
+          <em className="italic font-light opacity-80">Get your GC Cleared.</em>
+        </h2>
+        <div className="mt-16 max-w-md">
           <Button
             asChild
-            size="lg"
-            variant="secondary"
-            className="rounded-sm h-12 px-6 bg-background text-foreground hover:bg-background/90"
+            variant="outline"
+            className="w-full h-14 px-6 rounded-none border-background/25 bg-transparent text-background hover:bg-background/10 hover:text-background justify-between font-subline text-xs uppercase tracking-[0.22em] font-bold"
           >
-            <Link to="/contact" className="inline-flex items-center gap-2">Request access <ArrowRight className="h-4 w-4" /></Link>
+            <Link to="/contact">
+              Request access
+              <ArrowRight className="h-4 w-4 opacity-70" />
+            </Link>
           </Button>
         </div>
       </div>

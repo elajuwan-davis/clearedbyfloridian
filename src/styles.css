@@ -46,42 +46,44 @@
 }
 
 :root {
-  --radius: 0.25rem;
+  --radius: 0.125rem;
 
-  /* Paper / ink palette */
-  --paper: oklch(0.985 0.004 95);
-  --ink: oklch(0.16 0.025 250);
-  --rule: oklch(0.86 0.008 240);
+  /* Paper / ink palette — warm off-white over near-black, oxblood accent */
+  --paper: oklch(0.975 0.008 85);
+  --paper-deep: oklch(0.955 0.012 82);
+  --ink: oklch(0.18 0.012 260);
+  --rule: oklch(0.88 0.006 80);
 
   --background: var(--paper);
   --foreground: var(--ink);
 
-  --card: oklch(1 0 0);
+  --card: oklch(0.985 0.005 85);
   --card-foreground: var(--ink);
 
-  --popover: oklch(1 0 0);
+  --popover: var(--paper);
   --popover-foreground: var(--ink);
 
-  --primary: oklch(0.18 0.03 250);
-  --primary-foreground: oklch(0.985 0.004 95);
+  --primary: var(--ink);
+  --primary-foreground: var(--paper);
 
-  --secondary: oklch(0.95 0.006 240);
+  --secondary: var(--paper-deep);
   --secondary-foreground: var(--ink);
 
-  --muted: oklch(0.955 0.005 240);
-  --muted-foreground: oklch(0.45 0.02 250);
+  --muted: var(--paper-deep);
+  --muted-foreground: oklch(0.42 0.012 260);
 
-  --accent: oklch(0.55 0.13 232);
-  --accent-foreground: oklch(0.985 0.004 95);
+  /* Oxblood — restrained editorial accent */
+  --accent: oklch(0.32 0.085 25);
+  --accent-foreground: var(--paper);
 
-  --blueprint: oklch(0.55 0.13 232);
+  --blueprint: var(--accent);
 
-  --destructive: oklch(0.55 0.2 27);
-  --destructive-foreground: oklch(0.985 0.004 95);
+  --destructive: oklch(0.5 0.2 27);
+  --destructive-foreground: var(--paper);
 
-  --border: oklch(0.88 0.008 240);
-  --input: oklch(0.9 0.008 240);
-  --ring: oklch(0.55 0.13 232);
+  --border: var(--rule);
+  --input: oklch(0.9 0.006 80);
+  --ring: var(--accent);
 }
 
 @layer base {
@@ -149,5 +151,16 @@
     letter-spacing: 0.2em;
     text-transform: uppercase;
     color: var(--muted-foreground);
+  }
+  /* Editorial display — Cormorant for long-form headlines (hero, section H2) */
+  .display-serif {
+    font-family: var(--font-wordmark);
+    font-weight: 400;
+    letter-spacing: -0.015em;
+    font-feature-settings: "liga", "dlig", "swsh";
+  }
+  .display-serif em, .display-serif .italic {
+    font-style: italic;
+    font-weight: 300;
   }
 }
