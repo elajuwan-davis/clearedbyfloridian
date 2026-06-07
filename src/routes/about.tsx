@@ -73,20 +73,6 @@ function AboutPage() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-4 sm:px-6 py-24">
-        <div className="label-eyebrow">Team</div>
-        <h2 className="mt-4 font-display text-4xl tracking-tight">Reviewers & inspectors</h2>
-        <div className="mt-12 grid sm:grid-cols-2 lg:grid-cols-3 gap-px bg-border border hairline">
-          {team.map((m) => (
-            <div key={m.name} className="bg-background p-8">
-              <div className="aspect-square bg-muted blueprint-grid-fine border hairline mb-6" />
-              <div className="font-display text-lg">{m.name}</div>
-              <div className="font-mono text-[11px] uppercase tracking-wider text-accent mt-1">{m.role}</div>
-              <p className="mt-4 text-sm text-muted-foreground leading-relaxed">{m.bio}</p>
-            </div>
-          ))}
-        </div>
-      </section>
 
       <section className="mx-auto max-w-7xl px-4 sm:px-6 pb-24 grid md:grid-cols-3 gap-px bg-border border hairline">
         {[
