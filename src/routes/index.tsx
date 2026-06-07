@@ -164,7 +164,7 @@ function ServicesPreview() {
                 SERVICE
               </span>
             </div>
-            <h3 className="mt-6 font-display text-2xl tracking-tight">{s.title}</h3>
+            <h3 className="mt-6 display-serif text-3xl tracking-tight">{s.title}</h3>
             <p className="mt-3 text-sm text-muted-foreground leading-relaxed">{s.summary}</p>
             <ul className="mt-6 space-y-2 text-sm">
               {s.bullets.map((b) => (
@@ -177,6 +177,16 @@ function ServicesPreview() {
           </article>
         ))}
       </div>
+
+      <figure className="mt-20 max-w-3xl">
+        <div className="w-12 h-px bg-accent mb-6" />
+        <blockquote className="display-serif italic text-2xl md:text-3xl leading-snug text-foreground/85 text-pretty">
+          “The priority is keeping the sub-trades moving without municipal lag.”
+        </blockquote>
+        <figcaption className="mt-6 font-mono text-[11px] uppercase tracking-[0.22em] text-muted-foreground">
+          M. Alvarez, P.E. · Cleared Plan Review
+        </figcaption>
+      </figure>
     </section>
   );
 }
