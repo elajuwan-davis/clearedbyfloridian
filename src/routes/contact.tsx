@@ -35,7 +35,7 @@ function ContactPage() {
         intro="Cleared is offered by invitation to the licensed GCs delivering Flōridian's work. A principal will respond within four business hours to verify your project and begin intake."
       />
 
-      <section className="mx-auto max-w-6xl px-6 py-24 grid md:grid-cols-12 gap-12">
+      <section className="mx-auto max-w-6xl px-4 sm:px-6 py-24 grid md:grid-cols-12 gap-12">
         <div className="md:col-span-7">
           <form
             onSubmit={(e) => {

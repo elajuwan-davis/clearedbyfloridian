@@ -24,7 +24,7 @@ export function PageHeader({
   return (
     <section className="relative border-b hairline overflow-hidden">
       <div className="absolute inset-0 blueprint-grid-fine opacity-60" />
-      <div className="relative mx-auto max-w-7xl px-6 py-24 md:py-32">
+      <div className="relative mx-auto max-w-7xl px-4 sm:px-6 py-24 md:py-32">
         <div className="label-eyebrow">{eyebrow}</div>
         <h1 className="mt-6 font-display text-5xl md:text-7xl tracking-tight text-balance max-w-4xl">
           {title}

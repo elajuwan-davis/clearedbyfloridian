@@ -35,7 +35,7 @@ function AboutPage() {
         intro="Flōridian LLC has been designing and building South Florida's most considered pools, spas, and hardscapes since 1998. Cleared is what happens when twenty-eight years of running our own permits gets handed to the team building yours."
       />
 
-      <section className="mx-auto max-w-6xl px-6 py-24 grid md:grid-cols-12 gap-12">
+      <section className="mx-auto max-w-6xl px-4 sm:px-6 py-24 grid md:grid-cols-12 gap-12">
         <div className="md:col-span-5">
           <div className="label-eyebrow">Origin</div>
           <h2 className="mt-4 font-display text-3xl tracking-tight">From the deck end of the job.</h2>
@@ -61,7 +61,7 @@ function AboutPage() {
       </section>
 
       <section className="border-y hairline bg-secondary/40">
-        <div className="mx-auto max-w-6xl px-6 py-24 grid md:grid-cols-12 gap-12">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6 py-24 grid md:grid-cols-12 gap-12">
           <div className="md:col-span-5">
             <div className="label-eyebrow">Principles</div>
           </div>
@@ -81,7 +81,7 @@ function AboutPage() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-6 py-24">
+      <section className="mx-auto max-w-7xl px-4 sm:px-6 py-24">
         <div className="label-eyebrow">Team</div>
         <h2 className="mt-4 font-display text-4xl tracking-tight">Reviewers & inspectors</h2>
         <div className="mt-12 grid sm:grid-cols-2 lg:grid-cols-3 gap-px bg-border border hairline">
@@ -96,7 +96,7 @@ function AboutPage() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-6 pb-24 grid md:grid-cols-3 gap-px bg-border border hairline">
+      <section className="mx-auto max-w-7xl px-4 sm:px-6 pb-24 grid md:grid-cols-3 gap-px bg-border border hairline">
         {[
           { k: "1998", v: "Flōridian LLC founded · West Palm Beach" },
           { k: "FS 553.791", v: "Florida Private Provider Statute" },
