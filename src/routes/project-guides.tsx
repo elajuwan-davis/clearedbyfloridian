@@ -6,7 +6,10 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Search, AlertTriangle, FileText, ClipboardCheck, BookOpen } from "lucide-react";
-import { GUIDES, TRADES, CATEGORIES, type Guide } from "@/lib/project-guides-data";
+import { GUIDES as BASE_GUIDES, TRADES, CATEGORIES, type Guide } from "@/lib/project-guides-data";
+import { GUIDES_EXTRA } from "@/lib/project-guides-extras";
+
+const GUIDES: Guide[] = [...BASE_GUIDES, ...GUIDES_EXTRA];
 
 export const Route = createFileRoute("/project-guides")({
   head: () => ({ meta: [{ title: "Project Guides — Cleared" }, { name: "robots", content: "noindex" }] }),
