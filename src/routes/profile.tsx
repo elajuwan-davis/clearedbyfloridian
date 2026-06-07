@@ -265,6 +265,74 @@ function ProfilePage() {
           </div>
         </Section>
 
+        {/* Payment Authorization */}
+        <Section title="Payment Authorization" subtitle="Authorize Cleared by Flōridian to charge for services and permit fees.">
+          {paymentAuth ? (
+            <div
+              className="border bg-white p-5 rounded-[3px]"
+              style={{ borderColor: "color-mix(in oklab, var(--success, oklch(0.7 0.16 145)) 35%, transparent)" }}
+            >
+              <div className="flex items-start gap-3">
+                <CheckCircle2
+                  className="h-5 w-5 mt-0.5 shrink-0"
+                  strokeWidth={1.8}
+                  style={{ color: "var(--success, oklch(0.55 0.16 145))" }}
+                />
+                <div className="flex-1 min-w-0">
+                  <div className="text-sm text-obsidian font-medium">On file</div>
+                  <div className="mt-0.5 text-xs text-obsidian/55">
+                    Authorized {new Date(paymentAuth.authorizedAt).toLocaleDateString(undefined, { year: "numeric", month: "long", day: "numeric" })}
+                  </div>
+                </div>
+                <CreditCard className="h-4 w-4 text-obsidian/45 shrink-0" strokeWidth={1.5} />
+              </div>
+
+              <div className="mt-5 grid gap-3 sm:grid-cols-4 pt-5 border-t border-obsidian/10">
+                <Meta label="Type" value={paymentAuth.cardType} />
+                <Meta label="Brand" value={paymentAuth.brand} />
+                <Meta label={paymentAuth.cardType === "ACH" ? "Account" : "Card"} value={`•••• ${paymentAuth.last4}`} mono />
+                {paymentAuth.cardType !== "ACH" && <Meta label="Expires" value={paymentAuth.expiry} mono />}
+              </div>
+
+              <div className="mt-5 flex flex-wrap gap-3">
+                <Button asChild variant="outline" className="rounded-[3px]">
+                  <Link to="/forms/payment-authorization">Update authorization</Link>
+                </Button>
+                <Button variant="outline" className="rounded-[3px] text-oxblood border-oxblood/40 hover:bg-oxblood/5" onClick={revokePaymentAuth}>
+                  Revoke
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <div
+              className="border bg-white p-5 rounded-[3px]"
+              style={{ borderColor: "color-mix(in oklab, var(--amber, oklch(0.78 0.16 75)) 45%, transparent)" }}
+            >
+              <div className="flex items-start gap-3">
+                <AlertTriangle
+                  className="h-5 w-5 mt-0.5 shrink-0"
+                  strokeWidth={1.8}
+                  style={{ color: "var(--amber, oklch(0.62 0.16 65))" }}
+                />
+                <div className="flex-1 min-w-0">
+                  <div className="text-sm text-obsidian font-medium">No payment authorization on file</div>
+                  <p className="mt-1 text-xs text-obsidian/55 max-w-md">
+                    A payment authorization is required before Cleared can disburse municipality permit fees on your behalf.
+                  </p>
+                </div>
+              </div>
+              <div className="mt-5">
+                <Button asChild variant="dark" className="rounded-[3px] gap-2">
+                  <Link to="/forms/payment-authorization">
+                    Complete payment authorization <ArrowRight className="h-3.5 w-3.5" />
+                  </Link>
+                </Button>
+              </div>
+            </div>
+          )}
+        </Section>
+
+
         {/* Password */}
         <Section title="Change Password">
           <div className="grid gap-4 sm:grid-cols-3 max-w-2xl">
