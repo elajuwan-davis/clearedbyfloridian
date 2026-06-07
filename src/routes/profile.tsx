@@ -30,7 +30,7 @@ function ProfilePage() {
     name: "Coastline Builders Group",
     website: "https://coastlinebg.com",
     phone: "(561) 555-0144",
-    address: "215 Clematis St, Suite 200, West Palm Beach, FL 33401",
+    address: "",
   });
   const [language, setLanguage] = useState("en");
   const [emails, setEmails] = useState<string[]>([

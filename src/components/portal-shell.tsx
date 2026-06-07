@@ -11,6 +11,7 @@ import {
   BookOpen,
   LogOut,
   Menu,
+  User,
 } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { supabase } from "@/integrations/supabase/client";
@@ -19,13 +20,14 @@ type NavItem = { to: string; label: string; icon: typeof LayoutDashboard; exact?
 
 const portalNav: NavItem[] = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard, exact: true },
-  { to: "/projects", label: "My Permits", icon: FolderOpen },
+  { to: "/my-permits", label: "My Permits", icon: FolderOpen },
   { to: "/building-dept-logins", label: "Building Dept", icon: Building2 },
   { to: "/messages", label: "Messages", icon: MessageSquare },
   { to: "/forms", label: "Forms", icon: FileText },
   { to: "/invoices", label: "Invoices", icon: Receipt },
   { to: "/ask-victoria", label: "Ask Victoria", icon: Sparkle },
   { to: "/project-guides", label: "Project Guides", icon: BookOpen },
+  { to: "/profile", label: "Profile", icon: User },
 ];
 
 // Mock until auth wired — shape matches profiles row
