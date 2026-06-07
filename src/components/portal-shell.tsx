@@ -2,12 +2,13 @@ import type { ReactNode } from "react";
 import { Link, useRouterState } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 
-const portalNav = [
+type NavItem = { to: string; label: string; exact?: boolean };
+const portalNav: NavItem[] = [
   { to: "/portal", label: "Overview", exact: true },
   { to: "/portal/projects", label: "Projects" },
   { to: "/portal/inspections", label: "Inspections" },
   { to: "/portal/new-permit", label: "Submit permit" },
-] as const;
+];
 
 export function PortalShell({ children }: { children: ReactNode }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
