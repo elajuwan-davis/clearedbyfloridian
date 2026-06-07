@@ -253,24 +253,25 @@ function Coverage() {
 
 function CTA() {
   return (
-    <section className="border-t hairline bg-primary text-primary-foreground">
-      <div className="mx-auto max-w-7xl px-6 py-24 md:py-28 grid md:grid-cols-12 gap-8 items-end">
-        <div className="md:col-span-8">
-          <div className="font-mono text-xs uppercase tracking-[0.22em] opacity-60">
-            By invitation
-          </div>
-          <h2 className="mt-6 font-display text-4xl md:text-6xl tracking-tight text-balance">
-            Building with Flōridian? Get your GC Cleared.
-          </h2>
+    <section className="border-t hairline bg-foreground text-background">
+      <div className="mx-auto max-w-7xl px-6 py-24 md:py-32">
+        <div className="font-mono text-[11px] uppercase tracking-[0.22em] opacity-60">
+          By invitation
         </div>
-        <div className="md:col-span-4 flex md:justify-end">
+        <h2 className="mt-8 display-serif text-4xl md:text-7xl tracking-tight text-balance max-w-4xl">
+          Building with Flōridian?<br />
+          <em className="italic font-light opacity-80">Get your GC Cleared.</em>
+        </h2>
+        <div className="mt-16 max-w-md">
           <Button
             asChild
-            size="lg"
-            variant="secondary"
-            className="rounded-sm h-12 px-6 bg-background text-foreground hover:bg-background/90"
+            variant="outline"
+            className="w-full h-14 px-6 rounded-none border-background/25 bg-transparent text-background hover:bg-background/10 hover:text-background justify-between font-subline text-xs uppercase tracking-[0.22em] font-bold"
           >
-            <Link to="/contact" className="inline-flex items-center gap-2">Request access <ArrowRight className="h-4 w-4" /></Link>
+            <Link to="/contact">
+              Request access
+              <ArrowRight className="h-4 w-4 opacity-70" />
+            </Link>
           </Button>
         </div>
       </div>
