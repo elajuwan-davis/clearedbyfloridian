@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { motion } from "framer-motion";
+
 import { MarketingShell } from "@/components/marketing-shell";
 import { Button } from "@/components/ui/button";
 import { services } from "@/lib/mock-data";
