@@ -45,14 +45,37 @@ const fmt = (cents: number) =>
 
 function InvoicesPage() {
   const [show, setShow] = useState(false);
+  const [invoices, setInvoices] = useState<Invoice[]>(INVOICES);
   const [open, setOpen] = useState<string | null>(INVOICES[0].number);
 
-  const stats = useMemo(() => {
-    const total = INVOICES.reduce((s, i) => s + i.amount_cents, 0);
-    const pending = INVOICES.filter((i) => i.status === "pending").reduce((s, i) => s + i.amount_cents, 0);
-    const overdue = INVOICES.filter((i) => i.status === "overdue").reduce((s, i) => s + i.amount_cents, 0);
-    return { total, pending, overdue };
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const { data, error } = await supabase
+        .from("fees")
+        .select("id, invoice_number, status, description, amount_cents, address, created_at")
+        .order("created_at", { ascending: false });
+      if (cancelled || error || !data || data.length === 0) return;
+      setInvoices(
+        data.map((r: Record<string, unknown>) => ({
+          number: String(r.invoice_number ?? r.id),
+          status: String(r.status ?? "pending") as InvStatus,
+          address: String(r.address ?? ""),
+          description: String(r.description ?? ""),
+          amount_cents: Number(r.amount_cents ?? 0),
+          issued: r.created_at ? new Date(String(r.created_at)).toLocaleDateString() : "",
+        })),
+      );
+    })();
+    return () => { cancelled = true; };
   }, []);
+
+  const stats = useMemo(() => {
+    const total = invoices.reduce((s, i) => s + i.amount_cents, 0);
+    const pending = invoices.filter((i) => i.status === "pending").reduce((s, i) => s + i.amount_cents, 0);
+    const overdue = invoices.filter((i) => i.status === "overdue").reduce((s, i) => s + i.amount_cents, 0);
+    return { total, pending, overdue };
+  }, [invoices]);
 
   return (
     <PortalShell>
