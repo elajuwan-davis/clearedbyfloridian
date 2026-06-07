@@ -168,7 +168,7 @@ export const services = [
     code: "02",
     title: "Private Provider Inspections",
     summary:
-      "Threshold and routine inspections on your GC's schedule. We meet the crew on site — no four-hour windows, no missed days.",
+      "Threshold and routine inspections on your schedule. We meet your crew on site — no four-hour windows, no missed days.",
     bullets: [
       "Same- or next-day scheduling",
       "Digital reports delivered within 2 hours",
