@@ -48,7 +48,7 @@ function Hero() {
             <div className="font-mono text-[11px] uppercase tracking-[0.22em] text-accent">
               Florida Statute 553.791
             </div>
-            <h1 className="mt-10 display-serif text-[clamp(3rem,8.5vw,7.5rem)] leading-[1.02] tracking-tight text-balance">
+            <h1 className="mt-10 display-serif text-[clamp(2.25rem,7.5vw,7rem)] leading-[1.04] tracking-tight text-balance">
               Private-provider<br />
               permitting for the<br />
               <em className="italic font-light text-muted-foreground">Treasure Coast.</em>
