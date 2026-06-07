@@ -90,18 +90,18 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Cleared by Flōridian — Private Provider Permitting for Flōridian Clients" },
+      { title: "Cleared by Flōridian — Private Provider Permitting for South Florida" },
       {
         name: "description",
         content:
-          "Cleared is the private-provider permitting arm of Flōridian LLC — offered exclusively to active Flōridian luxury pool and hardscape clients in South Florida.",
+          "Cleared is the private-provider permitting partner for South Florida's elite general contractors — plan review, inspections, and permit coordination on a statutory clock.",
       },
-      { name: "author", content: "Flōridian LLC" },
+      { name: "author", content: "Cleared by Flōridian" },
       { property: "og:title", content: "Cleared by Flōridian — Private Provider Permitting" },
       {
         property: "og:description",
         content:
-          "Exclusive private-provider plan review and inspections for licensed GCs working with Flōridian. Established 1998, West Palm Beach.",
+          "Private-provider plan review and inspections under FL Statute 553.791. Broward through the Treasure Coast.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
