@@ -55,7 +55,7 @@ function ProjectsPage() {
     <PortalShell>
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
         {/* Header */}
-        <div className="flex items-end justify-between gap-6 border-b border-obsidian/10 pb-8">
+        <div className="flex flex-wrap items-end justify-between gap-4 border-b border-obsidian/10 pb-8">
           <div>
             <div className="eyebrow text-obsidian/50">FL Statute 553.791 · Active Portfolio</div>
             <h1 className="display-serif mt-3 text-5xl text-obsidian">Projects</h1>
