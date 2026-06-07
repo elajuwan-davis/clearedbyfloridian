@@ -25,7 +25,7 @@ function PortalOverview() {
         <div className="label-eyebrow">Overview</div>
         <h1 className="mt-4 font-display text-4xl tracking-tight">Good morning, Jamie.</h1>
         <p className="mt-2 text-muted-foreground">
-          Here's where every Atlas Build Group project sits this morning.
+          Here's where every Coastline Builders Group project sits this morning.
         </p>
       </div>
 

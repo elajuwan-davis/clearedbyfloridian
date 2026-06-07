@@ -20,12 +20,14 @@ export function PortalShell({ children }: { children: ReactNode }) {
           <Link to="/" className="flex items-center gap-3">
             <div className="relative h-9 w-9 border hairline bg-card flex items-center justify-center">
               <div className="absolute inset-1 border hairline opacity-60" />
-              <span className="relative font-display text-base leading-none">F</span>
+              <span className="relative font-display text-base leading-none">C</span>
               <span className="absolute -top-1 -right-1 h-1.5 w-1.5 bg-accent rounded-full" />
             </div>
             <div className="leading-none">
-              <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">Cleared by</div>
-              <div className="mt-1 font-display text-base">Flōridian</div>
+              <div className="font-display text-base">Cleared</div>
+              <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground mt-1">
+                by Flōridian
+              </div>
             </div>
           </Link>
         </div>
@@ -66,7 +68,7 @@ export function PortalShell({ children }: { children: ReactNode }) {
             </div>
             <div className="leading-tight">
               <div className="text-sm">J. Mendez</div>
-              <div className="text-[11px] text-muted-foreground">Atlas Build Group</div>
+              <div className="text-[11px] text-muted-foreground">Coastline Builders Group</div>
             </div>
           </div>
         </div>

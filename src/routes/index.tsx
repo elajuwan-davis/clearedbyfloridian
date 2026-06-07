@@ -8,17 +8,17 @@ import { ArrowRight } from "lucide-react";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Flōridian — Private Provider Permitting for South Florida Builders" },
+      { title: "Cleared by Flōridian — Private Provider Permitting, by Invitation" },
       {
         name: "description",
         content:
-          "Licensed private provider of permitting, plan review, and inspections for residential GCs in Miami-Dade, Broward, and the Keys. Faster approvals, on-site inspectors, real status.",
+          "Cleared is the private-provider permitting arm of Flōridian LLC. Plan review and inspections for the licensed GCs building Flōridian's luxury pool and hardscape projects across South Florida.",
       },
-      { property: "og:title", content: "Flōridian — Private Provider Permitting" },
+      { property: "og:title", content: "Cleared by Flōridian — Private Provider Permitting" },
       {
         property: "og:description",
         content:
-          "Plan review in days, not weeks. Inspections on your schedule. Built for South Florida residential GCs.",
+          "Permits in days, not weeks — for the GCs entrusted with Flōridian's luxury work.",
       },
     ],
   }),
@@ -29,6 +29,7 @@ function HomePage() {
   return (
     <MarketingShell>
       <Hero />
+      <Lineage />
       <Stats />
       <ServicesPreview />
       <Process />
@@ -52,7 +53,7 @@ function Hero() {
               transition={{ duration: 0.5 }}
               className="label-eyebrow"
             >
-              ◇ Licensed Private Provider · FL Statute 553.791
+              By invitation · FL Statute 553.791
             </motion.div>
             <motion.h1
               initial={{ opacity: 0, y: 16 }}
@@ -69,10 +70,10 @@ function Hero() {
               transition={{ duration: 0.6, delay: 0.2 }}
               className="mt-8 max-w-xl text-lg text-muted-foreground text-pretty"
             >
-              Flōridian is a licensed private provider of plan review and
-              inspections for residential general contractors across South
-              Florida. We move at the pace of construction — not the building
-              department.
+              Cleared is the private-provider permitting arm of Flōridian LLC —
+              offered exclusively to the licensed general contractors building
+              Flōridian's luxury pool and hardscape projects. Twenty-eight years
+              of South Florida residential construction, applied to your permit.
             </motion.p>
             <motion.div
               initial={{ opacity: 0 }}
@@ -81,7 +82,7 @@ function Hero() {
               className="mt-10 flex flex-wrap gap-3"
             >
               <Button asChild size="lg" className="rounded-sm h-12 px-6">
-                <Link to="/contact">Start a project</Link>
+                <Link to="/contact">Request access</Link>
               </Button>
               <Button asChild size="lg" variant="outline" className="rounded-sm h-12 px-6">
                 <Link to="/services">See services</Link>
@@ -96,15 +97,15 @@ function Hero() {
             className="md:col-span-4"
           >
             <div className="border hairline bg-card p-6 shadow-[0_1px_0_rgba(0,0,0,0.04)]">
-              <div className="label-eyebrow">Project · FLO-2026-0184</div>
+              <div className="label-eyebrow">Project · CLR-2026-0184</div>
               <div className="mt-4 font-display text-xl leading-tight">
-                412 Hibiscus Ln<br />Coral Gables
+                1217 S Ocean Blvd<br />Manalapan
               </div>
               <div className="mt-6 space-y-3 font-mono text-xs">
                 <Row k="Submitted" v="2026.05.22" />
                 <Row k="Review" v="In progress · 3d" />
                 <Row k="Reviewer" v="M. Alvarez, P.E." />
-                <Row k="Jurisdiction" v="Miami-Dade" />
+                <Row k="Jurisdiction" v="Palm Beach County" />
               </div>
               <div className="mt-6">
                 <div className="h-1 bg-secondary overflow-hidden">
@@ -134,12 +135,35 @@ function Row({ k, v }: { k: string; v: string }) {
   );
 }
 
+function Lineage() {
+  return (
+    <section className="border-b hairline bg-secondary/30">
+      <div className="mx-auto max-w-7xl px-6 py-20 grid md:grid-cols-12 gap-12">
+        <div className="md:col-span-4">
+          <div className="label-eyebrow">Lineage</div>
+          <div className="mt-4 font-mono text-xs uppercase tracking-[0.22em] text-muted-foreground">
+            EST. 1998 · WEST PALM BEACH
+          </div>
+        </div>
+        <div className="md:col-span-8">
+          <p className="font-display text-2xl md:text-3xl leading-snug tracking-tight text-pretty">
+            Flōridian has been building South Florida's most considered pools
+            and hardscapes for nearly three decades. Cleared brings that same
+            standard — and our in-house engineers, architects, and inspectors —
+            to the permitting side of your job.
+          </p>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function Stats() {
   const stats = [
     { k: "5–7 days", v: "Typical plan review turnaround" },
     { k: "2 hr", v: "Inspection report delivery" },
-    { k: "$1.2B+", v: "Construction value reviewed" },
-    { k: "14", v: "Jurisdictions covered" },
+    { k: "1998", v: "Year Flōridian was established" },
+    { k: "By invitation", v: "Active Flōridian clients only" },
   ];
   return (
     <section className="border-b hairline">
@@ -160,15 +184,16 @@ function ServicesPreview() {
     <section className="mx-auto max-w-7xl px-6 py-28">
       <div className="grid md:grid-cols-12 gap-12 mb-16">
         <div className="md:col-span-4">
-          <div className="label-eyebrow">§ Services</div>
+          <div className="label-eyebrow">Services</div>
           <h2 className="mt-4 font-display text-4xl md:text-5xl tracking-tight text-balance">
-            What we do for builders.
+            What we do for your GC.
           </h2>
         </div>
         <p className="md:col-span-7 md:col-start-6 self-end text-lg text-muted-foreground text-pretty">
-          Florida law lets you bypass building-department backlogs by using a
-          licensed private provider. We are that provider — credentialed,
-          insured, and operating to the same standards as the AHJ.
+          Florida law lets a licensed private provider stand in for the
+          building official on plan review and inspections. We are that
+          provider for every Flōridian project — credentialed, insured, and
+          operating to the standards the AHJ would apply.
         </p>
       </div>
 
@@ -200,16 +225,16 @@ function ServicesPreview() {
 
 function Process() {
   const steps = [
-    { n: "01", t: "Intake", d: "Submit drawings, structural calcs, energy & product approvals through the portal." },
+    { n: "01", t: "Intake", d: "Your GC submits drawings, structural calcs, energy & product approvals through the Cleared portal." },
     { n: "02", t: "Plan Review", d: "A licensed reviewer red-lines the set — usually within a week." },
     { n: "03", t: "Affidavit & Permit", d: "We file the private provider affidavit; the AHJ issues the permit." },
-    { n: "04", t: "Inspections", d: "Our inspectors meet your crews on site, document everything, deliver reports same-day." },
+    { n: "04", t: "Inspections", d: "Our inspectors meet the crew on site, document everything, deliver reports same-day." },
     { n: "05", t: "Close-out", d: "Final inspection, CO support, and records archived in the portal." },
   ];
   return (
     <section className="border-y hairline bg-secondary/40">
       <div className="mx-auto max-w-7xl px-6 py-28">
-        <div className="label-eyebrow">§ Process</div>
+        <div className="label-eyebrow">Process</div>
         <h2 className="mt-4 font-display text-4xl md:text-5xl tracking-tight max-w-2xl">
           A workflow your superintendents will actually use.
         </h2>
@@ -231,21 +256,22 @@ function Coverage() {
   return (
     <section className="mx-auto max-w-7xl px-6 py-28 grid md:grid-cols-12 gap-12">
       <div className="md:col-span-5">
-        <div className="label-eyebrow">§ Coverage</div>
+        <div className="label-eyebrow">Coverage</div>
         <h2 className="mt-4 font-display text-4xl md:text-5xl tracking-tight">
-          From the Keys<br />to Palm Beach.
+          Palm Beach<br />and the Treasure Coast.
         </h2>
         <p className="mt-6 text-muted-foreground max-w-md">
-          South Florida residential, exclusively. We know the HVHZ amendments,
-          the local product approvals, and the personalities at every counter.
+          Anchored in West Palm Beach. We work the HVHZ amendments, the
+          oceanfront flood maps, the historic-district reviews, and the local
+          product approvals — same as the people behind every Flōridian pool.
         </p>
       </div>
       <div className="md:col-span-7">
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-px bg-border border hairline">
           {[
-            "Miami-Dade","Miami Beach","City of Miami","Coral Gables","Coconut Grove",
-            "Pinecrest","Key Biscayne","Doral","Aventura","Hialeah",
-            "Fort Lauderdale","Hollywood","Boca Raton","Monroe County",
+            "Palm Beach","West Palm Beach","Manalapan","Jupiter","Tequesta",
+            "Wellington","Boca Raton","Delray Beach","Highland Beach","Gulf Stream",
+            "Vero Beach","Stuart","Hobe Sound","Martin County",
           ].map((j) => (
             <div key={j} className="bg-background p-5 font-mono text-xs uppercase tracking-wider hover:text-accent transition-colors">
               {j}
@@ -263,10 +289,10 @@ function CTA() {
       <div className="mx-auto max-w-7xl px-6 py-24 md:py-28 grid md:grid-cols-12 gap-8 items-end">
         <div className="md:col-span-8">
           <div className="font-mono text-xs uppercase tracking-[0.22em] opacity-60">
-            ◇ Ready to move
+            By invitation
           </div>
           <h2 className="mt-6 font-display text-4xl md:text-6xl tracking-tight text-balance">
-            Get a plan review estimate in 24 hours.
+            Building with Flōridian? Get your GC Cleared.
           </h2>
         </div>
         <div className="md:col-span-4 flex md:justify-end">
@@ -276,7 +302,7 @@ function CTA() {
             variant="secondary"
             className="rounded-sm h-12 px-6 bg-background text-foreground hover:bg-background/90"
           >
-            <Link to="/contact" className="inline-flex items-center gap-2">Start a project <ArrowRight className="h-4 w-4" /></Link>
+            <Link to="/contact" className="inline-flex items-center gap-2">Request access <ArrowRight className="h-4 w-4" /></Link>
           </Button>
         </div>
       </div>
