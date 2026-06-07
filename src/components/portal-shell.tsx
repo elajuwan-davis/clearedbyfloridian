@@ -1,11 +1,13 @@
 import { useState, type ReactNode } from "react";
-import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
 import {
   LayoutDashboard,
   FolderOpen,
+  Building2,
   MessageSquare,
-  ClipboardCheck,
-  FilePlus2,
+  FileText,
+  Receipt,
+  Sparkle,
+  BookOpen,
   LogOut,
   Menu,
 } from "lucide-react";
@@ -16,10 +18,13 @@ type NavItem = { to: string; label: string; icon: typeof LayoutDashboard; exact?
 
 const portalNav: NavItem[] = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard, exact: true },
-  { to: "/projects", label: "Projects", icon: FolderOpen },
+  { to: "/projects", label: "My Permits", icon: FolderOpen },
+  { to: "/building-dept-logins", label: "Building Dept", icon: Building2 },
   { to: "/messages", label: "Messages", icon: MessageSquare },
-  { to: "/portal/inspections", label: "Inspections", icon: ClipboardCheck },
-  { to: "/portal/new-permit", label: "Submit permit", icon: FilePlus2 },
+  { to: "/forms", label: "Forms", icon: FileText },
+  { to: "/invoices", label: "Invoices", icon: Receipt },
+  { to: "/ask-victoria", label: "Ask Victoria", icon: Sparkle },
+  { to: "/project-guides", label: "Project Guides", icon: BookOpen },
 ];
 
 // Mock until auth wired — shape matches profiles row
