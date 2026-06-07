@@ -54,13 +54,9 @@ export const Route = createFileRoute("/projects/$id")({
   component: ProjectDetailPage,
 });
 
-type Tone = "neutral" | "sky" | "warn" | "ok";
-const toneClass: Record<Tone, string> = {
-  neutral: "bg-paper-warm text-obsidian/70 border-obsidian/15",
-  sky: "bg-sky/10 text-sky border-sky/30",
-  warn: "bg-oxblood/10 text-oxblood border-oxblood/30",
-  ok: "bg-emerald-600/10 text-emerald-700 border-emerald-600/30",
-};
+import { toneClass, type BadgeTone } from "@/lib/status-badges";
+type Tone = BadgeTone;
+
 
 type Project = {
   id: string;
@@ -96,7 +92,7 @@ const PROJECTS: Record<string, Project> = {
     gc: "Coastline Builders Group",
     value_cents: 412_500_000,
     permit_types: ["Building", "Electrical", "Plumbing"],
-    status: { label: "In review", tone: "sky" },
+    status: { label: "In review", tone: "amber" },
     submitted_at: "May 28, 2026",
     documents: [
       { id: "d1", label: "Construction Plans", filename: "ocean-ridge-plans-r3.pdf", size_kb: 18420, uploaded_at: "May 28, 2026" },

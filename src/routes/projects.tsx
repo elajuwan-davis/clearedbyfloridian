@@ -24,24 +24,8 @@ type ProjectStatus =
   | "inspection_complete"
   | "permit_issued";
 
-const statusMeta: Record<ProjectStatus, { label: string; tone: "neutral" | "sky" | "warn" | "ok" }> = {
-  submitted: { label: "Submitted", tone: "neutral" },
-  in_review: { label: "In review", tone: "sky" },
-  corrections_required: { label: "Corrections required", tone: "warn" },
-  correction_response_under_review: { label: "Response under review", tone: "sky" },
-  resubmitted_to_county: { label: "Resubmitted", tone: "sky" },
-  approved: { label: "Approved", tone: "ok" },
-  inspection_scheduled: { label: "Inspection scheduled", tone: "sky" },
-  inspection_complete: { label: "Inspection complete", tone: "ok" },
-  permit_issued: { label: "Permit issued", tone: "ok" },
-};
+import { projectStatusMeta as statusMeta, toneClass } from "@/lib/status-badges";
 
-const toneClass: Record<"neutral" | "sky" | "warn" | "ok", string> = {
-  neutral: "bg-paper-warm text-obsidian/70 border-obsidian/10",
-  sky: "bg-sky/10 text-sky border-sky/30",
-  warn: "bg-oxblood/10 text-oxblood border-oxblood/30",
-  ok: "bg-emerald-600/10 text-emerald-700 border-emerald-600/30",
-};
 
 const projects: Array<{
   id: string;

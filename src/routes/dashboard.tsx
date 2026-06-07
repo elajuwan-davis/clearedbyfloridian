@@ -32,20 +32,9 @@ const stats = [
   { label: "Messages Unread", value: 5, icon: MessageSquare, accent: false },
 ];
 
-type ProjectStatus =
-  | "submitted"
-  | "in_review"
-  | "corrections_required"
-  | "approved"
-  | "permit_issued";
+import { projectStatusMeta as statusMeta, type BadgeTone } from "@/lib/status-badges";
+type ProjectStatus = keyof typeof statusMeta;
 
-const statusMeta: Record<ProjectStatus, { label: string; tone: "neutral" | "sky" | "warn" | "ok" }> = {
-  submitted: { label: "Submitted", tone: "neutral" },
-  in_review: { label: "In review", tone: "sky" },
-  corrections_required: { label: "Corrections required", tone: "warn" },
-  approved: { label: "Approved", tone: "ok" },
-  permit_issued: { label: "Permit issued", tone: "ok" },
-};
 
 const projects: Array<{
   id: string;
@@ -265,10 +254,10 @@ function StatusBadge({
   tone,
   children,
 }: {
-  tone: "neutral" | "sky" | "warn" | "ok";
+  tone: BadgeTone;
   children: React.ReactNode;
 }) {
-  const styles: Record<typeof tone, React.CSSProperties> = {
+  const styles: Record<BadgeTone, React.CSSProperties> = {
     neutral: {
       color: "var(--muted-foreground)",
       backgroundColor: "color-mix(in oklab, var(--ink) 5%, transparent)",
@@ -279,15 +268,25 @@ function StatusBadge({
       backgroundColor: "color-mix(in oklab, var(--sky) 14%, transparent)",
       borderColor: "color-mix(in oklab, var(--sky) 30%, transparent)",
     },
-    warn: {
+    amber: {
+      color: "oklch(0.48 0.13 75)",
+      backgroundColor: "oklch(0.9 0.09 75 / 0.45)",
+      borderColor: "oklch(0.7 0.12 75 / 0.45)",
+    },
+    oxblood: {
       color: "var(--accent)",
       backgroundColor: "color-mix(in oklab, var(--accent) 8%, transparent)",
       borderColor: "color-mix(in oklab, var(--accent) 30%, transparent)",
     },
-    ok: {
+    emerald: {
       color: "oklch(0.45 0.12 155)",
       backgroundColor: "oklch(0.92 0.05 155 / 0.5)",
       borderColor: "oklch(0.7 0.1 155 / 0.4)",
+    },
+    dark: {
+      color: "var(--paper-warm, #f8f4ec)",
+      backgroundColor: "var(--ink)",
+      borderColor: "var(--ink)",
     },
   };
   return (
@@ -299,6 +298,7 @@ function StatusBadge({
     </span>
   );
 }
+
 
 function Banner({
   tone,
