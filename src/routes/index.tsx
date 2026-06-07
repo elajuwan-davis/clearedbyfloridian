@@ -41,99 +41,57 @@ function HomePage() {
 
 function Hero() {
   return (
-    <section className="relative border-b hairline overflow-hidden">
-      <div className="absolute inset-0 blueprint-grid opacity-70" />
-      <div className="absolute inset-y-0 right-0 w-1/2 bg-gradient-to-l from-secondary/40 to-transparent pointer-events-none" />
-      <div className="relative mx-auto max-w-7xl px-6 pt-28 pb-32 md:pt-36 md:pb-40">
-        <div className="grid md:grid-cols-12 gap-12 items-end">
-          <div className="md:col-span-8">
+    <section className="relative border-b hairline">
+      <div className="mx-auto max-w-7xl px-6 pt-28 pb-32 md:pt-40 md:pb-44">
+        <div className="grid md:grid-cols-12 gap-12">
+          <div className="md:col-span-9">
             <motion.div
-              initial={{ opacity: 0, y: 8 }}
+              initial={{ opacity: 0, y: 6 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
-              className="label-eyebrow"
+              className="font-mono text-[11px] uppercase tracking-[0.22em] text-accent"
             >
-              By invitation · FL Statute 553.791
+              Florida Statute 553.791
             </motion.div>
             <motion.h1
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: 0.05 }}
-              className="mt-8 font-display text-[clamp(2.75rem,7vw,6.25rem)] leading-[0.95] tracking-tight text-balance"
+              transition={{ duration: 0.8, delay: 0.08 }}
+              className="mt-10 display-serif text-[clamp(3rem,8.5vw,7.5rem)] leading-[1.02] tracking-tight text-balance"
             >
-              Permits in days.<br />
-              <span className="text-muted-foreground">Not weeks.</span>
+              Private-provider<br />
+              permitting for the<br />
+              <em className="italic font-light text-muted-foreground">Treasure Coast.</em>
             </motion.h1>
             <motion.p
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="mt-8 max-w-xl text-lg text-muted-foreground text-pretty"
+              transition={{ duration: 0.6, delay: 0.25 }}
+              className="mt-10 max-w-xl font-display text-lg md:text-xl leading-relaxed text-foreground/80 text-pretty"
             >
-              Cleared is the private-provider permitting arm of Flōridian LLC —
-              offered exclusively to the licensed general contractors building
-              Flōridian's luxury pool and hardscape projects. Twenty-eight years
-              of South Florida residential construction, applied to your permit.
+              White-shoe counsel for expedited plan review and inspections —
+              extended by Flōridian LLC to the licensed general contractors
+              building our luxury pool and hardscape projects.
             </motion.p>
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ duration: 0.6, delay: 0.35 }}
-              className="mt-10 flex flex-wrap gap-3"
+              transition={{ duration: 0.6, delay: 0.4 }}
+              className="mt-14 flex items-center gap-4"
             >
-              <Button asChild size="lg" className="rounded-sm h-12 px-6">
-                <Link to="/contact">Request access</Link>
-              </Button>
-              <Button asChild size="lg" variant="outline" className="rounded-sm h-12 px-6">
-                <Link to="/services">See services</Link>
-              </Button>
+              <div className="w-12 h-px bg-accent" />
+              <span className="font-subline text-[11px] uppercase tracking-[0.22em] font-bold">
+                By invitation only
+              </span>
             </motion.div>
           </div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-            className="md:col-span-4"
-          >
-            <div className="border hairline bg-card p-6 shadow-[0_1px_0_rgba(0,0,0,0.04)]">
-              <div className="label-eyebrow">Project · CLR-2026-0184</div>
-              <div className="mt-4 font-display text-xl leading-tight">
-                1217 S Ocean Blvd<br />Manalapan
-              </div>
-              <div className="mt-6 space-y-3 font-mono text-xs">
-                <Row k="Submitted" v="2026.05.22" />
-                <Row k="Review" v="In progress · 3d" />
-                <Row k="Reviewer" v="M. Alvarez, P.E." />
-                <Row k="Jurisdiction" v="Palm Beach County" />
-              </div>
-              <div className="mt-6">
-                <div className="h-1 bg-secondary overflow-hidden">
-                  <div className="h-full bg-accent" style={{ width: "42%" }} />
-                </div>
-                <div className="mt-2 flex justify-between font-mono text-[10px] text-muted-foreground">
-                  <span>INTAKE</span>
-                  <span>REVIEW</span>
-                  <span>APPROVED</span>
-                  <span>CLOSED</span>
-                </div>
-              </div>
-            </div>
-          </motion.div>
         </div>
       </div>
     </section>
   );
 }
 
-function Row({ k, v }: { k: string; v: string }) {
-  return (
-    <div className="flex justify-between gap-4">
-      <span className="text-muted-foreground uppercase tracking-wider">{k}</span>
-      <span className="text-foreground">{v}</span>
-    </div>
-  );
-}
+
 
 function Lineage() {
   return (
