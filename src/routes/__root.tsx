@@ -85,14 +85,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Flōridian — Private Provider Permitting for South Florida" },
+      { title: "Cleared by Flōridian — Private Provider Permitting for South Florida" },
       {
         name: "description",
         content:
-          "Licensed private provider of permitting, plan review, and inspections for residential GCs in South Florida.",
+          "Cleared by Flōridian is a licensed private provider of permitting, plan review, and inspections for residential GCs in South Florida.",
       },
-      { name: "author", content: "Flōridian LLC" },
-      { property: "og:title", content: "Flōridian — Private Provider Permitting" },
+      { name: "author", content: "Cleared by Flōridian LLC" },
+      { property: "og:title", content: "Cleared by Flōridian — Private Provider Permitting" },
       {
         property: "og:description",
         content:

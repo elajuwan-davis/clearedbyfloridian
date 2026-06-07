@@ -5,8 +5,9 @@ export function SiteFooter() {
     <footer className="border-t hairline mt-32">
       <div className="mx-auto max-w-7xl px-6 py-16 grid gap-12 md:grid-cols-4">
         <div className="md:col-span-2">
-          <div className="font-display text-2xl tracking-tight">Flōridian</div>
-          <p className="mt-3 max-w-sm text-sm text-muted-foreground">
+          <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">Cleared by</div>
+          <div className="mt-1 font-display text-3xl tracking-tight">Flōridian</div>
+          <p className="mt-4 max-w-sm text-sm text-muted-foreground">
             A licensed private provider of permitting, plan review, and inspection
             services for residential general contractors across South Florida.
           </p>
@@ -36,7 +37,7 @@ export function SiteFooter() {
       </div>
       <div className="border-t hairline">
         <div className="mx-auto max-w-7xl px-6 py-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-xs text-muted-foreground">
-          <span>© {new Date().getFullYear()} Flōridian LLC. All rights reserved.</span>
+          <span>© {new Date().getFullYear()} Cleared by Flōridian LLC. All rights reserved.</span>
           <span className="font-mono">FBC 2023 · 8th Edition · HVHZ</span>
         </div>
       </div>
