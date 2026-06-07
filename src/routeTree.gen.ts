@@ -13,6 +13,7 @@ import { Route as ServicesRouteImport } from './routes/services'
 import { Route as ProjectsRouteImport } from './routes/projects'
 import { Route as ProcessRouteImport } from './routes/process'
 import { Route as PortalRouteImport } from './routes/portal'
+import { Route as MessagesRouteImport } from './routes/messages'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as ContactRouteImport } from './routes/contact'
@@ -43,6 +44,11 @@ const ProcessRoute = ProcessRouteImport.update({
 const PortalRoute = PortalRouteImport.update({
   id: '/portal',
   path: '/portal',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MessagesRoute = MessagesRouteImport.update({
+  id: '/messages',
+  path: '/messages',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -107,6 +113,7 @@ export interface FileRoutesByFullPath {
   '/contact': typeof ContactRoute
   '/dashboard': typeof DashboardRoute
   '/login': typeof LoginRoute
+  '/messages': typeof MessagesRoute
   '/portal': typeof PortalRouteWithChildren
   '/process': typeof ProcessRoute
   '/projects': typeof ProjectsRouteWithChildren
@@ -124,6 +131,7 @@ export interface FileRoutesByTo {
   '/contact': typeof ContactRoute
   '/dashboard': typeof DashboardRoute
   '/login': typeof LoginRoute
+  '/messages': typeof MessagesRoute
   '/process': typeof ProcessRoute
   '/projects': typeof ProjectsRouteWithChildren
   '/services': typeof ServicesRoute
@@ -141,6 +149,7 @@ export interface FileRoutesById {
   '/contact': typeof ContactRoute
   '/dashboard': typeof DashboardRoute
   '/login': typeof LoginRoute
+  '/messages': typeof MessagesRoute
   '/portal': typeof PortalRouteWithChildren
   '/process': typeof ProcessRoute
   '/projects': typeof ProjectsRouteWithChildren
@@ -160,6 +169,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/dashboard'
     | '/login'
+    | '/messages'
     | '/portal'
     | '/process'
     | '/projects'
@@ -177,6 +187,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/dashboard'
     | '/login'
+    | '/messages'
     | '/process'
     | '/projects'
     | '/services'
@@ -193,6 +204,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/dashboard'
     | '/login'
+    | '/messages'
     | '/portal'
     | '/process'
     | '/projects'
@@ -211,6 +223,7 @@ export interface RootRouteChildren {
   ContactRoute: typeof ContactRoute
   DashboardRoute: typeof DashboardRoute
   LoginRoute: typeof LoginRoute
+  MessagesRoute: typeof MessagesRoute
   PortalRoute: typeof PortalRouteWithChildren
   ProcessRoute: typeof ProcessRoute
   ProjectsRoute: typeof ProjectsRouteWithChildren
@@ -245,6 +258,13 @@ declare module '@tanstack/react-router' {
       path: '/portal'
       fullPath: '/portal'
       preLoaderRoute: typeof PortalRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/messages': {
+      id: '/messages'
+      path: '/messages'
+      fullPath: '/messages'
+      preLoaderRoute: typeof MessagesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -364,6 +384,7 @@ const rootRouteChildren: RootRouteChildren = {
   ContactRoute: ContactRoute,
   DashboardRoute: DashboardRoute,
   LoginRoute: LoginRoute,
+  MessagesRoute: MessagesRoute,
   PortalRoute: PortalRouteWithChildren,
   ProcessRoute: ProcessRoute,
   ProjectsRoute: ProjectsRouteWithChildren,
@@ -372,3 +393,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
