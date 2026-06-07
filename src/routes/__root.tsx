@@ -97,7 +97,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           "Cleared is the private-provider permitting partner for South Florida's elite general contractors — plan review, inspections, and permit coordination on a statutory clock.",
       },
       { name: "author", content: "Cleared by Flōridian" },
-      { property: "og:title", content: "Cleared by Flōridian — Private Provider Permitting" },
+      { property: "og:title", content: "Cleared by Flōridian — Private Provider Permitting for South Florida" },
       {
         property: "og:description",
         content:
@@ -105,6 +105,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
+      { name: "twitter:title", content: "Cleared by Flōridian — Private Provider Permitting for South Florida" },
+      { name: "description", content: "Clëared is a full-stack permitting portal and marketing website for residential builders." },
+      { property: "og:description", content: "Clëared is a full-stack permitting portal and marketing website for residential builders." },
+      { name: "twitter:description", content: "Clëared is a full-stack permitting portal and marketing website for residential builders." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/60e26fdd-43f6-4b23-a843-5d92cc1e18e2/id-preview-3cf4a0b5--0b3e81be-56ac-4636-ba0c-f0ab606037c7.lovable.app-1780806677456.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/60e26fdd-43f6-4b23-a843-5d92cc1e18e2/id-preview-3cf4a0b5--0b3e81be-56ac-4636-ba0c-f0ab606037c7.lovable.app-1780806677456.png" },
     ],
     links: [{ rel: "stylesheet", href: appCss }],
   }),
