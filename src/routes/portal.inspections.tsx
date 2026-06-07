@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { inspections } from "@/lib/mock-data";
 import { StatusBadge } from "./portal.index";
 import { Button } from "@/components/ui/button";
+import { ArrowRight, Plus } from "lucide-react";
 
 export const Route = createFileRoute("/portal/inspections")({
   component: InspectionsPage,
@@ -16,10 +17,10 @@ function InspectionsPage() {
     <div className="space-y-8 max-w-6xl">
       <div className="flex items-end justify-between flex-wrap gap-4">
         <div>
-          <div className="label-eyebrow">◇ Inspections</div>
+          <div className="label-eyebrow">Inspections</div>
           <h1 className="mt-4 font-display text-4xl tracking-tight">Schedule & history</h1>
         </div>
-        <Button size="sm" className="rounded-sm">+ Request inspection</Button>
+        <Button size="sm" className="rounded-sm inline-flex items-center gap-2"><Plus className="h-4 w-4" /> Request inspection</Button>
       </div>
 
       <div className="border hairline divide-y">
@@ -49,8 +50,8 @@ function InspectionsPage() {
               <div className="md:col-span-3 md:text-right space-y-2">
                 <StatusBadge status={i.status} />
                 <div>
-                  <Button size="sm" variant="ghost" className="font-mono text-[11px]">
-                    View report →
+                  <Button size="sm" variant="ghost" className="font-mono text-[11px] inline-flex items-center gap-1">
+                    View report <ArrowRight className="h-3 w-3" />
                   </Button>
                 </div>
               </div>

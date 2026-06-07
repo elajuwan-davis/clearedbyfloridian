@@ -30,14 +30,14 @@ function AboutPage() {
   return (
     <MarketingShell>
       <PageHeader
-        eyebrow="◇ About"
+        eyebrow="About"
         title="Built by people who actually run jobsites."
         intro="Flōridian started in a trailer in Coconut Grove in 2019. A GC, a structural engineer, and an architect were tired of watching permits sit in a queue. They got licensed as a private provider and started doing the work themselves."
       />
 
       <section className="mx-auto max-w-6xl px-6 py-24 grid md:grid-cols-12 gap-12">
         <div className="md:col-span-5">
-          <div className="label-eyebrow">§ Principles</div>
+          <div className="label-eyebrow">Principles</div>
         </div>
         <div className="md:col-span-7 space-y-12">
           {[
@@ -56,7 +56,7 @@ function AboutPage() {
 
       <section className="border-y hairline bg-secondary/40">
         <div className="mx-auto max-w-7xl px-6 py-24">
-          <div className="label-eyebrow">§ Team</div>
+          <div className="label-eyebrow">Team</div>
           <h2 className="mt-4 font-display text-4xl tracking-tight">Reviewers & inspectors</h2>
           <div className="mt-12 grid sm:grid-cols-2 lg:grid-cols-3 gap-px bg-border border hairline">
             {team.map((m) => (

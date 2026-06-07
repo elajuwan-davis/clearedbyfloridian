@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { MarketingShell } from "@/components/marketing-shell";
 import { Button } from "@/components/ui/button";
 import { services } from "@/lib/mock-data";
+import { ArrowRight } from "lucide-react";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -275,7 +276,7 @@ function CTA() {
             variant="secondary"
             className="rounded-sm h-12 px-6 bg-background text-foreground hover:bg-background/90"
           >
-            <Link to="/contact">Start a project →</Link>
+            <Link to="/contact" className="inline-flex items-center gap-2">Start a project <ArrowRight className="h-4 w-4" /></Link>
           </Button>
         </div>
       </div>

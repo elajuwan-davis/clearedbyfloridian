@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { permits, inspections } from "@/lib/mock-data";
 import { Badge } from "@/components/ui/badge";
+import { ArrowRight } from "lucide-react";
 
 export const Route = createFileRoute("/portal/")({
   component: PortalOverview,
@@ -21,7 +22,7 @@ function PortalOverview() {
   return (
     <div className="space-y-12 max-w-6xl">
       <div>
-        <div className="label-eyebrow">◇ Overview</div>
+        <div className="label-eyebrow">Overview</div>
         <h1 className="mt-4 font-display text-4xl tracking-tight">Good morning, Jamie.</h1>
         <p className="mt-2 text-muted-foreground">
           Here's where every Atlas Build Group project sits this morning.
@@ -40,8 +41,8 @@ function PortalOverview() {
       <section>
         <div className="flex items-baseline justify-between mb-6">
           <h2 className="font-display text-2xl tracking-tight">Active projects</h2>
-          <Link to="/portal/projects" className="font-mono text-xs text-accent hover:underline">
-            View all →
+          <Link to="/portal/projects" className="font-mono text-xs text-accent hover:underline inline-flex items-center gap-1">
+            View all <ArrowRight className="h-3 w-3" />
           </Link>
         </div>
         <div className="border hairline divide-y">
@@ -70,8 +71,8 @@ function PortalOverview() {
       <section>
         <div className="flex items-baseline justify-between mb-6">
           <h2 className="font-display text-2xl tracking-tight">Upcoming inspections</h2>
-          <Link to="/portal/inspections" className="font-mono text-xs text-accent hover:underline">
-            Schedule →
+          <Link to="/portal/inspections" className="font-mono text-xs text-accent hover:underline inline-flex items-center gap-1">
+            Schedule <ArrowRight className="h-3 w-3" />
           </Link>
         </div>
         <div className="border hairline divide-y">

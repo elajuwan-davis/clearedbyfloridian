@@ -48,7 +48,7 @@ export function PortalShell({ children }: { children: ReactNode }) {
                 }`}
               >
                 <span>{item.label}</span>
-                {isActive && <span className="font-mono text-[10px] text-accent">●</span>}
+                {isActive && <span className="h-1.5 w-1.5 rounded-full bg-accent" aria-hidden />}
               </Link>
             );
           })}

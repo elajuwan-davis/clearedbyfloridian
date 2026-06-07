@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { jurisdictions } from "@/lib/mock-data";
 import { toast } from "sonner";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 
 export const Route = createFileRoute("/portal/new-permit")({
   component: NewPermit,
@@ -30,7 +31,7 @@ function NewPermit() {
   return (
     <div className="max-w-3xl space-y-10">
       <div>
-        <div className="label-eyebrow">◇ New permit · Step {step} of 3</div>
+        <div className="label-eyebrow">New permit · Step {step} of 3</div>
         <h1 className="mt-4 font-display text-4xl tracking-tight">Submit a permit request</h1>
         <p className="mt-2 text-muted-foreground">
           Drawings can be uploaded after intake. Most submissions are reviewed within 5–7 business days.
@@ -126,9 +127,9 @@ function NewPermit() {
               product approvals.
             </p>
             <ul className="text-sm space-y-2 mt-4">
-              <li className="flex gap-3"><span className="font-mono text-accent">→</span> Reviewer assignment within 4 business hours</li>
-              <li className="flex gap-3"><span className="font-mono text-accent">→</span> Fixed-fee proposal within 1 business day</li>
-              <li className="flex gap-3"><span className="font-mono text-accent">→</span> Plan review begins on document acceptance</li>
+              <li className="flex gap-3"><ArrowRight className="h-4 w-4 mt-0.5 text-accent shrink-0" /> Reviewer assignment within 4 business hours</li>
+              <li className="flex gap-3"><ArrowRight className="h-4 w-4 mt-0.5 text-accent shrink-0" /> Fixed-fee proposal within 1 business day</li>
+              <li className="flex gap-3"><ArrowRight className="h-4 w-4 mt-0.5 text-accent shrink-0" /> Plan review begins on document acceptance</li>
             </ul>
           </div>
         )}
@@ -139,11 +140,12 @@ function NewPermit() {
             variant="ghost"
             onClick={() => setStep(Math.max(1, step - 1))}
             disabled={step === 1}
+            className="inline-flex items-center gap-2"
           >
-            ← Back
+            <ArrowLeft className="h-4 w-4" /> Back
           </Button>
-          <Button type="submit" size="lg" className="rounded-sm h-12 px-8">
-            {step < 3 ? "Continue →" : "Submit permit"}
+          <Button type="submit" size="lg" className="rounded-sm h-12 px-8 inline-flex items-center gap-2">
+            {step < 3 ? <>Continue <ArrowRight className="h-4 w-4" /></> : "Submit permit"}
           </Button>
         </div>
       </form>
