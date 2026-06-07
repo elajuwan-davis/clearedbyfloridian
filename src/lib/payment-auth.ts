@@ -1,50 +1,40 @@
 // Payment authorization storage + helpers.
-// Stored locally only. Card numbers and CVV are NEVER stored — only brand + last 4 + expiry.
+// Currently persists to localStorage. When Lovable Cloud is enabled,
+// swap save/load to a `payment_authorizations` Supabase table.
 
 export type PaymentAuthRecord = {
   cardholder: string;
   billingAddress: string;
   cardType: "Credit" | "Debit" | "ACH";
-  brand: string;
+  brand: string; // Visa, Mastercard, Amex, Discover, ACH, Unknown
   last4: string;
   expiry: string; // MM/YY, empty for ACH
-  authorizedAt: string;
-  authorizationDate: string;
+  authorizedAt: string; // ISO timestamp
+  authorizationDate: string; // YYYY-MM-DD from form
   signatureDataUrl: string;
 };
 
-const LS_KEY = "cleared.payment-auth";
+const KEY = "cleared.payment-auth";
 
-function lsLoad(): PaymentAuthRecord | null {
+export function savePaymentAuth(record: PaymentAuthRecord): void {
+  if (typeof window === "undefined") return;
+  localStorage.setItem(KEY, JSON.stringify(record));
+}
+
+export function loadPaymentAuth(): PaymentAuthRecord | null {
   if (typeof window === "undefined") return null;
   try {
-    const raw = localStorage.getItem(LS_KEY);
-    return raw ? (JSON.parse(raw) as PaymentAuthRecord) : null;
+    const raw = localStorage.getItem(KEY);
+    if (!raw) return null;
+    return JSON.parse(raw) as PaymentAuthRecord;
   } catch {
     return null;
   }
 }
 
-function lsSave(r: PaymentAuthRecord): void {
-  if (typeof window === "undefined") return;
-  try { localStorage.setItem(LS_KEY, JSON.stringify(r)); } catch { /* ignore */ }
-}
-
-function lsClear(): void {
-  if (typeof window === "undefined") return;
-  try { localStorage.removeItem(LS_KEY); } catch { /* ignore */ }
-}
-
-export function savePaymentAuth(record: PaymentAuthRecord): void {
-  lsSave(record);
-}
-
-export function loadPaymentAuth(): PaymentAuthRecord | null {
-  return lsLoad();
-}
-
 export function clearPaymentAuth(): void {
-  lsClear();
+  if (typeof window === "undefined") return;
+  localStorage.removeItem(KEY);
 }
 
 export function detectCardBrand(num: string): string {

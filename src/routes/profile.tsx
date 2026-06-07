@@ -47,9 +47,7 @@ function ProfilePage() {
 
   const [userId, setUserId] = useState<string | null>(null);
 
-  useEffect(() => {
-    setPaymentAuth(loadPaymentAuth());
-  }, []);
+  useEffect(() => { setPaymentAuth(loadPaymentAuth()); }, []);
 
   function revokePaymentAuth() {
     clearPaymentAuth();
