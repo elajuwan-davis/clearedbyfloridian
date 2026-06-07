@@ -225,8 +225,8 @@ function Coverage() {
     <section className="mx-auto max-w-7xl px-6 py-28 grid md:grid-cols-12 gap-12">
       <div className="md:col-span-5">
         <div className="label-eyebrow">Coverage</div>
-        <h2 className="mt-4 font-display text-4xl md:text-5xl tracking-tight">
-          Palm Beach<br />and the Treasure Coast.
+        <h2 className="mt-4 display-serif text-4xl md:text-6xl tracking-tight">
+          Palm Beach<br />and the <em className="italic font-light text-muted-foreground">Treasure Coast.</em>
         </h2>
         <p className="mt-6 text-muted-foreground max-w-md">
           Anchored in West Palm Beach. We work the HVHZ amendments, the
