@@ -42,7 +42,8 @@ function HomePage() {
 function Hero() {
   return (
     <section className="relative border-b hairline">
-      <div className="mx-auto max-w-7xl px-6 pt-28 pb-32 md:pt-40 md:pb-44">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 pt-16 pb-20 md:pt-40 md:pb-44">
+
         <div className="grid md:grid-cols-12 gap-12">
           <div className="md:col-span-10">
             <div className="font-mono text-[11px] uppercase tracking-[0.22em] text-accent">
@@ -77,7 +78,7 @@ function Hero() {
 function Lineage() {
   return (
     <section className="border-b hairline bg-secondary/30">
-      <div className="mx-auto max-w-7xl px-6 py-20 grid md:grid-cols-12 gap-12">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 py-20 grid md:grid-cols-12 gap-12">
         <div className="md:col-span-4">
           <div className="label-eyebrow">Lineage</div>
           <div className="mt-4 font-mono text-xs uppercase tracking-[0.22em] text-muted-foreground">
@@ -106,7 +107,7 @@ function Stats() {
   ];
   return (
     <section className="border-b hairline">
-      <div className="mx-auto max-w-7xl px-6 py-16 grid grid-cols-2 md:grid-cols-4 gap-px bg-border">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 py-16 grid grid-cols-2 md:grid-cols-4 gap-px bg-border">
         {stats.map((s) => (
           <div key={s.k} className="bg-background p-8">
             <div className="font-display text-4xl tracking-tight">{s.k}</div>
@@ -120,7 +121,7 @@ function Stats() {
 
 function ServicesPreview() {
   return (
-    <section className="mx-auto max-w-7xl px-6 py-28">
+    <section className="mx-auto max-w-7xl px-4 sm:px-6 py-28">
       <div className="grid md:grid-cols-12 gap-12 mb-16">
         <div className="md:col-span-4">
           <div className="label-eyebrow">Services</div>
@@ -182,7 +183,7 @@ function Process() {
   ];
   return (
     <section className="border-y hairline bg-secondary/40">
-      <div className="mx-auto max-w-7xl px-6 py-28">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 py-28">
         <div className="label-eyebrow">Process</div>
         <h2 className="mt-4 display-serif text-4xl md:text-6xl tracking-tight max-w-3xl">
           A workflow your superintendents <em className="italic font-light text-muted-foreground">will actually use.</em>
@@ -203,7 +204,7 @@ function Process() {
 
 function Coverage() {
   return (
-    <section className="mx-auto max-w-7xl px-6 py-28 grid md:grid-cols-12 gap-12">
+    <section className="mx-auto max-w-7xl px-4 sm:px-6 py-28 grid md:grid-cols-12 gap-12">
       <div className="md:col-span-5">
         <div className="label-eyebrow">Coverage</div>
         <h2 className="mt-4 display-serif text-4xl md:text-6xl tracking-tight">
@@ -235,7 +236,7 @@ function Coverage() {
 function CTA() {
   return (
     <section className="border-t hairline bg-foreground text-background">
-      <div className="mx-auto max-w-7xl px-6 py-24 md:py-32">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 py-24 md:py-32">
         <div className="font-mono text-[11px] uppercase tracking-[0.22em] opacity-60">
           By invitation
         </div>

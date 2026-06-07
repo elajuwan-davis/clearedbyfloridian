@@ -51,7 +51,7 @@ function LpoaSigningPage() {
 
   return (
     <PortalShell>
-      <form onSubmit={handleSubmit} className="mx-auto max-w-4xl px-8 py-12">
+      <form onSubmit={handleSubmit} className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
         {/* Back */}
         <Link
           to="/projects"

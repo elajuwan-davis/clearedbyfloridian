@@ -112,7 +112,7 @@ function AdminPage() {
 
   return (
     <PortalShell>
-      <div className="mx-auto max-w-7xl px-8 py-12">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
         {/* Header */}
         <div className="border-b border-obsidian/10 pb-8">
           <div className="flex flex-wrap items-center gap-2">

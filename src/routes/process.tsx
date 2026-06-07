@@ -65,7 +65,7 @@ function ProcessPage() {
         intro="Every Cleared project follows the same documented workflow under Florida Statute 553.791. Here is exactly what to expect and when."
       />
 
-      <section className="mx-auto max-w-6xl px-6 py-24">
+      <section className="mx-auto max-w-6xl px-4 sm:px-6 py-24">
         <div className="relative">
           <div className="absolute left-6 md:left-1/2 top-0 bottom-0 w-px bg-border" aria-hidden />
           <ol className="space-y-16">

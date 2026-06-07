@@ -28,7 +28,7 @@ function ServicesPage() {
         intro="Florida Statute 553.791 lets us act in place of the building official for plan review and inspections. We do that exclusively for the licensed general contractors delivering Flōridian's luxury pool and hardscape projects."
       />
 
-      <section className="mx-auto max-w-7xl px-6 py-24 space-y-px bg-border border-x hairline">
+      <section className="mx-auto max-w-7xl px-4 sm:px-6 py-24 space-y-px bg-border border-x hairline">
         {services.map((s, i) => (
           <article
             key={s.code}
@@ -64,7 +64,7 @@ function ServicesPage() {
         ))}
       </section>
 
-      <section className="mx-auto max-w-7xl px-6 pb-32">
+      <section className="mx-auto max-w-7xl px-4 sm:px-6 pb-32">
         <div className="border hairline bg-secondary/40 p-10 md:p-14 grid md:grid-cols-2 gap-10 items-center">
           <div>
             <div className="label-eyebrow">Working with Flōridian?</div>

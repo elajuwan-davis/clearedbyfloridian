@@ -215,7 +215,7 @@ function MessagesPage() {
 
   return (
     <PortalShell>
-      <div className="mx-auto max-w-6xl px-8 py-12">
+      <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
         {/* Header */}
         <div className="flex flex-col gap-6 border-b border-obsidian/10 pb-8 md:flex-row md:items-end md:justify-between">
           <div>

@@ -197,7 +197,7 @@ function BuildersPage() {
           <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-obsidian/55">
             Admin · Network
           </p>
-          <h1 className="display-serif text-5xl text-obsidian">
+          <h1 className="display-serif text-3xl sm:text-4xl lg:text-5xl text-obsidian">
             Builders <em className="italic text-oxblood">on file</em>
           </h1>
           <p className="max-w-2xl text-obsidian/65">

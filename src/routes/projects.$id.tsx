@@ -31,7 +31,7 @@ export const Route = createFileRoute("/projects/$id")({
   },
   notFoundComponent: () => (
     <PortalShell>
-      <div className="mx-auto max-w-3xl px-8 py-24 text-center">
+      <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-16 lg:py-24 text-center">
         <div className="eyebrow text-obsidian/50">404</div>
         <h1 className="display-serif mt-3 text-4xl text-obsidian">Project not found</h1>
         <p className="mt-3 text-sm text-obsidian/60">
@@ -45,7 +45,7 @@ export const Route = createFileRoute("/projects/$id")({
   ),
   errorComponent: ({ error }) => (
     <PortalShell>
-      <div className="mx-auto max-w-3xl px-8 py-24 text-center">
+      <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-16 lg:py-24 text-center">
         <h1 className="display-serif text-3xl text-obsidian">Something went wrong</h1>
         <p className="mt-3 text-sm text-obsidian/60">{error.message}</p>
       </div>
@@ -125,7 +125,7 @@ const PROJECTS: Record<string, Project> = {
           "Sheet S-201 — clarify beam B-12 connection detail at column line C/4 per FBC 2306.2",
           "Sheet E-301 — confirm AFCI protection for bedroom branch circuits per NEC 210.12(A)",
         ],
-        status: { label: "Open · 48-hour clock", tone: "warn" },
+        status: { label: "Open · 48-hour clock", tone: "oxblood" },
       },
     ],
     fees: [
@@ -145,7 +145,7 @@ const PROJECTS: Record<string, Project> = {
     gc: "Coastline Builders Group",
     value_cents: 687_200_000,
     permit_types: ["Building", "Mechanical"],
-    status: { label: "Corrections required", tone: "warn" },
+    status: { label: "Corrections required", tone: "oxblood" },
     submitted_at: "May 21, 2026",
     documents: [
       { id: "d1", label: "Construction Plans", filename: "jupiter-island-plans-r2.pdf", size_kb: 22140, uploaded_at: "May 21, 2026" },
@@ -171,12 +171,12 @@ const PROJECTS: Record<string, Project> = {
           "Energy compliance form FL-ECC missing signature page",
           "Wind load report — confirm Risk Category II per ASCE 7-22",
         ],
-        status: { label: "Open · 48-hour clock", tone: "warn" },
+        status: { label: "Open · 48-hour clock", tone: "oxblood" },
       },
     ],
     fees: [
       { id: "f1", label: "Permitting Fee", sublabel: "Construction value × 1.5%", amount_cents: 10_308_000, status: { label: "Invoiced", tone: "sky" }, invoice_date: "May 21, 2026" },
-      { id: "f2", label: "Private Provider & Admin Fee", sublabel: "Flat statutory administration", amount_cents: 885_600, status: { label: "Paid", tone: "ok" }, invoice_date: "May 21, 2026" },
+      { id: "f2", label: "Private Provider & Admin Fee", sublabel: "Flat statutory administration", amount_cents: 885_600, status: { label: "Paid", tone: "emerald" }, invoice_date: "May 21, 2026" },
     ],
   },
 };
