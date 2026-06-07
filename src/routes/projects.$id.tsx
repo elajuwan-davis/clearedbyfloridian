@@ -31,7 +31,7 @@ export const Route = createFileRoute("/projects/$id")({
   },
   notFoundComponent: () => (
     <PortalShell>
-      <div className="mx-auto max-w-3xl px-8 py-24 text-center">
+      <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-16 lg:py-24 text-center">
         <div className="eyebrow text-obsidian/50">404</div>
         <h1 className="display-serif mt-3 text-4xl text-obsidian">Project not found</h1>
         <p className="mt-3 text-sm text-obsidian/60">
@@ -45,7 +45,7 @@ export const Route = createFileRoute("/projects/$id")({
   ),
   errorComponent: ({ error }) => (
     <PortalShell>
-      <div className="mx-auto max-w-3xl px-8 py-24 text-center">
+      <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-16 lg:py-24 text-center">
         <h1 className="display-serif text-3xl text-obsidian">Something went wrong</h1>
         <p className="mt-3 text-sm text-obsidian/60">{error.message}</p>
       </div>
