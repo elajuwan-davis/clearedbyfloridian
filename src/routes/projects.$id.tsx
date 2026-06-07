@@ -192,7 +192,8 @@ const fmtMoneyWhole = (cents: number) =>
   `$${(cents / 100).toLocaleString("en-US", { maximumFractionDigits: 0 })}`;
 
 function ProjectDetailPage() {
-  const { project } = Route.useLoaderData();
+  const { project } = Route.useLoaderData() as { project: Project };
+
   const [reply, setReply] = useState("");
 
   const totalFees = project.fees.reduce((s, f) => s + f.amount_cents, 0);
