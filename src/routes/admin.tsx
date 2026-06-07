@@ -231,7 +231,7 @@ function AdminPage() {
                   <Th>Status</Th>
                   <Th>Assignee</Th>
                   <Th>Age</Th>
-                  <Th align="right"></Th>
+                  <Th align="right"> </Th>
                 </tr>
               </thead>
               <tbody>
