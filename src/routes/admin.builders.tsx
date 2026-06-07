@@ -399,8 +399,8 @@ function BuildersPage() {
               Verify <em className="italic text-oxblood">{verifying?.firm}</em>
             </DialogTitle>
             <DialogDescription className="text-obsidian/65">
-              Confirm Florida DBPR license, current COI naming Flōridian LLC as additional insured, and
-              executed Limited Power of Attorney before this firm can submit under FL 553.791.
+              Confirm Florida DBPR license, current COI, and executed Limited Power of Attorney
+              before this firm can submit under FL 553.791.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-3 py-2">

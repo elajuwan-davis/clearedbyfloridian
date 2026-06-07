@@ -8,10 +8,10 @@ export const Route = createFileRoute("/about")({
       {
         name: "description",
         content:
-          "Cleared is the private-provider permitting arm of Flōridian LLC, a luxury pool and hardscape builder established in West Palm Beach in 1998.",
+          "Cleared by Flōridian is a private-provider permitting practice for South Florida's elite general contractors.",
       },
       { property: "og:title", content: "About Cleared by Flōridian" },
-      { property: "og:description", content: "Twenty-eight years of luxury South Florida construction, now applied to permitting." },
+      { property: "og:description", content: "Built inside a luxury construction firm. Applied to permitting." },
     ],
   }),
   component: AboutPage,
@@ -23,7 +23,7 @@ const team = [
   { name: "Julian Pereira, P.E.", role: "MEP & Energy", bio: "Mechanical engineer, FBC Energy Conservation lead reviewer." },
   { name: "Dana Ortiz", role: "Inspections Lead", bio: "ICC-certified residential combination inspector. Former municipal inspector." },
   { name: "Sasha Whitfield", role: "Permit Coordinator", bio: "Tracks every file from intake to CO. Knows every counter clerk in Palm Beach County by name." },
-  { name: "Esteban Ruiz", role: "Founder · Flōridian LLC", bio: "Licensed CGC. Founded Flōridian in 1998 to build pools the way they should be built." },
+  { name: "Esteban Ruiz", role: "Founder", bio: "Licensed CGC. Built Flōridian to deliver pools and hardscape the way they should be built." },
 ];
 
 function AboutPage() {
@@ -31,8 +31,8 @@ function AboutPage() {
     <MarketingShell>
       <PageHeader
         eyebrow="About"
-        title="A permitting service built inside a luxury construction company."
-        intro="Flōridian LLC has been designing and building South Florida's most considered pools, spas, and hardscapes since 1998. Cleared is what happens when twenty-eight years of running our own permits gets handed to the team building yours."
+        title="A permitting practice built inside a luxury construction firm."
+        intro="Cleared is what happens when decades of running our own permits gets handed to the team building yours — same in-house engineers, architects, and inspectors, now standing in for the building official under FL Statute 553.791."
       />
 
       <section className="mx-auto max-w-6xl px-4 sm:px-6 py-24 grid md:grid-cols-12 gap-12">
@@ -42,20 +42,20 @@ function AboutPage() {
         </div>
         <div className="md:col-span-7 space-y-6 text-muted-foreground text-pretty">
           <p>
-            Flōridian was founded in 1998 in West Palm Beach by Esteban Ruiz, a
-            licensed CGC who wanted to build pools and hardscapes for South
-            Florida's most demanding estates without compromising on detail.
+            Flōridian was founded in West Palm Beach to build pools and
+            hardscape for South Florida's most demanding estates without
+            compromising on detail.
           </p>
           <p>
-            For nearly three decades we've run our own structural, MEP, and
+            For most of that history we've run our own structural, MEP, and
             energy reviews in-house — because nobody else moves at the pace a
-            $4M oceanfront job requires. In 2021 we became a licensed private
-            provider under FS 553.791 and began offering that capability to the
-            general contractors we work alongside.
+            $4M oceanfront job requires. We're now a licensed private
+            provider under FS 553.791, offering that capability to the
+            general contractors working alongside us.
           </p>
           <p>
-            That service is Cleared. It is offered, by invitation, to the
-            licensed GCs delivering Flōridian's projects — and only to them.
+            That service is Cleared. It's the same team, the same standards,
+            scaled to whatever your firm is building.
           </p>
         </div>
       </section>
@@ -98,8 +98,8 @@ function AboutPage() {
 
       <section className="mx-auto max-w-7xl px-4 sm:px-6 pb-24 grid md:grid-cols-3 gap-px bg-border border hairline">
         {[
-          { k: "1998", v: "Flōridian LLC founded · West Palm Beach" },
           { k: "FS 553.791", v: "Florida Private Provider Statute" },
+          { k: "10 days", v: "Statutory affidavit-to-permit window" },
           { k: "$10M", v: "Errors & omissions coverage" },
         ].map((s) => (
           <div key={s.k} className="bg-background p-10">

@@ -67,7 +67,7 @@ function LoginPage() {
               className="wordmark-subline mt-2"
               style={{ color: "color-mix(in oklab, var(--paper) 60%, transparent)" }}
             >
-              by Flōridian · Exclusive to GC Clients
+              by Flōridian
             </div>
           </Link>
         </div>
@@ -82,14 +82,14 @@ function LoginPage() {
           <p
             className="display-serif text-3xl leading-[1.15] text-paper"
           >
-            Private‑provider permitting for <em>$1M+ custom residential</em>, on a statutory clock.
+            Private‑provider permitting on a <em>statutory clock</em>.
           </p>
           <p
             className="text-sm leading-relaxed"
             style={{ color: "color-mix(in oklab, var(--paper) 65%, transparent)" }}
           >
             Affidavit to permit in 10 business days. Certificate of compliance to CO in 2.
-            Palm Beach County and the Treasure Coast.
+            Broward through the Treasure Coast.
           </p>
         </div>
 
@@ -97,7 +97,7 @@ function LoginPage() {
           className="relative font-mono text-[10px] tracking-[0.2em] uppercase"
           style={{ color: "color-mix(in oklab, var(--paper) 40%, transparent)" }}
         >
-          215 Clematis St · West Palm Beach, FL
+          FL Statute 553.791
         </div>
       </aside>
 
@@ -114,7 +114,7 @@ function LoginPage() {
             <div className="label-eyebrow">Builder portal</div>
             <h1 className="display-serif text-4xl leading-[1.05]">Sign in.</h1>
             <p className="text-sm text-muted-foreground mt-2">
-              Access restricted to licensed GCs on active Flōridian projects.
+              Access for licensed Florida general contractors.
             </p>
           </div>
 
@@ -191,8 +191,7 @@ function LoginPage() {
 
           <div className="mt-10 pt-6 border-t hairline">
             <p className="text-xs text-muted-foreground leading-relaxed">
-              Cleared accounts are issued by invitation only to GCs on active Flōridian
-              projects. To request access, contact your project manager.
+              New here? Contact us at permits@floridianinc.com to set up your firm's portal access.
             </p>
           </div>
         </div>

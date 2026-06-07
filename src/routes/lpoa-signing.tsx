@@ -102,8 +102,7 @@ function LpoaSigningPage() {
             <p className="mt-6">
               The undersigned, being the duly authorized qualifying agent for the licensed General
               Contractor of record, does hereby designate and appoint{" "}
-              <strong className="text-obsidian">Cleared by Flōridian</strong>, a service of
-              Flōridian LLC (FL contractor license CGC1503812), as the{" "}
+              <strong className="text-obsidian">Cleared by Flōridian</strong> as the{" "}
               <em>private provider of record</em> for permit applications submitted through this
               portal.
             </p>
