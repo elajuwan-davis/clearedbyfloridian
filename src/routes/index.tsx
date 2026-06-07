@@ -143,8 +143,8 @@ function ServicesPreview() {
       <div className="grid md:grid-cols-12 gap-12 mb-16">
         <div className="md:col-span-4">
           <div className="label-eyebrow">Services</div>
-          <h2 className="mt-4 font-display text-4xl md:text-5xl tracking-tight text-balance">
-            What we do for your GC.
+          <h2 className="mt-4 display-serif text-4xl md:text-6xl tracking-tight text-balance">
+            What we do<br />for your GC.
           </h2>
         </div>
         <p className="md:col-span-7 md:col-start-6 self-end text-lg text-muted-foreground text-pretty">
