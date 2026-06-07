@@ -23,7 +23,7 @@ const steps = [
     n: "01",
     day: "Day 0",
     t: "Intake",
-    d: "Your GC uploads drawings, structural calcs, energy compliance, and product approvals into the Cleared portal. We confirm scope within 4 business hours and issue a fixed-fee proposal.",
+    d: "Upload drawings, structural calcs, energy compliance, and product approvals into the Cleared portal. We confirm scope within 4 business hours and issue a fixed-fee proposal.",
     out: "Signed agreement · Project number · Reviewer assigned",
   },
   {
