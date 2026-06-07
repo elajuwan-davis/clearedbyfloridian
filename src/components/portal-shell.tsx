@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
 import {
   LayoutDashboard,
@@ -33,6 +33,27 @@ const portalNav: NavItem[] = [
 
   { to: "/profile", label: "Profile", icon: User },
 ];
+
+const protectedPortalPrefixes = [
+  "/dashboard",
+  "/my-permits",
+  "/messages",
+  "/forms",
+  "/invoices",
+  "/profile",
+  "/building-dept-logins",
+  "/ask-victoria",
+  "/project-guides",
+  "/fee-calculator",
+  "/admin",
+  "/projects",
+  "/portal",
+  "/lpoa-signing",
+];
+
+function isProtectedPortalPath(pathname: string) {
+  return protectedPortalPrefixes.some((path) => pathname === path || pathname.startsWith(`${path}/`));
+}
 
 // Mock until auth wired — shape matches profiles row
 const mockUser = {
@@ -157,14 +178,18 @@ export function PortalShell({ children }: { children: ReactNode }) {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [authState, setAuthState] = useState<"checking" | "authed" | "anon">("checking");
+  const signingOutRef = useRef(false);
 
   useEffect(() => {
     let cancelled = false;
+    const shouldProtect = isProtectedPortalPath(pathname);
     supabase.auth.getSession().then(({ data }) => {
       if (cancelled) return;
       if (!data.session) {
-        navigate({ to: "/login", replace: true });
         setAuthState("anon");
+        if (shouldProtect && !signingOutRef.current) {
+          navigate({ to: "/login", replace: true });
+        }
       } else {
         setAuthState("authed");
       }
@@ -172,7 +197,9 @@ export function PortalShell({ children }: { children: ReactNode }) {
     const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
       if (!session) {
         setAuthState("anon");
-        navigate({ to: "/login", replace: true });
+        if (shouldProtect && !signingOutRef.current) {
+          navigate({ to: "/login", replace: true });
+        }
       } else {
         setAuthState("authed");
       }
@@ -181,9 +208,10 @@ export function PortalShell({ children }: { children: ReactNode }) {
       cancelled = true;
       sub.subscription.unsubscribe();
     };
-  }, [navigate]);
+  }, [navigate, pathname]);
 
   async function handleSignOut() {
+    signingOutRef.current = true;
     await supabase.auth.signOut();
     navigate({ to: "/", replace: true });
   }
