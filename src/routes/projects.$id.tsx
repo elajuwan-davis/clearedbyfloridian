@@ -54,13 +54,9 @@ export const Route = createFileRoute("/projects/$id")({
   component: ProjectDetailPage,
 });
 
-type Tone = "neutral" | "sky" | "warn" | "ok";
-const toneClass: Record<Tone, string> = {
-  neutral: "bg-paper-warm text-obsidian/70 border-obsidian/15",
-  sky: "bg-sky/10 text-sky border-sky/30",
-  warn: "bg-oxblood/10 text-oxblood border-oxblood/30",
-  ok: "bg-emerald-600/10 text-emerald-700 border-emerald-600/30",
-};
+import { toneClass, type BadgeTone } from "@/lib/status-badges";
+type Tone = BadgeTone;
+
 
 type Project = {
   id: string;
