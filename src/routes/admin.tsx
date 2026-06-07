@@ -39,32 +39,10 @@ export const Route = createFileRoute("/admin")({
 });
 
 /* ─────────── types ─────────── */
-type Tone = "neutral" | "sky" | "warn" | "ok";
-const toneClass: Record<Tone, string> = {
-  neutral: "bg-paper-warm text-obsidian/70 border-obsidian/15",
-  sky: "bg-sky/10 text-sky border-sky/30",
-  warn: "bg-oxblood/10 text-oxblood border-oxblood/30",
-  ok: "bg-emerald-600/10 text-emerald-700 border-emerald-600/30",
-};
+import { projectStatusMeta, toneClass, type BadgeTone, type ProjectStatus as Status } from "@/lib/status-badges";
+type Tone = BadgeTone;
+const statusMeta = projectStatusMeta;
 
-type Status =
-  | "submitted"
-  | "in_review"
-  | "corrections_required"
-  | "resubmitted"
-  | "approved"
-  | "permit_issued"
-  | "inspection_scheduled";
-
-const statusMeta: Record<Status, { label: string; tone: Tone }> = {
-  submitted: { label: "Submitted", tone: "neutral" },
-  in_review: { label: "In review", tone: "sky" },
-  corrections_required: { label: "Corrections required", tone: "warn" },
-  resubmitted: { label: "Resubmitted", tone: "sky" },
-  approved: { label: "Approved", tone: "ok" },
-  permit_issued: { label: "Permit issued", tone: "ok" },
-  inspection_scheduled: { label: "Inspection scheduled", tone: "sky" },
-};
 
 type Fee = { kind: "permitting" | "admin"; amount_cents: number; status: "invoiced" | "paid" | "overdue" };
 
