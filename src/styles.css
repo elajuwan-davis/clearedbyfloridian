@@ -41,6 +41,8 @@
   --font-display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+  --font-wordmark: "Cormorant Garamond", "Times New Roman", serif;
+  --font-subline: "DM Sans", ui-sans-serif, system-ui, sans-serif;
 }
 
 :root {

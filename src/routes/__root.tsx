@@ -10,6 +10,11 @@ import {
 import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
+import "@fontsource/cormorant-garamond/400.css";
+import "@fontsource/cormorant-garamond/500.css";
+import "@fontsource/cormorant-garamond/600.css";
+import "@fontsource/dm-sans/400.css";
+import "@fontsource/dm-sans/500.css";
 import "@fontsource/space-grotesk/400.css";
 import "@fontsource/space-grotesk/500.css";
 import "@fontsource/space-grotesk/600.css";
