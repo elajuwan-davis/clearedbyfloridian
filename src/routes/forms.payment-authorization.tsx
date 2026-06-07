@@ -111,9 +111,14 @@ function PaymentAuthPage() {
       authorizationDate: form.authDate,
       signatureDataUrl: sigDataUrl,
     };
-    savePaymentAuth(record);
-    toast.success("Payment authorization saved and on file.");
-    navigate({ to: "/profile" });
+    try {
+      await savePaymentAuth(record);
+      toast.success("Payment authorization saved and on file.");
+      navigate({ to: "/profile" });
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Could not save authorization";
+      toast.error(msg);
+    }
   }
 
   return (
