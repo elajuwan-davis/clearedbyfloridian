@@ -66,10 +66,10 @@ function DashboardPage() {
   return (
     <PortalShell>
       {/* Header */}
-      <div className="flex flex-wrap items-end justify-between gap-6 mb-10">
-        <div>
+      <div className="flex flex-wrap items-end justify-between gap-4 mb-8 md:mb-10">
+        <div className="min-w-0">
           <div className="label-eyebrow mb-3">Builder dashboard</div>
-          <h1 className="display-serif text-5xl leading-[1.05]">
+          <h1 className="display-serif text-3xl sm:text-4xl md:text-5xl leading-[1.05]">
             {greeting}, <em>{mockBuilder.first_name}</em>.
           </h1>
         </div>
@@ -84,6 +84,7 @@ function DashboardPage() {
           </Link>
         </Button>
       </div>
+
 
       {/* Banners */}
       {(needsVerification || needsLpoa) && (
@@ -318,7 +319,7 @@ function Banner({
   const isWarn = tone === "warn";
   return (
     <div
-      className="flex items-start gap-4 p-5 border"
+      className="flex flex-col sm:flex-row items-start sm:items-center gap-4 p-4 sm:p-5 border"
       style={{
         borderRadius: "3px",
         backgroundColor: isWarn
@@ -329,37 +330,40 @@ function Banner({
           : "color-mix(in oklab, var(--sky) 35%, transparent)",
       }}
     >
-      <div
-        className="grid place-items-center h-9 w-9 shrink-0"
-        style={{
-          backgroundColor: isWarn
-            ? "color-mix(in oklab, var(--accent) 15%, transparent)"
-            : "color-mix(in oklab, var(--sky) 18%, transparent)",
-          color: isWarn ? "var(--accent)" : "color-mix(in oklab, var(--sky) 50%, var(--ink))",
-          borderRadius: "3px",
-        }}
-      >
-        <Icon className="h-4 w-4" strokeWidth={1.75} />
-      </div>
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2 mb-1">
-          <div
-            className="font-mono text-[10px] tracking-[0.18em] uppercase"
-            style={{ color: isWarn ? "var(--accent)" : "color-mix(in oklab, var(--sky) 50%, var(--ink))" }}
-          >
-            {isWarn ? "Action required" : "Awaiting signature"}
-          </div>
+      <div className="flex items-start gap-4 flex-1 min-w-0">
+        <div
+          className="grid place-items-center h-9 w-9 shrink-0"
+          style={{
+            backgroundColor: isWarn
+              ? "color-mix(in oklab, var(--accent) 15%, transparent)"
+              : "color-mix(in oklab, var(--sky) 18%, transparent)",
+            color: isWarn ? "var(--accent)" : "color-mix(in oklab, var(--sky) 50%, var(--ink))",
+            borderRadius: "3px",
+          }}
+        >
+          <Icon className="h-4 w-4" strokeWidth={1.75} />
         </div>
-        <div className="text-[15px] font-medium mb-0.5">{title}</div>
-        <p className="text-sm text-muted-foreground leading-relaxed">{body}</p>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 mb-1">
+            <div
+              className="font-mono text-[10px] tracking-[0.18em] uppercase"
+              style={{ color: isWarn ? "var(--accent)" : "color-mix(in oklab, var(--sky) 50%, var(--ink))" }}
+            >
+              {isWarn ? "Action required" : "Awaiting signature"}
+            </div>
+          </div>
+          <div className="text-[15px] font-medium mb-0.5">{title}</div>
+          <p className="text-sm text-muted-foreground leading-relaxed">{body}</p>
+        </div>
       </div>
       <Link
         to={href}
-        className="shrink-0 self-center font-subline text-[12px] tracking-[0.1em] uppercase px-3 py-2 border transition-colors hover:bg-foreground hover:text-background"
+        className="shrink-0 w-full sm:w-auto text-center font-subline text-[12px] tracking-[0.1em] uppercase px-3 py-2 border transition-colors hover:bg-foreground hover:text-background"
         style={{ borderColor: "var(--foreground)", color: "var(--foreground)", borderRadius: "3px" }}
       >
         {cta}
       </Link>
     </div>
+
   );
 }

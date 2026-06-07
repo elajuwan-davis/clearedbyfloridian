@@ -42,7 +42,8 @@ function HomePage() {
 function Hero() {
   return (
     <section className="relative border-b hairline">
-      <div className="mx-auto max-w-7xl px-6 pt-28 pb-32 md:pt-40 md:pb-44">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 pt-16 pb-20 md:pt-40 md:pb-44">
+
         <div className="grid md:grid-cols-12 gap-12">
           <div className="md:col-span-10">
             <div className="font-mono text-[11px] uppercase tracking-[0.22em] text-accent">
