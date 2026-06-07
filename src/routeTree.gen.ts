@@ -11,13 +11,20 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ServicesRouteImport } from './routes/services'
 import { Route as ProjectsRouteImport } from './routes/projects'
+import { Route as ProjectGuidesRouteImport } from './routes/project-guides'
+import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as ProcessRouteImport } from './routes/process'
 import { Route as PortalRouteImport } from './routes/portal'
 import { Route as MessagesRouteImport } from './routes/messages'
 import { Route as LpoaSigningRouteImport } from './routes/lpoa-signing'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as InvoicesRouteImport } from './routes/invoices'
+import { Route as FormsRouteImport } from './routes/forms'
+import { Route as FeeCalculatorRouteImport } from './routes/fee-calculator'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as ContactRouteImport } from './routes/contact'
+import { Route as BuildingDeptLoginsRouteImport } from './routes/building-dept-logins'
+import { Route as AskVictoriaRouteImport } from './routes/ask-victoria'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
@@ -37,6 +44,16 @@ const ServicesRoute = ServicesRouteImport.update({
 const ProjectsRoute = ProjectsRouteImport.update({
   id: '/projects',
   path: '/projects',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProjectGuidesRoute = ProjectGuidesRouteImport.update({
+  id: '/project-guides',
+  path: '/project-guides',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProfileRoute = ProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProcessRoute = ProcessRouteImport.update({
@@ -64,6 +81,21 @@ const LoginRoute = LoginRouteImport.update({
   path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
+const InvoicesRoute = InvoicesRouteImport.update({
+  id: '/invoices',
+  path: '/invoices',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FormsRoute = FormsRouteImport.update({
+  id: '/forms',
+  path: '/forms',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FeeCalculatorRoute = FeeCalculatorRouteImport.update({
+  id: '/fee-calculator',
+  path: '/fee-calculator',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DashboardRoute = DashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
@@ -72,6 +104,16 @@ const DashboardRoute = DashboardRouteImport.update({
 const ContactRoute = ContactRouteImport.update({
   id: '/contact',
   path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BuildingDeptLoginsRoute = BuildingDeptLoginsRouteImport.update({
+  id: '/building-dept-logins',
+  path: '/building-dept-logins',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AskVictoriaRoute = AskVictoriaRouteImport.update({
+  id: '/ask-victoria',
+  path: '/ask-victoria',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminRoute = AdminRouteImport.update({
@@ -129,13 +171,20 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/admin': typeof AdminRouteWithChildren
+  '/ask-victoria': typeof AskVictoriaRoute
+  '/building-dept-logins': typeof BuildingDeptLoginsRoute
   '/contact': typeof ContactRoute
   '/dashboard': typeof DashboardRoute
+  '/fee-calculator': typeof FeeCalculatorRoute
+  '/forms': typeof FormsRoute
+  '/invoices': typeof InvoicesRoute
   '/login': typeof LoginRoute
   '/lpoa-signing': typeof LpoaSigningRoute
   '/messages': typeof MessagesRoute
   '/portal': typeof PortalRouteWithChildren
   '/process': typeof ProcessRoute
+  '/profile': typeof ProfileRoute
+  '/project-guides': typeof ProjectGuidesRoute
   '/projects': typeof ProjectsRouteWithChildren
   '/services': typeof ServicesRoute
   '/admin/builders': typeof AdminBuildersRoute
@@ -150,12 +199,19 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/admin': typeof AdminRouteWithChildren
+  '/ask-victoria': typeof AskVictoriaRoute
+  '/building-dept-logins': typeof BuildingDeptLoginsRoute
   '/contact': typeof ContactRoute
   '/dashboard': typeof DashboardRoute
+  '/fee-calculator': typeof FeeCalculatorRoute
+  '/forms': typeof FormsRoute
+  '/invoices': typeof InvoicesRoute
   '/login': typeof LoginRoute
   '/lpoa-signing': typeof LpoaSigningRoute
   '/messages': typeof MessagesRoute
   '/process': typeof ProcessRoute
+  '/profile': typeof ProfileRoute
+  '/project-guides': typeof ProjectGuidesRoute
   '/projects': typeof ProjectsRouteWithChildren
   '/services': typeof ServicesRoute
   '/admin/builders': typeof AdminBuildersRoute
@@ -171,13 +227,20 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/admin': typeof AdminRouteWithChildren
+  '/ask-victoria': typeof AskVictoriaRoute
+  '/building-dept-logins': typeof BuildingDeptLoginsRoute
   '/contact': typeof ContactRoute
   '/dashboard': typeof DashboardRoute
+  '/fee-calculator': typeof FeeCalculatorRoute
+  '/forms': typeof FormsRoute
+  '/invoices': typeof InvoicesRoute
   '/login': typeof LoginRoute
   '/lpoa-signing': typeof LpoaSigningRoute
   '/messages': typeof MessagesRoute
   '/portal': typeof PortalRouteWithChildren
   '/process': typeof ProcessRoute
+  '/profile': typeof ProfileRoute
+  '/project-guides': typeof ProjectGuidesRoute
   '/projects': typeof ProjectsRouteWithChildren
   '/services': typeof ServicesRoute
   '/admin/builders': typeof AdminBuildersRoute
@@ -194,13 +257,20 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/admin'
+    | '/ask-victoria'
+    | '/building-dept-logins'
     | '/contact'
     | '/dashboard'
+    | '/fee-calculator'
+    | '/forms'
+    | '/invoices'
     | '/login'
     | '/lpoa-signing'
     | '/messages'
     | '/portal'
     | '/process'
+    | '/profile'
+    | '/project-guides'
     | '/projects'
     | '/services'
     | '/admin/builders'
@@ -215,12 +285,19 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/admin'
+    | '/ask-victoria'
+    | '/building-dept-logins'
     | '/contact'
     | '/dashboard'
+    | '/fee-calculator'
+    | '/forms'
+    | '/invoices'
     | '/login'
     | '/lpoa-signing'
     | '/messages'
     | '/process'
+    | '/profile'
+    | '/project-guides'
     | '/projects'
     | '/services'
     | '/admin/builders'
@@ -235,13 +312,20 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/admin'
+    | '/ask-victoria'
+    | '/building-dept-logins'
     | '/contact'
     | '/dashboard'
+    | '/fee-calculator'
+    | '/forms'
+    | '/invoices'
     | '/login'
     | '/lpoa-signing'
     | '/messages'
     | '/portal'
     | '/process'
+    | '/profile'
+    | '/project-guides'
     | '/projects'
     | '/services'
     | '/admin/builders'
@@ -257,13 +341,20 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
   AdminRoute: typeof AdminRouteWithChildren
+  AskVictoriaRoute: typeof AskVictoriaRoute
+  BuildingDeptLoginsRoute: typeof BuildingDeptLoginsRoute
   ContactRoute: typeof ContactRoute
   DashboardRoute: typeof DashboardRoute
+  FeeCalculatorRoute: typeof FeeCalculatorRoute
+  FormsRoute: typeof FormsRoute
+  InvoicesRoute: typeof InvoicesRoute
   LoginRoute: typeof LoginRoute
   LpoaSigningRoute: typeof LpoaSigningRoute
   MessagesRoute: typeof MessagesRoute
   PortalRoute: typeof PortalRouteWithChildren
   ProcessRoute: typeof ProcessRoute
+  ProfileRoute: typeof ProfileRoute
+  ProjectGuidesRoute: typeof ProjectGuidesRoute
   ProjectsRoute: typeof ProjectsRouteWithChildren
   ServicesRoute: typeof ServicesRoute
 }
@@ -282,6 +373,20 @@ declare module '@tanstack/react-router' {
       path: '/projects'
       fullPath: '/projects'
       preLoaderRoute: typeof ProjectsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/project-guides': {
+      id: '/project-guides'
+      path: '/project-guides'
+      fullPath: '/project-guides'
+      preLoaderRoute: typeof ProjectGuidesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/profile': {
+      id: '/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof ProfileRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/process': {
@@ -319,6 +424,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/invoices': {
+      id: '/invoices'
+      path: '/invoices'
+      fullPath: '/invoices'
+      preLoaderRoute: typeof InvoicesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/forms': {
+      id: '/forms'
+      path: '/forms'
+      fullPath: '/forms'
+      preLoaderRoute: typeof FormsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/fee-calculator': {
+      id: '/fee-calculator'
+      path: '/fee-calculator'
+      fullPath: '/fee-calculator'
+      preLoaderRoute: typeof FeeCalculatorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/dashboard': {
       id: '/dashboard'
       path: '/dashboard'
@@ -331,6 +457,20 @@ declare module '@tanstack/react-router' {
       path: '/contact'
       fullPath: '/contact'
       preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/building-dept-logins': {
+      id: '/building-dept-logins'
+      path: '/building-dept-logins'
+      fullPath: '/building-dept-logins'
+      preLoaderRoute: typeof BuildingDeptLoginsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ask-victoria': {
+      id: '/ask-victoria'
+      path: '/ask-victoria'
+      fullPath: '/ask-victoria'
+      preLoaderRoute: typeof AskVictoriaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin': {
@@ -451,16 +591,33 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
   AdminRoute: AdminRouteWithChildren,
+  AskVictoriaRoute: AskVictoriaRoute,
+  BuildingDeptLoginsRoute: BuildingDeptLoginsRoute,
   ContactRoute: ContactRoute,
   DashboardRoute: DashboardRoute,
+  FeeCalculatorRoute: FeeCalculatorRoute,
+  FormsRoute: FormsRoute,
+  InvoicesRoute: InvoicesRoute,
   LoginRoute: LoginRoute,
   LpoaSigningRoute: LpoaSigningRoute,
   MessagesRoute: MessagesRoute,
   PortalRoute: PortalRouteWithChildren,
   ProcessRoute: ProcessRoute,
+  ProfileRoute: ProfileRoute,
+  ProjectGuidesRoute: ProjectGuidesRoute,
   ProjectsRoute: ProjectsRouteWithChildren,
   ServicesRoute: ServicesRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
