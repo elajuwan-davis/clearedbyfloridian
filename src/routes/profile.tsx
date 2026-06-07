@@ -43,8 +43,18 @@ function ProfilePage() {
   const [license] = useState({ number: "CGC1521884", type: "Certified General Contractor", expires: "2027-08-31" });
   const [pwd, setPwd] = useState({ current: "", next: "", confirm: "" });
   const [avatar, setAvatar] = useState<string | null>(null);
+  const [paymentAuth, setPaymentAuth] = useState<PaymentAuthRecord | null>(null);
 
   const [userId, setUserId] = useState<string | null>(null);
+
+  useEffect(() => { setPaymentAuth(loadPaymentAuth()); }, []);
+
+  function revokePaymentAuth() {
+    clearPaymentAuth();
+    setPaymentAuth(null);
+    toast.success("Payment authorization revoked");
+  }
+
 
   useEffect(() => {
     let cancelled = false;
