@@ -37,6 +37,9 @@
   --color-ink: var(--ink);
   --color-paper: var(--paper);
   --color-rule: var(--rule);
+  --color-obsidian: var(--obsidian);
+  --color-obsidian-deep: var(--obsidian-deep);
+  --color-sky: var(--sky);
 
   --font-display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
