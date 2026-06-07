@@ -96,12 +96,6 @@ function ContactPage() {
 
         <aside className="md:col-span-5 md:pl-8 md:border-l hairline space-y-10">
           <div>
-            <div className="label-eyebrow">Office</div>
-            <p className="mt-3 leading-relaxed">
-              215 Clematis Street<br />Suite 400<br />West Palm Beach, FL 33401
-            </p>
-          </div>
-          <div>
             <div className="label-eyebrow">Phone</div>
             <p className="mt-3 font-mono">+1 (561) 555-0144</p>
           </div>
