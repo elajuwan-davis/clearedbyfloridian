@@ -38,6 +38,7 @@ import { Route as PortalInspectionsRouteImport } from './routes/portal.inspectio
 import { Route as FormsSubcontractorIntakeRouteImport } from './routes/forms.subcontractor-intake'
 import { Route as FormsPermitIntakeRouteImport } from './routes/forms.permit-intake'
 import { Route as FormsPaymentAuthorizationRouteImport } from './routes/forms.payment-authorization'
+import { Route as BuildingDeptLoginsSubmitRouteImport } from './routes/building-dept-logins.submit'
 import { Route as AdminBuildersRouteImport } from './routes/admin.builders'
 
 const ServicesRoute = ServicesRouteImport.update({
@@ -187,6 +188,12 @@ const FormsPaymentAuthorizationRoute =
     path: '/payment-authorization',
     getParentRoute: () => FormsRoute,
   } as any)
+const BuildingDeptLoginsSubmitRoute =
+  BuildingDeptLoginsSubmitRouteImport.update({
+    id: '/submit',
+    path: '/submit',
+    getParentRoute: () => BuildingDeptLoginsRoute,
+  } as any)
 const AdminBuildersRoute = AdminBuildersRouteImport.update({
   id: '/builders',
   path: '/builders',
@@ -198,7 +205,7 @@ export interface FileRoutesByFullPath {
   '/about': typeof AboutRoute
   '/admin': typeof AdminRouteWithChildren
   '/ask-victoria': typeof AskVictoriaRoute
-  '/building-dept-logins': typeof BuildingDeptLoginsRoute
+  '/building-dept-logins': typeof BuildingDeptLoginsRouteWithChildren
   '/contact': typeof ContactRoute
   '/dashboard': typeof DashboardRoute
   '/fee-calculator': typeof FeeCalculatorRoute
@@ -215,6 +222,7 @@ export interface FileRoutesByFullPath {
   '/projects': typeof ProjectsRouteWithChildren
   '/services': typeof ServicesRoute
   '/admin/builders': typeof AdminBuildersRoute
+  '/building-dept-logins/submit': typeof BuildingDeptLoginsSubmitRoute
   '/forms/payment-authorization': typeof FormsPaymentAuthorizationRoute
   '/forms/permit-intake': typeof FormsPermitIntakeRoute
   '/forms/subcontractor-intake': typeof FormsSubcontractorIntakeRoute
@@ -230,7 +238,7 @@ export interface FileRoutesByTo {
   '/about': typeof AboutRoute
   '/admin': typeof AdminRouteWithChildren
   '/ask-victoria': typeof AskVictoriaRoute
-  '/building-dept-logins': typeof BuildingDeptLoginsRoute
+  '/building-dept-logins': typeof BuildingDeptLoginsRouteWithChildren
   '/contact': typeof ContactRoute
   '/dashboard': typeof DashboardRoute
   '/fee-calculator': typeof FeeCalculatorRoute
@@ -246,6 +254,7 @@ export interface FileRoutesByTo {
   '/projects': typeof ProjectsRouteWithChildren
   '/services': typeof ServicesRoute
   '/admin/builders': typeof AdminBuildersRoute
+  '/building-dept-logins/submit': typeof BuildingDeptLoginsSubmitRoute
   '/forms/payment-authorization': typeof FormsPaymentAuthorizationRoute
   '/forms/permit-intake': typeof FormsPermitIntakeRoute
   '/forms/subcontractor-intake': typeof FormsSubcontractorIntakeRoute
@@ -262,7 +271,7 @@ export interface FileRoutesById {
   '/about': typeof AboutRoute
   '/admin': typeof AdminRouteWithChildren
   '/ask-victoria': typeof AskVictoriaRoute
-  '/building-dept-logins': typeof BuildingDeptLoginsRoute
+  '/building-dept-logins': typeof BuildingDeptLoginsRouteWithChildren
   '/contact': typeof ContactRoute
   '/dashboard': typeof DashboardRoute
   '/fee-calculator': typeof FeeCalculatorRoute
@@ -279,6 +288,7 @@ export interface FileRoutesById {
   '/projects': typeof ProjectsRouteWithChildren
   '/services': typeof ServicesRoute
   '/admin/builders': typeof AdminBuildersRoute
+  '/building-dept-logins/submit': typeof BuildingDeptLoginsSubmitRoute
   '/forms/payment-authorization': typeof FormsPaymentAuthorizationRoute
   '/forms/permit-intake': typeof FormsPermitIntakeRoute
   '/forms/subcontractor-intake': typeof FormsSubcontractorIntakeRoute
@@ -313,6 +323,7 @@ export interface FileRouteTypes {
     | '/projects'
     | '/services'
     | '/admin/builders'
+    | '/building-dept-logins/submit'
     | '/forms/payment-authorization'
     | '/forms/permit-intake'
     | '/forms/subcontractor-intake'
@@ -344,6 +355,7 @@ export interface FileRouteTypes {
     | '/projects'
     | '/services'
     | '/admin/builders'
+    | '/building-dept-logins/submit'
     | '/forms/payment-authorization'
     | '/forms/permit-intake'
     | '/forms/subcontractor-intake'
@@ -376,6 +388,7 @@ export interface FileRouteTypes {
     | '/projects'
     | '/services'
     | '/admin/builders'
+    | '/building-dept-logins/submit'
     | '/forms/payment-authorization'
     | '/forms/permit-intake'
     | '/forms/subcontractor-intake'
@@ -392,7 +405,7 @@ export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   AdminRoute: typeof AdminRouteWithChildren
   AskVictoriaRoute: typeof AskVictoriaRoute
-  BuildingDeptLoginsRoute: typeof BuildingDeptLoginsRoute
+  BuildingDeptLoginsRoute: typeof BuildingDeptLoginsRouteWithChildren
   ContactRoute: typeof ContactRoute
   DashboardRoute: typeof DashboardRoute
   FeeCalculatorRoute: typeof FeeCalculatorRoute
@@ -615,6 +628,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FormsPaymentAuthorizationRouteImport
       parentRoute: typeof FormsRoute
     }
+    '/building-dept-logins/submit': {
+      id: '/building-dept-logins/submit'
+      path: '/submit'
+      fullPath: '/building-dept-logins/submit'
+      preLoaderRoute: typeof BuildingDeptLoginsSubmitRouteImport
+      parentRoute: typeof BuildingDeptLoginsRoute
+    }
     '/admin/builders': {
       id: '/admin/builders'
       path: '/builders'
@@ -634,6 +654,17 @@ const AdminRouteChildren: AdminRouteChildren = {
 }
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
+
+interface BuildingDeptLoginsRouteChildren {
+  BuildingDeptLoginsSubmitRoute: typeof BuildingDeptLoginsSubmitRoute
+}
+
+const BuildingDeptLoginsRouteChildren: BuildingDeptLoginsRouteChildren = {
+  BuildingDeptLoginsSubmitRoute: BuildingDeptLoginsSubmitRoute,
+}
+
+const BuildingDeptLoginsRouteWithChildren =
+  BuildingDeptLoginsRoute._addFileChildren(BuildingDeptLoginsRouteChildren)
 
 interface FormsRouteChildren {
   FormsPaymentAuthorizationRoute: typeof FormsPaymentAuthorizationRoute
@@ -685,7 +716,7 @@ const rootRouteChildren: RootRouteChildren = {
   AboutRoute: AboutRoute,
   AdminRoute: AdminRouteWithChildren,
   AskVictoriaRoute: AskVictoriaRoute,
-  BuildingDeptLoginsRoute: BuildingDeptLoginsRoute,
+  BuildingDeptLoginsRoute: BuildingDeptLoginsRouteWithChildren,
   ContactRoute: ContactRoute,
   DashboardRoute: DashboardRoute,
   FeeCalculatorRoute: FeeCalculatorRoute,
