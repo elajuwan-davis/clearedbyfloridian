@@ -275,7 +275,7 @@ function CTA() {
             variant="secondary"
             className="rounded-sm h-12 px-6 bg-background text-foreground hover:bg-background/90"
           >
-            <Link to="/contact">Start a project →</Link>
+            <Link to="/contact" className="inline-flex items-center gap-2">Start a project <ArrowRight className="h-4 w-4" /></Link>
           </Button>
         </div>
       </div>
