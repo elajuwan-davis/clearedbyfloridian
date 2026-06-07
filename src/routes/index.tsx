@@ -44,52 +44,33 @@ function Hero() {
     <section className="relative border-b hairline">
       <div className="mx-auto max-w-7xl px-6 pt-28 pb-32 md:pt-40 md:pb-44">
         <div className="grid md:grid-cols-12 gap-12">
-          <div className="md:col-span-9">
-            <motion.div
-              initial={{ opacity: 0, y: 6 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              className="font-mono text-[11px] uppercase tracking-[0.22em] text-accent"
-            >
+          <div className="md:col-span-10">
+            <div className="font-mono text-[11px] uppercase tracking-[0.22em] text-accent">
               Florida Statute 553.791
-            </motion.div>
-            <motion.h1
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.08 }}
-              className="mt-10 display-serif text-[clamp(3rem,8.5vw,7.5rem)] leading-[1.02] tracking-tight text-balance"
-            >
+            </div>
+            <h1 className="mt-10 display-serif text-[clamp(3rem,8.5vw,7.5rem)] leading-[1.02] tracking-tight text-balance">
               Private-provider<br />
               permitting for the<br />
               <em className="italic font-light text-muted-foreground">Treasure Coast.</em>
-            </motion.h1>
-            <motion.p
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.25 }}
-              className="mt-10 max-w-xl font-display text-lg md:text-xl leading-relaxed text-foreground/80 text-pretty"
-            >
+            </h1>
+            <p className="mt-10 max-w-xl font-display text-lg md:text-xl leading-relaxed text-foreground/80 text-pretty">
               White-shoe counsel for expedited plan review and inspections —
               extended by Flōridian LLC to the licensed general contractors
               building our luxury pool and hardscape projects.
-            </motion.p>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.6, delay: 0.4 }}
-              className="mt-14 flex items-center gap-4"
-            >
+            </p>
+            <div className="mt-14 flex items-center gap-4">
               <div className="w-12 h-px bg-accent" />
               <span className="font-subline text-[11px] uppercase tracking-[0.22em] font-bold">
                 By invitation only
               </span>
-            </motion.div>
+            </div>
           </div>
         </div>
       </div>
     </section>
   );
 }
+
 
 
 
