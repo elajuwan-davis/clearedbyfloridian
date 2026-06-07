@@ -1,16 +1,18 @@
 import type { ReactNode } from "react";
 import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
-import { LayoutDashboard, FolderOpen, ClipboardCheck, FilePlus2, LogOut } from "lucide-react";
+import { LayoutDashboard, FolderOpen, MessageSquare, ClipboardCheck, FilePlus2, LogOut } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
 type NavItem = { to: string; label: string; icon: typeof LayoutDashboard; exact?: boolean };
 
 const portalNav: NavItem[] = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard, exact: true },
-  { to: "/portal/projects", label: "Projects", icon: FolderOpen },
+  { to: "/projects", label: "Projects", icon: FolderOpen },
+  { to: "/messages", label: "Messages", icon: MessageSquare },
   { to: "/portal/inspections", label: "Inspections", icon: ClipboardCheck },
   { to: "/portal/new-permit", label: "Submit permit", icon: FilePlus2 },
 ];
+
 
 // Mock until auth wired — shape matches profiles row
 const mockUser = {
