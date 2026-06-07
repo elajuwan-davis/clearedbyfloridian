@@ -203,8 +203,8 @@ function Process() {
     <section className="border-y hairline bg-secondary/40">
       <div className="mx-auto max-w-7xl px-6 py-28">
         <div className="label-eyebrow">Process</div>
-        <h2 className="mt-4 font-display text-4xl md:text-5xl tracking-tight max-w-2xl">
-          A workflow your superintendents will actually use.
+        <h2 className="mt-4 display-serif text-4xl md:text-6xl tracking-tight max-w-3xl">
+          A workflow your superintendents <em className="italic font-light text-muted-foreground">will actually use.</em>
         </h2>
         <div className="mt-16 grid md:grid-cols-5 gap-px bg-border border hairline">
           {steps.map((s) => (
