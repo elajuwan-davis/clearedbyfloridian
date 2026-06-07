@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { PortalShell } from "@/components/portal-shell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/select";
 import { Upload, Plus, Trash2, FileText } from "lucide-react";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/profile")({
   head: () => ({
@@ -41,6 +42,37 @@ function ProfilePage() {
   const [license] = useState({ number: "CGC1521884", type: "Certified General Contractor", expires: "2027-08-31" });
   const [pwd, setPwd] = useState({ current: "", next: "", confirm: "" });
   const [avatar, setAvatar] = useState<string | null>(null);
+
+  const [userId, setUserId] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const { data: auth } = await supabase.auth.getUser();
+      const uid = auth?.user?.id ?? null;
+      if (cancelled) return;
+      setUserId(uid);
+      if (!uid) return;
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("display_name, full_name, avatar_url, company_name, website, phone, address, language, notification_emails")
+        .eq("id", uid)
+        .maybeSingle();
+      if (cancelled || error || !data) return;
+      const d = data as Record<string, unknown>;
+      if (d.display_name || d.full_name) setDisplayName(String(d.display_name ?? d.full_name));
+      if (d.avatar_url) setAvatar(String(d.avatar_url));
+      setCompany((c) => ({
+        name: String(d.company_name ?? c.name),
+        website: String(d.website ?? c.website),
+        phone: String(d.phone ?? c.phone),
+        address: String(d.address ?? c.address),
+      }));
+      if (d.language) setLanguage(String(d.language));
+      if (Array.isArray(d.notification_emails)) setEmails(d.notification_emails as string[]);
+    })();
+    return () => { cancelled = true; };
+  }, []);
 
   function onAvatar(e: React.ChangeEvent<HTMLInputElement>) {
     const f = e.target.files?.[0];
