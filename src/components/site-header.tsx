@@ -16,10 +16,10 @@ export function SiteHeader() {
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
         <Link to="/" className="flex items-center gap-3 group">
           <LogoMark />
-          <div className="flex flex-col leading-none">
-            <span className="font-display text-base tracking-tight">Cleared</span>
-            <span className="mt-1 font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
-              by Flōridian
+          <div className="flex flex-col leading-[1]">
+            <span className="wordmark text-2xl">Cleared</span>
+            <span className="wordmark-subline mt-1">
+              by Flōridian · Exclusive to GC Clients
             </span>
           </div>
         </Link>

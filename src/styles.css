@@ -41,6 +41,8 @@
   --font-display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+  --font-wordmark: "Cormorant Garamond", "Times New Roman", serif;
+  --font-subline: "DM Sans", ui-sans-serif, system-ui, sans-serif;
 }
 
 :root {
@@ -131,6 +133,20 @@
     font-family: var(--font-mono);
     font-size: 11px;
     letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--muted-foreground);
+  }
+
+  .wordmark {
+    font-family: var(--font-wordmark);
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    font-feature-settings: "liga", "dlig";
+  }
+  .wordmark-subline {
+    font-family: var(--font-subline);
+    font-size: 10px;
+    letter-spacing: 0.2em;
     text-transform: uppercase;
     color: var(--muted-foreground);
   }

@@ -5,8 +5,8 @@ export function SiteFooter() {
     <footer className="border-t hairline mt-32">
       <div className="mx-auto max-w-7xl px-6 py-16 grid gap-12 md:grid-cols-4">
         <div className="md:col-span-2">
-          <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">by Flōridian</div>
-          <div className="mt-1 font-display text-3xl tracking-tight">Cleared</div>
+          <div className="wordmark text-6xl leading-none">Cleared</div>
+          <div className="wordmark-subline mt-2">by Flōridian · Exclusive to GC Clients</div>
           <p className="mt-4 max-w-sm text-sm text-muted-foreground">
             The private-provider permitting arm of Flōridian LLC — offered
             exclusively to active Flōridian luxury pool and hardscape clients
