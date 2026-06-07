@@ -40,7 +40,7 @@ export function PortalShell({ children }: { children: ReactNode }) {
             return (
               <Link
                 key={item.to}
-                to={item.to}
+                to={item.to as never}
                 className={`flex items-center justify-between rounded-sm px-3 py-2 text-sm transition-colors ${
                   isActive
                     ? "bg-secondary text-foreground"
