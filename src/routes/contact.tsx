@@ -56,7 +56,7 @@ function ContactPage() {
                 <Input required name="name" placeholder="Jamie Mendez" className="h-11 rounded-sm" />
               </Field>
               <Field label="GC / Company">
-                <Input required name="company" placeholder="Atlas Build Group" className="h-11 rounded-sm" />
+                <Input required name="company" placeholder="Coastline Builders Group" className="h-11 rounded-sm" />
               </Field>
               <Field label="Email">
                 <Input required type="email" name="email" placeholder="jamie@atlasbuild.com" className="h-11 rounded-sm" />

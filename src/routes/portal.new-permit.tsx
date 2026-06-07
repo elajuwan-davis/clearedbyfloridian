@@ -56,7 +56,7 @@ function NewPermit() {
             return;
           }
           toast.success("Permit submitted", {
-            description: "Project FLO-2026-0199 created. A reviewer has been assigned.",
+            description: "Project CLR-2026-0199 created. A reviewer has been assigned.",
           });
           navigate({ to: "/portal/projects" });
         }}
@@ -65,7 +65,7 @@ function NewPermit() {
         {step === 1 && (
           <div className="space-y-6">
             <Field label="Project address">
-              <Input required className="h-11 rounded-sm" placeholder="412 Hibiscus Ln, Coral Gables, FL" />
+              <Input required className="h-11 rounded-sm" placeholder="1217 S Ocean Blvd, Manalapan, FL" />
             </Field>
             <div className="grid sm:grid-cols-2 gap-6">
               <Field label="Jurisdiction">

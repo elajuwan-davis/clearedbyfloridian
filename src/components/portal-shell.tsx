@@ -68,7 +68,7 @@ export function PortalShell({ children }: { children: ReactNode }) {
             </div>
             <div className="leading-tight">
               <div className="text-sm">J. Mendez</div>
-              <div className="text-[11px] text-muted-foreground">Atlas Build Group</div>
+              <div className="text-[11px] text-muted-foreground">Coastline Builders Group</div>
             </div>
           </div>
         </div>
