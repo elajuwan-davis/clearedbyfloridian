@@ -122,7 +122,7 @@ function ServicesPreview() {
         <div className="md:col-span-4">
           <div className="label-eyebrow">Services</div>
           <h2 className="mt-4 display-serif text-4xl md:text-6xl tracking-tight text-balance">
-            What we do<br />for your GC.
+            What we do<br />for your team.
           </h2>
         </div>
         <p className="md:col-span-7 md:col-start-6 self-end text-lg text-muted-foreground text-pretty">
