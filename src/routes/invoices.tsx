@@ -108,7 +108,7 @@ function InvoicesPage() {
 
         {/* Accordion list */}
         <div className="mt-10 border border-obsidian/15 bg-white">
-          {INVOICES.map((inv) => {
+          {invoices.map((inv) => {
             const isOpen = open === inv.number;
             const t = statusTone[inv.status];
             return (
