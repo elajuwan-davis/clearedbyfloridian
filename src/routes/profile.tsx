@@ -47,10 +47,14 @@ function ProfilePage() {
 
   const [userId, setUserId] = useState<string | null>(null);
 
-  useEffect(() => { setPaymentAuth(loadPaymentAuth()); }, []);
+  useEffect(() => {
+    let cancelled = false;
+    loadPaymentAuth().then((r) => { if (!cancelled) setPaymentAuth(r); });
+    return () => { cancelled = true; };
+  }, []);
 
-  function revokePaymentAuth() {
-    clearPaymentAuth();
+  async function revokePaymentAuth() {
+    await clearPaymentAuth();
     setPaymentAuth(null);
     toast.success("Payment authorization revoked");
   }

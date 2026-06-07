@@ -89,7 +89,7 @@ function PaymentAuthPage() {
     setSigned(false);
   }
 
-  function submit() {
+  async function submit() {
     if (!form.cardholder.trim()) return toast.error("Cardholder Name is required");
     if (!form.billingAddress.trim()) return toast.error("Billing Address is required");
     const digits = form.cardNumber.replace(/\s/g, "");
