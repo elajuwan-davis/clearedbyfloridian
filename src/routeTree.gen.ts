@@ -14,6 +14,7 @@ import { Route as ProjectsRouteImport } from './routes/projects'
 import { Route as ProcessRouteImport } from './routes/process'
 import { Route as PortalRouteImport } from './routes/portal'
 import { Route as MessagesRouteImport } from './routes/messages'
+import { Route as LpoaSigningRouteImport } from './routes/lpoa-signing'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as ContactRouteImport } from './routes/contact'
@@ -49,6 +50,11 @@ const PortalRoute = PortalRouteImport.update({
 const MessagesRoute = MessagesRouteImport.update({
   id: '/messages',
   path: '/messages',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LpoaSigningRoute = LpoaSigningRouteImport.update({
+  id: '/lpoa-signing',
+  path: '/lpoa-signing',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -113,6 +119,7 @@ export interface FileRoutesByFullPath {
   '/contact': typeof ContactRoute
   '/dashboard': typeof DashboardRoute
   '/login': typeof LoginRoute
+  '/lpoa-signing': typeof LpoaSigningRoute
   '/messages': typeof MessagesRoute
   '/portal': typeof PortalRouteWithChildren
   '/process': typeof ProcessRoute
@@ -131,6 +138,7 @@ export interface FileRoutesByTo {
   '/contact': typeof ContactRoute
   '/dashboard': typeof DashboardRoute
   '/login': typeof LoginRoute
+  '/lpoa-signing': typeof LpoaSigningRoute
   '/messages': typeof MessagesRoute
   '/process': typeof ProcessRoute
   '/projects': typeof ProjectsRouteWithChildren
@@ -149,6 +157,7 @@ export interface FileRoutesById {
   '/contact': typeof ContactRoute
   '/dashboard': typeof DashboardRoute
   '/login': typeof LoginRoute
+  '/lpoa-signing': typeof LpoaSigningRoute
   '/messages': typeof MessagesRoute
   '/portal': typeof PortalRouteWithChildren
   '/process': typeof ProcessRoute
@@ -169,6 +178,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/dashboard'
     | '/login'
+    | '/lpoa-signing'
     | '/messages'
     | '/portal'
     | '/process'
@@ -187,6 +197,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/dashboard'
     | '/login'
+    | '/lpoa-signing'
     | '/messages'
     | '/process'
     | '/projects'
@@ -204,6 +215,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/dashboard'
     | '/login'
+    | '/lpoa-signing'
     | '/messages'
     | '/portal'
     | '/process'
@@ -223,6 +235,7 @@ export interface RootRouteChildren {
   ContactRoute: typeof ContactRoute
   DashboardRoute: typeof DashboardRoute
   LoginRoute: typeof LoginRoute
+  LpoaSigningRoute: typeof LpoaSigningRoute
   MessagesRoute: typeof MessagesRoute
   PortalRoute: typeof PortalRouteWithChildren
   ProcessRoute: typeof ProcessRoute
@@ -265,6 +278,13 @@ declare module '@tanstack/react-router' {
       path: '/messages'
       fullPath: '/messages'
       preLoaderRoute: typeof MessagesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/lpoa-signing': {
+      id: '/lpoa-signing'
+      path: '/lpoa-signing'
+      fullPath: '/lpoa-signing'
+      preLoaderRoute: typeof LpoaSigningRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -384,6 +404,7 @@ const rootRouteChildren: RootRouteChildren = {
   ContactRoute: ContactRoute,
   DashboardRoute: DashboardRoute,
   LoginRoute: LoginRoute,
+  LpoaSigningRoute: LpoaSigningRoute,
   MessagesRoute: MessagesRoute,
   PortalRoute: PortalRouteWithChildren,
   ProcessRoute: ProcessRoute,
