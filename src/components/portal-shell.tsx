@@ -24,10 +24,8 @@ export function PortalShell({ children }: { children: ReactNode }) {
               <span className="absolute -top-1 -right-1 h-1.5 w-1.5 bg-accent rounded-full" />
             </div>
             <div className="leading-none">
-              <div className="font-display text-base">Flōridian</div>
-              <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground mt-1">
-                Portal
-              </div>
+              <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">Cleared by</div>
+              <div className="mt-1 font-display text-base">Flōridian</div>
             </div>
           </Link>
         </div>

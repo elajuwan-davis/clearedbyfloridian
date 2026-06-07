@@ -15,10 +15,10 @@ export function SiteHeader() {
         <Link to="/" className="flex items-center gap-3 group">
           <LogoMark />
           <div className="flex flex-col leading-none">
-            <span className="font-display text-base tracking-tight">Flōridian</span>
             <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
-              Private Provider · FL
+              Cleared by
             </span>
+            <span className="mt-1 font-display text-base tracking-tight">Flōridian</span>
           </div>
         </Link>
 
