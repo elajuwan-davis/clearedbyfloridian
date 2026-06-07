@@ -10,10 +10,10 @@ export const Route = createFileRoute("/services")({
       {
         name: "description",
         content:
-          "Private plan review, third-party inspections, permit coordination, and pre-construction code review — offered exclusively to the licensed GCs building Flōridian projects.",
+          "Private plan review, third-party inspections, permit coordination, and pre-construction code review across South Florida.",
       },
       { property: "og:title", content: "Cleared Services" },
-      { property: "og:description", content: "Plan review, inspections, coordination, and pre-construction code review for Flōridian's GCs." },
+      { property: "og:description", content: "Plan review, inspections, coordination, and pre-construction code review." },
     ],
   }),
   component: ServicesPage,
@@ -24,8 +24,8 @@ function ServicesPage() {
     <MarketingShell>
       <PageHeader
         eyebrow="Services"
-        title="Four services. One contract. For the GCs we build with."
-        intro="Florida Statute 553.791 lets us act in place of the building official for plan review and inspections. We do that exclusively for the licensed general contractors delivering Flōridian's luxury pool and hardscape projects."
+        title="Four services. One contract."
+        intro="Florida Statute 553.791 lets a licensed private provider act in place of the building official for plan review and inspections. Cleared delivers all four services on a statutory clock."
       />
 
       <section className="mx-auto max-w-7xl px-4 sm:px-6 py-24 space-y-px bg-border border-x hairline">
