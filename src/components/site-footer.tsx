@@ -112,6 +112,8 @@ export function SiteFooter() {
           <span className="font-mono">FBC 2023 · 8th Edition · HVHZ</span>
         </div>
       </div>
+      </div>
+      <AppDownloadBanner />
     </footer>
   );
 }
