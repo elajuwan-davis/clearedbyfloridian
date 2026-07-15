@@ -23,11 +23,11 @@ function AppDownloadBanner() {
   });
 
   return (
-    <div className="border-b hairline bg-foreground text-background">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 py-10 flex flex-col md:flex-row items-center justify-between gap-8">
-        <div className="flex items-center gap-6">
-          <div className="bg-background p-2 rounded-sm shrink-0">
-            <svg viewBox="0 0 21 21" className="w-24 h-24" shapeRendering="crispEdges">
+    <div className="border-t hairline bg-foreground text-background">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 py-5 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="flex items-center gap-4">
+          <div className="bg-background p-1 rounded-sm shrink-0">
+            <svg viewBox="0 0 21 21" className="w-12 h-12" shapeRendering="crispEdges">
               {cells.map((on, i) => on ? (
                 <rect
                   key={i}
@@ -41,48 +41,35 @@ function AppDownloadBanner() {
             </svg>
           </div>
           <div>
-            <div className="font-mono text-[11px] uppercase tracking-[0.22em] opacity-60">
+            <div className="font-mono text-[10px] uppercase tracking-[0.22em] opacity-60">
               Mobile
             </div>
-            <div className="mt-2 display-serif text-3xl md:text-4xl tracking-tight">
-              Download our app.
+            <div className="font-display text-base leading-tight">
+              Download our app
             </div>
-            <p className="mt-2 text-sm opacity-70 max-w-sm">
-              Scan the code to install Cleared on iOS or Android — permits,
-              inspections, and messages from the jobsite.
-            </p>
           </div>
         </div>
-        <div className="flex gap-3">
+        <div className="flex gap-2">
           <a
             href="#"
-            className="flex items-center gap-3 border border-background/25 hover:bg-background/10 px-5 py-3 rounded-sm transition-colors"
+            className="flex items-center gap-2 border border-background/25 hover:bg-background/10 px-3 py-1.5 rounded-sm transition-colors"
           >
-            <Apple className="h-6 w-6" />
-            <div className="text-left">
-              <div className="font-mono text-[9px] uppercase tracking-widest opacity-60">
-                Download on the
-              </div>
-              <div className="font-display text-sm">App Store</div>
-            </div>
+            <Apple className="h-4 w-4" />
+            <span className="font-display text-xs">App Store</span>
           </a>
           <a
             href="#"
-            className="flex items-center gap-3 border border-background/25 hover:bg-background/10 px-5 py-3 rounded-sm transition-colors"
+            className="flex items-center gap-2 border border-background/25 hover:bg-background/10 px-3 py-1.5 rounded-sm transition-colors"
           >
-            <Smartphone className="h-6 w-6" />
-            <div className="text-left">
-              <div className="font-mono text-[9px] uppercase tracking-widest opacity-60">
-                Get it on
-              </div>
-              <div className="font-display text-sm">Google Play</div>
-            </div>
+            <Smartphone className="h-4 w-4" />
+            <span className="font-display text-xs">Google Play</span>
           </a>
         </div>
       </div>
     </div>
   );
 }
+
 
 export function SiteFooter() {
   return (
