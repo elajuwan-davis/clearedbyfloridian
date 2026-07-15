@@ -74,7 +74,6 @@ function AppDownloadBanner() {
 export function SiteFooter() {
   return (
     <footer className="border-t hairline mt-32">
-      <AppDownloadBanner />
       <div className="mx-auto max-w-7xl px-4 sm:px-6 py-16 grid gap-12 md:grid-cols-4">
         <div className="md:col-span-2">
           <div className="wordmark text-6xl leading-none">Cleared</div>
