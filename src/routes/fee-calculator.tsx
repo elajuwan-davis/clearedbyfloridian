@@ -4,8 +4,17 @@ import { PortalShell } from "@/components/portal-shell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Plus, Trash2, AlertTriangle, Search, FileDown } from "lucide-react";
+import {
+  Plus,
+  Trash2,
+  AlertTriangle,
+  Search,
+  FileDown,
+  Share2,
+  Download,
+} from "lucide-react";
 import contestReport from "@/assets/fee-contest-report.pdf.asset.json";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 
 
 export const Route = createFileRoute("/fee-calculator")({
@@ -72,6 +81,8 @@ function FeeCalculatorPage() {
   const [valueStr, setValueStr] = useState("");
   const [ppOnFile, setPpOnFile] = useState(true);
   const [rows, setRows] = useState<FeeRow[]>([{ id: uid(), description: "", amount: "" }]);
+  const [reportOpen, setReportOpen] = useState(false);
+  const [shareStatus, setShareStatus] = useState("Share");
 
 
 
@@ -97,12 +108,27 @@ function FeeCalculatorPage() {
     return MUNICIPALITIES.filter((m) => m.toLowerCase().includes(q)).slice(0, 12);
   }, [muniQuery]);
 
-  const canGenerate = permitNo.trim().length > 0 && rows.some((r) => Number(r.amount) > 0);
+  const reportUrl = contestReport.url;
 
   const updateRow = (id: string, patch: Partial<FeeRow>) =>
     setRows((rs) => rs.map((r) => (r.id === id ? { ...r, ...patch } : r)));
   const addRow = () => setRows((rs) => [...rs, { id: uid(), description: "", amount: "" }]);
   const removeRow = (id: string) => setRows((rs) => rs.filter((r) => r.id !== id));
+
+  const shareReport = async () => {
+    const absoluteUrl = new URL(reportUrl, window.location.origin).toString();
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: "Permit Fee Contest Report", url: absoluteUrl });
+      } else {
+        await navigator.clipboard.writeText(absoluteUrl);
+        setShareStatus("Copied");
+        window.setTimeout(() => setShareStatus("Share"), 1600);
+      }
+    } catch {
+      setShareStatus("Share");
+    }
+  };
 
 
 
@@ -242,23 +268,13 @@ function FeeCalculatorPage() {
             </div>
 
             <Button
+              type="button"
               variant="dark"
-              asChild
-              disabled={!canGenerate}
+              onClick={() => setReportOpen(true)}
               className="rounded-[3px] gap-2"
             >
-              <a
-                href={canGenerate ? contestReport.url : undefined}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-disabled={!canGenerate}
-                onClick={(e) => {
-                  if (!canGenerate) e.preventDefault();
-                }}
-              >
-                <FileDown className="h-4 w-4" />
-                Generate Contest Letter
-              </a>
+              <FileDown className="h-4 w-4" />
+              Generate Contest Letter
             </Button>
 
 
@@ -325,9 +341,181 @@ function FeeCalculatorPage() {
         </div>
       </div>
 
+      <Dialog open={reportOpen} onOpenChange={setReportOpen}>
+        <DialogContent className="max-w-[min(1040px,calc(100vw-24px))] max-h-[92vh] overflow-hidden border-0 p-0 rounded-[3px] bg-paper text-obsidian">
+          <div className="flex items-center justify-between gap-4 border-b border-obsidian/10 px-4 sm:px-6 py-4" style={{ backgroundColor: "var(--obsidian)", color: "var(--paper)" }}>
+            <div>
+              <div className="eyebrow" style={{ color: "color-mix(in oklab, var(--paper) 58%, transparent)" }}>Contest Report Preview</div>
+              <DialogTitle className="font-display text-2xl font-normal tracking-normal">Permit Fee Contest Report</DialogTitle>
+            </div>
+            <div className="mr-9 flex items-center gap-2">
+              <Button asChild variant="ghost" size="sm" className="rounded-[3px] border border-white/20 text-paper hover:bg-white/10 hover:text-paper">
+                <a href={reportUrl} download="Fee_Contest_Report_revised-2.pdf">
+                  <Download className="h-4 w-4" />
+                  Download
+                </a>
+              </Button>
+              <Button type="button" variant="ghost" size="sm" onClick={shareReport} className="rounded-[3px] border border-white/20 text-paper hover:bg-white/10 hover:text-paper">
+                <Share2 className="h-4 w-4" />
+                {shareStatus}
+              </Button>
+            </div>
+          </div>
+
+          <div className="max-h-[calc(92vh-88px)] overflow-y-auto bg-concrete/25 px-3 py-4 sm:px-6 sm:py-6">
+            <ContestReport />
+          </div>
+        </DialogContent>
+      </Dialog>
 
 
     </PortalShell>
+  );
+}
+
+function ContestReport() {
+  return (
+    <article className="mx-auto max-w-[820px] space-y-4 text-obsidian">
+      <section className="border border-obsidian/10 bg-white p-5 sm:p-8 rounded-[3px] shadow-sm">
+        <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-obsidian/55">
+          SAMPLE OUTPUT — DEMO DATA FOR ILLUSTRATION ONLY
+        </p>
+        <p className="mt-1 text-xs text-obsidian/55">
+          Not a real permit, municipality, or client. Generated to show calculator + letter output.
+        </p>
+
+        <h2 className="display-serif mt-7 text-4xl text-obsidian">Permit Fee Calculator — Results</h2>
+        <dl className="mt-5 grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+          <ReportField label="Permit Number" value="CLR-2026-0142" />
+          <ReportField label="Municipality" value="Palm Beach County Building Division" />
+          <ReportField label="Construction Value" value="$4,125,000" />
+          <ReportField label="Private Provider on File" value="Yes" />
+        </dl>
+
+        <div className="mt-6 overflow-x-auto border border-obsidian/10 rounded-[3px]">
+          <table className="min-w-full border-collapse text-left text-xs sm:text-sm">
+            <thead style={{ backgroundColor: "var(--obsidian)", color: "var(--paper)" }}>
+              <tr>
+                <th className="px-3 py-3 font-medium">Fee Line Item</th>
+                <th className="px-3 py-3 font-medium">Standard Fee</th>
+                <th className="px-3 py-3 font-medium">Correct Fee (w/ Provider)</th>
+                <th className="px-3 py-3 font-medium">Reduction Applied</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-obsidian/10">
+              <ReportFeeRow item="Building Permit Fee" standard="$22,000.00" correct="$18,700.00" reduction="15% (provider)" />
+              <ReportFeeRow item="Plan Review Fee" standard="$6,000.00" correct="$5,100.00" reduction="15% (provider)" />
+              <ReportFeeRow item="Technology Surcharge (statutory)" standard="$1,500.00" correct="$1,500.00" reduction="None" />
+              <ReportFeeRow item="DBPR / Building Code Fund Fee (statutory)" standard="$500.00" correct="$500.00" reduction="None" />
+              <ReportFeeRow item="TOTAL" standard="$30,000.00" correct="$25,800.00" reduction="" strong />
+            </tbody>
+          </table>
+        </div>
+
+        <h3 className="mt-7 font-mono text-[11px] uppercase tracking-[0.18em] text-obsidian/65">Calculated Results</h3>
+        <div className="mt-3 border border-obsidian/10 rounded-[3px] divide-y divide-obsidian/10 text-sm">
+          <ReportResult label="Expected County Fee (municipality's stated private-provider rate: 15%)" value="$25,800.00" />
+          <ReportResult label="Total Charged on Invoice" value="$30,000.00" />
+          <ReportResult label="Discrepancy (Overcharged)" value="$4,200.00" alert />
+        </div>
+
+        <p className="mt-5 text-sm leading-7 text-obsidian/75">
+          Under Florida Statute §553.791(2)(b), when a licensed private provider performs plan review and/or inspections in lieu of the local building department, the municipality is required to reduce its plan review and inspection-related fees to reflect the cost it did not incur. Statutory pass-through surcharges (e.g., DBPR/Building Code fund fees, technology surcharges) are unaffected because the municipality still incurs and remits those regardless of who performs the review.
+        </p>
+
+        <div className="mt-5 border-l-4 border-sky bg-sky/10 p-4 text-sm leading-7 text-obsidian/75">
+          Note on the reduction percentage: F.S. §553.791(2)(b) itself does not set a flat statewide percentage — it requires the fee to reflect the municipality's actual cost savings, and the specific rate is set by each municipality's own fee ordinance. 15% is used here as a realistic placeholder. For example, the City of Boca Raton's published fee schedule sets its standard Building Permit fee at 1.60% of valuation, with a private-provider-inspection carve-out of 1.45% (roughly a 9% reduction on that line) — a different number and structure than a neighboring city might use. In production, the calculator should look up and quote the target municipality's actual fee-schedule or ordinance language for the permit's jurisdiction, rather than applying one fixed percentage across all cities.
+        </div>
+      </section>
+
+      <section className="border border-obsidian/10 bg-white p-5 sm:p-8 rounded-[3px] shadow-sm">
+        <h2 className="font-mono text-[11px] uppercase tracking-[0.18em] text-obsidian/55">Generated Contest Letter</h2>
+        <div className="mt-6 space-y-5 text-sm leading-7 text-obsidian/78">
+          <p>
+            Meridian Permit Solutions, LLC<br />
+            Permit Expediting &amp; Private Provider Compliance<br />
+            permits@meridianpermits.com | (561) 555-0148
+          </p>
+          <p>July 16, 2026</p>
+          <p>
+            Palm Beach County Building Division<br />
+            Permit Coordinator<br />
+            2300 N Jog Rd, West Palm Beach, FL 33411<br />
+            permits@pbcgov.org
+          </p>
+          <p className="font-medium text-obsidian">
+            RE: Fee Dispute — Permit No. CLR-2026-0142 | 4521 Ocean Ridge Way, West Palm Beach, FL 33411
+          </p>
+          <p>Dear Permit Coordinator,</p>
+          <p>
+            Meridian Permit Solutions, LLC (&quot;Meridian&quot;) represents the permit holder of record for the above-referenced project. We are writing to formally contest the fee assessment issued on this permit, which reflects 100% of the standard municipal fee schedule despite the project's use of a licensed private provider for plan review and inspections.
+          </p>
+          <p>
+            The invoice as issued charges $30,000.00 in total municipal fees. Based on Palm Beach County's published private-provider fee reduction of 15% and the construction value of $4,125,000, the correct fee is $25,800.00. This is a discrepancy of $4,200.00.
+          </p>
+
+          <h3 className="pt-2 font-mono text-[11px] uppercase tracking-[0.18em] text-obsidian/65">Legal Basis for This Dispute</h3>
+          <p>
+            Florida Statute Section 553.791(2)(b) provides that when a permit applicant uses a licensed private provider in lieu of the local building department for plan review and/or required inspections, the local jurisdiction must reduce its permit fees accordingly, because the jurisdiction is not incurring the cost of performing that work itself. The specific reduction percentage is established by the jurisdiction's own fee ordinance; here, that ordinance sets the private-provider reduction at 15% of the applicable Building Permit and Plan Review line items. The statute permits the local jurisdiction to retain only a reasonable administrative fee, which must be based on the actual cost incurred for clerical and supervisory assistance, and any statutory pass-through fees that apply regardless of who performs the review.
+          </p>
+          <p>
+            The current invoice applies no such reduction to the Building Permit Fee or the Plan Review Fee, both of which correspond directly to work performed by the private provider rather than County staff. Only the statutory pass-through fees are appropriately unaffected by the private-provider designation.
+          </p>
+
+          <h3 className="pt-2 font-mono text-[11px] uppercase tracking-[0.18em] text-obsidian/65">Requested Action</h3>
+          <p>Meridian respectfully requests that the Building Division:</p>
+          <ol className="list-decimal space-y-3 pl-5">
+            <li>
+              Revise the invoice for Permit No. CLR-2026-0142 to reflect the corrected total of $25,800.00, consistent with the private-provider fee reduction required under F.S. §553.791(2)(b) and the County's own fee ordinance;
+            </li>
+            <li>
+              Provide a written itemized breakdown of any fees the Division maintains are properly chargeable at the full standard rate, together with the basis for that determination; and
+            </li>
+            <li>
+              Confirm the revised invoice amount in writing so that payment can be remitted promptly and permit issuance is not delayed.
+            </li>
+          </ol>
+          <p>
+            We appreciate the Division's attention to this matter and are prepared to provide any additional documentation needed to support prompt resolution. Please direct correspondence to permits@meridianpermits.com or (561) 555-0148.
+          </p>
+          <p>Respectfully,</p>
+          <div className="pt-3">
+            <p className="display-serif text-3xl text-obsidian">Alex Rivera</p>
+            <p>Permit Consultant, Meridian Permit Solutions, LLC</p>
+          </div>
+        </div>
+      </section>
+    </article>
+  );
+}
+
+function ReportField({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="border border-obsidian/10 bg-paper-warm/40 p-3 rounded-[3px]">
+      <dt className="font-mono text-[10px] uppercase tracking-[0.16em] text-obsidian/50">{label}</dt>
+      <dd className="mt-1 font-medium text-obsidian">{value}</dd>
+    </div>
+  );
+}
+
+function ReportFeeRow({ item, standard, correct, reduction, strong = false }: { item: string; standard: string; correct: string; reduction: string; strong?: boolean }) {
+  const className = strong ? "px-3 py-3 font-semibold text-obsidian" : "px-3 py-3 text-obsidian/75";
+  return (
+    <tr>
+      <td className={className}>{item}</td>
+      <td className={className}>{standard}</td>
+      <td className={className}>{correct}</td>
+      <td className={className}>{reduction}</td>
+    </tr>
+  );
+}
+
+function ReportResult({ label, value, alert = false }: { label: string; value: string; alert?: boolean }) {
+  return (
+    <div className="flex flex-col gap-1 p-3 sm:flex-row sm:items-center sm:justify-between">
+      <span className="text-obsidian/68">{label}</span>
+      <span className="font-mono font-semibold tabular-nums" style={{ color: alert ? "var(--accent)" : "var(--obsidian)" }}>{value}</span>
+    </div>
   );
 }
 
