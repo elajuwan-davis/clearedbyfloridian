@@ -188,6 +188,19 @@ export function PortalShell({ children }: { children: ReactNode }) {
   useEffect(() => {
     let cancelled = false;
     const shouldProtect = isProtectedPortalPath(pathname);
+
+    const hasDemo = (() => {
+      try {
+        return localStorage.getItem("cleared_demo_session") === "1";
+      } catch {
+        return false;
+      }
+    })();
+    if (hasDemo) {
+      setAuthState("authed");
+      return;
+    }
+
     supabase.auth.getSession().then(({ data }) => {
       if (cancelled) return;
       if (!data.session) {
@@ -217,9 +230,15 @@ export function PortalShell({ children }: { children: ReactNode }) {
 
   async function handleSignOut() {
     signingOutRef.current = true;
+    try {
+      localStorage.removeItem("cleared_demo_session");
+    } catch {
+      /* ignore */
+    }
     await supabase.auth.signOut();
     navigate({ to: "/", replace: true });
   }
+
 
   if (authState !== "authed") {
     return (
