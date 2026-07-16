@@ -104,9 +104,8 @@ function FeeCalculatorPage() {
   const addRow = () => setRows((rs) => [...rs, { id: uid(), description: "", amount: "" }]);
   const removeRow = (id: string) => setRows((rs) => rs.filter((r) => r.id !== id));
 
-  function openContestReport() {
-    window.open(contestReport.url, "_blank", "noopener,noreferrer");
-  }
+
+
 
 
   return (
