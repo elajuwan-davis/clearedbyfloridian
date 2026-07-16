@@ -4,8 +4,9 @@ import { PortalShell } from "@/components/portal-shell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { Plus, Trash2, AlertTriangle, Copy, Check, Search } from "lucide-react";
+import { Plus, Trash2, AlertTriangle, Search, FileDown } from "lucide-react";
+import contestReport from "@/assets/fee-contest-report.pdf.asset.json";
+
 
 export const Route = createFileRoute("/fee-calculator")({
   head: () => ({
