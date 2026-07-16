@@ -342,7 +342,7 @@ function FeeCalculatorPage() {
       </div>
 
       <Dialog open={reportOpen} onOpenChange={setReportOpen}>
-        <DialogContent className="max-w-[min(1040px,calc(100vw-24px))] max-h-[92vh] overflow-hidden border-0 p-0 rounded-[3px] bg-paper text-obsidian">
+        <DialogContent className="max-w-[min(1040px,calc(100vw-24px))] max-h-[92vh] overflow-hidden border-0 p-0 rounded-[3px] bg-paper text-paper">
           <div className="flex items-center justify-between gap-4 border-b border-obsidian/10 px-4 sm:px-6 py-4" style={{ backgroundColor: "var(--obsidian)", color: "var(--paper)" }}>
             <div>
               <div className="eyebrow" style={{ color: "color-mix(in oklab, var(--paper) 58%, transparent)" }}>Contest Report Preview</div>
