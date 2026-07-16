@@ -104,9 +104,8 @@ function FeeCalculatorPage() {
   const addRow = () => setRows((rs) => [...rs, { id: uid(), description: "", amount: "" }]);
   const removeRow = (id: string) => setRows((rs) => rs.filter((r) => r.id !== id));
 
-  function openContestReport() {
-    window.open(contestReport.url, "_blank", "noopener,noreferrer");
-  }
+
+
 
 
   return (
@@ -244,13 +243,24 @@ function FeeCalculatorPage() {
 
             <Button
               variant="dark"
+              asChild
               disabled={!canGenerate}
-              onClick={openContestReport}
               className="rounded-[3px] gap-2"
             >
-              <FileDown className="h-4 w-4" />
-              Generate Contest Letter
+              <a
+                href={canGenerate ? contestReport.url : undefined}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-disabled={!canGenerate}
+                onClick={(e) => {
+                  if (!canGenerate) e.preventDefault();
+                }}
+              >
+                <FileDown className="h-4 w-4" />
+                Generate Contest Letter
+              </a>
             </Button>
+
 
           </div>
 

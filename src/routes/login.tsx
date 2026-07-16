@@ -28,6 +28,19 @@ function LoginPage() {
     e.preventDefault();
     setError(null);
     setLoading(true);
+
+    // Demo credential bypass — matches showcased builder account
+    if (email.trim().toLowerCase() === "user@cleared.com" && password === "Cleared") {
+      try {
+        localStorage.setItem("cleared_demo_session", "1");
+      } catch {
+        /* ignore */
+      }
+      setLoading(false);
+      navigate({ to: "/dashboard", replace: true });
+      return;
+    }
+
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     setLoading(false);
     if (error) {
@@ -36,6 +49,7 @@ function LoginPage() {
     }
     navigate({ to: "/portal", replace: true });
   }
+
 
   return (
     <div className="min-h-screen grid grid-cols-1 lg:grid-cols-2 bg-background">
