@@ -10,10 +10,12 @@ import {
   Sparkle,
   BookOpen,
   Calculator,
+  ShieldCheck,
   LogOut,
   Menu,
   User,
 } from "lucide-react";
+
 
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { supabase } from "@/integrations/supabase/client";
@@ -30,9 +32,10 @@ const portalNav: NavItem[] = [
   { to: "/ask-victoria", label: "Ask Victoria", icon: Sparkle },
   { to: "/fee-calculator", label: "Fee Calculator", icon: Calculator },
   { to: "/project-guides", label: "Project Guides", icon: BookOpen },
-
+  { to: "/insurance", label: "Insurance", icon: ShieldCheck },
   { to: "/profile", label: "Profile", icon: User },
 ];
+
 
 const protectedPortalPrefixes = [
   "/dashboard",
@@ -45,6 +48,8 @@ const protectedPortalPrefixes = [
   "/ask-victoria",
   "/project-guides",
   "/fee-calculator",
+  "/insurance",
+
   "/admin",
   "/projects",
   "/portal",
