@@ -72,8 +72,8 @@ function FeeCalculatorPage() {
   const [valueStr, setValueStr] = useState("");
   const [ppOnFile, setPpOnFile] = useState(true);
   const [rows, setRows] = useState<FeeRow[]>([{ id: uid(), description: "", amount: "" }]);
-  const [letterOpen, setLetterOpen] = useState(false);
-  const [copied, setCopied] = useState(false);
+
+
 
   const value = Number(valueStr) || 0;
   const expected = useMemo(() => value * 0.015 * (ppOnFile ? 0.5 : 1), [value, ppOnFile]);
@@ -104,57 +104,10 @@ function FeeCalculatorPage() {
   const addRow = () => setRows((rs) => [...rs, { id: uid(), description: "", amount: "" }]);
   const removeRow = (id: string) => setRows((rs) => rs.filter((r) => r.id !== id));
 
-  const letter = useMemo(() => {
-    const today = new Date().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
-    const next = new Date();
-    do { next.setDate(next.getDate() + 1); } while (next.getDay() === 0 || next.getDay() === 6);
-    const nextBiz = next.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
-    const feeLines = rows
-      .filter((r) => Number(r.amount) > 0)
-      .map((r) => `  • ${r.description || "(unlabeled)"} — ${fmt(Number(r.amount))}`)
-      .join("\n");
-    return `${today}
-
-${muni || "[Municipality Name]"} Building Department
-
-Re: Permit No. ${permitNo} | ${muni || "[Municipality]"} | Private Provider Fee Inquiry
-
-To Whom It May Concern:
-
-We are writing on behalf of the permit applicant regarding the fee assessment on Permit No. ${permitNo}. We have identified a potential discrepancy between the fees assessed and those required under Florida Statute §553.791(2)(b).
-
-FEES ASSESSED:
-${feeLines}
-  Total charged: ${fmt(totalCharged)}
-
-EXPECTED FEE (with Private Provider):
-Expected permit fee: ${fmt(expected)}
-Basis: ${fmt(value)} × 1.5% × 50% private provider reduction per FS §553.791(2)(b)
-
-DISCREPANCY: ${fmt(Math.max(0, discrepancy))}
-
-Under F.S. §553.791(2)(b), when a licensed private provider performs plan review and/or inspections, the local government must reduce the building permit fee accordingly. The statutory review clock under F.S. §553.791 is currently running and is not tolled by this inquiry.
-
-We respectfully request: (1) confirmation that the private provider fee reduction was applied to this permit, and (2) a complete itemized fee breakdown showing each component and the basis for calculation.
-
-We would appreciate a response no later than close of business ${nextBiz}.
-
-Respectfully,
-
-Cleared by Flōridian
-Private Provider Services
-permits@floridianinc.com`;
-  }, [permitNo, muni, rows, totalCharged, expected, value, discrepancy]);
-
-  async function copyLetter() {
-    try {
-      await navigator.clipboard.writeText(letter);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 1800);
-    } catch {
-      /* ignore */
-    }
+  function openContestReport() {
+    window.open(contestReport.url, "_blank", "noopener,noreferrer");
   }
+
 
   return (
     <PortalShell>
