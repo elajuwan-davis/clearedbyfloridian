@@ -245,11 +245,13 @@ function FeeCalculatorPage() {
             <Button
               variant="dark"
               disabled={!canGenerate}
-              onClick={() => setLetterOpen(true)}
-              className="rounded-[3px]"
+              onClick={openContestReport}
+              className="rounded-[3px] gap-2"
             >
+              <FileDown className="h-4 w-4" />
               Generate Contest Letter
             </Button>
+
           </div>
 
           {/* Results panel */}
@@ -313,26 +315,8 @@ function FeeCalculatorPage() {
         </div>
       </div>
 
-      {/* Letter modal */}
-      <Dialog open={letterOpen} onOpenChange={setLetterOpen}>
-        <DialogContent className="max-w-2xl rounded-[3px]">
-          <DialogHeader>
-            <DialogTitle className="display-serif text-2xl">Contest Letter — Private Provider Fee Inquiry</DialogTitle>
-          </DialogHeader>
-          <pre className="max-h-[60vh] overflow-y-auto whitespace-pre-wrap border border-obsidian/15 bg-paper-warm/60 p-5 text-sm leading-relaxed text-obsidian font-sans rounded-[3px]">
-{letter}
-          </pre>
-          <DialogFooter className="gap-2">
-            <Button variant="outline" onClick={() => setLetterOpen(false)} className="rounded-[3px]">
-              Close
-            </Button>
-            <Button variant="dark" onClick={copyLetter} className="rounded-[3px] gap-2">
-              {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
-              {copied ? "Copied" : "Copy to clipboard"}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+
+
     </PortalShell>
   );
 }
