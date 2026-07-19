@@ -22,6 +22,9 @@ import {
 
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { supabase } from "@/integrations/supabase/client";
+import { useExpirationAlerts } from "@/hooks/use-expiration-alerts";
+import { NotificationBell } from "@/components/notification-bell";
+import type { Alert } from "@/lib/expiration-alerts";
 
 type AlertKey = "my-permits" | "request-coi" | "sub-insurance";
 type NavItem = { to: string; label: string; icon: typeof LayoutDashboard; exact?: boolean; alertKey?: AlertKey };
