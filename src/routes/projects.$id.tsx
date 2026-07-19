@@ -54,7 +54,8 @@ export const Route = createFileRoute("/projects/$id")({
   component: ProjectDetailPage,
 });
 
-import { toneClass, type BadgeTone } from "@/lib/status-badges";
+import { toneClass, projectStatusMeta, type BadgeTone } from "@/lib/status-badges";
+import { PROJECTS as SEED_PROJECTS, fullAddress } from "@/lib/projects-data";
 type Tone = BadgeTone;
 
 
@@ -79,107 +80,56 @@ type Project = {
   fees: Array<{ id: string; label: string; sublabel: string; amount_cents: number; status: { label: string; tone: Tone }; invoice_date: string }>;
 };
 
-const PROJECTS: Record<string, Project> = {
-  "1": {
-    id: "1",
-    permit_no: "CLR-2026-0142",
-    name: "Ocean Ridge Estate",
-    address: "1247 Banyan Trail",
-    city: "Ocean Ridge",
-    county: "Palm Beach",
-    parcel: "12-43-46-04-01-000-0140",
-    license_type: "CGC — Certified General Contractor",
-    gc: "Coastline Builders Group",
-    value_cents: 412_500_000,
-    permit_types: ["Building", "Electrical", "Plumbing"],
-    status: { label: "In review", tone: "amber" },
-    submitted_at: "May 28, 2026",
-    documents: [
-      { id: "d1", label: "Construction Plans", filename: "ocean-ridge-plans-r3.pdf", size_kb: 18420, uploaded_at: "May 28, 2026" },
-      { id: "d2", label: "Boundary Survey", filename: "survey-1247-banyan.pdf", size_kb: 1240, uploaded_at: "May 28, 2026" },
-      { id: "d3", label: "Notice of Commencement", filename: "noc-recorded-PB-2026-04421.pdf", size_kb: 380, uploaded_at: "May 29, 2026" },
-      { id: "d4", label: "Energy Calculations", filename: "energy-calcs-FBC.pdf", size_kb: 920, uploaded_at: "May 30, 2026" },
-    ],
-    messages: [
-      { id: "m1", author: "Marcus Hale", role: "GC · Coastline Builders Group", at: "May 28, 2026 · 9:14 AM", body: "Filing submitted. Plans are R3, signed and sealed by Atelier Vance." },
-      { id: "m2", author: "Cleared", role: "Private Provider", from_cleared: true, at: "May 28, 2026 · 11:02 AM", body: "Affidavit filed with Palm Beach County. Statutory clock started — permit or written citation due by June 11." },
-      { id: "m3", author: "Cleared", role: "Plan Review", from_cleared: true, at: "June 1, 2026 · 2:48 PM", body: "Plan review complete. Minor structural notation on Sheet S-201 — see Correction Round 1." },
-      { id: "m4", author: "Marcus Hale", role: "GC · Coastline Builders Group", at: "June 3, 2026 · 8:22 AM", body: "Atelier returning revised S-201 tomorrow. Will upload upon receipt." },
-    ],
-    history: [
-      { id: "h1", label: "Project created", at: "May 27, 2026 · 4:11 PM", done: true },
-      { id: "h2", label: "LPOA executed", at: "May 27, 2026 · 4:18 PM", note: "Affidavit of agency signed by qualifying agent", done: true },
-      { id: "h3", label: "Affidavit filed with AHJ", at: "May 28, 2026 · 11:02 AM", note: "Palm Beach County — 10 business day clock started", done: true },
-      { id: "h4", label: "Fees invoiced", at: "May 28, 2026 · 11:04 AM", done: true },
-      { id: "h5", label: "Plan review complete", at: "June 1, 2026 · 2:48 PM", note: "1 correction round opened", done: true },
-      { id: "h6", label: "Awaiting GC correction response", at: "In progress", done: false },
-      { id: "h7", label: "Resubmittal to county", at: "Pending", done: false },
-      { id: "h8", label: "Permit issued", at: "Pending", done: false },
-    ],
-    corrections: [
-      {
-        id: "c1",
-        round: 1,
-        opened_at: "June 1, 2026",
-        items: [
-          "Sheet S-201 — clarify beam B-12 connection detail at column line C/4 per FBC 2306.2",
-          "Sheet E-301 — confirm AFCI protection for bedroom branch circuits per NEC 210.12(A)",
-        ],
-        status: { label: "Open · 48-hour clock", tone: "oxblood" },
-      },
-    ],
-    fees: [
-      { id: "f1", label: "Permitting Fee", sublabel: "Construction value × 1.5%", amount_cents: 6_187_500, status: { label: "Invoiced", tone: "sky" }, invoice_date: "May 28, 2026" },
-      { id: "f2", label: "Private Provider & Admin Fee", sublabel: "Flat statutory administration", amount_cents: 885_600, status: { label: "Invoiced", tone: "sky" }, invoice_date: "May 28, 2026" },
-    ],
-  },
-  "2": {
-    id: "2",
-    permit_no: "CLR-2026-0138",
-    name: "Jupiter Island Residence",
-    address: "88 Beach Rd",
-    city: "Jupiter Island",
-    county: "Martin",
-    parcel: "33-40-42-04-000-000-0220",
-    license_type: "CGC — Certified General Contractor",
-    gc: "Coastline Builders Group",
-    value_cents: 687_200_000,
-    permit_types: ["Building", "Mechanical"],
-    status: { label: "Corrections required", tone: "oxblood" },
-    submitted_at: "May 21, 2026",
-    documents: [
-      { id: "d1", label: "Construction Plans", filename: "jupiter-island-plans-r2.pdf", size_kb: 22140, uploaded_at: "May 21, 2026" },
-      { id: "d2", label: "Boundary Survey", filename: "survey-88-beach.pdf", size_kb: 1410, uploaded_at: "May 21, 2026" },
-    ],
-    messages: [
-      { id: "m1", author: "Cleared", role: "Plan Review", from_cleared: true, at: "May 26, 2026 · 3:10 PM", body: "Plan review complete — 4 items requiring response. See Round 1." },
-    ],
-    history: [
-      { id: "h1", label: "Affidavit filed", at: "May 21, 2026", done: true },
-      { id: "h2", label: "Fees invoiced", at: "May 21, 2026", done: true },
-      { id: "h3", label: "Plan review", at: "May 26, 2026", done: true },
-      { id: "h4", label: "Awaiting corrections", at: "In progress", done: false },
-    ],
-    corrections: [
-      {
-        id: "c1",
-        round: 1,
-        opened_at: "May 26, 2026",
-        items: [
-          "Sheet A-101 — dimension string at east elevation",
-          "Sheet M-201 — equipment schedule mismatch w/ load calcs",
-          "Energy compliance form FL-ECC missing signature page",
-          "Wind load report — confirm Risk Category II per ASCE 7-22",
-        ],
-        status: { label: "Open · 48-hour clock", tone: "oxblood" },
-      },
-    ],
-    fees: [
-      { id: "f1", label: "Permitting Fee", sublabel: "Construction value × 1.5%", amount_cents: 10_308_000, status: { label: "Invoiced", tone: "sky" }, invoice_date: "May 21, 2026" },
-      { id: "f2", label: "Private Provider & Admin Fee", sublabel: "Flat statutory administration", amount_cents: 885_600, status: { label: "Paid", tone: "emerald" }, invoice_date: "May 21, 2026" },
-    ],
-  },
-};
+function slugify(s: string) {
+  return s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+}
+
+const PROJECTS: Record<string, Project> = Object.fromEntries(
+  SEED_PROJECTS.map((p) => {
+    const meta = projectStatusMeta[p.status];
+    const slug = slugify(p.name);
+    const feePermit = Math.round(p.value_cents * 0.015);
+    const proj: Project = {
+      id: p.id,
+      permit_no: p.permit_no,
+      name: p.name,
+      address: p.address,
+      city: p.city,
+      county: p.county,
+      parcel: `${p.county.slice(0, 2).toUpperCase()}-2026-${String(4400 + Number(p.id)).slice(-4)}`,
+      license_type: "CGC — Certified General Contractor",
+      gc: p.client,
+      value_cents: p.value_cents,
+      permit_types: p.permit_types,
+      status: { label: meta.label, tone: meta.tone },
+      submitted_at: p.submitted_at,
+      documents: [
+        { id: "d1", label: "Construction Plans", filename: `${slug}-plans.pdf`, size_kb: 12400, uploaded_at: p.submitted_at },
+        { id: "d2", label: "Boundary Survey", filename: `${slug}-survey.pdf`, size_kb: 1180, uploaded_at: p.submitted_at },
+        { id: "d3", label: "Notice of Commencement", filename: `noc-${slug}.pdf`, size_kb: 340, uploaded_at: p.submitted_at },
+      ],
+      messages: [
+        { id: "m1", author: p.client, role: `Client · ${p.client}`, at: `${p.submitted_at} · 9:14 AM`, body: `Intake submitted for ${p.name}${p.scope ? ` — ${p.scope}` : ""}.` },
+        { id: "m2", author: "Cleared", role: "Private Provider", from_cleared: true, at: `${p.submitted_at} · 11:02 AM`, body: `Affidavit filed with ${p.county} County. Statutory 10-business-day clock started.` },
+      ],
+      history: [
+        { id: "h1", label: "Project created", at: p.submitted_at, done: true },
+        { id: "h2", label: "LPOA executed", at: p.submitted_at, done: true },
+        { id: "h3", label: "Affidavit filed with AHJ", at: p.submitted_at, note: `${p.county} County — 10 business day clock started`, done: true },
+        { id: "h4", label: "Fees invoiced", at: p.submitted_at, done: true },
+        { id: "h5", label: "Plan review", at: p.status === "in_review" ? "In progress" : "Complete", done: p.status !== "in_review" },
+        { id: "h6", label: "Permit issued", at: p.status === "permit_issued" ? p.submitted_at : "Pending", done: p.status === "permit_issued" },
+      ],
+      corrections: [],
+      fees: [
+        { id: "f1", label: "Permitting Fee", sublabel: "Construction value × 1.5%", amount_cents: feePermit, status: { label: "Invoiced", tone: "sky" }, invoice_date: p.submitted_at },
+        { id: "f2", label: "Private Provider & Admin Fee", sublabel: "Flat statutory administration", amount_cents: 885_600, status: { label: "Invoiced", tone: "sky" }, invoice_date: p.submitted_at },
+      ],
+    };
+    return [p.id, proj];
+  }),
+);
+
 
 const fmtMoney = (cents: number) =>
   `$${(cents / 100).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
