@@ -41,6 +41,7 @@ import { Route as PortalProjectsRouteImport } from './routes/portal.projects'
 import { Route as PortalPermitFeesRouteImport } from './routes/portal.permit-fees'
 import { Route as PortalNewPermitRouteImport } from './routes/portal.new-permit'
 import { Route as PortalInspectionsRouteImport } from './routes/portal.inspections'
+import { Route as PortalBuildingDeptRouteImport } from './routes/portal.building-dept'
 import { Route as FormsSubcontractorIntakeRouteImport } from './routes/forms.subcontractor-intake'
 import { Route as FormsPermitIntakeRouteImport } from './routes/forms.permit-intake'
 import { Route as FormsPaymentAuthorizationRouteImport } from './routes/forms.payment-authorization'
@@ -210,6 +211,11 @@ const PortalInspectionsRoute = PortalInspectionsRouteImport.update({
   path: '/inspections',
   getParentRoute: () => PortalRoute,
 } as any)
+const PortalBuildingDeptRoute = PortalBuildingDeptRouteImport.update({
+  id: '/building-dept',
+  path: '/building-dept',
+  getParentRoute: () => PortalRoute,
+} as any)
 const FormsSubcontractorIntakeRoute =
   FormsSubcontractorIntakeRouteImport.update({
     id: '/subcontractor-intake',
@@ -276,6 +282,7 @@ export interface FileRoutesByFullPath {
   '/forms/payment-authorization': typeof FormsPaymentAuthorizationRoute
   '/forms/permit-intake': typeof FormsPermitIntakeRoute
   '/forms/subcontractor-intake': typeof FormsSubcontractorIntakeRoute
+  '/portal/building-dept': typeof PortalBuildingDeptRoute
   '/portal/inspections': typeof PortalInspectionsRoute
   '/portal/new-permit': typeof PortalNewPermitRoute
   '/portal/permit-fees': typeof PortalPermitFeesRoute
@@ -316,6 +323,7 @@ export interface FileRoutesByTo {
   '/forms/payment-authorization': typeof FormsPaymentAuthorizationRoute
   '/forms/permit-intake': typeof FormsPermitIntakeRoute
   '/forms/subcontractor-intake': typeof FormsSubcontractorIntakeRoute
+  '/portal/building-dept': typeof PortalBuildingDeptRoute
   '/portal/inspections': typeof PortalInspectionsRoute
   '/portal/new-permit': typeof PortalNewPermitRoute
   '/portal/permit-fees': typeof PortalPermitFeesRoute
@@ -358,6 +366,7 @@ export interface FileRoutesById {
   '/forms/payment-authorization': typeof FormsPaymentAuthorizationRoute
   '/forms/permit-intake': typeof FormsPermitIntakeRoute
   '/forms/subcontractor-intake': typeof FormsSubcontractorIntakeRoute
+  '/portal/building-dept': typeof PortalBuildingDeptRoute
   '/portal/inspections': typeof PortalInspectionsRoute
   '/portal/new-permit': typeof PortalNewPermitRoute
   '/portal/permit-fees': typeof PortalPermitFeesRoute
@@ -401,6 +410,7 @@ export interface FileRouteTypes {
     | '/forms/payment-authorization'
     | '/forms/permit-intake'
     | '/forms/subcontractor-intake'
+    | '/portal/building-dept'
     | '/portal/inspections'
     | '/portal/new-permit'
     | '/portal/permit-fees'
@@ -441,6 +451,7 @@ export interface FileRouteTypes {
     | '/forms/payment-authorization'
     | '/forms/permit-intake'
     | '/forms/subcontractor-intake'
+    | '/portal/building-dept'
     | '/portal/inspections'
     | '/portal/new-permit'
     | '/portal/permit-fees'
@@ -482,6 +493,7 @@ export interface FileRouteTypes {
     | '/forms/payment-authorization'
     | '/forms/permit-intake'
     | '/forms/subcontractor-intake'
+    | '/portal/building-dept'
     | '/portal/inspections'
     | '/portal/new-permit'
     | '/portal/permit-fees'
@@ -748,6 +760,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PortalInspectionsRouteImport
       parentRoute: typeof PortalRoute
     }
+    '/portal/building-dept': {
+      id: '/portal/building-dept'
+      path: '/building-dept'
+      fullPath: '/portal/building-dept'
+      preLoaderRoute: typeof PortalBuildingDeptRouteImport
+      parentRoute: typeof PortalRoute
+    }
     '/forms/subcontractor-intake': {
       id: '/forms/subcontractor-intake'
       path: '/subcontractor-intake'
@@ -847,6 +866,7 @@ const PortalSubcontractorsRouteWithChildren =
   PortalSubcontractorsRoute._addFileChildren(PortalSubcontractorsRouteChildren)
 
 interface PortalRouteChildren {
+  PortalBuildingDeptRoute: typeof PortalBuildingDeptRoute
   PortalInspectionsRoute: typeof PortalInspectionsRoute
   PortalNewPermitRoute: typeof PortalNewPermitRoute
   PortalPermitFeesRoute: typeof PortalPermitFeesRoute
@@ -859,6 +879,7 @@ interface PortalRouteChildren {
 }
 
 const PortalRouteChildren: PortalRouteChildren = {
+  PortalBuildingDeptRoute: PortalBuildingDeptRoute,
   PortalInspectionsRoute: PortalInspectionsRoute,
   PortalNewPermitRoute: PortalNewPermitRoute,
   PortalPermitFeesRoute: PortalPermitFeesRoute,
