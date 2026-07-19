@@ -48,7 +48,7 @@ export function LogPermitFeeDialog({
       setDate(editing.datePaid);
     } else {
       setProjectId(defaultProjectId ?? PROJECTS[0]?.id ?? "");
-      setFeeType("Building Permit Fee");
+      setFeeType("Total Permit Fee");
       setAmount("");
       setNotes("");
       setDate(today());
