@@ -96,12 +96,14 @@ export function updateSub(id: string, patch: Partial<SubRecord>): SubRecord | nu
 
 export type MissingField =
   | "licenseFileName"
+  | "licenseExpiration"
   | "coiFileName"
   | "coiExpiration"
   | "w9FileName";
 
 export const MISSING_FIELD_LABELS: Record<MissingField, string> = {
   licenseFileName: "License Upload",
+  licenseExpiration: "License Expiration Date",
   coiFileName: "COI Upload",
   coiExpiration: "COI Expiration Date",
   w9FileName: "W-9 Upload",
@@ -110,6 +112,7 @@ export const MISSING_FIELD_LABELS: Record<MissingField, string> = {
 export function missingFields(sub: SubRecord): MissingField[] {
   const out: MissingField[] = [];
   if (!sub.licenseFileName) out.push("licenseFileName");
+  if (!sub.licenseExpiration) out.push("licenseExpiration");
   if (!sub.coiFileName) out.push("coiFileName");
   if (!sub.coiExpiration) out.push("coiExpiration");
   if (!sub.w9FileName) out.push("w9FileName");
