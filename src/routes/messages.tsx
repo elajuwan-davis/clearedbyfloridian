@@ -144,7 +144,7 @@ function MessagesPage() {
     );
   }, [threads, query]);
 
-  const active = threads.find((t) => t.id === activeId) ?? threads[0];
+  const active = threads.find((t) => t.id === activeId) ?? threads[0] ?? null;
 
   function openThread(id: string) {
     setActiveId(id);
