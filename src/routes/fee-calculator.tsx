@@ -267,15 +267,26 @@ function FeeCalculatorPage() {
               </div>
             </div>
 
-            <Button
-              type="button"
-              variant="dark"
-              onClick={() => setReportOpen(true)}
-              className="rounded-[3px] gap-2"
-            >
-              <FileDown className="h-4 w-4" />
-              Generate Contest Letter
-            </Button>
+            <div className="flex flex-wrap gap-3">
+              <Button
+                type="button"
+                variant="dark"
+                onClick={() => setReportOpen(true)}
+                className="rounded-[3px] gap-2"
+              >
+                <FileDown className="h-4 w-4" />
+                Generate Contest Letter
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setAccuracyOpen(true)}
+                className="rounded-[3px] gap-2"
+              >
+                Our Accuracy
+              </Button>
+            </div>
+
 
 
           </div>
