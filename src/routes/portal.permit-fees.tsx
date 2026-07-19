@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState, type ChangeEvent } from "react";
 import { Wallet, Upload, CheckCircle2, X, Plus, Pencil, Trash2 } from "lucide-react";
 import { LogPermitFeeDialog } from "@/components/log-permit-fee-dialog";
-import { listFees, deleteFee, subscribeFees, type ManualFee } from "@/lib/manual-fees";
+import { listAllFees, deleteFee, fmtUsd, type ManualFee } from "@/lib/manual-fees";
 import { PROJECTS } from "@/lib/projects-data";
 
 export const Route = createFileRoute("/portal/permit-fees")({
