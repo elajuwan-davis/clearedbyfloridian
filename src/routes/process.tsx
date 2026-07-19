@@ -28,23 +28,23 @@ const steps = [
   },
   {
     n: "02",
-    day: "Day 1–7",
+    day: "Day 1–2",
     t: "Plan Review",
-    d: "A licensed Florida engineer or architect performs a full code review against the Florida Building Code 8th Edition. Comments are returned on the original set with cloud markups and a tracked correction log.",
+    d: "A licensed Florida engineer or architect performs a full code review against the Florida Building Code 8th Edition — 2-day plan review turnaround. Comments are returned on the original set with cloud markups and a tracked correction log.",
     out: "Red-lined set · Correction log · Compliance summary",
   },
   {
     n: "03",
-    day: "Day 7–10",
+    day: "Day 3–5",
     t: "Affidavit & Permit",
-    d: "Once revisions clear, we sign and file the Private Provider Affidavit with the AHJ. By statute, the building department has 30 business days but typically issues the permit within a week.",
+    d: "Once revisions clear, we sign and file the Private Provider Affidavit with the AHJ. By statute, the building department has 10 business days to issue the permit or cite specific plan deficiencies.",
     out: "FS 553.791 affidavit · Permit issued",
   },
   {
     n: "04",
     day: "Construction",
     t: "Inspections",
-    d: "Your super requests inspections through the portal — same- or next-day scheduling. Our inspectors meet your crews on site, document the work, and deliver digital reports within two hours.",
+    d: "Your super requests inspections through the portal — same-day inspections. Our inspectors meet your crews on site, document the work, and deliver digital reports within two hours.",
     out: "Digital inspection reports · Photo records",
   },
   {
