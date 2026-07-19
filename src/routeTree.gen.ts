@@ -31,6 +31,7 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as PortalIndexRouteImport } from './routes/portal.index'
+import { Route as SubIntakeTokenRouteImport } from './routes/sub-intake.$token'
 import { Route as ProjectsNewRouteImport } from './routes/projects.new'
 import { Route as ProjectsIdRouteImport } from './routes/projects.$id'
 import { Route as PortalSubcontractorsRouteImport } from './routes/portal.subcontractors'
@@ -158,6 +159,11 @@ const PortalIndexRoute = PortalIndexRouteImport.update({
   path: '/',
   getParentRoute: () => PortalRoute,
 } as any)
+const SubIntakeTokenRoute = SubIntakeTokenRouteImport.update({
+  id: '/sub-intake/$token',
+  path: '/sub-intake/$token',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProjectsNewRoute = ProjectsNewRouteImport.update({
   id: '/new',
   path: '/new',
@@ -279,6 +285,7 @@ export interface FileRoutesByFullPath {
   '/portal/subcontractors': typeof PortalSubcontractorsRouteWithChildren
   '/projects/$id': typeof ProjectsIdRoute
   '/projects/new': typeof ProjectsNewRoute
+  '/sub-intake/$token': typeof SubIntakeTokenRoute
   '/portal/': typeof PortalIndexRoute
   '/portal/permits/new': typeof PortalPermitsNewRoute
   '/portal/subcontractors/new': typeof PortalSubcontractorsNewRoute
@@ -318,6 +325,7 @@ export interface FileRoutesByTo {
   '/portal/subcontractors': typeof PortalSubcontractorsRouteWithChildren
   '/projects/$id': typeof ProjectsIdRoute
   '/projects/new': typeof ProjectsNewRoute
+  '/sub-intake/$token': typeof SubIntakeTokenRoute
   '/portal': typeof PortalIndexRoute
   '/portal/permits/new': typeof PortalPermitsNewRoute
   '/portal/subcontractors/new': typeof PortalSubcontractorsNewRoute
@@ -359,6 +367,7 @@ export interface FileRoutesById {
   '/portal/subcontractors': typeof PortalSubcontractorsRouteWithChildren
   '/projects/$id': typeof ProjectsIdRoute
   '/projects/new': typeof ProjectsNewRoute
+  '/sub-intake/$token': typeof SubIntakeTokenRoute
   '/portal/': typeof PortalIndexRoute
   '/portal/permits/new': typeof PortalPermitsNewRoute
   '/portal/subcontractors/new': typeof PortalSubcontractorsNewRoute
@@ -401,6 +410,7 @@ export interface FileRouteTypes {
     | '/portal/subcontractors'
     | '/projects/$id'
     | '/projects/new'
+    | '/sub-intake/$token'
     | '/portal/'
     | '/portal/permits/new'
     | '/portal/subcontractors/new'
@@ -440,6 +450,7 @@ export interface FileRouteTypes {
     | '/portal/subcontractors'
     | '/projects/$id'
     | '/projects/new'
+    | '/sub-intake/$token'
     | '/portal'
     | '/portal/permits/new'
     | '/portal/subcontractors/new'
@@ -480,6 +491,7 @@ export interface FileRouteTypes {
     | '/portal/subcontractors'
     | '/projects/$id'
     | '/projects/new'
+    | '/sub-intake/$token'
     | '/portal/'
     | '/portal/permits/new'
     | '/portal/subcontractors/new'
@@ -507,6 +519,7 @@ export interface RootRouteChildren {
   ProjectGuidesRoute: typeof ProjectGuidesRoute
   ProjectsRoute: typeof ProjectsRouteWithChildren
   ServicesRoute: typeof ServicesRoute
+  SubIntakeTokenRoute: typeof SubIntakeTokenRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -664,6 +677,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/portal/'
       preLoaderRoute: typeof PortalIndexRouteImport
       parentRoute: typeof PortalRoute
+    }
+    '/sub-intake/$token': {
+      id: '/sub-intake/$token'
+      path: '/sub-intake/$token'
+      fullPath: '/sub-intake/$token'
+      preLoaderRoute: typeof SubIntakeTokenRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/projects/new': {
       id: '/projects/new'
@@ -889,6 +909,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProjectGuidesRoute: ProjectGuidesRoute,
   ProjectsRoute: ProjectsRouteWithChildren,
   ServicesRoute: ServicesRoute,
+  SubIntakeTokenRoute: SubIntakeTokenRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
