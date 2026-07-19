@@ -25,14 +25,8 @@ type Invoice = {
   issued: string;
 };
 
-const INVOICES: Invoice[] = [
-  { number: "INV-2026-0001", status: "paid", address: "1247 Banyan Trail, Ocean Ridge", description: "New Construction of In-Ground Pool w/ Deck", amount_cents: 9_054_000, issued: "Apr 12, 2026" },
-  { number: "INV-2026-0002", status: "paid", address: "1812 S Ocean Blvd, Manalapan", description: "New Construction of In-Ground Pool w/ Deck", amount_cents: 27_456_000, issued: "Apr 21, 2026" },
-  { number: "INV-2026-0003", status: "pending", address: "88 Beach Rd, Jupiter Island", description: "Pool, Spa, & Summer Kitchen", amount_cents: 19_164_000, issued: "May 28, 2026" },
-  { number: "INV-2026-0004", status: "pending", address: "1247 Banyan Trail, Ocean Ridge", description: "Merchant Processing Fees", amount_cents: 88_600, issued: "May 30, 2026" },
-  { number: "INV-2026-0005", status: "overdue", address: "5440 SE Gomez Ave, Hobe Sound", description: "New Construction of In-Ground Pool w/ Deck", amount_cents: 5_352_000, issued: "Apr 02, 2026" },
-  { number: "INV-2026-0006", status: "pending", address: "2100 Ocean Dr, Vero Beach", description: "New Construction of In-Ground Pool w/ Deck", amount_cents: 8_741_100, issued: "Apr 29, 2026" },
-];
+const INVOICES: Invoice[] = [];
+
 
 const statusTone: Record<InvStatus, { label: string; cls: string }> = {
   paid: { label: "Paid", cls: "bg-emerald-600/10 text-emerald-700 border-emerald-600/30" },
@@ -46,7 +40,7 @@ const fmt = (cents: number) =>
 function InvoicesPage() {
   const [show, setShow] = useState(false);
   const [invoices, setInvoices] = useState<Invoice[]>(INVOICES);
-  const [open, setOpen] = useState<string | null>(INVOICES[0].number);
+  const [open, setOpen] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -107,53 +101,62 @@ function InvoicesPage() {
         </div>
 
         {/* Accordion list */}
-        <div className="mt-10 border border-obsidian/15 bg-white">
-          {invoices.map((inv) => {
-            const isOpen = open === inv.number;
-            const t = statusTone[inv.status];
-            return (
-              <div key={inv.number} className="border-b border-obsidian/10 last:border-0">
-                <button
-                  type="button"
-                  onClick={() => setOpen(isOpen ? null : inv.number)}
-                  className="w-full flex flex-wrap items-center gap-3 px-5 py-4 text-left hover:bg-paper-warm/50 transition-colors"
-                >
-                  <ChevronDown
-                    className={`h-4 w-4 text-obsidian/40 transition-transform shrink-0 ${isOpen ? "rotate-180" : ""}`}
-                  />
-                  <span className="font-mono text-[12px] tabular-nums text-obsidian">
-                    {inv.number}
-                  </span>
-                  <span className={`inline-flex items-center border px-2 py-0.5 font-mono text-[9px] font-medium uppercase tracking-[0.12em] rounded-[2px] ${t.cls}`}>
-                    {t.label}
-                  </span>
-                  <span className="text-sm text-obsidian/70 truncate flex-1 min-w-0">{inv.address}</span>
-                  <span className="font-mono text-sm tabular-nums text-obsidian ml-auto">
-                    {show ? fmt(inv.amount_cents) : "••••••"}
-                  </span>
-                </button>
-                {isOpen && (
-                  <div className="px-12 pb-5 pt-1 space-y-3">
-                    <p className="text-sm text-obsidian/75">
-                      {inv.description} — {inv.address}
-                    </p>
-                    <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-obsidian/45">
-                      Issued {inv.issued}
-                    </p>
-                    <Button
-                      variant={inv.status === "paid" ? "outline" : "dark"}
-                      className="w-full rounded-[3px] gap-2"
-                      disabled={inv.status === "paid"}
-                    >
-                      <FileText className="h-4 w-4" />
-                      {inv.status === "paid" ? "Paid — view receipt" : inv.status === "overdue" ? "Pay now (overdue)" : "Pay invoice"}
-                    </Button>
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
+        {invoices.length === 0 ? (
+          <div className="mt-10 border border-dashed border-obsidian/20 rounded-[3px] p-12 text-center">
+            <FileText className="h-8 w-8 mx-auto text-obsidian/30" strokeWidth={1.5} />
+            <p className="mt-3 text-sm text-obsidian/70">No invoices on file.</p>
+            <p className="mt-1 text-xs text-obsidian/50">Invoices will appear here as they are issued.</p>
+          </div>
+        ) : (
+          <div className="mt-10 border border-obsidian/15 bg-white">
+            {invoices.map((inv) => {
+              const isOpen = open === inv.number;
+              const t = statusTone[inv.status];
+              return (
+                <div key={inv.number} className="border-b border-obsidian/10 last:border-0">
+                  <button
+                    type="button"
+                    onClick={() => setOpen(isOpen ? null : inv.number)}
+                    className="w-full flex flex-wrap items-center gap-3 px-5 py-4 text-left hover:bg-paper-warm/50 transition-colors"
+                  >
+                    <ChevronDown
+                      className={`h-4 w-4 text-obsidian/40 transition-transform shrink-0 ${isOpen ? "rotate-180" : ""}`}
+                    />
+                    <span className="font-mono text-[12px] tabular-nums text-obsidian">
+                      {inv.number}
+                    </span>
+                    <span className={`inline-flex items-center border px-2 py-0.5 font-mono text-[9px] font-medium uppercase tracking-[0.12em] rounded-[2px] ${t.cls}`}>
+                      {t.label}
+                    </span>
+                    <span className="text-sm text-obsidian/70 truncate flex-1 min-w-0">{inv.address}</span>
+                    <span className="font-mono text-sm tabular-nums text-obsidian ml-auto">
+                      {show ? fmt(inv.amount_cents) : "••••••"}
+                    </span>
+                  </button>
+                  {isOpen && (
+                    <div className="px-12 pb-5 pt-1 space-y-3">
+                      <p className="text-sm text-obsidian/75">
+                        {inv.description} — {inv.address}
+                      </p>
+                      <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-obsidian/45">
+                        Issued {inv.issued}
+                      </p>
+                      <Button
+                        variant={inv.status === "paid" ? "outline" : "dark"}
+                        className="w-full rounded-[3px] gap-2"
+                        disabled={inv.status === "paid"}
+                      >
+                        <FileText className="h-4 w-4" />
+                        {inv.status === "paid" ? "Paid — view receipt" : inv.status === "overdue" ? "Pay now (overdue)" : "Pay invoice"}
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
+
       </div>
     </PortalShell>
   );

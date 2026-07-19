@@ -29,10 +29,19 @@ function LoginPage() {
     setError(null);
     setLoading(true);
 
-    // Demo credential bypass — matches showcased builder account
-    if (email.trim().toLowerCase() === "user@cleared.com" && password === "Cleared") {
+    // Demo credential bypass — team + showcased builder accounts
+    const DEMO_ACCOUNTS: Record<string, string> = {
+      "user@cleared.com": "Cleared",
+      "elajuwan@floridianinc.com": "Cleared",
+      "eman@floridianinc.com": "Cleared",
+      "jose@floridianinc.com": "Cleared",
+      "paul@floridianinc.com": "Cleared",
+    };
+    const emailKey = email.trim().toLowerCase();
+    if (DEMO_ACCOUNTS[emailKey] && password === DEMO_ACCOUNTS[emailKey]) {
       try {
         localStorage.setItem("cleared_demo_session", "1");
+        localStorage.setItem("cleared_demo_user", emailKey);
       } catch {
         /* ignore */
       }
@@ -40,6 +49,7 @@ function LoginPage() {
       navigate({ to: "/dashboard", replace: true });
       return;
     }
+
 
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     setLoading(false);
