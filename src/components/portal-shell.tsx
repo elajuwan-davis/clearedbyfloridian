@@ -318,16 +318,15 @@ export function PortalShell({ children }: { children: ReactNode }) {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Desktop sidebar */}
+      {/* Desktop sidebar — collapsed 64px, expands to 240px on hover */}
       <aside
-        className="fixed inset-y-0 left-0 z-40 hidden md:flex flex-col"
-        style={{ width: "256px" }}
+        className="group/sb sidebar-collapsed hover:sidebar-expanded fixed inset-y-0 left-0 z-40 hidden md:flex flex-col transition-[width] duration-200 ease-out w-[64px] hover:w-[240px] hover:shadow-2xl"
       >
-        <SidebarBody pathname={pathname} onSignOut={handleSignOut} />
+        <SidebarBody pathname={pathname} onSignOut={handleSignOut} collapsible />
       </aside>
 
       {/* Main column */}
-      <div className="md:pl-[256px] min-h-screen flex flex-col">
+      <div className="md:pl-[64px] min-h-screen flex flex-col">
         <header className="h-14 border-b hairline flex items-center justify-between gap-3 px-4 sm:px-6 md:px-8 sticky top-0 bg-background/85 backdrop-blur z-30">
           <div className="flex items-center gap-2 min-w-0">
             {/* Mobile menu trigger */}
