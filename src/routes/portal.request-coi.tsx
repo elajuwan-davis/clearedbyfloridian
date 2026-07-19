@@ -115,18 +115,23 @@ function RequestCOIPage() {
           )}
         </div>
 
-        <div>
-          <label className={labelCls}>Current COI on File (to be updated)</label>
-          <label className="inline-flex items-center gap-2 cursor-pointer border border-obsidian/20 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian rounded-[3px] hover:bg-obsidian/5">
-            <Upload className="h-3.5 w-3.5" /> {currentCoi ? "Replace file" : "Attach current COI (PDF)"}
-            <input type="file" accept="application/pdf,image/*" className="hidden" onChange={handleFile} />
-          </label>
-          {currentCoi && (
-            <div className="mt-2 inline-flex items-center gap-2 text-[11px] text-obsidian/70 bg-obsidian/5 px-2 py-1 rounded-[3px]">
-              {currentCoi}
-              <button type="button" onClick={() => setCurrentCoi(null)}><X className="h-3 w-3" /></button>
-            </div>
-          )}
+        <div
+          className="rounded-[3px] p-5 border"
+          style={{ backgroundColor: "#B6DAEA", borderColor: "#153157", color: "#153157" }}
+        >
+          <div className="font-mono text-[10px] uppercase tracking-[0.18em] opacity-70">
+            Reference
+          </div>
+          <div className="mt-1 font-display text-lg">COI Requirements — Flōridian</div>
+          <ul className="mt-3 space-y-1.5 text-[13px] leading-relaxed">
+            <li>· General Liability: $1,000,000 per occurrence / $2,000,000 aggregate</li>
+            <li>· Workers' Compensation: Statutory limits (Florida)</li>
+            <li>· Auto Liability: $1,000,000 combined single limit</li>
+            <li>· Certificate Holder: Flōridian LLC, [Floridian's address]</li>
+            <li>· Additional Insured endorsement required on GL policy</li>
+            <li>· 30-day notice of cancellation required</li>
+            <li>· Policy must be active for the full duration of the project</li>
+          </ul>
         </div>
 
         <div>
