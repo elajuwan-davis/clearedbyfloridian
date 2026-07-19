@@ -31,6 +31,14 @@ const REQUIRED_DOCS = [
 
 type DocState = { uploaded: string | null; na: boolean; deferred: boolean };
 
+type SubIntake = {
+  companyName: string;
+  qualifierName: string;
+  licenseNumber: string;
+  contactEmail: string;
+  insuranceCarrierEmail: string;
+};
+
 type FormState = {
   step: 1 | 2;
   projectName: string;
@@ -38,9 +46,9 @@ type FormState = {
   municipality: string;
   permitType: string;
   description: string;
-  subPlumbing: string;
-  subElectrical: string;
-  subGas: string;
+  subPlumbing: SubIntake;
+  subElectrical: SubIntake;
+  subGas: SubIntake;
   submittedDate: string;
   contractorCompany: string;
   contractorQualifier: string;
@@ -64,6 +72,14 @@ const emptyDocs: Record<string, DocState> = Object.fromEntries(
   REQUIRED_DOCS.map((d) => [d.key, { uploaded: null, na: false, deferred: false }]),
 );
 
+const emptySub: SubIntake = {
+  companyName: "",
+  qualifierName: "",
+  licenseNumber: "",
+  contactEmail: "",
+  insuranceCarrierEmail: "",
+};
+
 const initial: FormState = {
   step: 1,
   projectName: "",
@@ -71,9 +87,9 @@ const initial: FormState = {
   municipality: "",
   permitType: PERMIT_TYPES[0],
   description: "",
-  subPlumbing: "",
-  subElectrical: "",
-  subGas: "",
+  subPlumbing: { ...emptySub },
+  subElectrical: { ...emptySub },
+  subGas: { ...emptySub },
   submittedDate: new Date().toISOString().slice(0, 10),
   contractorCompany: "",
   contractorQualifier: "",
