@@ -129,6 +129,17 @@ export function coiStatus(sub: SubRecord): "on-file" | "expired" | "missing" {
   return "on-file";
 }
 
+export function licenseStatus(sub: SubRecord): "expired" | "expiring" | "ok" | "unset" {
+  if (!sub.licenseExpiration) return "unset";
+  const exp = new Date(sub.licenseExpiration);
+  if (isNaN(exp.getTime())) return "unset";
+  const today = new Date(new Date().toDateString());
+  const days = Math.floor((exp.getTime() - today.getTime()) / 86400000);
+  if (days < 0) return "expired";
+  if (days <= 60) return "expiring";
+  return "ok";
+}
+
 export function ensureToken(id: string): string {
   const sub = getSubById(id);
   if (!sub) throw new Error("Subcontractor not found");
