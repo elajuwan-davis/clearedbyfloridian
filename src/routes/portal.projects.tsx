@@ -54,7 +54,7 @@ function ProjectsPage() {
             return (
               <Link
                 key={p.id}
-                to="/projects/$id"
+                to="/portal/projects/$id"
                 params={{ id: p.id }}
                 className="grid grid-cols-12 gap-4 p-5 items-center hover:bg-secondary/40 transition-colors"
               >

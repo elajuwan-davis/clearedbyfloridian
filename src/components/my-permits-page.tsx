@@ -173,7 +173,7 @@ export function MyPermitsPage() {
                       return (
                         <li key={p.id} className="group relative flex flex-wrap items-center gap-3 px-5 py-4 hover:bg-paper-warm/40 transition-colors">
                           <Link
-                            to="/projects/$id"
+                            to="/portal/projects/$id"
                             params={{ id: p.id }}
                             aria-label={`Open ${p.name}`}
                             className="absolute inset-0"
@@ -198,7 +198,7 @@ export function MyPermitsPage() {
                               return (
                                 <Link
                                   key={t}
-                                  to="/projects/$id"
+                                  to="/portal/projects/$id"
                                   params={{ id: p.id }}
                                   title={issued ? `${t}: issued` : `${t}: in progress — click to view`}
                                   className={`inline-flex items-center gap-1 border px-2 py-0.5 text-[10px] font-mono uppercase tracking-[0.1em] rounded-[2px] transition-colors ${
