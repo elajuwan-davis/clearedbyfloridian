@@ -22,12 +22,14 @@ const PERMIT_TYPES = [
 ];
 
 const REQUIRED_DOCS = [
-  { key: "pool_eng", label: "Pool Engineering / Plans", required: true, desc: "Structural drawings for pool shell, sealed by Florida engineer." },
-  { key: "site", label: "Site Plan", required: true, desc: "Pool location, setbacks, barrier fencing, equipment location." },
-  { key: "electrical", label: "Electrical Plan", required: true, desc: "Pool bonding, GFCI protection, lighting, pump circuits." },
-  { key: "barrier", label: "Barrier / Fencing Plan", required: true, desc: "Pool barrier compliance per FBC R326." },
-  { key: "deck", label: "Deck Plan", required: false, desc: "Deck layout, drainage, material specs." },
+  { key: "stamped_plans", label: "Stamped Construction Plans", required: true, canDefer: true, desc: "Signed and sealed construction plans from your engineer/architect." },
+  { key: "site_survey", label: "Site / Spot Survey", required: false, canDefer: false, desc: "Boundary or spot survey showing existing site conditions." },
+  { key: "product_approvals", label: "Product Approvals / NOA", required: false, canDefer: false, desc: "Miami-Dade NOAs or Florida Product Approvals for windows, doors, roofing, etc." },
+  { key: "truss_packet", label: "Truss Packet", required: false, canDefer: false, desc: "Sealed truss engineering package from the truss manufacturer." },
+  { key: "energy_calcs", label: "Energy Calcs", required: false, canDefer: false, desc: "Florida energy code compliance calculations (Form R405 / R402)." },
+  { key: "civil_other", label: "Civil / Other", required: false, canDefer: false, desc: "Civil drawings, drainage plans, or any additional supporting documents." },
 ] as const;
+
 
 type DocState = { uploaded: string | null; na: boolean; deferred: boolean };
 
