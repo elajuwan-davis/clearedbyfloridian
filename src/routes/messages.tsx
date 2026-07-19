@@ -79,66 +79,12 @@ type Thread = {
   messages: Msg[];
 };
 
-const SEED: Thread[] = [
-  {
-    id: "1",
-    permit_no: "CLR-2026-0142",
-    name: "Ocean Ridge Estate",
-    address: "1247 Banyan Trail, Ocean Ridge",
-    county: "Palm Beach",
-    status: "corrections_required",
-    unread: 2,
-    lastAt: "2:48 PM",
-    messages: [
-      { id: "a", author: "Maritza Alvarez, P.E.", fromAdmin: true, at: "Jun 5 · 10:12 AM", body: "Plan review opened. Reviewing structural set S-100 through S-401 first." },
-      { id: "b", author: "You", fromAdmin: false, at: "Jun 5 · 1:40 PM", body: "Thanks — let us know when corrections are issued." },
-      { id: "c", author: "Maritza Alvarez, P.E.", fromAdmin: true, at: "Today · 2:48 PM", body: "Round 1 issued. One structural notation on S-201, plus a missing FL product approval citation on the impact glazing schedule. 48-hour clock running.", attachments: [{ name: "Round1-Corrections.pdf", size: "342 KB" }] },
-    ],
-  },
-  {
-    id: "2",
-    permit_no: "CLR-2026-0138",
-    name: "Jupiter Island Residence",
-    address: "88 Beach Rd, Jupiter Island",
-    county: "Martin",
-    status: "in_review",
-    unread: 1,
-    lastAt: "11:14 AM",
-    messages: [
-      { id: "a", author: "Sasha Whitfield", fromAdmin: true, at: "Today · 11:14 AM", body: "Intake complete. Assigned to R. Chen for architectural and J. Pereira for MEP." },
-    ],
-  },
-  {
-    id: "3",
-    permit_no: "CLR-2026-0131",
-    name: "Manalapan Bayfront",
-    address: "1812 S Ocean Blvd, Manalapan",
-    county: "Palm Beach",
-    status: "permit_issued",
-    unread: 0,
-    lastAt: "Yesterday",
-    messages: [
-      { id: "a", author: "Sasha Whitfield", fromAdmin: true, at: "Yesterday · 4:22 PM", body: "Permit issued by Palm Beach County. PB-2026-04812. Packet attached.", attachments: [{ name: "Permit-Packet.pdf", size: "1.2 MB" }] },
-    ],
-  },
-  {
-    id: "4",
-    permit_no: "CLR-2026-0112",
-    name: "Stuart Riverhouse",
-    address: "320 SW St Lucie Cres, Stuart",
-    county: "Martin",
-    status: "inspection_scheduled",
-    unread: 0,
-    lastAt: "Mon",
-    messages: [
-      { id: "a", author: "Dana Ortiz", fromAdmin: true, at: "Mon · 10:01 AM", body: "Footer inspection scheduled Friday Jun 12 at 9:00 AM. Virtual walkthrough link sent 30 min prior." },
-    ],
-  },
-];
+const SEED: Thread[] = [];
 
 function MessagesPage() {
   const [threads, setThreads] = useState<Thread[]>(SEED);
-  const [activeId, setActiveId] = useState<string>(SEED[0].id);
+  const [activeId, setActiveId] = useState<string>("");
+
   const [query, setQuery] = useState("");
   const [draft, setDraft] = useState("");
   const [pending, setPending] = useState<Attachment[]>([]);
