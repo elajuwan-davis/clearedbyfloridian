@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState, type FormEvent } from "react";
-import { FileCheck2, CheckCircle2 } from "lucide-react";
+import { useEffect, useMemo, useState, type ChangeEvent, type FormEvent } from "react";
+import { FileCheck2, CheckCircle2, Upload, X } from "lucide-react";
+import { loadSubLibrary, type SubRecord } from "@/lib/subcontractor-library";
 
 export const Route = createFileRoute("/portal/request-coi")({
   head: () => ({
@@ -14,6 +15,9 @@ export const Route = createFileRoute("/portal/request-coi")({
 
 function RequestCOIPage() {
   const [submitted, setSubmitted] = useState(false);
+  const [library, setLibrary] = useState<SubRecord[]>([]);
+  const [subIdx, setSubIdx] = useState<string>("");
+  const [currentCoi, setCurrentCoi] = useState<string | null>(null);
   const [form, setForm] = useState({
     projectName: "",
     projectAddress: "",
@@ -23,9 +27,30 @@ function RequestCOIPage() {
     notes: "",
   });
 
+  useEffect(() => {
+    setLibrary(loadSubLibrary());
+  }, []);
+
+  const selectedSub = useMemo(
+    () => (subIdx === "" ? null : library[Number(subIdx)] ?? null),
+    [library, subIdx],
+  );
+
+  function handleFile(e: ChangeEvent<HTMLInputElement>) {
+    const f = e.target.files?.[0];
+    if (f) setCurrentCoi(f.name);
+  }
+
   function handleSubmit(e: FormEvent) {
     e.preventDefault();
     setSubmitted(true);
+  }
+
+  function reset() {
+    setSubmitted(false);
+    setSubIdx("");
+    setCurrentCoi(null);
+    setForm({ projectName: "", projectAddress: "", holderName: "", holderAddress: "", additionalInsured: false, notes: "" });
   }
 
   const inputCls =
@@ -43,10 +68,7 @@ function RequestCOIPage() {
           </p>
           <button
             type="button"
-            onClick={() => {
-              setSubmitted(false);
-              setForm({ projectName: "", projectAddress: "", holderName: "", holderAddress: "", additionalInsured: false, notes: "" });
-            }}
+            onClick={reset}
             className="mt-6 inline-flex items-center gap-2 bg-obsidian px-4 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-paper rounded-[3px]"
           >
             Submit another
@@ -64,11 +86,49 @@ function RequestCOIPage() {
         </div>
         <h1 className="display-serif mt-3 text-4xl sm:text-5xl text-obsidian">Request COI</h1>
         <p className="mt-3 text-sm text-obsidian/60 max-w-xl">
-          Submit a Certificate of Insurance request. Cleared will coordinate with your carrier and deliver the certificate to the holder.
+          Select the subcontractor needing an updated certificate. Cleared will coordinate with their carrier and deliver the certificate to the holder.
         </p>
       </div>
 
       <form onSubmit={handleSubmit} className="mt-8 space-y-5 bg-white border border-obsidian/10 rounded-[3px] p-6 sm:p-8">
+        <div>
+          <label className={labelCls}>Subcontractor</label>
+          {library.length === 0 ? (
+            <div className="text-[12px] text-obsidian/55 border border-dashed border-obsidian/20 rounded-[3px] p-3">
+              No saved subcontractors yet. Add subs on a Permit Intake to populate this list.
+            </div>
+          ) : (
+            <select className={inputCls} value={subIdx} onChange={(e) => setSubIdx(e.target.value)} required>
+              <option value="">Select a subcontractor</option>
+              {library.map((s, i) => (
+                <option key={i} value={String(i)}>
+                  {s.companyName}{s.trade ? ` — ${s.trade}` : ""}
+                  {s.insuranceCarrierEmail ? ` · ${s.insuranceCarrierEmail}` : ""}
+                </option>
+              ))}
+            </select>
+          )}
+          {selectedSub && (
+            <div className="mt-2 text-[12px] text-obsidian/70 bg-obsidian/5 rounded-[3px] px-3 py-2">
+              <div><span className="font-mono uppercase tracking-[0.14em] text-[10px] text-obsidian/55">Carrier Email:</span> {selectedSub.insuranceCarrierEmail || "—"}</div>
+            </div>
+          )}
+        </div>
+
+        <div>
+          <label className={labelCls}>Current COI on File (to be updated)</label>
+          <label className="inline-flex items-center gap-2 cursor-pointer border border-obsidian/20 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian rounded-[3px] hover:bg-obsidian/5">
+            <Upload className="h-3.5 w-3.5" /> {currentCoi ? "Replace file" : "Attach current COI (PDF)"}
+            <input type="file" accept="application/pdf,image/*" className="hidden" onChange={handleFile} />
+          </label>
+          {currentCoi && (
+            <div className="mt-2 inline-flex items-center gap-2 text-[11px] text-obsidian/70 bg-obsidian/5 px-2 py-1 rounded-[3px]">
+              {currentCoi}
+              <button type="button" onClick={() => setCurrentCoi(null)}><X className="h-3 w-3" /></button>
+            </div>
+          )}
+        </div>
+
         <div>
           <label className={labelCls}>Project Name</label>
           <input required className={inputCls} value={form.projectName} onChange={(e) => setForm({ ...form, projectName: e.target.value })} />
