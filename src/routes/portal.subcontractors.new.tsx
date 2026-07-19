@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate, useSearch } from "@tanstack/react-router";
 import { useEffect, useMemo, useState, type ChangeEvent, type FormEvent } from "react";
 import { toast } from "sonner";
-import { ArrowLeft, Upload, X, Send, Copy, AlertTriangle, CheckCircle2 } from "lucide-react";
+import { ArrowLeft, Upload, X, Link2, Copy, AlertTriangle, CheckCircle2 } from "lucide-react";
 import {
   getSubById,
   upsertSub,
