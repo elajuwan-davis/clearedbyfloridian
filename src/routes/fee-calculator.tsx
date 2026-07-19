@@ -15,7 +15,6 @@ import {
 } from "lucide-react";
 import contestReport from "@/assets/fee-contest-report.pdf.asset.json";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
-import { LogPermitFeeDialog } from "@/components/log-permit-fee-dialog";
 
 
 export const Route = createFileRoute("/fee-calculator")({
