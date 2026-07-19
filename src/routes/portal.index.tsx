@@ -12,7 +12,9 @@ export const Route = createFileRoute("/portal/")({
 });
 
 function PortalOverview() {
-  const active = PROJECTS.filter((p) => p.status !== "permit_issued");
+  const CLOSED = new Set(["permit_issued", "cancelled", "closed", "completed"]);
+  const active = PROJECTS.filter((p) => !CLOSED.has(p.status));
+
   const upcomingInspections = inspections.filter((i) => i.status === "Scheduled").slice(0, 4);
   const inReview = PROJECTS.filter((p) => p.status === "in_review" || p.status === "corrections_required").length;
   const issued = PROJECTS.filter((p) => p.status === "permit_issued").length;
