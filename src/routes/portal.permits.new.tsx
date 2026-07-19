@@ -2,6 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState, type ChangeEvent, type DragEvent } from "react";
 import { Upload, Check, FileText, ArrowLeft, Save, Send, X, AlertCircle } from "lucide-react";
 import { upsertSub, loadSubLibrary, type SubRecord } from "@/lib/subcontractor-library";
+import { CloudUploadButtons } from "@/components/cloud-upload-buttons";
 
 export const Route = createFileRoute("/portal/permits/new")({
   head: () => ({
@@ -512,6 +513,7 @@ function NewPermitPage() {
                             <input type="file" accept="application/pdf" className="hidden" onChange={(e) => handleFile(d.key, e)} />
                           </label>
                         </p>
+                        <CloudUploadButtons />
                       </div>
                     )}
 
@@ -550,6 +552,7 @@ function NewPermitPage() {
                 <Upload className="h-3.5 w-3.5" /> Add PDFs ({form.extraDocs.length}/30)
                 <input type="file" accept="application/pdf" multiple className="hidden" onChange={handleExtraFiles} />
               </label>
+              <CloudUploadButtons />
               {form.extraDocs.length > 0 && (
                 <ul className="mt-3 space-y-1">
                   {form.extraDocs.map((name, i) => (

@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { FileCheck2, CheckCircle2 } from "lucide-react";
 import { loadSubLibrary, type SubRecord } from "@/lib/subcontractor-library";
+import { CloudUploadButtons } from "@/components/cloud-upload-buttons";
 
 export const Route = createFileRoute("/portal/request-coi")({
   head: () => ({
@@ -124,7 +125,7 @@ function RequestCOIPage() {
             <li>· General Liability: $1,000,000 per occurrence / $2,000,000 aggregate</li>
             <li>· Workers' Compensation: Statutory limits (Florida)</li>
             <li>· Auto Liability: $1,000,000 combined single limit</li>
-            <li>· Certificate Holder: Flōridian LLC, [Floridian's address]</li>
+            <li>· Certificate Holder: Flōridian LLC, 1000 S Pine Island Rd, Suite 155, Plantation, FL 33324</li>
             <li>· Additional Insured endorsement required on GL policy</li>
             <li>· 30-day notice of cancellation required</li>
             <li>· Policy must be active for the full duration of the project</li>
@@ -177,6 +178,7 @@ function RequestCOIPage() {
           {coiFile && (
             <div className="mt-1.5 text-[11px] text-obsidian/60 font-mono">{coiFile.name}</div>
           )}
+          <CloudUploadButtons />
           <p className="mt-1.5 text-[11px] text-obsidian/50">
             Optional. Upload a COI example provided by the HOA, GC, or certificate holder if available.
           </p>

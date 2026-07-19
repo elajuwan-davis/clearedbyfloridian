@@ -37,6 +37,7 @@ import { Route as ProjectsIdRouteImport } from './routes/projects.$id'
 import { Route as PortalRequestSubInsuranceRouteImport } from './routes/portal.request-sub-insurance'
 import { Route as PortalRequestCoiRouteImport } from './routes/portal.request-coi'
 import { Route as PortalProjectsRouteImport } from './routes/portal.projects'
+import { Route as PortalProfileRouteImport } from './routes/portal.profile'
 import { Route as PortalPermitsRouteImport } from './routes/portal.permits'
 import { Route as PortalPermitFeesRouteImport } from './routes/portal.permit-fees'
 import { Route as PortalNewPermitRouteImport } from './routes/portal.new-permit'
@@ -192,6 +193,11 @@ const PortalProjectsRoute = PortalProjectsRouteImport.update({
   path: '/projects',
   getParentRoute: () => PortalRoute,
 } as any)
+const PortalProfileRoute = PortalProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => PortalRoute,
+} as any)
 const PortalPermitsRoute = PortalPermitsRouteImport.update({
   id: '/permits',
   path: '/permits',
@@ -294,6 +300,7 @@ export interface FileRoutesByFullPath {
   '/portal/new-permit': typeof PortalNewPermitRoute
   '/portal/permit-fees': typeof PortalPermitFeesRoute
   '/portal/permits': typeof PortalPermitsRouteWithChildren
+  '/portal/profile': typeof PortalProfileRoute
   '/portal/projects': typeof PortalProjectsRoute
   '/portal/request-coi': typeof PortalRequestCoiRoute
   '/portal/request-sub-insurance': typeof PortalRequestSubInsuranceRoute
@@ -336,6 +343,7 @@ export interface FileRoutesByTo {
   '/portal/new-permit': typeof PortalNewPermitRoute
   '/portal/permit-fees': typeof PortalPermitFeesRoute
   '/portal/permits': typeof PortalPermitsRouteWithChildren
+  '/portal/profile': typeof PortalProfileRoute
   '/portal/projects': typeof PortalProjectsRoute
   '/portal/request-coi': typeof PortalRequestCoiRoute
   '/portal/request-sub-insurance': typeof PortalRequestSubInsuranceRoute
@@ -380,6 +388,7 @@ export interface FileRoutesById {
   '/portal/new-permit': typeof PortalNewPermitRoute
   '/portal/permit-fees': typeof PortalPermitFeesRoute
   '/portal/permits': typeof PortalPermitsRouteWithChildren
+  '/portal/profile': typeof PortalProfileRoute
   '/portal/projects': typeof PortalProjectsRoute
   '/portal/request-coi': typeof PortalRequestCoiRoute
   '/portal/request-sub-insurance': typeof PortalRequestSubInsuranceRoute
@@ -425,6 +434,7 @@ export interface FileRouteTypes {
     | '/portal/new-permit'
     | '/portal/permit-fees'
     | '/portal/permits'
+    | '/portal/profile'
     | '/portal/projects'
     | '/portal/request-coi'
     | '/portal/request-sub-insurance'
@@ -467,6 +477,7 @@ export interface FileRouteTypes {
     | '/portal/new-permit'
     | '/portal/permit-fees'
     | '/portal/permits'
+    | '/portal/profile'
     | '/portal/projects'
     | '/portal/request-coi'
     | '/portal/request-sub-insurance'
@@ -510,6 +521,7 @@ export interface FileRouteTypes {
     | '/portal/new-permit'
     | '/portal/permit-fees'
     | '/portal/permits'
+    | '/portal/profile'
     | '/portal/projects'
     | '/portal/request-coi'
     | '/portal/request-sub-insurance'
@@ -745,6 +757,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PortalProjectsRouteImport
       parentRoute: typeof PortalRoute
     }
+    '/portal/profile': {
+      id: '/portal/profile'
+      path: '/profile'
+      fullPath: '/portal/profile'
+      preLoaderRoute: typeof PortalProfileRouteImport
+      parentRoute: typeof PortalRoute
+    }
     '/portal/permits': {
       id: '/portal/permits'
       path: '/permits'
@@ -892,6 +911,7 @@ interface PortalRouteChildren {
   PortalNewPermitRoute: typeof PortalNewPermitRoute
   PortalPermitFeesRoute: typeof PortalPermitFeesRoute
   PortalPermitsRoute: typeof PortalPermitsRouteWithChildren
+  PortalProfileRoute: typeof PortalProfileRoute
   PortalProjectsRoute: typeof PortalProjectsRoute
   PortalRequestCoiRoute: typeof PortalRequestCoiRoute
   PortalRequestSubInsuranceRoute: typeof PortalRequestSubInsuranceRoute
@@ -906,6 +926,7 @@ const PortalRouteChildren: PortalRouteChildren = {
   PortalNewPermitRoute: PortalNewPermitRoute,
   PortalPermitFeesRoute: PortalPermitFeesRoute,
   PortalPermitsRoute: PortalPermitsRouteWithChildren,
+  PortalProfileRoute: PortalProfileRoute,
   PortalProjectsRoute: PortalProjectsRoute,
   PortalRequestCoiRoute: PortalRequestCoiRoute,
   PortalRequestSubInsuranceRoute: PortalRequestSubInsuranceRoute,

@@ -10,6 +10,7 @@ import {
   MISSING_FIELD_LABELS,
   type SubRecord,
 } from "@/lib/subcontractor-library";
+import { CloudUploadButtons } from "@/components/cloud-upload-buttons";
 
 type Search = { id?: string };
 
@@ -121,6 +122,7 @@ function NewSubcontractorPage() {
             </span>
           )}
         </div>
+        <CloudUploadButtons />
       </div>
     );
   }
