@@ -33,7 +33,7 @@ export function LogPermitFeeDialog({
   editing = null,
 }: Props) {
   const [projectId, setProjectId] = useState(defaultProjectId ?? PROJECTS[0]?.id ?? "");
-  const [feeType, setFeeType] = useState<ManualFeeType>("Building Permit Fee");
+  const [feeType, setFeeType] = useState<ManualFeeType>("Total Permit Fee");
   const [amount, setAmount] = useState("");
   const [notes, setNotes] = useState("");
   const [date, setDate] = useState(today());
