@@ -13,39 +13,21 @@ export const Route = createFileRoute("/projects")({
   component: ProjectsPage,
 });
 
-type ProjectStatus =
-  | "submitted"
-  | "in_review"
-  | "corrections_required"
-  | "correction_response_under_review"
-  | "resubmitted_to_county"
-  | "approved"
-  | "inspection_scheduled"
-  | "inspection_complete"
-  | "permit_issued";
-
 import { projectStatusMeta as statusMeta, toneClass } from "@/lib/status-badges";
+import { PROJECTS, fullAddress } from "@/lib/projects-data";
 
+const projects = PROJECTS.map((p) => ({
+  id: p.id,
+  permit_no: p.permit_no,
+  name: p.name,
+  address: fullAddress(p),
+  county: p.county,
+  value_cents: p.value_cents,
+  permit_types: p.permit_types,
+  status: p.status,
+  submitted_at: p.submitted_at,
+}));
 
-const projects: Array<{
-  id: string;
-  permit_no: string;
-  name: string;
-  address: string;
-  county: string;
-  value_cents: number;
-  permit_types: string[];
-  status: ProjectStatus;
-  submitted_at: string;
-}> = [
-  { id: "1", permit_no: "CLR-2026-0142", name: "Ocean Ridge Estate", address: "1247 Banyan Trail, Ocean Ridge", county: "Palm Beach", value_cents: 412_500_000, permit_types: ["Building", "Electrical", "Plumbing"], status: "in_review", submitted_at: "May 28, 2026" },
-  { id: "2", permit_no: "CLR-2026-0138", name: "Jupiter Island Residence", address: "88 Beach Rd, Jupiter Island", county: "Martin", value_cents: 687_200_000, permit_types: ["Building", "Mechanical"], status: "corrections_required", submitted_at: "May 21, 2026" },
-  { id: "3", permit_no: "CLR-2026-0131", name: "Manalapan Bayfront", address: "1812 S Ocean Blvd, Manalapan", county: "Palm Beach", value_cents: 1_240_000_000, permit_types: ["Building", "Electrical", "Plumbing", "Mechanical"], status: "permit_issued", submitted_at: "May 12, 2026" },
-  { id: "4", permit_no: "CLR-2026-0127", name: "Hobe Sound Compound", address: "5440 SE Gomez Ave, Hobe Sound", county: "Martin", value_cents: 298_400_000, permit_types: ["Building"], status: "approved", submitted_at: "May 06, 2026" },
-  { id: "5", permit_no: "CLR-2026-0119", name: "Vero Beach Oceanfront", address: "2100 Ocean Dr, Vero Beach", county: "Indian River", value_cents: 524_900_000, permit_types: ["Building", "Electrical"], status: "submitted", submitted_at: "Apr 29, 2026" },
-  { id: "6", permit_no: "CLR-2026-0112", name: "Stuart Riverhouse", address: "320 SW St Lucie Cres, Stuart", county: "Martin", value_cents: 186_300_000, permit_types: ["Building", "Plumbing"], status: "inspection_scheduled", submitted_at: "Apr 22, 2026" },
-  { id: "7", permit_no: "CLR-2026-0104", name: "Palm Beach Landmark", address: "412 N County Rd, Palm Beach", county: "Palm Beach", value_cents: 2_180_000_000, permit_types: ["Building", "Electrical", "Plumbing", "Mechanical"], status: "resubmitted_to_county", submitted_at: "Apr 14, 2026" },
-];
 
 const fmtMoney = (cents: number) =>
   `$${(cents / 100).toLocaleString("en-US", { maximumFractionDigits: 0 })}`;
