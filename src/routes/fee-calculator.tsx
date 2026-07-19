@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import contestReport from "@/assets/fee-contest-report.pdf.asset.json";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { isInternalUser } from "@/lib/is-internal-user";
 
 
 export const Route = createFileRoute("/fee-calculator")({
@@ -84,6 +85,7 @@ function FeeCalculatorPage() {
   const [reportOpen, setReportOpen] = useState(false);
   const [accuracyOpen, setAccuracyOpen] = useState(false);
   const [shareStatus, setShareStatus] = useState("Share");
+  const internal = isInternalUser();
   
 
 
@@ -274,15 +276,17 @@ function FeeCalculatorPage() {
             </div>
 
             <div className="flex flex-wrap gap-3">
-              <Button
-                type="button"
-                variant="dark"
-                onClick={() => setReportOpen(true)}
-                className="rounded-[3px] gap-2"
-              >
-                <FileDown className="h-4 w-4" />
-                Generate Contest Letter
-              </Button>
+              {internal && (
+                <Button
+                  type="button"
+                  variant="dark"
+                  onClick={() => setReportOpen(true)}
+                  className="rounded-[3px] gap-2"
+                >
+                  <FileDown className="h-4 w-4" />
+                  Generate Contest Letter
+                </Button>
+              )}
               <Button
                 type="button"
                 variant="outline"
