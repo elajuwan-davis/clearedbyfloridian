@@ -17,7 +17,8 @@ function RequestCOIPage() {
   const [submitted, setSubmitted] = useState(false);
   const [library, setLibrary] = useState<SubRecord[]>([]);
   const [subIdx, setSubIdx] = useState<string>("");
-  
+  const [coiFile, setCoiFile] = useState<File | null>(null);
+
   const [form, setForm] = useState({
     projectName: "",
     projectAddress: "",
@@ -45,7 +46,7 @@ function RequestCOIPage() {
   function reset() {
     setSubmitted(false);
     setSubIdx("");
-    
+    setCoiFile(null);
     setForm({ projectName: "", projectAddress: "", holderName: "", holderAddress: "", additionalInsured: false, notes: "" });
   }
 
