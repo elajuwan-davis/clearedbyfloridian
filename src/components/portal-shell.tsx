@@ -113,12 +113,14 @@ function SidebarBody({
   onNavigate,
   onSignOut,
   collapsible = false,
+  alertKeys,
 }: {
   pathname: string;
   onNavigate?: () => void;
   onSignOut: () => void;
   /** When true, the sidebar shows icons only until a `.sidebar-expanded` ancestor toggles labels in. */
   collapsible?: boolean;
+  alertKeys: Set<AlertKey>;
 }) {
   // When collapsible, labels/section headers are hidden by default and shown when
   // the .sidebar-expanded class is present on an ancestor (hover on desktop).
