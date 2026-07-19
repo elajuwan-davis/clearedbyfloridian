@@ -59,7 +59,7 @@ export function computeAlertsFrom(subs: SubRecord[], now: Date = new Date()): Al
 
     // License — SubRecord doesn't currently store a license expiration date,
     // but tolerate one on read for future-proofing.
-    const lic = parseDate((s as SubRecord & { licenseExpiration?: string | null }).licenseExpiration);
+    const lic = parseDate(s.licenseExpiration);
     if (lic) {
       const d = daysBetween(lic, today);
       if (d >= 0 && d <= WARN_WINDOW_DAYS) {
