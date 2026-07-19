@@ -4,6 +4,7 @@ import { Users, Plus, CheckCircle2, AlertTriangle } from "lucide-react";
 import {
   loadSubLibrary,
   coiStatus,
+  licenseStatus,
   isComplete,
   type SubRecord,
 } from "@/lib/subcontractor-library";
