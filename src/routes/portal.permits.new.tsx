@@ -281,15 +281,54 @@ function NewPermitPage() {
           <div className="pt-2 space-y-5">
             <div className={sectionCls}>Subcontractors</div>
             <p className="text-[12px] text-obsidian/55 -mt-3">
-              Saved subcontractors power the dropdowns on Request COI and Request Sub Insurance Update.
+              Select a saved subcontractor to auto-fill, or enter new details. Saved subs live in{" "}
+              <Link to="/portal/subcontractors" className="underline">Subcontractors</Link>.
             </p>
             {(["subPlumbing", "subElectrical", "subGas"] as const).map((k) => {
               const trade = k === "subPlumbing" ? "Plumbing" : k === "subElectrical" ? "Electrical" : "Gas";
               const s = form[k];
               const set = (patch: Partial<SubIntake>) => update(k, { ...s, ...patch });
+              const savedForTrade = savedSubs.filter(
+                (x) => !x.trade || x.trade.toLowerCase() === trade.toLowerCase(),
+              );
+              function applySaved(id: string) {
+                if (!id) return;
+                const rec = savedSubs.find((x) => x.id === id);
+                if (!rec) return;
+                set({
+                  companyName: rec.companyName ?? "",
+                  qualifierName: rec.qualifierName ?? "",
+                  licenseNumber: rec.licenseNumber ?? "",
+                  contactEmail: rec.email ?? "",
+                  insuranceCarrierEmail: rec.insuranceCarrierEmail ?? "",
+                });
+              }
               return (
                 <div key={k} className="border border-obsidian/12 rounded-[3px] p-4">
-                  <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-obsidian mb-3">{trade} Sub</div>
+                  <div className="flex items-center justify-between mb-3 gap-3 flex-wrap">
+                    <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-obsidian">{trade} Sub</div>
+                    {savedSubs.length > 0 && (
+                      <select
+                        className="text-[12px] border border-obsidian/20 rounded-[3px] px-2 py-1 bg-white"
+                        defaultValue=""
+                        onChange={(e) => { applySaved(e.target.value); e.target.value = ""; }}
+                      >
+                        <option value="">Select saved sub…</option>
+                        {savedForTrade.length > 0 && (
+                          <optgroup label={`${trade} subs`}>
+                            {savedForTrade.map((x) => (
+                              <option key={x.id} value={x.id}>{x.companyName}</option>
+                            ))}
+                          </optgroup>
+                        )}
+                        <optgroup label="All saved">
+                          {savedSubs.map((x) => (
+                            <option key={x.id} value={x.id}>{x.companyName}{x.trade ? ` — ${x.trade}` : ""}</option>
+                          ))}
+                        </optgroup>
+                      </select>
+                    )}
+                  </div>
                   <div className="grid gap-4 sm:grid-cols-2">
                     <div><label className={labelCls}>Company Name</label><input className={inputCls} value={s.companyName} onChange={(e) => set({ companyName: e.target.value })} /></div>
                     <div><label className={labelCls}>Qualifier Name</label><input className={inputCls} value={s.qualifierName} onChange={(e) => set({ qualifierName: e.target.value })} /></div>
@@ -301,6 +340,7 @@ function NewPermitPage() {
               );
             })}
           </div>
+
 
 
           <div>
