@@ -75,7 +75,7 @@ const SEED: Seed[] = [
   { n: 18, name: "Knight Residence", client: "Emma Althea Knight", street: "10142 SW Davanti Dr", city: "Port Saint Lucie", zip: "34987", status: "permit_issued", permit_no: "2621607" },
   { n: 19, name: "Manera Residence", client: "Knight Manera", street: "2006 Windward Way", city: "Vero Beach", zip: "32960" },
   { n: 20, name: "Perle Residence", client: "Cannatelli Builders (Perle)", street: "1261 Spanish River Rd", city: "Boca Raton", zip: "33432" },
-  { n: 21, name: "Mesmer Residence", client: "Mesmer Family", street: "3153 Royal Palm Ave", city: "Miami Beach", scope: "Natural Gas / Pool, Pergola & ODK", status: "permit_issued", permit_no: "PO-R2601278" },
+  { n: 21, name: "Mesmer Residence", client: "Mesmer Family", street: "3153 Royal Palm Ave", city: "Miami Beach", zip: "33140", scope: "Natural Gas / Pool, Pergola & ODK", status: "permit_issued", permit_no: "PO-R2601278" },
   { n: 22, name: "Henderson", client: "Arielle Henderson", street: "12923 SW Leopold Way", city: "Port St. Lucie", zip: "34987", status: "permit_issued", permit_no: "2619180" },
 
   { n: 24, name: "Paul-Hus Residence", client: "Sarah & Andy Paul-Hus", street: "2090 NE 26th St", city: "Lighthouse Point", zip: "33064", scope: "Pergola" },
@@ -84,7 +84,7 @@ const SEED: Seed[] = [
   { n: 27, name: "Moore Residence", client: "Thomas Moore", street: "200 Bayberry Dr", city: "Plantation", zip: "33317", scope: "Gas Heater / Gas Grille" },
   { n: 28, name: "Gardiner Residence", client: "Jennifer Gardiner", street: "4563 Citron Way", city: "Westlake", zip: "33470", permit_no: "PRP02025600199" },
   { n: 29, name: "Abrams Residence", client: "Paul Abrams", street: "19 Sutton Drive", city: "Palm Beach", zip: "33480", scope: "Gas Heater", permit_no: "RESP-2026.01.0416" },
-  { n: 30, name: "Valle Residence", client: "Valle", street: "Address pending", city: "" },
+  { n: 30, name: "Valle Residence", client: "Valle", street: "4555 Estates Cir", city: "Westlake", zip: "33470" },
   { n: 31, name: "601 Residence", client: "TBD", street: "601 Lighthouse Drive", city: "North Palm Beach", zip: "33408" },
 ];
 
