@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useMemo, useState, type ChangeEvent, type FormEvent } from "react";
-import { FileCheck2, CheckCircle2, Upload, X } from "lucide-react";
+import { useEffect, useMemo, useState, type FormEvent } from "react";
+import { FileCheck2, CheckCircle2 } from "lucide-react";
 import { loadSubLibrary, type SubRecord } from "@/lib/subcontractor-library";
 
 export const Route = createFileRoute("/portal/request-coi")({
