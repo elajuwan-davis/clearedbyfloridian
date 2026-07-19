@@ -3,13 +3,13 @@ import { getProjectById } from "@/lib/projects-data";
 import { ProjectDetail, ProjectDetailNotFound } from "@/components/project-detail";
 
 export const Route = createFileRoute("/portal/projects/$id")({
-  head: ({ loaderData }) => ({
+  head: () => ({
     meta: [
-      { title: `${loaderData?.project?.name ?? "Project"} — Cleared by Flōridian` },
+      { title: "Project — Cleared by Flōridian" },
       { name: "robots", content: "noindex" },
     ],
   }),
-  loader: ({ params }) => {
+  loader: ({ params }: { params: { id: string } }) => {
     const project = getProjectById(params.id);
     if (!project) throw notFound();
     return { project };
