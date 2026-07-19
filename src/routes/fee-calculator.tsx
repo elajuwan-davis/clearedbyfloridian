@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import contestReport from "@/assets/fee-contest-report.pdf.asset.json";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { isInternalUser } from "@/lib/is-internal-user";
 
 
 export const Route = createFileRoute("/fee-calculator")({
