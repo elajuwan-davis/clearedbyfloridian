@@ -63,9 +63,13 @@ const SEED: Project[] = PROJECTS.map((p) => ({
   updated_at: p.updated_at,
 }));
 
+const COUNTIES = ["Palm Beach", "Martin", "St. Lucie", "Indian River", "Broward", "Miami-Dade"] as const;
+type CountyFilter = "All" | (typeof COUNTIES)[number];
+
 function MyPermitsPage() {
   const [projects] = useState<Project[]>(SEED);
   const [query, setQuery] = useState("");
+  const [countyFilter, setCountyFilter] = useState<CountyFilter>("All");
   const [hideCounts, setHideCounts] = useState(false);
   const [open, setOpen] = useState<Record<GroupKey, boolean>>({
     intake: true,
@@ -78,9 +82,18 @@ function MyPermitsPage() {
 
   const filtered = useMemo(() => {
     const q = query.toLowerCase().trim();
-    if (!q) return projects;
-    return projects.filter((p) => `${p.name} ${p.address} ${p.county}`.toLowerCase().includes(q));
-  }, [projects, query]);
+    return projects.filter((p) => {
+      if (countyFilter !== "All" && p.county !== countyFilter) return false;
+      if (q && !`${p.name} ${p.address} ${p.county}`.toLowerCase().includes(q)) return false;
+      return true;
+    });
+  }, [projects, query, countyFilter]);
+
+  const countyCounts = useMemo(() => {
+    const counts: Record<string, number> = { All: projects.length };
+    for (const c of COUNTIES) counts[c] = projects.filter((p) => p.county === c).length;
+    return counts;
+  }, [projects]);
 
   const grouped = useMemo(() => {
     return GROUPS.map((g) => ({
@@ -88,6 +101,7 @@ function MyPermitsPage() {
       items: filtered.filter((p) => g.statuses.includes(p.status)),
     }));
   }, [filtered]);
+
 
   return (
     <PortalShell>
@@ -125,6 +139,30 @@ function MyPermitsPage() {
           />
         </div>
 
+        <div className="mt-4 flex flex-wrap gap-2">
+          {(["All", ...COUNTIES] as CountyFilter[]).map((c) => {
+            const active = countyFilter === c;
+            return (
+              <button
+                key={c}
+                type="button"
+                onClick={() => setCountyFilter(c)}
+                className={`inline-flex items-center gap-2 px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.12em] rounded-[3px] border transition-colors ${
+                  active
+                    ? "bg-obsidian text-paper border-obsidian"
+                    : "bg-white text-obsidian/70 border-obsidian/15 hover:border-obsidian/40 hover:text-obsidian"
+                }`}
+              >
+                {c}
+                <span className={`tabular-nums ${active ? "text-paper/70" : "text-obsidian/40"}`}>
+                  {countyCounts[c] ?? 0}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+
+
         <div className="mt-8 space-y-4">
           {grouped.map((g) => (
             <div key={g.key} className="bg-white border border-obsidian/10" style={{ borderLeftWidth: "3px", borderLeftColor: g.borderColor }}>
@@ -157,8 +195,12 @@ function MyPermitsPage() {
                           >
                             <div className="min-w-0 flex-1">
                               <div className="text-sm font-medium text-obsidian truncate">{p.name}</div>
-                              <div className="mt-0.5 text-xs text-obsidian/55 truncate">{p.address} · {p.county}</div>
+                              <div className="mt-0.5 text-xs text-obsidian/55 truncate">{p.address}</div>
                             </div>
+                            <span className="inline-flex items-center border border-obsidian/15 bg-paper-warm px-2 py-0.5 text-[10px] font-mono uppercase tracking-[0.1em] text-obsidian/70 rounded-[2px]">
+                              {p.county}
+                            </span>
+
                             {meta && (
                               <span className={`inline-flex items-center border px-2 py-0.5 text-[10px] font-medium uppercase tracking-[0.1em] ${toneClass[meta.tone]}`}>
                                 {meta.label}
