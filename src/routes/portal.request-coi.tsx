@@ -167,9 +167,26 @@ function RequestCOIPage() {
         </div>
 
         <div>
+          <label className={labelCls}>Attach Current COI (PDF)</label>
+          <input
+            type="file"
+            accept="application/pdf"
+            onChange={(e) => setCoiFile(e.target.files?.[0] ?? null)}
+            className="block w-full text-sm text-obsidian file:mr-3 file:rounded-[3px] file:border-0 file:bg-obsidian file:px-3 file:py-2 file:font-mono file:text-[10px] file:uppercase file:tracking-[0.14em] file:text-paper hover:file:bg-obsidian/90"
+          />
+          {coiFile && (
+            <div className="mt-1.5 text-[11px] text-obsidian/60 font-mono">{coiFile.name}</div>
+          )}
+          <p className="mt-1.5 text-[11px] text-obsidian/50">
+            Optional. Upload a COI example provided by the HOA, GC, or certificate holder if available.
+          </p>
+        </div>
+
+        <div>
           <label className={labelCls}>Notes</label>
           <textarea rows={4} className={inputCls} value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} />
         </div>
+
 
         <div className="pt-2 flex justify-end">
           <button type="submit" className="inline-flex items-center gap-2 bg-obsidian px-5 py-2.5 font-mono text-[11px] uppercase tracking-[0.14em] text-paper hover:bg-obsidian/90 rounded-[3px]">
