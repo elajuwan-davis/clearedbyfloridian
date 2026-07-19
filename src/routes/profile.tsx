@@ -11,7 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Upload, Plus, Trash2, FileText, CheckCircle2, AlertTriangle, CreditCard, ArrowRight } from "lucide-react";
+import { Upload, Plus, Trash2, FileText, CheckCircle2, AlertTriangle, CreditCard, ArrowRight, Users, Mail } from "lucide-react";
 import { toast } from "sonner";
 import { loadPaymentAuth, clearPaymentAuth, type PaymentAuthRecord } from "@/lib/payment-auth";
 import { supabase } from "@/integrations/supabase/client";
@@ -26,21 +26,25 @@ export const Route = createFileRoute("/profile")({
   component: ProfilePage,
 });
 
+const TEAM_MEMBERS: Array<{ name: string; email: string; role: string }> = [
+  { name: "Elajuwan Davis", email: "elajuwan@floridianinc.com", role: "Owner" },
+  { name: "Jose", email: "jose@floridianinc.com", role: "Admin" },
+  { name: "Iman", email: "eman@floridianinc.com", role: "Admin" },
+  { name: "Paul", email: "paul@floridianinc.com", role: "Admin" },
+];
+
 function ProfilePage() {
-  const [displayName, setDisplayName] = useState("Javier Mendez");
+  const [displayName, setDisplayName] = useState("Elajuwan Davis");
   const [company, setCompany] = useState({
-    name: "Coastline Builders Group",
-    website: "https://coastlinebg.com",
+    name: "Flōridian LLC",
+    website: "https://floridianinc.com",
     phone: "(561) 555-0144",
     address: "",
   });
   const [language, setLanguage] = useState("en");
-  const [emails, setEmails] = useState<string[]>([
-    "jmendez@coastlinebg.com",
-    "permits@coastlinebg.com",
-  ]);
+  const [emails, setEmails] = useState<string[]>(["king@floridianinc.com"]);
   const [newEmail, setNewEmail] = useState("");
-  const [license] = useState({ number: "CGC1521884", type: "Certified General Contractor", expires: "2027-08-31" });
+  const [license] = useState({ number: "CPC1459161", type: "CPC (Certified Pool/Spa Contractor)", expires: "2027-08-31" });
   const [pwd, setPwd] = useState({ current: "", next: "", confirm: "" });
   const [avatar, setAvatar] = useState<string | null>(null);
   const [paymentAuth, setPaymentAuth] = useState<PaymentAuthRecord | null>(null);
