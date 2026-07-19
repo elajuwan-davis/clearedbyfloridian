@@ -29,7 +29,7 @@ export const Route = createFileRoute("/profile")({
 const TEAM_MEMBERS: Array<{ name: string; email: string; role: string }> = [
   { name: "Elajuwan Davis", email: "elajuwan@floridianinc.com", role: "Owner" },
   { name: "Jose", email: "jose@floridianinc.com", role: "Admin" },
-  { name: "Iman", email: "eman@floridianinc.com", role: "Admin" },
+  { name: "Eman", email: "eman@floridianinc.com", role: "Admin" },
   { name: "Paul", email: "paul@floridianinc.com", role: "Admin" },
 ];
 
