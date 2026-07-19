@@ -186,15 +186,6 @@ function SubIntakeTokenPage() {
                 <FileRow label="License Upload" keyName="licenseFileName" />
               )}
               {(isBlankInvite || missing.includes("licenseExpiration")) && (
-                <p className="text-sm text-obsidian/70">
-                  Your profile is already complete. You may re-submit any updated documents below.
-                </p>
-              )}
-
-              {missing.includes("licenseFileName") && (
-                <FileRow label="License Upload" keyName="licenseFileName" />
-              )}
-              {missing.includes("licenseExpiration") && (
                 <div>
                   <label className={labelCls}>License Expiration Date</label>
                   <input
@@ -206,10 +197,10 @@ function SubIntakeTokenPage() {
                   />
                 </div>
               )}
-              {missing.includes("coiFileName") && (
+              {(isBlankInvite || missing.includes("coiFileName")) && (
                 <FileRow label="Certificate of Insurance (COI)" keyName="coiFileName" />
               )}
-              {missing.includes("coiExpiration") && (
+              {(isBlankInvite || missing.includes("coiExpiration")) && (
                 <div>
                   <label className={labelCls}>COI Expiration Date</label>
                   <input
@@ -221,7 +212,7 @@ function SubIntakeTokenPage() {
                   />
                 </div>
               )}
-              {missing.includes("w9FileName") && (
+              {(isBlankInvite || missing.includes("w9FileName")) && (
                 <FileRow label="W-9 Form" keyName="w9FileName" />
               )}
 
