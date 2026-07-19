@@ -331,13 +331,16 @@ export function PortalShell({ children }: { children: ReactNode }) {
   }
 
 
+  const alerts = useExpirationAlerts();
+  const alertKeys = computeAlertKeys(alerts);
+
   return (
     <div className="min-h-screen bg-background">
       {/* Desktop sidebar — collapsed 64px, expands to 240px on hover */}
       <aside
         className="group/sb fixed inset-y-0 left-0 z-40 hidden md:flex flex-col transition-[width] duration-200 ease-out w-[64px] hover:w-[240px] hover:shadow-2xl"
       >
-        <SidebarBody pathname={pathname} onSignOut={handleSignOut} collapsible />
+        <SidebarBody pathname={pathname} onSignOut={handleSignOut} collapsible alertKeys={alertKeys} />
       </aside>
 
       {/* Main column */}
@@ -361,6 +364,7 @@ export function PortalShell({ children }: { children: ReactNode }) {
                     setOpen(false);
                     handleSignOut();
                   }}
+                  alertKeys={alertKeys}
                 />
               </SheetContent>
             </Sheet>
@@ -368,10 +372,13 @@ export function PortalShell({ children }: { children: ReactNode }) {
               {pathname}
             </div>
           </div>
-          {/* Mobile wordmark on right */}
-          <Link to="/" className="md:hidden leading-[1] text-right">
-            <div className="wordmark text-lg">Cleared</div>
-          </Link>
+          <div className="flex items-center gap-2">
+            <NotificationBell />
+            {/* Mobile wordmark on right */}
+            <Link to="/" className="md:hidden leading-[1] text-right">
+              <div className="wordmark text-lg">Cleared</div>
+            </Link>
+          </div>
         </header>
         <div className="flex-1 px-4 sm:px-6 md:px-8 py-6 md:py-10">{children}</div>
       </div>
