@@ -12,6 +12,8 @@ import {
   Calculator,
   ShieldCheck,
   FileCheck2,
+  ShieldAlert,
+  Wallet,
   LogOut,
   Menu,
   User,
@@ -22,20 +24,46 @@ import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/s
 import { supabase } from "@/integrations/supabase/client";
 
 type NavItem = { to: string; label: string; icon: typeof LayoutDashboard; exact?: boolean };
+type NavSection = { label?: string; items: NavItem[] };
 
-const portalNav: NavItem[] = [
-  { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard, exact: true },
-  { to: "/my-permits", label: "My Permits", icon: FolderOpen },
-  { to: "/building-dept-logins", label: "Building Dept", icon: Building2 },
-  { to: "/messages", label: "Messages", icon: MessageSquare },
-  { to: "/forms", label: "Forms", icon: FileText },
-  { to: "/invoices", label: "Invoices", icon: Receipt },
-  { to: "/ask-victoria", label: "Ask Victoria", icon: Sparkle },
-  { to: "/fee-calculator", label: "Fee Calculator", icon: Calculator },
-  { to: "/project-guides", label: "Project Guides", icon: BookOpen },
-  { to: "/insurance", label: "Get Insurance", icon: ShieldCheck },
-  { to: "/portal/request-coi", label: "Request COI", icon: FileCheck2 },
-  { to: "/profile", label: "Profile", icon: User },
+const portalNav: NavSection[] = [
+  {
+    items: [
+      { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard, exact: true },
+    ],
+  },
+  {
+    label: "Projects",
+    items: [
+      { to: "/my-permits", label: "My Permits", icon: FolderOpen },
+      { to: "/messages", label: "Messages", icon: MessageSquare },
+      { to: "/project-guides", label: "Project Guides", icon: BookOpen },
+      { to: "/building-dept-logins", label: "Building Dept", icon: Building2 },
+    ],
+  },
+  {
+    label: "Finance",
+    items: [
+      { to: "/invoices", label: "Invoices", icon: Receipt },
+      { to: "/portal/permit-fees", label: "Permit Fees", icon: Wallet },
+      { to: "/fee-calculator", label: "Fee Calculator", icon: Calculator },
+    ],
+  },
+  {
+    label: "Insurance",
+    items: [
+      { to: "/portal/request-coi", label: "Request COI", icon: FileCheck2 },
+      { to: "/portal/request-sub-insurance", label: "Request Sub Insurance Update", icon: ShieldAlert },
+      { to: "/insurance", label: "Get Insurance", icon: ShieldCheck },
+    ],
+  },
+  {
+    items: [
+      { to: "/ask-victoria", label: "Ask Victoria", icon: Sparkle },
+      { to: "/forms", label: "Forms", icon: FileText },
+      { to: "/profile", label: "Profile", icon: User },
+    ],
+  },
 ];
 
 
@@ -103,36 +131,51 @@ function SidebarBody({
         </Link>
       </div>
 
-      <nav className="flex-1 px-3 py-5 space-y-0.5 overflow-y-auto">
-        {portalNav.map((item) => {
-          const Icon = item.icon;
-          const isActive = item.exact
-            ? pathname === item.to
-            : pathname === item.to || pathname.startsWith(item.to + "/");
-          return (
-            <Link
-              key={item.to}
-              to={item.to as never}
-              onClick={onNavigate}
-              className="group relative flex items-center gap-3 pl-5 pr-3 py-2.5 text-[13px] font-subline tracking-wide transition-colors"
-              style={{
-                color: isActive ? "var(--paper)" : "color-mix(in oklab, var(--paper) 60%, transparent)",
-                backgroundColor: isActive
-                  ? "color-mix(in oklab, var(--sky) 8%, transparent)"
-                  : "transparent",
-              }}
-            >
-              <span
-                aria-hidden
-                className="absolute left-0 top-0 bottom-0 w-[3px] transition-opacity"
-                style={{ backgroundColor: "var(--sky)", opacity: isActive ? 1 : 0 }}
-              />
-              <Icon className="h-4 w-4 shrink-0" strokeWidth={1.5} />
-              <span>{item.label}</span>
-            </Link>
-          );
-        })}
+      <nav className="flex-1 px-3 py-5 overflow-y-auto">
+        {portalNav.map((section, si) => (
+          <div key={si} className={si === 0 ? "" : "mt-5"}>
+            {section.label && (
+              <div
+                className="px-5 mb-1.5 font-mono text-[9px] uppercase tracking-[0.22em]"
+                style={{ color: "color-mix(in oklab, var(--paper) 40%, transparent)" }}
+              >
+                {section.label}
+              </div>
+            )}
+            <div className="space-y-0.5">
+              {section.items.map((item) => {
+                const Icon = item.icon;
+                const isActive = item.exact
+                  ? pathname === item.to
+                  : pathname === item.to || pathname.startsWith(item.to + "/");
+                return (
+                  <Link
+                    key={item.to}
+                    to={item.to as never}
+                    onClick={onNavigate}
+                    className="group relative flex items-center gap-3 pl-5 pr-3 py-2.5 text-[13px] font-subline tracking-wide transition-colors"
+                    style={{
+                      color: isActive ? "var(--paper)" : "color-mix(in oklab, var(--paper) 60%, transparent)",
+                      backgroundColor: isActive
+                        ? "color-mix(in oklab, var(--sky) 8%, transparent)"
+                        : "transparent",
+                    }}
+                  >
+                    <span
+                      aria-hidden
+                      className="absolute left-0 top-0 bottom-0 w-[3px] transition-opacity"
+                      style={{ backgroundColor: "var(--sky)", opacity: isActive ? 1 : 0 }}
+                    />
+                    <Icon className="h-4 w-4 shrink-0" strokeWidth={1.5} />
+                    <span>{item.label}</span>
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        ))}
       </nav>
+
 
       <div
         className="px-4 py-4 border-t space-y-3"

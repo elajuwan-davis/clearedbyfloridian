@@ -1,6 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState, type ChangeEvent } from "react";
 import { Upload, Check, FileText, ArrowLeft, Save, Send, X, AlertCircle } from "lucide-react";
+import { upsertSub } from "@/lib/subcontractor-library";
 
 export const Route = createFileRoute("/portal/permits/new")({
   head: () => ({
@@ -30,6 +31,14 @@ const REQUIRED_DOCS = [
 
 type DocState = { uploaded: string | null; na: boolean; deferred: boolean };
 
+type SubIntake = {
+  companyName: string;
+  qualifierName: string;
+  licenseNumber: string;
+  contactEmail: string;
+  insuranceCarrierEmail: string;
+};
+
 type FormState = {
   step: 1 | 2;
   projectName: string;
@@ -37,9 +46,9 @@ type FormState = {
   municipality: string;
   permitType: string;
   description: string;
-  subPlumbing: string;
-  subElectrical: string;
-  subGas: string;
+  subPlumbing: SubIntake;
+  subElectrical: SubIntake;
+  subGas: SubIntake;
   submittedDate: string;
   contractorCompany: string;
   contractorQualifier: string;
@@ -63,6 +72,14 @@ const emptyDocs: Record<string, DocState> = Object.fromEntries(
   REQUIRED_DOCS.map((d) => [d.key, { uploaded: null, na: false, deferred: false }]),
 );
 
+const emptySub: SubIntake = {
+  companyName: "",
+  qualifierName: "",
+  licenseNumber: "",
+  contactEmail: "",
+  insuranceCarrierEmail: "",
+};
+
 const initial: FormState = {
   step: 1,
   projectName: "",
@@ -70,9 +87,9 @@ const initial: FormState = {
   municipality: "",
   permitType: PERMIT_TYPES[0],
   description: "",
-  subPlumbing: "",
-  subElectrical: "",
-  subGas: "",
+  subPlumbing: { ...emptySub },
+  subElectrical: { ...emptySub },
+  subGas: { ...emptySub },
   submittedDate: new Date().toISOString().slice(0, 10),
   contractorCompany: "",
   contractorQualifier: "",
@@ -159,6 +176,23 @@ function NewPermitPage() {
     } catch {
       /* ignore */
     }
+    // Persist subs to shared library so COI + Sub Insurance dropdowns can use them.
+    ([
+      ["Plumbing", form.subPlumbing],
+      ["Electrical", form.subElectrical],
+      ["Gas", form.subGas],
+    ] as const).forEach(([trade, s]) => {
+      if (s.companyName.trim()) {
+        upsertSub({
+          companyName: s.companyName,
+          trade,
+          qualifierName: s.qualifierName,
+          licenseNumber: s.licenseNumber,
+          email: s.contactEmail,
+          insuranceCarrierEmail: s.insuranceCarrierEmail,
+        });
+      }
+    });
     setSubmitted(true);
   }
 
@@ -244,14 +278,30 @@ function NewPermitPage() {
             </div>
           </div>
 
-          <div className="pt-2">
+          <div className="pt-2 space-y-5">
             <div className={sectionCls}>Subcontractors</div>
-            <div className="mt-3 grid gap-4 sm:grid-cols-3">
-              <div><label className={labelCls}>Plumbing</label><input className={inputCls} placeholder="Contractor name" value={form.subPlumbing} onChange={(e) => update("subPlumbing", e.target.value)} /></div>
-              <div><label className={labelCls}>Electrical</label><input className={inputCls} placeholder="Contractor name" value={form.subElectrical} onChange={(e) => update("subElectrical", e.target.value)} /></div>
-              <div><label className={labelCls}>Gas</label><input className={inputCls} placeholder="Contractor name" value={form.subGas} onChange={(e) => update("subGas", e.target.value)} /></div>
-            </div>
+            <p className="text-[12px] text-obsidian/55 -mt-3">
+              Saved subcontractors power the dropdowns on Request COI and Request Sub Insurance Update.
+            </p>
+            {(["subPlumbing", "subElectrical", "subGas"] as const).map((k) => {
+              const trade = k === "subPlumbing" ? "Plumbing" : k === "subElectrical" ? "Electrical" : "Gas";
+              const s = form[k];
+              const set = (patch: Partial<SubIntake>) => update(k, { ...s, ...patch });
+              return (
+                <div key={k} className="border border-obsidian/12 rounded-[3px] p-4">
+                  <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-obsidian mb-3">{trade} Sub</div>
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <div><label className={labelCls}>Company Name</label><input className={inputCls} value={s.companyName} onChange={(e) => set({ companyName: e.target.value })} /></div>
+                    <div><label className={labelCls}>Qualifier Name</label><input className={inputCls} value={s.qualifierName} onChange={(e) => set({ qualifierName: e.target.value })} /></div>
+                    <div><label className={labelCls}>License Number</label><input className={inputCls} value={s.licenseNumber} onChange={(e) => set({ licenseNumber: e.target.value })} /></div>
+                    <div><label className={labelCls}>Contact Email</label><input type="email" className={inputCls} value={s.contactEmail} onChange={(e) => set({ contactEmail: e.target.value })} /></div>
+                    <div className="sm:col-span-2"><label className={labelCls}>Insurance Carrier Contact Email</label><input type="email" className={inputCls} value={s.insuranceCarrierEmail} onChange={(e) => set({ insuranceCarrierEmail: e.target.value })} /></div>
+                  </div>
+                </div>
+              );
+            })}
           </div>
+
 
           <div>
             <label className={labelCls}>Submitted Date</label>
