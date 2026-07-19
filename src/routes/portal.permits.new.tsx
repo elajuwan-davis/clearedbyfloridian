@@ -112,6 +112,11 @@ function NewPermitPage() {
   const [form, setForm] = useState<FormState>(initial);
   const [hasDraft, setHasDraft] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [savedSubs, setSavedSubs] = useState<SubRecord[]>([]);
+
+  useEffect(() => {
+    setSavedSubs(loadSubLibrary());
+  }, []);
 
   useEffect(() => {
     try {
