@@ -43,7 +43,7 @@ const portalNav: NavSection[] = [
       { to: "/portal/subcontractors", label: "Subcontractors", icon: User },
       { to: "/messages", label: "Messages", icon: MessageSquare },
       { to: "/project-guides", label: "Project Guides", icon: BookOpen },
-      { to: "/building-dept-logins", label: "Building Dept", icon: Building2 },
+      { to: "/portal/building-dept", label: "Building Dept", icon: Building2 },
     ],
   },
   {
