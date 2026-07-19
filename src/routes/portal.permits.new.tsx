@@ -176,6 +176,23 @@ function NewPermitPage() {
     } catch {
       /* ignore */
     }
+    // Persist subs to shared library so COI + Sub Insurance dropdowns can use them.
+    ([
+      ["Plumbing", form.subPlumbing],
+      ["Electrical", form.subElectrical],
+      ["Gas", form.subGas],
+    ] as const).forEach(([trade, s]) => {
+      if (s.companyName.trim()) {
+        upsertSub({
+          companyName: s.companyName,
+          trade,
+          qualifierName: s.qualifierName,
+          licenseNumber: s.licenseNumber,
+          email: s.contactEmail,
+          insuranceCarrierEmail: s.insuranceCarrierEmail,
+        });
+      }
+    });
     setSubmitted(true);
   }
 
