@@ -36,7 +36,7 @@ const portalNav: NavSection[] = [
   {
     label: "Projects",
     items: [
-      { to: "/portal/permits", label: "My Permits", icon: FileText },
+      { to: "/portal/permits", label: "My Permits", icon: FileText, alertKey: "my-permits" },
       { to: "/portal/subcontractors", label: "Subcontractors", icon: User },
       { to: "/messages", label: "Messages", icon: MessageSquare },
       { to: "/project-guides", label: "Project Guides", icon: BookOpen },
@@ -54,8 +54,8 @@ const portalNav: NavSection[] = [
   {
     label: "Insurance",
     items: [
-      { to: "/portal/request-coi", label: "Request COI", icon: FileCheck2 },
-      { to: "/portal/request-sub-insurance", label: "Sub Insurance Request", icon: ShieldAlert },
+      { to: "/portal/request-coi", label: "Request COI", icon: FileCheck2, alertKey: "request-coi" },
+      { to: "/portal/request-sub-insurance", label: "Sub Insurance Request", icon: ShieldAlert, alertKey: "sub-insurance" },
       { to: "/insurance", label: "Get Insurance", icon: ShieldCheck },
     ],
   },
