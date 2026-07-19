@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { MyPermitsPage } from "@/components/my-permits-page";
 
-export const Route = createFileRoute("/portal/permits")({
+export const Route = createFileRoute("/my-permits")({
   head: () => ({
     meta: [
       { title: "My Permits — Cleared by Flōridian" },

@@ -15,7 +15,6 @@ import { Route as ProjectGuidesRouteImport } from './routes/project-guides'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as ProcessRouteImport } from './routes/process'
 import { Route as PortalRouteImport } from './routes/portal'
-import { Route as MyPermitsRouteImport } from './routes/my-permits'
 import { Route as MessagesRouteImport } from './routes/messages'
 import { Route as LpoaSigningRouteImport } from './routes/lpoa-signing'
 import { Route as LoginRouteImport } from './routes/login'
@@ -79,11 +78,6 @@ const ProcessRoute = ProcessRouteImport.update({
 const PortalRoute = PortalRouteImport.update({
   id: '/portal',
   path: '/portal',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const MyPermitsRoute = MyPermitsRouteImport.update({
-  id: '/my-permits',
-  path: '/my-permits',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MessagesRoute = MessagesRouteImport.update({
@@ -277,7 +271,6 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/lpoa-signing': typeof LpoaSigningRoute
   '/messages': typeof MessagesRoute
-  '/my-permits': typeof MyPermitsRoute
   '/portal': typeof PortalRouteWithChildren
   '/process': typeof ProcessRoute
   '/profile': typeof ProfileRoute
@@ -320,7 +313,6 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/lpoa-signing': typeof LpoaSigningRoute
   '/messages': typeof MessagesRoute
-  '/my-permits': typeof MyPermitsRoute
   '/process': typeof ProcessRoute
   '/profile': typeof ProfileRoute
   '/project-guides': typeof ProjectGuidesRoute
@@ -363,7 +355,6 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/lpoa-signing': typeof LpoaSigningRoute
   '/messages': typeof MessagesRoute
-  '/my-permits': typeof MyPermitsRoute
   '/portal': typeof PortalRouteWithChildren
   '/process': typeof ProcessRoute
   '/profile': typeof ProfileRoute
@@ -408,7 +399,6 @@ export interface FileRouteTypes {
     | '/login'
     | '/lpoa-signing'
     | '/messages'
-    | '/my-permits'
     | '/portal'
     | '/process'
     | '/profile'
@@ -451,7 +441,6 @@ export interface FileRouteTypes {
     | '/login'
     | '/lpoa-signing'
     | '/messages'
-    | '/my-permits'
     | '/process'
     | '/profile'
     | '/project-guides'
@@ -493,7 +482,6 @@ export interface FileRouteTypes {
     | '/login'
     | '/lpoa-signing'
     | '/messages'
-    | '/my-permits'
     | '/portal'
     | '/process'
     | '/profile'
@@ -537,7 +525,6 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   LpoaSigningRoute: typeof LpoaSigningRoute
   MessagesRoute: typeof MessagesRoute
-  MyPermitsRoute: typeof MyPermitsRoute
   PortalRoute: typeof PortalRouteWithChildren
   ProcessRoute: typeof ProcessRoute
   ProfileRoute: typeof ProfileRoute
@@ -589,13 +576,6 @@ declare module '@tanstack/react-router' {
       path: '/portal'
       fullPath: '/portal'
       preLoaderRoute: typeof PortalRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/my-permits': {
-      id: '/my-permits'
-      path: '/my-permits'
-      fullPath: '/my-permits'
-      preLoaderRoute: typeof MyPermitsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/messages': {
@@ -946,7 +926,6 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   LpoaSigningRoute: LpoaSigningRoute,
   MessagesRoute: MessagesRoute,
-  MyPermitsRoute: MyPermitsRoute,
   PortalRoute: PortalRouteWithChildren,
   ProcessRoute: ProcessRoute,
   ProfileRoute: ProfileRoute,
