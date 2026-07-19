@@ -1,11 +1,12 @@
 import { Link } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { PortalShell } from "@/components/portal-shell";
 import { ChevronDown, Search, Eye, EyeOff, ArrowUpRight, AlertTriangle } from "lucide-react";
 import { projectStatusMeta, toneClass } from "@/lib/status-badges";
 import { PROJECTS, fullAddress, isAddressIncomplete } from "@/lib/projects-data";
 import { findPortalForAddress } from "@/lib/municipalities";
 import { ExternalLink } from "lucide-react";
+import { buildInspections, loadInspections, passedCount, POOL_INSPECTION_COUNT } from "@/lib/inspections";
 
 import { isPermitTypeComplete, permitTypeAnchor } from "@/lib/permit-type-status";
 
@@ -52,6 +53,17 @@ export function MyPermitsPage() {
   const [open, setOpen] = useState<Record<GroupKey, boolean>>({
     intake: true, preparing: true, submitted: true, issued: true, cancelled: false,
   });
+  const [inspectionCounts, setInspectionCounts] = useState<Record<string, number>>({});
+
+  useEffect(() => {
+    const counts: Record<string, number> = {};
+    for (const p of projects) {
+      if (!p.permit_types.some((t) => t.toLowerCase() === "pool")) continue;
+      const seed = buildInspections(p.status === "permit_issued");
+      counts[p.id] = passedCount(loadInspections(p.id, seed));
+    }
+    setInspectionCounts(counts);
+  }, [projects]);
 
   const filtered = useMemo(() => {
     const q = query.toLowerCase().trim();
@@ -168,19 +180,24 @@ export function MyPermitsPage() {
                           <div className="relative flex flex-wrap gap-1">
                             {p.permit_types.map((t) => {
                               const issued = p.status === "permit_issued" || p.status === "approved";
+                              const isPool = t.toLowerCase() === "pool";
+                              const passed = inspectionCounts[p.id];
                               return (
                                 <Link
                                   key={t}
                                   to="/projects/$id"
                                   params={{ id: p.id }}
                                   title={issued ? `${t}: issued` : `${t}: in progress — click to view`}
-                                  className={`inline-flex items-center border px-2 py-0.5 text-[10px] font-mono uppercase tracking-[0.1em] rounded-[2px] transition-colors ${
+                                  className={`inline-flex items-center gap-1 border px-2 py-0.5 text-[10px] font-mono uppercase tracking-[0.1em] rounded-[2px] transition-colors ${
                                     issued
                                       ? "border-emerald-600/40 bg-emerald-50 text-emerald-800 hover:bg-emerald-100"
                                       : "border-red-600/40 bg-red-50 text-red-800 hover:bg-red-100"
                                   }`}
                                 >
                                   {t}
+                                  {isPool && passed !== undefined && (
+                                    <span className="tabular-nums opacity-80">{passed}/{POOL_INSPECTION_COUNT}</span>
+                                  )}
                                 </Link>
                               );
                             })}
