@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
+import { loadSubLibrary, upsertSub, type SubRecord as LibSub } from "@/lib/subcontractor-library";
 
 export const Route = createFileRoute("/forms/subcontractor-intake")({
   head: () => ({ meta: [{ title: "Subcontractor Intake — Cleared" }, { name: "robots", content: "noindex" }] }),
@@ -14,7 +15,6 @@ export const Route = createFileRoute("/forms/subcontractor-intake")({
 });
 
 const TRADES = ["Mechanical", "Electrical", "Plumbing", "Gas", "Roofing", "Aluminum", "General"] as const;
-const LIB_KEY = "cleared.subcontractor-library";
 const PROJECTS_FALLBACK = [
   { id: "1", name: "Ocean Ridge Estate", permit_no: "CLR-2026-0142" },
   { id: "3", name: "Manalapan Bayfront", permit_no: "CLR-2026-0131" },
