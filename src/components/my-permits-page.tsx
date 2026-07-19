@@ -7,6 +7,7 @@ import { PROJECTS, fullAddress, isAddressIncomplete } from "@/lib/projects-data"
 import { findPortalForAddress } from "@/lib/municipalities";
 import { ExternalLink } from "lucide-react";
 import { buildInspections, loadInspections, passedCount, POOL_INSPECTION_COUNT } from "@/lib/inspections";
+import { totalForProject, fmtUsd } from "@/lib/manual-fees";
 
 import { isPermitTypeComplete, permitTypeAnchor } from "@/lib/permit-type-status";
 
@@ -56,6 +57,7 @@ export function MyPermitsPage() {
     intake: true, preparing: true, submitted: true, on_hold: true, outsourced: true, issued: true, cancelled: false,
   });
   const [inspectionCounts, setInspectionCounts] = useState<Record<string, number>>({});
+  const [feeTotals, setFeeTotals] = useState<Record<string, number>>({});
 
   useEffect(() => {
     const counts: Record<string, number> = {};
@@ -65,6 +67,15 @@ export function MyPermitsPage() {
       counts[p.id] = passedCount(loadInspections(p.id, seed));
     }
     setInspectionCounts(counts);
+
+    const refreshTotals = () => {
+      const t: Record<string, number> = {};
+      for (const p of projects) t[p.id] = totalForProject(p.id);
+      setFeeTotals(t);
+    };
+    refreshTotals();
+    window.addEventListener("manual-fees:changed", refreshTotals);
+    return () => window.removeEventListener("manual-fees:changed", refreshTotals);
   }, [projects]);
 
   const filtered = useMemo(() => {
@@ -207,6 +218,11 @@ export function MyPermitsPage() {
                           <span className="relative inline-flex items-center border border-obsidian/15 bg-paper-warm px-2 py-0.5 text-[10px] font-mono uppercase tracking-[0.1em] text-obsidian/70 rounded-[2px]">
                             {p.county}
                           </span>
+                          {feeTotals[p.id] > 0 && (
+                            <span className="relative inline-flex items-center border border-emerald-600/30 bg-emerald-50 px-2 py-0.5 text-[10px] font-mono tabular-nums text-emerald-800 rounded-[2px]" title="Manually logged permit fees">
+                              {fmtUsd(feeTotals[p.id])} in fees
+                            </span>
+                          )}
                           {meta && (
                             <span className={`relative inline-flex items-center border px-2 py-0.5 text-[10px] font-medium uppercase tracking-[0.1em] ${toneClass[meta.tone]}`}>
                               {meta.label}
