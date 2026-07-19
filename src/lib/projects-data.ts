@@ -75,7 +75,7 @@ const SEED: Seed[] = [
   { n: 18, name: "Knight Residence", client: "Emma Althea Knight", street: "10142 SW Davanti Dr", city: "Port Saint Lucie", zip: "34987", status: "permit_issued", permit_no: "2621607" },
   { n: 19, name: "Manera Residence", client: "Knight Manera", street: "2006 Windward Way", city: "Vero Beach", zip: "32960" },
   { n: 20, name: "Perle Residence", client: "Cannatelli Builders (Perle)", street: "1261 Spanish River Rd", city: "Boca Raton", zip: "33432" },
-  { n: 21, name: "Mesmer Residence", client: "Mesmer Family", street: "3153 Royal Palm Ave", city: "Miami Beach", zip: "33140", scope: "Natural Gas / Pool, Pergola & ODK", status: "permit_issued", permit_no: "PO-R2601278" },
+  { n: 21, name: "Mesmer Residence", client: "Mesmer Family", street: "3153 Royal Palm Ave", city: "Miami Beach", zip: "33140", scope: "Natural Gas / Pool, Pergola & ODK", status: "on_hold", permit_no: "PO-R2601278" },
   { n: 22, name: "Henderson", client: "Arielle Henderson", street: "12923 SW Leopold Way", city: "Port St. Lucie", zip: "34987", status: "permit_issued", permit_no: "2619180" },
 
   { n: 24, name: "Paul-Hus Residence", client: "Sarah & Andy Paul-Hus", street: "2090 NE 26th St", city: "Lighthouse Point", zip: "33064", scope: "Pergola" },

@@ -23,6 +23,7 @@ export type ProjectStatus =
   | "inspection_scheduled"
   | "inspection_complete"
   | "permit_issued"
+  | "on_hold"
   | "pending";
 
 export const projectStatusMeta: Record<ProjectStatus, { label: string; tone: BadgeTone }> = {
@@ -36,6 +37,7 @@ export const projectStatusMeta: Record<ProjectStatus, { label: string; tone: Bad
   inspection_scheduled: { label: "Inspection scheduled", tone: "amber" },
   inspection_complete: { label: "Inspection complete", tone: "emerald" },
   permit_issued: { label: "Permit issued", tone: "dark" },
+  on_hold: { label: "On hold", tone: "oxblood" },
   pending: { label: "Pending", tone: "neutral" },
 };
 
