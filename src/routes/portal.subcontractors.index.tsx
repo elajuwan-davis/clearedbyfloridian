@@ -9,7 +9,7 @@ import {
   type SubRecord,
 } from "@/lib/subcontractor-library";
 
-export const Route = createFileRoute("/portal/subcontractors")({
+export const Route = createFileRoute("/portal/subcontractors/")({
   head: () => ({
     meta: [
       { title: "Subcontractors — Cleared by Flōridian" },
