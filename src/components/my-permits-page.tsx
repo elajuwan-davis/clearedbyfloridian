@@ -4,6 +4,8 @@ import { PortalShell } from "@/components/portal-shell";
 import { ChevronDown, Search, Eye, EyeOff, ArrowUpRight, AlertTriangle } from "lucide-react";
 import { projectStatusMeta, toneClass } from "@/lib/status-badges";
 import { PROJECTS, fullAddress, isAddressIncomplete } from "@/lib/projects-data";
+import { findPortalForAddress } from "@/lib/municipalities";
+import { ExternalLink } from "lucide-react";
 
 type Project = {
   id: string;
@@ -165,6 +167,23 @@ export function MyPermitsPage() {
                                 {meta.label}
                               </span>
                             )}
+                            <span className="w-28 shrink-0 text-right">
+                              {(() => {
+                                const portal = findPortalForAddress(p.address);
+                                return portal?.url ? (
+                                  <a
+                                    href={portal.url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    onClick={(e) => e.stopPropagation()}
+                                    className="inline-flex items-center gap-1 font-mono text-[10px] uppercase tracking-[0.1em] text-sky-700 hover:text-sky-900"
+                                    title={`Open ${portal.name} portal`}
+                                  >
+                                    Open Portal <ExternalLink className="h-3 w-3" />
+                                  </a>
+                                ) : null;
+                              })()}
+                            </span>
                             <span className="font-mono text-[10px] tabular-nums text-obsidian/45 w-24 text-right shrink-0">{p.updated_at}</span>
                             <ArrowUpRight className="h-3.5 w-3.5 text-obsidian/40" />
                           </Link>
