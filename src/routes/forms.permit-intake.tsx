@@ -280,6 +280,7 @@ function PermitIntakePage() {
                   <div className="mt-1 text-xs text-obsidian/45">{files.length}/50 attached</div>
                   <input type="file" multiple accept="application/pdf" className="hidden" onChange={onFiles} />
                 </label>
+                <CloudUploadButtons />
                 {files.length > 0 && (
                   <ul className="mt-3 divide-y divide-obsidian/10 border border-obsidian/15 rounded-[3px]">
                     {files.map((f, i) => (

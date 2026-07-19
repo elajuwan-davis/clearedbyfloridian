@@ -512,6 +512,7 @@ function NewPermitPage() {
                             <input type="file" accept="application/pdf" className="hidden" onChange={(e) => handleFile(d.key, e)} />
                           </label>
                         </p>
+                        <CloudUploadButtons />
                       </div>
                     )}
 
@@ -550,6 +551,7 @@ function NewPermitPage() {
                 <Upload className="h-3.5 w-3.5" /> Add PDFs ({form.extraDocs.length}/30)
                 <input type="file" accept="application/pdf" multiple className="hidden" onChange={handleExtraFiles} />
               </label>
+              <CloudUploadButtons />
               {form.extraDocs.length > 0 && (
                 <ul className="mt-3 space-y-1">
                   {form.extraDocs.map((name, i) => (

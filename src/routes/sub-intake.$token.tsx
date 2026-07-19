@@ -7,6 +7,7 @@ import {
   missingFields,
   type SubRecord,
 } from "@/lib/subcontractor-library";
+import { CloudUploadButtons } from "@/components/cloud-upload-buttons";
 
 export const Route = createFileRoute("/sub-intake/$token")({
   head: () => ({
@@ -79,6 +80,7 @@ function SubIntakeTokenPage() {
             </span>
           )}
         </div>
+        <CloudUploadButtons />
       </div>
     );
   }
