@@ -1,6 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState, type ChangeEvent } from "react";
 import { Upload, Check, FileText, ArrowLeft, Save, Send, X, AlertCircle } from "lucide-react";
+import { upsertSub } from "@/lib/subcontractor-library";
 
 export const Route = createFileRoute("/portal/permits/new")({
   head: () => ({
