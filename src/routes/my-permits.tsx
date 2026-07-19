@@ -195,8 +195,12 @@ function MyPermitsPage() {
                           >
                             <div className="min-w-0 flex-1">
                               <div className="text-sm font-medium text-obsidian truncate">{p.name}</div>
-                              <div className="mt-0.5 text-xs text-obsidian/55 truncate">{p.address} · {p.county}</div>
+                              <div className="mt-0.5 text-xs text-obsidian/55 truncate">{p.address}</div>
                             </div>
+                            <span className="inline-flex items-center border border-obsidian/15 bg-paper-warm px-2 py-0.5 text-[10px] font-mono uppercase tracking-[0.1em] text-obsidian/70 rounded-[2px]">
+                              {p.county}
+                            </span>
+
                             {meta && (
                               <span className={`inline-flex items-center border px-2 py-0.5 text-[10px] font-medium uppercase tracking-[0.1em] ${toneClass[meta.tone]}`}>
                                 {meta.label}
