@@ -63,9 +63,13 @@ const SEED: Project[] = PROJECTS.map((p) => ({
   updated_at: p.updated_at,
 }));
 
+const COUNTIES = ["Palm Beach", "Martin", "St. Lucie", "Indian River", "Broward", "Miami-Dade"] as const;
+type CountyFilter = "All" | (typeof COUNTIES)[number];
+
 function MyPermitsPage() {
   const [projects] = useState<Project[]>(SEED);
   const [query, setQuery] = useState("");
+  const [countyFilter, setCountyFilter] = useState<CountyFilter>("All");
   const [hideCounts, setHideCounts] = useState(false);
   const [open, setOpen] = useState<Record<GroupKey, boolean>>({
     intake: true,
@@ -78,9 +82,18 @@ function MyPermitsPage() {
 
   const filtered = useMemo(() => {
     const q = query.toLowerCase().trim();
-    if (!q) return projects;
-    return projects.filter((p) => `${p.name} ${p.address} ${p.county}`.toLowerCase().includes(q));
-  }, [projects, query]);
+    return projects.filter((p) => {
+      if (countyFilter !== "All" && p.county !== countyFilter) return false;
+      if (q && !`${p.name} ${p.address} ${p.county}`.toLowerCase().includes(q)) return false;
+      return true;
+    });
+  }, [projects, query, countyFilter]);
+
+  const countyCounts = useMemo(() => {
+    const counts: Record<string, number> = { All: projects.length };
+    for (const c of COUNTIES) counts[c] = projects.filter((p) => p.county === c).length;
+    return counts;
+  }, [projects]);
 
   const grouped = useMemo(() => {
     return GROUPS.map((g) => ({
@@ -88,6 +101,7 @@ function MyPermitsPage() {
       items: filtered.filter((p) => g.statuses.includes(p.status)),
     }));
   }, [filtered]);
+
 
   return (
     <PortalShell>
