@@ -103,7 +103,7 @@ function dateFor(n: number) {
 
 export const PROJECTS: Project[] = SEED.map((s) => {
   const county = COUNTY_BY_CITY[s.city] ?? "Palm Beach";
-  const value_cents = seeded(s.n, 18_000_000, 68_000_000); // $180k–$680k
+  const value_cents = 5_000_000; // $50,000 flat across all projects
   const submitted = dateFor(s.n);
   const permit_types = s.scope?.toLowerCase().includes("pool")
     ? ["Building", "Electrical", "Plumbing"]
