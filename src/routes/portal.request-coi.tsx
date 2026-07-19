@@ -36,10 +36,6 @@ function RequestCOIPage() {
     [library, subIdx],
   );
 
-  function handleFile(e: ChangeEvent<HTMLInputElement>) {
-    const f = e.target.files?.[0];
-    if (f) setCurrentCoi(f.name);
-  }
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault();
