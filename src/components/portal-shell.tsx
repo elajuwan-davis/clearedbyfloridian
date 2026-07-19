@@ -170,6 +170,7 @@ function SidebarBody({
                 const isActive = item.exact
                   ? pathname === item.to
                   : pathname === item.to || pathname.startsWith(item.to + "/");
+                const hasAlert = item.alertKey ? alertKeys.has(item.alertKey) : false;
                 return (
                   <Link
                     key={item.to}
@@ -189,7 +190,16 @@ function SidebarBody({
                       className="absolute left-0 top-0 bottom-0 w-[3px] transition-opacity"
                       style={{ backgroundColor: "var(--sky)", opacity: isActive ? 1 : 0 }}
                     />
-                    <Icon className="h-4 w-4 shrink-0" strokeWidth={1.5} />
+                    <span className="relative shrink-0">
+                      <Icon className="h-4 w-4" strokeWidth={1.5} />
+                      {hasAlert && (
+                        <span
+                          aria-hidden
+                          className="absolute -top-0.5 -right-0.5 h-2 w-2 rounded-full bg-red-500 ring-2"
+                          style={{ ["--tw-ring-color" as never]: "var(--obsidian)" }}
+                        />
+                      )}
+                    </span>
                     <span className={labelCls}>{item.label}</span>
                   </Link>
                 );
