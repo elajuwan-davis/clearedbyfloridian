@@ -1,7 +1,10 @@
+import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { permits, inspections } from "@/lib/mock-data";
 import { Badge } from "@/components/ui/badge";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, X, AlertTriangle } from "lucide-react";
+import { useExpirationAlerts } from "@/hooks/use-expiration-alerts";
+import { AlertsList } from "@/components/alerts-list";
 
 export const Route = createFileRoute("/portal/")({
   component: PortalOverview,
@@ -11,6 +14,8 @@ function PortalOverview() {
   const active = permits.filter((p) => p.status !== "Closed");
   const upcomingInspections = inspections.filter((i) => i.status === "Scheduled").slice(0, 4);
   const inReview = permits.filter((p) => p.status === "Plan Review" || p.status === "Revisions Required").length;
+  const alerts = useExpirationAlerts();
+  const [dismissed, setDismissed] = useState(false);
 
   const stats = [
     { k: "Active permits", v: active.length },
@@ -28,6 +33,32 @@ function PortalOverview() {
           Here's where every Coastline Builders Group project sits this morning.
         </p>
       </div>
+
+      {!dismissed && alerts.length > 0 && (
+        <section className="border hairline rounded-[3px] bg-background">
+          <div className="flex items-center justify-between px-4 py-3 border-b hairline">
+            <div className="flex items-center gap-2">
+              <AlertTriangle className="h-4 w-4 text-red-600" strokeWidth={1.75} />
+              <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-obsidian">
+                Expiring Licenses &amp; Insurance
+              </div>
+              <span className="font-mono text-[10px] text-muted-foreground">
+                {alerts.length} item{alerts.length === 1 ? "" : "s"}
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={() => setDismissed(true)}
+              aria-label="Dismiss alerts"
+              className="p-1 rounded-[3px] hover:bg-secondary"
+            >
+              <X className="h-4 w-4" strokeWidth={1.5} />
+            </button>
+          </div>
+          <AlertsList alerts={alerts} />
+        </section>
+      )}
+
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-border border hairline">
         {stats.map((s) => (
