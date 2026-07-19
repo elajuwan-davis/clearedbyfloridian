@@ -99,7 +99,7 @@ const mockUser = {
   full_name: "Elajuwan Davis",
   initials: "ED",
   role: "admin" as "builder" | "staff" | "admin",
-  company_name: "Flōridian LLC",
+  company_name: "Flōridian",
 };
 
 const roleLabel: Record<typeof mockUser.role, string> = {

@@ -36,7 +36,7 @@ const TEAM_MEMBERS: Array<{ name: string; email: string; role: string }> = [
 function ProfilePage() {
   const [displayName, setDisplayName] = useState("Elajuwan Davis");
   const [company, setCompany] = useState({
-    name: "Flōridian LLC",
+    name: "Flōridian",
     website: "https://floridianinc.com",
     phone: "(561) 555-0144",
     address: "",
