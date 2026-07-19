@@ -34,7 +34,7 @@ function NewPermit() {
         <div className="label-eyebrow">New permit · Step {step} of 3</div>
         <h1 className="mt-4 font-display text-4xl tracking-tight">Submit a permit request</h1>
         <p className="mt-2 text-muted-foreground">
-          Drawings can be uploaded after intake. Most submissions are reviewed within 5–7 business days.
+          Drawings can be uploaded after intake. 2-day plan review turnaround with same-day inspections after permit issuance.
         </p>
       </div>
 
