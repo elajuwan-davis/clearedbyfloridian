@@ -120,10 +120,10 @@ function SidebarBody({
   // When collapsible, labels/section headers are hidden by default and shown when
   // the .sidebar-expanded class is present on an ancestor (hover on desktop).
   const labelCls = collapsible
-    ? "opacity-0 -translate-x-1 transition-all duration-200 whitespace-nowrap group-[.sidebar-expanded]/sb:opacity-100 group-[.sidebar-expanded]/sb:translate-x-0"
+    ? "opacity-0 -translate-x-1 transition-all duration-200 whitespace-nowrap group-hover/sb:opacity-100 group-hover/sb:translate-x-0"
     : "whitespace-nowrap";
   const sectionLabelCls = collapsible
-    ? "px-5 mb-1.5 font-mono text-[9px] uppercase tracking-[0.22em] h-3 overflow-hidden opacity-0 transition-opacity duration-200 group-[.sidebar-expanded]/sb:opacity-100"
+    ? "px-5 mb-1.5 font-mono text-[9px] uppercase tracking-[0.22em] h-3 overflow-hidden opacity-0 transition-opacity duration-200 group-hover/sb:opacity-100"
     : "px-5 mb-1.5 font-mono text-[9px] uppercase tracking-[0.22em]";
 
   return (
@@ -135,14 +135,14 @@ function SidebarBody({
       >
         <Link to="/" onClick={onNavigate} className="block leading-[1] relative w-full h-8">
           {collapsible && (
-            <div className="wordmark text-3xl text-paper absolute inset-0 flex items-center transition-opacity duration-200 group-[.sidebar-expanded]/sb:opacity-0">
+            <div className="wordmark text-3xl text-paper absolute inset-0 flex items-center transition-opacity duration-200 group-hover/sb:opacity-0">
               C
             </div>
           )}
           <div
             className={
               collapsible
-                ? "absolute inset-0 opacity-0 transition-opacity duration-200 group-[.sidebar-expanded]/sb:opacity-100"
+                ? "absolute inset-0 opacity-0 transition-opacity duration-200 group-hover/sb:opacity-100"
                 : ""
             }
           >
@@ -320,7 +320,7 @@ export function PortalShell({ children }: { children: ReactNode }) {
     <div className="min-h-screen bg-background">
       {/* Desktop sidebar — collapsed 64px, expands to 240px on hover */}
       <aside
-        className="group/sb sidebar-collapsed hover:sidebar-expanded fixed inset-y-0 left-0 z-40 hidden md:flex flex-col transition-[width] duration-200 ease-out w-[64px] hover:w-[240px] hover:shadow-2xl"
+        className="group/sb fixed inset-y-0 left-0 z-40 hidden md:flex flex-col transition-[width] duration-200 ease-out w-[64px] hover:w-[240px] hover:shadow-2xl"
       >
         <SidebarBody pathname={pathname} onSignOut={handleSignOut} collapsible />
       </aside>
