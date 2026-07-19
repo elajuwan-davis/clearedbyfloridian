@@ -56,6 +56,7 @@ export const Route = createFileRoute("/projects/$id")({
 
 import { toneClass, projectStatusMeta, type BadgeTone } from "@/lib/status-badges";
 import { PROJECTS as SEED_PROJECTS, fullAddress } from "@/lib/projects-data";
+import { InspectionsSection } from "@/components/inspections-section";
 type Tone = BadgeTone;
 
 
@@ -288,6 +289,14 @@ function ProjectDetailPage() {
                   </div>
                 </div>
               </div>
+            </DetailSection>
+
+            {/* Inspections */}
+            <DetailSection step="04" title="Inspections" description="Pool inspection sequence · 601–610">
+              <InspectionsSection
+                projectId={project.id}
+                allPassedSeed={project.status.label.toLowerCase().includes("issued")}
+              />
             </DetailSection>
 
             {/* Correction Rounds */}
