@@ -1,4 +1,4 @@
-import type { Project } from "@/lib/projects-data";
+
 
 const COMPLETE_STATUSES = new Set(["permit_issued", "inspection_complete", "approved"]);
 
@@ -14,9 +14,8 @@ function hash(str: string) {
  * other project has at least one incomplete permit type so red badges are
  * visible for the list-scan workflow.
  */
-export function isPermitTypeComplete(project: Pick<Project, "id" | "status">, permitType: string): boolean {
+export function isPermitTypeComplete(project: { id: string; status: string }, permitType: string): boolean {
   if (COMPLETE_STATUSES.has(project.status)) return true;
-  // Deterministically flip ~35% of permit types complete for in-progress projects.
   return hash(`${project.id}:${permitType}`) % 100 < 35;
 }
 
