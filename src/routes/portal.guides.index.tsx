@@ -3,7 +3,7 @@ import { useMemo, useState } from "react";
 import { PortalShell } from "@/components/portal-shell";
 import { Input } from "@/components/ui/input";
 import { Search, FileText, ClipboardCheck, ArrowRight } from "lucide-react";
-import { PORTAL_GUIDES } from "@/lib/portal-guides-data";
+import { PORTAL_GUIDES, PORTAL_GUIDE_CATEGORIES } from "@/lib/portal-guides-data";
 
 export const Route = createFileRoute("/portal/guides/")({
   head: () => ({
@@ -29,13 +29,9 @@ function PortalGuidesIndex() {
   }, [q]);
 
   const grouped = useMemo(() => {
-    const m = new Map<string, typeof PORTAL_GUIDES>();
-    for (const g of guides) {
-      const arr = m.get(g.category) ?? [];
-      arr.push(g);
-      m.set(g.category, arr);
-    }
-    return Array.from(m.entries());
+    return PORTAL_GUIDE_CATEGORIES.map(
+      (cat) => [cat, guides.filter((g) => g.category === cat)] as const,
+    ).filter(([, list]) => list.length > 0);
   }, [guides]);
 
   return (
