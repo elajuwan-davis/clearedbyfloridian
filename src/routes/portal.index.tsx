@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { permits, inspections } from "@/lib/mock-data";
-import { Badge } from "@/components/ui/badge";
+import { PROJECTS, fullAddress } from "@/lib/projects-data";
+import { inspections } from "@/lib/mock-data";
+import { projectStatusMeta, toneClass } from "@/lib/status-badges";
 import { ArrowRight, X, AlertTriangle } from "lucide-react";
 import { useExpirationAlerts } from "@/hooks/use-expiration-alerts";
 import { AlertsList } from "@/components/alerts-list";
@@ -11,9 +12,10 @@ export const Route = createFileRoute("/portal/")({
 });
 
 function PortalOverview() {
-  const active = permits.filter((p) => p.status !== "Closed");
+  const active = PROJECTS.filter((p) => p.status !== "permit_issued");
   const upcomingInspections = inspections.filter((i) => i.status === "Scheduled").slice(0, 4);
-  const inReview = permits.filter((p) => p.status === "Plan Review" || p.status === "Revisions Required").length;
+  const inReview = PROJECTS.filter((p) => p.status === "in_review" || p.status === "corrections_required").length;
+  const issued = PROJECTS.filter((p) => p.status === "permit_issued").length;
   const alerts = useExpirationAlerts();
   const [dismissed, setDismissed] = useState(false);
 
@@ -21,16 +23,16 @@ function PortalOverview() {
     { k: "Active permits", v: active.length },
     { k: "In review", v: inReview },
     { k: "Upcoming inspections", v: upcomingInspections.length },
-    { k: "Closed YTD", v: 23 },
+    { k: "Issued", v: issued },
   ];
 
   return (
     <div className="space-y-12 max-w-6xl">
       <div>
         <div className="label-eyebrow">Overview</div>
-        <h1 className="mt-4 font-display text-4xl tracking-tight">Good morning, Jamie.</h1>
+        <h1 className="mt-4 font-display text-4xl tracking-tight">Good morning.</h1>
         <p className="mt-2 text-muted-foreground">
-          Here's where every Coastline Builders Group project sits this morning.
+          Here's where every active Flōridian project sits this morning.
         </p>
       </div>
 
@@ -77,48 +79,27 @@ function PortalOverview() {
           </Link>
         </div>
         <div className="border hairline divide-y">
-          {active.slice(0, 4).map((p) => (
-            <div key={p.id} className="p-5 grid md:grid-cols-12 gap-4 items-center hover:bg-secondary/40 transition-colors">
-              <div className="md:col-span-1 font-mono text-xs text-muted-foreground">{p.number}</div>
-              <div className="md:col-span-4">
-                <div className="font-medium">{p.address}</div>
-                <div className="text-xs text-muted-foreground mt-1">{p.scope}</div>
-              </div>
-              <div className="md:col-span-2 font-mono text-xs text-muted-foreground">{p.jurisdiction}</div>
-              <div className="md:col-span-3">
-                <div className="h-1 bg-secondary overflow-hidden">
-                  <div className="h-full bg-accent" style={{ width: `${p.progress}%` }} />
-                </div>
-                <div className="mt-1 font-mono text-[10px] text-muted-foreground">{p.progress}% complete</div>
-              </div>
-              <div className="md:col-span-2 md:text-right">
-                <StatusBadge status={p.status} />
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <section>
-        <div className="flex items-baseline justify-between mb-6">
-          <h2 className="font-display text-2xl tracking-tight">Upcoming inspections</h2>
-          <Link to="/portal/inspections" className="font-mono text-xs text-accent hover:underline inline-flex items-center gap-1">
-            Schedule <ArrowRight className="h-3 w-3" />
-          </Link>
-        </div>
-        <div className="border hairline divide-y">
-          {upcomingInspections.map((i) => {
-            const d = new Date(i.scheduledFor);
+          {active.slice(0, 6).map((p) => {
+            const meta = projectStatusMeta[p.status];
             return (
-              <div key={i.id} className="p-5 grid md:grid-cols-12 gap-4 items-center">
-                <div className="md:col-span-2 font-mono text-xs">
-                  {d.toLocaleDateString("en-US", { month: "short", day: "numeric" })}
-                  <span className="text-muted-foreground"> · {d.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}</span>
+              <Link
+                key={p.id}
+                to="/projects/$id"
+                params={{ id: p.id }}
+                className="p-5 grid md:grid-cols-12 gap-4 items-center hover:bg-secondary/40 transition-colors"
+              >
+                <div className="md:col-span-2 font-mono text-xs text-muted-foreground">{p.permit_no}</div>
+                <div className="md:col-span-5">
+                  <div className="font-medium">{p.name}</div>
+                  <div className="text-xs text-muted-foreground mt-1">{fullAddress(p)}</div>
                 </div>
-                <div className="md:col-span-4 font-medium">{i.type}</div>
-                <div className="md:col-span-4 text-sm text-muted-foreground">{i.address}</div>
-                <div className="md:col-span-2 md:text-right font-mono text-xs">{i.inspector}</div>
-              </div>
+                <div className="md:col-span-2 text-xs text-muted-foreground">{p.client}</div>
+                <div className="md:col-span-3 md:text-right">
+                  <span className={`inline-flex items-center border px-2 py-0.5 text-[10px] font-medium uppercase tracking-[0.1em] ${toneClass[meta.tone]}`}>
+                    {meta.label}
+                  </span>
+                </div>
+              </Link>
             );
           })}
         </div>
@@ -135,14 +116,11 @@ export function StatusBadge({ status }: { status: string }) {
     "Inspections": "bg-violet-100 text-violet-900 border-violet-200",
     "Intake": "bg-secondary text-foreground border-border",
     "Closed": "bg-muted text-muted-foreground border-border",
-    "Scheduled": "bg-blue-100 text-blue-900 border-blue-200",
-    "Passed": "bg-emerald-100 text-emerald-900 border-emerald-200",
-    "Failed": "bg-red-100 text-red-900 border-red-200",
-    "Pending Reschedule": "bg-amber-100 text-amber-900 border-amber-200",
   };
   return (
-    <Badge variant="outline" className={`rounded-sm font-mono text-[10px] uppercase tracking-wider ${tone[status] ?? ""}`}>
+    <span className={`inline-flex items-center border rounded-sm px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider ${tone[status] ?? "bg-secondary text-foreground border-border"}`}>
       {status}
-    </Badge>
+    </span>
   );
 }
+
