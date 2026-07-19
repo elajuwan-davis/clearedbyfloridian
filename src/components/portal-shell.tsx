@@ -109,40 +109,58 @@ function SidebarBody({
   pathname,
   onNavigate,
   onSignOut,
+  collapsible = false,
 }: {
   pathname: string;
   onNavigate?: () => void;
   onSignOut: () => void;
+  /** When true, the sidebar shows icons only until a `.sidebar-expanded` ancestor toggles labels in. */
+  collapsible?: boolean;
 }) {
+  // When collapsible, labels/section headers are hidden by default and shown when
+  // the .sidebar-expanded class is present on an ancestor (hover on desktop).
+  const labelCls = collapsible
+    ? "opacity-0 -translate-x-1 transition-all duration-200 whitespace-nowrap group-[.sidebar-expanded]/sb:opacity-100 group-[.sidebar-expanded]/sb:translate-x-0"
+    : "whitespace-nowrap";
+  const sectionLabelCls = collapsible
+    ? "px-5 mb-1.5 font-mono text-[9px] uppercase tracking-[0.22em] h-3 overflow-hidden opacity-0 transition-opacity duration-200 group-[.sidebar-expanded]/sb:opacity-100"
+    : "px-5 mb-1.5 font-mono text-[9px] uppercase tracking-[0.22em]";
+
   return (
-    <div className="flex h-full flex-col text-paper" style={{ backgroundColor: "var(--obsidian)" }}>
+    <div className="flex h-full flex-col text-paper overflow-hidden" style={{ backgroundColor: "var(--obsidian)" }}>
       {/* Wordmark */}
       <div
-        className="px-6 py-6 border-b"
+        className="h-[73px] flex items-center px-5 border-b shrink-0"
         style={{ borderColor: "color-mix(in oklab, var(--paper) 10%, transparent)" }}
       >
-        <Link to="/" onClick={onNavigate} className="block leading-[1]">
-          <div className="wordmark text-3xl text-paper">Cleared</div>
+        <Link to="/" onClick={onNavigate} className="block leading-[1] relative w-full h-8">
+          {collapsible && (
+            <div className="wordmark text-3xl text-paper absolute inset-0 flex items-center transition-opacity duration-200 group-[.sidebar-expanded]/sb:opacity-0">
+              C
+            </div>
+          )}
           <div
-            className="wordmark-subline mt-1.5"
-            style={{ color: "color-mix(in oklab, var(--paper) 55%, transparent)" }}
+            className={
+              collapsible
+                ? "absolute inset-0 opacity-0 transition-opacity duration-200 group-[.sidebar-expanded]/sb:opacity-100"
+                : ""
+            }
           >
-            by Flōridian
+            <div className="wordmark text-3xl text-paper leading-none">Cleared</div>
+            <div
+              className="wordmark-subline mt-1"
+              style={{ color: "color-mix(in oklab, var(--paper) 55%, transparent)" }}
+            >
+              by Flōridian
+            </div>
           </div>
         </Link>
       </div>
 
-      <nav className="flex-1 px-3 py-5 overflow-y-auto">
+      <nav className="flex-1 px-2 py-5 overflow-y-auto overflow-x-hidden">
         {portalNav.map((section, si) => (
           <div key={si} className={si === 0 ? "" : "mt-5"}>
-            {section.label && (
-              <div
-                className="px-5 mb-1.5 font-mono text-[9px] uppercase tracking-[0.22em]"
-                style={{ color: "color-mix(in oklab, var(--paper) 40%, transparent)" }}
-              >
-                {section.label}
-              </div>
-            )}
+            {section.label && <div className={sectionLabelCls} style={{ color: "color-mix(in oklab, var(--paper) 40%, transparent)" }}>{section.label}</div>}
             <div className="space-y-0.5">
               {section.items.map((item) => {
                 const Icon = item.icon;
@@ -154,7 +172,8 @@ function SidebarBody({
                     key={item.to}
                     to={item.to as never}
                     onClick={onNavigate}
-                    className="group relative flex items-center gap-3 pl-5 pr-3 py-2.5 text-[13px] font-subline tracking-wide transition-colors"
+                    title={collapsible ? item.label : undefined}
+                    className="group relative flex items-center gap-3 pl-4 pr-3 py-2.5 text-[13px] font-subline tracking-wide transition-colors"
                     style={{
                       color: isActive ? "var(--paper)" : "color-mix(in oklab, var(--paper) 60%, transparent)",
                       backgroundColor: isActive
@@ -168,7 +187,7 @@ function SidebarBody({
                       style={{ backgroundColor: "var(--sky)", opacity: isActive ? 1 : 0 }}
                     />
                     <Icon className="h-4 w-4 shrink-0" strokeWidth={1.5} />
-                    <span>{item.label}</span>
+                    <span className={labelCls}>{item.label}</span>
                   </Link>
                 );
               })}
@@ -177,9 +196,8 @@ function SidebarBody({
         ))}
       </nav>
 
-
       <div
-        className="px-4 py-4 border-t space-y-3"
+        className="px-3 py-4 border-t space-y-3 shrink-0"
         style={{ borderColor: "color-mix(in oklab, var(--paper) 10%, transparent)" }}
       >
         <div className="flex items-center gap-3">
@@ -193,7 +211,7 @@ function SidebarBody({
           >
             {mockUser.initials}
           </div>
-          <div className="leading-tight min-w-0 flex-1">
+          <div className={`leading-tight min-w-0 flex-1 ${labelCls}`}>
             <div className="text-[13px] text-paper truncate">{mockUser.full_name}</div>
             <div
               className="inline-block mt-0.5 px-1.5 py-0.5 font-mono text-[9px] tracking-[0.18em] uppercase"
@@ -210,14 +228,15 @@ function SidebarBody({
         </div>
         <button
           onClick={onSignOut}
+          title={collapsible ? "Sign out" : undefined}
           className="w-full flex items-center gap-2 px-3 py-2 text-[12px] font-subline tracking-wide transition-colors"
           style={{
             color: "color-mix(in oklab, var(--paper) 65%, transparent)",
             borderRadius: "3px",
           }}
         >
-          <LogOut className="h-3.5 w-3.5" strokeWidth={1.5} />
-          <span>Sign out</span>
+          <LogOut className="h-3.5 w-3.5 shrink-0" strokeWidth={1.5} />
+          <span className={labelCls}>Sign out</span>
         </button>
       </div>
     </div>
