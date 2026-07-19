@@ -18,7 +18,7 @@ export const Route = createFileRoute("/")({
       {
         property: "og:description",
         content:
-          "Permits in days, not weeks — for the GCs building South Florida's most considered residential work.",
+          "2-day plan review and same-day inspections — for the GCs building South Florida's most considered residential work.",
       },
     ],
   }),
