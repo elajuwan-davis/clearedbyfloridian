@@ -53,6 +53,17 @@ export function MyPermitsPage() {
   const [open, setOpen] = useState<Record<GroupKey, boolean>>({
     intake: true, preparing: true, submitted: true, issued: true, cancelled: false,
   });
+  const [inspectionCounts, setInspectionCounts] = useState<Record<string, number>>({});
+
+  useEffect(() => {
+    const counts: Record<string, number> = {};
+    for (const p of projects) {
+      if (!p.permit_types.some((t) => t.toLowerCase() === "pool")) continue;
+      const seed = buildInspections(p.status === "permit_issued");
+      counts[p.id] = passedCount(loadInspections(p.id, seed));
+    }
+    setInspectionCounts(counts);
+  }, [projects]);
 
   const filtered = useMemo(() => {
     const q = query.toLowerCase().trim();
