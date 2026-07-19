@@ -330,6 +330,9 @@ export function PortalShell({ children }: { children: ReactNode }) {
   }
 
 
+  const alerts = useExpirationAlerts();
+  const alertKeys = computeAlertKeys(alerts);
+
   if (authState !== "authed") {
     return (
       <div className="min-h-screen grid place-items-center bg-background">
@@ -340,9 +343,6 @@ export function PortalShell({ children }: { children: ReactNode }) {
     );
   }
 
-
-  const alerts = useExpirationAlerts();
-  const alertKeys = computeAlertKeys(alerts);
 
   return (
     <div className="min-h-screen bg-background">
