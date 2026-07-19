@@ -152,6 +152,7 @@ function MessagesPage() {
   }
 
   function sendMessage() {
+    if (!active) return;
     if (!draft.trim() && pending.length === 0) return;
     const m: Msg = {
       id: `m${Date.now()}`,
@@ -179,8 +180,10 @@ function MessagesPage() {
   }
 
   function changeStatus(s: ProjectStatus) {
+    if (!active) return;
     setThreads((prev) => prev.map((t) => (t.id === active.id ? { ...t, status: s } : t)));
   }
+
 
   return (
     <PortalShell>
