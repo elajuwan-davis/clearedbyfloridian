@@ -7,6 +7,8 @@ import { PROJECTS, fullAddress, isAddressIncomplete } from "@/lib/projects-data"
 import { findPortalForAddress } from "@/lib/municipalities";
 import { ExternalLink } from "lucide-react";
 
+import { isPermitTypeComplete, permitTypeAnchor } from "@/lib/permit-type-status";
+
 type Project = {
   id: string;
   name: string;
@@ -15,6 +17,7 @@ type Project = {
   status: string;
   updated_at: string;
   incomplete: boolean;
+  permit_types: string[];
 };
 
 type GroupKey = "intake" | "preparing" | "submitted" | "issued" | "cancelled";
@@ -35,6 +38,7 @@ const SEED: Project[] = PROJECTS.map((p) => ({
   status: p.status,
   updated_at: p.updated_at,
   incomplete: isAddressIncomplete(p),
+  permit_types: p.permit_types,
 }));
 
 const COUNTIES = ["Palm Beach", "Martin", "St. Lucie", "Indian River", "Broward", "Miami-Dade"] as const;
@@ -140,53 +144,72 @@ export function MyPermitsPage() {
                   ) : (
                     g.items.map((p) => {
                       const meta = projectStatusMeta[p.status as keyof typeof projectStatusMeta];
+                      const portal = findPortalForAddress(p.address);
                       return (
-                        <li key={p.id}>
+                        <li key={p.id} className="group relative flex flex-wrap items-center gap-3 px-5 py-4 hover:bg-paper-warm/40 transition-colors">
                           <Link
                             to="/projects/$id"
                             params={{ id: p.id }}
-                            className="flex flex-wrap items-center gap-3 px-5 py-4 hover:bg-paper-warm/40 transition-colors"
-                          >
-                            <div className="min-w-0 flex-1">
-                              <div className="flex items-center gap-2">
-                                <div className="text-sm font-medium text-obsidian truncate">{p.name}</div>
-                                {p.incomplete && (
-                                  <span className="inline-flex items-center gap-1 border border-amber-500/40 bg-amber-50 px-1.5 py-0.5 text-[9px] font-mono uppercase tracking-[0.1em] text-amber-700 rounded-[2px]">
-                                    <AlertTriangle className="h-2.5 w-2.5" />
-                                    Address Incomplete
-                                  </span>
-                                )}
-                              </div>
-                              <div className="mt-0.5 text-xs text-obsidian/55 truncate">{p.address}</div>
+                            aria-label={`Open ${p.name}`}
+                            className="absolute inset-0"
+                          />
+                          <div className="relative min-w-0 flex-1">
+                            <div className="flex items-center gap-2">
+                              <div className="text-sm font-medium text-obsidian truncate">{p.name}</div>
+                              {p.incomplete && (
+                                <span className="inline-flex items-center gap-1 border border-amber-500/40 bg-amber-50 px-1.5 py-0.5 text-[9px] font-mono uppercase tracking-[0.1em] text-amber-700 rounded-[2px]">
+                                  <AlertTriangle className="h-2.5 w-2.5" />
+                                  Address Incomplete
+                                </span>
+                              )}
                             </div>
-                            <span className="inline-flex items-center border border-obsidian/15 bg-paper-warm px-2 py-0.5 text-[10px] font-mono uppercase tracking-[0.1em] text-obsidian/70 rounded-[2px]">
-                              {p.county}
+                            <div className="mt-0.5 text-xs text-obsidian/55 truncate">{p.address}</div>
+                          </div>
+                          <div className="relative flex flex-wrap gap-1">
+                            {p.permit_types.map((t) => {
+                              const complete = isPermitTypeComplete(p, t);
+                              const anchor = permitTypeAnchor(t);
+                              return (
+                                <Link
+                                  key={t}
+                                  to="/projects/$id"
+                                  params={{ id: p.id }}
+                                  hash={anchor}
+                                  title={complete ? `${t}: complete` : `${t}: outstanding items — click to view`}
+                                  className={`inline-flex items-center border px-2 py-0.5 text-[10px] font-mono uppercase tracking-[0.1em] rounded-[2px] transition-colors ${
+                                    complete
+                                      ? "border-emerald-600/40 bg-emerald-50 text-emerald-800 hover:bg-emerald-100"
+                                      : "border-red-600/40 bg-red-50 text-red-800 hover:bg-red-100"
+                                  }`}
+                                >
+                                  {t}
+                                </Link>
+                              );
+                            })}
+                          </div>
+                          <span className="relative inline-flex items-center border border-obsidian/15 bg-paper-warm px-2 py-0.5 text-[10px] font-mono uppercase tracking-[0.1em] text-obsidian/70 rounded-[2px]">
+                            {p.county}
+                          </span>
+                          {meta && (
+                            <span className={`relative inline-flex items-center border px-2 py-0.5 text-[10px] font-medium uppercase tracking-[0.1em] ${toneClass[meta.tone]}`}>
+                              {meta.label}
                             </span>
-                            {meta && (
-                              <span className={`inline-flex items-center border px-2 py-0.5 text-[10px] font-medium uppercase tracking-[0.1em] ${toneClass[meta.tone]}`}>
-                                {meta.label}
-                              </span>
-                            )}
-                            <span className="w-28 shrink-0 text-right">
-                              {(() => {
-                                const portal = findPortalForAddress(p.address);
-                                return portal?.url ? (
-                                  <a
-                                    href={portal.url}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    onClick={(e) => e.stopPropagation()}
-                                    className="inline-flex items-center gap-1 font-mono text-[10px] uppercase tracking-[0.1em] text-sky-700 hover:text-sky-900"
-                                    title={`Open ${portal.name} portal`}
-                                  >
-                                    Open Portal <ExternalLink className="h-3 w-3" />
-                                  </a>
-                                ) : null;
-                              })()}
-                            </span>
-                            <span className="font-mono text-[10px] tabular-nums text-obsidian/45 w-24 text-right shrink-0">{p.updated_at}</span>
-                            <ArrowUpRight className="h-3.5 w-3.5 text-obsidian/40" />
-                          </Link>
+                          )}
+                          <span className="relative w-28 shrink-0 text-right">
+                            {portal?.url ? (
+                              <a
+                                href={portal.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-1 font-mono text-[10px] uppercase tracking-[0.1em] text-sky-700 hover:text-sky-900"
+                                title={`Open ${portal.name} portal`}
+                              >
+                                Open Portal <ExternalLink className="h-3 w-3" />
+                              </a>
+                            ) : null}
+                          </span>
+                          <span className="relative font-mono text-[10px] tabular-nums text-obsidian/45 w-24 text-right shrink-0">{p.updated_at}</span>
+                          <ArrowUpRight className="relative h-3.5 w-3.5 text-obsidian/40" />
                         </li>
                       );
                     })
