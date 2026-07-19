@@ -124,7 +124,7 @@ function RequestCOIPage() {
             <li>· General Liability: $1,000,000 per occurrence / $2,000,000 aggregate</li>
             <li>· Workers' Compensation: Statutory limits (Florida)</li>
             <li>· Auto Liability: $1,000,000 combined single limit</li>
-            <li>· Certificate Holder: Flōridian LLC, [Floridian's address]</li>
+            <li>· Certificate Holder: Flōridian LLC, 1000 S Pine Island Rd, Suite 155, Plantation, FL 33324</li>
             <li>· Additional Insured endorsement required on GL policy</li>
             <li>· 30-day notice of cancellation required</li>
             <li>· Policy must be active for the full duration of the project</li>
