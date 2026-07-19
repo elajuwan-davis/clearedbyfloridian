@@ -25,14 +25,8 @@ type Invoice = {
   issued: string;
 };
 
-const INVOICES: Invoice[] = [
-  { number: "INV-2026-0001", status: "paid", address: "1247 Banyan Trail, Ocean Ridge", description: "New Construction of In-Ground Pool w/ Deck", amount_cents: 9_054_000, issued: "Apr 12, 2026" },
-  { number: "INV-2026-0002", status: "paid", address: "1812 S Ocean Blvd, Manalapan", description: "New Construction of In-Ground Pool w/ Deck", amount_cents: 27_456_000, issued: "Apr 21, 2026" },
-  { number: "INV-2026-0003", status: "pending", address: "88 Beach Rd, Jupiter Island", description: "Pool, Spa, & Summer Kitchen", amount_cents: 19_164_000, issued: "May 28, 2026" },
-  { number: "INV-2026-0004", status: "pending", address: "1247 Banyan Trail, Ocean Ridge", description: "Merchant Processing Fees", amount_cents: 88_600, issued: "May 30, 2026" },
-  { number: "INV-2026-0005", status: "overdue", address: "5440 SE Gomez Ave, Hobe Sound", description: "New Construction of In-Ground Pool w/ Deck", amount_cents: 5_352_000, issued: "Apr 02, 2026" },
-  { number: "INV-2026-0006", status: "pending", address: "2100 Ocean Dr, Vero Beach", description: "New Construction of In-Ground Pool w/ Deck", amount_cents: 8_741_100, issued: "Apr 29, 2026" },
-];
+const INVOICES: Invoice[] = [];
+
 
 const statusTone: Record<InvStatus, { label: string; cls: string }> = {
   paid: { label: "Paid", cls: "bg-emerald-600/10 text-emerald-700 border-emerald-600/30" },
