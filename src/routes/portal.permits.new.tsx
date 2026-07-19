@@ -261,14 +261,30 @@ function NewPermitPage() {
             </div>
           </div>
 
-          <div className="pt-2">
+          <div className="pt-2 space-y-5">
             <div className={sectionCls}>Subcontractors</div>
-            <div className="mt-3 grid gap-4 sm:grid-cols-3">
-              <div><label className={labelCls}>Plumbing</label><input className={inputCls} placeholder="Contractor name" value={form.subPlumbing} onChange={(e) => update("subPlumbing", e.target.value)} /></div>
-              <div><label className={labelCls}>Electrical</label><input className={inputCls} placeholder="Contractor name" value={form.subElectrical} onChange={(e) => update("subElectrical", e.target.value)} /></div>
-              <div><label className={labelCls}>Gas</label><input className={inputCls} placeholder="Contractor name" value={form.subGas} onChange={(e) => update("subGas", e.target.value)} /></div>
-            </div>
+            <p className="text-[12px] text-obsidian/55 -mt-3">
+              Saved subcontractors power the dropdowns on Request COI and Request Sub Insurance Update.
+            </p>
+            {(["subPlumbing", "subElectrical", "subGas"] as const).map((k) => {
+              const trade = k === "subPlumbing" ? "Plumbing" : k === "subElectrical" ? "Electrical" : "Gas";
+              const s = form[k];
+              const set = (patch: Partial<SubIntake>) => update(k, { ...s, ...patch });
+              return (
+                <div key={k} className="border border-obsidian/12 rounded-[3px] p-4">
+                  <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-obsidian mb-3">{trade} Sub</div>
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <div><label className={labelCls}>Company Name</label><input className={inputCls} value={s.companyName} onChange={(e) => set({ companyName: e.target.value })} /></div>
+                    <div><label className={labelCls}>Qualifier Name</label><input className={inputCls} value={s.qualifierName} onChange={(e) => set({ qualifierName: e.target.value })} /></div>
+                    <div><label className={labelCls}>License Number</label><input className={inputCls} value={s.licenseNumber} onChange={(e) => set({ licenseNumber: e.target.value })} /></div>
+                    <div><label className={labelCls}>Contact Email</label><input type="email" className={inputCls} value={s.contactEmail} onChange={(e) => set({ contactEmail: e.target.value })} /></div>
+                    <div className="sm:col-span-2"><label className={labelCls}>Insurance Carrier Contact Email</label><input type="email" className={inputCls} value={s.insuranceCarrierEmail} onChange={(e) => set({ insuranceCarrierEmail: e.target.value })} /></div>
+                  </div>
+                </div>
+              );
+            })}
           </div>
+
 
           <div>
             <label className={labelCls}>Submitted Date</label>
