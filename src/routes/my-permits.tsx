@@ -139,6 +139,30 @@ function MyPermitsPage() {
           />
         </div>
 
+        <div className="mt-4 flex flex-wrap gap-2">
+          {(["All", ...COUNTIES] as CountyFilter[]).map((c) => {
+            const active = countyFilter === c;
+            return (
+              <button
+                key={c}
+                type="button"
+                onClick={() => setCountyFilter(c)}
+                className={`inline-flex items-center gap-2 px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.12em] rounded-[3px] border transition-colors ${
+                  active
+                    ? "bg-obsidian text-paper border-obsidian"
+                    : "bg-white text-obsidian/70 border-obsidian/15 hover:border-obsidian/40 hover:text-obsidian"
+                }`}
+              >
+                {c}
+                <span className={`tabular-nums ${active ? "text-paper/70" : "text-obsidian/40"}`}>
+                  {countyCounts[c] ?? 0}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+
+
         <div className="mt-8 space-y-4">
           {grouped.map((g) => (
             <div key={g.key} className="bg-white border border-obsidian/10" style={{ borderLeftWidth: "3px", borderLeftColor: g.borderColor }}>
