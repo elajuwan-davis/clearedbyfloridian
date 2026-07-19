@@ -59,7 +59,7 @@ export function MyPermitsPage() {
     const counts: Record<string, number> = {};
     for (const p of projects) {
       if (!p.permit_types.some((t) => t.toLowerCase() === "pool")) continue;
-      const seed = buildInspections(p.status === "permit_issued");
+      const seed = buildInspections(false);
       counts[p.id] = passedCount(loadInspections(p.id, seed));
     }
     setInspectionCounts(counts);

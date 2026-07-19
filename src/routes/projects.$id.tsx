@@ -293,10 +293,7 @@ function ProjectDetailPage() {
 
             {/* Inspections */}
             <DetailSection step="04" title="Inspections" description="Pool inspection sequence · 601–610">
-              <InspectionsSection
-                projectId={project.id}
-                allPassedSeed={project.status.label.toLowerCase().includes("issued")}
-              />
+              <InspectionsSection projectId={project.id} allPassedSeed={false} />
             </DetailSection>
 
             {/* Correction Rounds */}
