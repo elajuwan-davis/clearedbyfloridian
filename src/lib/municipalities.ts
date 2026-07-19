@@ -51,7 +51,7 @@ export function findPortalForAddress(address: string): Municipality | undefined 
     [/\broyal palm beach\b/, "Royal Palm Beach"],
     [/\bport st\.?\s*lucie\b/, "City of Port St. Lucie"],
     [/\bstuart\b/, "Martin County / Stuart"],
-    [/\bvero beach\b/, "County of PSL"], // no dedicated Vero Beach portal in list
+    
   ];
   for (const [re, name] of aliases) {
     if (re.test(lower)) {
