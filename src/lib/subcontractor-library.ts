@@ -1,5 +1,5 @@
 // Shared subcontractor library used across Permit Intake, Request COI,
-// Request Sub Insurance Update, Subcontractors admin, and the public
+// Sub Insurance Request, Subcontractors admin, and the public
 // /sub-intake/$token completion flow. Backed by localStorage until wired to Cloud.
 
 export type SubRecord = {

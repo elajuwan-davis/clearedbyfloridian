@@ -54,7 +54,7 @@ const portalNav: NavSection[] = [
     label: "Insurance",
     items: [
       { to: "/portal/request-coi", label: "Request COI", icon: FileCheck2 },
-      { to: "/portal/request-sub-insurance", label: "Request Sub Insurance Update", icon: ShieldAlert },
+      { to: "/portal/request-sub-insurance", label: "Sub Insurance Request", icon: ShieldAlert },
       { to: "/insurance", label: "Get Insurance", icon: ShieldCheck },
     ],
   },
