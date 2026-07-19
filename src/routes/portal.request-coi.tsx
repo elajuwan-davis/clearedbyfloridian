@@ -17,7 +17,7 @@ function RequestCOIPage() {
   const [submitted, setSubmitted] = useState(false);
   const [library, setLibrary] = useState<SubRecord[]>([]);
   const [subIdx, setSubIdx] = useState<string>("");
-  const [currentCoi, setCurrentCoi] = useState<string | null>(null);
+  
   const [form, setForm] = useState({
     projectName: "",
     projectAddress: "",
