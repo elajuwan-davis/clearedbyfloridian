@@ -11,6 +11,7 @@ import {
   BookOpen,
   Calculator,
   ShieldCheck,
+  FileCheck2,
   LogOut,
   Menu,
   User,
@@ -32,7 +33,8 @@ const portalNav: NavItem[] = [
   { to: "/ask-victoria", label: "Ask Victoria", icon: Sparkle },
   { to: "/fee-calculator", label: "Fee Calculator", icon: Calculator },
   { to: "/project-guides", label: "Project Guides", icon: BookOpen },
-  { to: "/insurance", label: "Insurance", icon: ShieldCheck },
+  { to: "/insurance", label: "Get Insurance", icon: ShieldCheck },
+  { to: "/portal/request-coi", label: "Request COI", icon: FileCheck2 },
   { to: "/profile", label: "Profile", icon: User },
 ];
 

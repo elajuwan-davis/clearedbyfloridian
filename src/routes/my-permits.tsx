@@ -122,6 +122,13 @@ function MyPermitsPage() {
             <div className="eyebrow text-obsidian/50">FL Statute 553.791 · Pipeline</div>
             <h1 className="display-serif mt-3 text-4xl sm:text-5xl text-obsidian">My Permits</h1>
           </div>
+          <div className="flex items-center gap-2">
+          <Link
+            to="/portal/permits/new"
+            className="inline-flex items-center gap-2 bg-obsidian px-4 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-paper hover:bg-obsidian/90 rounded-[3px]"
+          >
+            + New Permit
+          </Link>
           <button
             type="button"
             onClick={() => setHideCounts((v) => !v)}
@@ -130,6 +137,7 @@ function MyPermitsPage() {
             {hideCounts ? <Eye className="h-3.5 w-3.5" /> : <EyeOff className="h-3.5 w-3.5" />}
             {hideCounts ? "Show counts" : "Hide counts"}
           </button>
+          </div>
         </div>
 
         <div className="mt-6 relative max-w-md">
