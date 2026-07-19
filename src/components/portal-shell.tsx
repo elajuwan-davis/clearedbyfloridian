@@ -23,7 +23,8 @@ import {
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { supabase } from "@/integrations/supabase/client";
 
-type NavItem = { to: string; label: string; icon: typeof LayoutDashboard; exact?: boolean };
+type AlertKey = "my-permits" | "request-coi" | "sub-insurance";
+type NavItem = { to: string; label: string; icon: typeof LayoutDashboard; exact?: boolean; alertKey?: AlertKey };
 type NavSection = { label?: string; items: NavItem[] };
 
 const portalNav: NavSection[] = [
