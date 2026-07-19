@@ -45,7 +45,7 @@ function RequestCOIPage() {
   function reset() {
     setSubmitted(false);
     setSubIdx("");
-    setCurrentCoi(null);
+    
     setForm({ projectName: "", projectAddress: "", holderName: "", holderAddress: "", additionalInsured: false, notes: "" });
   }
 
