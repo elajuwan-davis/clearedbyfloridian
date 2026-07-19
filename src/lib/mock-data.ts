@@ -157,7 +157,7 @@ export const services = [
     code: "01",
     title: "Private Plan Review",
     summary:
-      "Licensed third-party plan review for residential permits on Flōridian projects — typically 5–7 business days, not 5–7 weeks.",
+      "Licensed third-party plan review for residential permits on Flōridian projects — 2-day plan review turnaround.",
     bullets: [
       "Structural, architectural, MEP, and energy review",
       "Florida Building Code, 8th Edition (2023) compliant",
@@ -168,9 +168,9 @@ export const services = [
     code: "02",
     title: "Private Provider Inspections",
     summary:
-      "Threshold and routine inspections on your schedule. We meet your crew on site — no four-hour windows, no missed days.",
+      "Same-day inspections on your schedule. We meet your crew on site — no four-hour windows, no missed days.",
     bullets: [
-      "Same- or next-day scheduling",
+      "Same-day inspections",
       "Digital reports delivered within 2 hours",
       "Failed-item re-inspections within 24 hours",
     ],
