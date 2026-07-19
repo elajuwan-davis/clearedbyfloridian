@@ -8,6 +8,7 @@ export type SubRecord = {
   companyName: string;
   qualifierName?: string;
   licenseNumber?: string;
+  licenseExpiration?: string | null; // yyyy-mm-dd
   licenseFileName?: string | null;
   contactFirstName?: string;
   contactLastName?: string;
