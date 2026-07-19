@@ -216,7 +216,7 @@ function MessagesPage() {
               ) : (
                 filtered.map((t) => {
                   const last = t.messages[t.messages.length - 1];
-                  const isActive = t.id === active.id;
+                  const isActive = active ? t.id === active.id : false;
                   return (
                     <li key={t.id}>
                       <button
