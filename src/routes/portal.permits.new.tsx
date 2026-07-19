@@ -207,8 +207,37 @@ function NewPermitPage() {
         });
       }
     });
+    // Persist document records (including "pending" placeholders for deferred required docs)
+    // so staff can see outstanding items on the project record.
+    try {
+      const key = "cleared_intake_document_records";
+      const existing = JSON.parse(localStorage.getItem(key) ?? "[]");
+      const records = REQUIRED_DOCS.map((d) => {
+        const s = form.docs[d.key];
+        const status = s.uploaded
+          ? "uploaded"
+          : s.deferred
+            ? "pending"
+            : s.na
+              ? "not_applicable"
+              : "missing";
+        return {
+          project: form.projectName || form.address,
+          docKey: d.key,
+          label: d.label,
+          required: d.required,
+          status,
+          filename: s.uploaded ?? null,
+          submittedAt: new Date().toISOString(),
+        };
+      });
+      localStorage.setItem(key, JSON.stringify([...existing, ...records]));
+    } catch {
+      /* ignore */
+    }
     setSubmitted(true);
   }
+
 
   if (submitted) {
     return (
