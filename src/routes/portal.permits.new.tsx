@@ -172,11 +172,12 @@ function NewPermitPage() {
     if (file) updateDoc(key, { uploaded: file.name, na: false, deferred: false });
   }
 
-  function handleDrop(key: string, e: React.DragEvent<HTMLDivElement>) {
+  function handleDrop(key: string, e: DragEvent<HTMLDivElement>) {
     e.preventDefault();
     const file = e.dataTransfer.files?.[0];
     if (file) updateDoc(key, { uploaded: file.name, na: false, deferred: false });
   }
+
 
   function handleExtraFiles(e: ChangeEvent<HTMLInputElement>) {
     const files = Array.from(e.target.files ?? []).slice(0, 30 - form.extraDocs.length);
