@@ -247,8 +247,8 @@ function CTA() {
           Get started
         </div>
         <h2 className="mt-8 display-serif text-4xl md:text-7xl tracking-tight text-balance max-w-4xl">
-          Permits in days,<br />
-          <em className="italic font-light opacity-80">not weeks.</em>
+          2-day plan review.<br />
+          <em className="italic font-light opacity-80">Same-day inspections.</em>
         </h2>
         <div className="mt-16 max-w-md">
           <Button
