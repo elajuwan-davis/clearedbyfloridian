@@ -140,7 +140,7 @@ function NewSubcontractorPage() {
             <AlertTriangle className="h-5 w-5 text-amber-700 shrink-0" strokeWidth={1.5} />
             <div className="flex-1">
               <div className="text-sm text-obsidian">
-                This profile is incomplete. Send <span className="font-medium">{saved.companyName}</span> a completion link?
+                This profile is incomplete. Generate a link for <span className="font-medium">{saved.companyName}</span> to complete it.
               </div>
               <div className="mt-1 text-[12px] text-obsidian/60">
                 Missing: {missing.map((m) => MISSING_FIELD_LABELS[m]).join(", ")}
@@ -150,7 +150,7 @@ function NewSubcontractorPage() {
                 onClick={sendLink}
                 className="mt-3 inline-flex items-center gap-2 bg-obsidian px-4 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-paper rounded-[3px]"
               >
-                <Send className="h-3.5 w-3.5" /> Send Link
+                <Link2 className="h-3.5 w-3.5" /> Generate Link
               </button>
             </div>
           </div>
