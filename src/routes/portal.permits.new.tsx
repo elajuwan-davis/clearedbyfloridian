@@ -449,45 +449,98 @@ function NewPermitPage() {
               </div>
             </div>
 
-            <ul className="divide-y divide-obsidian/10 border border-obsidian/10 rounded-[3px]">
+            <ul className="space-y-3">
               {REQUIRED_DOCS.map((d) => {
                 const s = form.docs[d.key];
                 const done = s.uploaded || s.na || s.deferred;
                 return (
-                  <li key={d.key} className="p-4 flex flex-wrap items-start gap-4">
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-2">
-                        {done ? <Check className="h-4 w-4 text-emerald-600" /> : <FileText className="h-4 w-4 text-obsidian/40" />}
-                        <span className="text-sm font-medium text-obsidian">{d.label}</span>
-                        <span className={`font-mono text-[9px] uppercase tracking-[0.14em] px-1.5 py-0.5 rounded ${d.required ? "bg-red-50 text-red-700" : "bg-obsidian/8 text-obsidian/60"}`}>
-                          {d.required ? "Required" : "Conditional"}
-                        </span>
-                      </div>
-                      <p className="mt-1 text-[12px] text-obsidian/60">{d.desc}</p>
-                      {s.uploaded && (
-                        <div className="mt-2 inline-flex items-center gap-2 text-[11px] text-obsidian/70 bg-obsidian/5 px-2 py-1 rounded-[3px]">
-                          {s.uploaded}
-                          <button type="button" onClick={() => updateDoc(d.key, { uploaded: null })}><X className="h-3 w-3" /></button>
+                  <li key={d.key} className="border border-obsidian/10 rounded-[3px] p-4">
+                    <div className="flex flex-wrap items-start justify-between gap-3 mb-3">
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          {done ? <Check className="h-4 w-4 text-emerald-600" /> : <FileText className="h-4 w-4 text-obsidian/40" />}
+                          <span className="text-sm font-medium text-obsidian">{d.label}</span>
+                          <span className={`font-mono text-[9px] uppercase tracking-[0.14em] px-1.5 py-0.5 rounded ${d.required ? "bg-red-50 text-red-700" : "bg-obsidian/8 text-obsidian/60"}`}>
+                            {d.required ? "Required" : "Optional"}
+                          </span>
+                          {s.deferred && (
+                            <span className="font-mono text-[9px] uppercase tracking-[0.14em] px-1.5 py-0.5 rounded bg-amber-100 text-amber-800">
+                              Pending — upload later
+                            </span>
+                          )}
                         </div>
-                      )}
+                        <p className="mt-1 text-[12px] text-obsidian/60">{d.desc}</p>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-3 shrink-0">
-                      <label className="inline-flex items-center gap-1.5 cursor-pointer border border-obsidian/20 px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian rounded-[3px] hover:bg-obsidian/5">
-                        <Upload className="h-3 w-3" /> Upload
-                        <input type="file" accept="application/pdf" className="hidden" onChange={(e) => handleFile(d.key, e)} />
-                      </label>
-                      <label className="flex items-center gap-1.5 text-[11px] text-obsidian/70">
-                        <input type="checkbox" checked={s.na} onChange={(e) => updateDoc(d.key, { na: e.target.checked, uploaded: e.target.checked ? null : s.uploaded, deferred: false })} />
-                        N/A
-                      </label>
-                      <button type="button" onClick={() => updateDoc(d.key, { deferred: !s.deferred, na: false })} className={`font-mono text-[10px] uppercase tracking-[0.14em] ${s.deferred ? "text-amber-700" : "text-obsidian/50 hover:text-obsidian"}`}>
-                        {s.deferred ? "Deferred" : "Defer"}
-                      </button>
+
+                    {s.uploaded ? (
+                      <div className="flex items-center justify-between gap-2 text-[12px] text-obsidian/80 bg-emerald-50 border border-emerald-200 px-3 py-2 rounded-[3px]">
+                        <div className="flex items-center gap-2 min-w-0">
+                          <FileText className="h-3.5 w-3.5 shrink-0 text-emerald-700" />
+                          <span className="truncate">{s.uploaded}</span>
+                        </div>
+                        <button type="button" onClick={() => updateDoc(d.key, { uploaded: null })} className="text-obsidian/50 hover:text-obsidian shrink-0">
+                          <X className="h-3.5 w-3.5" />
+                        </button>
+                      </div>
+                    ) : s.deferred ? (
+                      <div className="flex items-center justify-between gap-2 text-[12px] text-amber-900 bg-amber-50 border border-amber-200 px-3 py-2 rounded-[3px]">
+                        <div className="flex items-center gap-2">
+                          <AlertCircle className="h-3.5 w-3.5 text-amber-700" />
+                          Marked as pending — you'll upload this after submission.
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => updateDoc(d.key, { deferred: false })}
+                          className="font-mono text-[10px] uppercase tracking-[0.14em] text-amber-800 hover:text-amber-900"
+                        >
+                          Undo
+                        </button>
+                      </div>
+                    ) : (
+                      <div
+                        onDragOver={(e) => e.preventDefault()}
+                        onDrop={(e) => handleDrop(d.key, e)}
+                        className="border-2 border-dashed border-obsidian/20 hover:border-obsidian/40 bg-obsidian/[0.02] rounded-[3px] px-4 py-5 text-center transition-colors"
+                      >
+                        <Upload className="mx-auto h-5 w-5 text-obsidian/40" strokeWidth={1.5} />
+                        <p className="mt-2 text-[12px] text-obsidian/65">
+                          Drag & drop a PDF here, or{" "}
+                          <label className="text-obsidian font-medium underline cursor-pointer">
+                            browse
+                            <input type="file" accept="application/pdf" className="hidden" onChange={(e) => handleFile(d.key, e)} />
+                          </label>
+                        </p>
+                      </div>
+                    )}
+
+                    <div className="mt-3 flex items-center gap-4 flex-wrap">
+                      {!d.required && !s.uploaded && (
+                        <label className="flex items-center gap-1.5 text-[11px] text-obsidian/70">
+                          <input
+                            type="checkbox"
+                            checked={s.na}
+                            onChange={(e) => updateDoc(d.key, { na: e.target.checked, uploaded: null, deferred: false })}
+                          />
+                          Does not apply
+                        </label>
+                      )}
+                      {d.canDefer && !s.uploaded && (
+                        <label className="flex items-center gap-1.5 text-[11px] text-amber-800">
+                          <input
+                            type="checkbox"
+                            checked={s.deferred}
+                            onChange={(e) => updateDoc(d.key, { deferred: e.target.checked, na: false, uploaded: null })}
+                          />
+                          I'll upload this later
+                        </label>
+                      )}
                     </div>
                   </li>
                 );
               })}
             </ul>
+
 
             <div className="pt-2">
               <div className={sectionCls}>Additional Documents</div>
