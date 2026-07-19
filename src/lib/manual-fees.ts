@@ -1,6 +1,7 @@
 // Manual permit fee entries — localStorage-backed until Supabase is wired.
 
 export type ManualFeeType =
+  | "Total Permit Fee"
   | "Building Permit Fee"
   | "Electrical Permit Fee"
   | "Plumbing Permit Fee"
@@ -8,6 +9,7 @@ export type ManualFeeType =
   | "Other";
 
 export const FEE_TYPES: ManualFeeType[] = [
+  "Total Permit Fee",
   "Building Permit Fee",
   "Electrical Permit Fee",
   "Plumbing Permit Fee",

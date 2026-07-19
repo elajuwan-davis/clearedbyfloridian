@@ -1,6 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState, type ChangeEvent } from "react";
-import { Wallet, Upload, CheckCircle2, X } from "lucide-react";
+import { useEffect, useMemo, useState, type ChangeEvent } from "react";
+import { Wallet, Upload, CheckCircle2, X, Plus, Pencil, Trash2 } from "lucide-react";
+import { LogPermitFeeDialog } from "@/components/log-permit-fee-dialog";
+import { listAllFees, deleteFee, fmtUsd, type ManualFee } from "@/lib/manual-fees";
+import { PROJECTS } from "@/lib/projects-data";
 
 export const Route = createFileRoute("/portal/permit-fees")({
   head: () => ({
@@ -35,36 +38,116 @@ const fmt = (cents: number) =>
 
 function PermitFeesPage() {
   const [receipts, setReceipts] = useState<Record<string, string>>({});
+  const [manualFees, setManualFees] = useState<ManualFee[]>([]);
+  const [logOpen, setLogOpen] = useState(false);
+  const [editing, setEditing] = useState<ManualFee | null>(null);
+
+  useEffect(() => {
+    const refresh = () => setManualFees(listAllFees());
+    refresh();
+    window.addEventListener("manual-fees:changed", refresh);
+    return () => window.removeEventListener("manual-fees:changed", refresh);
+  }, []);
 
   const totalSavings = useMemo(
     () => FEES.reduce((s, f) => s + (f.savings_cents || 0), 0),
     [],
   );
+  const manualTotal = useMemo(
+    () => manualFees.reduce((s, f) => s + f.amountCents, 0),
+    [manualFees],
+  );
+
+  function projectName(id: string) {
+    return PROJECTS.find((p) => p.id === id)?.name ?? id;
+  }
 
   function upload(permit: string, e: ChangeEvent<HTMLInputElement>) {
     const f = e.target.files?.[0];
     if (f) setReceipts((r) => ({ ...r, [permit]: f.name }));
   }
 
+  function openNew() {
+    setEditing(null);
+    setLogOpen(true);
+  }
+  function openEdit(fee: ManualFee) {
+    setEditing(fee);
+    setLogOpen(true);
+  }
+
   return (
     <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
       <div className="border-b border-obsidian/10 pb-8">
-        <div className="eyebrow text-obsidian/50 flex items-center gap-2">
-          <Wallet className="h-3.5 w-3.5" strokeWidth={1.5} /> Finance
+        <div className="flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <div className="eyebrow text-obsidian/50 flex items-center gap-2">
+              <Wallet className="h-3.5 w-3.5" strokeWidth={1.5} /> Finance
+            </div>
+            <h1 className="display-serif mt-3 text-4xl sm:text-5xl text-obsidian">Permit Fees</h1>
+            <p className="mt-3 text-sm text-obsidian/60 max-w-xl">
+              Municipality-issued fees payable through each city's portal. Log fees manually as you pull them from municipal portals.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={openNew}
+            className="inline-flex items-center gap-2 bg-obsidian px-4 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-paper hover:bg-obsidian/90 rounded-[3px]"
+          >
+            <Plus className="h-3.5 w-3.5" /> Log Permit Fee
+          </button>
         </div>
-        <h1 className="display-serif mt-3 text-4xl sm:text-5xl text-obsidian">Permit Fees</h1>
-        <p className="mt-3 text-sm text-obsidian/60 max-w-xl">
-          Municipality-issued fees payable through each city's portal. Savings column reflects the reduction under Flōridian's private-provider + permit-runner service vs. standard process.
-        </p>
       </div>
 
-      {FEES.length === 0 ? (
-        <div className="mt-10 border border-dashed border-obsidian/20 rounded-[3px] p-12 text-center">
-          <Wallet className="h-8 w-8 mx-auto text-obsidian/30" strokeWidth={1.5} />
-          <p className="mt-3 text-sm text-obsidian/70">No permit fees on file.</p>
-          <p className="mt-1 text-xs text-obsidian/50">Fees will appear here as permits are issued.</p>
+      {/* Manually logged fees */}
+      <div className="mt-10">
+        <div className="flex items-end justify-between">
+          <h2 className="display-serif text-2xl text-obsidian">Logged Fees</h2>
+          {manualFees.length > 0 && (
+            <div className="font-mono text-[11px] uppercase tracking-[0.14em] text-obsidian/60">
+              Total <span className="ml-2 text-obsidian text-sm">{fmtUsd(manualTotal)}</span>
+            </div>
+          )}
         </div>
-      ) : (
+
+        {manualFees.length === 0 ? (
+          <div className="mt-4 border border-dashed border-obsidian/20 rounded-[3px] p-10 text-center">
+            <Wallet className="h-8 w-8 mx-auto text-obsidian/30" strokeWidth={1.5} />
+            <p className="mt-3 text-sm text-obsidian/70">No fees logged yet.</p>
+            <p className="mt-1 text-xs text-obsidian/50">Use "Log Permit Fee" to record a payment.</p>
+          </div>
+        ) : (
+          <div className="mt-4 border border-obsidian/10 bg-white rounded-[3px] overflow-hidden">
+            <div className="grid grid-cols-[1.3fr_1.2fr_1fr_0.9fr_1.2fr_auto] gap-4 px-5 py-3 border-b border-obsidian/10 bg-obsidian/5 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/60">
+              <div>Project</div>
+              <div>Fee Type</div>
+              <div>Date</div>
+              <div className="text-right">Amount</div>
+              <div>Notes</div>
+              <div></div>
+            </div>
+            {manualFees.map((f) => (
+              <div key={f.id} className="grid grid-cols-[1.3fr_1.2fr_1fr_0.9fr_1.2fr_auto] gap-4 px-5 py-4 border-b border-obsidian/10 last:border-b-0 items-center text-sm">
+                <div className="text-obsidian">{projectName(f.projectId)}</div>
+                <div className="text-obsidian/75 text-[13px]">{f.feeType}</div>
+                <div className="text-obsidian/60 font-mono text-[12px]">{f.datePaid}</div>
+                <div className="text-right font-mono text-obsidian">{fmtUsd(f.amountCents)}</div>
+                <div className="text-obsidian/60 text-[12px] truncate">{f.notes || "—"}</div>
+                <div className="flex items-center gap-1">
+                  <button type="button" onClick={() => openEdit(f)} className="p-1.5 text-obsidian/60 hover:text-obsidian" aria-label="Edit">
+                    <Pencil className="h-3.5 w-3.5" />
+                  </button>
+                  <button type="button" onClick={() => deleteFee(f.id)} className="p-1.5 text-obsidian/60 hover:text-oxblood" aria-label="Delete">
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {FEES.length > 0 && (
         <>
           <div className="mt-8 border border-obsidian/10 bg-white rounded-[3px] overflow-hidden">
             <div className="grid grid-cols-[1.1fr_1.4fr_1fr_0.9fr_0.9fr_0.9fr_auto] gap-4 px-5 py-3 border-b border-obsidian/10 bg-obsidian/5 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/60">
@@ -136,6 +219,8 @@ function PermitFeesPage() {
           </div>
         </>
       )}
+
+      <LogPermitFeeDialog open={logOpen} onOpenChange={setLogOpen} editing={editing} />
     </div>
   );
 }
