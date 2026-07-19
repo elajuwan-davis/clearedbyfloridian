@@ -22,8 +22,12 @@ import {
 
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { supabase } from "@/integrations/supabase/client";
+import { useExpirationAlerts } from "@/hooks/use-expiration-alerts";
+import { NotificationBell } from "@/components/notification-bell";
+import type { Alert } from "@/lib/expiration-alerts";
 
-type NavItem = { to: string; label: string; icon: typeof LayoutDashboard; exact?: boolean };
+type AlertKey = "my-permits" | "request-coi" | "sub-insurance";
+type NavItem = { to: string; label: string; icon: typeof LayoutDashboard; exact?: boolean; alertKey?: AlertKey };
 type NavSection = { label?: string; items: NavItem[] };
 
 const portalNav: NavSection[] = [
@@ -35,7 +39,7 @@ const portalNav: NavSection[] = [
   {
     label: "Projects",
     items: [
-      { to: "/portal/permits", label: "My Permits", icon: FileText },
+      { to: "/portal/permits", label: "My Permits", icon: FileText, alertKey: "my-permits" },
       { to: "/portal/subcontractors", label: "Subcontractors", icon: User },
       { to: "/messages", label: "Messages", icon: MessageSquare },
       { to: "/project-guides", label: "Project Guides", icon: BookOpen },
@@ -53,8 +57,8 @@ const portalNav: NavSection[] = [
   {
     label: "Insurance",
     items: [
-      { to: "/portal/request-coi", label: "Request COI", icon: FileCheck2 },
-      { to: "/portal/request-sub-insurance", label: "Sub Insurance Request", icon: ShieldAlert },
+      { to: "/portal/request-coi", label: "Request COI", icon: FileCheck2, alertKey: "request-coi" },
+      { to: "/portal/request-sub-insurance", label: "Sub Insurance Request", icon: ShieldAlert, alertKey: "sub-insurance" },
       { to: "/insurance", label: "Get Insurance", icon: ShieldCheck },
     ],
   },
@@ -104,17 +108,29 @@ const roleLabel: Record<typeof mockUser.role, string> = {
   admin: "Admin",
 };
 
+function computeAlertKeys(alerts: Alert[]): Set<AlertKey> {
+  const set = new Set<AlertKey>();
+  for (const a of alerts) {
+    if (a.kind === "coi-expired") set.add("request-coi");
+    if (a.kind === "coi-expiring") set.add("sub-insurance");
+    if (a.kind === "license-expiring") set.add("my-permits");
+  }
+  return set;
+}
+
 function SidebarBody({
   pathname,
   onNavigate,
   onSignOut,
   collapsible = false,
+  alertKeys,
 }: {
   pathname: string;
   onNavigate?: () => void;
   onSignOut: () => void;
   /** When true, the sidebar shows icons only until a `.sidebar-expanded` ancestor toggles labels in. */
   collapsible?: boolean;
+  alertKeys: Set<AlertKey>;
 }) {
   // When collapsible, labels/section headers are hidden by default and shown when
   // the .sidebar-expanded class is present on an ancestor (hover on desktop).
@@ -166,6 +182,7 @@ function SidebarBody({
                 const isActive = item.exact
                   ? pathname === item.to
                   : pathname === item.to || pathname.startsWith(item.to + "/");
+                const hasAlert = item.alertKey ? alertKeys.has(item.alertKey) : false;
                 return (
                   <Link
                     key={item.to}
@@ -185,7 +202,16 @@ function SidebarBody({
                       className="absolute left-0 top-0 bottom-0 w-[3px] transition-opacity"
                       style={{ backgroundColor: "var(--sky)", opacity: isActive ? 1 : 0 }}
                     />
-                    <Icon className="h-4 w-4 shrink-0" strokeWidth={1.5} />
+                    <span className="relative shrink-0">
+                      <Icon className="h-4 w-4" strokeWidth={1.5} />
+                      {hasAlert && (
+                        <span
+                          aria-hidden
+                          className="absolute -top-0.5 -right-0.5 h-2 w-2 rounded-full bg-red-500 ring-2"
+                          style={{ ["--tw-ring-color" as never]: "var(--obsidian)" }}
+                        />
+                      )}
+                    </span>
                     <span className={labelCls}>{item.label}</span>
                   </Link>
                 );
@@ -315,13 +341,16 @@ export function PortalShell({ children }: { children: ReactNode }) {
   }
 
 
+  const alerts = useExpirationAlerts();
+  const alertKeys = computeAlertKeys(alerts);
+
   return (
     <div className="min-h-screen bg-background">
       {/* Desktop sidebar — collapsed 64px, expands to 240px on hover */}
       <aside
         className="group/sb fixed inset-y-0 left-0 z-40 hidden md:flex flex-col transition-[width] duration-200 ease-out w-[64px] hover:w-[240px] hover:shadow-2xl"
       >
-        <SidebarBody pathname={pathname} onSignOut={handleSignOut} collapsible />
+        <SidebarBody pathname={pathname} onSignOut={handleSignOut} collapsible alertKeys={alertKeys} />
       </aside>
 
       {/* Main column */}
@@ -345,6 +374,7 @@ export function PortalShell({ children }: { children: ReactNode }) {
                     setOpen(false);
                     handleSignOut();
                   }}
+                  alertKeys={alertKeys}
                 />
               </SheetContent>
             </Sheet>
@@ -352,10 +382,13 @@ export function PortalShell({ children }: { children: ReactNode }) {
               {pathname}
             </div>
           </div>
-          {/* Mobile wordmark on right */}
-          <Link to="/" className="md:hidden leading-[1] text-right">
-            <div className="wordmark text-lg">Cleared</div>
-          </Link>
+          <div className="flex items-center gap-2">
+            <NotificationBell />
+            {/* Mobile wordmark on right */}
+            <Link to="/" className="md:hidden leading-[1] text-right">
+              <div className="wordmark text-lg">Cleared</div>
+            </Link>
+          </div>
         </header>
         <div className="flex-1 px-4 sm:px-6 md:px-8 py-6 md:py-10">{children}</div>
       </div>
