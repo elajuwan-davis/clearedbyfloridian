@@ -48,10 +48,7 @@ function SubcontractorIntakePage() {
   });
 
   useEffect(() => {
-    try {
-      const raw = localStorage.getItem(LIB_KEY);
-      if (raw) setLibrary(JSON.parse(raw) as SubRecord[]);
-    } catch { /* ignore */ }
+    setLibrary(loadSubLibrary() as SubRecord[]);
   }, []);
 
   function applySaved(idx: string) {
@@ -67,15 +64,15 @@ function SubcontractorIntakePage() {
     if (!form.licenseNumber.trim()) return toast.error("License number is required");
     if (!form.valuation.trim()) return toast.error("Trade valuation is required");
 
-    // Save to library if not already present
-    const exists = library.some((s) => s.companyName === form.companyName && s.licenseNumber === form.licenseNumber);
-    if (!exists) {
-      const next = [...library, {
-        companyName: form.companyName, trade: form.trade, companyAddress: form.companyAddress,
-        qualifierName: form.qualifierName, email: form.email, phone: form.phone, licenseNumber: form.licenseNumber,
-      }];
-      localStorage.setItem(LIB_KEY, JSON.stringify(next));
-    }
+    upsertSub({
+      companyName: form.companyName,
+      trade: form.trade,
+      companyAddress: form.companyAddress,
+      qualifierName: form.qualifierName,
+      email: form.email,
+      phone: form.phone,
+      licenseNumber: form.licenseNumber,
+    } as LibSub);
     toast.success("Subcontractor added to project");
     navigate({ to: "/forms" });
   }
