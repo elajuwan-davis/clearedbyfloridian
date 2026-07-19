@@ -34,6 +34,7 @@ const emptyForm: SubRecord = {
   companyName: "",
   qualifierName: "",
   licenseNumber: "",
+  licenseExpiration: null,
   licenseFileName: null,
   contactFirstName: "",
   contactLastName: "",
