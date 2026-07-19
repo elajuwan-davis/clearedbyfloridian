@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { FileCheck2, CheckCircle2 } from "lucide-react";
 import { loadSubLibrary, type SubRecord } from "@/lib/subcontractor-library";
+import { CloudUploadButtons } from "@/components/cloud-upload-buttons";
 
 export const Route = createFileRoute("/portal/request-coi")({
   head: () => ({
@@ -177,6 +178,7 @@ function RequestCOIPage() {
           {coiFile && (
             <div className="mt-1.5 text-[11px] text-obsidian/60 font-mono">{coiFile.name}</div>
           )}
+          <CloudUploadButtons />
           <p className="mt-1.5 text-[11px] text-obsidian/50">
             Optional. Upload a COI example provided by the HOA, GC, or certificate holder if available.
           </p>
