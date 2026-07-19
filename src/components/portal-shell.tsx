@@ -96,10 +96,10 @@ function isProtectedPortalPath(pathname: string) {
 
 // Mock until auth wired — shape matches profiles row
 const mockUser = {
-  full_name: "J. Mendez",
-  initials: "JM",
-  role: "builder" as "builder" | "staff" | "admin",
-  company_name: "Coastline Builders Group",
+  full_name: "Elajuwan Davis",
+  initials: "ED",
+  role: "admin" as "builder" | "staff" | "admin",
+  company_name: "Flōridian LLC",
 };
 
 const roleLabel: Record<typeof mockUser.role, string> = {
