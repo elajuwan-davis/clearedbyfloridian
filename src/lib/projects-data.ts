@@ -72,11 +72,11 @@ const SEED: Seed[] = [
   { n: 14, name: "Ramirez Residence", client: "Roberto Ramirez", street: "104 Manor Circle", city: "Jupiter", zip: "33458" },
   { n: 15, name: "Walker Residence", client: "Colin Walker", street: "123 Fairview W", city: "Tequesta", zip: "33469", scope: "16' x 31' pool" },
   { n: 16, name: "Keuning Residence", client: "Dana Keuning", street: "9355 SE Mercury St", city: "Hobe Sound", zip: "33455" },
-  { n: 18, name: "Knight Residence", client: "Emma Althea Knight", street: "10142 SW Davanti Drive", city: "Port Saint Lucie", zip: "34987" },
+  { n: 18, name: "Knight Residence", client: "Emma Althea Knight", street: "10142 SW Davanti Dr", city: "Port Saint Lucie", zip: "34987", status: "permit_issued", permit_no: "2621607" },
   { n: 19, name: "Manera Residence", client: "Knight Manera", street: "2006 Windward Way", city: "Vero Beach", zip: "32960" },
   { n: 20, name: "Perle Residence", client: "Cannatelli Builders (Perle)", street: "1261 Spanish River Rd", city: "Boca Raton", zip: "33432" },
   { n: 21, name: "Mesmer Residence", client: "Mesmer Family", street: "3153 Royal Palm Ave", city: "Miami Beach", scope: "Natural Gas / Pool, Pergola & ODK", status: "permit_issued", permit_no: "PO-R2601278" },
-  { n: 22, name: "Henderson", client: "Arielle Henderson", street: "12923 SW Leopold Wy", city: "Port St. Lucie", zip: "34987" },
+  { n: 22, name: "Henderson", client: "Arielle Henderson", street: "12923 SW Leopold Way", city: "Port St. Lucie", zip: "34987", status: "permit_issued", permit_no: "2619180" },
 
   { n: 24, name: "Paul-Hus Residence", client: "Sarah & Andy Paul-Hus", street: "2090 NE 26th St", city: "Lighthouse Point", zip: "33064", scope: "Pergola" },
   { n: 25, name: "Spina Residence", client: "Rudolph Spina", street: "17560 72nd Rd N", city: "Loxahatchee", zip: "33470" },
