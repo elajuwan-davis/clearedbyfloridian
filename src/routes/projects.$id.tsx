@@ -57,6 +57,7 @@ export const Route = createFileRoute("/projects/$id")({
 import { toneClass, projectStatusMeta, type BadgeTone } from "@/lib/status-badges";
 import { PROJECTS as SEED_PROJECTS, fullAddress } from "@/lib/projects-data";
 import { InspectionsSection } from "@/components/inspections-section";
+import { ProjectManualFees } from "@/components/project-manual-fees";
 type Tone = BadgeTone;
 
 
@@ -344,6 +345,11 @@ function ProjectDetailPage() {
                   ))
                 )}
               </div>
+            </DetailSection>
+
+            {/* Manual Permit Fees */}
+            <DetailSection step="06" title="Permit Fees" description="Manually logged county fees">
+              <ProjectManualFees projectId={project.id} />
             </DetailSection>
           </div>
 
