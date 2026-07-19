@@ -131,36 +131,51 @@ function SidebarBody({
         </Link>
       </div>
 
-      <nav className="flex-1 px-3 py-5 space-y-0.5 overflow-y-auto">
-        {portalNav.map((item) => {
-          const Icon = item.icon;
-          const isActive = item.exact
-            ? pathname === item.to
-            : pathname === item.to || pathname.startsWith(item.to + "/");
-          return (
-            <Link
-              key={item.to}
-              to={item.to as never}
-              onClick={onNavigate}
-              className="group relative flex items-center gap-3 pl-5 pr-3 py-2.5 text-[13px] font-subline tracking-wide transition-colors"
-              style={{
-                color: isActive ? "var(--paper)" : "color-mix(in oklab, var(--paper) 60%, transparent)",
-                backgroundColor: isActive
-                  ? "color-mix(in oklab, var(--sky) 8%, transparent)"
-                  : "transparent",
-              }}
-            >
-              <span
-                aria-hidden
-                className="absolute left-0 top-0 bottom-0 w-[3px] transition-opacity"
-                style={{ backgroundColor: "var(--sky)", opacity: isActive ? 1 : 0 }}
-              />
-              <Icon className="h-4 w-4 shrink-0" strokeWidth={1.5} />
-              <span>{item.label}</span>
-            </Link>
-          );
-        })}
+      <nav className="flex-1 px-3 py-5 overflow-y-auto">
+        {portalNav.map((section, si) => (
+          <div key={si} className={si === 0 ? "" : "mt-5"}>
+            {section.label && (
+              <div
+                className="px-5 mb-1.5 font-mono text-[9px] uppercase tracking-[0.22em]"
+                style={{ color: "color-mix(in oklab, var(--paper) 40%, transparent)" }}
+              >
+                {section.label}
+              </div>
+            )}
+            <div className="space-y-0.5">
+              {section.items.map((item) => {
+                const Icon = item.icon;
+                const isActive = item.exact
+                  ? pathname === item.to
+                  : pathname === item.to || pathname.startsWith(item.to + "/");
+                return (
+                  <Link
+                    key={item.to}
+                    to={item.to as never}
+                    onClick={onNavigate}
+                    className="group relative flex items-center gap-3 pl-5 pr-3 py-2.5 text-[13px] font-subline tracking-wide transition-colors"
+                    style={{
+                      color: isActive ? "var(--paper)" : "color-mix(in oklab, var(--paper) 60%, transparent)",
+                      backgroundColor: isActive
+                        ? "color-mix(in oklab, var(--sky) 8%, transparent)"
+                        : "transparent",
+                    }}
+                  >
+                    <span
+                      aria-hidden
+                      className="absolute left-0 top-0 bottom-0 w-[3px] transition-opacity"
+                      style={{ backgroundColor: "var(--sky)", opacity: isActive ? 1 : 0 }}
+                    />
+                    <Icon className="h-4 w-4 shrink-0" strokeWidth={1.5} />
+                    <span>{item.label}</span>
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        ))}
       </nav>
+
 
       <div
         className="px-4 py-4 border-t space-y-3"
