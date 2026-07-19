@@ -1,9 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { PortalShell } from "@/components/portal-shell";
 import { ChevronDown, Search, Eye, EyeOff, ArrowUpRight } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
 import { projectStatusMeta, toneClass } from "@/lib/status-badges";
+import { PROJECTS, fullAddress } from "@/lib/projects-data";
 
 export const Route = createFileRoute("/my-permits")({
   head: () => ({
@@ -54,19 +54,17 @@ const GROUPS: Array<{
   { key: "cancelled", label: "Cancelled", statuses: ["cancelled"], borderColor: "oklch(0.5 0.18 25)" },
 ];
 
-const SEED: Project[] = [
-  { id: "1", name: "Ocean Ridge Estate", address: "1247 Banyan Trail, Ocean Ridge", county: "Palm Beach", status: "in_review", updated_at: "Jun 5, 2026" },
-  { id: "2", name: "Jupiter Island Residence", address: "88 Beach Rd, Jupiter Island", county: "Martin", status: "corrections_required", updated_at: "Jun 4, 2026" },
-  { id: "3", name: "Manalapan Bayfront", address: "1812 S Ocean Blvd, Manalapan", county: "Palm Beach", status: "permit_issued", updated_at: "Jun 2, 2026" },
-  { id: "4", name: "Hobe Sound Compound", address: "5440 SE Gomez Ave, Hobe Sound", county: "Martin", status: "approved", updated_at: "May 31, 2026" },
-  { id: "5", name: "Vero Beach Oceanfront", address: "2100 Ocean Dr, Vero Beach", county: "Indian River", status: "submitted", updated_at: "May 29, 2026" },
-  { id: "6", name: "Stuart Riverhouse", address: "320 SW St Lucie Cres, Stuart", county: "Martin", status: "inspection_scheduled", updated_at: "May 28, 2026" },
-  { id: "7", name: "Palm Beach Landmark", address: "412 N County Rd, Palm Beach", county: "Palm Beach", status: "resubmitted_to_county", updated_at: "May 25, 2026" },
-  { id: "8", name: "Coral Springs Modern", address: "9402 Wiles Rd, Coral Springs", county: "Broward", status: "cancelled", updated_at: "May 12, 2026" },
-];
+const SEED: Project[] = PROJECTS.map((p) => ({
+  id: p.id,
+  name: p.name,
+  address: fullAddress(p),
+  county: p.county,
+  status: p.status,
+  updated_at: p.updated_at,
+}));
 
 function MyPermitsPage() {
-  const [projects, setProjects] = useState<Project[]>(SEED);
+  const [projects] = useState<Project[]>(SEED);
   const [query, setQuery] = useState("");
   const [hideCounts, setHideCounts] = useState(false);
   const [open, setOpen] = useState<Record<GroupKey, boolean>>({
@@ -77,29 +75,6 @@ function MyPermitsPage() {
     cancelled: false,
   });
 
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      const { data, error } = await supabase
-        .from("projects")
-        .select("id, project_name, address, county, status, updated_at")
-        .order("updated_at", { ascending: false });
-      if (cancelled || error || !data || data.length === 0) return;
-      setProjects(
-        data.map((p: Record<string, unknown>) => ({
-          id: String(p.id),
-          name: String(p.project_name ?? p.name ?? "Untitled"),
-          address: String(p.address ?? ""),
-          county: String(p.county ?? ""),
-          status: String(p.status ?? "submitted"),
-          updated_at: p.updated_at ? new Date(String(p.updated_at)).toLocaleDateString() : "",
-        })),
-      );
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, []);
 
   const filtered = useMemo(() => {
     const q = query.toLowerCase().trim();
