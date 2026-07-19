@@ -55,6 +55,7 @@ function NewSubcontractorPage() {
   const [form, setForm] = useState<SubRecord>(emptyForm);
   const [saved, setSaved] = useState<SubRecord | null>(null);
   const [shareUrl, setShareUrl] = useState<string | null>(null);
+  const [blankInviteUrl, setBlankInviteUrl] = useState<string | null>(null);
 
   useEffect(() => {
     if (id) {
@@ -85,6 +86,23 @@ function NewSubcontractorPage() {
     setSaved(rec);
     setForm(rec);
     toast.success("Subcontractor saved");
+  }
+
+  function generateBlankInviteLink() {
+    // Create a fully blank placeholder sub. The public /sub-intake/[token]
+    // page will render the full onboarding form (identity + docs) because
+    // every field is empty.
+    const stamp = new Date().toLocaleDateString();
+    const rec = upsertSub({ companyName: `Pending Invite ${stamp}`, trade: "" });
+    const token = ensureToken(rec.id);
+    const url = `${window.location.origin}/sub-intake/${token}`;
+    setBlankInviteUrl(url);
+    toast.success("Intake link generated");
+  }
+
+  function copyBlankInviteLink() {
+    if (!blankInviteUrl) return;
+    navigator.clipboard.writeText(blankInviteUrl).then(() => toast.success("Link copied"));
   }
 
   function sendLink() {
