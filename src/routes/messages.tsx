@@ -253,150 +253,165 @@ function MessagesPage() {
 
           {/* RIGHT — thread */}
           <section className="flex flex-col min-h-[600px]">
-            {/* Thread header */}
-            <div className="flex flex-wrap items-start justify-between gap-4 p-4 border-b border-obsidian/10 bg-paper-warm/40">
-              <div className="min-w-0">
-                <div className="display-serif text-2xl text-obsidian">{active.name}</div>
-                <div className="mt-1 text-xs text-obsidian/55">{active.address}</div>
-                <div className="mt-1 font-mono text-[10px] uppercase tracking-[0.12em] text-obsidian/45">
-                  {active.permit_no} · {active.county} County
+            {!active ? (
+              <div className="flex-1 grid place-items-center p-8 text-center">
+                <div>
+                  <Inbox className="h-8 w-8 mx-auto text-obsidian/30" strokeWidth={1.5} />
+                  <p className="mt-3 text-sm text-obsidian/60">No messages yet.</p>
+                  <p className="mt-1 text-xs text-obsidian/45 max-w-xs">
+                    Messages will appear here as permits are processed.
+                  </p>
                 </div>
               </div>
-              <div className="flex items-center gap-2">
-                <Select value={active.status} onValueChange={(v) => changeStatus(v as ProjectStatus)}>
-                  <SelectTrigger className="h-9 w-[230px] rounded-[3px] border-obsidian/15 bg-white text-xs">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {PROJECT_STATUSES.map((s) => (
-                      <SelectItem key={s} value={s}>
-                        {STATUS_LABEL[s]}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <Button asChild variant="ghost" size="sm" className="rounded-[3px] gap-1">
-                  <a href={`/projects/${active.id}`}>
-                    Details <ArrowUpRight className="h-3 w-3" />
-                  </a>
-                </Button>
-              </div>
-            </div>
-
-            {/* Messages */}
-            <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 bg-paper">
-              {active.messages.map((m) => (
-                <div key={m.id} className={`flex ${m.fromAdmin ? "justify-start" : "justify-end"}`}>
-                  <div className={`max-w-[80%] ${m.fromAdmin ? "" : "items-end"}`}>
-                    <div className="flex items-baseline gap-2 mb-1">
-                      <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-obsidian/60">
-                        {m.author}
-                      </span>
-                      {m.fromAdmin && (
-                        <span className="border border-obsidian/30 bg-obsidian text-paper px-1.5 py-0.5 font-mono text-[8px] font-medium uppercase tracking-[0.12em] rounded-[2px]">
-                          Admin
-                        </span>
-                      )}
-                      <span className="font-mono text-[10px] text-obsidian/40">{m.at}</span>
-                    </div>
-                    <div
-                      className="px-4 py-3 text-sm leading-relaxed rounded-[3px]"
-                      style={
-                        m.fromAdmin
-                          ? { backgroundColor: "var(--obsidian)", color: "var(--paper)" }
-                          : { backgroundColor: "color-mix(in oklab, var(--sky) 22%, white)", color: "var(--obsidian)" }
-                      }
-                    >
-                      {m.body}
-                      {m.attachments && m.attachments.length > 0 && (
-                        <div className="mt-3 space-y-1.5">
-                          {m.attachments.map((a) => (
-                            <div
-                              key={a.name}
-                              className="flex items-center gap-2 px-2 py-1.5 text-xs"
-                              style={{
-                                backgroundColor: m.fromAdmin
-                                  ? "color-mix(in oklab, var(--paper) 12%, transparent)"
-                                  : "color-mix(in oklab, var(--obsidian) 8%, transparent)",
-                                borderRadius: "2px",
-                              }}
-                            >
-                              <FileText className="h-3 w-3 shrink-0" />
-                              <span className="font-mono truncate">{a.name}</span>
-                              <span className="font-mono opacity-60 ml-auto">{a.size}</span>
-                            </div>
-                          ))}
-                        </div>
-                      )}
+            ) : (
+              <>
+                {/* Thread header */}
+                <div className="flex flex-wrap items-start justify-between gap-4 p-4 border-b border-obsidian/10 bg-paper-warm/40">
+                  <div className="min-w-0">
+                    <div className="display-serif text-2xl text-obsidian">{active.name}</div>
+                    <div className="mt-1 text-xs text-obsidian/55">{active.address}</div>
+                    <div className="mt-1 font-mono text-[10px] uppercase tracking-[0.12em] text-obsidian/45">
+                      {active.permit_no} · {active.county} County
                     </div>
                   </div>
+                  <div className="flex items-center gap-2">
+                    <Select value={active.status} onValueChange={(v) => changeStatus(v as ProjectStatus)}>
+                      <SelectTrigger className="h-9 w-[230px] rounded-[3px] border-obsidian/15 bg-white text-xs">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {PROJECT_STATUSES.map((s) => (
+                          <SelectItem key={s} value={s}>
+                            {STATUS_LABEL[s]}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <Button asChild variant="ghost" size="sm" className="rounded-[3px] gap-1">
+                      <a href={`/projects/${active.id}`}>
+                        Details <ArrowUpRight className="h-3 w-3" />
+                      </a>
+                    </Button>
+                  </div>
                 </div>
-              ))}
-            </div>
 
-            {/* Composer */}
-            <div className="border-t border-obsidian/10 bg-white p-3">
-              {pending.length > 0 && (
-                <div className="flex flex-wrap gap-2 mb-2">
-                  {pending.map((a, i) => (
-                    <div
-                      key={`${a.name}-${i}`}
-                      className="flex items-center gap-2 border border-obsidian/15 bg-paper-warm px-2 py-1 text-xs rounded-[3px]"
-                    >
-                      <FileText className="h-3 w-3" />
-                      <span className="font-mono truncate max-w-[200px]">{a.name}</span>
-                      <button
-                        type="button"
-                        onClick={() => setPending((p) => p.filter((_, idx) => idx !== i))}
-                        className="text-obsidian/40 hover:text-oxblood"
-                      >
-                        <X className="h-3 w-3" />
-                      </button>
+                {/* Messages */}
+                <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 bg-paper">
+                  {active.messages.map((m) => (
+                    <div key={m.id} className={`flex ${m.fromAdmin ? "justify-start" : "justify-end"}`}>
+                      <div className={`max-w-[80%] ${m.fromAdmin ? "" : "items-end"}`}>
+                        <div className="flex items-baseline gap-2 mb-1">
+                          <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-obsidian/60">
+                            {m.author}
+                          </span>
+                          {m.fromAdmin && (
+                            <span className="border border-obsidian/30 bg-obsidian text-paper px-1.5 py-0.5 font-mono text-[8px] font-medium uppercase tracking-[0.12em] rounded-[2px]">
+                              Admin
+                            </span>
+                          )}
+                          <span className="font-mono text-[10px] text-obsidian/40">{m.at}</span>
+                        </div>
+                        <div
+                          className="px-4 py-3 text-sm leading-relaxed rounded-[3px]"
+                          style={
+                            m.fromAdmin
+                              ? { backgroundColor: "var(--obsidian)", color: "var(--paper)" }
+                              : { backgroundColor: "color-mix(in oklab, var(--sky) 22%, white)", color: "var(--obsidian)" }
+                          }
+                        >
+                          {m.body}
+                          {m.attachments && m.attachments.length > 0 && (
+                            <div className="mt-3 space-y-1.5">
+                              {m.attachments.map((a) => (
+                                <div
+                                  key={a.name}
+                                  className="flex items-center gap-2 px-2 py-1.5 text-xs"
+                                  style={{
+                                    backgroundColor: m.fromAdmin
+                                      ? "color-mix(in oklab, var(--paper) 12%, transparent)"
+                                      : "color-mix(in oklab, var(--obsidian) 8%, transparent)",
+                                    borderRadius: "2px",
+                                  }}
+                                >
+                                  <FileText className="h-3 w-3 shrink-0" />
+                                  <span className="font-mono truncate">{a.name}</span>
+                                  <span className="font-mono opacity-60 ml-auto">{a.size}</span>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      </div>
                     </div>
                   ))}
                 </div>
-              )}
-              <div className="flex items-end gap-2">
-                <input
-                  ref={fileRef}
-                  type="file"
-                  multiple
-                  onChange={(e) => onFiles(e.target.files)}
-                  className="hidden"
-                />
-                <button
-                  type="button"
-                  onClick={() => fileRef.current?.click()}
-                  className="h-10 w-10 grid place-items-center border border-obsidian/15 bg-paper-warm hover:bg-paper-warm/70 rounded-[3px] text-obsidian/65"
-                  aria-label="Attach file"
-                >
-                  <Paperclip className="h-4 w-4" strokeWidth={1.75} />
-                </button>
-                <textarea
-                  value={draft}
-                  onChange={(e) => setDraft(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" && !e.shiftKey) {
-                      e.preventDefault();
-                      sendMessage();
-                    }
-                  }}
-                  rows={1}
-                  placeholder="Type a message... (Enter to send, Shift+Enter for new line)"
-                  className="flex-1 resize-none border border-obsidian/15 bg-paper-warm px-3 py-2.5 text-sm text-obsidian placeholder:text-obsidian/40 focus:border-obsidian/40 focus:outline-none rounded-[3px] min-h-[40px] max-h-32"
-                />
-                <Button
-                  type="button"
-                  onClick={sendMessage}
-                  variant="dark"
-                  className="h-10 rounded-[3px] gap-1.5"
-                >
-                  <Send className="h-3.5 w-3.5" strokeWidth={1.75} />
-                  Send
-                </Button>
-              </div>
-            </div>
+
+                {/* Composer */}
+                <div className="border-t border-obsidian/10 bg-white p-3">
+                  {pending.length > 0 && (
+                    <div className="flex flex-wrap gap-2 mb-2">
+                      {pending.map((a, i) => (
+                        <div
+                          key={`${a.name}-${i}`}
+                          className="flex items-center gap-2 border border-obsidian/15 bg-paper-warm px-2 py-1 text-xs rounded-[3px]"
+                        >
+                          <FileText className="h-3 w-3" />
+                          <span className="font-mono truncate max-w-[200px]">{a.name}</span>
+                          <button
+                            type="button"
+                            onClick={() => setPending((p) => p.filter((_, idx) => idx !== i))}
+                            className="text-obsidian/40 hover:text-oxblood"
+                          >
+                            <X className="h-3 w-3" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  <div className="flex items-end gap-2">
+                    <input
+                      ref={fileRef}
+                      type="file"
+                      multiple
+                      onChange={(e) => onFiles(e.target.files)}
+                      className="hidden"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => fileRef.current?.click()}
+                      className="h-10 w-10 grid place-items-center border border-obsidian/15 bg-paper-warm hover:bg-paper-warm/70 rounded-[3px] text-obsidian/65"
+                      aria-label="Attach file"
+                    >
+                      <Paperclip className="h-4 w-4" strokeWidth={1.75} />
+                    </button>
+                    <textarea
+                      value={draft}
+                      onChange={(e) => setDraft(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" && !e.shiftKey) {
+                          e.preventDefault();
+                          sendMessage();
+                        }
+                      }}
+                      rows={1}
+                      placeholder="Type a message... (Enter to send, Shift+Enter for new line)"
+                      className="flex-1 resize-none border border-obsidian/15 bg-paper-warm px-3 py-2.5 text-sm text-obsidian placeholder:text-obsidian/40 focus:border-obsidian/40 focus:outline-none rounded-[3px] min-h-[40px] max-h-32"
+                    />
+                    <Button
+                      type="button"
+                      onClick={sendMessage}
+                      variant="dark"
+                      className="h-10 rounded-[3px] gap-1.5"
+                    >
+                      <Send className="h-3.5 w-3.5" strokeWidth={1.75} />
+                      Send
+                    </Button>
+                  </div>
+                </div>
+              </>
+            )}
           </section>
+
         </div>
       </div>
     </PortalShell>
