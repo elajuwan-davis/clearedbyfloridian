@@ -224,7 +224,3 @@ function PermitFeesPage() {
     </div>
   );
 }
-
-    </div>
-  );
-}
