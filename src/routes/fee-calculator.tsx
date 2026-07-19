@@ -222,7 +222,7 @@ function FeeCalculatorPage() {
                   ))}
                 </div>
                 {ppOnFile && (
-                  <p className="mt-2 text-xs text-obsidian/55">50% fee reduction required under FS §553.791(2)(b).</p>
+                  <p className="mt-2 text-xs text-obsidian/55">30% fee reduction required under FS §553.791(2)(b).</p>
                 )}
               </div>
             </div>
