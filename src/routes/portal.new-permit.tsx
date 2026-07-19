@@ -34,7 +34,7 @@ function NewPermit() {
         <div className="label-eyebrow">New permit · Step {step} of 3</div>
         <h1 className="mt-4 font-display text-4xl tracking-tight">Submit a permit request</h1>
         <p className="mt-2 text-muted-foreground">
-          Drawings can be uploaded after intake. Most submissions are reviewed within 5–7 business days.
+          Drawings can be uploaded after intake. 2-day plan review turnaround with same-day inspections after permit issuance.
         </p>
       </div>
 
@@ -128,8 +128,8 @@ function NewPermit() {
             </p>
             <ul className="text-sm space-y-2 mt-4">
               <li className="flex gap-3"><ArrowRight className="h-4 w-4 mt-0.5 text-accent shrink-0" /> Reviewer assignment within 4 business hours</li>
-              <li className="flex gap-3"><ArrowRight className="h-4 w-4 mt-0.5 text-accent shrink-0" /> Fixed-fee proposal within 1 business day</li>
-              <li className="flex gap-3"><ArrowRight className="h-4 w-4 mt-0.5 text-accent shrink-0" /> Plan review begins on document acceptance</li>
+              <li className="flex gap-3"><ArrowRight className="h-4 w-4 mt-0.5 text-accent shrink-0" /> 2-day plan review turnaround once documents are accepted</li>
+              <li className="flex gap-3"><ArrowRight className="h-4 w-4 mt-0.5 text-accent shrink-0" /> Same-day inspections after permit issuance</li>
             </ul>
           </div>
         )}

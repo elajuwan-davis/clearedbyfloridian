@@ -69,7 +69,7 @@ function ServicesPage() {
           <div>
             <div className="label-eyebrow">For licensed GCs</div>
             <h3 className="mt-4 font-display text-3xl tracking-tight">
-              Get cleared in 48 hours.
+              2-day plan review. Same-day inspections.
             </h3>
             <p className="mt-4 text-muted-foreground">
               Credential vetting, master services agreement, and your first

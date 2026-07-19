@@ -18,7 +18,7 @@ export const Route = createFileRoute("/")({
       {
         property: "og:description",
         content:
-          "Permits in days, not weeks — for the GCs building South Florida's most considered residential work.",
+          "2-day plan review and same-day inspections — for the GCs building South Florida's most considered residential work.",
       },
     ],
   }),
@@ -96,8 +96,8 @@ function Lineage() {
 
 function Stats() {
   const stats = [
-    { k: "5–7 days", v: "Typical plan review turnaround" },
-    { k: "2 hr", v: "Inspection report delivery" },
+    { k: "2-day", v: "Plan review turnaround" },
+    { k: "Same-day", v: "Inspections" },
     { k: "10 days", v: "Statutory affidavit-to-permit window" },
     { k: "2 days", v: "Cert of compliance to CO" },
   ];
@@ -172,9 +172,9 @@ function ServicesPreview() {
 function Process() {
   const steps = [
     { n: "01", t: "Intake", d: "Submit drawings, structural calcs, energy & product approvals through the Cleared portal." },
-    { n: "02", t: "Plan Review", d: "A licensed reviewer red-lines the set — usually within a week." },
+    { n: "02", t: "Plan Review", d: "A licensed reviewer red-lines the set — 2-day plan review turnaround." },
     { n: "03", t: "Affidavit & Permit", d: "We file the private provider affidavit; the AHJ issues the permit." },
-    { n: "04", t: "Inspections", d: "Our inspectors meet the crew on site, document everything, deliver reports same-day." },
+    { n: "04", t: "Inspections", d: "Same-day inspections — our inspectors meet the crew on site, document everything, deliver reports." },
     { n: "05", t: "Close-out", d: "Final inspection, CO support, and records archived in the portal." },
   ];
   return (
@@ -247,8 +247,8 @@ function CTA() {
           Get started
         </div>
         <h2 className="mt-8 display-serif text-4xl md:text-7xl tracking-tight text-balance max-w-4xl">
-          Permits in days,<br />
-          <em className="italic font-light opacity-80">not weeks.</em>
+          2-day plan review.<br />
+          <em className="italic font-light opacity-80">Same-day inspections.</em>
         </h2>
         <div className="mt-16 max-w-md">
           <Button
