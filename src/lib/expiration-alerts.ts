@@ -1,7 +1,7 @@
 // Computes expiring/expired COI + License alerts from the subcontractor library.
 import { loadSubLibrary, type SubRecord } from "./subcontractor-library";
 
-export type AlertKind = "coi-expired" | "coi-expiring" | "license-expiring";
+export type AlertKind = "coi-expired" | "coi-expiring" | "license-expired" | "license-expiring";
 export type Alert = {
   id: string;
   kind: AlertKind;
