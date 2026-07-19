@@ -85,6 +85,7 @@ function FeeCalculatorPage() {
   const [reportOpen, setReportOpen] = useState(false);
   const [accuracyOpen, setAccuracyOpen] = useState(false);
   const [shareStatus, setShareStatus] = useState("Share");
+  const internal = isInternalUser();
   
 
 
