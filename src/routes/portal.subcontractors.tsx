@@ -4,6 +4,7 @@ import { Users, Plus, CheckCircle2, AlertTriangle } from "lucide-react";
 import {
   loadSubLibrary,
   coiStatus,
+  licenseStatus,
   isComplete,
   type SubRecord,
 } from "@/lib/subcontractor-library";
@@ -64,18 +65,23 @@ function SubcontractorsListPage() {
         </div>
       ) : (
         <div className="mt-8 border border-obsidian/10 bg-white rounded-[3px] overflow-hidden">
-          <div className="hidden md:grid grid-cols-[1.5fr_0.9fr_1fr_0.9fr_0.7fr_0.9fr] gap-4 px-5 py-3 border-b border-obsidian/10 bg-obsidian/5 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/60">
-            <div>Company</div><div>Trade</div><div>License #</div><div>COI</div><div>W-9</div><div>Status</div>
+          <div className="hidden md:grid grid-cols-[1.5fr_0.8fr_0.9fr_0.8fr_0.9fr_0.6fr_0.8fr] gap-4 px-5 py-3 border-b border-obsidian/10 bg-obsidian/5 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/60">
+            <div>Company</div><div>Trade</div><div>License #</div><div>COI</div><div>License Exp</div><div>W-9</div><div>Status</div>
           </div>
           {subs.map((s) => {
             const coi = coiTone[coiStatus(s)];
+            const lic = licenseStatus(s);
+            const licDot =
+              lic === "expired" ? "bg-oxblood" : lic === "expiring" ? "bg-amber-500" : lic === "ok" ? "bg-emerald-600" : "bg-obsidian/20";
+            const licLabel =
+              lic === "expired" ? "Expired" : lic === "expiring" ? "Expiring" : lic === "ok" ? "Current" : "—";
             const complete = isComplete(s);
             return (
               <Link
                 key={s.id}
                 to="/portal/subcontractors/new"
                 search={{ id: s.id } as never}
-                className="grid grid-cols-2 md:grid-cols-[1.5fr_0.9fr_1fr_0.9fr_0.7fr_0.9fr] gap-x-4 gap-y-2 px-5 py-4 border-b border-obsidian/10 last:border-b-0 items-center text-sm hover:bg-obsidian/[0.02]"
+                className="grid grid-cols-2 md:grid-cols-[1.5fr_0.8fr_0.9fr_0.8fr_0.9fr_0.6fr_0.8fr] gap-x-4 gap-y-2 px-5 py-4 border-b border-obsidian/10 last:border-b-0 items-center text-sm hover:bg-obsidian/[0.02]"
               >
                 <div>
                   <div className="text-obsidian font-medium">{s.companyName}</div>
@@ -89,6 +95,15 @@ function SubcontractorsListPage() {
                   </span>
                   {s.coiExpiration && (
                     <div className="mt-1 text-[10px] text-obsidian/50 font-mono">exp {s.coiExpiration}</div>
+                  )}
+                </div>
+                <div>
+                  <span className="inline-flex items-center gap-1.5 text-[12px] text-obsidian/80">
+                    <span className={`h-2 w-2 rounded-full ${licDot}`} />
+                    {licLabel}
+                  </span>
+                  {s.licenseExpiration && (
+                    <div className="mt-1 text-[10px] text-obsidian/50 font-mono">exp {s.licenseExpiration}</div>
                   )}
                 </div>
                 <div>

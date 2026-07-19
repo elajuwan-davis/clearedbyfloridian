@@ -8,6 +8,7 @@ export type SubRecord = {
   companyName: string;
   qualifierName?: string;
   licenseNumber?: string;
+  licenseExpiration?: string | null; // yyyy-mm-dd
   licenseFileName?: string | null;
   contactFirstName?: string;
   contactLastName?: string;
@@ -95,12 +96,14 @@ export function updateSub(id: string, patch: Partial<SubRecord>): SubRecord | nu
 
 export type MissingField =
   | "licenseFileName"
+  | "licenseExpiration"
   | "coiFileName"
   | "coiExpiration"
   | "w9FileName";
 
 export const MISSING_FIELD_LABELS: Record<MissingField, string> = {
   licenseFileName: "License Upload",
+  licenseExpiration: "License Expiration Date",
   coiFileName: "COI Upload",
   coiExpiration: "COI Expiration Date",
   w9FileName: "W-9 Upload",
@@ -109,6 +112,7 @@ export const MISSING_FIELD_LABELS: Record<MissingField, string> = {
 export function missingFields(sub: SubRecord): MissingField[] {
   const out: MissingField[] = [];
   if (!sub.licenseFileName) out.push("licenseFileName");
+  if (!sub.licenseExpiration) out.push("licenseExpiration");
   if (!sub.coiFileName) out.push("coiFileName");
   if (!sub.coiExpiration) out.push("coiExpiration");
   if (!sub.w9FileName) out.push("w9FileName");
@@ -126,6 +130,17 @@ export function coiStatus(sub: SubRecord): "on-file" | "expired" | "missing" {
     if (!isNaN(exp.getTime()) && exp < new Date(new Date().toDateString())) return "expired";
   }
   return "on-file";
+}
+
+export function licenseStatus(sub: SubRecord): "expired" | "expiring" | "ok" | "unset" {
+  if (!sub.licenseExpiration) return "unset";
+  const exp = new Date(sub.licenseExpiration);
+  if (isNaN(exp.getTime())) return "unset";
+  const today = new Date(new Date().toDateString());
+  const days = Math.floor((exp.getTime() - today.getTime()) / 86400000);
+  if (days < 0) return "expired";
+  if (days <= 60) return "expiring";
+  return "ok";
 }
 
 export function ensureToken(id: string): string {

@@ -34,6 +34,7 @@ const emptyForm: SubRecord = {
   companyName: "",
   qualifierName: "",
   licenseNumber: "",
+  licenseExpiration: null,
   licenseFileName: null,
   contactFirstName: "",
   contactLastName: "",
@@ -174,6 +175,7 @@ function NewSubcontractorPage() {
           <div><label className={labelCls}>Company Name *</label><input required className={inputCls} value={form.companyName} onChange={(e) => set("companyName", e.target.value)} /></div>
           <div><label className={labelCls}>Qualifier Name *</label><input required className={inputCls} value={form.qualifierName ?? ""} onChange={(e) => set("qualifierName", e.target.value)} /></div>
           <div><label className={labelCls}>License Number *</label><input required className={inputCls} value={form.licenseNumber ?? ""} onChange={(e) => set("licenseNumber", e.target.value)} /></div>
+          <div><label className={labelCls}>License Expiration Date</label><input type="date" className={inputCls} value={form.licenseExpiration ?? ""} onChange={(e) => set("licenseExpiration", e.target.value || null)} /></div>
           <div className="sm:col-span-2">
             <FileRow label="License Upload" name={form.licenseFileName} keyName="licenseFileName" />
           </div>

@@ -1,7 +1,7 @@
 // Computes expiring/expired COI + License alerts from the subcontractor library.
 import { loadSubLibrary, type SubRecord } from "./subcontractor-library";
 
-export type AlertKind = "coi-expired" | "coi-expiring" | "license-expiring";
+export type AlertKind = "coi-expired" | "coi-expiring" | "license-expired" | "license-expiring";
 export type Alert = {
   id: string;
   kind: AlertKind;
@@ -57,12 +57,21 @@ export function computeAlertsFrom(subs: SubRecord[], now: Date = new Date()): Al
       }
     }
 
-    // License — SubRecord doesn't currently store a license expiration date,
-    // but tolerate one on read for future-proofing.
-    const lic = parseDate((s as SubRecord & { licenseExpiration?: string | null }).licenseExpiration);
+    // License
+    const lic = parseDate(s.licenseExpiration);
     if (lic) {
       const d = daysBetween(lic, today);
-      if (d >= 0 && d <= WARN_WINDOW_DAYS) {
+      if (d < 0) {
+        alerts.push({
+          id: `${s.id}:license-expired`,
+          kind: "license-expired",
+          companyName: s.companyName,
+          subId: s.id,
+          daysRemaining: d,
+          label: "LICENSE EXPIRED",
+          severity: "red",
+        });
+      } else if (d <= WARN_WINDOW_DAYS) {
         alerts.push({
           id: `${s.id}:license-expiring`,
           kind: "license-expiring",
