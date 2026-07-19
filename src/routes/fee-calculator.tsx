@@ -142,23 +142,14 @@ function FeeCalculatorPage() {
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
         <div className="border-b border-obsidian/10 pb-8">
           <div className="eyebrow text-obsidian/50">FS §553.791(2)(b) · Audit Tool</div>
-          <div className="flex flex-wrap items-end justify-between gap-4">
-            <div>
-              <h1 className="display-serif mt-3 text-4xl sm:text-5xl text-obsidian">Permit Fee Calculator</h1>
-              <p className="mt-2 text-sm text-obsidian/60">
-                Verify the county charged you correctly and generate a dispute letter if needed.
-              </p>
-            </div>
-            <button
-              type="button"
-              onClick={() => setLogFeeOpen(true)}
-              className="inline-flex items-center gap-2 bg-obsidian px-4 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-paper hover:bg-obsidian/90 rounded-[3px]"
-            >
-              <Plus className="h-3.5 w-3.5" /> Log Permit Fee
-            </button>
+          <div>
+            <h1 className="display-serif mt-3 text-4xl sm:text-5xl text-obsidian">Permit Fee Calculator</h1>
+            <p className="mt-2 text-sm text-obsidian/60">
+              Verify the county charged you correctly and generate a dispute letter if needed.
+            </p>
           </div>
         </div>
-        <LogPermitFeeDialog open={logFeeOpen} onOpenChange={setLogFeeOpen} />
+
 
         <div className="mt-8 grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-8">
           {/* Inputs */}
