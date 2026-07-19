@@ -301,7 +301,7 @@ function ProjectDetailPage() {
 
             {/* Correction Rounds */}
             <DetailSection
-              step="04"
+              step="05"
               title="Correction Rounds"
               description="48-hour response window per round"
             >
