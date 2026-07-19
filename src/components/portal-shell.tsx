@@ -29,13 +29,13 @@ type NavSection = { label?: string; items: NavItem[] };
 const portalNav: NavSection[] = [
   {
     items: [
-      { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard, exact: true },
+      { to: "/portal", label: "Dashboard", icon: LayoutDashboard, exact: true },
     ],
   },
   {
     label: "Projects",
     items: [
-      { to: "/my-permits", label: "My Permits", icon: FolderOpen },
+      { to: "/portal/permits", label: "My Permits", icon: FileText },
       { to: "/portal/subcontractors", label: "Subcontractors", icon: User },
       { to: "/messages", label: "Messages", icon: MessageSquare },
       { to: "/project-guides", label: "Project Guides", icon: BookOpen },
@@ -61,7 +61,6 @@ const portalNav: NavSection[] = [
   {
     items: [
       { to: "/ask-victoria", label: "Ask Victoria", icon: Sparkle },
-      { to: "/forms", label: "Forms", icon: FileText },
       { to: "/profile", label: "Profile", icon: User },
     ],
   },
