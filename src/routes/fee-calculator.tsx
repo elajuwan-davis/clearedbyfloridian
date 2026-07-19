@@ -82,7 +82,9 @@ function FeeCalculatorPage() {
   const [ppOnFile, setPpOnFile] = useState(true);
   const [rows, setRows] = useState<FeeRow[]>([{ id: uid(), description: "", amount: "" }]);
   const [reportOpen, setReportOpen] = useState(false);
+  const [accuracyOpen, setAccuracyOpen] = useState(false);
   const [shareStatus, setShareStatus] = useState("Share");
+
 
 
 
