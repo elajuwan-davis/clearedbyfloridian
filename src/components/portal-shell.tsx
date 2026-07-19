@@ -12,6 +12,8 @@ import {
   Calculator,
   ShieldCheck,
   FileCheck2,
+  ShieldAlert,
+  Wallet,
   LogOut,
   Menu,
   User,
@@ -22,20 +24,46 @@ import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/s
 import { supabase } from "@/integrations/supabase/client";
 
 type NavItem = { to: string; label: string; icon: typeof LayoutDashboard; exact?: boolean };
+type NavSection = { label?: string; items: NavItem[] };
 
-const portalNav: NavItem[] = [
-  { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard, exact: true },
-  { to: "/my-permits", label: "My Permits", icon: FolderOpen },
-  { to: "/building-dept-logins", label: "Building Dept", icon: Building2 },
-  { to: "/messages", label: "Messages", icon: MessageSquare },
-  { to: "/forms", label: "Forms", icon: FileText },
-  { to: "/invoices", label: "Invoices", icon: Receipt },
-  { to: "/ask-victoria", label: "Ask Victoria", icon: Sparkle },
-  { to: "/fee-calculator", label: "Fee Calculator", icon: Calculator },
-  { to: "/project-guides", label: "Project Guides", icon: BookOpen },
-  { to: "/insurance", label: "Get Insurance", icon: ShieldCheck },
-  { to: "/portal/request-coi", label: "Request COI", icon: FileCheck2 },
-  { to: "/profile", label: "Profile", icon: User },
+const portalNav: NavSection[] = [
+  {
+    items: [
+      { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard, exact: true },
+    ],
+  },
+  {
+    label: "Projects",
+    items: [
+      { to: "/my-permits", label: "My Permits", icon: FolderOpen },
+      { to: "/messages", label: "Messages", icon: MessageSquare },
+      { to: "/project-guides", label: "Project Guides", icon: BookOpen },
+      { to: "/building-dept-logins", label: "Building Dept", icon: Building2 },
+    ],
+  },
+  {
+    label: "Finance",
+    items: [
+      { to: "/invoices", label: "Invoices", icon: Receipt },
+      { to: "/portal/permit-fees", label: "Permit Fees", icon: Wallet },
+      { to: "/fee-calculator", label: "Fee Calculator", icon: Calculator },
+    ],
+  },
+  {
+    label: "Insurance",
+    items: [
+      { to: "/portal/request-coi", label: "Request COI", icon: FileCheck2 },
+      { to: "/portal/request-sub-insurance", label: "Request Sub Insurance Update", icon: ShieldAlert },
+      { to: "/insurance", label: "Get Insurance", icon: ShieldCheck },
+    ],
+  },
+  {
+    items: [
+      { to: "/ask-victoria", label: "Ask Victoria", icon: Sparkle },
+      { to: "/forms", label: "Forms", icon: FileText },
+      { to: "/profile", label: "Profile", icon: User },
+    ],
+  },
 ];
 
 
