@@ -40,7 +40,7 @@ const fmt = (cents: number) =>
 function InvoicesPage() {
   const [show, setShow] = useState(false);
   const [invoices, setInvoices] = useState<Invoice[]>(INVOICES);
-  const [open, setOpen] = useState<string | null>(INVOICES[0].number);
+  const [open, setOpen] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
