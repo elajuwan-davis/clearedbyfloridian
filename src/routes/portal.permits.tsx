@@ -1,7 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import MyPermitsRoute from "./my-permits";
+import { MyPermitsPage } from "./my-permits";
 
-// /portal/permits mirrors the full historical My Permits list (all statuses).
 export const Route = createFileRoute("/portal/permits")({
   head: () => ({
     meta: [
@@ -9,5 +8,5 @@ export const Route = createFileRoute("/portal/permits")({
       { name: "robots", content: "noindex" },
     ],
   }),
-  component: (MyPermitsRoute as any).options?.component ?? (MyPermitsRoute as any).component,
+  component: MyPermitsPage,
 });
