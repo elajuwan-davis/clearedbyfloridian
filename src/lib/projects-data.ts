@@ -85,7 +85,10 @@ const SEED: Seed[] = [
   { n: 27, name: "Moore Residence", client: "Thomas Moore", street: "200 Bayberry Dr", city: "", scope: "Gas Heater / Gas Grille" },
   { n: 28, name: "Gardiner Residence", client: "Jennifer Gardiner", street: "4563 Citron Way", city: "", permit_no: "PRP02025600199" },
   { n: 29, name: "Abrams Residence", client: "Paul Abrams", street: "19 Sutton Drive", city: "", scope: "Gas Heater", permit_no: "RESP-2026.01.0416" },
+  { n: 30, name: "Valle Residence", client: "Valle", street: "Address pending", city: "" },
+  { n: 31, name: "601 Residence", client: "TBD", street: "601 — address pending", city: "" },
 ];
+
 
 
 // Deterministic pseudo-random for stable-but-varied valuations & dates.
