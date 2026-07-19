@@ -15,6 +15,8 @@ export const Route = createFileRoute("/my-permits")({
   component: MyPermitsPage,
 });
 
+export { MyPermitsPage };
+
 type Project = {
   id: string;
   name: string;
