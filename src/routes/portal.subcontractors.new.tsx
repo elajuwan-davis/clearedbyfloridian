@@ -209,20 +209,20 @@ function NewSubcontractorPage() {
         <div className="fixed inset-0 z-50 grid place-items-center bg-obsidian/40 p-4" onClick={() => setShareUrl(null)}>
           <div className="w-full max-w-lg bg-white rounded-[3px] p-6" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between">
-              <div className="font-display text-xl text-obsidian">Completion Link Ready</div>
+              <div className="font-display text-xl text-obsidian">Intake Link Generated</div>
               <button onClick={() => setShareUrl(null)}><X className="h-4 w-4" /></button>
             </div>
             <p className="mt-3 text-sm text-obsidian/65">
-              Share this link with your subcontractor:
+              Copy this link and share it with your subcontractor via text, email, WhatsApp, or however you prefer:
             </p>
             <div className="mt-3 flex items-stretch gap-2">
               <input readOnly value={shareUrl} className={`${inputCls} font-mono text-[12px]`} onFocus={(e) => e.currentTarget.select()} />
               <button type="button" onClick={copyLink} className="inline-flex items-center gap-1.5 bg-obsidian px-3 font-mono text-[10px] uppercase tracking-[0.14em] text-paper rounded-[3px]">
-                <Copy className="h-3.5 w-3.5" /> Copy
+                <Copy className="h-3.5 w-3.5" /> Copy Link
               </button>
             </div>
             <p className="mt-3 text-[11px] text-obsidian/50">
-              Sub sees only the fields still missing from their profile.
+              The sub will only see fields still missing from their profile.
             </p>
           </div>
         </div>
