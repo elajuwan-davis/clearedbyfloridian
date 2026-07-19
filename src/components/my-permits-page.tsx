@@ -21,13 +21,14 @@ type Project = {
   permit_types: string[];
 };
 
-type GroupKey = "intake" | "preparing" | "submitted" | "on_hold" | "issued" | "cancelled";
+type GroupKey = "intake" | "preparing" | "submitted" | "on_hold" | "outsourced" | "issued" | "cancelled";
 
 const GROUPS: Array<{ key: GroupKey; label: string; statuses: string[]; borderColor: string }> = [
   { key: "intake", label: "Intake", statuses: ["submitted"], borderColor: "oklch(0.78 0.13 75)" },
   { key: "preparing", label: "Preparing Forms", statuses: ["in_review", "corrections_required", "correction_response_under_review"], borderColor: "oklch(0.78 0.13 75)" },
   { key: "submitted", label: "Submitted", statuses: ["resubmitted_to_county", "resubmitted", "approved"], borderColor: "oklch(0.78 0.13 75)" },
   { key: "on_hold", label: "On Hold", statuses: ["on_hold"], borderColor: "oklch(0.72 0.17 65)" },
+  { key: "outsourced", label: "Outsourced Permitting", statuses: ["outsourced_permitting"], borderColor: "oklch(0.5 0.2 285)" },
   { key: "issued", label: "Issued", statuses: ["inspection_scheduled", "inspection_complete", "permit_issued"], borderColor: "oklch(0.58 0.16 150)" },
   { key: "cancelled", label: "Cancelled", statuses: ["cancelled"], borderColor: "oklch(0.5 0.18 25)" },
 ];
@@ -52,7 +53,7 @@ export function MyPermitsPage() {
   const [countyFilter, setCountyFilter] = useState<CountyFilter>("All");
   const [hideCounts, setHideCounts] = useState(false);
   const [open, setOpen] = useState<Record<GroupKey, boolean>>({
-    intake: true, preparing: true, submitted: true, on_hold: true, issued: true, cancelled: false,
+    intake: true, preparing: true, submitted: true, on_hold: true, outsourced: true, issued: true, cancelled: false,
   });
   const [inspectionCounts, setInspectionCounts] = useState<Record<string, number>>({});
 
