@@ -34,6 +34,7 @@ const portalNav: NavSection[] = [
   {
     items: [
       { to: "/portal", label: "Dashboard", icon: LayoutDashboard, exact: true },
+      { to: "/portal/guides", label: "Project Guides", icon: BookOpen },
     ],
   },
   {
@@ -42,7 +43,6 @@ const portalNav: NavSection[] = [
       { to: "/portal/permits", label: "My Permits", icon: FileText, alertKey: "my-permits" },
       { to: "/portal/subcontractors", label: "Subcontractors", icon: User },
       { to: "/messages", label: "Messages", icon: MessageSquare },
-      { to: "/project-guides", label: "Project Guides", icon: BookOpen },
       { to: "/portal/building-dept", label: "Building Dept", icon: Building2 },
     ],
   },
