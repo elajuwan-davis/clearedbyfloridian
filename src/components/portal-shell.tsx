@@ -108,6 +108,16 @@ const roleLabel: Record<typeof mockUser.role, string> = {
   admin: "Admin",
 };
 
+function computeAlertKeys(alerts: Alert[]): Set<AlertKey> {
+  const set = new Set<AlertKey>();
+  for (const a of alerts) {
+    if (a.kind === "coi-expired") set.add("request-coi");
+    if (a.kind === "coi-expiring") set.add("sub-insurance");
+    if (a.kind === "license-expiring") set.add("my-permits");
+  }
+  return set;
+}
+
 function SidebarBody({
   pathname,
   onNavigate,
