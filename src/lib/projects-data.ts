@@ -80,7 +80,13 @@ const SEED: Seed[] = [
   { n: 22, name: "Henderson", client: "Arielle Henderson", street: "12923 SW Leopold Wy", city: "Port St. Lucie", zip: "34987" },
   { n: 23, name: "Rocklage Residence", client: "Scott Rocklage", street: "14646 Watermark Way", city: "Palm Beach Gardens", zip: "33410", scope: "Pool Resurfacing" },
   { n: 24, name: "Paul-Hus Residence", client: "Sarah & Andy Paul-Hus", street: "2090 NE 26th St", city: "Lighthouse Point", zip: "33064", scope: "Pergola" },
+  { n: 25, name: "Spina Residence", client: "Rudolph Spina", street: "17560 72nd Rd N", city: "Loxahatchee", zip: "33470" },
+  { n: 26, name: "Roberts Residence", client: "Julie & Danielle Roberts", street: "8096 Bautista Way", city: "Palm Beach Gardens", zip: "33418", permit_no: "BRES-25-11-06480" },
+  { n: 27, name: "Moore Residence", client: "Thomas Moore", street: "200 Bayberry Dr", city: "", scope: "Gas Heater / Gas Grille" },
+  { n: 28, name: "Gardiner Residence", client: "Jennifer Gardiner", street: "4563 Citron Way", city: "", permit_no: "PRP02025600199" },
+  { n: 29, name: "Abrams Residence", client: "Paul Abrams", street: "19 Sutton Drive", city: "", scope: "Gas Heater", permit_no: "RESP-2026.01.0416" },
 ];
+
 
 // Deterministic pseudo-random for stable-but-varied valuations & dates.
 function seeded(n: number, min: number, max: number) {
