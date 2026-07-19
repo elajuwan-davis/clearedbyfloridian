@@ -121,6 +121,18 @@ function SubIntakeTokenPage() {
               {missing.includes("licenseFileName") && (
                 <FileRow label="License Upload" keyName="licenseFileName" />
               )}
+              {missing.includes("licenseExpiration") && (
+                <div>
+                  <label className={labelCls}>License Expiration Date</label>
+                  <input
+                    type="date"
+                    required
+                    className={inputCls}
+                    value={(patch.licenseExpiration as string) ?? ""}
+                    onChange={(e) => set("licenseExpiration", e.target.value || null)}
+                  />
+                </div>
+              )}
               {missing.includes("coiFileName") && (
                 <FileRow label="Certificate of Insurance (COI)" keyName="coiFileName" />
               )}
