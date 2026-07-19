@@ -234,26 +234,7 @@ function NewSubcontractorPage() {
           </div>
         </div>
       )}
-          <div className="flex items-start gap-3">
-            <AlertTriangle className="h-5 w-5 text-amber-700 shrink-0" strokeWidth={1.5} />
-            <div className="flex-1">
-              <div className="text-sm text-obsidian">
-                This profile is incomplete. Generate a link for <span className="font-medium">{saved.companyName}</span> to complete it.
-              </div>
-              <div className="mt-1 text-[12px] text-obsidian/60">
-                Missing: {missing.map((m) => MISSING_FIELD_LABELS[m]).join(", ")}
-              </div>
-              <button
-                type="button"
-                onClick={sendLink}
-                className="mt-3 inline-flex items-center gap-2 bg-obsidian px-4 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-paper rounded-[3px]"
-              >
-                <Link2 className="h-3.5 w-3.5" /> Generate Link
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+
 
       {saved && missing.length === 0 && (
         <div className="mt-6 border border-emerald-600/30 bg-emerald-600/5 rounded-[3px] p-4 flex items-center gap-3">
