@@ -10,6 +10,7 @@ import {
 } from "@/lib/subcontractor-library";
 
 export const Route = createFileRoute("/portal/subcontractors/")({
+
   head: () => ({
     meta: [
       { title: "Subcontractors — Cleared by Flōridian" },
