@@ -2,6 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState, type ChangeEvent, type DragEvent } from "react";
 import { Upload, Check, FileText, ArrowLeft, Save, Send, X, AlertCircle } from "lucide-react";
 import { upsertSub, loadSubLibrary, type SubRecord } from "@/lib/subcontractor-library";
+import { CloudUploadButtons } from "@/components/cloud-upload-buttons";
 
 export const Route = createFileRoute("/portal/permits/new")({
   head: () => ({

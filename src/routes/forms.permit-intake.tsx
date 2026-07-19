@@ -9,6 +9,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Upload, X, Plus, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
+import { CloudUploadButtons } from "@/components/cloud-upload-buttons";
 
 export const Route = createFileRoute("/forms/permit-intake")({
   head: () => ({ meta: [{ title: "Permit Intake — Cleared" }, { name: "robots", content: "noindex" }] }),
