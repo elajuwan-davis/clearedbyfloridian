@@ -1,16 +1,18 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Users, Plus, CheckCircle2, AlertTriangle } from "lucide-react";
+import { toast } from "sonner";
+import { Users, Plus, CheckCircle2, AlertTriangle, Link2, Copy, X, Clock } from "lucide-react";
 import {
   loadSubLibrary,
   coiStatus,
   licenseStatus,
   isComplete,
+  ensureToken,
+  upsertSub,
   type SubRecord,
 } from "@/lib/subcontractor-library";
 
 export const Route = createFileRoute("/portal/subcontractors/")({
-
   head: () => ({
     meta: [
       { title: "Subcontractors — Cleared by Flōridian" },
@@ -28,10 +30,28 @@ const coiTone: Record<ReturnType<typeof coiStatus>, { label: string; cls: string
 
 function SubcontractorsListPage() {
   const [subs, setSubs] = useState<SubRecord[]>([]);
+  const [shareUrl, setShareUrl] = useState<string | null>(null);
 
   useEffect(() => {
     setSubs(loadSubLibrary());
   }, []);
+
+  function generateBlankIntakeLink() {
+    // Create a lightweight placeholder sub carrying only a completion token so
+    // the recipient can complete the full profile. Company name is filled in
+    // during intake completion.
+    const rec = upsertSub({ companyName: `Pending Invite ${new Date().toLocaleDateString()}`, trade: "" });
+    const token = ensureToken(rec.id);
+    const url = `${window.location.origin}/sub-intake/${token}`;
+    setShareUrl(url);
+    setSubs(loadSubLibrary());
+    toast.success("Intake link generated");
+  }
+
+  function copyLink() {
+    if (!shareUrl) return;
+    navigator.clipboard.writeText(shareUrl).then(() => toast.success("Link copied"));
+  }
 
   return (
     <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
@@ -45,12 +65,21 @@ function SubcontractorsListPage() {
             Central library of subcontractor profiles. Complete profiles power COI requests, Sub Insurance updates, and Permit Intake auto-fill.
           </p>
         </div>
-        <Link
-          to="/portal/subcontractors/new"
-          className="inline-flex items-center gap-2 bg-obsidian px-4 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-paper hover:bg-obsidian/90 rounded-[3px]"
-        >
-          <Plus className="h-3.5 w-3.5" /> Add Subcontractor
-        </Link>
+        <div className="flex flex-wrap items-center gap-2">
+          <button
+            type="button"
+            onClick={generateBlankIntakeLink}
+            className="inline-flex items-center gap-2 border border-obsidian/25 bg-white px-4 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian hover:bg-obsidian/5 rounded-[3px]"
+          >
+            <Link2 className="h-3.5 w-3.5" /> Generate Intake Link
+          </button>
+          <Link
+            to="/portal/subcontractors/new"
+            className="inline-flex items-center gap-2 bg-obsidian px-4 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-paper hover:bg-obsidian/90 rounded-[3px]"
+          >
+            <Plus className="h-3.5 w-3.5" /> Add Subcontractor
+          </Link>
+        </div>
       </div>
 
       {subs.length === 0 ? (
@@ -77,6 +106,7 @@ function SubcontractorsListPage() {
             const licLabel =
               lic === "expired" ? "Expired" : lic === "expiring" ? "Expiring" : lic === "ok" ? "Current" : "—";
             const complete = isComplete(s);
+            const pendingInvite = !!s.completionToken && !complete;
             return (
               <Link
                 key={s.id}
@@ -113,7 +143,11 @@ function SubcontractorsListPage() {
                   </span>
                 </div>
                 <div>
-                  {complete ? (
+                  {pendingInvite ? (
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 border rounded-[2px] font-mono text-[10px] uppercase tracking-[0.12em] bg-sky-500/10 text-sky-800 border-sky-600/30">
+                      <Clock className="h-3 w-3" /> Pending Invite
+                    </span>
+                  ) : complete ? (
                     <span className="inline-flex items-center gap-1 px-2 py-0.5 border rounded-[2px] font-mono text-[10px] uppercase tracking-[0.12em] bg-emerald-600/10 text-emerald-700 border-emerald-600/30">
                       <CheckCircle2 className="h-3 w-3" /> Complete
                     </span>
@@ -126,6 +160,38 @@ function SubcontractorsListPage() {
               </Link>
             );
           })}
+        </div>
+      )}
+
+      {shareUrl && (
+        <div className="fixed inset-0 z-50 grid place-items-center bg-obsidian/40 p-4" onClick={() => setShareUrl(null)}>
+          <div className="w-full max-w-lg bg-white rounded-[3px] p-6" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between">
+              <div className="font-display text-xl text-obsidian">Intake Link Generated</div>
+              <button onClick={() => setShareUrl(null)}><X className="h-4 w-4" /></button>
+            </div>
+            <p className="mt-3 text-sm text-obsidian/65">
+              Copy this link and share it with your subcontractor via text, email, WhatsApp, or however you prefer:
+            </p>
+            <div className="mt-3 flex items-stretch gap-2">
+              <input
+                readOnly
+                value={shareUrl}
+                onFocus={(e) => e.currentTarget.select()}
+                className="block w-full border border-obsidian/15 bg-white px-3 py-2 font-mono text-[12px] text-obsidian focus:border-obsidian/40 focus:outline-none rounded-[3px]"
+              />
+              <button
+                type="button"
+                onClick={copyLink}
+                className="inline-flex items-center gap-1.5 bg-obsidian px-3 font-mono text-[10px] uppercase tracking-[0.14em] text-paper rounded-[3px]"
+              >
+                <Copy className="h-3.5 w-3.5" /> Copy Link
+              </button>
+            </div>
+            <p className="mt-3 text-[11px] text-obsidian/50">
+              The sub will complete their full profile through the intake form.
+            </p>
+          </div>
         </div>
       )}
     </div>
