@@ -96,8 +96,8 @@ function Lineage() {
 
 function Stats() {
   const stats = [
-    { k: "5–7 days", v: "Typical plan review turnaround" },
-    { k: "2 hr", v: "Inspection report delivery" },
+    { k: "2-day", v: "Plan review turnaround" },
+    { k: "Same-day", v: "Inspections" },
     { k: "10 days", v: "Statutory affidavit-to-permit window" },
     { k: "2 days", v: "Cert of compliance to CO" },
   ];
