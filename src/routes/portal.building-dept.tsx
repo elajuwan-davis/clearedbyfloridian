@@ -16,16 +16,20 @@ type Row = { name: string; url?: string; note?: string };
 
 const MUNICIPALITIES: Row[] = [
   { name: "Coral Springs" },
-  { name: "Greenacres" },
-  { name: "Jupiter" },
+  { name: "Greenacres", note: "Need to register in their office" },
+  { name: "Jupiter", note: "Log-in details not working" },
   { name: "Palm Beach" },
   { name: "Wellington" },
   { name: "Palm Beach Gardens", url: "https://palmbeachgardensfl-energovweb.tylerhost.net/apps/SelfService#/home" },
   { name: "Fort Lauderdale" },
-  { name: "City of Port St. Lucie", url: "https://county-taxes.net/sflucie/stlucie/property-tax/" },
+  {
+    name: "City of Port St. Lucie",
+    url: "https://county-taxes.net/stlucie/stlucie/property-tax/c3RsdWNpZTpyZWFsX2VzdGF0ZTpwYXJlbnRzOjMyNjUwZDg1LTQ1YWUtMTFlZC05ZjkyLTAwNTA1NjgxODY0ZA==/bills/b1c0d174-81ab-11ef-a78a-00505681864d#parcel",
+    note: "Property search link",
+  },
   { name: "West Palm Beach" },
   { name: "Miramar", note: "No login required" },
-  { name: "Boca Raton", note: "EHub Boca" },
+  { name: "Boca Raton", note: "Uses EHub Boca system" },
   { name: "Pembroke Pines", note: "No login required" },
   { name: "Miami-Dade County" },
   { name: "Oakland Park" },
@@ -35,6 +39,7 @@ const MUNICIPALITIES: Row[] = [
   { name: "Martin County / Stuart" },
   { name: "Boynton Beach" },
   { name: "Royal Palm Beach" },
+  { name: "ProjectDocx", note: "Document management system" },
   { name: "Fort Myers" },
   { name: "Westlake", url: "https://cityviewportal.westlakegov.com/Permit/Locator" },
   { name: "Doral" },
@@ -49,6 +54,7 @@ const MUNICIPALITIES: Row[] = [
 
 function BuildingDeptPage() {
   const liveCount = MUNICIPALITIES.filter((m) => m.url).length;
+  const showNotes = MUNICIPALITIES.some((m) => m.note);
 
   return (
     <PortalShell>
@@ -65,8 +71,15 @@ function BuildingDeptPage() {
 
         <div className="border hairline overflow-hidden bg-background">
           <div className="grid grid-cols-12 gap-4 px-5 py-3 border-b hairline bg-secondary/40 label-eyebrow">
-            <div className="col-span-7">Municipality</div>
-            <div className="col-span-5 text-right">Portal Link</div>
+            <div className="col-span-4">Municipality</div>
+            {showNotes ? (
+              <>
+                <div className="col-span-5">Notes</div>
+                <div className="col-span-3 text-right">Portal Link</div>
+              </>
+            ) : (
+              <div className="col-span-8 text-right">Portal Link</div>
+            )}
           </div>
           <div className="divide-y">
             {MUNICIPALITIES.map((m) => (
@@ -74,18 +87,20 @@ function BuildingDeptPage() {
                 key={m.name}
                 className="grid grid-cols-12 gap-4 items-center px-5 py-4 hover:bg-secondary/30 transition-colors"
               >
-                <div className="col-span-7 flex items-center gap-3">
+                <div className="col-span-4 flex items-center gap-3">
                   <Building2 className="h-4 w-4 text-obsidian/60" strokeWidth={1.5} />
-                  <div>
-                    <div className="text-sm font-medium text-obsidian">{m.name}</div>
-                    {m.note && (
-                      <div className="font-mono text-[10px] uppercase tracking-[0.14em] text-muted-foreground mt-0.5">
-                        {m.note}
-                      </div>
+                  <div className="text-sm font-medium text-obsidian">{m.name}</div>
+                </div>
+                {showNotes && (
+                  <div className="col-span-5 text-xs text-muted-foreground">
+                    {m.note ? (
+                      <span className="italic">{m.note}</span>
+                    ) : (
+                      <span className="text-muted-foreground/40">—</span>
                     )}
                   </div>
-                </div>
-                <div className="col-span-5 flex justify-end">
+                )}
+                <div className={`${showNotes ? "col-span-3" : "col-span-8"} flex justify-end`}>
                   {m.url ? (
                     <a
                       href={m.url}
