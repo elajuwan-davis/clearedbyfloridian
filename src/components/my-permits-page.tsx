@@ -7,6 +7,8 @@ import { PROJECTS, fullAddress, isAddressIncomplete } from "@/lib/projects-data"
 import { findPortalForAddress } from "@/lib/municipalities";
 import { ExternalLink } from "lucide-react";
 
+import { isPermitTypeComplete, permitTypeAnchor } from "@/lib/permit-type-status";
+
 type Project = {
   id: string;
   name: string;
@@ -15,6 +17,7 @@ type Project = {
   status: string;
   updated_at: string;
   incomplete: boolean;
+  permit_types: string[];
 };
 
 type GroupKey = "intake" | "preparing" | "submitted" | "issued" | "cancelled";
@@ -35,6 +38,7 @@ const SEED: Project[] = PROJECTS.map((p) => ({
   status: p.status,
   updated_at: p.updated_at,
   incomplete: isAddressIncomplete(p),
+  permit_types: p.permit_types,
 }));
 
 const COUNTIES = ["Palm Beach", "Martin", "St. Lucie", "Indian River", "Broward", "Miami-Dade"] as const;
