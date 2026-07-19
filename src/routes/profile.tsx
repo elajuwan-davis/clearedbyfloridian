@@ -269,6 +269,44 @@ function ProfilePage() {
           </div>
         </Section>
 
+        {/* Team Members */}
+        <Section
+          title="Team Members"
+          subtitle="Everyone with access to your Cleared workspace."
+        >
+          <div className="border border-obsidian/15 bg-white rounded-[3px] divide-y divide-obsidian/10">
+            {TEAM_MEMBERS.map((m) => (
+              <div key={m.email} className="flex items-center gap-4 px-4 py-3">
+                <div className="h-9 w-9 grid place-items-center rounded-[3px] bg-paper-warm border border-obsidian/10 shrink-0">
+                  <span className="font-display text-sm text-obsidian/70">
+                    {m.name.split(" ").map((s) => s[0]).join("").slice(0, 2)}
+                  </span>
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="text-sm text-obsidian font-medium truncate">{m.name}</div>
+                  <div className="mt-0.5 flex items-center gap-1.5 text-xs text-obsidian/55 truncate">
+                    <Mail className="h-3 w-3 shrink-0" />
+                    {m.email}
+                  </div>
+                </div>
+                <span
+                  className={`inline-flex items-center border px-2 py-0.5 text-[10px] font-mono uppercase tracking-[0.12em] rounded-[2px] ${
+                    m.role === "Owner"
+                      ? "bg-obsidian text-paper border-obsidian"
+                      : "bg-paper-warm text-obsidian/70 border-obsidian/15"
+                  }`}
+                >
+                  {m.role}
+                </span>
+              </div>
+            ))}
+          </div>
+          <p className="mt-3 flex items-center gap-1.5 text-xs text-obsidian/55">
+            <Users className="h-3 w-3" />
+            {TEAM_MEMBERS.length} members with access
+          </p>
+        </Section>
+
         {/* Payment Authorization */}
         <Section title="Payment Authorization" subtitle="Authorize Cleared by Flōridian to charge for services and permit fees.">
           {paymentAuth ? (
