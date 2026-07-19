@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { MyPermitsPage } from "./my-permits";
+import { MyPermitsPage } from "@/components/my-permits-page";
 
 export const Route = createFileRoute("/portal/permits")({
   head: () => ({
