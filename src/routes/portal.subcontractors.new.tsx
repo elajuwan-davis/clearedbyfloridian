@@ -55,6 +55,7 @@ function NewSubcontractorPage() {
   const [form, setForm] = useState<SubRecord>(emptyForm);
   const [saved, setSaved] = useState<SubRecord | null>(null);
   const [shareUrl, setShareUrl] = useState<string | null>(null);
+  const [blankInviteUrl, setBlankInviteUrl] = useState<string | null>(null);
 
   useEffect(() => {
     if (id) {
@@ -85,6 +86,23 @@ function NewSubcontractorPage() {
     setSaved(rec);
     setForm(rec);
     toast.success("Subcontractor saved");
+  }
+
+  function generateBlankInviteLink() {
+    // Create a fully blank placeholder sub. The public /sub-intake/[token]
+    // page will render the full onboarding form (identity + docs) because
+    // every field is empty.
+    const stamp = new Date().toLocaleDateString();
+    const rec = upsertSub({ companyName: `Pending Invite ${stamp}`, trade: "" });
+    const token = ensureToken(rec.id);
+    const url = `${window.location.origin}/sub-intake/${token}`;
+    setBlankInviteUrl(url);
+    toast.success("Intake link generated");
+  }
+
+  function copyBlankInviteLink() {
+    if (!blankInviteUrl) return;
+    navigator.clipboard.writeText(blankInviteUrl).then(() => toast.success("Link copied"));
   }
 
   function sendLink() {
@@ -136,6 +154,64 @@ function NewSubcontractorPage() {
         {saved ? "Edit Subcontractor" : "Add Subcontractor"}
       </h1>
 
+      {!saved && (
+        <div className="mt-8 bg-white border border-obsidian/10 rounded-[3px] p-6 sm:p-8">
+          <div className="eyebrow text-obsidian/50">Fastest path</div>
+          <h2 className="display-serif mt-2 text-2xl text-obsidian">Generate Intake Link</h2>
+          <p className="mt-2 text-sm text-obsidian/65">
+            Send this link to the subcontractor to fill out their own profile.
+          </p>
+
+          {!blankInviteUrl ? (
+            <button
+              type="button"
+              onClick={generateBlankInviteLink}
+              className="mt-4 inline-flex items-center gap-2 bg-obsidian px-5 py-2.5 font-mono text-[11px] uppercase tracking-[0.14em] text-paper hover:bg-obsidian/90 rounded-[3px]"
+            >
+              <Link2 className="h-3.5 w-3.5" /> Generate Intake Link
+            </button>
+          ) : (
+            <div className="mt-4">
+              <div className="flex items-stretch gap-2">
+                <input
+                  readOnly
+                  value={blankInviteUrl}
+                  onFocus={(e) => e.currentTarget.select()}
+                  className={`${inputCls} font-mono text-[12px]`}
+                />
+                <button
+                  type="button"
+                  onClick={copyBlankInviteLink}
+                  className="inline-flex items-center gap-1.5 bg-obsidian px-3 font-mono text-[10px] uppercase tracking-[0.14em] text-paper rounded-[3px]"
+                >
+                  <Copy className="h-3.5 w-3.5" /> Copy Link
+                </button>
+              </div>
+              <p className="mt-2 text-[11px] text-obsidian/55">
+                A placeholder record was created. The sub will fill in all their info; their submission updates that record.
+              </p>
+              <button
+                type="button"
+                onClick={generateBlankInviteLink}
+                className="mt-2 text-[11px] font-mono uppercase tracking-[0.14em] text-obsidian/60 hover:text-obsidian"
+              >
+                Generate another
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+
+      {!saved && (
+        <div className="my-8 flex items-center gap-4">
+          <div className="flex-1 border-t border-obsidian/15" />
+          <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-obsidian/50">
+            or fill out manually
+          </span>
+          <div className="flex-1 border-t border-obsidian/15" />
+        </div>
+      )}
+
       {saved && missing.length > 0 && (
         <div className="mt-6 border border-amber-600/40 bg-amber-500/5 rounded-[3px] p-4">
           <div className="flex items-start gap-3">
@@ -158,6 +234,7 @@ function NewSubcontractorPage() {
           </div>
         </div>
       )}
+
 
       {saved && missing.length === 0 && (
         <div className="mt-6 border border-emerald-600/30 bg-emerald-600/5 rounded-[3px] p-4 flex items-center gap-3">
