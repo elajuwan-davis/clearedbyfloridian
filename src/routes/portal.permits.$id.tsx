@@ -188,7 +188,7 @@ function PermitDetailPage() {
         )}
       </div>
 
-      <div className="mt-6 grid gap-6 md:grid-cols-2">
+      <fieldset disabled={!editing} className="mt-6 grid gap-6 md:grid-cols-2 disabled:opacity-90">
         <div className="bg-white border border-obsidian/10 rounded-[3px] p-6 space-y-4">
           <div className="text-[11px] font-mono uppercase tracking-[0.18em] text-obsidian/75">Project</div>
           <div><label className={labelCls("project_name")}>Project Name {flag("project_name")}</label><input className={inputCls("project_name")} value={e.project_name ?? ""} onChange={(ev) => set("project_name", ev.target.value)} /></div>
