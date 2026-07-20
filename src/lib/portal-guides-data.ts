@@ -748,6 +748,7 @@ import { SINGLE_FAMILY_GUIDES_3 } from "./portal-guides-single-family-3";
 import { GUIDES_BATCH_4 } from "./portal-guides-batch-4";
 import { GUIDES_BATCH_5 } from "./portal-guides-batch-5";
 import { GUIDES_BATCH_6 } from "./portal-guides-batch-6";
+import { GUIDES_BATCH_7 } from "./portal-guides-batch-7";
 
 
 export const PORTAL_GUIDES: PortalGuide[] = [
