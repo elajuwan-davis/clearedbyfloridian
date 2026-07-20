@@ -565,18 +565,51 @@ function UploadDocDialog({
   open, onOpenChange, projectId,
 }: { open: boolean; onOpenChange: (v: boolean) => void; projectId: string }) {
   const [type, setType] = useState<DocType>(DOC_TYPES[0]);
-  const [filename, setFilename] = useState("");
+  const [file, setFile] = useState<File | null>(null);
+  const [busy, setBusy] = useState(false);
 
-  function save() {
-    if (!filename.trim()) return;
-    addDoc({
-      projectId,
-      type,
-      filename: filename.trim(),
-      uploadedBy: localStorage.getItem("cleared_demo_user") || "Team",
-    });
-    setFilename("");
-    onOpenChange(false);
+  async function save() {
+    if (!file) return;
+    if (file.size > 50 * 1024 * 1024) {
+      toast.error("File too large (max 50 MB)");
+      return;
+    }
+    setBusy(true);
+    try {
+      await addDocFile({
+        projectId,
+        type,
+        file,
+        uploadedBy: localStorage.getItem("cleared_demo_user") || "Team",
+      });
+      toast.success(`Uploaded ${file.name}`);
+      setFile(null);
+      onOpenChange(false);
+    } catch (e) {
+      toast.error("Upload failed: " + (e instanceof Error ? e.message : String(e)));
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function saveDeferred() {
+    if (!file) return;
+    setBusy(true);
+    try {
+      await addDocPlaceholder({
+        projectId,
+        type,
+        filename: file.name,
+        uploadedBy: localStorage.getItem("cleared_demo_user") || "Team",
+      });
+      toast.success("Marked as pending — upload later");
+      setFile(null);
+      onOpenChange(false);
+    } catch (e) {
+      toast.error("Save failed: " + (e instanceof Error ? e.message : String(e)));
+    } finally {
+      setBusy(false);
+    }
   }
 
   return (
@@ -598,15 +631,26 @@ function UploadDocDialog({
             <label className="font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/55">File</label>
             <input
               type="file"
-              onChange={(e) => setFilename(e.target.files?.[0]?.name ?? "")}
+              accept=".pdf,.png,.jpg,.jpeg,.webp,.heic,.doc,.docx,.xls,.xlsx"
+              onChange={(e) => setFile(e.target.files?.[0] ?? null)}
               className="mt-1.5 block w-full text-sm"
             />
-            {filename && <div className="mt-1 font-mono text-[11px] text-obsidian/60">{filename}</div>}
+            {file && (
+              <div className="mt-1 font-mono text-[11px] text-obsidian/60">
+                {file.name} · {(file.size / 1024).toFixed(0)} KB
+              </div>
+            )}
           </div>
         </div>
         <div className="mt-6 flex justify-end gap-2">
-          <Button variant="outline" onClick={() => onOpenChange(false)} className="rounded-[3px]">Cancel</Button>
-          <Button variant="dark" onClick={save} className="rounded-[3px]" disabled={!filename.trim()}>Upload</Button>
+          <Button variant="outline" onClick={() => onOpenChange(false)} className="rounded-[3px]" disabled={busy}>Cancel</Button>
+          <Button variant="outline" onClick={saveDeferred} className="rounded-[3px]" disabled={!file || busy}>
+            Defer — upload later
+          </Button>
+          <Button variant="dark" onClick={save} className="rounded-[3px]" disabled={!file || busy}>
+            {busy ? <Loader2 className="h-3.5 w-3.5 animate-spin mr-1.5" /> : <Upload className="h-3.5 w-3.5 mr-1.5" />}
+            Upload
+          </Button>
         </div>
       </DialogContent>
     </Dialog>
