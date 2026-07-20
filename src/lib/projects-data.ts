@@ -2,6 +2,7 @@
 // Consumed by /my-permits, /projects, /projects/$id, /portal, /portal/projects.
 
 import type { ProjectStatus } from "./status-badges";
+import { getHubspotProject } from "./hubspot-projects";
 
 export type Project = {
   id: string;
@@ -139,14 +140,7 @@ export function getProjectById(id: string): Project | null {
   const seeded = PROJECTS.find((p) => p.id === id);
   if (seeded) return seeded;
   if (typeof window !== "undefined" && id.startsWith("hs-")) {
-    // Client-only lookup for HubSpot-sourced projects (localStorage-backed).
-    try {
-      // Lazy import to avoid SSR reference and circular deps.
-      const { getHubspotProject } = require("./hubspot-projects") as typeof import("./hubspot-projects");
-      return getHubspotProject(id);
-    } catch {
-      return null;
-    }
+    return getHubspotProject(id);
   }
   return null;
 }
