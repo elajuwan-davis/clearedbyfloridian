@@ -29,24 +29,43 @@ function LoginPage() {
     setError(null);
     setLoading(true);
 
-    // Demo credential bypass — team + showcased builder accounts
-    const DEMO_ACCOUNTS: Record<string, string> = {
-      "user@cleared.com": "Cleared",
-      "elajuwan@floridianinc.com": "Cleared",
-      "eman@floridianinc.com": "Cleared",
-      "jose@floridianinc.com": "Cleared",
-      "paul@floridianinc.com": "Cleared",
-    };
     const emailKey = email.trim().toLowerCase();
-    if (DEMO_ACCOUNTS[emailKey] && password === DEMO_ACCOUNTS[emailKey]) {
-      try {
-        localStorage.setItem("cleared_demo_session", "1");
-        localStorage.setItem("cleared_demo_user", emailKey);
-      } catch {
-        /* ignore */
+
+    // Real Supabase auth for @cleared.com and @floridianinc.com internal team.
+    // On success, ALSO set demo localStorage keys so existing role/UI checks continue to work.
+    if (/@(cleared|floridianinc)\.com$/.test(emailKey)) {
+      const { error: authErr } = await supabase.auth.signInWithPassword({ email: emailKey, password });
+      if (!authErr) {
+        try {
+          localStorage.setItem("cleared_demo_session", "1");
+          localStorage.setItem("cleared_demo_user", emailKey);
+          localStorage.setItem("cleared_demo_user_email", emailKey);
+        } catch {
+          /* ignore */
+        }
+        setLoading(false);
+        navigate({ to: "/dashboard", replace: true });
+        return;
+      }
+      // Fall through to legacy demo bypass for backward-compat with @floridianinc.com "Cleared" password
+      const LEGACY: Record<string, string> = {
+        "user@cleared.com": "Cleared",
+        "elajuwan@floridianinc.com": "Cleared",
+        "eman@floridianinc.com": "Cleared",
+        "jose@floridianinc.com": "Cleared",
+        "paul@floridianinc.com": "Cleared",
+      };
+      if (LEGACY[emailKey] && password === LEGACY[emailKey]) {
+        try {
+          localStorage.setItem("cleared_demo_session", "1");
+          localStorage.setItem("cleared_demo_user", emailKey);
+        } catch { /* ignore */ }
+        setLoading(false);
+        navigate({ to: "/dashboard", replace: true });
+        return;
       }
       setLoading(false);
-      navigate({ to: "/dashboard", replace: true });
+      setError(authErr.message);
       return;
     }
 
@@ -69,6 +88,7 @@ function LoginPage() {
     }
     navigate({ to: "/portal", replace: true });
   }
+
 
 
   return (

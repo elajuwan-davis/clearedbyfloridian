@@ -9,9 +9,11 @@ type Props = {
   permit: PermitRow;
   doc: PermitDoc;
   onChange: (updated: PermitRow) => void;
+  readOnly?: boolean;
 };
 
-export function PermitDocUploader({ permit, doc, onChange }: Props) {
+export function PermitDocUploader({ permit, doc, onChange, readOnly = false }: Props) {
+
   const inputRef = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
   const [dragOver, setDragOver] = useState(false);
@@ -150,14 +152,17 @@ export function PermitDocUploader({ permit, doc, onChange }: Props) {
             <button type="button" onClick={handleDownload} className="inline-flex items-center gap-1 border border-obsidian/20 bg-white px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian rounded-[3px] hover:bg-obsidian/5">
               <Download className="h-3 w-3" />
             </button>
-            <button type="button" onClick={handleRemove} disabled={busy} className="inline-flex items-center gap-1 border border-red-600/30 text-red-700 px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] rounded-[3px] hover:bg-red-50 disabled:opacity-60">
-              <Trash2 className="h-3 w-3" />
-            </button>
+            {!readOnly && (
+              <button type="button" onClick={handleRemove} disabled={busy} className="inline-flex items-center gap-1 border border-red-600/30 text-red-700 px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] rounded-[3px] hover:bg-red-50 disabled:opacity-60">
+                <Trash2 className="h-3 w-3" />
+              </button>
+            )}
           </div>
         )}
+
       </div>
 
-      {!isUploaded && (
+      {!isUploaded && !readOnly && (
         <div className="mt-3 ml-7">
           <div
             onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}

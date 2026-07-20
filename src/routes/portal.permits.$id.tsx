@@ -1,7 +1,8 @@
 import { createFileRoute, Link, useNavigate, notFound } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { ArrowLeft, Trash2, Save, AlertTriangle, FileText } from "lucide-react";
+import { ArrowLeft, Trash2, Save, AlertTriangle, FileText, Pencil, X, Lock } from "lucide-react";
+
 import { getPermit, updatePermit, deletePermit, permitCompleteness, getEffectiveDocs, type PermitRow, type PermitStatus } from "@/lib/permits-api";
 import { PermitDocUploader } from "@/components/permit-doc-uploader";
 
@@ -25,7 +26,9 @@ function PermitDetailPage() {
   const [row, setRow] = useState<PermitRow | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [editing, setEditing] = useState(false);
   const [edit, setEdit] = useState<Partial<PermitRow>>({});
+
 
   useEffect(() => {
     getPermit(id)
@@ -41,6 +44,7 @@ function PermitDetailPage() {
       const updated = await updatePermit(row.id, edit);
       setRow(updated);
       setEdit(updated);
+      setEditing(false);
       toast.success("Saved");
     } catch (e) {
       toast.error("Save failed: " + (e instanceof Error ? e.message : String(e)));
@@ -48,6 +52,12 @@ function PermitDetailPage() {
       setSaving(false);
     }
   }
+
+  function cancelEdit() {
+    if (row) setEdit(row);
+    setEditing(false);
+  }
+
 
   async function remove() {
     if (!row) return;
@@ -89,13 +99,33 @@ function PermitDetailPage() {
           <div className="mt-2 text-sm text-obsidian/60">{row.job_address}</div>
         </div>
         <div className="flex items-center gap-2">
-          <button onClick={save} disabled={saving} className="inline-flex items-center gap-2 bg-obsidian px-4 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-paper rounded-[3px] disabled:opacity-60">
-            <Save className="h-3.5 w-3.5" /> {saving ? "Saving…" : "Save"}
-          </button>
-          <button onClick={remove} className="inline-flex items-center gap-2 border border-red-600/30 text-red-700 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.14em] rounded-[3px] hover:bg-red-50">
-            <Trash2 className="h-3.5 w-3.5" /> Delete
-          </button>
+          {!editing ? (
+            <>
+              <span className="inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/50">
+                <Lock className="h-3 w-3" /> Read only
+              </span>
+              <button onClick={() => setEditing(true)} className="inline-flex items-center gap-2 bg-obsidian px-4 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-paper rounded-[3px]">
+                <Pencil className="h-3.5 w-3.5" /> Edit
+              </button>
+              <button onClick={remove} className="inline-flex items-center gap-2 border border-red-600/30 text-red-700 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.14em] rounded-[3px] hover:bg-red-50">
+                <Trash2 className="h-3.5 w-3.5" /> Delete
+              </button>
+            </>
+          ) : (
+            <>
+              <button onClick={cancelEdit} disabled={saving} className="inline-flex items-center gap-2 border border-obsidian/20 bg-white px-3 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian rounded-[3px] disabled:opacity-60">
+                <X className="h-3.5 w-3.5" /> Cancel
+              </button>
+              <button onClick={save} disabled={saving} className="inline-flex items-center gap-2 bg-obsidian px-4 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-paper rounded-[3px] disabled:opacity-60">
+                <Save className="h-3.5 w-3.5" /> {saving ? "Saving…" : "Save"}
+              </button>
+              <button onClick={remove} className="inline-flex items-center gap-2 border border-red-600/30 text-red-700 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.14em] rounded-[3px] hover:bg-red-50">
+                <Trash2 className="h-3.5 w-3.5" /> Delete
+              </button>
+            </>
+          )}
         </div>
+
       </div>
 
       {/* Completeness panel */}
@@ -158,7 +188,7 @@ function PermitDetailPage() {
         )}
       </div>
 
-      <div className="mt-6 grid gap-6 md:grid-cols-2">
+      <fieldset disabled={!editing} className="mt-6 grid gap-6 md:grid-cols-2 disabled:opacity-90">
         <div className="bg-white border border-obsidian/10 rounded-[3px] p-6 space-y-4">
           <div className="text-[11px] font-mono uppercase tracking-[0.18em] text-obsidian/75">Project</div>
           <div><label className={labelCls("project_name")}>Project Name {flag("project_name")}</label><input className={inputCls("project_name")} value={e.project_name ?? ""} onChange={(ev) => set("project_name", ev.target.value)} /></div>
@@ -203,7 +233,8 @@ function PermitDetailPage() {
           </div>
           <div><label className={labelCls("owner_entity")}>Owner Entity</label><input className={inputBase + " border-obsidian/15 focus:border-obsidian/40"} value={e.owner_entity ?? ""} onChange={(ev) => set("owner_entity", ev.target.value)} /></div>
         </div>
-      </div>
+      </fieldset>
+
 
       <div className="mt-6 bg-white border border-obsidian/10 rounded-[3px] p-6">
         <div className="flex items-center justify-between mb-2">
@@ -216,7 +247,7 @@ function PermitDetailPage() {
         <div>
           {docs.map((d) => (
             <div key={d.key} id={`doc-${d.key}`}>
-              <PermitDocUploader permit={row} doc={d} onChange={(u) => { setRow(u); setEdit(u); }} />
+              <PermitDocUploader permit={row} doc={d} readOnly={!editing} onChange={(u) => { setRow(u); setEdit(u); }} />
             </div>
           ))}
         </div>
