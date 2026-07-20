@@ -233,7 +233,8 @@ function PermitDetailPage() {
           </div>
           <div><label className={labelCls("owner_entity")}>Owner Entity</label><input className={inputBase + " border-obsidian/15 focus:border-obsidian/40"} value={e.owner_entity ?? ""} onChange={(ev) => set("owner_entity", ev.target.value)} /></div>
         </div>
-      </div>
+      </fieldset>
+
 
       <div className="mt-6 bg-white border border-obsidian/10 rounded-[3px] p-6">
         <div className="flex items-center justify-between mb-2">
