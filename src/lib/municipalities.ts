@@ -10,7 +10,7 @@ export const MUNICIPALITIES: Municipality[] = [
   { name: "Wellington", url: "https://wellingtonfl-energovweb.tylerhost.net/apps/SelfService", phone: "(561) 791-4000" },
   { name: "Palm Beach Gardens", url: "https://palmbeachgardensfl-energovweb.tylerhost.net/apps/SelfService#/home" },
   { name: "Fort Lauderdale", url: "https://aca-prod.accela.com/FTL/Login.aspx" },
-  { name: "City of Port St. Lucie", url: "https://county-taxes.net/stlucie/stlucie/property-tax/", note: "Property search link", phone: "(772) 871-5132" },
+  { name: "City of Port St. Lucie", url: "https://pandapublicweb.cityofpsl.com/SignIn/StatusPermit.aspx?Tab=SubmitTab&View=Permits", phone: "(772) 871-5132" },
   { name: "West Palm Beach", url: "https://permit-planner.wpb.org/" },
   { name: "Miramar", url: "https://mss.miramarfl.gov/css/default.aspx", note: "No login required" },
   { name: "Boca Raton", url: "https://www.bocaehub.com", note: "Uses EHub Boca system" },
@@ -35,6 +35,7 @@ export const MUNICIPALITIES: Municipality[] = [
   { name: "Miami Beach", url: "https://energovcss.miamibeachfl.gov/energovprod/selfservice#/home" },
   { name: "Lighthouse Point", url: "https://ci-lighthousepoint-fl.smartgovcommunity.com/" },
   { name: "County of PSL", url: "https://www.stlucieco.gov/departments-and-services/planning-and-development-services/energov-online-platform", phone: "(772) 871-5132" },
+  { name: "St. Lucie County", url: "https://www.stlucieco.gov/departments-and-services/planning-and-development-services/energov-online-platform", phone: "(772) 462-1553" },
 
 ];
 
@@ -56,7 +57,8 @@ export function findPortalForAddress(address: string): Municipality | undefined 
     [/\broyal palm beach\b/, "Royal Palm Beach"],
     [/\bport st\.?\s*lucie\b/, "City of Port St. Lucie"],
     [/\bstuart\b/, "Martin County / Stuart"],
-    
+    [/\bfort pierce\b/, "St. Lucie County"],
+
   ];
   for (const [re, name] of aliases) {
     if (re.test(lower)) {
