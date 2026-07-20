@@ -60,9 +60,10 @@ export function RequestNotaryDialog({
       <DialogContent className="max-w-md rounded-[3px]">
         <DialogTitle className="display-serif text-2xl text-obsidian">Request Notary</DialogTitle>
         <DialogDescription className="text-sm text-obsidian/70">
-          Flōridian's team will coordinate a same-day virtual or in-person notarization and return the
+          Flōridian's in-house remote notary will schedule a live video session and return the
           notarized document to this project.
         </DialogDescription>
+
 
         <div className="mt-4 space-y-4">
           <div>
@@ -94,7 +95,12 @@ export function RequestNotaryDialog({
               className="mt-1.5 rounded-[3px]"
             />
           </div>
+
+          <div className="rounded-[3px] border border-obsidian/12 bg-paper-warm px-3 py-2 font-mono text-[10px] leading-relaxed uppercase tracking-[0.12em] text-obsidian/60">
+            Remote online notarization performed pursuant to Florida Statute §117.265.
+          </div>
         </div>
+
 
         <div className="mt-6 flex justify-end gap-2">
           <Button variant="outline" className="rounded-[3px]" onClick={() => onOpenChange(false)} disabled={busy}>Cancel</Button>

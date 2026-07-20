@@ -1,21 +1,25 @@
 // LocalStorage-backed notary request store.
+// Flōridian performs remote online notarization in-house per FL Stat §117.265.
 
-export type NotaryStatus = "requested" | "scheduled" | "completed";
+export type NotaryStatus = "requested" | "scheduled" | "in_session" | "completed";
 
 export type NotaryRequest = {
   id: string;
   projectId: string;
   projectName: string;
+  clientName?: string;
   docId?: string;
   documentName: string;
-  preferredAt: string;    // ISO date (yyyy-mm-dd) or datetime
+  preferredAt: string;    // client's preferred datetime-local
   notes?: string;
   status: NotaryStatus;
   createdAt: string;
   createdBy: string;
   scheduledFor?: string;
+  sessionLink?: string;
   completedAt?: string;
   notarizedFilename?: string;
+  sealDate?: string;
 };
 
 const KEY = "cleared.notaryRequests.v1";
@@ -35,9 +39,15 @@ export function listNotaryRequests(projectId?: string): NotaryRequest[] {
   const all = read().sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1));
   return projectId ? all.filter((r) => r.projectId === projectId) : all;
 }
-
 export function notaryForDoc(docId: string): NotaryRequest | undefined {
   return read().find((r) => r.docId === docId);
+}
+
+function notify(subject: string, lines: string[]) {
+  // Notification stub — server email wiring goes here (Resend/Mailgun/Lovable Emails).
+  try {
+    console.info(`[NOTIFY] ${subject}\n${lines.join("\n")}`);
+  } catch {}
 }
 
 export function createNotaryRequest(input: Omit<NotaryRequest, "id" | "createdAt" | "status">): NotaryRequest {
@@ -48,31 +58,55 @@ export function createNotaryRequest(input: Omit<NotaryRequest, "id" | "createdAt
     status: "requested",
   };
   write([req, ...read()]);
-  // Notification stub — in production, hit /api/notify or an email server fn.
-  try {
-    console.info(
-      `[NOTIFY team@floridianinc.com] Notary request for ${input.projectName} — ${input.documentName} — preferred ${input.preferredAt}`
-    );
-  } catch {}
+  notify(`Notary request → team@floridianinc.com`, [
+    `Project: ${input.projectName}`,
+    `Client: ${input.clientName ?? input.createdBy}`,
+    `Document: ${input.documentName}`,
+    `Preferred: ${input.preferredAt}`,
+    input.notes ? `Notes: ${input.notes}` : "",
+  ].filter(Boolean));
   return req;
 }
 
-export function scheduleNotary(id: string, scheduledFor: string) {
-  write(read().map((r) => r.id === id ? { ...r, status: "scheduled", scheduledFor } : r));
+export function scheduleNotary(id: string, scheduledFor: string, sessionLink: string) {
+  const list = read();
+  const r = list.find((x) => x.id === id);
+  if (!r) return;
+  write(list.map((x) => x.id === id ? { ...x, status: "scheduled", scheduledFor, sessionLink } : x));
+  notify(`Notary scheduled for ${r.projectName}`, [
+    `Client: ${r.clientName ?? r.createdBy}`,
+    `Document: ${r.documentName}`,
+    `When: ${scheduledFor}`,
+    `Session link: ${sessionLink}`,
+  ]);
 }
 
-export function completeNotary(id: string, notarizedFilename: string) {
-  write(read().map((r) => r.id === id
-    ? { ...r, status: "completed", completedAt: new Date().toISOString(), notarizedFilename }
-    : r));
+export function markInSession(id: string) {
+  write(read().map((r) => r.id === id ? { ...r, status: "in_session" } : r));
+}
+
+export function completeNotary(id: string, notarizedFilename: string, sealDate?: string) {
+  const list = read();
+  const r = list.find((x) => x.id === id);
+  if (!r) return;
+  write(list.map((x) => x.id === id
+    ? { ...x, status: "completed", completedAt: new Date().toISOString(), notarizedFilename, sealDate }
+    : x));
+  notify(`Notarized document ready — ${r.projectName}`, [
+    `Client: ${r.clientName ?? r.createdBy}`,
+    `Document: ${r.documentName}`,
+    `File: ${notarizedFilename}`,
+    sealDate ? `Seal date: ${sealDate}` : "",
+  ].filter(Boolean));
 }
 
 export const NOTARY_EVT = EVT;
 
-export function notaryBadge(status: NotaryStatus): { label: string; className: string; iconSeal?: boolean } {
+export function notaryBadge(status: NotaryStatus): { label: string; className: string; iconSeal?: boolean; pulse?: boolean } {
   switch (status) {
-    case "requested": return { label: "Notarization Requested", className: "bg-amber-500 text-white" };
-    case "scheduled": return { label: "Notarization Scheduled", className: "bg-sky-600 text-white" };
-    case "completed": return { label: "Notarized",              className: "bg-[#B8860B] text-white", iconSeal: true };
+    case "requested":  return { label: "Notarization Requested", className: "bg-amber-500 text-white" };
+    case "scheduled":  return { label: "Notarization Scheduled", className: "bg-sky-600 text-white" };
+    case "in_session": return { label: "In Session",             className: "bg-emerald-600 text-white", pulse: true };
+    case "completed":  return { label: "Notarized",              className: "bg-[#B8860B] text-white", iconSeal: true };
   }
 }
