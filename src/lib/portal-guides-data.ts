@@ -781,6 +781,7 @@ export const PORTAL_GUIDES: PortalGuide[] = [
   ...COMMERCIAL_GUIDES,
   // Single Family
   ...SINGLE_FAMILY_GUIDES,
+  ...SINGLE_FAMILY_GUIDES_2,
 ];
 
 export const PORTAL_GUIDE_CATEGORIES = [
