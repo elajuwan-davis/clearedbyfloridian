@@ -44,6 +44,7 @@ function PermitDetailPage() {
       const updated = await updatePermit(row.id, edit);
       setRow(updated);
       setEdit(updated);
+      setEditing(false);
       toast.success("Saved");
     } catch (e) {
       toast.error("Save failed: " + (e instanceof Error ? e.message : String(e)));
@@ -51,6 +52,12 @@ function PermitDetailPage() {
       setSaving(false);
     }
   }
+
+  function cancelEdit() {
+    if (row) setEdit(row);
+    setEditing(false);
+  }
+
 
   async function remove() {
     if (!row) return;
