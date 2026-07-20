@@ -60,6 +60,7 @@ import { Route as PortalGuidesIndexRouteImport } from './routes/portal.guides.in
 import { Route as PortalSubcontractorsNewRouteImport } from './routes/portal.subcontractors.new'
 import { Route as PortalProjectsIdRouteImport } from './routes/portal.projects.$id'
 import { Route as PortalPermitsNewRouteImport } from './routes/portal.permits.new'
+import { Route as PortalPermitsIdRouteImport } from './routes/portal.permits.$id'
 import { Route as PortalGuidesSlugRouteImport } from './routes/portal.guides.$slug'
 import { Route as ApiPublicHubspotDealWebhookRouteImport } from './routes/api/public/hubspot.deal-webhook'
 
@@ -323,6 +324,11 @@ const PortalPermitsNewRoute = PortalPermitsNewRouteImport.update({
   path: '/new',
   getParentRoute: () => PortalPermitsRoute,
 } as any)
+const PortalPermitsIdRoute = PortalPermitsIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => PortalPermitsRoute,
+} as any)
 const PortalGuidesSlugRoute = PortalGuidesSlugRouteImport.update({
   id: '/guides/$slug',
   path: '/guides/$slug',
@@ -382,6 +388,7 @@ export interface FileRoutesByFullPath {
   '/sub-intake/$token': typeof SubIntakeTokenRoute
   '/portal/': typeof PortalIndexRoute
   '/portal/guides/$slug': typeof PortalGuidesSlugRoute
+  '/portal/permits/$id': typeof PortalPermitsIdRoute
   '/portal/permits/new': typeof PortalPermitsNewRoute
   '/portal/projects/$id': typeof PortalProjectsIdRoute
   '/portal/subcontractors/new': typeof PortalSubcontractorsNewRoute
@@ -435,6 +442,7 @@ export interface FileRoutesByTo {
   '/sub-intake/$token': typeof SubIntakeTokenRoute
   '/portal': typeof PortalIndexRoute
   '/portal/guides/$slug': typeof PortalGuidesSlugRoute
+  '/portal/permits/$id': typeof PortalPermitsIdRoute
   '/portal/permits/new': typeof PortalPermitsNewRoute
   '/portal/projects/$id': typeof PortalProjectsIdRoute
   '/portal/subcontractors/new': typeof PortalSubcontractorsNewRoute
@@ -491,6 +499,7 @@ export interface FileRoutesById {
   '/sub-intake/$token': typeof SubIntakeTokenRoute
   '/portal/': typeof PortalIndexRoute
   '/portal/guides/$slug': typeof PortalGuidesSlugRoute
+  '/portal/permits/$id': typeof PortalPermitsIdRoute
   '/portal/permits/new': typeof PortalPermitsNewRoute
   '/portal/projects/$id': typeof PortalProjectsIdRoute
   '/portal/subcontractors/new': typeof PortalSubcontractorsNewRoute
@@ -548,6 +557,7 @@ export interface FileRouteTypes {
     | '/sub-intake/$token'
     | '/portal/'
     | '/portal/guides/$slug'
+    | '/portal/permits/$id'
     | '/portal/permits/new'
     | '/portal/projects/$id'
     | '/portal/subcontractors/new'
@@ -601,6 +611,7 @@ export interface FileRouteTypes {
     | '/sub-intake/$token'
     | '/portal'
     | '/portal/guides/$slug'
+    | '/portal/permits/$id'
     | '/portal/permits/new'
     | '/portal/projects/$id'
     | '/portal/subcontractors/new'
@@ -656,6 +667,7 @@ export interface FileRouteTypes {
     | '/sub-intake/$token'
     | '/portal/'
     | '/portal/guides/$slug'
+    | '/portal/permits/$id'
     | '/portal/permits/new'
     | '/portal/projects/$id'
     | '/portal/subcontractors/new'
@@ -1053,6 +1065,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PortalPermitsNewRouteImport
       parentRoute: typeof PortalPermitsRoute
     }
+    '/portal/permits/$id': {
+      id: '/portal/permits/$id'
+      path: '/$id'
+      fullPath: '/portal/permits/$id'
+      preLoaderRoute: typeof PortalPermitsIdRouteImport
+      parentRoute: typeof PortalPermitsRoute
+    }
     '/portal/guides/$slug': {
       id: '/portal/guides/$slug'
       path: '/guides/$slug'
@@ -1110,11 +1129,13 @@ const FormsRouteChildren: FormsRouteChildren = {
 const FormsRouteWithChildren = FormsRoute._addFileChildren(FormsRouteChildren)
 
 interface PortalPermitsRouteChildren {
+  PortalPermitsIdRoute: typeof PortalPermitsIdRoute
   PortalPermitsNewRoute: typeof PortalPermitsNewRoute
   PortalPermitsIndexRoute: typeof PortalPermitsIndexRoute
 }
 
 const PortalPermitsRouteChildren: PortalPermitsRouteChildren = {
+  PortalPermitsIdRoute: PortalPermitsIdRoute,
   PortalPermitsNewRoute: PortalPermitsNewRoute,
   PortalPermitsIndexRoute: PortalPermitsIndexRoute,
 }
