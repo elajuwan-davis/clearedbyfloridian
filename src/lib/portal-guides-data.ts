@@ -747,6 +747,7 @@ import { SINGLE_FAMILY_GUIDES_2 } from "./portal-guides-single-family-2";
 import { SINGLE_FAMILY_GUIDES_3 } from "./portal-guides-single-family-3";
 import { GUIDES_BATCH_4 } from "./portal-guides-batch-4";
 import { GUIDES_BATCH_5 } from "./portal-guides-batch-5";
+import { GUIDES_BATCH_6 } from "./portal-guides-batch-6";
 
 
 export const PORTAL_GUIDES: PortalGuide[] = [
@@ -789,6 +790,8 @@ export const PORTAL_GUIDES: PortalGuide[] = [
   ...SINGLE_FAMILY_GUIDES_3,
   ...GUIDES_BATCH_4,
   ...GUIDES_BATCH_5,
+  // Multi Family
+  ...GUIDES_BATCH_6,
 
 ];
 
@@ -802,6 +805,7 @@ export const PORTAL_GUIDE_CATEGORIES = [
   "Plumbing",
   "Commercial",
   "Single Family",
+  "Multi Family",
 ];
 
 export function getPortalGuide(slug: string): PortalGuide | undefined {
