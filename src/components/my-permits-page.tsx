@@ -62,7 +62,6 @@ export function MyPermitsPage() {
   useEffect(() => {
     const counts: Record<string, number> = {};
     for (const p of projects) {
-      if (!p.permit_types.some((t) => t.toLowerCase() === "pool")) continue;
       const seed = buildInspections(false);
       counts[p.id] = passedCount(loadInspections(p.id, seed));
     }
@@ -192,29 +191,27 @@ export function MyPermitsPage() {
                           </div>
                           <div className="relative flex flex-wrap gap-1">
                             {p.permit_types.map((t) => {
-                              const issued = p.status === "permit_issued" || p.status === "approved";
-                              const isPool = t.toLowerCase() === "pool";
-                              const passed = inspectionCounts[p.id];
+                              const issued = p.status === "permit_issued";
+                              const passed = inspectionCounts[p.id] ?? 0;
                               return (
                                 <Link
                                   key={t}
                                   to="/portal/projects/$id"
                                   params={{ id: p.id }}
                                   title={issued ? `${t}: issued` : `${t}: in progress — click to view`}
-                                  className={`inline-flex items-center gap-1 border px-2 py-0.5 text-[10px] font-mono uppercase tracking-[0.1em] rounded-[2px] transition-colors ${
-                                    issued
-                                      ? "border-emerald-600/40 bg-emerald-50 text-emerald-800 hover:bg-emerald-100"
-                                      : "border-red-600/40 bg-red-50 text-red-800 hover:bg-red-100"
+                                  className={`inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-mono uppercase tracking-[0.1em] rounded-[2px] text-white transition-opacity hover:opacity-90 ${
+                                    issued ? "bg-[#16a34a]" : "bg-[#dc2626]"
                                   }`}
                                 >
                                   {t}
-                                  {isPool && passed !== undefined && (
-                                    <span className="tabular-nums opacity-80">{passed}/{POOL_INSPECTION_COUNT}</span>
-                                  )}
+                                  <span className="tabular-nums opacity-90">
+                                    {passed}/{POOL_INSPECTION_COUNT}
+                                  </span>
                                 </Link>
                               );
                             })}
                           </div>
+
                           <span className="relative inline-flex items-center border border-obsidian/15 bg-paper-warm px-2 py-0.5 text-[10px] font-mono uppercase tracking-[0.1em] text-obsidian/70 rounded-[2px]">
                             {p.county}
                           </span>
