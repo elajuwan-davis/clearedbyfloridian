@@ -25,6 +25,8 @@ import { Bell, BellOff } from "lucide-react";
 
 import { isPermitTypeComplete } from "@/lib/permit-type-status";
 import { PCNLookupDialog } from "@/components/pcn-lookup-dialog";
+import { PropertyAppraiserDialog } from "@/components/property-appraiser-dialog";
+import { QrCode, Wand2 } from "lucide-react";
 import { GenerateNTBODialog, GenerateOwnerAuthDialog } from "@/components/generate-form-dialogs";
 import { SendForSignatureDialog } from "@/components/send-for-signature-dialog";
 import { RequestNotaryDialog } from "@/components/request-notary-dialog";
@@ -135,6 +137,7 @@ export function ProjectDetail({ project }: { project: Project }) {
               </span>
             )}
             {internal && <ClientNotificationsToggle projectId={project.id} />}
+            <HeaderExtras project={project} />
           </div>
 
         </header>
