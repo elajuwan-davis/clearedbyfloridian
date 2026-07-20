@@ -148,7 +148,13 @@ export function ProjectDetail({ project }: { project: Project }) {
 
           <TabsContent value="overview" className="mt-6"><OverviewTab project={project} /></TabsContent>
           <TabsContent value="inspections" className="mt-6">
-            <InspectionsSection projectId={project.id} allPassedSeed={false} />
+            <InspectionsSection
+              projectId={project.id}
+              allPassedSeed={false}
+              projectAddress={`${project.address}, ${project.city}`}
+              municipality={portal}
+            />
+
           </TabsContent>
           <TabsContent value="documents" className="mt-6"><DocumentsTab project={project} /></TabsContent>
           <TabsContent value="subs" className="mt-6"><SubsTab project={project} /></TabsContent>
