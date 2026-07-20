@@ -8,7 +8,8 @@ import {
   loadInspections,
   saveInspections,
   passedCount,
-  POOL_INSPECTION_COUNT,
+  POOL_INSPECTIONS,
+  PSL_HENDERSON_INSPECTIONS,
 } from "@/lib/inspections";
 import { addNote } from "@/lib/project-notes";
 import type { Municipality } from "@/lib/municipalities";
@@ -19,6 +20,7 @@ type Props = {
   projectAddress?: string;
   municipality?: Municipality;
 };
+
 
 const STATUS_META: Record<InspectionStatus, { label: string; pill: string }> = {
   passed: { label: "Passed", pill: "bg-[#16a34a] text-white border-[#16a34a]" },
@@ -50,8 +52,10 @@ export function InspectionsSection({
   projectAddress,
   municipality,
 }: Props) {
-  const seed = useMemo(() => buildInspections(allPassedSeed), [allPassedSeed]);
+  const template = projectId === "22" ? PSL_HENDERSON_INSPECTIONS : POOL_INSPECTIONS;
+  const seed = useMemo(() => buildInspections(allPassedSeed, template), [allPassedSeed, template]);
   const [items, setItems] = useState<Inspection[]>(seed);
+
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
   const [scheduling, setScheduling] = useState<Inspection | null>(null);
 
@@ -85,7 +89,9 @@ export function InspectionsSection({
   }
 
   const passed = passedCount(items);
-  const pct = Math.round((passed / POOL_INSPECTION_COUNT) * 100);
+  const total = items.length;
+  const pct = total ? Math.round((passed / total) * 100) : 0;
+
 
   return (
     <div>
@@ -93,7 +99,7 @@ export function InspectionsSection({
         <div className="border-b border-obsidian/10 bg-paper-warm px-5 py-4">
           <div className="flex items-baseline justify-between gap-4">
             <div className="font-mono text-[11px] font-medium uppercase tracking-[0.14em] text-obsidian/70">
-              {passed} of {POOL_INSPECTION_COUNT} inspections passed
+              {passed} of {total} inspections passed
             </div>
             <div className="font-mono text-[11px] tabular-nums text-obsidian/55">{pct}%</div>
           </div>
@@ -112,6 +118,15 @@ export function InspectionsSection({
                   <span className="inline-flex h-8 min-w-[3rem] items-center justify-center bg-[#153157] px-2 font-mono text-[11px] font-semibold tracking-[0.08em] text-white rounded-[3px]">
                     {ins.code}
                   </span>
+                  {ins.phase !== undefined && (
+                    <span
+                      className="inline-flex h-8 items-center justify-center border border-obsidian/20 bg-sky/20 px-2 font-mono text-[10px] font-semibold uppercase tracking-[0.1em] text-obsidian rounded-[3px]"
+                      title={`Phase ${ins.phase} — inspections in the same phase are typically called together`}
+                    >
+                      Phase {ins.phase}
+                    </span>
+                  )}
+
                   <button
                     type="button"
                     onClick={() =>

@@ -10,11 +10,13 @@ export type Inspection = {
   name: string;
   description: string;
   status: InspectionStatus;
+  phase?: number;
   notes?: string;
   scheduledDate?: string; // yyyy-mm-dd
   scheduledWindow?: InspectionWindow;
   scheduledNotes?: string;
 };
+
 
 
 export const POOL_INSPECTIONS: Omit<Inspection, "status">[] = [
@@ -76,9 +78,29 @@ export const POOL_INSPECTIONS: Omit<Inspection, "status">[] = [
 
 export const POOL_INSPECTION_COUNT = POOL_INSPECTIONS.length;
 
-export function buildInspections(allPassed: boolean): Inspection[] {
-  return POOL_INSPECTIONS.map((i) => ({ ...i, status: allPassed ? "passed" : "pending" }));
+// PSL (Port St. Lucie) permit-specific inspection sequence for the Henderson project (permit 2619180).
+// Grouped by phase: 1 = pre-shell, 2 = rough / pre-deck, 4 = finals.
+export const PSL_HENDERSON_INSPECTIONS: Omit<Inspection, "status">[] = [
+  { code: "1802", phase: 1, name: "A-FMBD — Formboard Survey", description: "Formboard survey verifying pool footprint, setbacks, and elevations match approved site plan prior to steel placement." },
+  { code: "6400", phase: 1, name: "POOL — Pool Steel", description: "Inspection of reinforcing steel (rebar) placement, spacing, coverage, and tie-wire compliance prior to gunite/shotcrete application." },
+  { code: "1014", phase: 1, name: "EQBS — Equipotential Shell Bonding", description: "Verification of equipotential bonding of the pool shell steel per NEC 680.26 prior to shell encapsulation." },
+  { code: "6200", phase: 1, name: "UPLU — Underground Plumbing Inspection", description: "Inspection of underground pool plumbing lines (suction, return, cleaner, feature) pressure-tested prior to cover." },
+  { code: "6300", phase: 2, name: "R-PLUR — Plumbing Rough Inspection", description: "Rough plumbing inspection of equipment-pad piping and manifolds prior to deck pour / equipment set." },
+  { code: "1013", phase: 2, name: "EQBP — Equipotential Perimeter Bonding", description: "Perimeter equipotential bonding grid inspection (3-ft perimeter conductor) per NEC 680.26(B)(2) prior to deck pour." },
+  { code: "1451", phase: 2, name: "BARR — Pool Barrier", description: "Pool safety barrier inspection: fence height, gate self-close/self-latch, door alarms per FS 515 prior to water fill." },
+  { code: "8803", phase: 2, name: "UGPE — Underground Piping Electric", description: "Inspection of underground electrical conduits and raceways prior to backfill." },
+  { code: "3100", phase: 2, name: "R-ELER — Electric Rough-In Inspection", description: "Rough-in electrical inspection: bonding, conduit runs, GFCI provisions, and equipment feeder rough at equipment pad." },
+  { code: "3400", phase: 4, name: "FINL — Final Inspection", description: "Final building inspection — overall structural and site compliance review; confirms all prior inspections passed and permit card is on site." },
+  { code: "3000", phase: 4, name: "F-ELEF — Electric Final Inspection", description: "Final electrical: bonding, GFCI protection, lighting circuits, panel terminations, and equipment operation." },
+  { code: "6100", phase: 4, name: "F-PLUF — Plumbing Final", description: "Final plumbing at equipment pad: pump, filter, heater, valves, and unions verified leak-free under operating pressure." },
+  { code: "1000", phase: 4, name: "A-PPCC — Private Provider Certificate of Compliance", description: "Private Provider issues Certificate of Compliance per FS 553.791; triggers 2-business-day Certificate of Occupancy window." },
+  { code: "1500", phase: 4, name: "LD-APEN — Approval by Engineering", description: "Land Development engineering approval. Contact PSL Engineering at (772) 871-5177 to schedule." },
+];
+
+export function buildInspections(allPassed: boolean, template: Omit<Inspection, "status">[] = POOL_INSPECTIONS): Inspection[] {
+  return template.map((i) => ({ ...i, status: allPassed ? "passed" : "pending" }));
 }
+
 
 const STORAGE_PREFIX = "cleared:inspections:";
 
