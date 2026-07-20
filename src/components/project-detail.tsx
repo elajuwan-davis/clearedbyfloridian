@@ -257,19 +257,22 @@ function DocumentsTab({ project }: { project: Project }) {
   const [ownerOpen, setOwnerOpen] = useState(false);
   const [pcnOpen, setPcnOpen] = useState(false);
   const [pcn, setPcnLocal] = useState("");
+  const [tick, setTick] = useState(0);
+  const [sigDialog, setSigDialog] = useState<{ documentName: string; docId?: string } | null>(null);
+  const [notaryDialog, setNotaryDialog] = useState<{ documentName: string; docId?: string } | null>(null);
+  const role = typeof window !== "undefined" ? getPortalRole() : "gc";
+  const showNotary = canRequestNotary(role);
 
   useEffect(() => {
     const refresh = () => {
       setDocs(listDocs(project.id));
       setPcnLocal(getPCN(project.id));
+      setTick((t) => t + 1);
     };
     refresh();
-    window.addEventListener("project-docs:changed", refresh);
-    window.addEventListener("project-pcn:changed", refresh);
-    return () => {
-      window.removeEventListener("project-docs:changed", refresh);
-      window.removeEventListener("project-pcn:changed", refresh);
-    };
+    const evts = ["project-docs:changed", "project-pcn:changed", SIG_EVT, NOTARY_EVT];
+    evts.forEach((e) => window.addEventListener(e, refresh));
+    return () => evts.forEach((e) => window.removeEventListener(e, refresh));
   }, [project.id]);
 
   const byType = useMemo(() => {
@@ -278,6 +281,9 @@ function DocumentsTab({ project }: { project: Project }) {
     for (const d of docs) (map[d.type] ??= []).push(d);
     return map;
   }, [docs]);
+
+  const ntboSig = useMemo(() => sigStatusForDocument(project.id, "NTBO"), [project.id, tick]);
+  const ownerSig = useMemo(() => sigStatusForDocument(project.id, "Owner Authorization"), [project.id, tick]);
 
   return (
     <div className="space-y-6">
@@ -297,36 +303,24 @@ function DocumentsTab({ project }: { project: Project }) {
           </div>
         </div>
         <div className="p-4 grid gap-3 sm:grid-cols-2">
-          <button
-            onClick={() => setNtboOpen(true)}
-            className="text-left border border-obsidian/12 hover:border-obsidian rounded-[3px] p-4 bg-paper-warm/40 transition"
-          >
-            <div className="flex items-center gap-2">
-              <FileSignature className="h-4 w-4 text-obsidian/60" />
-              <div className="text-sm font-semibold text-obsidian">Generate NTBO</div>
-            </div>
-            <div className="mt-1 text-xs text-obsidian/60">
-              Notice to Building Official — pre-filled with project + Flōridian firm data.
-            </div>
-            <div className="mt-2 font-mono text-[10px] uppercase tracking-[0.12em] text-obsidian/50">
-              Form 61G20-2.005 · §553.791
-            </div>
-          </button>
-          <button
-            onClick={() => setOwnerOpen(true)}
-            className="text-left border border-obsidian/12 hover:border-obsidian rounded-[3px] p-4 bg-paper-warm/40 transition"
-          >
-            <div className="flex items-center gap-2">
-              <FileCheck2 className="h-4 w-4 text-obsidian/60" />
-              <div className="text-sm font-semibold text-obsidian">Generate Owner Auth</div>
-            </div>
-            <div className="mt-1 text-xs text-obsidian/60">
-              Private Provider Owner Authorization & Indemnification.
-            </div>
-            <div className="mt-2 font-mono text-[10px] uppercase tracking-[0.12em] text-obsidian/50">
-              FL Statute §553.791
-            </div>
-          </button>
+          <GenerateCard
+            icon={<FileSignature className="h-4 w-4 text-obsidian/60" />}
+            title="Generate NTBO"
+            subtitle="Notice to Building Official — pre-filled with project + firm data."
+            meta="Form 61G20-2.005 · §553.791"
+            sigStatus={ntboSig ? sigBadge(ntboSig.status) : null}
+            onGenerate={() => setNtboOpen(true)}
+            onSend={() => setSigDialog({ documentName: "NTBO" })}
+          />
+          <GenerateCard
+            icon={<FileCheck2 className="h-4 w-4 text-obsidian/60" />}
+            title="Generate Owner Auth"
+            subtitle="Private Provider Owner Authorization & Indemnification."
+            meta="FL Statute §553.791"
+            sigStatus={ownerSig ? sigBadge(ownerSig.status) : null}
+            onGenerate={() => setOwnerOpen(true)}
+            onSend={() => setSigDialog({ documentName: "Owner Authorization" })}
+          />
         </div>
       </div>
 
@@ -353,28 +347,66 @@ function DocumentsTab({ project }: { project: Project }) {
                 </div>
               ) : (
                 <ul className="divide-y divide-obsidian/5">
-                  {items.map((d) => (
-                    <li key={d.id} className="flex items-center gap-3 px-4 py-3">
-                      <FileText className="h-4 w-4 shrink-0 text-obsidian/50" />
-                      <div className="min-w-0 flex-1">
-                        <div className="text-sm text-obsidian truncate">{d.filename}</div>
-                        <div className="mt-0.5 font-mono text-[10px] uppercase tracking-[0.12em] text-obsidian/50">
-                          {d.uploadedAt} · {d.uploadedBy}
-                          {d.status === "pending" && <span className="ml-2 text-amber-700">· pending</span>}
+                  {items.map((d) => {
+                    const sig = getSignatureForDoc(d.id);
+                    const notary = notaryForDoc(d.id);
+                    return (
+                      <li key={d.id} className="flex flex-wrap items-center gap-3 px-4 py-3">
+                        <FileText className="h-4 w-4 shrink-0 text-obsidian/50" />
+                        <div className="min-w-0 flex-1">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <div className="text-sm text-obsidian truncate">{d.filename}</div>
+                            {sig && (
+                              <span
+                                title={sig.signedBy ? `${sig.signedBy} · ${sig.signedAt?.slice(0, 10)}` : sig.recipientEmail}
+                                className={`font-mono text-[9px] uppercase tracking-[0.12em] px-1.5 py-0.5 rounded-[3px] ${sigBadge(sig.status).className}`}
+                              >
+                                {sigBadge(sig.status).label}
+                              </span>
+                            )}
+                            {notary && (
+                              <span
+                                className={`font-mono text-[9px] uppercase tracking-[0.12em] px-1.5 py-0.5 rounded-[3px] inline-flex items-center gap-1 ${notaryBadge(notary.status).className}`}
+                              >
+                                {notaryBadge(notary.status).iconSeal && <Stamp className="h-2.5 w-2.5" />}
+                                {notaryBadge(notary.status).label}
+                              </span>
+                            )}
+                          </div>
+                          <div className="mt-0.5 font-mono text-[10px] uppercase tracking-[0.12em] text-obsidian/50">
+                            {d.uploadedAt} · {d.uploadedBy}
+                            {d.status === "pending" && <span className="ml-2 text-amber-700">· pending</span>}
+                          </div>
                         </div>
-                      </div>
-                      <button className="p-1 text-obsidian/45 hover:text-obsidian" aria-label="Download">
-                        <Download className="h-3.5 w-3.5" />
-                      </button>
-                      <button
-                        className="p-1 text-obsidian/45 hover:text-oxblood"
-                        aria-label="Delete"
-                        onClick={() => { if (confirm("Remove this document?")) deleteDoc(d.id); }}
-                      >
-                        <Trash2 className="h-3.5 w-3.5" />
-                      </button>
-                    </li>
-                  ))}
+                        <div className="flex items-center gap-1">
+                          <Button
+                            variant="outline" size="sm" className="h-7 rounded-[3px] text-[11px]"
+                            onClick={() => setSigDialog({ documentName: d.filename, docId: d.id })}
+                          >
+                            <Send className="h-3 w-3 mr-1" /> Send for Signature
+                          </Button>
+                          {showNotary && (
+                            <Button
+                              variant="outline" size="sm" className="h-7 rounded-[3px] text-[11px]"
+                              onClick={() => setNotaryDialog({ documentName: d.filename, docId: d.id })}
+                            >
+                              <Stamp className="h-3 w-3 mr-1" /> Request Notary
+                            </Button>
+                          )}
+                          <button className="p-1 text-obsidian/45 hover:text-obsidian" aria-label="Download">
+                            <Download className="h-3.5 w-3.5" />
+                          </button>
+                          <button
+                            className="p-1 text-obsidian/45 hover:text-oxblood"
+                            aria-label="Delete"
+                            onClick={() => { if (confirm("Remove this document?")) deleteDoc(d.id); }}
+                          >
+                            <Trash2 className="h-3.5 w-3.5" />
+                          </button>
+                        </div>
+                      </li>
+                    );
+                  })}
                 </ul>
               )}
             </div>
@@ -386,9 +418,60 @@ function DocumentsTab({ project }: { project: Project }) {
       <PCNLookupDialog open={pcnOpen} onOpenChange={setPcnOpen} project={project} />
       <GenerateNTBODialog open={ntboOpen} onOpenChange={setNtboOpen} project={project} />
       <GenerateOwnerAuthDialog open={ownerOpen} onOpenChange={setOwnerOpen} project={project} />
+      {sigDialog && (
+        <SendForSignatureDialog
+          open={!!sigDialog}
+          onOpenChange={(v) => !v && setSigDialog(null)}
+          project={project}
+          documentName={sigDialog.documentName}
+          docId={sigDialog.docId}
+        />
+      )}
+      {notaryDialog && (
+        <RequestNotaryDialog
+          open={!!notaryDialog}
+          onOpenChange={(v) => !v && setNotaryDialog(null)}
+          project={project}
+          documentName={notaryDialog.documentName}
+          docId={notaryDialog.docId}
+        />
+      )}
     </div>
   );
 }
+
+function GenerateCard({
+  icon, title, subtitle, meta, sigStatus, onGenerate, onSend,
+}: {
+  icon: React.ReactNode; title: string; subtitle: string; meta: string;
+  sigStatus: { label: string; className: string } | null;
+  onGenerate: () => void; onSend: () => void;
+}) {
+  return (
+    <div className="border border-obsidian/12 rounded-[3px] p-4 bg-paper-warm/40">
+      <div className="flex items-center gap-2">
+        {icon}
+        <div className="text-sm font-semibold text-obsidian">{title}</div>
+        {sigStatus && (
+          <span className={`ml-auto font-mono text-[9px] uppercase tracking-[0.12em] px-1.5 py-0.5 rounded-[3px] ${sigStatus.className}`}>
+            {sigStatus.label}
+          </span>
+        )}
+      </div>
+      <div className="mt-1 text-xs text-obsidian/60">{subtitle}</div>
+      <div className="mt-2 font-mono text-[10px] uppercase tracking-[0.12em] text-obsidian/50">{meta}</div>
+      <div className="mt-3 flex gap-2">
+        <Button size="sm" variant="dark" className="rounded-[3px] h-7 text-[11px]" onClick={onGenerate}>
+          <Download className="h-3 w-3 mr-1" /> Generate PDF
+        </Button>
+        <Button size="sm" variant="outline" className="rounded-[3px] h-7 text-[11px]" onClick={onSend}>
+          <Send className="h-3 w-3 mr-1" /> Send for Signature
+        </Button>
+      </div>
+    </div>
+  );
+}
+
 
 function UploadDocDialog({
   open, onOpenChange, projectId,
