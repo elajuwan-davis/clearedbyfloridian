@@ -275,6 +275,14 @@ export function MyPermitsPage() {
                           <div className="relative min-w-0 flex-1">
                             <div className="flex items-center gap-2">
                               <div className="text-sm font-medium text-obsidian truncate">{p.name}</div>
+                              {p.fromHubspot && (
+                                <span
+                                  className="inline-flex items-center gap-1 border border-[#ff7a59]/40 bg-[#ff7a59]/10 px-1.5 py-0.5 text-[9px] font-mono uppercase tracking-[0.1em] text-[#c34a2f] rounded-[2px]"
+                                  title="Auto-created from HubSpot deal"
+                                >
+                                  HubSpot
+                                </span>
+                              )}
                               {p.incomplete && (
                                 <span className="inline-flex items-center gap-1 border border-amber-500/40 bg-amber-50 px-1.5 py-0.5 text-[9px] font-mono uppercase tracking-[0.1em] text-amber-700 rounded-[2px]">
                                   <AlertTriangle className="h-2.5 w-2.5" />
