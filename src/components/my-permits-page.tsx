@@ -31,6 +31,9 @@ const STATUS_LABEL: Record<PermitStatus, string> = {
 export function MyPermitsPage() {
   const [permits, setPermits] = useState<PermitRow[]>([]);
   const [loading, setLoading] = useState(true);
+  const [syncing, setSyncing] = useState(false);
+  const [lastSync, setLastSync] = useState<string | null>(null);
+  const [syncMsg, setSyncMsg] = useState<string | null>(null);
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState<Record<GroupKey, boolean>>({
     intake: true, preparing: true, submitted: true, on_hold: true, outsourced: true, issued: true, cancelled: false,
@@ -44,7 +47,23 @@ export function MyPermitsPage() {
     } finally { setLoading(false); }
   }
 
-  useEffect(() => { refresh(); }, []);
+  async function handleSync() {
+    setSyncing(true);
+    setSyncMsg(null);
+    try {
+      const res = await syncAllPermits();
+      setLastSync(res.ranAt);
+      setSyncMsg(res.updated > 0 ? `Synced · ${res.updated} updated` : "Synced · no changes");
+      await refresh();
+    } catch {
+      setSyncMsg("Sync failed");
+    } finally {
+      setSyncing(false);
+      setTimeout(() => setSyncMsg(null), 4000);
+    }
+  }
+
+  useEffect(() => { refresh(); setLastSync(getLastRun()); }, []);
 
   const filtered = useMemo(() => {
     const q = query.toLowerCase().trim();
