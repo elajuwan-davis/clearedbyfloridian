@@ -69,7 +69,7 @@ function ProfilePage() {
       setUserId(uid);
       if (!uid) return;
       const { data, error } = await supabase
-        .from("profiles")
+        .from("profiles" as any)
         .select("display_name, full_name, avatar_url, company_name, website, phone, address, language, notification_emails")
         .eq("id", uid)
         .maybeSingle();
@@ -117,7 +117,7 @@ function ProfilePage() {
 
   async function saveProfile() {
     if (!userId) { toast.success("Profile saved (sign in to persist)"); return; }
-    const { error } = await supabase.from("profiles").update({
+    const { error } = await supabase.from("profiles" as any).update({
       display_name: displayName,
       avatar_url: avatar,
       company_name: company.name,

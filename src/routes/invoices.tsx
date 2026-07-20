@@ -46,7 +46,7 @@ function InvoicesPage() {
     let cancelled = false;
     (async () => {
       const { data, error } = await supabase
-        .from("fees")
+        .from("fees" as any)
         .select("id, invoice_number, status, description, amount_cents, address, created_at")
         .order("created_at", { ascending: false });
       if (cancelled || error || !data || data.length === 0) return;

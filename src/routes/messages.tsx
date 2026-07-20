@@ -94,7 +94,7 @@ function MessagesPage() {
     let cancelled = false;
     (async () => {
       const { data, error } = await supabase
-        .from("messages")
+        .from("messages" as any)
         .select("id, project_id, sender_role, body, created_at, projects(project_name, address, county, status)")
         .order("created_at", { ascending: true });
       if (cancelled || error || !data || data.length === 0) return;
