@@ -99,13 +99,33 @@ function PermitDetailPage() {
           <div className="mt-2 text-sm text-obsidian/60">{row.job_address}</div>
         </div>
         <div className="flex items-center gap-2">
-          <button onClick={save} disabled={saving} className="inline-flex items-center gap-2 bg-obsidian px-4 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-paper rounded-[3px] disabled:opacity-60">
-            <Save className="h-3.5 w-3.5" /> {saving ? "Saving…" : "Save"}
-          </button>
-          <button onClick={remove} className="inline-flex items-center gap-2 border border-red-600/30 text-red-700 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.14em] rounded-[3px] hover:bg-red-50">
-            <Trash2 className="h-3.5 w-3.5" /> Delete
-          </button>
+          {!editing ? (
+            <>
+              <span className="inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/50">
+                <Lock className="h-3 w-3" /> Read only
+              </span>
+              <button onClick={() => setEditing(true)} className="inline-flex items-center gap-2 bg-obsidian px-4 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-paper rounded-[3px]">
+                <Pencil className="h-3.5 w-3.5" /> Edit
+              </button>
+              <button onClick={remove} className="inline-flex items-center gap-2 border border-red-600/30 text-red-700 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.14em] rounded-[3px] hover:bg-red-50">
+                <Trash2 className="h-3.5 w-3.5" /> Delete
+              </button>
+            </>
+          ) : (
+            <>
+              <button onClick={cancelEdit} disabled={saving} className="inline-flex items-center gap-2 border border-obsidian/20 bg-white px-3 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian rounded-[3px] disabled:opacity-60">
+                <X className="h-3.5 w-3.5" /> Cancel
+              </button>
+              <button onClick={save} disabled={saving} className="inline-flex items-center gap-2 bg-obsidian px-4 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-paper rounded-[3px] disabled:opacity-60">
+                <Save className="h-3.5 w-3.5" /> {saving ? "Saving…" : "Save"}
+              </button>
+              <button onClick={remove} className="inline-flex items-center gap-2 border border-red-600/30 text-red-700 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.14em] rounded-[3px] hover:bg-red-50">
+                <Trash2 className="h-3.5 w-3.5" /> Delete
+              </button>
+            </>
+          )}
         </div>
+
       </div>
 
       {/* Completeness panel */}
