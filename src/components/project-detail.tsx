@@ -113,7 +113,7 @@ export function ProjectDetail({ project }: { project: Project }) {
             </span>
           </div>
 
-          <div className="mt-5 flex flex-wrap gap-2">
+          <div className="mt-5 flex flex-wrap gap-2 items-center">
             <Button variant="outline" size="sm" className="rounded-[3px]">
               <Pencil className="mr-1.5 h-3.5 w-3.5" /> Edit Project
             </Button>
@@ -127,7 +127,9 @@ export function ProjectDetail({ project }: { project: Project }) {
                 City portal link unavailable
               </span>
             )}
+            {internal && <ClientNotificationsToggle projectId={project.id} />}
           </div>
+
         </header>
 
         {/* Tabs */}
