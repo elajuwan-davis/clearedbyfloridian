@@ -24,6 +24,7 @@ import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/s
 import { supabase } from "@/integrations/supabase/client";
 import { useExpirationAlerts } from "@/hooks/use-expiration-alerts";
 import { NotificationBell } from "@/components/notification-bell";
+import { VickyWidget } from "@/components/vicky-widget";
 import type { Alert } from "@/lib/expiration-alerts";
 
 type AlertKey = "my-permits" | "request-coi" | "sub-insurance";
