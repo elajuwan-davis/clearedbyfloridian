@@ -10,7 +10,9 @@ import {
   passedCount,
   POOL_INSPECTIONS,
   PSL_HENDERSON_INSPECTIONS,
+  PSL_KNIGHT_INSPECTIONS,
 } from "@/lib/inspections";
+
 import { addNote } from "@/lib/project-notes";
 import type { Municipality } from "@/lib/municipalities";
 
@@ -52,7 +54,11 @@ export function InspectionsSection({
   projectAddress,
   municipality,
 }: Props) {
-  const template = projectId === "22" ? PSL_HENDERSON_INSPECTIONS : POOL_INSPECTIONS;
+  const template =
+    projectId === "22" ? PSL_HENDERSON_INSPECTIONS
+    : projectId === "18" ? PSL_KNIGHT_INSPECTIONS
+    : POOL_INSPECTIONS;
+
   const seed = useMemo(() => buildInspections(allPassedSeed, template), [allPassedSeed, template]);
   const [items, setItems] = useState<Inspection[]>(seed);
 
@@ -116,7 +122,8 @@ export function InspectionsSection({
               <li key={ins.code} className="px-5 py-4">
                 <div className="flex flex-wrap items-center gap-3">
                   <span className="inline-flex h-8 min-w-[3rem] items-center justify-center bg-[#153157] px-2 font-mono text-[11px] font-semibold tracking-[0.08em] text-white rounded-[3px]">
-                    {ins.code}
+                    {ins.code.replace(/-.*$/, "")}
+
                   </span>
                   {ins.phase !== undefined && (
                     <span
