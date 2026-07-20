@@ -1,7 +1,9 @@
 // Standard pool inspection sequence (Palm Beach / Treasure Coast convention).
 // Code 605 is skipped intentionally (fiberglass-only).
 
-export type InspectionStatus = "pending" | "passed" | "corrections";
+export type InspectionStatus = "pending" | "scheduled" | "passed" | "corrections";
+
+export type InspectionWindow = "morning" | "afternoon";
 
 export type Inspection = {
   code: string;
@@ -9,7 +11,11 @@ export type Inspection = {
   description: string;
   status: InspectionStatus;
   notes?: string;
+  scheduledDate?: string; // yyyy-mm-dd
+  scheduledWindow?: InspectionWindow;
+  scheduledNotes?: string;
 };
+
 
 export const POOL_INSPECTIONS: Omit<Inspection, "status">[] = [
   {
@@ -82,11 +88,21 @@ export function loadInspections(projectId: string, seed: Inspection[]): Inspecti
     const raw = window.localStorage.getItem(STORAGE_PREFIX + projectId);
     if (!raw) return seed;
     const parsed = JSON.parse(raw) as Inspection[];
-    // Merge: seed order + persisted status/notes by code
+    // Merge: seed order + persisted mutable fields by code
     return seed.map((s) => {
       const p = parsed.find((x) => x.code === s.code);
-      return p ? { ...s, status: p.status, notes: p.notes } : s;
+      return p
+        ? {
+            ...s,
+            status: p.status,
+            notes: p.notes,
+            scheduledDate: p.scheduledDate,
+            scheduledWindow: p.scheduledWindow,
+            scheduledNotes: p.scheduledNotes,
+          }
+        : s;
     });
+
   } catch {
     return seed;
   }

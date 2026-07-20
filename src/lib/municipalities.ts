@@ -1,14 +1,16 @@
-export type Municipality = { name: string; url?: string; note?: string };
+export type Municipality = { name: string; url?: string; note?: string; phone?: string };
+
+
 
 export const MUNICIPALITIES: Municipality[] = [
   { name: "Coral Springs", url: "https://etrakit.coralsprings.gov/etrakit/" },
   { name: "Greenacres", url: "https://portal.greenacresfl.gov/", note: "Need to register in their office" },
   { name: "Jupiter", url: "https://cds.jupiter.fl.us/EnerGov_Prod/selfservice/JupiterFLProd", note: "Log-in details not working" },
   { name: "Palm Beach", url: "https://eden.townofpalmbeach.com/Default.aspx?Build=PM.PermitsHome&ShowLogon=ShowLogon" },
-  { name: "Wellington", url: "https://wellingtonfl-energovweb.tylerhost.net/apps/SelfService" },
+  { name: "Wellington", url: "https://wellingtonfl-energovweb.tylerhost.net/apps/SelfService", phone: "(561) 791-4000" },
   { name: "Palm Beach Gardens", url: "https://palmbeachgardensfl-energovweb.tylerhost.net/apps/SelfService#/home" },
   { name: "Fort Lauderdale", url: "https://aca-prod.accela.com/FTL/Login.aspx" },
-  { name: "City of Port St. Lucie", url: "https://county-taxes.net/stlucie/stlucie/property-tax/", note: "Property search link" },
+  { name: "City of Port St. Lucie", url: "https://county-taxes.net/stlucie/stlucie/property-tax/", note: "Property search link", phone: "(772) 871-5132" },
   { name: "West Palm Beach", url: "https://permit-planner.wpb.org/" },
   { name: "Miramar", url: "https://mss.miramarfl.gov/css/default.aspx", note: "No login required" },
   { name: "Boca Raton", url: "https://www.bocaehub.com", note: "Uses EHub Boca system" },
@@ -18,19 +20,22 @@ export const MUNICIPALITIES: Municipality[] = [
   { name: "Weston", url: "https://aca-prod.accela.com/WESTON/Login.aspx" },
   { name: "Wilton Manors", url: "https://www.citizenserve.com/Portal/PortalController?Action=showHomePage&ctzPagePrefix=Portal_&installationID=125" },
   { name: "Davie", url: "https://esuite.davie-fl.gov/eSuite.Permits/AdvancedSearchPage/AdvancedSearch.aspx" },
-  { name: "Martin County / Stuart", url: "https://aca-prod.accela.com/MARTINCO/Default.aspx" },
+  { name: "Martin County / Stuart", url: "https://aca-prod.accela.com/MARTINCO/Default.aspx", phone: "(772) 288-5916" },
+  { name: "Palm Beach County", url: "https://discover.pbcgov.org/pzb/Pages/PermitTrackingSystem.aspx", phone: "(561) 233-5100" },
+  { name: "Indian River County", url: "https://ircgov.com/community-development/", phone: "(772) 226-1260" },
   { name: "Boynton Beach", url: "https://www.sagesgov.com/boyntonbeach-fl" },
   { name: "Royal Palm Beach", url: "https://click2gov.royalpalmbeach.com/Click2GovBP/index.html" },
   { name: "Fort Myers", url: "https://cdservices.cityftmyers.com/energovprod/selfservice" },
-  { name: "Westlake", url: "https://cityviewportal.westlakegov.com/Permit/Locator" },
+  { name: "Westlake", url: "https://cityviewportal.westlakegov.com/Permit/Locator", phone: "(561) 472-5100" },
   { name: "Doral", url: "https://doralfl-energovweb.tylerhost.net/apps/SelfService" },
   { name: "Parkland", url: "https://www.mgoconnect.org/cp/portal" },
-  { name: "North Palm Beach", url: "https://www.mgoconnect.org/cp/portal", note: "Select North Palm Beach on login" },
-  { name: "Plantation", url: "https://aca.plantation.org/CitizenAccess/Default.aspx" },
+  { name: "North Palm Beach", url: "https://www.mgoconnect.org/cp/portal", note: "Select North Palm Beach on login", phone: "(561) 841-3380" },
+  { name: "Plantation", url: "https://aca.plantation.org/CitizenAccess/Default.aspx", phone: "(954) 797-2200" },
   { name: "Tequesta", url: "https://bsaonline.com/Account/LogOn?uid=2607" },
   { name: "Miami Beach", url: "https://energovcss.miamibeachfl.gov/energovprod/selfservice#/home" },
   { name: "Lighthouse Point", url: "https://ci-lighthousepoint-fl.smartgovcommunity.com/" },
-  { name: "County of PSL", url: "https://www.stlucieco.gov/departments-and-services/planning-and-development-services/energov-online-platform" },
+  { name: "County of PSL", url: "https://www.stlucieco.gov/departments-and-services/planning-and-development-services/energov-online-platform", phone: "(772) 871-5132" },
+
 ];
 
 /** Find the best matching municipality portal URL for a given address string. */
