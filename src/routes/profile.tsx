@@ -69,12 +69,12 @@ function ProfilePage() {
       setUserId(uid);
       if (!uid) return;
       const { data, error } = await supabase
-        .from("profiles")
+        .from("profiles" as any)
         .select("display_name, full_name, avatar_url, company_name, website, phone, address, language, notification_emails")
         .eq("id", uid)
         .maybeSingle();
       if (cancelled || error || !data) return;
-      const d = data as Record<string, unknown>;
+      const d = data as unknown as Record<string, unknown>;
       if (d.display_name || d.full_name) setDisplayName(String(d.display_name ?? d.full_name));
       if (d.avatar_url) setAvatar(String(d.avatar_url));
       setCompany((c) => ({
@@ -117,7 +117,7 @@ function ProfilePage() {
 
   async function saveProfile() {
     if (!userId) { toast.success("Profile saved (sign in to persist)"); return; }
-    const { error } = await supabase.from("profiles").update({
+    const { error } = await (supabase.from("profiles" as any) as any).update({
       display_name: displayName,
       avatar_url: avatar,
       company_name: company.name,

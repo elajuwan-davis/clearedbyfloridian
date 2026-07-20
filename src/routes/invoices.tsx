@@ -46,12 +46,12 @@ function InvoicesPage() {
     let cancelled = false;
     (async () => {
       const { data, error } = await supabase
-        .from("fees")
+        .from("fees" as any)
         .select("id, invoice_number, status, description, amount_cents, address, created_at")
         .order("created_at", { ascending: false });
       if (cancelled || error || !data || data.length === 0) return;
       setInvoices(
-        data.map((r: Record<string, unknown>) => ({
+        (data as any[]).map((r: Record<string, unknown>) => ({
           number: String(r.invoice_number ?? r.id),
           status: String(r.status ?? "pending") as InvStatus,
           address: String(r.address ?? ""),
