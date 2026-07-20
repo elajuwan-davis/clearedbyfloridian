@@ -4,6 +4,7 @@ import { Upload, Eye, Download, Trash2, Loader2, Check, AlertTriangle, X, FileTe
 import { uploadPermitFile, getPermitFileUrl, deletePermitFile } from "@/lib/permit-storage";
 import type { PermitDoc, PermitRow } from "@/lib/permits-api";
 import { updatePermit, getEffectiveDocs } from "@/lib/permits-api";
+import { GoogleDrivePickerDialog } from "@/components/google-drive-picker-dialog";
 
 type Props = {
   permit: PermitRow;
