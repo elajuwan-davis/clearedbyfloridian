@@ -67,9 +67,9 @@ function NewPermitPage() {
     contractorCompany: "",
     contractorQualifier: "",
     companyAddress: "",
-    poc: "",
-    pocPhone: "",
-    pocEmail: "",
+    poc: "José Maceda Gutiérrez",
+    pocPhone: "55-1830-6606",
+    pocEmail: "team@floridianinc.com",
     licenseNumber: "",
     ownerName: "",
     ownerEntity: "",
@@ -280,7 +280,7 @@ function NewPermitPage() {
             <div className="grid gap-5 sm:grid-cols-2">
               <div><label className={labelCls}>Contractor Company Name *</label><input required className={inputCls} value={form.contractorCompany} onChange={(e) => update("contractorCompany", e.target.value)} /></div>
               <div><label className={labelCls}>Contractor Qualifier Name *</label><input required className={inputCls} value={form.contractorQualifier} onChange={(e) => update("contractorQualifier", e.target.value)} /></div>
-              <div className="sm:col-span-2"><label className={labelCls}>Company Address *</label><input required className={inputCls} value={form.companyAddress} onChange={(e) => update("companyAddress", e.target.value)} /></div>
+              <div className="sm:col-span-2"><label className={labelCls}>Company Address</label><input className={inputCls} value={form.companyAddress} onChange={(e) => update("companyAddress", e.target.value)} /></div>
               <div><label className={labelCls}>Point of Contact *</label><input required className={inputCls} value={form.poc} onChange={(e) => update("poc", e.target.value)} /></div>
               <div><label className={labelCls}>POC Phone *</label><input required className={inputCls} value={form.pocPhone} onChange={(e) => update("pocPhone", e.target.value)} /></div>
               <div><label className={labelCls}>POC Email *</label><input type="email" required className={inputCls} value={form.pocEmail} onChange={(e) => update("pocEmail", e.target.value)} /></div>

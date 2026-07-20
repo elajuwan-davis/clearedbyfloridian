@@ -138,7 +138,6 @@ export const REQUIRED_FIELDS: Array<{ key: keyof PermitRow; label: string }> = [
   { key: "description", label: "Scope Description" },
   { key: "contractor_company", label: "Contractor Company" },
   { key: "contractor_qualifier", label: "Contractor Qualifier" },
-  { key: "company_address", label: "Company Address" },
   { key: "poc", label: "Point of Contact" },
   { key: "poc_phone", label: "POC Phone" },
   { key: "poc_email", label: "POC Email" },
