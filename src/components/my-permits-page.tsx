@@ -48,7 +48,12 @@ const COUNTIES = ["Palm Beach", "Martin", "St. Lucie", "Indian River", "Broward"
 type CountyFilter = "All" | (typeof COUNTIES)[number];
 
 export function MyPermitsPage() {
-  const [projects] = useState<Project[]>(SEED);
+  const [statusVersion, setStatusVersion] = useState(0);
+  const projects = useMemo<Project[]>(
+    () => SEED.map((p) => ({ ...p, status: getEffectiveStatus(p.id, p.status as any) })),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [statusVersion],
+  );
   const [query, setQuery] = useState("");
   const [countyFilter, setCountyFilter] = useState<CountyFilter>("All");
   const [hideCounts, setHideCounts] = useState(false);
@@ -57,6 +62,20 @@ export function MyPermitsPage() {
   });
   const [inspectionCounts, setInspectionCounts] = useState<Record<string, number>>({});
   const [feeTotals, setFeeTotals] = useState<Record<string, number>>({});
+  const [syncing, setSyncing] = useState(false);
+  const [lastRun, setLastRun] = useState<string | null>(null);
+  const [lastResult, setLastResult] = useState<SyncResult | null>(null);
+  const [showResult, setShowResult] = useState(false);
+
+  useEffect(() => {
+    setLastRun(getLastRun());
+    const onSync = () => {
+      setLastRun(getLastRun());
+      setStatusVersion((v) => v + 1);
+    };
+    window.addEventListener("permit-sync:changed", onSync);
+    return () => window.removeEventListener("permit-sync:changed", onSync);
+  }, []);
 
   useEffect(() => {
     const counts: Record<string, number> = {};
@@ -75,6 +94,19 @@ export function MyPermitsPage() {
     window.addEventListener("manual-fees:changed", refreshTotals);
     return () => window.removeEventListener("manual-fees:changed", refreshTotals);
   }, [projects]);
+
+  async function handleSync() {
+    if (syncing) return;
+    setSyncing(true);
+    setShowResult(false);
+    try {
+      const result = await syncAllPermits();
+      setLastResult(result);
+      setShowResult(true);
+    } finally {
+      setSyncing(false);
+    }
+  }
 
   const filtered = useMemo(() => {
     const q = query.toLowerCase().trim();
