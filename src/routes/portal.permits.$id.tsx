@@ -247,7 +247,7 @@ function PermitDetailPage() {
         <div>
           {docs.map((d) => (
             <div key={d.key} id={`doc-${d.key}`}>
-              <PermitDocUploader permit={row} doc={d} onChange={(u) => { setRow(u); setEdit(u); }} />
+              <PermitDocUploader permit={row} doc={d} readOnly={!editing} onChange={(u) => { setRow(u); setEdit(u); }} />
             </div>
           ))}
         </div>
