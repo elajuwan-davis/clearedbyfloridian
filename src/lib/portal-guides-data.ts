@@ -790,6 +790,8 @@ export const PORTAL_GUIDES: PortalGuide[] = [
   ...SINGLE_FAMILY_GUIDES_3,
   ...GUIDES_BATCH_4,
   ...GUIDES_BATCH_5,
+  // Multi Family
+  ...GUIDES_BATCH_6,
 
 ];
 
@@ -803,6 +805,7 @@ export const PORTAL_GUIDE_CATEGORIES = [
   "Plumbing",
   "Commercial",
   "Single Family",
+  "Multi Family",
 ];
 
 export function getPortalGuide(slug: string): PortalGuide | undefined {
