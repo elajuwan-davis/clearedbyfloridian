@@ -29,7 +29,7 @@ import {
   type Contractor,
 } from "@/lib/contractors-store";
 
-export const Route = createFileRoute("/admin/contractors")({
+export const Route = createFileRoute("/admin_/contractors")({
   head: () => ({
     meta: [
       { title: "Admin · Contractors — Cleared by Flōridian" },
