@@ -98,7 +98,11 @@ function NotaryRow({ r }: { r: NotaryRequest }) {
                 <label className="font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/55">Notarized filename</label>
                 <Input value={notarizedFilename} onChange={(e) => setNotarizedFilename(e.target.value)} placeholder="notarized-owner-auth.pdf" className="mt-1.5 rounded-[3px]" />
               </div>
-              <Button variant="dark" className="rounded-[3px]" disabled={!notarizedFilename.trim()} onClick={() => completeNotary(r.id, notarizedFilename.trim())}>
+              <Button variant="dark" className="rounded-[3px]" disabled={!notarizedFilename.trim()} onClick={() => {
+                const name = notarizedFilename.trim();
+                completeNotary(r.id, name);
+                addDoc({ projectId: r.projectId, type: "Civil / Other", filename: `[Notarized] ${name}`, uploadedBy: "Flōridian Notary" });
+              }}>
                 <CheckCircle2 className="h-4 w-4 mr-2" /> Mark Completed
               </Button>
             </>
