@@ -4,6 +4,7 @@ import { Upload, Eye, Download, Trash2, Loader2, Check, AlertTriangle, X, FileTe
 import { uploadPermitFile, getPermitFileUrl, deletePermitFile } from "@/lib/permit-storage";
 import type { PermitDoc, PermitRow } from "@/lib/permits-api";
 import { updatePermit, getEffectiveDocs } from "@/lib/permits-api";
+import { GoogleDrivePickerDialog } from "@/components/google-drive-picker-dialog";
 
 type Props = {
   permit: PermitRow;
@@ -18,6 +19,7 @@ export function PermitDocUploader({ permit, doc, onChange, readOnly = false }: P
   const [busy, setBusy] = useState(false);
   const [dragOver, setDragOver] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [drivePickerOpen, setDrivePickerOpen] = useState(false);
 
   const isUploaded = doc.status === "uploaded" && doc.path;
 
@@ -102,11 +104,24 @@ export function PermitDocUploader({ permit, doc, onChange, readOnly = false }: P
     toast.success("Marked as pending");
   }
 
-  function handleCloudSoon(name: "Google Drive" | "OneDrive") {
-    toast.message(`${name} import`, {
-      description: `Per-user ${name} OAuth is not connected yet. Ask an admin to enable the ${name} App User Connector in workspace settings, then reload this page.`,
+  function handleOneDriveSoon() {
+    toast.message("OneDrive import", {
+      description: "Per-user OneDrive OAuth is not connected yet. Ask an admin to enable the Microsoft OneDrive App User Connector, then reload this page.",
     });
   }
+
+  async function handleDriveImported(result: { path: string; filename: string; mime: string; size: number }) {
+    await persistDocs({
+      ...doc,
+      status: "uploaded",
+      filename: result.filename,
+      path: result.path,
+      size: result.size,
+      mime: result.mime,
+      uploaded_at: new Date().toISOString(),
+    });
+  }
+
 
   const statusBadge = () => {
     const map: Record<PermitDoc["status"], string> = {
@@ -201,10 +216,10 @@ export function PermitDocUploader({ permit, doc, onChange, readOnly = false }: P
                 >
                   {busy ? <Loader2 className="h-3 w-3 animate-spin" /> : <Upload className="h-3 w-3" />} Browse
                 </button>
-                <button type="button" onClick={() => handleCloudSoon("Google Drive")} className="inline-flex items-center gap-1.5 border border-obsidian/20 bg-white px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian rounded-[3px] hover:bg-obsidian/5">
+                <button type="button" onClick={() => setDrivePickerOpen(true)} className="inline-flex items-center gap-1.5 border border-obsidian/20 bg-white px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian rounded-[3px] hover:bg-obsidian/5">
                   <Cloud className="h-3 w-3" /> Google Drive
                 </button>
-                <button type="button" onClick={() => handleCloudSoon("OneDrive")} className="inline-flex items-center gap-1.5 border border-obsidian/20 bg-white px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian rounded-[3px] hover:bg-obsidian/5">
+                <button type="button" onClick={handleOneDriveSoon} className="inline-flex items-center gap-1.5 border border-obsidian/20 bg-white px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian rounded-[3px] hover:bg-obsidian/5">
                   <Cloud className="h-3 w-3" /> OneDrive
                 </button>
                 {doc.status !== "pending" && (
@@ -222,6 +237,13 @@ export function PermitDocUploader({ permit, doc, onChange, readOnly = false }: P
           </div>
         </div>
       )}
+      <GoogleDrivePickerDialog
+        open={drivePickerOpen}
+        onOpenChange={setDrivePickerOpen}
+        permitId={permit.id}
+        docKey={doc.key}
+        onImported={handleDriveImported}
+      />
     </div>
   );
 }
