@@ -47,23 +47,6 @@ function LoginPage() {
         navigate({ to: "/dashboard", replace: true });
         return;
       }
-      // Fall through to legacy demo bypass for backward-compat with @floridianinc.com "Cleared" password
-      const LEGACY: Record<string, string> = {
-        "user@cleared.com": "Cleared",
-        "elajuwan@floridianinc.com": "Cleared",
-        "eman@floridianinc.com": "Cleared",
-        "jose@floridianinc.com": "Cleared",
-        "paul@floridianinc.com": "Cleared",
-      };
-      if (LEGACY[emailKey] && password === LEGACY[emailKey]) {
-        try {
-          localStorage.setItem("cleared_demo_session", "1");
-          localStorage.setItem("cleared_demo_user", emailKey);
-        } catch { /* ignore */ }
-        setLoading(false);
-        navigate({ to: "/dashboard", replace: true });
-        return;
-      }
       setLoading(false);
       setError(authErr.message);
       return;
