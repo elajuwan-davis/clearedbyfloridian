@@ -117,7 +117,7 @@ const SOFFIT: InspectionPhase = {
 };
 
 // Extended framing block with party-wall/duplex additions
-const ROUGH_FRAMING_PARTY: InspectionPhase = {
+export const ROUGH_FRAMING_PARTY: InspectionPhase = {
   ...ROUGH_FRAMING,
   title: "Rough Framing (with Party Wall)",
   checks: [
@@ -128,7 +128,7 @@ const ROUGH_FRAMING_PARTY: InspectionPhase = {
   refs: ROUGH_FRAMING.refs + " · R302.1 · R302.2 · R302.4",
 };
 
-const DRYWALL_PARTY: InspectionPhase = {
+export const DRYWALL_PARTY: InspectionPhase = {
   ...DRYWALL,
   title: "Drywall (with Party Wall)",
   checks: [
@@ -139,7 +139,7 @@ const DRYWALL_PARTY: InspectionPhase = {
   refs: DRYWALL.refs + " · R302.1 · R302.2 · R302.4",
 };
 
-const FINAL_BUILDING_PARTY: InspectionPhase = {
+export const FINAL_BUILDING_PARTY: InspectionPhase = {
   ...FINAL_BUILDING,
   title: "Final Building (with Party Wall)",
   checks: [
@@ -150,7 +150,7 @@ const FINAL_BUILDING_PARTY: InspectionPhase = {
 };
 
 // Full new-construction dwelling sequence (19-phase)
-const NEW_DWELLING_SEQ = [
+export const NEW_DWELLING_SEQ = [
   UNDERGROUND_PLUMBING,
   UNDERGROUND_ELECTRICAL,
   FOOTING_SLAB_UFER,
