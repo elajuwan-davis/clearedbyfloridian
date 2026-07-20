@@ -23,8 +23,13 @@ import { isInternalUser } from "@/lib/is-internal-user";
 import { isPermitTypeComplete } from "@/lib/permit-type-status";
 import { PCNLookupDialog } from "@/components/pcn-lookup-dialog";
 import { GenerateNTBODialog, GenerateOwnerAuthDialog } from "@/components/generate-form-dialogs";
+import { SendForSignatureDialog } from "@/components/send-for-signature-dialog";
+import { RequestNotaryDialog } from "@/components/request-notary-dialog";
 import { getPCN } from "@/lib/project-pcn";
-import { FileSignature, FileCheck2, MapPinned } from "lucide-react";
+import { FileSignature, FileCheck2, MapPinned, Send, Stamp } from "lucide-react";
+import { getSignatureForDoc, sigBadge, sigStatusForDocument, SIG_EVT } from "@/lib/signature-requests";
+import { notaryForDoc, notaryBadge, NOTARY_EVT } from "@/lib/notary-requests";
+import { getPortalRole, canRequestNotary } from "@/lib/portal-role";
 
 const fmtMoneyWhole = (cents: number) =>
   `$${(cents / 100).toLocaleString("en-US", { maximumFractionDigits: 0 })}`;
