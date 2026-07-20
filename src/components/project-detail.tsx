@@ -443,13 +443,51 @@ function DocumentsTab({ project }: { project: Project }) {
                               <Stamp className="h-3 w-3 mr-1" /> Request Notary
                             </Button>
                           )}
-                          <button className="p-1 text-obsidian/45 hover:text-obsidian" aria-label="Download">
-                            <Download className="h-3.5 w-3.5" />
-                          </button>
+                          {d.status === "uploaded" && (d.size ?? 0) > 0 && (
+                            <button
+                              className="p-1 text-obsidian/60 hover:text-obsidian"
+                              aria-label="View"
+                              title="View"
+                              onClick={async () => {
+                                try {
+                                  const url = await getDocViewUrl(d.path);
+                                  window.open(url, "_blank", "noopener,noreferrer");
+                                } catch (e) {
+                                  toast.error("Could not open: " + (e instanceof Error ? e.message : String(e)));
+                                }
+                              }}
+                            >
+                              <Eye className="h-3.5 w-3.5" />
+                            </button>
+                          )}
+                          {d.status === "uploaded" && (d.size ?? 0) > 0 && (
+                            <button
+                              className="p-1 text-obsidian/45 hover:text-obsidian"
+                              aria-label="Download"
+                              title="Download"
+                              onClick={async () => {
+                                try {
+                                  const url = await getDocDownloadUrl(d.path, d.filename);
+                                  const a = document.createElement("a");
+                                  a.href = url; a.download = d.filename;
+                                  document.body.appendChild(a); a.click(); a.remove();
+                                } catch (e) {
+                                  toast.error("Download failed: " + (e instanceof Error ? e.message : String(e)));
+                                }
+                              }}
+                            >
+                              <Download className="h-3.5 w-3.5" />
+                            </button>
+                          )}
                           <button
                             className="p-1 text-obsidian/45 hover:text-oxblood"
                             aria-label="Delete"
-                            onClick={() => { if (confirm("Remove this document?")) deleteDoc(d.id); }}
+                            onClick={async () => {
+                              if (!confirm("Remove this document?")) return;
+                              try { await deleteDoc(d.id); } catch (e) {
+                                toast.error("Delete failed: " + (e instanceof Error ? e.message : String(e)));
+                              }
+                            }}
                           >
                             <Trash2 className="h-3.5 w-3.5" />
                           </button>
