@@ -88,6 +88,14 @@ export function ProjectDetail({ project }: { project: Project }) {
                 <Hash className="h-2.5 w-2.5" /> {project.permit_no}
               </span>
             )}
+            {project.id.startsWith("hs-") && (
+              <span
+                className="inline-flex items-center gap-1 border border-[#ff7a59]/40 bg-[#ff7a59]/10 px-2 py-1 font-mono text-[10px] uppercase tracking-[0.12em] text-[#c34a2f] rounded-[3px]"
+                title="Auto-created from a HubSpot Closed Won deal"
+              >
+                Created from HubSpot deal
+              </span>
+            )}
           </div>
           <h1 className="display-serif mt-4 text-4xl lg:text-5xl text-obsidian">{project.name}</h1>
           <div className="mt-3 flex flex-wrap items-center gap-x-6 gap-y-1.5 text-sm text-obsidian/70">
