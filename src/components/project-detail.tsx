@@ -20,6 +20,9 @@ import { loadSubLibrary, coiStatus, coiLifecycleStatus, type SubRecord } from "@
 import { addNote, deleteNote, listNotes, type ProjectNote } from "@/lib/project-notes";
 import { DOC_TYPES, addDoc, deleteDoc, listDocs, type DocType, type ProjectDoc } from "@/lib/project-documents";
 import { isInternalUser } from "@/lib/is-internal-user";
+import { notificationsEnabled, setNotificationsEnabled } from "@/lib/client-notifications";
+import { Bell, BellOff } from "lucide-react";
+
 import { isPermitTypeComplete } from "@/lib/permit-type-status";
 import { PCNLookupDialog } from "@/components/pcn-lookup-dialog";
 import { GenerateNTBODialog, GenerateOwnerAuthDialog } from "@/components/generate-form-dialogs";
@@ -735,5 +738,30 @@ function InfoRow({ label, value, mono }: { label: string; value: React.ReactNode
   );
 }
 
+function ClientNotificationsToggle({ projectId }: { projectId: string }) {
+  const [on, setOn] = useState(() => notificationsEnabled(projectId));
+  function toggle() {
+    const next = !on;
+    setNotificationsEnabled(projectId, next);
+    setOn(next);
+  }
+  return (
+    <button
+      type="button"
+      onClick={toggle}
+      title="Internal only — auto-emails to client on key milestones"
+      className={`inline-flex items-center gap-1.5 border px-3 py-1.5 text-xs rounded-[3px] font-mono uppercase tracking-[0.12em] ${
+        on
+          ? "border-emerald-600/40 bg-emerald-50 text-emerald-800"
+          : "border-obsidian/15 bg-paper-warm text-obsidian/60"
+      }`}
+    >
+      {on ? <Bell className="h-3.5 w-3.5" /> : <BellOff className="h-3.5 w-3.5" />}
+      Client notifications: {on ? "ON" : "OFF"}
+    </button>
+  );
+}
+
 // Keeps a stable import so tree-shakers don't drop PROJECTS re-export uses.
+
 export const _ALL_PROJECTS = PROJECTS;
