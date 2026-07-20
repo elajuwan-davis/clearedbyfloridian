@@ -378,6 +378,9 @@ function DocumentsTab({ project }: { project: Project }) {
       </div>
 
       <UploadDocDialog open={open} onOpenChange={setOpen} projectId={project.id} />
+      <PCNLookupDialog open={pcnOpen} onOpenChange={setPcnOpen} project={project} />
+      <GenerateNTBODialog open={ntboOpen} onOpenChange={setNtboOpen} project={project} />
+      <GenerateOwnerAuthDialog open={ownerOpen} onOpenChange={setOwnerOpen} project={project} />
     </div>
   );
 }
