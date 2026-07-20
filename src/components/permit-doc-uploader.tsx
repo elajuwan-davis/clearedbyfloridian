@@ -152,11 +152,14 @@ export function PermitDocUploader({ permit, doc, onChange, readOnly = false }: P
             <button type="button" onClick={handleDownload} className="inline-flex items-center gap-1 border border-obsidian/20 bg-white px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian rounded-[3px] hover:bg-obsidian/5">
               <Download className="h-3 w-3" />
             </button>
-            <button type="button" onClick={handleRemove} disabled={busy} className="inline-flex items-center gap-1 border border-red-600/30 text-red-700 px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] rounded-[3px] hover:bg-red-50 disabled:opacity-60">
-              <Trash2 className="h-3 w-3" />
-            </button>
+            {!readOnly && (
+              <button type="button" onClick={handleRemove} disabled={busy} className="inline-flex items-center gap-1 border border-red-600/30 text-red-700 px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] rounded-[3px] hover:bg-red-50 disabled:opacity-60">
+                <Trash2 className="h-3 w-3" />
+              </button>
+            )}
           </div>
         )}
+
       </div>
 
       {!isUploaded && (
