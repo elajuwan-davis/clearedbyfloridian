@@ -12,6 +12,8 @@ import {
   ArrowLeft,
 } from "lucide-react";
 import { getPortalGuide, type PortalGuide } from "@/lib/portal-guides-data";
+import { generateNTBO, generateOwnerAuth, downloadPdf } from "@/lib/private-provider-forms";
+import { FLORIDIAN_FIRM } from "@/lib/floridian-firm";
 
 export const Route = createFileRoute("/portal/guides/$slug")({
   head: () => ({
