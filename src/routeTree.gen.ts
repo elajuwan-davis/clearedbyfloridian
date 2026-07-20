@@ -56,6 +56,7 @@ import { Route as PortalSubcontractorsNewRouteImport } from './routes/portal.sub
 import { Route as PortalProjectsIdRouteImport } from './routes/portal.projects.$id'
 import { Route as PortalPermitsNewRouteImport } from './routes/portal.permits.new'
 import { Route as PortalGuidesSlugRouteImport } from './routes/portal.guides.$slug'
+import { Route as ApiPublicHubspotDealWebhookRouteImport } from './routes/api/public/hubspot.deal-webhook'
 
 const ServicesRoute = ServicesRouteImport.update({
   id: '/services',
@@ -297,6 +298,12 @@ const PortalGuidesSlugRoute = PortalGuidesSlugRouteImport.update({
   path: '/guides/$slug',
   getParentRoute: () => PortalRoute,
 } as any)
+const ApiPublicHubspotDealWebhookRoute =
+  ApiPublicHubspotDealWebhookRouteImport.update({
+    id: '/api/public/hubspot/deal-webhook',
+    path: '/api/public/hubspot/deal-webhook',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -346,6 +353,7 @@ export interface FileRoutesByFullPath {
   '/portal/subcontractors/new': typeof PortalSubcontractorsNewRoute
   '/portal/guides/': typeof PortalGuidesIndexRoute
   '/portal/subcontractors/': typeof PortalSubcontractorsIndexRoute
+  '/api/public/hubspot/deal-webhook': typeof ApiPublicHubspotDealWebhookRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -394,6 +402,7 @@ export interface FileRoutesByTo {
   '/portal/subcontractors/new': typeof PortalSubcontractorsNewRoute
   '/portal/guides': typeof PortalGuidesIndexRoute
   '/portal/subcontractors': typeof PortalSubcontractorsIndexRoute
+  '/api/public/hubspot/deal-webhook': typeof ApiPublicHubspotDealWebhookRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -444,6 +453,7 @@ export interface FileRoutesById {
   '/portal/subcontractors/new': typeof PortalSubcontractorsNewRoute
   '/portal/guides/': typeof PortalGuidesIndexRoute
   '/portal/subcontractors/': typeof PortalSubcontractorsIndexRoute
+  '/api/public/hubspot/deal-webhook': typeof ApiPublicHubspotDealWebhookRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -495,6 +505,7 @@ export interface FileRouteTypes {
     | '/portal/subcontractors/new'
     | '/portal/guides/'
     | '/portal/subcontractors/'
+    | '/api/public/hubspot/deal-webhook'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -543,6 +554,7 @@ export interface FileRouteTypes {
     | '/portal/subcontractors/new'
     | '/portal/guides'
     | '/portal/subcontractors'
+    | '/api/public/hubspot/deal-webhook'
   id:
     | '__root__'
     | '/'
@@ -592,6 +604,7 @@ export interface FileRouteTypes {
     | '/portal/subcontractors/new'
     | '/portal/guides/'
     | '/portal/subcontractors/'
+    | '/api/public/hubspot/deal-webhook'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -618,6 +631,7 @@ export interface RootRouteChildren {
   ServicesRoute: typeof ServicesRoute
   AdminContractorsRoute: typeof AdminContractorsRoute
   SubIntakeTokenRoute: typeof SubIntakeTokenRoute
+  ApiPublicHubspotDealWebhookRoute: typeof ApiPublicHubspotDealWebhookRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -951,6 +965,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PortalGuidesSlugRouteImport
       parentRoute: typeof PortalRoute
     }
+    '/api/public/hubspot/deal-webhook': {
+      id: '/api/public/hubspot/deal-webhook'
+      path: '/api/public/hubspot/deal-webhook'
+      fullPath: '/api/public/hubspot/deal-webhook'
+      preLoaderRoute: typeof ApiPublicHubspotDealWebhookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -1090,6 +1111,7 @@ const rootRouteChildren: RootRouteChildren = {
   ServicesRoute: ServicesRoute,
   AdminContractorsRoute: AdminContractorsRoute,
   SubIntakeTokenRoute: SubIntakeTokenRoute,
+  ApiPublicHubspotDealWebhookRoute: ApiPublicHubspotDealWebhookRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

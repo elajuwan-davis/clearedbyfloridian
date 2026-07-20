@@ -136,7 +136,19 @@ export const PROJECTS: Project[] = SEED.map((s) => {
 });
 
 export function getProjectById(id: string): Project | null {
-  return PROJECTS.find((p) => p.id === id) ?? null;
+  const seeded = PROJECTS.find((p) => p.id === id);
+  if (seeded) return seeded;
+  if (typeof window !== "undefined" && id.startsWith("hs-")) {
+    // Client-only lookup for HubSpot-sourced projects (localStorage-backed).
+    try {
+      // Lazy import to avoid SSR reference and circular deps.
+      const { getHubspotProject } = require("./hubspot-projects") as typeof import("./hubspot-projects");
+      return getHubspotProject(id);
+    } catch {
+      return null;
+    }
+  }
+  return null;
 }
 
 export function fullAddress(p: Project): string {
