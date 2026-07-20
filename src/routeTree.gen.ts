@@ -45,6 +45,7 @@ import { Route as PortalNotaryQueueRouteImport } from './routes/portal.notary-qu
 import { Route as PortalNewPermitRouteImport } from './routes/portal.new-permit'
 import { Route as PortalInspectionsRouteImport } from './routes/portal.inspections'
 import { Route as PortalBuildingDeptRouteImport } from './routes/portal.building-dept'
+import { Route as PermitCardIdRouteImport } from './routes/permit-card.$id'
 import { Route as FormsSubcontractorIntakeRouteImport } from './routes/forms.subcontractor-intake'
 import { Route as FormsPermitIntakeRouteImport } from './routes/forms.permit-intake'
 import { Route as FormsPaymentAuthorizationRouteImport } from './routes/forms.payment-authorization'
@@ -242,6 +243,11 @@ const PortalBuildingDeptRoute = PortalBuildingDeptRouteImport.update({
   path: '/building-dept',
   getParentRoute: () => PortalRoute,
 } as any)
+const PermitCardIdRoute = PermitCardIdRouteImport.update({
+  id: '/permit-card/$id',
+  path: '/permit-card/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const FormsSubcontractorIntakeRoute =
   FormsSubcontractorIntakeRouteImport.update({
     id: '/subcontractor-intake',
@@ -354,6 +360,7 @@ export interface FileRoutesByFullPath {
   '/forms/payment-authorization': typeof FormsPaymentAuthorizationRoute
   '/forms/permit-intake': typeof FormsPermitIntakeRoute
   '/forms/subcontractor-intake': typeof FormsSubcontractorIntakeRoute
+  '/permit-card/$id': typeof PermitCardIdRoute
   '/portal/building-dept': typeof PortalBuildingDeptRoute
   '/portal/inspections': typeof PortalInspectionsRoute
   '/portal/new-permit': typeof PortalNewPermitRoute
@@ -406,6 +413,7 @@ export interface FileRoutesByTo {
   '/forms/payment-authorization': typeof FormsPaymentAuthorizationRoute
   '/forms/permit-intake': typeof FormsPermitIntakeRoute
   '/forms/subcontractor-intake': typeof FormsSubcontractorIntakeRoute
+  '/permit-card/$id': typeof PermitCardIdRoute
   '/portal/building-dept': typeof PortalBuildingDeptRoute
   '/portal/inspections': typeof PortalInspectionsRoute
   '/portal/new-permit': typeof PortalNewPermitRoute
@@ -460,6 +468,7 @@ export interface FileRoutesById {
   '/forms/payment-authorization': typeof FormsPaymentAuthorizationRoute
   '/forms/permit-intake': typeof FormsPermitIntakeRoute
   '/forms/subcontractor-intake': typeof FormsSubcontractorIntakeRoute
+  '/permit-card/$id': typeof PermitCardIdRoute
   '/portal/building-dept': typeof PortalBuildingDeptRoute
   '/portal/inspections': typeof PortalInspectionsRoute
   '/portal/new-permit': typeof PortalNewPermitRoute
@@ -515,6 +524,7 @@ export interface FileRouteTypes {
     | '/forms/payment-authorization'
     | '/forms/permit-intake'
     | '/forms/subcontractor-intake'
+    | '/permit-card/$id'
     | '/portal/building-dept'
     | '/portal/inspections'
     | '/portal/new-permit'
@@ -567,6 +577,7 @@ export interface FileRouteTypes {
     | '/forms/payment-authorization'
     | '/forms/permit-intake'
     | '/forms/subcontractor-intake'
+    | '/permit-card/$id'
     | '/portal/building-dept'
     | '/portal/inspections'
     | '/portal/new-permit'
@@ -620,6 +631,7 @@ export interface FileRouteTypes {
     | '/forms/payment-authorization'
     | '/forms/permit-intake'
     | '/forms/subcontractor-intake'
+    | '/permit-card/$id'
     | '/portal/building-dept'
     | '/portal/inspections'
     | '/portal/new-permit'
@@ -667,6 +679,7 @@ export interface RootRouteChildren {
   ProjectsRoute: typeof ProjectsRouteWithChildren
   ServicesRoute: typeof ServicesRoute
   AdminContractorsRoute: typeof AdminContractorsRoute
+  PermitCardIdRoute: typeof PermitCardIdRoute
   SubIntakeTokenRoute: typeof SubIntakeTokenRoute
   ApiPublicHubspotDealWebhookRoute: typeof ApiPublicHubspotDealWebhookRoute
 }
@@ -925,6 +938,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PortalBuildingDeptRouteImport
       parentRoute: typeof PortalRoute
     }
+    '/permit-card/$id': {
+      id: '/permit-card/$id'
+      path: '/permit-card/$id'
+      fullPath: '/permit-card/$id'
+      preLoaderRoute: typeof PermitCardIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/forms/subcontractor-intake': {
       id: '/forms/subcontractor-intake'
       path: '/subcontractor-intake'
@@ -1173,6 +1193,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProjectsRoute: ProjectsRouteWithChildren,
   ServicesRoute: ServicesRoute,
   AdminContractorsRoute: AdminContractorsRoute,
+  PermitCardIdRoute: PermitCardIdRoute,
   SubIntakeTokenRoute: SubIntakeTokenRoute,
   ApiPublicHubspotDealWebhookRoute: ApiPublicHubspotDealWebhookRoute,
 }
