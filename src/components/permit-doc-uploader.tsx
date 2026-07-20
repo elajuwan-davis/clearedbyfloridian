@@ -9,9 +9,11 @@ type Props = {
   permit: PermitRow;
   doc: PermitDoc;
   onChange: (updated: PermitRow) => void;
+  readOnly?: boolean;
 };
 
-export function PermitDocUploader({ permit, doc, onChange }: Props) {
+export function PermitDocUploader({ permit, doc, onChange, readOnly = false }: Props) {
+
   const inputRef = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
   const [dragOver, setDragOver] = useState(false);
