@@ -315,7 +315,7 @@ function DocumentsTab({ project }: { project: Project }) {
 
   useEffect(() => {
     const refresh = () => {
-      setDocs(listDocs(project.id));
+      void listDocs(project.id).then((list) => setDocs(list));
       setPcnLocal(getPCN(project.id));
       setTick((t) => t + 1);
     };
