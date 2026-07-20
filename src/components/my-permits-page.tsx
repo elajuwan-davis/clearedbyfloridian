@@ -2,7 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { PortalShell } from "@/components/portal-shell";
 import { ChevronDown, Search, AlertTriangle, Plus, FileText, RefreshCw } from "lucide-react";
-import { listPermits, missingRequiredDocs, type PermitRow, type PermitStatus } from "@/lib/permits-api";
+import { listPermits, permitCompleteness, type PermitRow, type PermitStatus } from "@/lib/permits-api";
 
 type GroupKey = "intake" | "preparing" | "submitted" | "on_hold" | "outsourced" | "issued" | "cancelled";
 
@@ -104,36 +104,52 @@ export function MyPermitsPage() {
                     <li className="px-5 py-6 text-center text-sm text-obsidian/45">No permits in this stage.</li>
                   ) : (
                     g.items.map((p) => {
-                      const missing = missingRequiredDocs(p);
+                      const c = permitCompleteness(p);
                       const issued = p.status === "permit_issued";
+                      const barColor = c.percent === 100 ? "#16a34a" : c.percent >= 60 ? "#153157" : c.percent >= 30 ? "#d97706" : "#dc2626";
                       return (
                         <li key={p.id}>
-                          <Link to="/portal/permits/$id" params={{ id: p.id }} className="flex flex-wrap items-center gap-3 px-5 py-4 hover:bg-paper-warm/40">
-                            <div className="min-w-0 flex-1">
-                              <div className="flex items-center gap-2">
-                                <div className="text-sm font-medium text-obsidian truncate">{p.project_name}</div>
-                                {missing.length > 0 && (
-                                  <span className="inline-flex items-center gap-1 border border-amber-500/40 bg-amber-50 px-1.5 py-0.5 text-[9px] font-mono uppercase tracking-[0.1em] text-amber-700 rounded-[2px]">
-                                    <AlertTriangle className="h-2.5 w-2.5" /> {missing.length} missing
-                                  </span>
-                                )}
+                          <Link to="/portal/permits/$id" params={{ id: p.id }} className="block px-5 py-4 hover:bg-paper-warm/40">
+                            <div className="flex flex-wrap items-center gap-3">
+                              <div className="min-w-0 flex-1">
+                                <div className="flex items-center gap-2 flex-wrap">
+                                  <div className="text-sm font-medium text-obsidian truncate">{p.project_name}</div>
+                                  {c.missingFields.length > 0 && (
+                                    <span className="inline-flex items-center gap-1 border border-red-500/40 bg-red-50 px-1.5 py-0.5 text-[9px] font-mono uppercase tracking-[0.1em] text-red-700 rounded-[2px]">
+                                      <AlertTriangle className="h-2.5 w-2.5" /> {c.missingFields.length} field{c.missingFields.length === 1 ? "" : "s"}
+                                    </span>
+                                  )}
+                                  {c.missingDocs.length > 0 && (
+                                    <span className="inline-flex items-center gap-1 border border-amber-500/40 bg-amber-50 px-1.5 py-0.5 text-[9px] font-mono uppercase tracking-[0.1em] text-amber-700 rounded-[2px]">
+                                      <FileText className="h-2.5 w-2.5" /> {c.missingDocs.length} doc{c.missingDocs.length === 1 ? "" : "s"}
+                                    </span>
+                                  )}
+                                </div>
+                                <div className="mt-0.5 text-xs text-obsidian/55 truncate">{p.job_address}</div>
                               </div>
-                              <div className="mt-0.5 text-xs text-obsidian/55 truncate">{p.job_address}</div>
+                              {p.permit_type && (
+                                <span className={`inline-flex items-center px-2 py-0.5 text-[10px] font-mono uppercase tracking-[0.1em] rounded-[2px] text-white ${issued ? "bg-[#16a34a]" : "bg-[#dc2626]"}`}>
+                                  {p.permit_type}
+                                </span>
+                              )}
+                              {p.municipality && (
+                                <span className="inline-flex items-center border border-obsidian/15 bg-paper-warm px-2 py-0.5 text-[10px] font-mono uppercase tracking-[0.1em] text-obsidian/70 rounded-[2px]">
+                                  {p.municipality}
+                                </span>
+                              )}
+                              <span className="font-mono text-[10px] uppercase tracking-[0.1em] text-obsidian/70 border border-obsidian/15 px-2 py-0.5 rounded-[2px]">
+                                {STATUS_LABEL[p.status]}
+                              </span>
+                              <span className="font-mono text-[10px] tabular-nums text-obsidian/45 w-24 text-right shrink-0">{new Date(p.updated_at).toLocaleDateString()}</span>
                             </div>
-                            {p.permit_type && (
-                              <span className={`inline-flex items-center px-2 py-0.5 text-[10px] font-mono uppercase tracking-[0.1em] rounded-[2px] text-white ${issued ? "bg-[#16a34a]" : "bg-[#dc2626]"}`}>
-                                {p.permit_type}
+                            <div className="mt-2.5 flex items-center gap-3">
+                              <div className="flex-1 h-1.5 bg-obsidian/10 rounded-full overflow-hidden">
+                                <div className="h-full transition-all" style={{ width: `${c.percent}%`, background: barColor }} />
+                              </div>
+                              <span className="font-mono text-[10px] tabular-nums text-obsidian/60 shrink-0">
+                                {c.done}/{c.total} · {c.percent}%
                               </span>
-                            )}
-                            {p.municipality && (
-                              <span className="inline-flex items-center border border-obsidian/15 bg-paper-warm px-2 py-0.5 text-[10px] font-mono uppercase tracking-[0.1em] text-obsidian/70 rounded-[2px]">
-                                {p.municipality}
-                              </span>
-                            )}
-                            <span className="font-mono text-[10px] uppercase tracking-[0.1em] text-obsidian/70 border border-obsidian/15 px-2 py-0.5 rounded-[2px]">
-                              {STATUS_LABEL[p.status]}
-                            </span>
-                            <span className="font-mono text-[10px] tabular-nums text-obsidian/45 w-24 text-right shrink-0">{new Date(p.updated_at).toLocaleDateString()}</span>
+                            </div>
                           </Link>
                         </li>
                       );
