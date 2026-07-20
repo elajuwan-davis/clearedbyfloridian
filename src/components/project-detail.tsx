@@ -25,6 +25,8 @@ import { Bell, BellOff } from "lucide-react";
 
 import { isPermitTypeComplete } from "@/lib/permit-type-status";
 import { PCNLookupDialog } from "@/components/pcn-lookup-dialog";
+import { PropertyAppraiserDialog } from "@/components/property-appraiser-dialog";
+import { QrCode, Wand2 } from "lucide-react";
 import { GenerateNTBODialog, GenerateOwnerAuthDialog } from "@/components/generate-form-dialogs";
 import { SendForSignatureDialog } from "@/components/send-for-signature-dialog";
 import { RequestNotaryDialog } from "@/components/request-notary-dialog";
@@ -135,6 +137,7 @@ export function ProjectDetail({ project }: { project: Project }) {
               </span>
             )}
             {internal && <ClientNotificationsToggle projectId={project.id} />}
+            <HeaderExtras project={project} />
           </div>
 
         </header>
@@ -167,6 +170,28 @@ export function ProjectDetail({ project }: { project: Project }) {
         </Tabs>
       </div>
     </PortalShell>
+  );
+}
+
+function HeaderExtras({ project }: { project: Project }) {
+  const [apprOpen, setApprOpen] = useState(false);
+  return (
+    <>
+      <Button variant="outline" size="sm" className="rounded-[3px]" onClick={() => setApprOpen(true)}>
+        <Wand2 className="mr-1.5 h-3.5 w-3.5" /> Auto-Fill from Appraiser
+      </Button>
+      {project.permit_no && (
+        <Link
+          to="/permit-card/$id"
+          params={{ id: project.id }}
+          target="_blank"
+          className="inline-flex items-center gap-1.5 border border-obsidian/20 bg-white px-3 py-1.5 text-xs font-medium text-obsidian rounded-[3px] hover:bg-paper-warm"
+        >
+          <QrCode className="h-3.5 w-3.5" /> Generate Permit Card
+        </Link>
+      )}
+      <PropertyAppraiserDialog open={apprOpen} onOpenChange={setApprOpen} project={project} />
+    </>
   );
 }
 

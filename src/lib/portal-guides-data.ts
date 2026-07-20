@@ -741,6 +741,8 @@ const OUTDOOR_PLUMBING_ROUGH: PortalGuide = {
 
 // ---------- REGISTRY ----------
 
+import { COMMERCIAL_GUIDES } from "./portal-guides-commercial";
+
 export const PORTAL_GUIDES: PortalGuide[] = [
   // Pool & Spa
   POOL_CONSTRUCTION,
@@ -773,6 +775,8 @@ export const PORTAL_GUIDES: PortalGuide[] = [
   WATER_FEATURE,
   IRRIGATION,
   OUTDOOR_PLUMBING_ROUGH,
+  // Commercial
+  ...COMMERCIAL_GUIDES,
 ];
 
 export const PORTAL_GUIDE_CATEGORIES = [
@@ -782,8 +786,10 @@ export const PORTAL_GUIDE_CATEGORIES = [
   "Structural / Site Work",
   "Electrical",
   "Plumbing",
+  "Commercial",
 ];
 
 export function getPortalGuide(slug: string): PortalGuide | undefined {
   return PORTAL_GUIDES.find((g) => g.slug === slug);
 }
+
