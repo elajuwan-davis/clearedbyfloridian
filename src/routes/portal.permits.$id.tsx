@@ -125,19 +125,7 @@ function PermitDetailPage() {
                 </div>
                 <ul className="mt-2 text-[12px] text-red-900/80 space-y-1">
                   {c.missingFields.map((f) => (
-                    <li key={f.key} className="flex items-center justify-between gap-2">
-                      <span>• {f.label}</span>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          const el = document.getElementById(`field-${f.key}`) as HTMLElement | null;
-                          if (el) { el.scrollIntoView({ behavior: "smooth", block: "center" }); (el as HTMLInputElement).focus?.(); }
-                        }}
-                        className="font-mono text-[10px] uppercase tracking-[0.14em] text-red-700 hover:underline"
-                      >
-                        Fill →
-                      </button>
-                    </li>
+                    <li key={f.key}>• {f.label}</li>
                   ))}
                 </ul>
               </div>
