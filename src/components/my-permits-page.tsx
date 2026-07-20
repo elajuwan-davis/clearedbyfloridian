@@ -1,15 +1,14 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { PortalShell } from "@/components/portal-shell";
-import { ChevronDown, Search, Eye, EyeOff, ArrowUpRight, AlertTriangle } from "lucide-react";
+import { ChevronDown, Search, Eye, EyeOff, ArrowUpRight, AlertTriangle, RefreshCw, CheckCircle2 } from "lucide-react";
 import { projectStatusMeta, toneClass } from "@/lib/status-badges";
 import { PROJECTS, fullAddress, isAddressIncomplete } from "@/lib/projects-data";
 import { findPortalForAddress } from "@/lib/municipalities";
 import { ExternalLink } from "lucide-react";
 import { buildInspections, loadInspections, passedCount, POOL_INSPECTION_COUNT } from "@/lib/inspections";
 import { totalForProject, fmtUsd } from "@/lib/manual-fees";
-
-import { isPermitTypeComplete, permitTypeAnchor } from "@/lib/permit-type-status";
+import { syncAllPermits, getLastRun, getEffectiveStatus, formatRelative, type SyncResult } from "@/lib/permit-sync";
 
 type Project = {
   id: string;
@@ -49,7 +48,12 @@ const COUNTIES = ["Palm Beach", "Martin", "St. Lucie", "Indian River", "Broward"
 type CountyFilter = "All" | (typeof COUNTIES)[number];
 
 export function MyPermitsPage() {
-  const [projects] = useState<Project[]>(SEED);
+  const [statusVersion, setStatusVersion] = useState(0);
+  const projects = useMemo<Project[]>(
+    () => SEED.map((p) => ({ ...p, status: getEffectiveStatus(p.id, p.status as any) })),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [statusVersion],
+  );
   const [query, setQuery] = useState("");
   const [countyFilter, setCountyFilter] = useState<CountyFilter>("All");
   const [hideCounts, setHideCounts] = useState(false);
@@ -58,6 +62,20 @@ export function MyPermitsPage() {
   });
   const [inspectionCounts, setInspectionCounts] = useState<Record<string, number>>({});
   const [feeTotals, setFeeTotals] = useState<Record<string, number>>({});
+  const [syncing, setSyncing] = useState(false);
+  const [lastRun, setLastRun] = useState<string | null>(null);
+  const [lastResult, setLastResult] = useState<SyncResult | null>(null);
+  const [showResult, setShowResult] = useState(false);
+
+  useEffect(() => {
+    setLastRun(getLastRun());
+    const onSync = () => {
+      setLastRun(getLastRun());
+      setStatusVersion((v) => v + 1);
+    };
+    window.addEventListener("permit-sync:changed", onSync);
+    return () => window.removeEventListener("permit-sync:changed", onSync);
+  }, []);
 
   useEffect(() => {
     const counts: Record<string, number> = {};
@@ -76,6 +94,19 @@ export function MyPermitsPage() {
     window.addEventListener("manual-fees:changed", refreshTotals);
     return () => window.removeEventListener("manual-fees:changed", refreshTotals);
   }, [projects]);
+
+  async function handleSync() {
+    if (syncing) return;
+    setSyncing(true);
+    setShowResult(false);
+    try {
+      const result = await syncAllPermits();
+      setLastResult(result);
+      setShowResult(true);
+    } finally {
+      setSyncing(false);
+    }
+  }
 
   const filtered = useMemo(() => {
     const q = query.toLowerCase().trim();
@@ -104,8 +135,34 @@ export function MyPermitsPage() {
           <div>
             <div className="eyebrow text-obsidian/50">FL Statute 553.791 · Pipeline</div>
             <h1 className="display-serif mt-3 text-4xl sm:text-5xl text-obsidian">My Permits</h1>
+            <div className="mt-3 flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.12em] text-obsidian/50">
+              <span>Last synced: {formatRelative(lastRun)}</span>
+              {showResult && lastResult && lastResult.updated > 0 && (
+                <button
+                  type="button"
+                  onClick={() => setShowResult(false)}
+                  className="inline-flex items-center gap-1 border border-emerald-600/40 bg-emerald-50 px-2 py-0.5 text-emerald-800 rounded-[2px] hover:bg-emerald-100"
+                  title="Dismiss"
+                >
+                  <CheckCircle2 className="h-3 w-3" />
+                  {lastResult.updated} {lastResult.updated === 1 ? "permit" : "permits"} updated
+                </button>
+              )}
+              {showResult && lastResult && lastResult.updated === 0 && (
+                <span className="text-obsidian/45">· No changes ({lastResult.unchanged} unchanged)</span>
+              )}
+            </div>
           </div>
           <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={handleSync}
+              disabled={syncing}
+              className="inline-flex items-center gap-2 border border-obsidian/20 bg-white px-3 py-2 font-mono text-[10px] uppercase tracking-[0.12em] text-obsidian hover:bg-paper-warm rounded-[3px] disabled:opacity-60"
+            >
+              <RefreshCw className={`h-3.5 w-3.5 ${syncing ? "animate-spin" : ""}`} />
+              {syncing ? "Syncing…" : "Sync Permits"}
+            </button>
             <Link to="/portal/permits/new" className="inline-flex items-center gap-2 bg-obsidian px-4 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-paper hover:bg-obsidian/90 rounded-[3px]">
               + New Permit
             </Link>
@@ -115,6 +172,22 @@ export function MyPermitsPage() {
             </button>
           </div>
         </div>
+
+        {showResult && lastResult && lastResult.updated > 0 && (
+          <div className="mt-4 border border-emerald-600/30 bg-emerald-50/70 p-4 rounded-[3px]">
+            <div className="font-subline text-[11px] uppercase tracking-[0.14em] text-emerald-900 mb-2">
+              Sync complete — {lastResult.updated} updated, {lastResult.unchanged} unchanged
+            </div>
+            <ul className="space-y-1 text-sm text-emerald-900/85">
+              {lastResult.changes.map((c) => (
+                <li key={c.projectId} className="font-mono text-[11px]">
+                  <span className="text-emerald-900/60">{c.projectName}:</span>{" "}
+                  {projectStatusMeta[c.from]?.label ?? c.from} → <strong>{projectStatusMeta[c.to]?.label ?? c.to}</strong>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
 
         <div className="mt-6 relative max-w-md">
           <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-obsidian/40" />
