@@ -16,7 +16,7 @@ import { findPortalForAddress } from "@/lib/municipalities";
 import { InspectionsSection } from "@/components/inspections-section";
 import { ProjectManualFees } from "@/components/project-manual-fees";
 import { LogPermitFeeDialog } from "@/components/log-permit-fee-dialog";
-import { loadSubLibrary, coiStatus, type SubRecord } from "@/lib/subcontractor-library";
+import { loadSubLibrary, coiStatus, coiLifecycleStatus, type SubRecord } from "@/lib/subcontractor-library";
 import { addNote, deleteNote, listNotes, type ProjectNote } from "@/lib/project-notes";
 import { DOC_TYPES, addDoc, deleteDoc, listDocs, type DocType, type ProjectDoc } from "@/lib/project-documents";
 import { isInternalUser } from "@/lib/is-internal-user";
@@ -572,9 +572,24 @@ function SubsTab({ project }: { project: Project }) {
             <tbody className="divide-y divide-obsidian/5">
               {subs.map((s) => {
                 const coi = coiStatus(s);
+                const lifecycle = coiLifecycleStatus(s);
                 return (
                   <tr key={s.id}>
-                    <td className="px-4 py-3 font-medium text-obsidian">{s.companyName}</td>
+                    <td className="px-4 py-3 font-medium text-obsidian">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span>{s.companyName}</span>
+                        {lifecycle === "expired" && (
+                          <span className="inline-flex items-center border border-red-600/40 bg-red-50 text-red-800 px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-[0.1em] rounded-[3px]">
+                            COI Expired
+                          </span>
+                        )}
+                        {lifecycle === "expiring_soon" && (
+                          <span className="inline-flex items-center border border-amber-600/40 bg-amber-50 text-amber-800 px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-[0.1em] rounded-[3px]">
+                            COI Expiring
+                          </span>
+                        )}
+                      </div>
+                    </td>
                     <td className="px-4 py-3 text-obsidian/70">{s.trade || "—"}</td>
                     <td className="px-4 py-3 font-mono text-xs text-obsidian/70">{s.licenseNumber || "—"}</td>
                     <td className="px-4 py-3 text-obsidian/70">
@@ -594,6 +609,7 @@ function SubsTab({ project }: { project: Project }) {
                   </tr>
                 );
               })}
+
             </tbody>
           </table>
         </div>
