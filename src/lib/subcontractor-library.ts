@@ -21,9 +21,11 @@ export type SubRecord = {
   coiExpiration?: string | null; // yyyy-mm-dd
   w9FileName?: string | null;
   completionToken?: string | null;
+  coiLastReminderSent?: string | null; // ISO timestamp
   // legacy fields tolerated on read
   name?: string;
 };
+
 
 export const LIB_KEY = "cleared.subcontractor-library";
 
