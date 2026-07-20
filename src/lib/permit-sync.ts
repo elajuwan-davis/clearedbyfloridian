@@ -6,6 +6,8 @@
 import { PROJECTS } from "./projects-data";
 import { projectStatusMeta, type ProjectStatus } from "./status-badges";
 import { addNote } from "./project-notes";
+import { triggerForStatusChange } from "./client-notifications";
+
 
 const TS_KEY = "cleared.permitSync.timestamps.v1";
 const STATUS_KEY = "cleared.permitSync.statusOverrides.v1";
@@ -106,6 +108,8 @@ export async function syncAllPermits(): Promise<SyncResult> {
         "System (Auto-Sync)",
         `Status updated: ${fromLabel} → ${toLabel} (auto-sync ${date})`,
       );
+      triggerForStatusChange(p.id, current, next);
+
     } else {
       unchanged += 1;
     }

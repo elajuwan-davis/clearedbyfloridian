@@ -16,15 +16,22 @@ import { findPortalForAddress } from "@/lib/municipalities";
 import { InspectionsSection } from "@/components/inspections-section";
 import { ProjectManualFees } from "@/components/project-manual-fees";
 import { LogPermitFeeDialog } from "@/components/log-permit-fee-dialog";
-import { loadSubLibrary, coiStatus, type SubRecord } from "@/lib/subcontractor-library";
+import { loadSubLibrary, coiStatus, coiLifecycleStatus, type SubRecord } from "@/lib/subcontractor-library";
 import { addNote, deleteNote, listNotes, type ProjectNote } from "@/lib/project-notes";
 import { DOC_TYPES, addDoc, deleteDoc, listDocs, type DocType, type ProjectDoc } from "@/lib/project-documents";
 import { isInternalUser } from "@/lib/is-internal-user";
+import { notificationsEnabled, setNotificationsEnabled } from "@/lib/client-notifications";
+import { Bell, BellOff } from "lucide-react";
+
 import { isPermitTypeComplete } from "@/lib/permit-type-status";
 import { PCNLookupDialog } from "@/components/pcn-lookup-dialog";
 import { GenerateNTBODialog, GenerateOwnerAuthDialog } from "@/components/generate-form-dialogs";
 import { SendForSignatureDialog } from "@/components/send-for-signature-dialog";
 import { RequestNotaryDialog } from "@/components/request-notary-dialog";
+import { GenerateLienWaiverDialog } from "@/components/generate-lien-waiver-dialog";
+import { LIEN_WAIVER_EVT, WAIVER_TYPE_LABEL, listWaivers, waiverBadge, type LienWaiver } from "@/lib/lien-waivers";
+
+
 import { getPCN } from "@/lib/project-pcn";
 import { FileSignature, FileCheck2, MapPinned, Send, Stamp } from "lucide-react";
 import { getSignatureForDoc, sigBadge, sigStatusForDocument, SIG_EVT } from "@/lib/signature-requests";
@@ -113,7 +120,7 @@ export function ProjectDetail({ project }: { project: Project }) {
             </span>
           </div>
 
-          <div className="mt-5 flex flex-wrap gap-2">
+          <div className="mt-5 flex flex-wrap gap-2 items-center">
             <Button variant="outline" size="sm" className="rounded-[3px]">
               <Pencil className="mr-1.5 h-3.5 w-3.5" /> Edit Project
             </Button>
@@ -127,7 +134,9 @@ export function ProjectDetail({ project }: { project: Project }) {
                 City portal link unavailable
               </span>
             )}
+            {internal && <ClientNotificationsToggle projectId={project.id} />}
           </div>
+
         </header>
 
         {/* Tabs */}
@@ -143,7 +152,13 @@ export function ProjectDetail({ project }: { project: Project }) {
 
           <TabsContent value="overview" className="mt-6"><OverviewTab project={project} /></TabsContent>
           <TabsContent value="inspections" className="mt-6">
-            <InspectionsSection projectId={project.id} allPassedSeed={false} />
+            <InspectionsSection
+              projectId={project.id}
+              allPassedSeed={false}
+              projectAddress={`${project.address}, ${project.city}`}
+              municipality={portal}
+            />
+
           </TabsContent>
           <TabsContent value="documents" className="mt-6"><DocumentsTab project={project} /></TabsContent>
           <TabsContent value="subs" className="mt-6"><SubsTab project={project} /></TabsContent>
@@ -537,10 +552,20 @@ function UploadDocDialog({
 
 function SubsTab({ project }: { project: Project }) {
   const [subs, setSubs] = useState<SubRecord[]>([]);
+  const [waivers, setWaivers] = useState<LienWaiver[]>([]);
+  const [waiverFor, setWaiverFor] = useState<SubRecord | null>(null);
+  const propertyAddress = `${project.address}, ${project.city}, FL`;
+
   useEffect(() => { setSubs(loadSubLibrary()); }, []);
+  useEffect(() => {
+    const refresh = () => setWaivers(listWaivers(project.id));
+    refresh();
+    window.addEventListener(LIEN_WAIVER_EVT, refresh);
+    return () => window.removeEventListener(LIEN_WAIVER_EVT, refresh);
+  }, [project.id]);
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-8">
       <div className="flex items-center justify-between">
         <div className="text-sm text-obsidian/60">
           {subs.length} subcontractor{subs.length === 1 ? "" : "s"} in your library
@@ -567,14 +592,30 @@ function SubsTab({ project }: { project: Project }) {
                 <th className="px-4 py-2.5">License</th>
                 <th className="px-4 py-2.5">Contact</th>
                 <th className="px-4 py-2.5">COI</th>
+                <th className="px-4 py-2.5 text-right">Lien Waiver</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-obsidian/5">
               {subs.map((s) => {
                 const coi = coiStatus(s);
+                const lifecycle = coiLifecycleStatus(s);
                 return (
                   <tr key={s.id}>
-                    <td className="px-4 py-3 font-medium text-obsidian">{s.companyName}</td>
+                    <td className="px-4 py-3 font-medium text-obsidian">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span>{s.companyName}</span>
+                        {lifecycle === "expired" && (
+                          <span className="inline-flex items-center border border-red-600/40 bg-red-50 text-red-800 px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-[0.1em] rounded-[3px]">
+                            COI Expired
+                          </span>
+                        )}
+                        {lifecycle === "expiring_soon" && (
+                          <span className="inline-flex items-center border border-amber-600/40 bg-amber-50 text-amber-800 px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-[0.1em] rounded-[3px]">
+                            COI Expiring
+                          </span>
+                        )}
+                      </div>
+                    </td>
                     <td className="px-4 py-3 text-obsidian/70">{s.trade || "—"}</td>
                     <td className="px-4 py-3 font-mono text-xs text-obsidian/70">{s.licenseNumber || "—"}</td>
                     <td className="px-4 py-3 text-obsidian/70">
@@ -591,6 +632,15 @@ function SubsTab({ project }: { project: Project }) {
                         {coi === "on-file" ? "On file" : coi === "expired" ? "Expired" : "Missing"}
                       </span>
                     </td>
+                    <td className="px-4 py-3 text-right">
+                      <button
+                        type="button"
+                        onClick={() => setWaiverFor(s)}
+                        className="inline-flex items-center gap-1.5 border border-obsidian bg-obsidian px-2.5 py-1.5 font-mono text-[10px] font-semibold uppercase tracking-[0.1em] text-white rounded-[3px] hover:bg-obsidian/90"
+                      >
+                        <FileSignature className="h-3 w-3" /> Generate Waiver
+                      </button>
+                    </td>
                   </tr>
                 );
               })}
@@ -598,9 +648,66 @@ function SubsTab({ project }: { project: Project }) {
           </table>
         </div>
       )}
+
+      {/* Lien Waivers section */}
+      <div>
+        <div className="mb-3 flex items-baseline justify-between">
+          <h3 className="font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-obsidian/70">
+            Lien Waivers
+          </h3>
+          <span className="font-mono text-[10px] text-obsidian/50">Florida Statute §713.20</span>
+        </div>
+        {waivers.length === 0 ? (
+          <div className="border border-dashed border-obsidian/20 bg-white p-6 text-center text-sm text-obsidian/60">
+            No lien waivers generated yet. Use "Generate Waiver" above to send one via Signwell.
+          </div>
+        ) : (
+          <div className="border border-obsidian/10 bg-white overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead className="bg-paper-warm">
+                <tr className="text-left font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/60">
+                  <th className="px-4 py-2.5">Subcontractor</th>
+                  <th className="px-4 py-2.5">Type</th>
+                  <th className="px-4 py-2.5">Amount</th>
+                  <th className="px-4 py-2.5">Payment Date</th>
+                  <th className="px-4 py-2.5">Status</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-obsidian/5">
+                {waivers.map((w) => {
+                  const b = waiverBadge(w.status);
+                  return (
+                    <tr key={w.id}>
+                      <td className="px-4 py-3 font-medium text-obsidian">{w.subCompany}</td>
+                      <td className="px-4 py-3 text-obsidian/70">{WAIVER_TYPE_LABEL[w.waiverType]}</td>
+                      <td className="px-4 py-3 font-mono text-obsidian/80">${w.amount.toLocaleString()}</td>
+                      <td className="px-4 py-3 text-obsidian/70">{w.paymentDate}</td>
+                      <td className="px-4 py-3">
+                        <span className={`inline-flex items-center border px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.1em] rounded-[3px] ${b.className}`}>
+                          {b.label}
+                        </span>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+
+      {waiverFor && (
+        <GenerateLienWaiverDialog
+          sub={waiverFor}
+          projectId={project.id}
+          propertyAddress={propertyAddress}
+          onClose={() => setWaiverFor(null)}
+        />
+      )}
     </div>
   );
 }
+
 
 /* --------------------------------- FEES ----------------------------------- */
 
@@ -717,5 +824,30 @@ function InfoRow({ label, value, mono }: { label: string; value: React.ReactNode
   );
 }
 
+function ClientNotificationsToggle({ projectId }: { projectId: string }) {
+  const [on, setOn] = useState(() => notificationsEnabled(projectId));
+  function toggle() {
+    const next = !on;
+    setNotificationsEnabled(projectId, next);
+    setOn(next);
+  }
+  return (
+    <button
+      type="button"
+      onClick={toggle}
+      title="Internal only — auto-emails to client on key milestones"
+      className={`inline-flex items-center gap-1.5 border px-3 py-1.5 text-xs rounded-[3px] font-mono uppercase tracking-[0.12em] ${
+        on
+          ? "border-emerald-600/40 bg-emerald-50 text-emerald-800"
+          : "border-obsidian/15 bg-paper-warm text-obsidian/60"
+      }`}
+    >
+      {on ? <Bell className="h-3.5 w-3.5" /> : <BellOff className="h-3.5 w-3.5" />}
+      Client notifications: {on ? "ON" : "OFF"}
+    </button>
+  );
+}
+
 // Keeps a stable import so tree-shakers don't drop PROJECTS re-export uses.
+
 export const _ALL_PROJECTS = PROJECTS;

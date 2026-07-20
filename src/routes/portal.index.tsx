@@ -6,6 +6,8 @@ import { projectStatusMeta, toneClass } from "@/lib/status-badges";
 import { ArrowRight, X, AlertTriangle } from "lucide-react";
 import { useExpirationAlerts } from "@/hooks/use-expiration-alerts";
 import { AlertsList } from "@/components/alerts-list";
+import { CoiAlertsWidget } from "@/components/coi-alerts-widget";
+
 
 export const Route = createFileRoute("/portal/")({
   component: PortalOverview,
@@ -62,6 +64,10 @@ function PortalOverview() {
           <AlertsList alerts={alerts} />
         </section>
       )}
+
+      <CoiAlertsWidget />
+
+
 
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-border border hairline">
