@@ -221,27 +221,20 @@ function PermitDetailPage() {
       </div>
 
       <div className="mt-6 bg-white border border-obsidian/10 rounded-[3px] p-6">
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center justify-between mb-2">
           <div className="text-[11px] font-mono uppercase tracking-[0.18em] text-obsidian/75">Documents</div>
           <span className="font-mono text-[11px] tabular-nums text-obsidian/60">{c.docsDone}/{c.docsTotal} complete</span>
         </div>
-        <ul className="divide-y divide-obsidian/10">
+        <div className="text-[12px] text-obsidian/55 mb-2">
+          Files upload to secure cloud storage. Google Drive & OneDrive import requires the App User Connector to be enabled in workspace settings.
+        </div>
+        <div>
           {docs.map((d) => (
-            <li key={d.key} className="py-3 flex items-center gap-3">
-              {d.status === "uploaded" ? <Check className="h-4 w-4 text-emerald-600" /> : d.status === "pending" ? <AlertTriangle className="h-4 w-4 text-amber-600" /> : d.status === "not_applicable" ? <FileText className="h-4 w-4 text-obsidian/40" /> : <X className="h-4 w-4 text-red-600" />}
-              <div className="flex-1">
-                <div className="text-sm text-obsidian">{d.label}{d.required && <span className="ml-2 text-[10px] font-mono uppercase text-red-700">Required</span>}</div>
-                {d.filename && <div className="text-[11px] text-obsidian/55 font-mono">{d.filename}</div>}
-              </div>
-              <span className={`font-mono text-[10px] uppercase px-2 py-0.5 rounded ${
-                d.status === "uploaded" ? "bg-emerald-100 text-emerald-800" :
-                d.status === "pending" ? "bg-amber-100 text-amber-800" :
-                d.status === "not_applicable" ? "bg-obsidian/10 text-obsidian/60" :
-                "bg-red-100 text-red-800"
-              }`}>{d.status.replace("_", " ")}</span>
-            </li>
+            <div key={d.key} id={`doc-${d.key}`}>
+              <PermitDocUploader permit={row} doc={d} onChange={(u) => { setRow(u); setEdit(u); }} />
+            </div>
           ))}
-        </ul>
+        </div>
       </div>
 
       {row.subs && row.subs.length > 0 && (
