@@ -14,7 +14,198 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      permits: {
+        Row: {
+          additional_notes: string | null
+          city: string | null
+          company_address: string | null
+          construction_value_cents: number | null
+          contractor_company: string | null
+          contractor_qualifier: string | null
+          county: string | null
+          created_at: string
+          created_by: string | null
+          description: string | null
+          documents: Json
+          extra_docs: Json
+          id: string
+          intake_payload: Json | null
+          job_address: string
+          license_number: string | null
+          municipality: string | null
+          owner_entity: string | null
+          owner_name: string | null
+          pcn: string | null
+          permit_number: string | null
+          permit_type: string | null
+          poc: string | null
+          poc_email: string | null
+          poc_phone: string | null
+          project_name: string
+          signer_email: string | null
+          signer_phone: string | null
+          status: string
+          submitted_date: string | null
+          subs: Json
+          updated_at: string
+        }
+        Insert: {
+          additional_notes?: string | null
+          city?: string | null
+          company_address?: string | null
+          construction_value_cents?: number | null
+          contractor_company?: string | null
+          contractor_qualifier?: string | null
+          county?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          documents?: Json
+          extra_docs?: Json
+          id?: string
+          intake_payload?: Json | null
+          job_address: string
+          license_number?: string | null
+          municipality?: string | null
+          owner_entity?: string | null
+          owner_name?: string | null
+          pcn?: string | null
+          permit_number?: string | null
+          permit_type?: string | null
+          poc?: string | null
+          poc_email?: string | null
+          poc_phone?: string | null
+          project_name: string
+          signer_email?: string | null
+          signer_phone?: string | null
+          status?: string
+          submitted_date?: string | null
+          subs?: Json
+          updated_at?: string
+        }
+        Update: {
+          additional_notes?: string | null
+          city?: string | null
+          company_address?: string | null
+          construction_value_cents?: number | null
+          contractor_company?: string | null
+          contractor_qualifier?: string | null
+          county?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          documents?: Json
+          extra_docs?: Json
+          id?: string
+          intake_payload?: Json | null
+          job_address?: string
+          license_number?: string | null
+          municipality?: string | null
+          owner_entity?: string | null
+          owner_name?: string | null
+          pcn?: string | null
+          permit_number?: string | null
+          permit_type?: string | null
+          poc?: string | null
+          poc_email?: string | null
+          poc_phone?: string | null
+          project_name?: string
+          signer_email?: string | null
+          signer_phone?: string | null
+          status?: string
+          submitted_date?: string | null
+          subs?: Json
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      subcontractors: {
+        Row: {
+          coi_expiration: string | null
+          coi_file_name: string | null
+          coi_file_path: string | null
+          company_address: string | null
+          company_name: string
+          completion_token: string
+          contact_first_name: string | null
+          contact_last_name: string | null
+          created_at: string
+          created_by: string | null
+          email: string | null
+          id: string
+          insurance_carrier_email: string | null
+          insurance_carrier_name: string | null
+          license_expiration: string | null
+          license_file_name: string | null
+          license_file_path: string | null
+          license_number: string | null
+          license_type: string | null
+          phone: string | null
+          qualifier_name: string | null
+          status: string
+          trade: string | null
+          updated_at: string
+          w9_file_name: string | null
+          w9_file_path: string | null
+        }
+        Insert: {
+          coi_expiration?: string | null
+          coi_file_name?: string | null
+          coi_file_path?: string | null
+          company_address?: string | null
+          company_name: string
+          completion_token?: string
+          contact_first_name?: string | null
+          contact_last_name?: string | null
+          created_at?: string
+          created_by?: string | null
+          email?: string | null
+          id?: string
+          insurance_carrier_email?: string | null
+          insurance_carrier_name?: string | null
+          license_expiration?: string | null
+          license_file_name?: string | null
+          license_file_path?: string | null
+          license_number?: string | null
+          license_type?: string | null
+          phone?: string | null
+          qualifier_name?: string | null
+          status?: string
+          trade?: string | null
+          updated_at?: string
+          w9_file_name?: string | null
+          w9_file_path?: string | null
+        }
+        Update: {
+          coi_expiration?: string | null
+          coi_file_name?: string | null
+          coi_file_path?: string | null
+          company_address?: string | null
+          company_name?: string
+          completion_token?: string
+          contact_first_name?: string | null
+          contact_last_name?: string | null
+          created_at?: string
+          created_by?: string | null
+          email?: string | null
+          id?: string
+          insurance_carrier_email?: string | null
+          insurance_carrier_name?: string | null
+          license_expiration?: string | null
+          license_file_name?: string | null
+          license_file_path?: string | null
+          license_number?: string | null
+          license_type?: string | null
+          phone?: string | null
+          qualifier_name?: string | null
+          status?: string
+          trade?: string | null
+          updated_at?: string
+          w9_file_name?: string | null
+          w9_file_path?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
