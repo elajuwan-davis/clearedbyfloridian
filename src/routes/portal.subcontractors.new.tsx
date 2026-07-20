@@ -1,8 +1,9 @@
 import { createFileRoute, Link, useNavigate, useSearch } from "@tanstack/react-router";
 import { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
 import { toast } from "sonner";
-import { ArrowLeft, Upload, X, Link2, Copy } from "lucide-react";
-import { getSub, createSub, updateSubApi, type SubRow, type SubInsert } from "@/lib/subs-api";
+import { ArrowLeft, Upload, X, Link2, Copy, Trash2 } from "lucide-react";
+import { getSub, createSub, updateSubApi, deleteSub, type SubRow, type SubInsert } from "@/lib/subs-api";
+
 
 type Search = { id?: string };
 
@@ -42,18 +43,58 @@ function NewSubcontractorPage() {
     if (f) set(k, f.name);
   }
 
+  function formatErr(err: unknown): string {
+    if (!err) return "Unknown error";
+    if (err instanceof Error) return err.message;
+    if (typeof err === "object") {
+      const e = err as { message?: string; error_description?: string; hint?: string; details?: string; code?: string };
+      return e.message || e.error_description || e.details || e.hint || (e.code ? `Error ${e.code}` : JSON.stringify(err));
+    }
+    return String(err);
+  }
+
+  const WRITABLE: (keyof SubInsert)[] = [
+    "company_name","trade","qualifier_name","license_number","license_type","license_expiration",
+    "license_file_name","license_file_path","contact_first_name","contact_last_name","email","phone",
+    "company_address","insurance_carrier_name","insurance_carrier_email","coi_file_name","coi_file_path",
+    "coi_expiration","w9_file_name","w9_file_path","status",
+  ];
+  function sanitize(f: Partial<SubInsert>): Partial<SubInsert> {
+    const out: Partial<SubInsert> = {};
+    for (const k of WRITABLE) {
+      const v = (f as Record<string, unknown>)[k as string];
+      if (v !== undefined) (out as Record<string, unknown>)[k as string] = v;
+    }
+    return out;
+  }
+
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     if (!form.company_name?.trim()) return toast.error("Company Name is required");
     try {
+      const payload = sanitize(form);
       let rec: SubRow;
-      if (saved) rec = await updateSubApi(saved.id, form);
-      else rec = await createSub(form as SubInsert);
+      if (saved) rec = await updateSubApi(saved.id, payload);
+      else rec = await createSub(payload as SubInsert);
       setSaved(rec);
       setForm(rec);
       toast.success("Saved");
     } catch (err) {
-      toast.error("Save failed: " + (err instanceof Error ? err.message : String(err)));
+      console.error("Sub save error:", err);
+      toast.error("Save failed: " + formatErr(err));
+    }
+  }
+
+  async function handleDelete() {
+    if (!saved) return;
+    if (!confirm(`Delete "${saved.company_name}"? This cannot be undone.`)) return;
+    try {
+      await deleteSub(saved.id);
+      toast.success("Subcontractor deleted");
+      navigate({ to: "/portal/subcontractors" });
+    } catch (err) {
+      console.error("Sub delete error:", err);
+      toast.error("Delete failed: " + formatErr(err));
     }
   }
 
@@ -64,7 +105,7 @@ function NewSubcontractorPage() {
       setShareUrl(url);
       toast.success("Intake link generated");
     } catch (e) {
-      toast.error("Failed: " + (e instanceof Error ? e.message : String(e)));
+      toast.error("Failed: " + formatErr(e));
     }
   }
 
@@ -78,6 +119,7 @@ function NewSubcontractorPage() {
     const url = `${window.location.origin}/sub-intake/${saved.completion_token}`;
     navigator.clipboard.writeText(url).then(() => toast.success("Intake link copied"));
   }
+
 
   const inputCls = "block w-full border border-obsidian/15 bg-white px-3 py-2 text-sm text-obsidian focus:border-obsidian/40 focus:outline-none rounded-[3px]";
   const labelCls = "block text-[11px] font-mono uppercase tracking-[0.14em] text-obsidian/60 mb-1.5";
@@ -165,14 +207,24 @@ function NewSubcontractorPage() {
           <div className="sm:col-span-2"><FileRow label="W-9 Upload" name={form.w9_file_name} keyName="w9_file_name" /></div>
         </div>
 
-        <div className="flex items-center justify-end gap-2 pt-4 border-t border-obsidian/10">
-          <button type="button" onClick={() => navigate({ to: "/portal/subcontractors" })} className="inline-flex items-center gap-2 border border-obsidian/20 px-4 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian rounded-[3px]">
-            Cancel
-          </button>
-          <button type="submit" className="inline-flex items-center gap-2 bg-obsidian px-5 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-paper hover:bg-obsidian/90 rounded-[3px]">
-            {saved ? "Save Changes" : "Save Subcontractor"}
-          </button>
+        <div className="flex items-center justify-between gap-2 pt-4 border-t border-obsidian/10 flex-wrap">
+          <div>
+            {saved && (
+              <button type="button" onClick={handleDelete} className="inline-flex items-center gap-2 border border-red-600/40 text-red-700 hover:bg-red-50 px-4 py-2 font-mono text-[10px] uppercase tracking-[0.14em] rounded-[3px]">
+                <Trash2 className="h-3.5 w-3.5" /> Delete
+              </button>
+            )}
+          </div>
+          <div className="flex items-center gap-2">
+            <button type="button" onClick={() => navigate({ to: "/portal/subcontractors" })} className="inline-flex items-center gap-2 border border-obsidian/20 px-4 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian rounded-[3px]">
+              Cancel
+            </button>
+            <button type="submit" className="inline-flex items-center gap-2 bg-obsidian px-5 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-paper hover:bg-obsidian/90 rounded-[3px]">
+              {saved ? "Save Changes" : "Save Subcontractor"}
+            </button>
+          </div>
         </div>
+
       </form>
     </div>
   );
