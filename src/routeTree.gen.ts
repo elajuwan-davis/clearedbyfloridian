@@ -21,6 +21,7 @@ import { Route as LpoaSigningRouteImport } from './routes/lpoa-signing'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as InvoicesRouteImport } from './routes/invoices'
 import { Route as InsuranceRouteImport } from './routes/insurance'
+import { Route as GcPortalRouteImport } from './routes/gc-portal'
 import { Route as FormsRouteImport } from './routes/forms'
 import { Route as FeeCalculatorRouteImport } from './routes/fee-calculator'
 import { Route as DashboardRouteImport } from './routes/dashboard'
@@ -50,6 +51,7 @@ import { Route as FormsPaymentAuthorizationRouteImport } from './routes/forms.pa
 import { Route as BuildingDeptLoginsSubmitRouteImport } from './routes/building-dept-logins.submit'
 import { Route as AdminContractorsRouteImport } from './routes/admin_.contractors'
 import { Route as AdminHubspotSimulateRouteImport } from './routes/admin.hubspot-simulate'
+import { Route as AdminGcClientsRouteImport } from './routes/admin.gc-clients'
 import { Route as AdminBuildersRouteImport } from './routes/admin.builders'
 import { Route as PortalSubcontractorsIndexRouteImport } from './routes/portal.subcontractors.index'
 import { Route as PortalGuidesIndexRouteImport } from './routes/portal.guides.index'
@@ -117,6 +119,11 @@ const InvoicesRoute = InvoicesRouteImport.update({
 const InsuranceRoute = InsuranceRouteImport.update({
   id: '/insurance',
   path: '/insurance',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GcPortalRoute = GcPortalRouteImport.update({
+  id: '/gc-portal',
+  path: '/gc-portal',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FormsRoute = FormsRouteImport.update({
@@ -268,6 +275,11 @@ const AdminHubspotSimulateRoute = AdminHubspotSimulateRouteImport.update({
   path: '/hubspot-simulate',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminGcClientsRoute = AdminGcClientsRouteImport.update({
+  id: '/gc-clients',
+  path: '/gc-clients',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminBuildersRoute = AdminBuildersRouteImport.update({
   id: '/builders',
   path: '/builders',
@@ -321,6 +333,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof DashboardRoute
   '/fee-calculator': typeof FeeCalculatorRoute
   '/forms': typeof FormsRouteWithChildren
+  '/gc-portal': typeof GcPortalRoute
   '/insurance': typeof InsuranceRoute
   '/invoices': typeof InvoicesRoute
   '/login': typeof LoginRoute
@@ -334,6 +347,7 @@ export interface FileRoutesByFullPath {
   '/projects': typeof ProjectsRouteWithChildren
   '/services': typeof ServicesRoute
   '/admin/builders': typeof AdminBuildersRoute
+  '/admin/gc-clients': typeof AdminGcClientsRoute
   '/admin/hubspot-simulate': typeof AdminHubspotSimulateRoute
   '/admin/contractors': typeof AdminContractorsRoute
   '/building-dept-logins/submit': typeof BuildingDeptLoginsSubmitRoute
@@ -372,6 +386,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof DashboardRoute
   '/fee-calculator': typeof FeeCalculatorRoute
   '/forms': typeof FormsRouteWithChildren
+  '/gc-portal': typeof GcPortalRoute
   '/insurance': typeof InsuranceRoute
   '/invoices': typeof InvoicesRoute
   '/login': typeof LoginRoute
@@ -384,6 +399,7 @@ export interface FileRoutesByTo {
   '/projects': typeof ProjectsRouteWithChildren
   '/services': typeof ServicesRoute
   '/admin/builders': typeof AdminBuildersRoute
+  '/admin/gc-clients': typeof AdminGcClientsRoute
   '/admin/hubspot-simulate': typeof AdminHubspotSimulateRoute
   '/admin/contractors': typeof AdminContractorsRoute
   '/building-dept-logins/submit': typeof BuildingDeptLoginsSubmitRoute
@@ -423,6 +439,7 @@ export interface FileRoutesById {
   '/dashboard': typeof DashboardRoute
   '/fee-calculator': typeof FeeCalculatorRoute
   '/forms': typeof FormsRouteWithChildren
+  '/gc-portal': typeof GcPortalRoute
   '/insurance': typeof InsuranceRoute
   '/invoices': typeof InvoicesRoute
   '/login': typeof LoginRoute
@@ -436,6 +453,7 @@ export interface FileRoutesById {
   '/projects': typeof ProjectsRouteWithChildren
   '/services': typeof ServicesRoute
   '/admin/builders': typeof AdminBuildersRoute
+  '/admin/gc-clients': typeof AdminGcClientsRoute
   '/admin/hubspot-simulate': typeof AdminHubspotSimulateRoute
   '/admin_/contractors': typeof AdminContractorsRoute
   '/building-dept-logins/submit': typeof BuildingDeptLoginsSubmitRoute
@@ -476,6 +494,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/fee-calculator'
     | '/forms'
+    | '/gc-portal'
     | '/insurance'
     | '/invoices'
     | '/login'
@@ -489,6 +508,7 @@ export interface FileRouteTypes {
     | '/projects'
     | '/services'
     | '/admin/builders'
+    | '/admin/gc-clients'
     | '/admin/hubspot-simulate'
     | '/admin/contractors'
     | '/building-dept-logins/submit'
@@ -527,6 +547,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/fee-calculator'
     | '/forms'
+    | '/gc-portal'
     | '/insurance'
     | '/invoices'
     | '/login'
@@ -539,6 +560,7 @@ export interface FileRouteTypes {
     | '/projects'
     | '/services'
     | '/admin/builders'
+    | '/admin/gc-clients'
     | '/admin/hubspot-simulate'
     | '/admin/contractors'
     | '/building-dept-logins/submit'
@@ -577,6 +599,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/fee-calculator'
     | '/forms'
+    | '/gc-portal'
     | '/insurance'
     | '/invoices'
     | '/login'
@@ -590,6 +613,7 @@ export interface FileRouteTypes {
     | '/projects'
     | '/services'
     | '/admin/builders'
+    | '/admin/gc-clients'
     | '/admin/hubspot-simulate'
     | '/admin_/contractors'
     | '/building-dept-logins/submit'
@@ -629,6 +653,7 @@ export interface RootRouteChildren {
   DashboardRoute: typeof DashboardRoute
   FeeCalculatorRoute: typeof FeeCalculatorRoute
   FormsRoute: typeof FormsRouteWithChildren
+  GcPortalRoute: typeof GcPortalRoute
   InsuranceRoute: typeof InsuranceRoute
   InvoicesRoute: typeof InvoicesRoute
   LoginRoute: typeof LoginRoute
@@ -730,6 +755,13 @@ declare module '@tanstack/react-router' {
       path: '/insurance'
       fullPath: '/insurance'
       preLoaderRoute: typeof InsuranceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/gc-portal': {
+      id: '/gc-portal'
+      path: '/gc-portal'
+      fullPath: '/gc-portal'
+      preLoaderRoute: typeof GcPortalRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/forms': {
@@ -935,6 +967,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminHubspotSimulateRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/gc-clients': {
+      id: '/admin/gc-clients'
+      path: '/gc-clients'
+      fullPath: '/admin/gc-clients'
+      preLoaderRoute: typeof AdminGcClientsRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/builders': {
       id: '/admin/builders'
       path: '/builders'
@@ -996,11 +1035,13 @@ declare module '@tanstack/react-router' {
 
 interface AdminRouteChildren {
   AdminBuildersRoute: typeof AdminBuildersRoute
+  AdminGcClientsRoute: typeof AdminGcClientsRoute
   AdminHubspotSimulateRoute: typeof AdminHubspotSimulateRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
   AdminBuildersRoute: AdminBuildersRoute,
+  AdminGcClientsRoute: AdminGcClientsRoute,
   AdminHubspotSimulateRoute: AdminHubspotSimulateRoute,
 }
 
@@ -1118,6 +1159,7 @@ const rootRouteChildren: RootRouteChildren = {
   DashboardRoute: DashboardRoute,
   FeeCalculatorRoute: FeeCalculatorRoute,
   FormsRoute: FormsRouteWithChildren,
+  GcPortalRoute: GcPortalRoute,
   InsuranceRoute: InsuranceRoute,
   InvoicesRoute: InvoicesRoute,
   LoginRoute: LoginRoute,
