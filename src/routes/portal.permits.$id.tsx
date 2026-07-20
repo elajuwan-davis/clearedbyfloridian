@@ -2,7 +2,7 @@ import { createFileRoute, Link, useNavigate, notFound } from "@tanstack/react-ro
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { ArrowLeft, Trash2, Save, AlertTriangle, FileText, Check, X } from "lucide-react";
-import { getPermit, updatePermit, deletePermit, missingRequiredDocs, type PermitRow, type PermitStatus } from "@/lib/permits-api";
+import { getPermit, updatePermit, deletePermit, permitCompleteness, getEffectiveDocs, type PermitRow, type PermitStatus } from "@/lib/permits-api";
 
 export const Route = createFileRoute("/portal/permits/$id")({
   head: () => ({
