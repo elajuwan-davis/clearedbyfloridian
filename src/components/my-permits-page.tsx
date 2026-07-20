@@ -51,10 +51,24 @@ type CountyFilter = "All" | (typeof COUNTIES)[number];
 
 export function MyPermitsPage() {
   const [statusVersion, setStatusVersion] = useState(0);
+  const [hubspotVersion, setHubspotVersion] = useState(0);
   const projects = useMemo<Project[]>(
-    () => SEED.map((p) => ({ ...p, status: getEffectiveStatus(p.id, p.status as any) })),
+    () => {
+      const hs: Project[] = (typeof window === "undefined" ? [] : listHubspotProjects()).map((p) => ({
+        id: p.id,
+        name: p.name,
+        address: fullAddress(p),
+        county: p.county,
+        status: p.status,
+        updated_at: p.updated_at,
+        incomplete: isAddressIncomplete(p),
+        permit_types: p.permit_types,
+        fromHubspot: true,
+      }));
+      return [...hs, ...SEED].map((p) => ({ ...p, status: getEffectiveStatus(p.id, p.status as any) }));
+    },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [statusVersion],
+    [statusVersion, hubspotVersion],
   );
   const [query, setQuery] = useState("");
   const [countyFilter, setCountyFilter] = useState<CountyFilter>("All");
@@ -71,12 +85,18 @@ export function MyPermitsPage() {
 
   useEffect(() => {
     setLastRun(getLastRun());
+    setHubspotVersion((v) => v + 1); // hydrate hubspot list after mount
     const onSync = () => {
       setLastRun(getLastRun());
       setStatusVersion((v) => v + 1);
     };
+    const onHs = () => setHubspotVersion((v) => v + 1);
     window.addEventListener("permit-sync:changed", onSync);
-    return () => window.removeEventListener("permit-sync:changed", onSync);
+    window.addEventListener(HUBSPOT_EVT, onHs);
+    return () => {
+      window.removeEventListener("permit-sync:changed", onSync);
+      window.removeEventListener(HUBSPOT_EVT, onHs);
+    };
   }, []);
 
   useEffect(() => {
