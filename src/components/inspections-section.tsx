@@ -10,7 +10,9 @@ import {
   passedCount,
   POOL_INSPECTIONS,
   PSL_HENDERSON_INSPECTIONS,
+  PSL_KNIGHT_INSPECTIONS,
 } from "@/lib/inspections";
+
 import { addNote } from "@/lib/project-notes";
 import type { Municipality } from "@/lib/municipalities";
 
@@ -52,7 +54,11 @@ export function InspectionsSection({
   projectAddress,
   municipality,
 }: Props) {
-  const template = projectId === "22" ? PSL_HENDERSON_INSPECTIONS : POOL_INSPECTIONS;
+  const template =
+    projectId === "22" ? PSL_HENDERSON_INSPECTIONS
+    : projectId === "18" ? PSL_KNIGHT_INSPECTIONS
+    : POOL_INSPECTIONS;
+
   const seed = useMemo(() => buildInspections(allPassedSeed, template), [allPassedSeed, template]);
   const [items, setItems] = useState<Inspection[]>(seed);
 
