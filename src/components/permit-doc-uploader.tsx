@@ -104,11 +104,24 @@ export function PermitDocUploader({ permit, doc, onChange, readOnly = false }: P
     toast.success("Marked as pending");
   }
 
-  function handleCloudSoon(name: "Google Drive" | "OneDrive") {
-    toast.message(`${name} import`, {
-      description: `Per-user ${name} OAuth is not connected yet. Ask an admin to enable the ${name} App User Connector in workspace settings, then reload this page.`,
+  function handleOneDriveSoon() {
+    toast.message("OneDrive import", {
+      description: "Per-user OneDrive OAuth is not connected yet. Ask an admin to enable the Microsoft OneDrive App User Connector, then reload this page.",
     });
   }
+
+  async function handleDriveImported(result: { path: string; filename: string; mime: string; size: number }) {
+    await persistDocs({
+      ...doc,
+      status: "uploaded",
+      filename: result.filename,
+      path: result.path,
+      size: result.size,
+      mime: result.mime,
+      uploaded_at: new Date().toISOString(),
+    });
+  }
+
 
   const statusBadge = () => {
     const map: Record<PermitDoc["status"], string> = {
