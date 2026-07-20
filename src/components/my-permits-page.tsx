@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { PortalShell } from "@/components/portal-shell";
 import { ChevronDown, Search, AlertTriangle, Plus, FileText, RefreshCw } from "lucide-react";
 import { listPermits, permitCompleteness, type PermitRow, type PermitStatus } from "@/lib/permits-api";
+import { syncAllPermits, getLastRun, formatRelative } from "@/lib/permit-sync";
 
 type GroupKey = "intake" | "preparing" | "submitted" | "on_hold" | "outsourced" | "issued" | "cancelled";
 
@@ -30,6 +31,9 @@ const STATUS_LABEL: Record<PermitStatus, string> = {
 export function MyPermitsPage() {
   const [permits, setPermits] = useState<PermitRow[]>([]);
   const [loading, setLoading] = useState(true);
+  const [syncing, setSyncing] = useState(false);
+  const [lastSync, setLastSync] = useState<string | null>(null);
+  const [syncMsg, setSyncMsg] = useState<string | null>(null);
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState<Record<GroupKey, boolean>>({
     intake: true, preparing: true, submitted: true, on_hold: true, outsourced: true, issued: true, cancelled: false,
@@ -43,7 +47,23 @@ export function MyPermitsPage() {
     } finally { setLoading(false); }
   }
 
-  useEffect(() => { refresh(); }, []);
+  async function handleSync() {
+    setSyncing(true);
+    setSyncMsg(null);
+    try {
+      const res = await syncAllPermits();
+      setLastSync(res.ranAt);
+      setSyncMsg(res.updated > 0 ? `Synced · ${res.updated} updated` : "Synced · no changes");
+      await refresh();
+    } catch {
+      setSyncMsg("Sync failed");
+    } finally {
+      setSyncing(false);
+      setTimeout(() => setSyncMsg(null), 4000);
+    }
+  }
+
+  useEffect(() => { refresh(); setLastSync(getLastRun()); }, []);
 
   const filtered = useMemo(() => {
     const q = query.toLowerCase().trim();
@@ -66,8 +86,12 @@ export function MyPermitsPage() {
             <p className="mt-2 text-[12px] text-obsidian/55">{loading ? "Loading…" : `${permits.length} permit${permits.length === 1 ? "" : "s"} on file`}</p>
           </div>
           <div className="flex items-center gap-2">
-            <button onClick={refresh} className="inline-flex items-center gap-2 border border-obsidian/20 bg-white px-3 py-2 font-mono text-[10px] uppercase tracking-[0.12em] text-obsidian hover:bg-paper-warm rounded-[3px]">
-              <RefreshCw className={`h-3.5 w-3.5 ${loading ? "animate-spin" : ""}`} /> Refresh
+            <div className="hidden sm:flex flex-col items-end mr-1">
+              <span className="font-mono text-[9px] uppercase tracking-[0.14em] text-obsidian/45">Last sync</span>
+              <span className="font-mono text-[10px] tabular-nums text-obsidian/70">{syncMsg ?? formatRelative(lastSync)}</span>
+            </div>
+            <button onClick={handleSync} disabled={syncing} className="inline-flex items-center gap-2 border border-obsidian/20 bg-white px-3 py-2 font-mono text-[10px] uppercase tracking-[0.12em] text-obsidian hover:bg-paper-warm rounded-[3px] disabled:opacity-60">
+              <RefreshCw className={`h-3.5 w-3.5 ${syncing ? "animate-spin" : ""}`} /> {syncing ? "Syncing…" : "Sync Permits"}
             </button>
             <Link to="/portal/permits/new" className="inline-flex items-center gap-2 bg-obsidian px-4 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-paper hover:bg-obsidian/90 rounded-[3px]">
               <Plus className="h-3.5 w-3.5" /> New Permit
