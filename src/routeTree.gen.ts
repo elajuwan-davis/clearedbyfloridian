@@ -47,6 +47,7 @@ import { Route as FormsSubcontractorIntakeRouteImport } from './routes/forms.sub
 import { Route as FormsPermitIntakeRouteImport } from './routes/forms.permit-intake'
 import { Route as FormsPaymentAuthorizationRouteImport } from './routes/forms.payment-authorization'
 import { Route as BuildingDeptLoginsSubmitRouteImport } from './routes/building-dept-logins.submit'
+import { Route as AdminContractorsRouteImport } from './routes/admin.contractors'
 import { Route as AdminBuildersRouteImport } from './routes/admin.builders'
 import { Route as PortalSubcontractorsIndexRouteImport } from './routes/portal.subcontractors.index'
 import { Route as PortalGuidesIndexRouteImport } from './routes/portal.guides.index'
@@ -249,6 +250,11 @@ const BuildingDeptLoginsSubmitRoute =
     path: '/submit',
     getParentRoute: () => BuildingDeptLoginsRoute,
   } as any)
+const AdminContractorsRoute = AdminContractorsRouteImport.update({
+  id: '/contractors',
+  path: '/contractors',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminBuildersRoute = AdminBuildersRouteImport.update({
   id: '/builders',
   path: '/builders',
@@ -309,6 +315,7 @@ export interface FileRoutesByFullPath {
   '/projects': typeof ProjectsRouteWithChildren
   '/services': typeof ServicesRoute
   '/admin/builders': typeof AdminBuildersRoute
+  '/admin/contractors': typeof AdminContractorsRoute
   '/building-dept-logins/submit': typeof BuildingDeptLoginsSubmitRoute
   '/forms/payment-authorization': typeof FormsPaymentAuthorizationRoute
   '/forms/permit-intake': typeof FormsPermitIntakeRoute
@@ -355,6 +362,7 @@ export interface FileRoutesByTo {
   '/projects': typeof ProjectsRouteWithChildren
   '/services': typeof ServicesRoute
   '/admin/builders': typeof AdminBuildersRoute
+  '/admin/contractors': typeof AdminContractorsRoute
   '/building-dept-logins/submit': typeof BuildingDeptLoginsSubmitRoute
   '/forms/payment-authorization': typeof FormsPaymentAuthorizationRoute
   '/forms/permit-intake': typeof FormsPermitIntakeRoute
@@ -403,6 +411,7 @@ export interface FileRoutesById {
   '/projects': typeof ProjectsRouteWithChildren
   '/services': typeof ServicesRoute
   '/admin/builders': typeof AdminBuildersRoute
+  '/admin/contractors': typeof AdminContractorsRoute
   '/building-dept-logins/submit': typeof BuildingDeptLoginsSubmitRoute
   '/forms/payment-authorization': typeof FormsPaymentAuthorizationRoute
   '/forms/permit-intake': typeof FormsPermitIntakeRoute
@@ -452,6 +461,7 @@ export interface FileRouteTypes {
     | '/projects'
     | '/services'
     | '/admin/builders'
+    | '/admin/contractors'
     | '/building-dept-logins/submit'
     | '/forms/payment-authorization'
     | '/forms/permit-intake'
@@ -498,6 +508,7 @@ export interface FileRouteTypes {
     | '/projects'
     | '/services'
     | '/admin/builders'
+    | '/admin/contractors'
     | '/building-dept-logins/submit'
     | '/forms/payment-authorization'
     | '/forms/permit-intake'
@@ -545,6 +556,7 @@ export interface FileRouteTypes {
     | '/projects'
     | '/services'
     | '/admin/builders'
+    | '/admin/contractors'
     | '/building-dept-logins/submit'
     | '/forms/payment-authorization'
     | '/forms/permit-intake'
@@ -863,6 +875,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BuildingDeptLoginsSubmitRouteImport
       parentRoute: typeof BuildingDeptLoginsRoute
     }
+    '/admin/contractors': {
+      id: '/admin/contractors'
+      path: '/contractors'
+      fullPath: '/admin/contractors'
+      preLoaderRoute: typeof AdminContractorsRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/builders': {
       id: '/admin/builders'
       path: '/builders'
@@ -917,10 +936,12 @@ declare module '@tanstack/react-router' {
 
 interface AdminRouteChildren {
   AdminBuildersRoute: typeof AdminBuildersRoute
+  AdminContractorsRoute: typeof AdminContractorsRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
   AdminBuildersRoute: AdminBuildersRoute,
+  AdminContractorsRoute: AdminContractorsRoute,
 }
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
