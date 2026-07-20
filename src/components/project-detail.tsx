@@ -248,12 +248,23 @@ function OverviewTab({ project }: { project: Project }) {
 function DocumentsTab({ project }: { project: Project }) {
   const [docs, setDocs] = useState<ProjectDoc[]>([]);
   const [open, setOpen] = useState(false);
+  const [ntboOpen, setNtboOpen] = useState(false);
+  const [ownerOpen, setOwnerOpen] = useState(false);
+  const [pcnOpen, setPcnOpen] = useState(false);
+  const [pcn, setPcnLocal] = useState("");
 
   useEffect(() => {
-    const refresh = () => setDocs(listDocs(project.id));
+    const refresh = () => {
+      setDocs(listDocs(project.id));
+      setPcnLocal(getPCN(project.id));
+    };
     refresh();
     window.addEventListener("project-docs:changed", refresh);
-    return () => window.removeEventListener("project-docs:changed", refresh);
+    window.addEventListener("project-pcn:changed", refresh);
+    return () => {
+      window.removeEventListener("project-docs:changed", refresh);
+      window.removeEventListener("project-pcn:changed", refresh);
+    };
   }, [project.id]);
 
   const byType = useMemo(() => {
@@ -264,13 +275,63 @@ function DocumentsTab({ project }: { project: Project }) {
   }, [docs]);
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
+      {/* Generate Forms — pre-filled private provider PDFs */}
+      <div className="border border-obsidian/12 bg-white rounded-[3px]">
+        <div className="flex items-center justify-between border-b border-obsidian/10 bg-paper-warm px-4 py-2.5">
+          <div className="font-mono text-[11px] uppercase tracking-[0.14em] text-obsidian/70">
+            Generate Forms
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-obsidian/55">
+              PCN: {pcn || <span className="text-amber-700">not set</span>}
+            </span>
+            <Button variant="outline" size="sm" className="rounded-[3px]" onClick={() => setPcnOpen(true)}>
+              <MapPinned className="mr-1.5 h-3.5 w-3.5" /> Look Up PCN
+            </Button>
+          </div>
+        </div>
+        <div className="p-4 grid gap-3 sm:grid-cols-2">
+          <button
+            onClick={() => setNtboOpen(true)}
+            className="text-left border border-obsidian/12 hover:border-obsidian rounded-[3px] p-4 bg-paper-warm/40 transition"
+          >
+            <div className="flex items-center gap-2">
+              <FileSignature className="h-4 w-4 text-obsidian/60" />
+              <div className="text-sm font-semibold text-obsidian">Generate NTBO</div>
+            </div>
+            <div className="mt-1 text-xs text-obsidian/60">
+              Notice to Building Official — pre-filled with project + Flōridian firm data.
+            </div>
+            <div className="mt-2 font-mono text-[10px] uppercase tracking-[0.12em] text-obsidian/50">
+              Form 61G20-2.005 · §553.791
+            </div>
+          </button>
+          <button
+            onClick={() => setOwnerOpen(true)}
+            className="text-left border border-obsidian/12 hover:border-obsidian rounded-[3px] p-4 bg-paper-warm/40 transition"
+          >
+            <div className="flex items-center gap-2">
+              <FileCheck2 className="h-4 w-4 text-obsidian/60" />
+              <div className="text-sm font-semibold text-obsidian">Generate Owner Auth</div>
+            </div>
+            <div className="mt-1 text-xs text-obsidian/60">
+              Private Provider Owner Authorization & Indemnification.
+            </div>
+            <div className="mt-2 font-mono text-[10px] uppercase tracking-[0.12em] text-obsidian/50">
+              FL Statute §553.791
+            </div>
+          </button>
+        </div>
+      </div>
+
       <div className="flex items-center justify-between">
         <div className="text-sm text-obsidian/60">{docs.length} document{docs.length === 1 ? "" : "s"} on file</div>
         <Button variant="dark" size="sm" className="rounded-[3px]" onClick={() => setOpen(true)}>
           <Upload className="mr-1.5 h-3.5 w-3.5" /> Upload Document
         </Button>
       </div>
+
 
       <div className="space-y-3">
         {DOC_TYPES.map((type) => {
