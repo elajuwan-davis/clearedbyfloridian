@@ -121,9 +121,14 @@ function AdminPage() {
               Admin · Staff Only
             </span>
           </div>
-          <h1 className="display-serif mt-3 text-5xl text-obsidian">
-            Operations <em>Desk</em>
-          </h1>
+          <div className="mt-3 flex flex-wrap items-end justify-between gap-4">
+            <h1 className="display-serif text-5xl text-obsidian">
+              Operations <em>Desk</em>
+            </h1>
+            <Button asChild variant="outline" className="rounded-[3px]">
+              <a href="/admin/contractors">Contractor Registry →</a>
+            </Button>
+          </div>
           <p className="mt-2 max-w-2xl text-sm text-obsidian/60">
             Portfolio-wide queue across Broward, Palm Beach, and the Treasure Coast. Triage
             corrections, assign reviewers, monitor float on invoiced fees.

@@ -47,6 +47,7 @@ import { Route as FormsSubcontractorIntakeRouteImport } from './routes/forms.sub
 import { Route as FormsPermitIntakeRouteImport } from './routes/forms.permit-intake'
 import { Route as FormsPaymentAuthorizationRouteImport } from './routes/forms.payment-authorization'
 import { Route as BuildingDeptLoginsSubmitRouteImport } from './routes/building-dept-logins.submit'
+import { Route as AdminContractorsRouteImport } from './routes/admin_.contractors'
 import { Route as AdminBuildersRouteImport } from './routes/admin.builders'
 import { Route as PortalSubcontractorsIndexRouteImport } from './routes/portal.subcontractors.index'
 import { Route as PortalGuidesIndexRouteImport } from './routes/portal.guides.index'
@@ -249,6 +250,11 @@ const BuildingDeptLoginsSubmitRoute =
     path: '/submit',
     getParentRoute: () => BuildingDeptLoginsRoute,
   } as any)
+const AdminContractorsRoute = AdminContractorsRouteImport.update({
+  id: '/admin_/contractors',
+  path: '/admin/contractors',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminBuildersRoute = AdminBuildersRouteImport.update({
   id: '/builders',
   path: '/builders',
@@ -309,6 +315,7 @@ export interface FileRoutesByFullPath {
   '/projects': typeof ProjectsRouteWithChildren
   '/services': typeof ServicesRoute
   '/admin/builders': typeof AdminBuildersRoute
+  '/admin/contractors': typeof AdminContractorsRoute
   '/building-dept-logins/submit': typeof BuildingDeptLoginsSubmitRoute
   '/forms/payment-authorization': typeof FormsPaymentAuthorizationRoute
   '/forms/permit-intake': typeof FormsPermitIntakeRoute
@@ -355,6 +362,7 @@ export interface FileRoutesByTo {
   '/projects': typeof ProjectsRouteWithChildren
   '/services': typeof ServicesRoute
   '/admin/builders': typeof AdminBuildersRoute
+  '/admin/contractors': typeof AdminContractorsRoute
   '/building-dept-logins/submit': typeof BuildingDeptLoginsSubmitRoute
   '/forms/payment-authorization': typeof FormsPaymentAuthorizationRoute
   '/forms/permit-intake': typeof FormsPermitIntakeRoute
@@ -403,6 +411,7 @@ export interface FileRoutesById {
   '/projects': typeof ProjectsRouteWithChildren
   '/services': typeof ServicesRoute
   '/admin/builders': typeof AdminBuildersRoute
+  '/admin_/contractors': typeof AdminContractorsRoute
   '/building-dept-logins/submit': typeof BuildingDeptLoginsSubmitRoute
   '/forms/payment-authorization': typeof FormsPaymentAuthorizationRoute
   '/forms/permit-intake': typeof FormsPermitIntakeRoute
@@ -452,6 +461,7 @@ export interface FileRouteTypes {
     | '/projects'
     | '/services'
     | '/admin/builders'
+    | '/admin/contractors'
     | '/building-dept-logins/submit'
     | '/forms/payment-authorization'
     | '/forms/permit-intake'
@@ -498,6 +508,7 @@ export interface FileRouteTypes {
     | '/projects'
     | '/services'
     | '/admin/builders'
+    | '/admin/contractors'
     | '/building-dept-logins/submit'
     | '/forms/payment-authorization'
     | '/forms/permit-intake'
@@ -545,6 +556,7 @@ export interface FileRouteTypes {
     | '/projects'
     | '/services'
     | '/admin/builders'
+    | '/admin_/contractors'
     | '/building-dept-logins/submit'
     | '/forms/payment-authorization'
     | '/forms/permit-intake'
@@ -592,6 +604,7 @@ export interface RootRouteChildren {
   ProjectGuidesRoute: typeof ProjectGuidesRoute
   ProjectsRoute: typeof ProjectsRouteWithChildren
   ServicesRoute: typeof ServicesRoute
+  AdminContractorsRoute: typeof AdminContractorsRoute
   SubIntakeTokenRoute: typeof SubIntakeTokenRoute
 }
 
@@ -863,6 +876,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BuildingDeptLoginsSubmitRouteImport
       parentRoute: typeof BuildingDeptLoginsRoute
     }
+    '/admin_/contractors': {
+      id: '/admin_/contractors'
+      path: '/admin/contractors'
+      fullPath: '/admin/contractors'
+      preLoaderRoute: typeof AdminContractorsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/builders': {
       id: '/admin/builders'
       path: '/builders'
@@ -1047,6 +1067,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProjectGuidesRoute: ProjectGuidesRoute,
   ProjectsRoute: ProjectsRouteWithChildren,
   ServicesRoute: ServicesRoute,
+  AdminContractorsRoute: AdminContractorsRoute,
   SubIntakeTokenRoute: SubIntakeTokenRoute,
 }
 export const routeTree = rootRouteImport
