@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { MessageCircle, Send, X } from "lucide-react";
 import { PROJECTS } from "@/lib/projects-data";
-import { getInspectionsForProject, type Inspection } from "@/lib/inspections";
-import { listSubcontractors } from "@/lib/subcontractor-library";
+import { loadInspections, buildInspections, type Inspection } from "@/lib/inspections";
+import { loadSubLibrary, coiLifecycleStatus, type SubRecord } from "@/lib/subcontractor-library";
 
 type Msg = { role: "user" | "vicky"; text: string };
 
