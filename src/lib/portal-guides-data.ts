@@ -788,6 +788,8 @@ export const PORTAL_GUIDES: PortalGuide[] = [
   ...SINGLE_FAMILY_GUIDES_2,
   ...SINGLE_FAMILY_GUIDES_3,
   ...GUIDES_BATCH_4,
+  ...GUIDES_BATCH_5,
+
 ];
 
 
