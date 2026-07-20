@@ -103,10 +103,8 @@ export async function deletePermit(id: string): Promise<void> {
 export const DEFAULT_DOC_TEMPLATE: PermitDoc[] = [
   { key: "stamped_plans", label: "Stamped Construction Plans", required: true, status: "missing", filename: null },
   { key: "site_survey", label: "Site / Spot Survey", required: false, status: "missing", filename: null },
-  { key: "product_approvals", label: "Product Approvals / NOA", required: false, status: "missing", filename: null },
-  { key: "truss_packet", label: "Truss Packet", required: false, status: "missing", filename: null },
-  { key: "energy_calcs", label: "Energy Calcs", required: false, status: "missing", filename: null },
-  { key: "civil_other", label: "Civil / Other", required: false, status: "missing", filename: null },
+  { key: "tdh_calculations", label: "TDH Calculations (Turnover Design and Hydraulics)", required: false, status: "missing", filename: null },
+  { key: "equipment_specification", label: "Equipment Specification", required: false, status: "missing", filename: null },
 ];
 
 export function getEffectiveDocs(row: PermitRow): PermitDoc[] {

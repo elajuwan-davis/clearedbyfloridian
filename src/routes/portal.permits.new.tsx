@@ -27,10 +27,8 @@ const PERMIT_TYPES = [
 const REQUIRED_DOCS = [
   { key: "stamped_plans", label: "Stamped Construction Plans", required: true, canDefer: true, desc: "Signed and sealed construction plans." },
   { key: "site_survey", label: "Site / Spot Survey", required: false, canDefer: false, desc: "Boundary or spot survey." },
-  { key: "product_approvals", label: "Product Approvals / NOA", required: false, canDefer: false, desc: "Miami-Dade NOAs or Florida Product Approvals." },
-  { key: "truss_packet", label: "Truss Packet", required: false, canDefer: false, desc: "Sealed truss engineering package." },
-  { key: "energy_calcs", label: "Energy Calcs", required: false, canDefer: false, desc: "Florida energy code compliance calcs." },
-  { key: "civil_other", label: "Civil / Other", required: false, canDefer: false, desc: "Civil drawings or additional support docs." },
+  { key: "tdh_calculations", label: "TDH Calculations (Turnover Design and Hydraulics)", required: false, canDefer: false, desc: "Turnover design and hydraulics calculations." },
+  { key: "equipment_specification", label: "Equipment Specification", required: false, canDefer: false, desc: "Equipment specifications and cut sheets." },
 ] as const;
 
 type DocState = { uploaded: string | null; na: boolean; deferred: boolean };
