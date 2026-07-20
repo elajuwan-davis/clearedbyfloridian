@@ -34,6 +34,13 @@ export type SubInsert = Partial<Omit<SubRow, "id" | "created_at" | "updated_at" 
 
 const T = () => supabase.from("subcontractors" as any) as any;
 
+async function requireSignedInTeamSession() {
+  const { data, error } = await supabase.auth.getSession();
+  if (error || !data.session) {
+    throw new Error("Please sign in again with a team account before saving subcontractors.");
+  }
+}
+
 export async function listSubs(): Promise<SubRow[]> {
   const { data, error } = await T().select("*").order("created_at", { ascending: false });
   if (error) throw error;
@@ -47,18 +54,21 @@ export async function getSub(id: string): Promise<SubRow | null> {
 }
 
 export async function createSub(row: SubInsert): Promise<SubRow> {
+  await requireSignedInTeamSession();
   const { data, error } = await T().insert(row).select("*").single();
   if (error) throw error;
   return data as SubRow;
 }
 
 export async function updateSubApi(id: string, patch: Partial<SubInsert>): Promise<SubRow> {
+  await requireSignedInTeamSession();
   const { data, error } = await T().update(patch).eq("id", id).select("*").single();
   if (error) throw error;
   return data as SubRow;
 }
 
 export async function deleteSub(id: string): Promise<void> {
+  await requireSignedInTeamSession();
   const { error } = await T().delete().eq("id", id);
   if (error) throw error;
 }
