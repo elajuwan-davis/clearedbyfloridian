@@ -162,7 +162,7 @@ export function PermitDocUploader({ permit, doc, onChange, readOnly = false }: P
 
       </div>
 
-      {!isUploaded && (
+      {!isUploaded && !readOnly && (
         <div className="mt-3 ml-7">
           <div
             onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
