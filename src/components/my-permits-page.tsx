@@ -1,15 +1,14 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { PortalShell } from "@/components/portal-shell";
-import { ChevronDown, Search, Eye, EyeOff, ArrowUpRight, AlertTriangle } from "lucide-react";
+import { ChevronDown, Search, Eye, EyeOff, ArrowUpRight, AlertTriangle, RefreshCw, CheckCircle2 } from "lucide-react";
 import { projectStatusMeta, toneClass } from "@/lib/status-badges";
 import { PROJECTS, fullAddress, isAddressIncomplete } from "@/lib/projects-data";
 import { findPortalForAddress } from "@/lib/municipalities";
 import { ExternalLink } from "lucide-react";
 import { buildInspections, loadInspections, passedCount, POOL_INSPECTION_COUNT } from "@/lib/inspections";
 import { totalForProject, fmtUsd } from "@/lib/manual-fees";
-
-import { isPermitTypeComplete, permitTypeAnchor } from "@/lib/permit-type-status";
+import { syncAllPermits, getLastRun, getEffectiveStatus, formatRelative, type SyncResult } from "@/lib/permit-sync";
 
 type Project = {
   id: string;
