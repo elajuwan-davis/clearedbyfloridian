@@ -94,12 +94,100 @@ export async function deletePermit(id: string): Promise<void> {
   if (error) throw error;
 }
 
+// Default document checklist applied when a permit has no documents attached yet
+// (matches the GC Intake — 6 Document Upload Fields).
+export const DEFAULT_DOC_TEMPLATE: PermitDoc[] = [
+  { key: "stamped_plans", label: "Stamped Construction Plans", required: true, status: "missing", filename: null },
+  { key: "site_survey", label: "Site / Spot Survey", required: false, status: "missing", filename: null },
+  { key: "product_approvals", label: "Product Approvals / NOA", required: false, status: "missing", filename: null },
+  { key: "truss_packet", label: "Truss Packet", required: false, status: "missing", filename: null },
+  { key: "energy_calcs", label: "Energy Calcs", required: false, status: "missing", filename: null },
+  { key: "civil_other", label: "Civil / Other", required: false, status: "missing", filename: null },
+];
+
+export function getEffectiveDocs(row: PermitRow): PermitDoc[] {
+  const docs = row.documents ?? [];
+  return docs.length > 0 ? docs : DEFAULT_DOC_TEMPLATE;
+}
+
 export function missingRequiredDocs(row: PermitRow): PermitDoc[] {
-  return (row.documents ?? []).filter(
+  return getEffectiveDocs(row).filter(
     (d) => d.required && d.status !== "uploaded" && d.status !== "not_applicable",
   );
 }
 
 export function pendingDocs(row: PermitRow): PermitDoc[] {
-  return (row.documents ?? []).filter((d) => d.status === "pending" || d.status === "missing");
+  return getEffectiveDocs(row).filter((d) => d.status === "pending" || d.status === "missing");
+}
+
+// Required fields tracked for permit completeness.
+export const REQUIRED_FIELDS: Array<{ key: keyof PermitRow; label: string }> = [
+  { key: "project_name", label: "Project Name" },
+  { key: "job_address", label: "Job Address" },
+  { key: "city", label: "City" },
+  { key: "county", label: "County" },
+  { key: "municipality", label: "Municipality" },
+  { key: "permit_type", label: "Permit Type" },
+  { key: "permit_number", label: "Permit Number" },
+  { key: "construction_value_cents", label: "Construction Value" },
+  { key: "pcn", label: "PCN (Parcel Control #)" },
+  { key: "description", label: "Scope Description" },
+  { key: "contractor_company", label: "Contractor Company" },
+  { key: "contractor_qualifier", label: "Contractor Qualifier" },
+  { key: "company_address", label: "Company Address" },
+  { key: "poc", label: "Point of Contact" },
+  { key: "poc_phone", label: "POC Phone" },
+  { key: "poc_email", label: "POC Email" },
+  { key: "license_number", label: "License Number" },
+  { key: "owner_name", label: "Owner Name" },
+  { key: "submitted_date", label: "Submitted Date" },
+];
+
+function fieldFilled(row: PermitRow, key: keyof PermitRow): boolean {
+  const v = row[key];
+  if (v === null || v === undefined) return false;
+  if (typeof v === "string") return v.trim().length > 0;
+  if (typeof v === "number") return v > 0;
+  return true;
+}
+
+export function missingRequiredFields(row: PermitRow): Array<{ key: string; label: string }> {
+  return REQUIRED_FIELDS.filter((f) => !fieldFilled(row, f.key)).map((f) => ({ key: String(f.key), label: f.label }));
+}
+
+export type PermitCompleteness = {
+  fieldsTotal: number;
+  fieldsDone: number;
+  docsTotal: number;
+  docsDone: number;
+  total: number;
+  done: number;
+  percent: number;
+  missingFields: Array<{ key: string; label: string }>;
+  missingDocs: PermitDoc[];
+  pendingDocs: PermitDoc[];
+};
+
+export function permitCompleteness(row: PermitRow): PermitCompleteness {
+  const docs = getEffectiveDocs(row);
+  const fieldsTotal = REQUIRED_FIELDS.length;
+  const missingFields = missingRequiredFields(row);
+  const fieldsDone = fieldsTotal - missingFields.length;
+
+  const docsTotal = docs.length;
+  const docsDone = docs.filter((d) => d.status === "uploaded" || d.status === "not_applicable").length;
+  const missingDocsList = docs.filter((d) => d.status !== "uploaded" && d.status !== "not_applicable");
+  const pendingDocsList = docs.filter((d) => d.status === "pending" || d.status === "missing");
+
+  const total = fieldsTotal + docsTotal;
+  const done = fieldsDone + docsDone;
+  return {
+    fieldsTotal, fieldsDone,
+    docsTotal, docsDone,
+    total, done,
+    percent: total === 0 ? 0 : Math.round((done / total) * 100),
+    missingFields,
+    missingDocs: missingDocsList,
+    pendingDocs: pendingDocsList,
+  };
 }
