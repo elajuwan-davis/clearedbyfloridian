@@ -130,11 +130,8 @@ function PermitDetailPage() {
                       <button
                         type="button"
                         onClick={() => {
-                          const el = document.getElementById(`field-${f.key}`);
-                          if (el) {
-                            el.scrollIntoView({ behavior: "smooth", block: "center" });
-                            (el.querySelector("input,textarea,select") as HTMLElement | null)?.focus();
-                          }
+                          const el = document.getElementById(`field-${f.key}`) as HTMLElement | null;
+                          if (el) { el.scrollIntoView({ behavior: "smooth", block: "center" }); (el as HTMLInputElement).focus?.(); }
                         }}
                         className="font-mono text-[10px] uppercase tracking-[0.14em] text-red-700 hover:underline"
                       >
