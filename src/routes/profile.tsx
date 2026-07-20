@@ -117,7 +117,7 @@ function ProfilePage() {
 
   async function saveProfile() {
     if (!userId) { toast.success("Profile saved (sign in to persist)"); return; }
-    const { error } = await supabase.from("profiles" as any).update({
+    const { error } = await (supabase.from("profiles" as any) as any).update({
       display_name: displayName,
       avatar_url: avatar,
       company_name: company.name,
