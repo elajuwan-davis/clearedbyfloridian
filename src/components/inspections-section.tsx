@@ -122,7 +122,8 @@ export function InspectionsSection({
               <li key={ins.code} className="px-5 py-4">
                 <div className="flex flex-wrap items-center gap-3">
                   <span className="inline-flex h-8 min-w-[3rem] items-center justify-center bg-[#153157] px-2 font-mono text-[11px] font-semibold tracking-[0.08em] text-white rounded-[3px]">
-                    {ins.code}
+                    {ins.code.replace(/-.*$/, "")}
+
                   </span>
                   {ins.phase !== undefined && (
                     <span
