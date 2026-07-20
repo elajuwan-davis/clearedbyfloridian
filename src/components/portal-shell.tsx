@@ -9,6 +9,7 @@ import {
   Receipt,
   Sparkle,
   BookOpen,
+  Wrench,
   Calculator,
   ShieldCheck,
   FileCheck2,
@@ -36,6 +37,7 @@ const portalNav: NavSection[] = [
     items: [
       { to: "/portal", label: "Dashboard", icon: LayoutDashboard, exact: true },
       { to: "/portal/guides", label: "Project Guides", icon: BookOpen },
+      { to: "/portal/equipment-specs", label: "Equipment Specs", icon: Wrench },
     ],
   },
   {
