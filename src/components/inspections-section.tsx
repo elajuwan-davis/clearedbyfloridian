@@ -118,6 +118,15 @@ export function InspectionsSection({
                   <span className="inline-flex h-8 min-w-[3rem] items-center justify-center bg-[#153157] px-2 font-mono text-[11px] font-semibold tracking-[0.08em] text-white rounded-[3px]">
                     {ins.code}
                   </span>
+                  {ins.phase !== undefined && (
+                    <span
+                      className="inline-flex h-8 items-center justify-center border border-obsidian/20 bg-sky/20 px-2 font-mono text-[10px] font-semibold uppercase tracking-[0.1em] text-obsidian rounded-[3px]"
+                      title={`Phase ${ins.phase} — inspections in the same phase are typically called together`}
+                    >
+                      Phase {ins.phase}
+                    </span>
+                  )}
+
                   <button
                     type="button"
                     onClick={() =>
