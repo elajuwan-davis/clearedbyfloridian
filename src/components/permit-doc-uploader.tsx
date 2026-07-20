@@ -19,6 +19,7 @@ export function PermitDocUploader({ permit, doc, onChange, readOnly = false }: P
   const [busy, setBusy] = useState(false);
   const [dragOver, setDragOver] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [drivePickerOpen, setDrivePickerOpen] = useState(false);
 
   const isUploaded = doc.status === "uploaded" && doc.path;
 
