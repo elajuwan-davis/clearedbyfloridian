@@ -44,6 +44,7 @@ import { Route as PortalPermitFeesRouteImport } from './routes/portal.permit-fee
 import { Route as PortalNotaryQueueRouteImport } from './routes/portal.notary-queue'
 import { Route as PortalNewPermitRouteImport } from './routes/portal.new-permit'
 import { Route as PortalInspectionsRouteImport } from './routes/portal.inspections'
+import { Route as PortalEquipmentSpecsRouteImport } from './routes/portal.equipment-specs'
 import { Route as PortalBuildingDeptRouteImport } from './routes/portal.building-dept'
 import { Route as PermitCardIdRouteImport } from './routes/permit-card.$id'
 import { Route as FormsSubcontractorIntakeRouteImport } from './routes/forms.subcontractor-intake'
@@ -241,6 +242,11 @@ const PortalInspectionsRoute = PortalInspectionsRouteImport.update({
   path: '/inspections',
   getParentRoute: () => PortalRoute,
 } as any)
+const PortalEquipmentSpecsRoute = PortalEquipmentSpecsRouteImport.update({
+  id: '/equipment-specs',
+  path: '/equipment-specs',
+  getParentRoute: () => PortalRoute,
+} as any)
 const PortalBuildingDeptRoute = PortalBuildingDeptRouteImport.update({
   id: '/building-dept',
   path: '/building-dept',
@@ -380,6 +386,7 @@ export interface FileRoutesByFullPath {
   '/forms/subcontractor-intake': typeof FormsSubcontractorIntakeRoute
   '/permit-card/$id': typeof PermitCardIdRoute
   '/portal/building-dept': typeof PortalBuildingDeptRoute
+  '/portal/equipment-specs': typeof PortalEquipmentSpecsRoute
   '/portal/inspections': typeof PortalInspectionsRoute
   '/portal/new-permit': typeof PortalNewPermitRoute
   '/portal/notary-queue': typeof PortalNotaryQueueRoute
@@ -436,6 +443,7 @@ export interface FileRoutesByTo {
   '/forms/subcontractor-intake': typeof FormsSubcontractorIntakeRoute
   '/permit-card/$id': typeof PermitCardIdRoute
   '/portal/building-dept': typeof PortalBuildingDeptRoute
+  '/portal/equipment-specs': typeof PortalEquipmentSpecsRoute
   '/portal/inspections': typeof PortalInspectionsRoute
   '/portal/new-permit': typeof PortalNewPermitRoute
   '/portal/notary-queue': typeof PortalNotaryQueueRoute
@@ -493,6 +501,7 @@ export interface FileRoutesById {
   '/forms/subcontractor-intake': typeof FormsSubcontractorIntakeRoute
   '/permit-card/$id': typeof PermitCardIdRoute
   '/portal/building-dept': typeof PortalBuildingDeptRoute
+  '/portal/equipment-specs': typeof PortalEquipmentSpecsRoute
   '/portal/inspections': typeof PortalInspectionsRoute
   '/portal/new-permit': typeof PortalNewPermitRoute
   '/portal/notary-queue': typeof PortalNotaryQueueRoute
@@ -552,6 +561,7 @@ export interface FileRouteTypes {
     | '/forms/subcontractor-intake'
     | '/permit-card/$id'
     | '/portal/building-dept'
+    | '/portal/equipment-specs'
     | '/portal/inspections'
     | '/portal/new-permit'
     | '/portal/notary-queue'
@@ -608,6 +618,7 @@ export interface FileRouteTypes {
     | '/forms/subcontractor-intake'
     | '/permit-card/$id'
     | '/portal/building-dept'
+    | '/portal/equipment-specs'
     | '/portal/inspections'
     | '/portal/new-permit'
     | '/portal/notary-queue'
@@ -664,6 +675,7 @@ export interface FileRouteTypes {
     | '/forms/subcontractor-intake'
     | '/permit-card/$id'
     | '/portal/building-dept'
+    | '/portal/equipment-specs'
     | '/portal/inspections'
     | '/portal/new-permit'
     | '/portal/notary-queue'
@@ -966,6 +978,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PortalInspectionsRouteImport
       parentRoute: typeof PortalRoute
     }
+    '/portal/equipment-specs': {
+      id: '/portal/equipment-specs'
+      path: '/equipment-specs'
+      fullPath: '/portal/equipment-specs'
+      preLoaderRoute: typeof PortalEquipmentSpecsRouteImport
+      parentRoute: typeof PortalRoute
+    }
     '/portal/building-dept': {
       id: '/portal/building-dept'
       path: '/building-dept'
@@ -1178,6 +1197,7 @@ const PortalProjectsRouteWithChildren = PortalProjectsRoute._addFileChildren(
 
 interface PortalRouteChildren {
   PortalBuildingDeptRoute: typeof PortalBuildingDeptRoute
+  PortalEquipmentSpecsRoute: typeof PortalEquipmentSpecsRoute
   PortalInspectionsRoute: typeof PortalInspectionsRoute
   PortalNewPermitRoute: typeof PortalNewPermitRoute
   PortalNotaryQueueRoute: typeof PortalNotaryQueueRoute
@@ -1196,6 +1216,7 @@ interface PortalRouteChildren {
 
 const PortalRouteChildren: PortalRouteChildren = {
   PortalBuildingDeptRoute: PortalBuildingDeptRoute,
+  PortalEquipmentSpecsRoute: PortalEquipmentSpecsRoute,
   PortalInspectionsRoute: PortalInspectionsRoute,
   PortalNewPermitRoute: PortalNewPermitRoute,
   PortalNotaryQueueRoute: PortalNotaryQueueRoute,
