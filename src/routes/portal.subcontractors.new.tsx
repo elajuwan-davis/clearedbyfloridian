@@ -82,11 +82,13 @@ function NewSubcontractorPage() {
     if (!form.qualifierName?.trim()) return toast.error("Qualifier Name is required");
     if (!form.licenseNumber?.trim()) return toast.error("License Number is required");
     if (!form.email?.trim()) return toast.error("Contact Email is required");
+    if (!form.coiExpiration) return toast.error("COI Expiration Date is required");
     const rec = upsertSub(form);
     setSaved(rec);
     setForm(rec);
     toast.success("Subcontractor saved");
   }
+
 
   function generateBlankInviteLink() {
     // Create a fully blank placeholder sub. The public /sub-intake/[token]
@@ -268,7 +270,7 @@ function NewSubcontractorPage() {
           <div className="sm:col-span-2">
             <FileRow label="COI Upload" name={form.coiFileName} keyName="coiFileName" />
           </div>
-          <div><label className={labelCls}>COI Expiration Date</label><input type="date" className={inputCls} value={form.coiExpiration ?? ""} onChange={(e) => set("coiExpiration", e.target.value || null)} /></div>
+          <div><label className={labelCls}>COI Expiration Date *</label><input type="date" required className={inputCls} value={form.coiExpiration ?? ""} onChange={(e) => set("coiExpiration", e.target.value || null)} /></div>
           <div className="sm:col-span-2">
             <FileRow label="W-9 Upload" name={form.w9FileName} keyName="w9FileName" />
           </div>
