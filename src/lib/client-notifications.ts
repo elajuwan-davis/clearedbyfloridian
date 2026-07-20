@@ -3,7 +3,7 @@
 
 import { addNote } from "./project-notes";
 import { PROJECTS, type Project, fullAddress } from "./projects-data";
-import { getMunicipalityAlias } from "./municipalities";
+import { findPortalForAddress } from "./municipalities";
 
 const PREFS_KEY = "cleared.client-notifications.prefs";
 const OUTBOX_KEY = "cleared.client-notifications.outbox";
@@ -77,7 +77,7 @@ function buildEmail(
   payload: NotificationPayload = {},
 ): { subject: string; body: string } {
   const addr = fullAddress(project);
-  const muni = getMunicipalityAlias(fullAddress(project))?.name ?? "your municipality";
+  const muni = findPortalForAddress(fullAddress(project))?.name ?? "your municipality";
   switch (kind) {
     case "submitted":
       return {
