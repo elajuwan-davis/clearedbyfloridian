@@ -743,6 +743,7 @@ const OUTDOOR_PLUMBING_ROUGH: PortalGuide = {
 
 import { COMMERCIAL_GUIDES } from "./portal-guides-commercial";
 import { SINGLE_FAMILY_GUIDES } from "./portal-guides-single-family";
+import { SINGLE_FAMILY_GUIDES_2 } from "./portal-guides-single-family-2";
 
 export const PORTAL_GUIDES: PortalGuide[] = [
   // Pool & Spa
@@ -780,6 +781,7 @@ export const PORTAL_GUIDES: PortalGuide[] = [
   ...COMMERCIAL_GUIDES,
   // Single Family
   ...SINGLE_FAMILY_GUIDES,
+  ...SINGLE_FAMILY_GUIDES_2,
 ];
 
 export const PORTAL_GUIDE_CATEGORIES = [
