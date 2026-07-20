@@ -173,6 +173,28 @@ export function ProjectDetail({ project }: { project: Project }) {
   );
 }
 
+function HeaderExtras({ project }: { project: Project }) {
+  const [apprOpen, setApprOpen] = useState(false);
+  return (
+    <>
+      <Button variant="outline" size="sm" className="rounded-[3px]" onClick={() => setApprOpen(true)}>
+        <Wand2 className="mr-1.5 h-3.5 w-3.5" /> Auto-Fill from Appraiser
+      </Button>
+      {project.permit_no && (
+        <Link
+          to="/permit-card/$id"
+          params={{ id: project.id }}
+          target="_blank"
+          className="inline-flex items-center gap-1.5 border border-obsidian/20 bg-white px-3 py-1.5 text-xs font-medium text-obsidian rounded-[3px] hover:bg-paper-warm"
+        >
+          <QrCode className="h-3.5 w-3.5" /> Generate Permit Card
+        </Link>
+      )}
+      <PropertyAppraiserDialog open={apprOpen} onOpenChange={setApprOpen} project={project} />
+    </>
+  );
+}
+
 function TabTrigger({ value, icon, label }: { value: string; icon: React.ReactNode; label: string }) {
   return (
     <TabsTrigger
