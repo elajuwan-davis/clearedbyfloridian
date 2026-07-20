@@ -116,7 +116,7 @@ function GCPortal() {
                       color: "var(--obsidian)",
                     }}
                   >
-                    {p.stage}
+                    {p.status}
                   </span>
                 </div>
               </Link>
