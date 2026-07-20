@@ -4,6 +4,7 @@ import { PortalShell } from "@/components/portal-shell";
 import { ChevronDown, Search, Eye, EyeOff, ArrowUpRight, AlertTriangle, RefreshCw, CheckCircle2 } from "lucide-react";
 import { projectStatusMeta, toneClass } from "@/lib/status-badges";
 import { PROJECTS, fullAddress, isAddressIncomplete } from "@/lib/projects-data";
+import { listHubspotProjects, HUBSPOT_EVT } from "@/lib/hubspot-projects";
 import { findPortalForAddress } from "@/lib/municipalities";
 import { ExternalLink } from "lucide-react";
 import { buildInspections, loadInspections, passedCount, POOL_INSPECTION_COUNT } from "@/lib/inspections";
@@ -19,6 +20,7 @@ type Project = {
   updated_at: string;
   incomplete: boolean;
   permit_types: string[];
+  fromHubspot?: boolean;
 };
 
 type GroupKey = "intake" | "preparing" | "submitted" | "on_hold" | "outsourced" | "issued" | "cancelled";
