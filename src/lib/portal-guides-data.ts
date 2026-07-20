@@ -793,6 +793,7 @@ export const PORTAL_GUIDES: PortalGuide[] = [
   ...GUIDES_BATCH_5,
   // Multi Family
   ...GUIDES_BATCH_6,
+  ...GUIDES_BATCH_7,
 
 ];
 
