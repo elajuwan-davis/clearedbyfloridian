@@ -237,6 +237,13 @@ export function PermitDocUploader({ permit, doc, onChange, readOnly = false }: P
           </div>
         </div>
       )}
+      <GoogleDrivePickerDialog
+        open={drivePickerOpen}
+        onOpenChange={setDrivePickerOpen}
+        permitId={permit.id}
+        docKey={doc.key}
+        onImported={handleDriveImported}
+      />
     </div>
   );
 }
