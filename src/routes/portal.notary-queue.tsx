@@ -12,6 +12,7 @@ import {
   NOTARY_EVT,
   type NotaryRequest,
 } from "@/lib/notary-requests";
+import { addDoc } from "@/lib/project-documents";
 
 export const Route = createFileRoute("/portal/notary-queue")({
   component: NotaryQueuePage,
