@@ -16,6 +16,10 @@ export type PermitDoc = {
   required: boolean;
   status: "uploaded" | "pending" | "not_applicable" | "missing";
   filename: string | null;
+  path?: string | null;
+  size?: number | null;
+  mime?: string | null;
+  uploaded_at?: string | null;
 };
 
 export type PermitSub = {
