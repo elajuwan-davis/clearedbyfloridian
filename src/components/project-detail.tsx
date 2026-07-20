@@ -18,7 +18,9 @@ import { ProjectManualFees } from "@/components/project-manual-fees";
 import { LogPermitFeeDialog } from "@/components/log-permit-fee-dialog";
 import { loadSubLibrary, coiStatus, coiLifecycleStatus, type SubRecord } from "@/lib/subcontractor-library";
 import { addNote, deleteNote, listNotes, type ProjectNote } from "@/lib/project-notes";
-import { DOC_TYPES, addDoc, deleteDoc, listDocs, type DocType, type ProjectDoc } from "@/lib/project-documents";
+import { DOC_TYPES, addDocFile, addDocPlaceholder, deleteDoc, listDocs, getDocViewUrl, getDocDownloadUrl, type DocType, type ProjectDoc } from "@/lib/project-documents";
+import { Eye, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 import { isInternalUser } from "@/lib/is-internal-user";
 import { notificationsEnabled, setNotificationsEnabled } from "@/lib/client-notifications";
 import { Bell, BellOff } from "lucide-react";
@@ -313,7 +315,7 @@ function DocumentsTab({ project }: { project: Project }) {
 
   useEffect(() => {
     const refresh = () => {
-      setDocs(listDocs(project.id));
+      void listDocs(project.id).then((list) => setDocs(list));
       setPcnLocal(getPCN(project.id));
       setTick((t) => t + 1);
     };
@@ -441,13 +443,51 @@ function DocumentsTab({ project }: { project: Project }) {
                               <Stamp className="h-3 w-3 mr-1" /> Request Notary
                             </Button>
                           )}
-                          <button className="p-1 text-obsidian/45 hover:text-obsidian" aria-label="Download">
-                            <Download className="h-3.5 w-3.5" />
-                          </button>
+                          {d.status === "uploaded" && (d.size ?? 0) > 0 && (
+                            <button
+                              className="p-1 text-obsidian/60 hover:text-obsidian"
+                              aria-label="View"
+                              title="View"
+                              onClick={async () => {
+                                try {
+                                  const url = await getDocViewUrl(d.path);
+                                  window.open(url, "_blank", "noopener,noreferrer");
+                                } catch (e) {
+                                  toast.error("Could not open: " + (e instanceof Error ? e.message : String(e)));
+                                }
+                              }}
+                            >
+                              <Eye className="h-3.5 w-3.5" />
+                            </button>
+                          )}
+                          {d.status === "uploaded" && (d.size ?? 0) > 0 && (
+                            <button
+                              className="p-1 text-obsidian/45 hover:text-obsidian"
+                              aria-label="Download"
+                              title="Download"
+                              onClick={async () => {
+                                try {
+                                  const url = await getDocDownloadUrl(d.path, d.filename);
+                                  const a = document.createElement("a");
+                                  a.href = url; a.download = d.filename;
+                                  document.body.appendChild(a); a.click(); a.remove();
+                                } catch (e) {
+                                  toast.error("Download failed: " + (e instanceof Error ? e.message : String(e)));
+                                }
+                              }}
+                            >
+                              <Download className="h-3.5 w-3.5" />
+                            </button>
+                          )}
                           <button
                             className="p-1 text-obsidian/45 hover:text-oxblood"
                             aria-label="Delete"
-                            onClick={() => { if (confirm("Remove this document?")) deleteDoc(d.id); }}
+                            onClick={async () => {
+                              if (!confirm("Remove this document?")) return;
+                              try { await deleteDoc(d.id); } catch (e) {
+                                toast.error("Delete failed: " + (e instanceof Error ? e.message : String(e)));
+                              }
+                            }}
                           >
                             <Trash2 className="h-3.5 w-3.5" />
                           </button>
@@ -525,18 +565,51 @@ function UploadDocDialog({
   open, onOpenChange, projectId,
 }: { open: boolean; onOpenChange: (v: boolean) => void; projectId: string }) {
   const [type, setType] = useState<DocType>(DOC_TYPES[0]);
-  const [filename, setFilename] = useState("");
+  const [file, setFile] = useState<File | null>(null);
+  const [busy, setBusy] = useState(false);
 
-  function save() {
-    if (!filename.trim()) return;
-    addDoc({
-      projectId,
-      type,
-      filename: filename.trim(),
-      uploadedBy: localStorage.getItem("cleared_demo_user") || "Team",
-    });
-    setFilename("");
-    onOpenChange(false);
+  async function save() {
+    if (!file) return;
+    if (file.size > 50 * 1024 * 1024) {
+      toast.error("File too large (max 50 MB)");
+      return;
+    }
+    setBusy(true);
+    try {
+      await addDocFile({
+        projectId,
+        type,
+        file,
+        uploadedBy: localStorage.getItem("cleared_demo_user") || "Team",
+      });
+      toast.success(`Uploaded ${file.name}`);
+      setFile(null);
+      onOpenChange(false);
+    } catch (e) {
+      toast.error("Upload failed: " + (e instanceof Error ? e.message : String(e)));
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function saveDeferred() {
+    if (!file) return;
+    setBusy(true);
+    try {
+      await addDocPlaceholder({
+        projectId,
+        type,
+        filename: file.name,
+        uploadedBy: localStorage.getItem("cleared_demo_user") || "Team",
+      });
+      toast.success("Marked as pending — upload later");
+      setFile(null);
+      onOpenChange(false);
+    } catch (e) {
+      toast.error("Save failed: " + (e instanceof Error ? e.message : String(e)));
+    } finally {
+      setBusy(false);
+    }
   }
 
   return (
@@ -558,15 +631,26 @@ function UploadDocDialog({
             <label className="font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/55">File</label>
             <input
               type="file"
-              onChange={(e) => setFilename(e.target.files?.[0]?.name ?? "")}
+              accept=".pdf,.png,.jpg,.jpeg,.webp,.heic,.doc,.docx,.xls,.xlsx"
+              onChange={(e) => setFile(e.target.files?.[0] ?? null)}
               className="mt-1.5 block w-full text-sm"
             />
-            {filename && <div className="mt-1 font-mono text-[11px] text-obsidian/60">{filename}</div>}
+            {file && (
+              <div className="mt-1 font-mono text-[11px] text-obsidian/60">
+                {file.name} · {(file.size / 1024).toFixed(0)} KB
+              </div>
+            )}
           </div>
         </div>
         <div className="mt-6 flex justify-end gap-2">
-          <Button variant="outline" onClick={() => onOpenChange(false)} className="rounded-[3px]">Cancel</Button>
-          <Button variant="dark" onClick={save} className="rounded-[3px]" disabled={!filename.trim()}>Upload</Button>
+          <Button variant="outline" onClick={() => onOpenChange(false)} className="rounded-[3px]" disabled={busy}>Cancel</Button>
+          <Button variant="outline" onClick={saveDeferred} className="rounded-[3px]" disabled={!file || busy}>
+            Defer — upload later
+          </Button>
+          <Button variant="dark" onClick={save} className="rounded-[3px]" disabled={!file || busy}>
+            {busy ? <Loader2 className="h-3.5 w-3.5 animate-spin mr-1.5" /> : <Upload className="h-3.5 w-3.5 mr-1.5" />}
+            Upload
+          </Button>
         </div>
       </DialogContent>
     </Dialog>
