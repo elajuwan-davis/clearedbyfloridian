@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { PortalShell } from "@/components/portal-shell";
 import { ChevronDown, Search, AlertTriangle, Plus, FileText, RefreshCw } from "lucide-react";
 import { listPermits, permitCompleteness, type PermitRow, type PermitStatus } from "@/lib/permits-api";
+import { syncAllPermits, getLastRun, formatRelative } from "@/lib/permit-sync";
 
 type GroupKey = "intake" | "preparing" | "submitted" | "on_hold" | "outsourced" | "issued" | "cancelled";
 
