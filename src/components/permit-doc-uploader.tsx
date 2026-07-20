@@ -216,10 +216,10 @@ export function PermitDocUploader({ permit, doc, onChange, readOnly = false }: P
                 >
                   {busy ? <Loader2 className="h-3 w-3 animate-spin" /> : <Upload className="h-3 w-3" />} Browse
                 </button>
-                <button type="button" onClick={() => handleCloudSoon("Google Drive")} className="inline-flex items-center gap-1.5 border border-obsidian/20 bg-white px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian rounded-[3px] hover:bg-obsidian/5">
+                <button type="button" onClick={() => setDrivePickerOpen(true)} className="inline-flex items-center gap-1.5 border border-obsidian/20 bg-white px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian rounded-[3px] hover:bg-obsidian/5">
                   <Cloud className="h-3 w-3" /> Google Drive
                 </button>
-                <button type="button" onClick={() => handleCloudSoon("OneDrive")} className="inline-flex items-center gap-1.5 border border-obsidian/20 bg-white px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian rounded-[3px] hover:bg-obsidian/5">
+                <button type="button" onClick={handleOneDriveSoon} className="inline-flex items-center gap-1.5 border border-obsidian/20 bg-white px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian rounded-[3px] hover:bg-obsidian/5">
                   <Cloud className="h-3 w-3" /> OneDrive
                 </button>
                 {doc.status !== "pending" && (
