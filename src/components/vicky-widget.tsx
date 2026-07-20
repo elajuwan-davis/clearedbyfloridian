@@ -24,7 +24,7 @@ function answer(input: string): string {
     for (const p of PROJECTS) {
       if (q.includes(p.client.toLowerCase().split(" ")[0]) || q.includes(p.name.toLowerCase().split(" ")[0])) {
         let insp: Inspection[] = [];
-        try { insp = getInspectionsForProject(p.id); } catch { /* ignore */ }
+        try { insp = loadInspections(p.id, buildInspections(false)); } catch { /* ignore */ }
         const pending = insp.filter((i) => i.status === "pending" || i.status === "scheduled");
         if (q.includes("next")) {
           const next = pending[0];
@@ -42,13 +42,13 @@ function answer(input: string): string {
   // Expired COIs
   if (q.includes("coi") && (q.includes("expired") || q.includes("expiring"))) {
     try {
-      const subs = listSubcontractors();
+      const subs: SubRecord[] = loadSubLibrary();
       const flagged = subs.filter((s) => {
-        const status = (s as { coi_status?: string }).coi_status;
+        const status = coiLifecycleStatus(s);
         return status === "expired" || status === "expiring_soon";
       });
       return flagged.length
-        ? `${flagged.length} subs with COI issues: ${flagged.slice(0, 5).map((s) => s.company_name).join(", ")}.`
+        ? `${flagged.length} subs with COI issues: ${flagged.slice(0, 5).map((s) => s.companyName).join(", ")}.`
         : "All subcontractor COIs are current.";
     } catch {
       return "COI tracking data is not available right now.";
@@ -65,13 +65,13 @@ function answer(input: string): string {
 
   // Permits in issued status
   if (q.includes("permit") && q.includes("issued")) {
-    const issued = PROJECTS.filter((p) => p.status === "Issued");
+    const issued = PROJECTS.filter((p) => p.status === "permit_issued");
     return `${issued.length} permits are currently in Issued status.`;
   }
 
   // Projects on hold
   if (q.includes("hold")) {
-    const held = PROJECTS.filter((p) => p.status === "On Hold");
+    const held = PROJECTS.filter((p) => p.status === "on_hold");
     return held.length
       ? `${held.length} projects on hold: ${held.map((p) => p.name).join(", ")}.`
       : "No projects are currently on hold.";
