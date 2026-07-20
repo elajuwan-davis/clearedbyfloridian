@@ -86,8 +86,12 @@ export function MyPermitsPage() {
             <p className="mt-2 text-[12px] text-obsidian/55">{loading ? "Loading…" : `${permits.length} permit${permits.length === 1 ? "" : "s"} on file`}</p>
           </div>
           <div className="flex items-center gap-2">
-            <button onClick={refresh} className="inline-flex items-center gap-2 border border-obsidian/20 bg-white px-3 py-2 font-mono text-[10px] uppercase tracking-[0.12em] text-obsidian hover:bg-paper-warm rounded-[3px]">
-              <RefreshCw className={`h-3.5 w-3.5 ${loading ? "animate-spin" : ""}`} /> Refresh
+            <div className="hidden sm:flex flex-col items-end mr-1">
+              <span className="font-mono text-[9px] uppercase tracking-[0.14em] text-obsidian/45">Last sync</span>
+              <span className="font-mono text-[10px] tabular-nums text-obsidian/70">{syncMsg ?? formatRelative(lastSync)}</span>
+            </div>
+            <button onClick={handleSync} disabled={syncing} className="inline-flex items-center gap-2 border border-obsidian/20 bg-white px-3 py-2 font-mono text-[10px] uppercase tracking-[0.12em] text-obsidian hover:bg-paper-warm rounded-[3px] disabled:opacity-60">
+              <RefreshCw className={`h-3.5 w-3.5 ${syncing ? "animate-spin" : ""}`} /> {syncing ? "Syncing…" : "Sync Permits"}
             </button>
             <Link to="/portal/permits/new" className="inline-flex items-center gap-2 bg-obsidian px-4 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-paper hover:bg-obsidian/90 rounded-[3px]">
               <Plus className="h-3.5 w-3.5" /> New Permit
