@@ -99,7 +99,7 @@ function MessagesPage() {
         .order("created_at", { ascending: true });
       if (cancelled || error || !data || data.length === 0) return;
       const byProject = new Map<string, Thread>();
-      for (const m of data as Array<Record<string, unknown>>) {
+      for (const m of (data as any[]) as Array<Record<string, unknown>>) {
         const pid = String(m.project_id ?? "");
         if (!pid) continue;
         const proj = (m.projects as Record<string, unknown> | null) ?? {};

@@ -51,7 +51,7 @@ function InvoicesPage() {
         .order("created_at", { ascending: false });
       if (cancelled || error || !data || data.length === 0) return;
       setInvoices(
-        data.map((r: Record<string, unknown>) => ({
+        (data as any[]).map((r: Record<string, unknown>) => ({
           number: String(r.invoice_number ?? r.id),
           status: String(r.status ?? "pending") as InvStatus,
           address: String(r.address ?? ""),

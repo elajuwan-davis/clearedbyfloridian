@@ -74,7 +74,7 @@ function ProfilePage() {
         .eq("id", uid)
         .maybeSingle();
       if (cancelled || error || !data) return;
-      const d = data as Record<string, unknown>;
+      const d = data as unknown as Record<string, unknown>;
       if (d.display_name || d.full_name) setDisplayName(String(d.display_name ?? d.full_name));
       if (d.avatar_url) setAvatar(String(d.avatar_url));
       setCompany((c) => ({
