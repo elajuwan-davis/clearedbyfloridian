@@ -62,7 +62,6 @@ export function MyPermitsPage() {
   useEffect(() => {
     const counts: Record<string, number> = {};
     for (const p of projects) {
-      if (!p.permit_types.some((t) => t.toLowerCase() === "pool")) continue;
       const seed = buildInspections(false);
       counts[p.id] = passedCount(loadInspections(p.id, seed));
     }
