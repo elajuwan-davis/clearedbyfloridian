@@ -1,8 +1,9 @@
 import { createFileRoute, Link, useNavigate, notFound } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { ArrowLeft, Trash2, Save, AlertTriangle, FileText, Check, X } from "lucide-react";
+import { ArrowLeft, Trash2, Save, AlertTriangle, FileText } from "lucide-react";
 import { getPermit, updatePermit, deletePermit, permitCompleteness, getEffectiveDocs, type PermitRow, type PermitStatus } from "@/lib/permits-api";
+import { PermitDocUploader } from "@/components/permit-doc-uploader";
 
 export const Route = createFileRoute("/portal/permits/$id")({
   head: () => ({
@@ -122,8 +123,25 @@ function PermitDetailPage() {
                 <div className="flex items-center gap-2 text-sm font-medium text-red-800">
                   <AlertTriangle className="h-4 w-4" /> {c.missingFields.length} missing field{c.missingFields.length === 1 ? "" : "s"}
                 </div>
-                <ul className="mt-2 text-[12px] text-red-900/80 list-disc pl-5 space-y-0.5">
-                  {c.missingFields.map((f) => <li key={f.key}>{f.label}</li>)}
+                <ul className="mt-2 text-[12px] text-red-900/80 space-y-1">
+                  {c.missingFields.map((f) => (
+                    <li key={f.key} className="flex items-center justify-between gap-2">
+                      <span>• {f.label}</span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const el = document.getElementById(`field-${f.key}`);
+                          if (el) {
+                            el.scrollIntoView({ behavior: "smooth", block: "center" });
+                            (el.querySelector("input,textarea,select") as HTMLElement | null)?.focus();
+                          }
+                        }}
+                        className="font-mono text-[10px] uppercase tracking-[0.14em] text-red-700 hover:underline"
+                      >
+                        Fill →
+                      </button>
+                    </li>
+                  ))}
                 </ul>
               </div>
             )}
@@ -132,10 +150,20 @@ function PermitDetailPage() {
                 <div className="flex items-center gap-2 text-sm font-medium text-amber-900">
                   <FileText className="h-4 w-4" /> {c.missingDocs.length} missing document{c.missingDocs.length === 1 ? "" : "s"}
                 </div>
-                <ul className="mt-2 text-[12px] text-amber-900/80 list-disc pl-5 space-y-0.5">
+                <ul className="mt-2 text-[12px] text-amber-900/80 space-y-1">
                   {c.missingDocs.map((d) => (
-                    <li key={d.key}>
-                      {d.label}{d.required && <span className="ml-1.5 text-[10px] font-mono uppercase text-red-700">Required</span>}
+                    <li key={d.key} className="flex items-center justify-between gap-2">
+                      <span>• {d.label}{d.required && <span className="ml-1.5 text-[10px] font-mono uppercase text-red-700">Required</span>}</span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const el = document.getElementById(`doc-${d.key}`);
+                          if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+                        }}
+                        className="font-mono text-[10px] uppercase tracking-[0.14em] text-amber-800 hover:underline"
+                      >
+                        Upload →
+                      </button>
                     </li>
                   ))}
                 </ul>
