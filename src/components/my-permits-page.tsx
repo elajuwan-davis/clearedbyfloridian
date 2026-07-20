@@ -4,6 +4,7 @@ import { PortalShell } from "@/components/portal-shell";
 import { ChevronDown, Search, Eye, EyeOff, ArrowUpRight, AlertTriangle, RefreshCw, CheckCircle2 } from "lucide-react";
 import { projectStatusMeta, toneClass } from "@/lib/status-badges";
 import { PROJECTS, fullAddress, isAddressIncomplete } from "@/lib/projects-data";
+import { listHubspotProjects, HUBSPOT_EVT } from "@/lib/hubspot-projects";
 import { findPortalForAddress } from "@/lib/municipalities";
 import { ExternalLink } from "lucide-react";
 import { buildInspections, loadInspections, passedCount, POOL_INSPECTION_COUNT } from "@/lib/inspections";
@@ -19,6 +20,7 @@ type Project = {
   updated_at: string;
   incomplete: boolean;
   permit_types: string[];
+  fromHubspot?: boolean;
 };
 
 type GroupKey = "intake" | "preparing" | "submitted" | "on_hold" | "outsourced" | "issued" | "cancelled";
@@ -49,10 +51,24 @@ type CountyFilter = "All" | (typeof COUNTIES)[number];
 
 export function MyPermitsPage() {
   const [statusVersion, setStatusVersion] = useState(0);
+  const [hubspotVersion, setHubspotVersion] = useState(0);
   const projects = useMemo<Project[]>(
-    () => SEED.map((p) => ({ ...p, status: getEffectiveStatus(p.id, p.status as any) })),
+    () => {
+      const hs: Project[] = (typeof window === "undefined" ? [] : listHubspotProjects()).map((p) => ({
+        id: p.id,
+        name: p.name,
+        address: fullAddress(p),
+        county: p.county,
+        status: p.status,
+        updated_at: p.updated_at,
+        incomplete: isAddressIncomplete(p),
+        permit_types: p.permit_types,
+        fromHubspot: true,
+      }));
+      return [...hs, ...SEED].map((p) => ({ ...p, status: getEffectiveStatus(p.id, p.status as any) }));
+    },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [statusVersion],
+    [statusVersion, hubspotVersion],
   );
   const [query, setQuery] = useState("");
   const [countyFilter, setCountyFilter] = useState<CountyFilter>("All");
@@ -69,12 +85,18 @@ export function MyPermitsPage() {
 
   useEffect(() => {
     setLastRun(getLastRun());
+    setHubspotVersion((v) => v + 1); // hydrate hubspot list after mount
     const onSync = () => {
       setLastRun(getLastRun());
       setStatusVersion((v) => v + 1);
     };
+    const onHs = () => setHubspotVersion((v) => v + 1);
     window.addEventListener("permit-sync:changed", onSync);
-    return () => window.removeEventListener("permit-sync:changed", onSync);
+    window.addEventListener(HUBSPOT_EVT, onHs);
+    return () => {
+      window.removeEventListener("permit-sync:changed", onSync);
+      window.removeEventListener(HUBSPOT_EVT, onHs);
+    };
   }, []);
 
   useEffect(() => {
@@ -253,6 +275,14 @@ export function MyPermitsPage() {
                           <div className="relative min-w-0 flex-1">
                             <div className="flex items-center gap-2">
                               <div className="text-sm font-medium text-obsidian truncate">{p.name}</div>
+                              {p.fromHubspot && (
+                                <span
+                                  className="inline-flex items-center gap-1 border border-[#ff7a59]/40 bg-[#ff7a59]/10 px-1.5 py-0.5 text-[9px] font-mono uppercase tracking-[0.1em] text-[#c34a2f] rounded-[2px]"
+                                  title="Auto-created from HubSpot deal"
+                                >
+                                  HubSpot
+                                </span>
+                              )}
                               {p.incomplete && (
                                 <span className="inline-flex items-center gap-1 border border-amber-500/40 bg-amber-50 px-1.5 py-0.5 text-[9px] font-mono uppercase tracking-[0.1em] text-amber-700 rounded-[2px]">
                                   <AlertTriangle className="h-2.5 w-2.5" />

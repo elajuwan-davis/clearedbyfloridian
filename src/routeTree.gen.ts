@@ -49,6 +49,7 @@ import { Route as FormsPermitIntakeRouteImport } from './routes/forms.permit-int
 import { Route as FormsPaymentAuthorizationRouteImport } from './routes/forms.payment-authorization'
 import { Route as BuildingDeptLoginsSubmitRouteImport } from './routes/building-dept-logins.submit'
 import { Route as AdminContractorsRouteImport } from './routes/admin_.contractors'
+import { Route as AdminHubspotSimulateRouteImport } from './routes/admin.hubspot-simulate'
 import { Route as AdminBuildersRouteImport } from './routes/admin.builders'
 import { Route as PortalSubcontractorsIndexRouteImport } from './routes/portal.subcontractors.index'
 import { Route as PortalGuidesIndexRouteImport } from './routes/portal.guides.index'
@@ -56,6 +57,7 @@ import { Route as PortalSubcontractorsNewRouteImport } from './routes/portal.sub
 import { Route as PortalProjectsIdRouteImport } from './routes/portal.projects.$id'
 import { Route as PortalPermitsNewRouteImport } from './routes/portal.permits.new'
 import { Route as PortalGuidesSlugRouteImport } from './routes/portal.guides.$slug'
+import { Route as ApiPublicHubspotDealWebhookRouteImport } from './routes/api/public/hubspot.deal-webhook'
 
 const ServicesRoute = ServicesRouteImport.update({
   id: '/services',
@@ -261,6 +263,11 @@ const AdminContractorsRoute = AdminContractorsRouteImport.update({
   path: '/admin/contractors',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminHubspotSimulateRoute = AdminHubspotSimulateRouteImport.update({
+  id: '/hubspot-simulate',
+  path: '/hubspot-simulate',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminBuildersRoute = AdminBuildersRouteImport.update({
   id: '/builders',
   path: '/builders',
@@ -297,6 +304,12 @@ const PortalGuidesSlugRoute = PortalGuidesSlugRouteImport.update({
   path: '/guides/$slug',
   getParentRoute: () => PortalRoute,
 } as any)
+const ApiPublicHubspotDealWebhookRoute =
+  ApiPublicHubspotDealWebhookRouteImport.update({
+    id: '/api/public/hubspot/deal-webhook',
+    path: '/api/public/hubspot/deal-webhook',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -321,6 +334,7 @@ export interface FileRoutesByFullPath {
   '/projects': typeof ProjectsRouteWithChildren
   '/services': typeof ServicesRoute
   '/admin/builders': typeof AdminBuildersRoute
+  '/admin/hubspot-simulate': typeof AdminHubspotSimulateRoute
   '/admin/contractors': typeof AdminContractorsRoute
   '/building-dept-logins/submit': typeof BuildingDeptLoginsSubmitRoute
   '/forms/payment-authorization': typeof FormsPaymentAuthorizationRoute
@@ -346,6 +360,7 @@ export interface FileRoutesByFullPath {
   '/portal/subcontractors/new': typeof PortalSubcontractorsNewRoute
   '/portal/guides/': typeof PortalGuidesIndexRoute
   '/portal/subcontractors/': typeof PortalSubcontractorsIndexRoute
+  '/api/public/hubspot/deal-webhook': typeof ApiPublicHubspotDealWebhookRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -369,6 +384,7 @@ export interface FileRoutesByTo {
   '/projects': typeof ProjectsRouteWithChildren
   '/services': typeof ServicesRoute
   '/admin/builders': typeof AdminBuildersRoute
+  '/admin/hubspot-simulate': typeof AdminHubspotSimulateRoute
   '/admin/contractors': typeof AdminContractorsRoute
   '/building-dept-logins/submit': typeof BuildingDeptLoginsSubmitRoute
   '/forms/payment-authorization': typeof FormsPaymentAuthorizationRoute
@@ -394,6 +410,7 @@ export interface FileRoutesByTo {
   '/portal/subcontractors/new': typeof PortalSubcontractorsNewRoute
   '/portal/guides': typeof PortalGuidesIndexRoute
   '/portal/subcontractors': typeof PortalSubcontractorsIndexRoute
+  '/api/public/hubspot/deal-webhook': typeof ApiPublicHubspotDealWebhookRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -419,6 +436,7 @@ export interface FileRoutesById {
   '/projects': typeof ProjectsRouteWithChildren
   '/services': typeof ServicesRoute
   '/admin/builders': typeof AdminBuildersRoute
+  '/admin/hubspot-simulate': typeof AdminHubspotSimulateRoute
   '/admin_/contractors': typeof AdminContractorsRoute
   '/building-dept-logins/submit': typeof BuildingDeptLoginsSubmitRoute
   '/forms/payment-authorization': typeof FormsPaymentAuthorizationRoute
@@ -444,6 +462,7 @@ export interface FileRoutesById {
   '/portal/subcontractors/new': typeof PortalSubcontractorsNewRoute
   '/portal/guides/': typeof PortalGuidesIndexRoute
   '/portal/subcontractors/': typeof PortalSubcontractorsIndexRoute
+  '/api/public/hubspot/deal-webhook': typeof ApiPublicHubspotDealWebhookRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -470,6 +489,7 @@ export interface FileRouteTypes {
     | '/projects'
     | '/services'
     | '/admin/builders'
+    | '/admin/hubspot-simulate'
     | '/admin/contractors'
     | '/building-dept-logins/submit'
     | '/forms/payment-authorization'
@@ -495,6 +515,7 @@ export interface FileRouteTypes {
     | '/portal/subcontractors/new'
     | '/portal/guides/'
     | '/portal/subcontractors/'
+    | '/api/public/hubspot/deal-webhook'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -518,6 +539,7 @@ export interface FileRouteTypes {
     | '/projects'
     | '/services'
     | '/admin/builders'
+    | '/admin/hubspot-simulate'
     | '/admin/contractors'
     | '/building-dept-logins/submit'
     | '/forms/payment-authorization'
@@ -543,6 +565,7 @@ export interface FileRouteTypes {
     | '/portal/subcontractors/new'
     | '/portal/guides'
     | '/portal/subcontractors'
+    | '/api/public/hubspot/deal-webhook'
   id:
     | '__root__'
     | '/'
@@ -567,6 +590,7 @@ export interface FileRouteTypes {
     | '/projects'
     | '/services'
     | '/admin/builders'
+    | '/admin/hubspot-simulate'
     | '/admin_/contractors'
     | '/building-dept-logins/submit'
     | '/forms/payment-authorization'
@@ -592,6 +616,7 @@ export interface FileRouteTypes {
     | '/portal/subcontractors/new'
     | '/portal/guides/'
     | '/portal/subcontractors/'
+    | '/api/public/hubspot/deal-webhook'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -618,6 +643,7 @@ export interface RootRouteChildren {
   ServicesRoute: typeof ServicesRoute
   AdminContractorsRoute: typeof AdminContractorsRoute
   SubIntakeTokenRoute: typeof SubIntakeTokenRoute
+  ApiPublicHubspotDealWebhookRoute: typeof ApiPublicHubspotDealWebhookRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -902,6 +928,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminContractorsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/hubspot-simulate': {
+      id: '/admin/hubspot-simulate'
+      path: '/hubspot-simulate'
+      fullPath: '/admin/hubspot-simulate'
+      preLoaderRoute: typeof AdminHubspotSimulateRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/builders': {
       id: '/admin/builders'
       path: '/builders'
@@ -951,15 +984,24 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PortalGuidesSlugRouteImport
       parentRoute: typeof PortalRoute
     }
+    '/api/public/hubspot/deal-webhook': {
+      id: '/api/public/hubspot/deal-webhook'
+      path: '/api/public/hubspot/deal-webhook'
+      fullPath: '/api/public/hubspot/deal-webhook'
+      preLoaderRoute: typeof ApiPublicHubspotDealWebhookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 interface AdminRouteChildren {
   AdminBuildersRoute: typeof AdminBuildersRoute
+  AdminHubspotSimulateRoute: typeof AdminHubspotSimulateRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
   AdminBuildersRoute: AdminBuildersRoute,
+  AdminHubspotSimulateRoute: AdminHubspotSimulateRoute,
 }
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
@@ -1090,6 +1132,7 @@ const rootRouteChildren: RootRouteChildren = {
   ServicesRoute: ServicesRoute,
   AdminContractorsRoute: AdminContractorsRoute,
   SubIntakeTokenRoute: SubIntakeTokenRoute,
+  ApiPublicHubspotDealWebhookRoute: ApiPublicHubspotDealWebhookRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -2,6 +2,7 @@
 // Consumed by /my-permits, /projects, /projects/$id, /portal, /portal/projects.
 
 import type { ProjectStatus } from "./status-badges";
+import { getHubspotProject } from "./hubspot-projects";
 
 export type Project = {
   id: string;
@@ -136,7 +137,12 @@ export const PROJECTS: Project[] = SEED.map((s) => {
 });
 
 export function getProjectById(id: string): Project | null {
-  return PROJECTS.find((p) => p.id === id) ?? null;
+  const seeded = PROJECTS.find((p) => p.id === id);
+  if (seeded) return seeded;
+  if (typeof window !== "undefined" && id.startsWith("hs-")) {
+    return getHubspotProject(id);
+  }
+  return null;
 }
 
 export function fullAddress(p: Project): string {
