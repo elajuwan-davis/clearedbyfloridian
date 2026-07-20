@@ -408,6 +408,5 @@ function InternalOnlyVicky() {
     }
   }, []);
   if (!show) return null;
-  const Widget = require("@/components/vicky-widget").VickyWidget as React.ComponentType;
-  return <Widget />;
+  return <VickyWidget />;
 }
