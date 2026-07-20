@@ -1,20 +1,20 @@
 // Single Family + Commercial project guides — batch 4.
 import type { PortalGuide, GuideDownload, GuideDoc, InspectionPhase } from "./portal-guides-data";
 
-const REVIEWED = "Reviewed by Flōridian permitting staff — July 2026";
+export const REVIEWED = "Reviewed by Flōridian permitting staff — July 2026";
 
-const STANDARD_DOWNLOADS: GuideDownload[] = [
+export const STANDARD_DOWNLOADS: GuideDownload[] = [
   { title: "Notice to Building Official — Use of Private Provider", meta: "Form 61G20-2.005 · FL Statute §553.791" },
   { title: "Private Provider Owner Authorization & Indemnification", meta: "FL Statute §553.791" },
 ];
 
-const NTBO_OWNER: GuideDoc[] = [
+export const NTBO_OWNER: GuideDoc[] = [
   { name: "Notice to Building Official (NTBO)", description: "Required when using a private provider (Flōridian). Download below.", required: "conditional" },
   { name: "Owner Authorization Form", description: "Private Provider Owner Authorization & Indemnification. Download below.", required: "conditional" },
 ];
 
 // ---------- Shared phase blocks ----------
-const ROUGH_FRAMING: InspectionPhase = {
+export const ROUGH_FRAMING: InspectionPhase = {
   phase: "Rough Framing", code: "301", title: "Rough Framing",
   tags: ["Required", "Structural", "Critical"],
   checks: [
@@ -28,7 +28,7 @@ const ROUGH_FRAMING: InspectionPhase = {
   ],
   refs: "FBC-R R602.3 · R602.7 · R602.10 · R802.11 · R602.8",
 };
-const ROOF_DRY_IN: InspectionPhase = {
+export const ROOF_DRY_IN: InspectionPhase = {
   phase: "Roof Dry In", code: "306", title: "Roof Dry In (In Progress)",
   tags: ["Required", "Structural", "Critical"],
   checks: [
@@ -39,7 +39,7 @@ const ROOF_DRY_IN: InspectionPhase = {
   ],
   refs: "FBC-R R905.1.1 · R905.2.8.5 · R903.2",
 };
-const ROUGH_PLUMBING: InspectionPhase = {
+export const ROUGH_PLUMBING: InspectionPhase = {
   phase: "Rough Plumbing", code: "402", title: "Rough Plumbing",
   tags: ["Required", "Plumbing", "Critical"],
   checks: [
@@ -51,7 +51,7 @@ const ROUGH_PLUMBING: InspectionPhase = {
   ],
   refs: "FBC-P 604.1 · 704.1 · 308.1 · 903.1 · 607.1",
 };
-const ROUGH_ELECTRICAL: InspectionPhase = {
+export const ROUGH_ELECTRICAL: InspectionPhase = {
   phase: "Rough Electrical", code: "202", title: "Rough Electrical",
   tags: ["Required", "Electrical", "Critical"],
   checks: [
@@ -64,7 +64,7 @@ const ROUGH_ELECTRICAL: InspectionPhase = {
   ],
   refs: "NEC 408.4 · 210.3 · 240.4 · 314.16 · 210.8 · 210.12 · 250.50 · FBC-R R314.3 · R315",
 };
-const ROUGH_HVAC: InspectionPhase = {
+export const ROUGH_HVAC: InspectionPhase = {
   phase: "Rough Mechanical / HVAC", code: "702", title: "Rough Mechanical / HVAC",
   tags: ["Required", "Mechanical", "Critical"],
   checks: [
@@ -76,7 +76,7 @@ const ROUGH_HVAC: InspectionPhase = {
   ],
   refs: "FBC-M 603.1 · 603.9 · 304.1 · 1101.3 · 601.2",
 };
-const INSULATION: InspectionPhase = {
+export const INSULATION: InspectionPhase = {
   phase: "Insulation", code: "308", title: "Insulation",
   tags: ["Required", "Critical"],
   checks: [
@@ -87,7 +87,7 @@ const INSULATION: InspectionPhase = {
   ],
   refs: "FBC-E R402.1 · R402.4 · R402.4.1",
 };
-const LATHE_SIDING: InspectionPhase = {
+export const LATHE_SIDING: InspectionPhase = {
   phase: "Lathe, Siding", code: "309", title: "Lathe, Siding",
   tags: ["Required", "Critical"],
   checks: [
@@ -98,7 +98,7 @@ const LATHE_SIDING: InspectionPhase = {
   ],
   refs: "FBC-R R703.1 · R703.2 · R703.4",
 };
-const DRYWALL: InspectionPhase = {
+export const DRYWALL: InspectionPhase = {
   phase: "Drywall", code: "310", title: "Drywall",
   tags: ["Required", "Critical"],
   checks: [
@@ -109,7 +109,7 @@ const DRYWALL: InspectionPhase = {
   ],
   refs: "FBC-R R702.3.1 · R702.3.5 · R302.6 · R702.4",
 };
-const FINAL_ELECTRICAL: InspectionPhase = {
+export const FINAL_ELECTRICAL: InspectionPhase = {
   phase: "Final Electrical", code: "608", title: "Final Electrical",
   tags: ["Required", "Electrical", "Critical"],
   checks: [
@@ -121,7 +121,7 @@ const FINAL_ELECTRICAL: InspectionPhase = {
   ],
   refs: "NEC 408.4 · 210.8 · 210.12 · 210.52 · 210.70 · 210.52(E)",
 };
-const FINAL_PLUMBING: InspectionPhase = {
+export const FINAL_PLUMBING: InspectionPhase = {
   phase: "Final Plumbing", code: "609", title: "Final Plumbing",
   tags: ["Required", "Plumbing", "Critical"],
   checks: [
@@ -132,7 +132,7 @@ const FINAL_PLUMBING: InspectionPhase = {
   ],
   refs: "FBC-P 405.1 · 607.1 · 312.1 · 608.15.4.2",
 };
-const FINAL_HVAC: InspectionPhase = {
+export const FINAL_HVAC: InspectionPhase = {
   phase: "Final Mechanical / HVAC", code: "709", title: "Final Mechanical / HVAC",
   tags: ["Required", "Mechanical", "Critical"],
   checks: [
@@ -144,7 +144,7 @@ const FINAL_HVAC: InspectionPhase = {
   ],
   refs: "FBC-M 304.1 · 307.2 · 601.2",
 };
-const FINAL_BUILDING: InspectionPhase = {
+export const FINAL_BUILDING: InspectionPhase = {
   phase: "Final Building", code: "610", title: "Final Building",
   tags: ["Required", "Life Safety", "Critical"],
   checks: [
@@ -159,7 +159,7 @@ const FINAL_BUILDING: InspectionPhase = {
   ],
   refs: "FBC-R R311.2 · R314.3 · R315 · R310.1 · R311.7 · R319.1 · R703.1 · R401.3",
 };
-const FOOTING_SLAB_UFER: InspectionPhase = {
+export const FOOTING_SLAB_UFER: InspectionPhase = {
   phase: "Footing, Slab, UFER", code: "101", title: "Footing, Slab, UFER",
   tags: ["Required", "Structural", "Critical"],
   checks: [
@@ -173,7 +173,7 @@ const FOOTING_SLAB_UFER: InspectionPhase = {
   refs: "FBC-R R403.1 · R506.1 · R506.2.3 · R403.1.6 · NEC 250.52(A)(3)",
 };
 
-const FULL_DWELLING = [
+export const FULL_DWELLING = [
   ROUGH_FRAMING, ROOF_DRY_IN, ROUGH_PLUMBING, ROUGH_ELECTRICAL, ROUGH_HVAC,
   INSULATION, LATHE_SIDING, DRYWALL, FINAL_ELECTRICAL, FINAL_PLUMBING, FINAL_HVAC, FINAL_BUILDING,
 ];

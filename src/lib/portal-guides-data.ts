@@ -746,6 +746,8 @@ import { SINGLE_FAMILY_GUIDES } from "./portal-guides-single-family";
 import { SINGLE_FAMILY_GUIDES_2 } from "./portal-guides-single-family-2";
 import { SINGLE_FAMILY_GUIDES_3 } from "./portal-guides-single-family-3";
 import { GUIDES_BATCH_4 } from "./portal-guides-batch-4";
+import { GUIDES_BATCH_5 } from "./portal-guides-batch-5";
+
 
 export const PORTAL_GUIDES: PortalGuide[] = [
   // Pool & Spa
@@ -786,6 +788,8 @@ export const PORTAL_GUIDES: PortalGuide[] = [
   ...SINGLE_FAMILY_GUIDES_2,
   ...SINGLE_FAMILY_GUIDES_3,
   ...GUIDES_BATCH_4,
+  ...GUIDES_BATCH_5,
+
 ];
 
 
