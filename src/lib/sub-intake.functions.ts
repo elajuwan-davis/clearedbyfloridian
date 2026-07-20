@@ -25,16 +25,37 @@ const SubmitInput = z.object({
   }),
 });
 
+export type PublicSubRecord = {
+  id: string;
+  company_name: string;
+  trade: string | null;
+  qualifier_name: string | null;
+  license_number: string | null;
+  license_expiration: string | null;
+  license_file_name: string | null;
+  contact_first_name: string | null;
+  contact_last_name: string | null;
+  email: string | null;
+  phone: string | null;
+  company_address: string | null;
+  insurance_carrier_name: string | null;
+  insurance_carrier_email: string | null;
+  coi_file_name: string | null;
+  coi_expiration: string | null;
+  w9_file_name: string | null;
+  status: string;
+};
+
 export const getSubByTokenFn = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) => TokenInput.parse(d))
-  .handler(async ({ data }) => {
+  .handler(async ({ data }): Promise<PublicSubRecord | null> => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: row, error } = await (supabaseAdmin.from("subcontractors" as any) as any)
       .select("id, company_name, trade, qualifier_name, license_number, license_expiration, license_file_name, contact_first_name, contact_last_name, email, phone, company_address, insurance_carrier_name, insurance_carrier_email, coi_file_name, coi_expiration, w9_file_name, status")
       .eq("completion_token", data.token)
       .maybeSingle();
     if (error) throw new Error(error.message);
-    return row as Record<string, unknown> | null;
+    return (row as PublicSubRecord | null) ?? null;
   });
 
 export const submitSubIntakeFn = createServerFn({ method: "POST" })
