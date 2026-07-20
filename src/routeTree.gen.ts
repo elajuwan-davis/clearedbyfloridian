@@ -55,6 +55,7 @@ import { Route as AdminHubspotSimulateRouteImport } from './routes/admin.hubspot
 import { Route as AdminGcClientsRouteImport } from './routes/admin.gc-clients'
 import { Route as AdminBuildersRouteImport } from './routes/admin.builders'
 import { Route as PortalSubcontractorsIndexRouteImport } from './routes/portal.subcontractors.index'
+import { Route as PortalPermitsIndexRouteImport } from './routes/portal.permits.index'
 import { Route as PortalGuidesIndexRouteImport } from './routes/portal.guides.index'
 import { Route as PortalSubcontractorsNewRouteImport } from './routes/portal.subcontractors.new'
 import { Route as PortalProjectsIdRouteImport } from './routes/portal.projects.$id'
@@ -297,6 +298,11 @@ const PortalSubcontractorsIndexRoute =
     path: '/subcontractors/',
     getParentRoute: () => PortalRoute,
   } as any)
+const PortalPermitsIndexRoute = PortalPermitsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => PortalPermitsRoute,
+} as any)
 const PortalGuidesIndexRoute = PortalGuidesIndexRouteImport.update({
   id: '/guides/',
   path: '/guides/',
@@ -380,6 +386,7 @@ export interface FileRoutesByFullPath {
   '/portal/projects/$id': typeof PortalProjectsIdRoute
   '/portal/subcontractors/new': typeof PortalSubcontractorsNewRoute
   '/portal/guides/': typeof PortalGuidesIndexRoute
+  '/portal/permits/': typeof PortalPermitsIndexRoute
   '/portal/subcontractors/': typeof PortalSubcontractorsIndexRoute
   '/api/public/hubspot/deal-webhook': typeof ApiPublicHubspotDealWebhookRoute
 }
@@ -419,7 +426,6 @@ export interface FileRoutesByTo {
   '/portal/new-permit': typeof PortalNewPermitRoute
   '/portal/notary-queue': typeof PortalNotaryQueueRoute
   '/portal/permit-fees': typeof PortalPermitFeesRoute
-  '/portal/permits': typeof PortalPermitsRouteWithChildren
   '/portal/profile': typeof PortalProfileRoute
   '/portal/projects': typeof PortalProjectsRouteWithChildren
   '/portal/request-coi': typeof PortalRequestCoiRoute
@@ -433,6 +439,7 @@ export interface FileRoutesByTo {
   '/portal/projects/$id': typeof PortalProjectsIdRoute
   '/portal/subcontractors/new': typeof PortalSubcontractorsNewRoute
   '/portal/guides': typeof PortalGuidesIndexRoute
+  '/portal/permits': typeof PortalPermitsIndexRoute
   '/portal/subcontractors': typeof PortalSubcontractorsIndexRoute
   '/api/public/hubspot/deal-webhook': typeof ApiPublicHubspotDealWebhookRoute
 }
@@ -488,6 +495,7 @@ export interface FileRoutesById {
   '/portal/projects/$id': typeof PortalProjectsIdRoute
   '/portal/subcontractors/new': typeof PortalSubcontractorsNewRoute
   '/portal/guides/': typeof PortalGuidesIndexRoute
+  '/portal/permits/': typeof PortalPermitsIndexRoute
   '/portal/subcontractors/': typeof PortalSubcontractorsIndexRoute
   '/api/public/hubspot/deal-webhook': typeof ApiPublicHubspotDealWebhookRoute
 }
@@ -544,6 +552,7 @@ export interface FileRouteTypes {
     | '/portal/projects/$id'
     | '/portal/subcontractors/new'
     | '/portal/guides/'
+    | '/portal/permits/'
     | '/portal/subcontractors/'
     | '/api/public/hubspot/deal-webhook'
   fileRoutesByTo: FileRoutesByTo
@@ -583,7 +592,6 @@ export interface FileRouteTypes {
     | '/portal/new-permit'
     | '/portal/notary-queue'
     | '/portal/permit-fees'
-    | '/portal/permits'
     | '/portal/profile'
     | '/portal/projects'
     | '/portal/request-coi'
@@ -597,6 +605,7 @@ export interface FileRouteTypes {
     | '/portal/projects/$id'
     | '/portal/subcontractors/new'
     | '/portal/guides'
+    | '/portal/permits'
     | '/portal/subcontractors'
     | '/api/public/hubspot/deal-webhook'
   id:
@@ -651,6 +660,7 @@ export interface FileRouteTypes {
     | '/portal/projects/$id'
     | '/portal/subcontractors/new'
     | '/portal/guides/'
+    | '/portal/permits/'
     | '/portal/subcontractors/'
     | '/api/public/hubspot/deal-webhook'
   fileRoutesById: FileRoutesById
@@ -1008,6 +1018,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PortalSubcontractorsIndexRouteImport
       parentRoute: typeof PortalRoute
     }
+    '/portal/permits/': {
+      id: '/portal/permits/'
+      path: '/'
+      fullPath: '/portal/permits/'
+      preLoaderRoute: typeof PortalPermitsIndexRouteImport
+      parentRoute: typeof PortalPermitsRoute
+    }
     '/portal/guides/': {
       id: '/portal/guides/'
       path: '/guides'
@@ -1094,10 +1111,12 @@ const FormsRouteWithChildren = FormsRoute._addFileChildren(FormsRouteChildren)
 
 interface PortalPermitsRouteChildren {
   PortalPermitsNewRoute: typeof PortalPermitsNewRoute
+  PortalPermitsIndexRoute: typeof PortalPermitsIndexRoute
 }
 
 const PortalPermitsRouteChildren: PortalPermitsRouteChildren = {
   PortalPermitsNewRoute: PortalPermitsNewRoute,
+  PortalPermitsIndexRoute: PortalPermitsIndexRoute,
 }
 
 const PortalPermitsRouteWithChildren = PortalPermitsRoute._addFileChildren(
@@ -1200,13 +1219,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
