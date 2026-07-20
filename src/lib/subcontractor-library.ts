@@ -21,9 +21,11 @@ export type SubRecord = {
   coiExpiration?: string | null; // yyyy-mm-dd
   w9FileName?: string | null;
   completionToken?: string | null;
+  coiLastReminderSent?: string | null; // ISO timestamp
   // legacy fields tolerated on read
   name?: string;
 };
+
 
 export const LIB_KEY = "cleared.subcontractor-library";
 
@@ -131,6 +133,39 @@ export function coiStatus(sub: SubRecord): "on-file" | "expired" | "missing" {
   }
   return "on-file";
 }
+
+/**
+ * Lifecycle status for COI expiration tracking.
+ * - expired: expiration date is in the past
+ * - expiring_soon: within 30 days
+ * - active: > 30 days out
+ * - missing: no expiration on file
+ */
+export function coiLifecycleStatus(
+  sub: SubRecord,
+): "active" | "expiring_soon" | "expired" | "missing" {
+  if (!sub.coiExpiration) return "missing";
+  const exp = new Date(sub.coiExpiration);
+  if (isNaN(exp.getTime())) return "missing";
+  const today = new Date(new Date().toDateString());
+  const days = Math.floor((exp.getTime() - today.getTime()) / 86400000);
+  if (days < 0) return "expired";
+  if (days <= 30) return "expiring_soon";
+  return "active";
+}
+
+export function daysUntilCoiExpiration(sub: SubRecord): number | null {
+  if (!sub.coiExpiration) return null;
+  const exp = new Date(sub.coiExpiration);
+  if (isNaN(exp.getTime())) return null;
+  const today = new Date(new Date().toDateString());
+  return Math.floor((exp.getTime() - today.getTime()) / 86400000);
+}
+
+export function logCoiReminder(id: string): SubRecord | null {
+  return updateSub(id, { coiLastReminderSent: new Date().toISOString() });
+}
+
 
 export function licenseStatus(sub: SubRecord): "expired" | "expiring" | "ok" | "unset" {
   if (!sub.licenseExpiration) return "unset";
