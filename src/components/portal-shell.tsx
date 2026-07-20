@@ -392,6 +392,22 @@ export function PortalShell({ children }: { children: ReactNode }) {
         </header>
         <div className="flex-1 px-4 sm:px-6 md:px-8 py-6 md:py-10">{children}</div>
       </div>
+      <InternalOnlyVicky />
     </div>
   );
+}
+
+function InternalOnlyVicky() {
+  const [show, setShow] = useState(false);
+  useEffect(() => {
+    try {
+      const email = (localStorage.getItem("cleared_demo_user") || "").toLowerCase();
+      setShow(email.endsWith("@floridianinc.com") || email === "user@cleared.com");
+    } catch {
+      setShow(false);
+    }
+  }, []);
+  if (!show) return null;
+  const Widget = require("@/components/vicky-widget").VickyWidget as React.ComponentType;
+  return <Widget />;
 }
