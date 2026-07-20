@@ -129,21 +129,64 @@ function GuideDetail() {
                     Downloadable Forms
                   </div>
                   <div className="grid gap-3 sm:grid-cols-2">
-                    {guide.downloads.map((f) => (
-                      <div key={f.title} className="border border-obsidian/12 rounded-[3px] p-4 bg-paper-warm flex flex-col">
-                        <div className="text-sm font-semibold text-obsidian leading-snug">{f.title}</div>
-                        <div className="mt-1 font-mono text-[10px] uppercase tracking-[0.16em] text-obsidian/55">{f.meta}</div>
-                        <Button
-                          disabled={!f.href}
-                          variant="outline"
-                          className="rounded-[3px] mt-4 self-start"
-                          onClick={() => f.href && window.open(f.href, "_blank")}
-                        >
-                          <Download className="h-4 w-4 mr-2" strokeWidth={1.75} />
-                          {f.href ? "Download PDF" : "PDF pending"}
-                        </Button>
-                      </div>
-                    ))}
+                    {guide.downloads.map((f) => {
+                      const isNTBO = /ntbo|notice to building/i.test(f.title);
+                      const isOwner = /owner auth/i.test(f.title);
+                      const genHandler = async () => {
+                        if (isNTBO) {
+                          const bytes = await generateNTBO({
+                            projectName: "",
+                            parcelTaxId: "",
+                            services: { plansReview: true, inspections: true },
+                            signatoryType: "Corporation",
+                            firmName: FLORIDIAN_FIRM.firmName,
+                            privateProvider: FLORIDIAN_FIRM.privateProvider,
+                            addressLine1: FLORIDIAN_FIRM.addressLine1,
+                            addressLine2: FLORIDIAN_FIRM.addressLine2,
+                            telephone: FLORIDIAN_FIRM.telephone,
+                            email: FLORIDIAN_FIRM.email,
+                            licenseNumber: FLORIDIAN_FIRM.licenseNumber,
+                            printNameCorporation: FLORIDIAN_FIRM.printNameCorporation,
+                            representativeName: FLORIDIAN_FIRM.representativeName,
+                          });
+                          downloadPdf(bytes, "NTBO_Template.pdf");
+                        } else if (isOwner) {
+                          const bytes = await generateOwnerAuth({
+                            propertyAddress: "",
+                            permitProjectNo: "",
+                            firmName: FLORIDIAN_FIRM.firmName,
+                            privateProvider: FLORIDIAN_FIRM.privateProvider,
+                            telephone: FLORIDIAN_FIRM.telephone,
+                            email: FLORIDIAN_FIRM.email,
+                            licenseNumber: FLORIDIAN_FIRM.licenseNumber,
+                          });
+                          downloadPdf(bytes, "OwnerAuth_Template.pdf");
+                        } else if (f.href) {
+                          window.open(f.href, "_blank");
+                        }
+                      };
+                      const canGen = isNTBO || isOwner || !!f.href;
+                      return (
+                        <div key={f.title} className="border border-obsidian/12 rounded-[3px] p-4 bg-paper-warm flex flex-col">
+                          <div className="text-sm font-semibold text-obsidian leading-snug">{f.title}</div>
+                          <div className="mt-1 font-mono text-[10px] uppercase tracking-[0.16em] text-obsidian/55">{f.meta}</div>
+                          <Button
+                            disabled={!canGen}
+                            variant="outline"
+                            className="rounded-[3px] mt-4 self-start"
+                            onClick={genHandler}
+                          >
+                            <Download className="h-4 w-4 mr-2" strokeWidth={1.75} />
+                            {isNTBO || isOwner ? "Generate Pre-Filled PDF" : (f.href ? "Download PDF" : "PDF pending")}
+                          </Button>
+                          {(isNTBO || isOwner) && (
+                            <div className="mt-2 font-mono text-[9px] uppercase tracking-[0.16em] text-obsidian/45">
+                              Firm details pre-filled · edit per project from the Documents tab
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
               )}
