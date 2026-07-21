@@ -1,10 +1,11 @@
 import { createFileRoute, Link, useNavigate, notFound } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { ArrowLeft, Trash2, Save, AlertTriangle, FileText, Pencil, X, Lock } from "lucide-react";
+import { ArrowLeft, Trash2, Save, AlertTriangle, FileText, Pencil, X, Lock, Plus } from "lucide-react";
 
-import { getPermit, updatePermit, deletePermit, permitCompleteness, getEffectiveDocs, type PermitRow, type PermitStatus } from "@/lib/permits-api";
+import { getPermit, updatePermit, deletePermit, permitCompleteness, getEffectiveDocs, type PermitRow, type PermitStatus, type PermitDoc } from "@/lib/permits-api";
 import { PermitDocUploader } from "@/components/permit-doc-uploader";
+import { deletePermitFile } from "@/lib/permit-storage";
 
 export const Route = createFileRoute("/portal/permits/$id")({
   head: () => ({
@@ -247,10 +248,58 @@ function PermitDetailPage() {
         <div>
           {docs.map((d) => (
             <div key={d.key} id={`doc-${d.key}`}>
-              <PermitDocUploader permit={row} doc={d} readOnly={!editing} onChange={(u) => { setRow(u); setEdit(u); }} />
+              <PermitDocUploader
+                permit={row}
+                doc={d}
+                readOnly={!editing}
+                onChange={(u) => { setRow(u); setEdit(u); }}
+                onRename={d.custom ? async (label) => {
+                  const next = docs.map((x) => x.key === d.key ? { ...x, label } : x);
+                  const updated = await updatePermit(row.id, { documents: next });
+                  setRow(updated); setEdit(updated);
+                } : undefined}
+                onDeleteField={d.custom ? async () => {
+                  if (!confirm(`Delete field "${d.label}"? Any uploaded file will also be removed.`)) return;
+                  if (d.path) { try { await deletePermitFile(d.path); } catch { /* ignore */ } }
+                  const next = docs.filter((x) => x.key !== d.key);
+                  const updated = await updatePermit(row.id, { documents: next });
+                  setRow(updated); setEdit(updated);
+                  toast.success("Field removed");
+                } : undefined}
+              />
             </div>
           ))}
         </div>
+        {editing && (
+          <div className="mt-4 pt-4 border-t border-obsidian/10">
+            <button
+              type="button"
+              onClick={async () => {
+                const label = window.prompt("Name this document field (e.g. Soil Report)");
+                if (!label || !label.trim()) return;
+                const newDoc: PermitDoc = {
+                  key: `custom_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
+                  label: label.trim(),
+                  required: false,
+                  status: "missing",
+                  filename: null,
+                  custom: true,
+                };
+                const next = [...docs, newDoc];
+                try {
+                  const updated = await updatePermit(row.id, { documents: next });
+                  setRow(updated); setEdit(updated);
+                  toast.success("Field added");
+                } catch (e) {
+                  toast.error("Add failed: " + (e instanceof Error ? e.message : String(e)));
+                }
+              }}
+              className="inline-flex items-center gap-2 border border-obsidian/20 bg-white px-3 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian rounded-[3px] hover:bg-obsidian/5"
+            >
+              <Plus className="h-3.5 w-3.5" /> Add custom document field
+            </button>
+          </div>
+        )}
       </div>
 
       {row.subs && row.subs.length > 0 && (

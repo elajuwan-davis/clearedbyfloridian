@@ -20,6 +20,7 @@ export type PermitDoc = {
   size?: number | null;
   mime?: string | null;
   uploaded_at?: string | null;
+  custom?: boolean;
 };
 
 export type PermitSub = {

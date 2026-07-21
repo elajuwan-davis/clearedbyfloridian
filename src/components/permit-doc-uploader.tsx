@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 import { toast } from "sonner";
-import { Upload, Eye, Download, Trash2, Loader2, Check, AlertTriangle, X, FileText, Cloud } from "lucide-react";
+import { Upload, Eye, Download, Trash2, Loader2, Check, AlertTriangle, X, FileText, Cloud, Pencil } from "lucide-react";
 import { uploadPermitFile, getPermitFileUrl, deletePermitFile } from "@/lib/permit-storage";
 import type { PermitDoc, PermitRow } from "@/lib/permits-api";
 import { updatePermit, getEffectiveDocs } from "@/lib/permits-api";
@@ -11,9 +11,11 @@ type Props = {
   doc: PermitDoc;
   onChange: (updated: PermitRow) => void;
   readOnly?: boolean;
+  onRename?: (label: string) => void | Promise<void>;
+  onDeleteField?: () => void | Promise<void>;
 };
 
-export function PermitDocUploader({ permit, doc, onChange, readOnly = false }: Props) {
+export function PermitDocUploader({ permit, doc, onChange, readOnly = false, onRename, onDeleteField }: Props) {
 
   const inputRef = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
@@ -151,7 +153,31 @@ export function PermitDocUploader({ permit, doc, onChange, readOnly = false }: P
           <div className="flex flex-wrap items-center gap-2">
             <div className="text-sm text-obsidian font-medium">{doc.label}</div>
             {doc.required && <span className="text-[10px] font-mono uppercase text-red-700">Required</span>}
+            {doc.custom && <span className="text-[10px] font-mono uppercase text-obsidian/50">Custom</span>}
             {statusBadge()}
+            {!readOnly && onRename && (
+              <button
+                type="button"
+                onClick={async () => {
+                  const next = window.prompt("Rename field", doc.label);
+                  if (next && next.trim() && next.trim() !== doc.label) await onRename(next.trim());
+                }}
+                className="inline-flex items-center gap-1 text-[10px] font-mono uppercase tracking-[0.14em] text-obsidian/60 hover:text-obsidian"
+                title="Rename field"
+              >
+                <Pencil className="h-3 w-3" /> Rename
+              </button>
+            )}
+            {!readOnly && onDeleteField && (
+              <button
+                type="button"
+                onClick={() => onDeleteField()}
+                className="inline-flex items-center gap-1 text-[10px] font-mono uppercase tracking-[0.14em] text-red-700 hover:underline"
+                title="Delete field"
+              >
+                <X className="h-3 w-3" /> Remove field
+              </button>
+            )}
           </div>
           {doc.filename && (
             <div className="mt-1 text-[12px] text-obsidian/60 font-mono truncate">
