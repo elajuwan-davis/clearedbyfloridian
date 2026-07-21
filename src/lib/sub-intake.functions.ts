@@ -62,13 +62,36 @@ export const submitSubIntakeFn = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) => SubmitInput.parse(d))
   .handler(async ({ data }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const table = (supabaseAdmin.from("subcontractors" as any) as any);
+
+    const { data: inviteRow, error: lookupErr } = await table
+      .select("id, company_name")
+      .eq("completion_token", data.token)
+      .maybeSingle();
+    if (lookupErr) throw new Error(lookupErr.message);
+    if (!inviteRow) throw new Error("Invalid or expired intake link");
+
+    const isReusableInvite = /^Pending Invite/i.test(inviteRow.company_name ?? "");
+
+    if (isReusableInvite) {
+      // Reusable link — insert a NEW sub record per submission; leave invite row intact.
+      const insertPayload: Record<string, unknown> = { ...data.patch, status: "complete" };
+      const { data: newRow, error: insertErr } = await table
+        .insert(insertPayload)
+        .select("id")
+        .single();
+      if (insertErr) throw new Error(insertErr.message);
+      return { ok: true, id: newRow.id };
+    }
+
+    // Personalized invite — update the pre-filled row in place.
     const patch: Record<string, unknown> = { ...data.patch, status: "complete" };
-    const { data: row, error } = await (supabaseAdmin.from("subcontractors" as any) as any)
+    const { data: row, error } = await table
       .update(patch)
       .eq("completion_token", data.token)
       .select("id")
       .maybeSingle();
     if (error) throw new Error(error.message);
     if (!row) throw new Error("Invalid or expired intake link");
-    return { ok: true };
+    return { ok: true, id: row.id };
   });
