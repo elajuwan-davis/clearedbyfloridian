@@ -15,7 +15,7 @@ type Props = {
   onDeleteField?: () => void | Promise<void>;
 };
 
-export function PermitDocUploader({ permit, doc, onChange, readOnly = false }: Props) {
+export function PermitDocUploader({ permit, doc, onChange, readOnly = false, onRename, onDeleteField }: Props) {
 
   const inputRef = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
