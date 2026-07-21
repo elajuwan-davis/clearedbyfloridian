@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 import { toast } from "sonner";
-import { Upload, Eye, Download, Trash2, Loader2, Check, AlertTriangle, X, FileText, Cloud } from "lucide-react";
+import { Upload, Eye, Download, Trash2, Loader2, Check, AlertTriangle, X, FileText, Cloud, Pencil } from "lucide-react";
 import { uploadPermitFile, getPermitFileUrl, deletePermitFile } from "@/lib/permit-storage";
 import type { PermitDoc, PermitRow } from "@/lib/permits-api";
 import { updatePermit, getEffectiveDocs } from "@/lib/permits-api";
@@ -11,6 +11,8 @@ type Props = {
   doc: PermitDoc;
   onChange: (updated: PermitRow) => void;
   readOnly?: boolean;
+  onRename?: (label: string) => void | Promise<void>;
+  onDeleteField?: () => void | Promise<void>;
 };
 
 export function PermitDocUploader({ permit, doc, onChange, readOnly = false }: Props) {
