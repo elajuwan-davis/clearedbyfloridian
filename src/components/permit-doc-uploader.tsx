@@ -153,7 +153,31 @@ export function PermitDocUploader({ permit, doc, onChange, readOnly = false, onR
           <div className="flex flex-wrap items-center gap-2">
             <div className="text-sm text-obsidian font-medium">{doc.label}</div>
             {doc.required && <span className="text-[10px] font-mono uppercase text-red-700">Required</span>}
+            {doc.custom && <span className="text-[10px] font-mono uppercase text-obsidian/50">Custom</span>}
             {statusBadge()}
+            {!readOnly && onRename && (
+              <button
+                type="button"
+                onClick={async () => {
+                  const next = window.prompt("Rename field", doc.label);
+                  if (next && next.trim() && next.trim() !== doc.label) await onRename(next.trim());
+                }}
+                className="inline-flex items-center gap-1 text-[10px] font-mono uppercase tracking-[0.14em] text-obsidian/60 hover:text-obsidian"
+                title="Rename field"
+              >
+                <Pencil className="h-3 w-3" /> Rename
+              </button>
+            )}
+            {!readOnly && onDeleteField && (
+              <button
+                type="button"
+                onClick={() => onDeleteField()}
+                className="inline-flex items-center gap-1 text-[10px] font-mono uppercase tracking-[0.14em] text-red-700 hover:underline"
+                title="Delete field"
+              >
+                <X className="h-3 w-3" /> Remove field
+              </button>
+            )}
           </div>
           {doc.filename && (
             <div className="mt-1 text-[12px] text-obsidian/60 font-mono truncate">
