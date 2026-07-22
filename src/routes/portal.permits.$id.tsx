@@ -211,8 +211,38 @@ function PermitDetailPage() {
               <label className={labelCls("construction_value_cents")}>Construction Value (USD) {flag("construction_value_cents")}</label>
               <input type="number" className={inputCls("construction_value_cents")} value={e.construction_value_cents ? Math.round(e.construction_value_cents / 100) : ""} onChange={(ev) => set("construction_value_cents", ev.target.value ? Math.round(Number(ev.target.value) * 100) : 0)} />
             </div>
-            <div><label className={labelCls("pcn")}>PCN {flag("pcn")}</label><input className={inputCls("pcn")} value={e.pcn ?? ""} onChange={(ev) => set("pcn", ev.target.value)} /></div>
-          </div>
+            <div>
+              <label className={labelCls("pcn")}>PCN {flag("pcn")}</label>
+              <div className="flex gap-1.5">
+                <input className={inputCls("pcn") + " flex-1"} value={e.pcn ?? ""} onChange={(ev) => set("pcn", ev.target.value)} />
+                <button
+                  type="button"
+                  disabled={!editing || pcnLoading || !e.job_address || !e.county}
+                  title={!e.job_address || !e.county ? "Address and county required" : "Look up PCN from county property appraiser"}
+                  onClick={async () => {
+                    if (!e.job_address || !e.county) return;
+                    setPcnLoading(true);
+                    try {
+                      const rec = await fetchAppraiserRecord(e.job_address, e.city ?? "", e.county, e.owner_name ?? "");
+                      if (rec?.pcn) {
+                        set("pcn", rec.pcn);
+                        toast.success(`PCN found from ${rec.source}`);
+                      } else {
+                        toast.error("Not found — enter manually");
+                      }
+                    } catch {
+                      toast.error("Not found — enter manually");
+                    } finally {
+                      setPcnLoading(false);
+                    }
+                  }}
+                  className="inline-flex items-center gap-1 border border-obsidian/20 bg-white px-2.5 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian rounded-[3px] hover:bg-obsidian/5 disabled:opacity-50"
+                >
+                  {pcnLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : <Search className="h-3 w-3" />} Lookup
+                </button>
+              </div>
+            </div>
+
           <div><label className={labelCls("submitted_date")}>Submitted Date {flag("submitted_date")}</label><input type="date" className={inputCls("submitted_date")} value={e.submitted_date ?? ""} onChange={(ev) => set("submitted_date", ev.target.value)} /></div>
           <div>
             <label className={labelCls("status")}>Status</label>
