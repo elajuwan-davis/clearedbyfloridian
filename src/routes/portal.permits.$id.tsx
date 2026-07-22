@@ -31,6 +31,9 @@ function PermitDetailPage() {
   const [saving, setSaving] = useState(false);
   const [editing, setEditing] = useState(false);
   const [edit, setEdit] = useState<Partial<PermitRow>>({});
+  const [pcnLoading, setPcnLoading] = useState(false);
+  const [showHidden, setShowHidden] = useState(false);
+
 
 
   useEffect(() => {
