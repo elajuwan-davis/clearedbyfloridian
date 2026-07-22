@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState, type ChangeEvent, type FormEvent } from "react";
 import { Upload, X, CheckCircle2 } from "lucide-react";
-import { getSubByTokenFn, submitSubIntakeFn, type PublicSubRecord } from "@/lib/sub-intake.functions";
+import { getSubByTokenFn, submitSubIntakeFn, getSubUploadUrlFn, type PublicSubRecord } from "@/lib/sub-intake.functions";
 
 export const Route = createFileRoute("/sub-intake/$token")({
   head: () => ({
@@ -34,10 +34,34 @@ function SubIntakeTokenPage() {
     [sub],
   );
 
-  function onFile(key: "license_file_name" | "coi_file_name" | "w9_file_name", e: ChangeEvent<HTMLInputElement>) {
+  const FIELD_MAP: Record<"license_file_name" | "coi_file_name" | "w9_file_name", "license" | "coi" | "w9"> = {
+    license_file_name: "license",
+    coi_file_name: "coi",
+    w9_file_name: "w9",
+  };
+  const PATH_KEY: Record<"license_file_name" | "coi_file_name" | "w9_file_name", string> = {
+    license_file_name: "license_file_path",
+    coi_file_name: "coi_file_path",
+    w9_file_name: "w9_file_path",
+  };
+  const [uploading, setUploading] = useState<Record<string, boolean>>({});
+
+  async function onFile(key: "license_file_name" | "coi_file_name" | "w9_file_name", e: ChangeEvent<HTMLInputElement>) {
     const f = e.target.files?.[0];
-    if (f) setPatch((p) => ({ ...p, [key]: f.name }));
+    if (!f) return;
+    setUploading((u) => ({ ...u, [key]: true }));
+    try {
+      const { signedUrl, path } = await getSubUploadUrlFn({ data: { token, field: FIELD_MAP[key], filename: f.name, contentType: f.type } });
+      const res = await fetch(signedUrl, { method: "PUT", body: f, headers: { "Content-Type": f.type || "application/octet-stream", "x-upsert": "true" } });
+      if (!res.ok) throw new Error(`Upload failed (${res.status})`);
+      setPatch((p) => ({ ...p, [key]: f.name, [PATH_KEY[key]]: path }));
+    } catch (err) {
+      alert("Upload failed: " + (err instanceof Error ? err.message : String(err)));
+    } finally {
+      setUploading((u) => ({ ...u, [key]: false }));
+    }
   }
+
   function set(k: string, v: string | null) { setPatch((p) => ({ ...p, [k]: v })); }
 
   async function submit(e: FormEvent) {
@@ -56,23 +80,25 @@ function SubIntakeTokenPage() {
 
   function FileRow({ label, keyName }: { label: string; keyName: "license_file_name" | "coi_file_name" | "w9_file_name" }) {
     const name = patch[keyName];
+    const busy = uploading[keyName];
     return (
       <div>
         <label className={labelCls}>{label}</label>
         <div className="flex items-center gap-3 flex-wrap">
           <label className="inline-flex items-center gap-2 cursor-pointer border border-obsidian/20 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian rounded-[3px] hover:bg-obsidian/5">
-            <Upload className="h-3.5 w-3.5" /> {name ? "Replace" : "Upload"}
-            <input type="file" accept="application/pdf,image/*" className="hidden" onChange={(e) => onFile(keyName, e)} />
+            <Upload className="h-3.5 w-3.5" /> {busy ? "Uploading…" : name ? "Replace" : "Upload"}
+            <input type="file" accept="application/pdf,image/*" className="hidden" disabled={busy} onChange={(e) => onFile(keyName, e)} />
           </label>
           {name && (
             <span className="inline-flex items-center gap-1.5 text-[11px] text-obsidian/70 bg-obsidian/5 px-2 py-1 rounded-[3px]">
               {name}
-              <button type="button" onClick={() => setPatch((p) => ({ ...p, [keyName]: null }))}><X className="h-3 w-3" /></button>
+              <button type="button" onClick={() => setPatch((p) => ({ ...p, [keyName]: null, [PATH_KEY[keyName]]: null }))}><X className="h-3 w-3" /></button>
             </span>
           )}
         </div>
       </div>
     );
+
   }
 
   if (loading) {

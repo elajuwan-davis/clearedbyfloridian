@@ -1,8 +1,10 @@
 import { createFileRoute, Link, useNavigate, useSearch } from "@tanstack/react-router";
 import { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
 import { toast } from "sonner";
-import { ArrowLeft, Upload, X, Link2, Copy, Trash2 } from "lucide-react";
+import { ArrowLeft, Upload, X, Link2, Copy, Trash2, Eye, Loader2 } from "lucide-react";
 import { getSub, createSub, updateSubApi, deleteSub, type SubRow, type SubInsert } from "@/lib/subs-api";
+import { supabase } from "@/integrations/supabase/client";
+
 
 
 type Search = { id?: string };
@@ -38,10 +40,82 @@ function NewSubcontractorPage() {
 
   function set<K extends keyof SubInsert>(k: K, v: SubInsert[K]) { setForm((f) => ({ ...f, [k]: v })); }
 
-  function onFile(k: "license_file_name" | "coi_file_name" | "w9_file_name", e: ChangeEvent<HTMLInputElement>) {
+  const NAME_TO_PATH: Record<"license_file_name" | "coi_file_name" | "w9_file_name", "license_file_path" | "coi_file_path" | "w9_file_path"> = {
+    license_file_name: "license_file_path",
+    coi_file_name: "coi_file_path",
+    w9_file_name: "w9_file_path",
+  };
+  const FIELD_LABEL: Record<"license_file_name" | "coi_file_name" | "w9_file_name", string> = {
+    license_file_name: "license",
+    coi_file_name: "coi",
+    w9_file_name: "w9",
+  };
+  const [uploading, setUploading] = useState<Record<string, boolean>>({});
+
+  async function onFile(k: "license_file_name" | "coi_file_name" | "w9_file_name", e: ChangeEvent<HTMLInputElement>) {
     const f = e.target.files?.[0];
-    if (f) set(k, f.name);
+    if (!f) return;
+    // Need a saved record to scope the storage path
+    let rec = saved;
+    if (!rec) {
+      if (!form.company_name?.trim()) {
+        toast.error("Enter a company name and save first, then upload documents.");
+        return;
+      }
+      try {
+        rec = await createSub(sanitize(form) as SubInsert);
+        setSaved(rec);
+        setForm(rec);
+      } catch (err) {
+        toast.error("Save first failed: " + formatErr(err));
+        return;
+      }
+    }
+    setUploading((u) => ({ ...u, [k]: true }));
+    try {
+      const safe = f.name.replace(/[^a-zA-Z0-9._-]+/g, "_");
+      const path = `subs/${rec.id}/${FIELD_LABEL[k]}/${Date.now()}-${safe}`;
+      const { error } = await supabase.storage.from("permit-files").upload(path, f, {
+        contentType: f.type || "application/octet-stream",
+        upsert: false,
+      });
+      if (error) throw error;
+      const patch = { [k]: f.name, [NAME_TO_PATH[k]]: path } as Partial<SubInsert>;
+      const updated = await updateSubApi(rec.id, patch);
+      setSaved(updated);
+      setForm(updated);
+      toast.success("Uploaded");
+    } catch (err) {
+      toast.error("Upload failed: " + formatErr(err));
+    } finally {
+      setUploading((u) => ({ ...u, [k]: false }));
+    }
   }
+
+  async function viewFile(path: string) {
+    try {
+      const { data, error } = await supabase.storage.from("permit-files").createSignedUrl(path, 300);
+      if (error) throw error;
+      window.open(data.signedUrl, "_blank", "noopener");
+    } catch (err) {
+      toast.error("Could not open file: " + formatErr(err));
+    }
+  }
+
+  async function removeFile(k: "license_file_name" | "coi_file_name" | "w9_file_name") {
+    if (!saved) { set(k, null); return; }
+    const pathKey = NAME_TO_PATH[k];
+    const path = (saved as unknown as Record<string, string | null>)[pathKey];
+    try {
+      if (path) { await supabase.storage.from("permit-files").remove([path]); }
+      const updated = await updateSubApi(saved.id, { [k]: null, [pathKey]: null } as Partial<SubInsert>);
+      setSaved(updated);
+      setForm(updated);
+    } catch (err) {
+      toast.error("Remove failed: " + formatErr(err));
+    }
+  }
+
 
   function formatErr(err: unknown): string {
     if (!err) return "Unknown error";
@@ -125,24 +199,36 @@ function NewSubcontractorPage() {
   const labelCls = "block text-[11px] font-mono uppercase tracking-[0.14em] text-obsidian/60 mb-1.5";
 
   function FileRow({ label, name, keyName }: { label: string; name: string | null | undefined; keyName: "license_file_name" | "coi_file_name" | "w9_file_name" }) {
+    const busy = uploading[keyName];
+    const path = (saved as unknown as Record<string, string | null> | null)?.[NAME_TO_PATH[keyName]] ?? null;
     return (
       <div>
         <label className={labelCls}>{label}</label>
         <div className="flex items-center gap-3 flex-wrap">
-          <label className="inline-flex items-center gap-2 cursor-pointer border border-obsidian/20 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian rounded-[3px] hover:bg-obsidian/5">
-            <Upload className="h-3.5 w-3.5" /> {name ? "Replace" : "Upload"}
-            <input type="file" accept="application/pdf,image/*" className="hidden" onChange={(e) => onFile(keyName, e)} />
+          <label className={`inline-flex items-center gap-2 border border-obsidian/20 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian rounded-[3px] hover:bg-obsidian/5 ${busy ? "opacity-60 cursor-wait" : "cursor-pointer"}`}>
+            {busy ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Upload className="h-3.5 w-3.5" />}
+            {busy ? "Uploading…" : name ? "Replace" : "Upload"}
+            <input type="file" accept="application/pdf,image/*" className="hidden" disabled={busy} onChange={(e) => onFile(keyName, e)} />
           </label>
           {name && (
             <span className="inline-flex items-center gap-1.5 text-[11px] text-obsidian/70 bg-obsidian/5 px-2 py-1 rounded-[3px]">
               {name}
-              <button type="button" onClick={() => set(keyName, null)}><X className="h-3 w-3" /></button>
+              {path && (
+                <button type="button" title="View file" onClick={() => viewFile(path)} className="text-obsidian/60 hover:text-obsidian">
+                  <Eye className="h-3 w-3" />
+                </button>
+              )}
+              <button type="button" title="Remove" onClick={() => removeFile(keyName)}><X className="h-3 w-3" /></button>
             </span>
+          )}
+          {name && !path && (
+            <span className="text-[10px] font-mono uppercase tracking-[0.12em] text-amber-700">Filename only — no file stored</span>
           )}
         </div>
       </div>
     );
   }
+
 
   return (
     <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
