@@ -186,8 +186,8 @@ export function MyPermitsPage() {
                                 title="Change status"
                                 className="font-mono text-[10px] uppercase tracking-[0.1em] text-obsidian bg-white border border-obsidian/20 px-1.5 py-0.5 rounded-[2px] hover:bg-paper-warm focus:outline-none focus:border-obsidian/50 disabled:opacity-50"
                               >
-                                {(Object.keys(STATUS_LABEL) as PermitStatus[]).map((s) => (
-                                  <option key={s} value={s}>Move to: {STATUS_LABEL[s]}</option>
+                                {STATUS_OPTIONS.map((s) => (
+                                  <option key={s.value} value={s.value}>Move to: {s.label}</option>
                                 ))}
                               </select>
                               <span className="font-mono text-[10px] tabular-nums text-obsidian/45 w-24 text-right shrink-0">{new Date(p.updated_at).toLocaleDateString()}</span>
