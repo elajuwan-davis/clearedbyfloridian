@@ -1,11 +1,13 @@
 import { createFileRoute, Link, useNavigate, notFound } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { ArrowLeft, Trash2, Save, AlertTriangle, FileText, Pencil, X, Lock, Plus } from "lucide-react";
+import { ArrowLeft, Trash2, Save, AlertTriangle, FileText, Pencil, X, Lock, Plus, Search, Loader2, Eye, EyeOff } from "lucide-react";
 
 import { getPermit, updatePermit, deletePermit, permitCompleteness, getEffectiveDocs, type PermitRow, type PermitStatus, type PermitDoc } from "@/lib/permits-api";
 import { PermitDocUploader } from "@/components/permit-doc-uploader";
 import { deletePermitFile } from "@/lib/permit-storage";
+import { fetchAppraiserRecord } from "@/lib/property-appraiser";
+
 
 export const Route = createFileRoute("/portal/permits/$id")({
   head: () => ({
@@ -29,6 +31,9 @@ function PermitDetailPage() {
   const [saving, setSaving] = useState(false);
   const [editing, setEditing] = useState(false);
   const [edit, setEdit] = useState<Partial<PermitRow>>({});
+  const [pcnLoading, setPcnLoading] = useState(false);
+  const [showHidden, setShowHidden] = useState(false);
+
 
 
   useEffect(() => {
@@ -206,8 +211,40 @@ function PermitDetailPage() {
               <label className={labelCls("construction_value_cents")}>Construction Value (USD) {flag("construction_value_cents")}</label>
               <input type="number" className={inputCls("construction_value_cents")} value={e.construction_value_cents ? Math.round(e.construction_value_cents / 100) : ""} onChange={(ev) => set("construction_value_cents", ev.target.value ? Math.round(Number(ev.target.value) * 100) : 0)} />
             </div>
-            <div><label className={labelCls("pcn")}>PCN {flag("pcn")}</label><input className={inputCls("pcn")} value={e.pcn ?? ""} onChange={(ev) => set("pcn", ev.target.value)} /></div>
+            <div>
+              <label className={labelCls("pcn")}>PCN {flag("pcn")}</label>
+              <div className="flex gap-1.5">
+                <input className={inputCls("pcn") + " flex-1"} value={e.pcn ?? ""} onChange={(ev) => set("pcn", ev.target.value)} />
+                <button
+                  type="button"
+                  disabled={!editing || pcnLoading || !e.job_address || !e.county}
+                  title={!e.job_address || !e.county ? "Address and county required" : "Look up PCN from county property appraiser"}
+                  onClick={async () => {
+                    if (!e.job_address || !e.county) return;
+                    setPcnLoading(true);
+                    try {
+                      const rec = await fetchAppraiserRecord(e.job_address, e.city ?? "", e.county, e.owner_name ?? "");
+                      if (rec?.pcn) {
+                        set("pcn", rec.pcn);
+                        toast.success(`PCN found from ${rec.source}`);
+                      } else {
+                        toast.error("Not found — enter manually");
+                      }
+                    } catch {
+                      toast.error("Not found — enter manually");
+                    } finally {
+                      setPcnLoading(false);
+                    }
+                  }}
+                  className="inline-flex items-center gap-1 border border-obsidian/20 bg-white px-2.5 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian rounded-[3px] hover:bg-obsidian/5 disabled:opacity-50"
+                >
+                  {pcnLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : <Search className="h-3 w-3" />} Lookup
+                </button>
+              </div>
+            </div>
           </div>
+
+
           <div><label className={labelCls("submitted_date")}>Submitted Date {flag("submitted_date")}</label><input type="date" className={inputCls("submitted_date")} value={e.submitted_date ?? ""} onChange={(ev) => set("submitted_date", ev.target.value)} /></div>
           <div>
             <label className={labelCls("status")}>Status</label>
@@ -238,15 +275,27 @@ function PermitDetailPage() {
 
 
       <div className="mt-6 bg-white border border-obsidian/10 rounded-[3px] p-6">
-        <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center justify-between mb-2 gap-3 flex-wrap">
           <div className="text-[11px] font-mono uppercase tracking-[0.18em] text-obsidian/75">Documents</div>
-          <span className="font-mono text-[11px] tabular-nums text-obsidian/60">{c.docsDone}/{c.docsTotal} complete</span>
+          <div className="flex items-center gap-3">
+            {docs.some((d) => d.status === "not_applicable") && (
+              <button
+                type="button"
+                onClick={() => setShowHidden((v) => !v)}
+                className="inline-flex items-center gap-1 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/60 hover:text-obsidian"
+              >
+                {showHidden ? <EyeOff className="h-3 w-3" /> : <Eye className="h-3 w-3" />}
+                {showHidden ? "Hide" : "Show"} not-required ({docs.filter((d) => d.status === "not_applicable").length})
+              </button>
+            )}
+            <span className="font-mono text-[11px] tabular-nums text-obsidian/60">{c.docsDone}/{c.docsTotal} complete</span>
+          </div>
         </div>
         <div className="text-[12px] text-obsidian/55 mb-2">
           Files upload to secure cloud storage. Google Drive & OneDrive import requires the App User Connector to be enabled in workspace settings.
         </div>
         <div>
-          {docs.map((d) => (
+          {docs.filter((d) => showHidden || d.status !== "not_applicable").map((d) => (
             <div key={d.key} id={`doc-${d.key}`}>
               <PermitDocUploader
                 permit={row}
@@ -270,6 +319,7 @@ function PermitDetailPage() {
             </div>
           ))}
         </div>
+
         {editing && (
           <div className="mt-4 pt-4 border-t border-obsidian/10">
             <button
