@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState, type ChangeEvent, type FormEvent } from "react";
 import { Upload, X, CheckCircle2 } from "lucide-react";
-import { getSubByTokenFn, submitSubIntakeFn, type PublicSubRecord } from "@/lib/sub-intake.functions";
+import { getSubByTokenFn, submitSubIntakeFn, getSubUploadUrlFn, type PublicSubRecord } from "@/lib/sub-intake.functions";
 
 export const Route = createFileRoute("/sub-intake/$token")({
   head: () => ({
