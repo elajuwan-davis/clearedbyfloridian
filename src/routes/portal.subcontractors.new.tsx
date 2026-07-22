@@ -199,24 +199,36 @@ function NewSubcontractorPage() {
   const labelCls = "block text-[11px] font-mono uppercase tracking-[0.14em] text-obsidian/60 mb-1.5";
 
   function FileRow({ label, name, keyName }: { label: string; name: string | null | undefined; keyName: "license_file_name" | "coi_file_name" | "w9_file_name" }) {
+    const busy = uploading[keyName];
+    const path = (saved as unknown as Record<string, string | null> | null)?.[NAME_TO_PATH[keyName]] ?? null;
     return (
       <div>
         <label className={labelCls}>{label}</label>
         <div className="flex items-center gap-3 flex-wrap">
-          <label className="inline-flex items-center gap-2 cursor-pointer border border-obsidian/20 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian rounded-[3px] hover:bg-obsidian/5">
-            <Upload className="h-3.5 w-3.5" /> {name ? "Replace" : "Upload"}
-            <input type="file" accept="application/pdf,image/*" className="hidden" onChange={(e) => onFile(keyName, e)} />
+          <label className={`inline-flex items-center gap-2 border border-obsidian/20 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian rounded-[3px] hover:bg-obsidian/5 ${busy ? "opacity-60 cursor-wait" : "cursor-pointer"}`}>
+            {busy ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Upload className="h-3.5 w-3.5" />}
+            {busy ? "Uploading…" : name ? "Replace" : "Upload"}
+            <input type="file" accept="application/pdf,image/*" className="hidden" disabled={busy} onChange={(e) => onFile(keyName, e)} />
           </label>
           {name && (
             <span className="inline-flex items-center gap-1.5 text-[11px] text-obsidian/70 bg-obsidian/5 px-2 py-1 rounded-[3px]">
               {name}
-              <button type="button" onClick={() => set(keyName, null)}><X className="h-3 w-3" /></button>
+              {path && (
+                <button type="button" title="View file" onClick={() => viewFile(path)} className="text-obsidian/60 hover:text-obsidian">
+                  <Eye className="h-3 w-3" />
+                </button>
+              )}
+              <button type="button" title="Remove" onClick={() => removeFile(keyName)}><X className="h-3 w-3" /></button>
             </span>
+          )}
+          {name && !path && (
+            <span className="text-[10px] font-mono uppercase tracking-[0.12em] text-amber-700">Filename only — no file stored</span>
           )}
         </div>
       </div>
     );
   }
+
 
   return (
     <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
