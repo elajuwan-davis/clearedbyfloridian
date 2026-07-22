@@ -242,6 +242,8 @@ function PermitDetailPage() {
                 </button>
               </div>
             </div>
+          </div>
+
 
           <div><label className={labelCls("submitted_date")}>Submitted Date {flag("submitted_date")}</label><input type="date" className={inputCls("submitted_date")} value={e.submitted_date ?? ""} onChange={(ev) => set("submitted_date", ev.target.value)} /></div>
           <div>
