@@ -222,7 +222,7 @@ function NewSubcontractorPage() {
             </span>
           )}
           {name && !path && (
-            <span className="text-[10px] font-mono uppercase tracking-[0.12em] text-amber-700">Filename only — no file stored</span>
+            <span className="text-[10px] font-mono uppercase tracking-[0.12em] text-amber-700">Needs re-upload — old submission saved only the filename</span>
           )}
         </div>
       </div>

@@ -1,14 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState, type ChangeEvent, type FormEvent } from "react";
 import { Upload, X, CheckCircle2 } from "lucide-react";
-import { getSubByTokenFn, submitSubIntakeFn, getSubUploadUrlFn, type PublicSubRecord } from "@/lib/sub-intake.functions";
-import { createClient } from "@supabase/supabase-js";
-
-const publicStorage = createClient(
-  import.meta.env.VITE_SUPABASE_URL as string,
-  import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string,
-  { auth: { persistSession: false, autoRefreshToken: false } },
-);
+import { getSubByTokenFn, submitSubIntakeFn, type PublicSubRecord } from "@/lib/sub-intake.functions";
 
 export const Route = createFileRoute("/sub-intake/$token")({
   head: () => ({
@@ -58,13 +51,22 @@ function SubIntakeTokenPage() {
     if (!f) return;
     setUploading((u) => ({ ...u, [key]: true }));
     try {
-      const { path, token: uploadToken } = await getSubUploadUrlFn({ data: { token, field: FIELD_MAP[key], filename: f.name, contentType: f.type } });
-      const { error: upErr } = await publicStorage.storage.from("permit-files").uploadToSignedUrl(path, uploadToken, f, {
-        contentType: f.type || "application/octet-stream",
-        upsert: true,
+      const body = new FormData();
+      body.set("token", token);
+      body.set("field", FIELD_MAP[key]);
+      body.set("file", f);
+
+      const response = await fetch("/api/public/sub-intake-upload", {
+        method: "POST",
+        body,
       });
-      if (upErr) throw upErr;
-      setPatch((p) => ({ ...p, [key]: f.name, [PATH_KEY[key]]: path }));
+      const result = await response.json().catch(() => null) as { path?: string; name?: string; error?: string } | null;
+      const uploadedPath = result?.path;
+      const uploadedName = result?.name;
+      if (!response.ok || !uploadedPath || !uploadedName) {
+        throw new Error(result?.error || "The file did not reach storage. Please try again.");
+      }
+      setPatch((p) => ({ ...p, [key]: uploadedName, [PATH_KEY[key]]: uploadedPath }));
     } catch (err) {
       alert("Upload failed: " + (err instanceof Error ? err.message : String(err)));
     } finally {
@@ -78,6 +80,11 @@ function SubIntakeTokenPage() {
     e.preventDefault();
     setSubmitting(true);
     try {
+      for (const key of Object.keys(PATH_KEY) as Array<keyof typeof PATH_KEY>) {
+        if (patch[key] && !patch[PATH_KEY[key]]) {
+          throw new Error("One or more documents only has a filename. Please re-upload it before submitting.");
+        }
+      }
       await submitSubIntakeFn({ data: { token, patch } });
       setDone(true);
     } catch (err) {
