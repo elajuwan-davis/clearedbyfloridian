@@ -2,6 +2,13 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState, type ChangeEvent, type FormEvent } from "react";
 import { Upload, X, CheckCircle2 } from "lucide-react";
 import { getSubByTokenFn, submitSubIntakeFn, getSubUploadUrlFn, type PublicSubRecord } from "@/lib/sub-intake.functions";
+import { createClient } from "@supabase/supabase-js";
+
+const publicStorage = createClient(
+  import.meta.env.VITE_SUPABASE_URL as string,
+  import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string,
+  { auth: { persistSession: false, autoRefreshToken: false } },
+);
 
 export const Route = createFileRoute("/sub-intake/$token")({
   head: () => ({
