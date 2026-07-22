@@ -101,7 +101,7 @@ function NewSubcontractorPage() {
   async function generateBlankInviteLink() {
     try {
       const rec = await createSub({ company_name: `Pending Invite ${new Date().toLocaleDateString()}`, status: "invited" });
-      const url = `${window.location.origin}/sub-intake/${rec.completion_token}`;
+      const url = `https://cleared.floridianinc.com/sub-intake/${rec.completion_token}`;
       setShareUrl(url);
       toast.success("Intake link generated");
     } catch (e) {
@@ -116,7 +116,7 @@ function NewSubcontractorPage() {
 
   function copySavedLink() {
     if (!saved) return;
-    const url = `${window.location.origin}/sub-intake/${saved.completion_token}`;
+    const url = `https://cleared.floridianinc.com/sub-intake/${saved.completion_token}`;
     navigator.clipboard.writeText(url).then(() => toast.success("Intake link copied"));
   }
 
@@ -174,7 +174,7 @@ function NewSubcontractorPage() {
       {saved && (
         <div className="mt-6 bg-white border border-obsidian/10 rounded-[3px] p-4 flex items-center justify-between gap-3 flex-wrap">
           <div className="text-[12px] text-obsidian/70">
-            Intake link: <span className="font-mono">{`${typeof window !== "undefined" ? window.location.origin : ""}/sub-intake/${saved.completion_token}`}</span>
+            Intake link: <span className="font-mono">{`https://cleared.floridianinc.com/sub-intake/${saved.completion_token}`}</span>
           </div>
           <button onClick={copySavedLink} className="inline-flex items-center gap-1.5 border border-obsidian/20 px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian rounded-[3px]">
             <Copy className="h-3.5 w-3.5" /> Copy link

@@ -37,7 +37,7 @@ function SubcontractorsListPage() {
     try {
       const stamp = new Date().toLocaleDateString();
       const rec = await createSub({ company_name: `Pending Invite ${stamp}`, status: "invited" });
-      const url = `${window.location.origin}/sub-intake/${rec.completion_token}`;
+      const url = `https://cleared.floridianinc.com/sub-intake/${rec.completion_token}`;
       setShareUrl(url);
       await refresh();
       toast.success("Intake link generated");
@@ -58,7 +58,7 @@ function SubcontractorsListPage() {
   }
 
   async function copySubLink(token: string) {
-    const url = `${window.location.origin}/sub-intake/${token}`;
+    const url = `https://cleared.floridianinc.com/sub-intake/${token}`;
     await navigator.clipboard.writeText(url);
     toast.success("Intake link copied");
   }
