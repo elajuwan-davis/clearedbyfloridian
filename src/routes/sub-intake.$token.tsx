@@ -2,6 +2,13 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState, type ChangeEvent, type FormEvent } from "react";
 import { Upload, X, CheckCircle2 } from "lucide-react";
 import { getSubByTokenFn, submitSubIntakeFn, getSubUploadUrlFn, type PublicSubRecord } from "@/lib/sub-intake.functions";
+import { createClient } from "@supabase/supabase-js";
+
+const publicStorage = createClient(
+  import.meta.env.VITE_SUPABASE_URL as string,
+  import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string,
+  { auth: { persistSession: false, autoRefreshToken: false } },
+);
 
 export const Route = createFileRoute("/sub-intake/$token")({
   head: () => ({
@@ -51,9 +58,12 @@ function SubIntakeTokenPage() {
     if (!f) return;
     setUploading((u) => ({ ...u, [key]: true }));
     try {
-      const { signedUrl, path } = await getSubUploadUrlFn({ data: { token, field: FIELD_MAP[key], filename: f.name, contentType: f.type } });
-      const res = await fetch(signedUrl, { method: "PUT", body: f, headers: { "Content-Type": f.type || "application/octet-stream", "x-upsert": "true" } });
-      if (!res.ok) throw new Error(`Upload failed (${res.status})`);
+      const { path, token: uploadToken } = await getSubUploadUrlFn({ data: { token, field: FIELD_MAP[key], filename: f.name, contentType: f.type } });
+      const { error: upErr } = await publicStorage.storage.from("permit-files").uploadToSignedUrl(path, uploadToken, f, {
+        contentType: f.type || "application/octet-stream",
+        upsert: true,
+      });
+      if (upErr) throw upErr;
       setPatch((p) => ({ ...p, [key]: f.name, [PATH_KEY[key]]: path }));
     } catch (err) {
       alert("Upload failed: " + (err instanceof Error ? err.message : String(err)));
