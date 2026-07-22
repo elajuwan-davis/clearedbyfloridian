@@ -275,15 +275,27 @@ function PermitDetailPage() {
 
 
       <div className="mt-6 bg-white border border-obsidian/10 rounded-[3px] p-6">
-        <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center justify-between mb-2 gap-3 flex-wrap">
           <div className="text-[11px] font-mono uppercase tracking-[0.18em] text-obsidian/75">Documents</div>
-          <span className="font-mono text-[11px] tabular-nums text-obsidian/60">{c.docsDone}/{c.docsTotal} complete</span>
+          <div className="flex items-center gap-3">
+            {docs.some((d) => d.status === "not_applicable") && (
+              <button
+                type="button"
+                onClick={() => setShowHidden((v) => !v)}
+                className="inline-flex items-center gap-1 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/60 hover:text-obsidian"
+              >
+                {showHidden ? <EyeOff className="h-3 w-3" /> : <Eye className="h-3 w-3" />}
+                {showHidden ? "Hide" : "Show"} not-required ({docs.filter((d) => d.status === "not_applicable").length})
+              </button>
+            )}
+            <span className="font-mono text-[11px] tabular-nums text-obsidian/60">{c.docsDone}/{c.docsTotal} complete</span>
+          </div>
         </div>
         <div className="text-[12px] text-obsidian/55 mb-2">
           Files upload to secure cloud storage. Google Drive & OneDrive import requires the App User Connector to be enabled in workspace settings.
         </div>
         <div>
-          {docs.map((d) => (
+          {docs.filter((d) => showHidden || d.status !== "not_applicable").map((d) => (
             <div key={d.key} id={`doc-${d.key}`}>
               <PermitDocUploader
                 permit={row}
@@ -307,6 +319,7 @@ function PermitDetailPage() {
             </div>
           ))}
         </div>
+
         {editing && (
           <div className="mt-4 pt-4 border-t border-obsidian/10">
             <button
