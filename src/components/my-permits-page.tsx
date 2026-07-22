@@ -2,7 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { PortalShell } from "@/components/portal-shell";
 import { ChevronDown, Search, AlertTriangle, Plus, FileText, RefreshCw } from "lucide-react";
-import { listPermits, permitCompleteness, type PermitRow, type PermitStatus } from "@/lib/permits-api";
+import { listPermits, updatePermit, permitCompleteness, type PermitRow, type PermitStatus } from "@/lib/permits-api";
 import { syncAllPermits, getLastRun, formatRelative } from "@/lib/permit-sync";
 
 type GroupKey = "intake" | "preparing" | "submitted" | "on_hold" | "outsourced" | "issued" | "cancelled";
@@ -35,9 +35,23 @@ export function MyPermitsPage() {
   const [lastSync, setLastSync] = useState<string | null>(null);
   const [syncMsg, setSyncMsg] = useState<string | null>(null);
   const [query, setQuery] = useState("");
+  const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [open, setOpen] = useState<Record<GroupKey, boolean>>({
     intake: true, preparing: true, submitted: true, on_hold: true, outsourced: true, issued: true, cancelled: false,
   });
+
+  async function changeStatus(id: string, status: PermitStatus) {
+    setUpdatingId(id);
+    // optimistic
+    setPermits((prev) => prev.map((p) => (p.id === id ? { ...p, status } : p)));
+    try {
+      await updatePermit(id, { status });
+    } catch {
+      await refresh();
+    } finally {
+      setUpdatingId(null);
+    }
+  }
 
   async function refresh() {
     setLoading(true);
@@ -164,7 +178,20 @@ export function MyPermitsPage() {
                               <span className="font-mono text-[10px] uppercase tracking-[0.1em] text-obsidian/70 border border-obsidian/15 px-2 py-0.5 rounded-[2px]">
                                 {STATUS_LABEL[p.status]}
                               </span>
+                              <select
+                                value={p.status}
+                                disabled={updatingId === p.id}
+                                onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                                onChange={(e) => { e.preventDefault(); e.stopPropagation(); changeStatus(p.id, e.target.value as PermitStatus); }}
+                                title="Change status"
+                                className="font-mono text-[10px] uppercase tracking-[0.1em] text-obsidian bg-white border border-obsidian/20 px-1.5 py-0.5 rounded-[2px] hover:bg-paper-warm focus:outline-none focus:border-obsidian/50 disabled:opacity-50"
+                              >
+                                {(Object.keys(STATUS_LABEL) as PermitStatus[]).map((s) => (
+                                  <option key={s} value={s}>Move to: {STATUS_LABEL[s]}</option>
+                                ))}
+                              </select>
                               <span className="font-mono text-[10px] tabular-nums text-obsidian/45 w-24 text-right shrink-0">{new Date(p.updated_at).toLocaleDateString()}</span>
+
                             </div>
                             <div className="mt-2.5 flex items-center gap-3">
                               <div className="flex-1 h-1.5 bg-obsidian/10 rounded-full overflow-hidden">
