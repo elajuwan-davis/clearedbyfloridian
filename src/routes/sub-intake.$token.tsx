@@ -58,9 +58,12 @@ function SubIntakeTokenPage() {
     if (!f) return;
     setUploading((u) => ({ ...u, [key]: true }));
     try {
-      const { signedUrl, path } = await getSubUploadUrlFn({ data: { token, field: FIELD_MAP[key], filename: f.name, contentType: f.type } });
-      const res = await fetch(signedUrl, { method: "PUT", body: f, headers: { "Content-Type": f.type || "application/octet-stream", "x-upsert": "true" } });
-      if (!res.ok) throw new Error(`Upload failed (${res.status})`);
+      const { path, token: uploadToken } = await getSubUploadUrlFn({ data: { token, field: FIELD_MAP[key], filename: f.name, contentType: f.type } });
+      const { error: upErr } = await publicStorage.storage.from("permit-files").uploadToSignedUrl(path, uploadToken, f, {
+        contentType: f.type || "application/octet-stream",
+        upsert: true,
+      });
+      if (upErr) throw upErr;
       setPatch((p) => ({ ...p, [key]: f.name, [PATH_KEY[key]]: path }));
     } catch (err) {
       alert("Upload failed: " + (err instanceof Error ? err.message : String(err)));
