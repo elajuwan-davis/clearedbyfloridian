@@ -34,10 +34,34 @@ function SubIntakeTokenPage() {
     [sub],
   );
 
-  function onFile(key: "license_file_name" | "coi_file_name" | "w9_file_name", e: ChangeEvent<HTMLInputElement>) {
+  const FIELD_MAP: Record<"license_file_name" | "coi_file_name" | "w9_file_name", "license" | "coi" | "w9"> = {
+    license_file_name: "license",
+    coi_file_name: "coi",
+    w9_file_name: "w9",
+  };
+  const PATH_KEY: Record<"license_file_name" | "coi_file_name" | "w9_file_name", string> = {
+    license_file_name: "license_file_path",
+    coi_file_name: "coi_file_path",
+    w9_file_name: "w9_file_path",
+  };
+  const [uploading, setUploading] = useState<Record<string, boolean>>({});
+
+  async function onFile(key: "license_file_name" | "coi_file_name" | "w9_file_name", e: ChangeEvent<HTMLInputElement>) {
     const f = e.target.files?.[0];
-    if (f) setPatch((p) => ({ ...p, [key]: f.name }));
+    if (!f) return;
+    setUploading((u) => ({ ...u, [key]: true }));
+    try {
+      const { signedUrl, path } = await getSubUploadUrlFn({ data: { token, field: FIELD_MAP[key], filename: f.name, contentType: f.type } });
+      const res = await fetch(signedUrl, { method: "PUT", body: f, headers: { "Content-Type": f.type || "application/octet-stream", "x-upsert": "true" } });
+      if (!res.ok) throw new Error(`Upload failed (${res.status})`);
+      setPatch((p) => ({ ...p, [key]: f.name, [PATH_KEY[key]]: path }));
+    } catch (err) {
+      alert("Upload failed: " + (err instanceof Error ? err.message : String(err)));
+    } finally {
+      setUploading((u) => ({ ...u, [key]: false }));
+    }
   }
+
   function set(k: string, v: string | null) { setPatch((p) => ({ ...p, [k]: v })); }
 
   async function submit(e: FormEvent) {
