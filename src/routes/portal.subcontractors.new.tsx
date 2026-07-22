@@ -1,8 +1,10 @@
 import { createFileRoute, Link, useNavigate, useSearch } from "@tanstack/react-router";
 import { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
 import { toast } from "sonner";
-import { ArrowLeft, Upload, X, Link2, Copy, Trash2 } from "lucide-react";
+import { ArrowLeft, Upload, X, Link2, Copy, Trash2, Eye, Loader2 } from "lucide-react";
 import { getSub, createSub, updateSubApi, deleteSub, type SubRow, type SubInsert } from "@/lib/subs-api";
+import { supabase } from "@/integrations/supabase/client";
+
 
 
 type Search = { id?: string };
