@@ -126,6 +126,17 @@ export const submitSubIntakeFn = createServerFn({ method: "POST" })
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const table = (supabaseAdmin.from("subcontractors" as any) as any);
 
+    const filePairs = [
+      ["license_file_name", "license_file_path"],
+      ["coi_file_name", "coi_file_path"],
+      ["w9_file_name", "w9_file_path"],
+    ] as const;
+    for (const [nameKey, pathKey] of filePairs) {
+      if (data.patch[nameKey] && !data.patch[pathKey]) {
+        throw new Error("Document uploads must finish before submitting. Please re-upload the file.");
+      }
+    }
+
     const { data: inviteRow, error: lookupErr } = await table
       .select("id, company_name")
       .eq("completion_token", data.token)
