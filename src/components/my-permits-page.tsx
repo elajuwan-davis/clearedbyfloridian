@@ -35,9 +35,23 @@ export function MyPermitsPage() {
   const [lastSync, setLastSync] = useState<string | null>(null);
   const [syncMsg, setSyncMsg] = useState<string | null>(null);
   const [query, setQuery] = useState("");
+  const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [open, setOpen] = useState<Record<GroupKey, boolean>>({
     intake: true, preparing: true, submitted: true, on_hold: true, outsourced: true, issued: true, cancelled: false,
   });
+
+  async function changeStatus(id: string, status: PermitStatus) {
+    setUpdatingId(id);
+    // optimistic
+    setPermits((prev) => prev.map((p) => (p.id === id ? { ...p, status } : p)));
+    try {
+      await updatePermit(id, { status });
+    } catch {
+      await refresh();
+    } finally {
+      setUpdatingId(null);
+    }
+  }
 
   async function refresh() {
     setLoading(true);
