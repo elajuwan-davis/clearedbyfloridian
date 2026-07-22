@@ -21,7 +21,10 @@ export type PermitDoc = {
   mime?: string | null;
   uploaded_at?: string | null;
   custom?: boolean;
+  external_url?: string | null;
+  source?: "upload" | "google_drive" | "library" | null;
 };
+
 
 export type PermitSub = {
   trade: string;
