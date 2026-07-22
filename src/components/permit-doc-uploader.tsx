@@ -1,10 +1,11 @@
 import { useRef, useState } from "react";
 import { toast } from "sonner";
-import { Upload, Eye, Download, Trash2, Loader2, Check, AlertTriangle, X, FileText, Cloud, Pencil } from "lucide-react";
+import { Upload, Eye, Download, Trash2, Loader2, Check, AlertTriangle, X, FileText, Cloud, Pencil, Ban, RotateCcw, Library } from "lucide-react";
 import { uploadPermitFile, getPermitFileUrl, deletePermitFile } from "@/lib/permit-storage";
 import type { PermitDoc, PermitRow } from "@/lib/permits-api";
 import { updatePermit, getEffectiveDocs } from "@/lib/permits-api";
 import { GoogleDrivePickerDialog } from "@/components/google-drive-picker-dialog";
+import { EquipmentLibraryDialog } from "@/components/equipment-library-dialog";
 
 type Props = {
   permit: PermitRow;
@@ -15,6 +16,12 @@ type Props = {
   onDeleteField?: () => void | Promise<void>;
 };
 
+function isEquipmentDoc(doc: PermitDoc): boolean {
+  const k = doc.key.toLowerCase();
+  const l = doc.label.toLowerCase();
+  return k.includes("equipment") || l.includes("equipment");
+}
+
 export function PermitDocUploader({ permit, doc, onChange, readOnly = false, onRename, onDeleteField }: Props) {
 
   const inputRef = useRef<HTMLInputElement>(null);
@@ -22,8 +29,11 @@ export function PermitDocUploader({ permit, doc, onChange, readOnly = false, onR
   const [dragOver, setDragOver] = useState(false);
   const [progress, setProgress] = useState(0);
   const [drivePickerOpen, setDrivePickerOpen] = useState(false);
+  const [libraryOpen, setLibraryOpen] = useState(false);
 
-  const isUploaded = doc.status === "uploaded" && doc.path;
+  const isUploaded = doc.status === "uploaded" && (doc.path || doc.external_url);
+  const isExternal = !!doc.external_url;
+  const notRequired = doc.status === "not_applicable";
 
   async function persistDocs(nextDoc: PermitDoc) {
     const current = getEffectiveDocs(permit);
@@ -50,6 +60,8 @@ export function PermitDocUploader({ permit, doc, onChange, readOnly = false, onR
         size,
         mime,
         uploaded_at: new Date().toISOString(),
+        external_url: null,
+        source: "upload",
       });
       setProgress(100);
       toast.success(`Uploaded ${file.name}`);
@@ -62,6 +74,10 @@ export function PermitDocUploader({ permit, doc, onChange, readOnly = false, onR
   }
 
   async function handleView() {
+    if (doc.external_url) {
+      window.open(doc.external_url, "_blank", "noopener,noreferrer");
+      return;
+    }
     if (!doc.path) return;
     try {
       const url = await getPermitFileUrl(doc.path, 600);
@@ -72,6 +88,10 @@ export function PermitDocUploader({ permit, doc, onChange, readOnly = false, onR
   }
 
   async function handleDownload() {
+    if (doc.external_url) {
+      window.open(doc.external_url, "_blank", "noopener,noreferrer");
+      return;
+    }
     if (!doc.path) return;
     try {
       const url = await getPermitFileUrl(doc.path, 600);
@@ -87,12 +107,11 @@ export function PermitDocUploader({ permit, doc, onChange, readOnly = false, onR
   }
 
   async function handleRemove() {
-    if (!doc.path) return;
-    if (!confirm(`Remove ${doc.filename}?`)) return;
+    if (!confirm(`Remove ${doc.filename ?? "attachment"}?`)) return;
     setBusy(true);
     try {
-      await deletePermitFile(doc.path);
-      await persistDocs({ ...doc, status: "missing", filename: null, path: null, size: null, mime: null, uploaded_at: null });
+      if (doc.path) await deletePermitFile(doc.path);
+      await persistDocs({ ...doc, status: "missing", filename: null, path: null, size: null, mime: null, uploaded_at: null, external_url: null, source: null });
       toast.success("Removed");
     } catch (e) {
       toast.error("Remove failed: " + (e instanceof Error ? e.message : String(e)));
@@ -104,6 +123,16 @@ export function PermitDocUploader({ permit, doc, onChange, readOnly = false, onR
   async function handleDefer() {
     await persistDocs({ ...doc, status: "pending" });
     toast.success("Marked as pending");
+  }
+
+  async function handleMarkNotRequired() {
+    await persistDocs({ ...doc, status: "not_applicable" });
+    toast.success("Marked as not required for this permit");
+  }
+
+  async function handleRestore() {
+    await persistDocs({ ...doc, status: doc.path || doc.external_url ? "uploaded" : "missing" });
+    toast.success("Restored");
   }
 
   function handleOneDriveSoon() {
@@ -121,7 +150,26 @@ export function PermitDocUploader({ permit, doc, onChange, readOnly = false, onR
       size: result.size,
       mime: result.mime,
       uploaded_at: new Date().toISOString(),
+      external_url: null,
+      source: "google_drive",
     });
+  }
+
+  async function handleLibrarySelect(specs: { title: string; url: string }[]) {
+    const first = specs[0];
+    const label = specs.length === 1 ? first.title : `${first.title} +${specs.length - 1} more`;
+    await persistDocs({
+      ...doc,
+      status: "uploaded",
+      filename: label,
+      external_url: first.url,
+      path: null,
+      size: null,
+      mime: "application/pdf",
+      uploaded_at: new Date().toISOString(),
+      source: "library",
+    });
+    toast.success(`Attached ${specs.length} spec sheet${specs.length === 1 ? "" : "s"}`);
   }
 
 
@@ -132,9 +180,10 @@ export function PermitDocUploader({ permit, doc, onChange, readOnly = false, onR
       not_applicable: "bg-obsidian/10 text-obsidian/60",
       missing: "bg-red-100 text-red-800",
     };
+    const label = doc.status === "not_applicable" ? "not required" : doc.status.replace("_", " ");
     return (
       <span className={`font-mono text-[10px] uppercase px-2 py-0.5 rounded ${map[doc.status]}`}>
-        {doc.status.replace("_", " ")}
+        {label}
       </span>
     );
   };
@@ -142,18 +191,19 @@ export function PermitDocUploader({ permit, doc, onChange, readOnly = false, onR
   const StatusIcon =
     doc.status === "uploaded" ? <Check className="h-4 w-4 text-emerald-600" /> :
     doc.status === "pending" ? <AlertTriangle className="h-4 w-4 text-amber-600" /> :
-    doc.status === "not_applicable" ? <FileText className="h-4 w-4 text-obsidian/40" /> :
+    doc.status === "not_applicable" ? <Ban className="h-4 w-4 text-obsidian/40" /> :
     <X className="h-4 w-4 text-red-600" />;
 
   return (
-    <div className="py-4 border-b border-obsidian/10 last:border-0">
+    <div className={`py-4 border-b border-obsidian/10 last:border-0 ${notRequired ? "opacity-55" : ""}`}>
       <div className="flex items-start gap-3">
         {StatusIcon}
         <div className="flex-1 min-w-0">
           <div className="flex flex-wrap items-center gap-2">
-            <div className="text-sm text-obsidian font-medium">{doc.label}</div>
-            {doc.required && <span className="text-[10px] font-mono uppercase text-red-700">Required</span>}
+            <div className={`text-sm text-obsidian font-medium ${notRequired ? "line-through" : ""}`}>{doc.label}</div>
+            {doc.required && !notRequired && <span className="text-[10px] font-mono uppercase text-red-700">Required</span>}
             {doc.custom && <span className="text-[10px] font-mono uppercase text-obsidian/50">Custom</span>}
+            {isExternal && <span className="text-[10px] font-mono uppercase text-obsidian/50">Library</span>}
             {statusBadge()}
             {!readOnly && onRename && (
               <button
@@ -178,6 +228,26 @@ export function PermitDocUploader({ permit, doc, onChange, readOnly = false, onR
                 <X className="h-3 w-3" /> Remove field
               </button>
             )}
+            {!readOnly && !notRequired && (
+              <button
+                type="button"
+                onClick={handleMarkNotRequired}
+                className="inline-flex items-center gap-1 text-[10px] font-mono uppercase tracking-[0.14em] text-obsidian/55 hover:text-obsidian"
+                title="Mark as not required for this permit"
+              >
+                <Ban className="h-3 w-3" /> Not required
+              </button>
+            )}
+            {!readOnly && notRequired && (
+              <button
+                type="button"
+                onClick={handleRestore}
+                className="inline-flex items-center gap-1 text-[10px] font-mono uppercase tracking-[0.14em] text-obsidian/70 hover:text-obsidian"
+                title="Restore to required list"
+              >
+                <RotateCcw className="h-3 w-3" /> Restore
+              </button>
+            )}
           </div>
           {doc.filename && (
             <div className="mt-1 text-[12px] text-obsidian/60 font-mono truncate">
@@ -190,9 +260,11 @@ export function PermitDocUploader({ permit, doc, onChange, readOnly = false, onR
             <button type="button" onClick={handleView} className="inline-flex items-center gap-1 border border-obsidian/20 bg-white px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian rounded-[3px] hover:bg-obsidian/5">
               <Eye className="h-3 w-3" /> View
             </button>
-            <button type="button" onClick={handleDownload} className="inline-flex items-center gap-1 border border-obsidian/20 bg-white px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian rounded-[3px] hover:bg-obsidian/5">
-              <Download className="h-3 w-3" />
-            </button>
+            {!isExternal && (
+              <button type="button" onClick={handleDownload} className="inline-flex items-center gap-1 border border-obsidian/20 bg-white px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian rounded-[3px] hover:bg-obsidian/5">
+                <Download className="h-3 w-3" />
+              </button>
+            )}
             {!readOnly && (
               <button type="button" onClick={handleRemove} disabled={busy} className="inline-flex items-center gap-1 border border-red-600/30 text-red-700 px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] rounded-[3px] hover:bg-red-50 disabled:opacity-60">
                 <Trash2 className="h-3 w-3" />
@@ -203,7 +275,7 @@ export function PermitDocUploader({ permit, doc, onChange, readOnly = false, onR
 
       </div>
 
-      {!isUploaded && !readOnly && (
+      {!isUploaded && !readOnly && !notRequired && (
         <div className="mt-3 ml-7">
           <div
             onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
@@ -242,6 +314,11 @@ export function PermitDocUploader({ permit, doc, onChange, readOnly = false, onR
                 >
                   {busy ? <Loader2 className="h-3 w-3 animate-spin" /> : <Upload className="h-3 w-3" />} Browse
                 </button>
+                {isEquipmentDoc(doc) && (
+                  <button type="button" onClick={() => setLibraryOpen(true)} className="inline-flex items-center gap-1.5 border border-obsidian/20 bg-white px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian rounded-[3px] hover:bg-obsidian/5">
+                    <Library className="h-3 w-3" /> Select from Library
+                  </button>
+                )}
                 <button type="button" onClick={() => setDrivePickerOpen(true)} className="inline-flex items-center gap-1.5 border border-obsidian/20 bg-white px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian rounded-[3px] hover:bg-obsidian/5">
                   <Cloud className="h-3 w-3" /> Google Drive
                 </button>
@@ -269,6 +346,11 @@ export function PermitDocUploader({ permit, doc, onChange, readOnly = false, onR
         permitId={permit.id}
         docKey={doc.key}
         onImported={handleDriveImported}
+      />
+      <EquipmentLibraryDialog
+        open={libraryOpen}
+        onOpenChange={setLibraryOpen}
+        onSelect={handleLibrarySelect}
       />
     </div>
   );
