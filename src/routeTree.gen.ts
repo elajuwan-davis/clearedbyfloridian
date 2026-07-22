@@ -63,6 +63,7 @@ import { Route as PortalProjectsIdRouteImport } from './routes/portal.projects.$
 import { Route as PortalPermitsNewRouteImport } from './routes/portal.permits.new'
 import { Route as PortalPermitsIdRouteImport } from './routes/portal.permits.$id'
 import { Route as PortalGuidesSlugRouteImport } from './routes/portal.guides.$slug'
+import { Route as ApiPublicSubIntakeUploadRouteImport } from './routes/api/public/sub-intake-upload'
 import { Route as ApiPublicSeedTeamRouteImport } from './routes/api/public/seed-team'
 import { Route as ApiPublicHubspotDealWebhookRouteImport } from './routes/api/public/hubspot.deal-webhook'
 
@@ -341,6 +342,12 @@ const PortalGuidesSlugRoute = PortalGuidesSlugRouteImport.update({
   path: '/guides/$slug',
   getParentRoute: () => PortalRoute,
 } as any)
+const ApiPublicSubIntakeUploadRoute =
+  ApiPublicSubIntakeUploadRouteImport.update({
+    id: '/api/public/sub-intake-upload',
+    path: '/api/public/sub-intake-upload',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicSeedTeamRoute = ApiPublicSeedTeamRouteImport.update({
   id: '/api/public/seed-team',
   path: '/api/public/seed-team',
@@ -401,6 +408,7 @@ export interface FileRoutesByFullPath {
   '/sub-intake/$token': typeof SubIntakeTokenRoute
   '/portal/': typeof PortalIndexRoute
   '/api/public/seed-team': typeof ApiPublicSeedTeamRoute
+  '/api/public/sub-intake-upload': typeof ApiPublicSubIntakeUploadRoute
   '/portal/guides/$slug': typeof PortalGuidesSlugRoute
   '/portal/permits/$id': typeof PortalPermitsIdRoute
   '/portal/permits/new': typeof PortalPermitsNewRoute
@@ -457,6 +465,7 @@ export interface FileRoutesByTo {
   '/sub-intake/$token': typeof SubIntakeTokenRoute
   '/portal': typeof PortalIndexRoute
   '/api/public/seed-team': typeof ApiPublicSeedTeamRoute
+  '/api/public/sub-intake-upload': typeof ApiPublicSubIntakeUploadRoute
   '/portal/guides/$slug': typeof PortalGuidesSlugRoute
   '/portal/permits/$id': typeof PortalPermitsIdRoute
   '/portal/permits/new': typeof PortalPermitsNewRoute
@@ -516,6 +525,7 @@ export interface FileRoutesById {
   '/sub-intake/$token': typeof SubIntakeTokenRoute
   '/portal/': typeof PortalIndexRoute
   '/api/public/seed-team': typeof ApiPublicSeedTeamRoute
+  '/api/public/sub-intake-upload': typeof ApiPublicSubIntakeUploadRoute
   '/portal/guides/$slug': typeof PortalGuidesSlugRoute
   '/portal/permits/$id': typeof PortalPermitsIdRoute
   '/portal/permits/new': typeof PortalPermitsNewRoute
@@ -576,6 +586,7 @@ export interface FileRouteTypes {
     | '/sub-intake/$token'
     | '/portal/'
     | '/api/public/seed-team'
+    | '/api/public/sub-intake-upload'
     | '/portal/guides/$slug'
     | '/portal/permits/$id'
     | '/portal/permits/new'
@@ -632,6 +643,7 @@ export interface FileRouteTypes {
     | '/sub-intake/$token'
     | '/portal'
     | '/api/public/seed-team'
+    | '/api/public/sub-intake-upload'
     | '/portal/guides/$slug'
     | '/portal/permits/$id'
     | '/portal/permits/new'
@@ -690,6 +702,7 @@ export interface FileRouteTypes {
     | '/sub-intake/$token'
     | '/portal/'
     | '/api/public/seed-team'
+    | '/api/public/sub-intake-upload'
     | '/portal/guides/$slug'
     | '/portal/permits/$id'
     | '/portal/permits/new'
@@ -728,6 +741,7 @@ export interface RootRouteChildren {
   PermitCardIdRoute: typeof PermitCardIdRoute
   SubIntakeTokenRoute: typeof SubIntakeTokenRoute
   ApiPublicSeedTeamRoute: typeof ApiPublicSeedTeamRoute
+  ApiPublicSubIntakeUploadRoute: typeof ApiPublicSubIntakeUploadRoute
   ApiPublicHubspotDealWebhookRoute: typeof ApiPublicHubspotDealWebhookRoute
 }
 
@@ -1111,6 +1125,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PortalGuidesSlugRouteImport
       parentRoute: typeof PortalRoute
     }
+    '/api/public/sub-intake-upload': {
+      id: '/api/public/sub-intake-upload'
+      path: '/api/public/sub-intake-upload'
+      fullPath: '/api/public/sub-intake-upload'
+      preLoaderRoute: typeof ApiPublicSubIntakeUploadRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/seed-team': {
       id: '/api/public/seed-team'
       path: '/api/public/seed-team'
@@ -1277,6 +1298,7 @@ const rootRouteChildren: RootRouteChildren = {
   PermitCardIdRoute: PermitCardIdRoute,
   SubIntakeTokenRoute: SubIntakeTokenRoute,
   ApiPublicSeedTeamRoute: ApiPublicSeedTeamRoute,
+  ApiPublicSubIntakeUploadRoute: ApiPublicSubIntakeUploadRoute,
   ApiPublicHubspotDealWebhookRoute: ApiPublicHubspotDealWebhookRoute,
 }
 export const routeTree = rootRouteImport

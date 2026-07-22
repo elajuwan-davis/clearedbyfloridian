@@ -61,10 +61,12 @@ function SubIntakeTokenPage() {
         body,
       });
       const result = await response.json().catch(() => null) as { path?: string; name?: string; error?: string } | null;
-      if (!response.ok || !result?.path || !result.name) {
+      const uploadedPath = result?.path;
+      const uploadedName = result?.name;
+      if (!response.ok || !uploadedPath || !uploadedName) {
         throw new Error(result?.error || "The file did not reach storage. Please try again.");
       }
-      setPatch((p) => ({ ...p, [key]: result.name, [PATH_KEY[key]]: result.path }));
+      setPatch((p) => ({ ...p, [key]: uploadedName, [PATH_KEY[key]]: uploadedPath }));
     } catch (err) {
       alert("Upload failed: " + (err instanceof Error ? err.message : String(err)));
     } finally {
