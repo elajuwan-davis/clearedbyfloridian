@@ -40,10 +40,82 @@ function NewSubcontractorPage() {
 
   function set<K extends keyof SubInsert>(k: K, v: SubInsert[K]) { setForm((f) => ({ ...f, [k]: v })); }
 
-  function onFile(k: "license_file_name" | "coi_file_name" | "w9_file_name", e: ChangeEvent<HTMLInputElement>) {
+  const NAME_TO_PATH: Record<"license_file_name" | "coi_file_name" | "w9_file_name", "license_file_path" | "coi_file_path" | "w9_file_path"> = {
+    license_file_name: "license_file_path",
+    coi_file_name: "coi_file_path",
+    w9_file_name: "w9_file_path",
+  };
+  const FIELD_LABEL: Record<"license_file_name" | "coi_file_name" | "w9_file_name", string> = {
+    license_file_name: "license",
+    coi_file_name: "coi",
+    w9_file_name: "w9",
+  };
+  const [uploading, setUploading] = useState<Record<string, boolean>>({});
+
+  async function onFile(k: "license_file_name" | "coi_file_name" | "w9_file_name", e: ChangeEvent<HTMLInputElement>) {
     const f = e.target.files?.[0];
-    if (f) set(k, f.name);
+    if (!f) return;
+    // Need a saved record to scope the storage path
+    let rec = saved;
+    if (!rec) {
+      if (!form.company_name?.trim()) {
+        toast.error("Enter a company name and save first, then upload documents.");
+        return;
+      }
+      try {
+        rec = await createSub(sanitize(form) as SubInsert);
+        setSaved(rec);
+        setForm(rec);
+      } catch (err) {
+        toast.error("Save first failed: " + formatErr(err));
+        return;
+      }
+    }
+    setUploading((u) => ({ ...u, [k]: true }));
+    try {
+      const safe = f.name.replace(/[^a-zA-Z0-9._-]+/g, "_");
+      const path = `subs/${rec.id}/${FIELD_LABEL[k]}/${Date.now()}-${safe}`;
+      const { error } = await supabase.storage.from("permit-files").upload(path, f, {
+        contentType: f.type || "application/octet-stream",
+        upsert: false,
+      });
+      if (error) throw error;
+      const patch = { [k]: f.name, [NAME_TO_PATH[k]]: path } as Partial<SubInsert>;
+      const updated = await updateSubApi(rec.id, patch);
+      setSaved(updated);
+      setForm(updated);
+      toast.success("Uploaded");
+    } catch (err) {
+      toast.error("Upload failed: " + formatErr(err));
+    } finally {
+      setUploading((u) => ({ ...u, [k]: false }));
+    }
   }
+
+  async function viewFile(path: string) {
+    try {
+      const { data, error } = await supabase.storage.from("permit-files").createSignedUrl(path, 300);
+      if (error) throw error;
+      window.open(data.signedUrl, "_blank", "noopener");
+    } catch (err) {
+      toast.error("Could not open file: " + formatErr(err));
+    }
+  }
+
+  async function removeFile(k: "license_file_name" | "coi_file_name" | "w9_file_name") {
+    if (!saved) { set(k, null); return; }
+    const pathKey = NAME_TO_PATH[k];
+    const path = (saved as unknown as Record<string, string | null>)[pathKey];
+    try {
+      if (path) { await supabase.storage.from("permit-files").remove([path]); }
+      const updated = await updateSubApi(saved.id, { [k]: null, [pathKey]: null } as Partial<SubInsert>);
+      setSaved(updated);
+      setForm(updated);
+    } catch (err) {
+      toast.error("Remove failed: " + formatErr(err));
+    }
+  }
+
 
   function formatErr(err: unknown): string {
     if (!err) return "Unknown error";
