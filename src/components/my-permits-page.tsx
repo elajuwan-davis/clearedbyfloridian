@@ -28,6 +28,16 @@ const STATUS_LABEL: Record<PermitStatus, string> = {
   cancelled: "Cancelled",
 };
 
+const STATUS_OPTIONS: Array<{ value: PermitStatus; label: string }> = [
+  { value: "submitted", label: "Intake" },
+  { value: "in_review", label: "In Review" },
+  { value: "approved", label: "Submitted / Approved" },
+  { value: "on_hold", label: "On Hold" },
+  { value: "outsourced_permitting", label: "Outsourced Permitting" },
+  { value: "permit_issued", label: "Issued" },
+  { value: "cancelled", label: "Cancelled" },
+];
+
 export function MyPermitsPage() {
   const [permits, setPermits] = useState<PermitRow[]>([]);
   const [loading, setLoading] = useState(true);
