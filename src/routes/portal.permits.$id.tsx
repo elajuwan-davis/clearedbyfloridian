@@ -1,11 +1,13 @@
 import { createFileRoute, Link, useNavigate, notFound } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { ArrowLeft, Trash2, Save, AlertTriangle, FileText, Pencil, X, Lock, Plus } from "lucide-react";
+import { ArrowLeft, Trash2, Save, AlertTriangle, FileText, Pencil, X, Lock, Plus, Search, Loader2, Eye, EyeOff } from "lucide-react";
 
 import { getPermit, updatePermit, deletePermit, permitCompleteness, getEffectiveDocs, type PermitRow, type PermitStatus, type PermitDoc } from "@/lib/permits-api";
 import { PermitDocUploader } from "@/components/permit-doc-uploader";
 import { deletePermitFile } from "@/lib/permit-storage";
+import { fetchAppraiserRecord } from "@/lib/property-appraiser";
+
 
 export const Route = createFileRoute("/portal/permits/$id")({
   head: () => ({
