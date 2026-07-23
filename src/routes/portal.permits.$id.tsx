@@ -518,8 +518,15 @@ function PermitDetailPage() {
               {mergingAttachments && (
                 <span className="inline-flex items-center gap-1.5 text-[11px] font-mono text-obsidian/60">
                   <Loader2 className="h-3 w-3 animate-spin" /> Merging attachments…
-                </span>
+              </span>
               )}
+              <button
+                onClick={() => exportUrl && window.open(exportUrl, "_blank", "noopener")}
+                disabled={!exportUrl}
+                className="inline-flex items-center gap-2 border border-obsidian/20 bg-white px-3 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian rounded-[3px] hover:bg-obsidian/5 disabled:opacity-50"
+              >
+                Open in tab
+              </button>
               <button
                 onClick={downloadExport}
                 disabled={!exportBlob}
