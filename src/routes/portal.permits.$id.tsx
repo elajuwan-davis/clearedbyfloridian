@@ -1,12 +1,14 @@
 import { createFileRoute, Link, useNavigate, notFound } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { ArrowLeft, Trash2, Save, AlertTriangle, FileText, Pencil, X, Lock, Plus, Search, Loader2, Eye, EyeOff } from "lucide-react";
+import { ArrowLeft, Trash2, Save, AlertTriangle, FileText, Pencil, X, Lock, Plus, Search, Loader2, Eye, EyeOff, Download, Share2, RotateCcw, Cloud } from "lucide-react";
 
-import { getPermit, updatePermit, deletePermit, permitCompleteness, getEffectiveDocs, type PermitRow, type PermitStatus, type PermitDoc } from "@/lib/permits-api";
+import { getPermit, updatePermit, deletePermit, permitCompleteness, getEffectiveDocs, getHiddenFieldKeys, withHiddenFieldKeys, type PermitRow, type PermitStatus, type PermitDoc } from "@/lib/permits-api";
 import { PermitDocUploader } from "@/components/permit-doc-uploader";
 import { deletePermitFile } from "@/lib/permit-storage";
 import { fetchAppraiserRecord } from "@/lib/property-appraiser";
+import { generatePermitExportPdf, suggestExportFilename } from "@/lib/permit-export";
+import { uploadFileToGoogleDrive } from "@/lib/google-drive.functions";
 
 
 export const Route = createFileRoute("/portal/permits/$id")({
@@ -33,6 +35,10 @@ function PermitDetailPage() {
   const [edit, setEdit] = useState<Partial<PermitRow>>({});
   const [pcnLoading, setPcnLoading] = useState(false);
   const [showHidden, setShowHidden] = useState(false);
+  const [exportOpen, setExportOpen] = useState(false);
+  const [exporting, setExporting] = useState(false);
+  const [exportBlob, setExportBlob] = useState<Blob | null>(null);
+  const [driveUploading, setDriveUploading] = useState(false);
 
 
 
@@ -77,20 +83,119 @@ function PermitDetailPage() {
     }
   }
 
+  async function toggleFieldHidden(k: string) {
+    if (!row) return;
+    const current = getHiddenFieldKeys(row);
+    const next = current.includes(k) ? current.filter((x) => x !== k) : [...current, k];
+    const payload = withHiddenFieldKeys(row, next);
+    try {
+      const updated = await updatePermit(row.id, { intake_payload: payload });
+      setRow(updated);
+      setEdit((p) => ({ ...p, intake_payload: updated.intake_payload }));
+    } catch (err) {
+      toast.error("Update failed: " + (err instanceof Error ? err.message : String(err)));
+    }
+  }
+
+  async function openExport() {
+    if (!row) return;
+    setExportOpen(true);
+    setExporting(true);
+    setExportBlob(null);
+    try {
+      const blob = await generatePermitExportPdf(row);
+      setExportBlob(blob);
+    } catch (err) {
+      toast.error("Export failed: " + (err instanceof Error ? err.message : String(err)));
+      setExportOpen(false);
+    } finally {
+      setExporting(false);
+    }
+  }
+
+  function downloadExport() {
+    if (!exportBlob || !row) return;
+    const url = URL.createObjectURL(exportBlob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = suggestExportFilename(row);
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
+
+  async function shareExport() {
+    if (!exportBlob || !row) return;
+    const filename = suggestExportFilename(row);
+    const file = new File([exportBlob], filename, { type: "application/pdf" });
+    const nav = navigator as Navigator & { canShare?: (data: ShareData) => boolean };
+    if (nav.canShare && nav.canShare({ files: [file] })) {
+      try {
+        await navigator.share({ files: [file], title: row.project_name, text: `Permit export: ${row.project_name}` });
+      } catch (err) {
+        if ((err as Error).name !== "AbortError") toast.error("Share failed: " + (err as Error).message);
+      }
+    } else {
+      downloadExport();
+      toast.info("Native sharing unavailable — file downloaded instead");
+    }
+  }
+
+  async function uploadToDrive() {
+    if (!exportBlob || !row) return;
+    setDriveUploading(true);
+    try {
+      const buf = new Uint8Array(await exportBlob.arrayBuffer());
+      let bin = "";
+      for (let i = 0; i < buf.length; i++) bin += String.fromCharCode(buf[i]);
+      const base64 = btoa(bin);
+      const out = await uploadFileToGoogleDrive({
+        data: { filename: suggestExportFilename(row), mime: "application/pdf", base64 },
+      });
+      toast.success("Uploaded to Google Drive");
+      if (out?.webViewLink) window.open(out.webViewLink, "_blank", "noopener");
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      if (msg.includes("not connected")) {
+        toast.error("Connect Google Drive first from Documents section");
+      } else if (msg.includes("403") || msg.toLowerCase().includes("scope")) {
+        toast.error("Reconnect Google Drive to grant upload permission");
+      } else {
+        toast.error("Drive upload failed: " + msg);
+      }
+    } finally {
+      setDriveUploading(false);
+    }
+  }
+
   if (loading) return <div className="mx-auto max-w-5xl px-6 py-12 text-obsidian/60">Loading…</div>;
   if (!row) return <div className="mx-auto max-w-5xl px-6 py-12 text-obsidian/60">Permit not found.</div>;
 
   const c = permitCompleteness(row);
   const missingFieldKeys = new Set(c.missingFields.map((f) => f.key));
+  const hiddenFieldSet = new Set(getHiddenFieldKeys(row));
   const barColor = c.percent === 100 ? "#16a34a" : c.percent >= 60 ? "#153157" : c.percent >= 30 ? "#d97706" : "#dc2626";
   const inputBase = "block w-full border bg-white px-3 py-2 text-sm text-obsidian rounded-[3px] focus:outline-none";
-  const inputCls = (k: string) => `${inputBase} ${missingFieldKeys.has(k) ? "border-red-500/60 focus:border-red-600" : "border-obsidian/15 focus:border-obsidian/40"}`;
-  const labelCls = (k: string) => `flex items-center gap-1.5 text-[11px] font-mono uppercase tracking-[0.14em] mb-1.5 ${missingFieldKeys.has(k) ? "text-red-700" : "text-obsidian/60"}`;
-  const flag = (k: string) => missingFieldKeys.has(k) ? <AlertTriangle className="h-3 w-3 text-red-600" /> : null;
+  const isHidden = (k: string) => hiddenFieldSet.has(k);
+  const inputCls = (k: string) => `${inputBase} ${isHidden(k) ? "border-obsidian/10 bg-obsidian/[0.03] text-obsidian/40 line-through" : missingFieldKeys.has(k) ? "border-red-500/60 focus:border-red-600" : "border-obsidian/15 focus:border-obsidian/40"}`;
+  const labelCls = (k: string) => `flex items-center gap-1.5 text-[11px] font-mono uppercase tracking-[0.14em] mb-1.5 ${isHidden(k) ? "text-obsidian/40 line-through" : missingFieldKeys.has(k) ? "text-red-700" : "text-obsidian/60"}`;
+  const flag = (k: string) => (!isHidden(k) && missingFieldKeys.has(k)) ? <AlertTriangle className="h-3 w-3 text-red-600" /> : null;
+  const fieldDelBtn = (k: string) => editing ? (
+    <button
+      type="button"
+      onClick={() => toggleFieldHidden(k)}
+      title={isHidden(k) ? "Restore field" : "Remove this field from this permit"}
+      className={`ml-auto inline-flex items-center rounded-[3px] p-0.5 ${isHidden(k) ? "text-obsidian/50 hover:text-obsidian" : "text-obsidian/30 hover:text-red-600"}`}
+    >
+      {isHidden(k) ? <RotateCcw className="h-3 w-3" /> : <Trash2 className="h-3 w-3" />}
+    </button>
+  ) : null;
 
   function set<K extends keyof PermitRow>(k: K, v: PermitRow[K]) { setEdit((p) => ({ ...p, [k]: v })); }
   const e = edit as PermitRow;
   const docs = getEffectiveDocs(row);
+
 
   return (
     <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
@@ -110,6 +215,9 @@ function PermitDetailPage() {
               <span className="inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/50">
                 <Lock className="h-3 w-3" /> Read only
               </span>
+              <button onClick={openExport} className="inline-flex items-center gap-2 border border-obsidian/20 bg-white px-3 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian rounded-[3px] hover:bg-obsidian/5">
+                <Download className="h-3.5 w-3.5" /> Export
+              </button>
               <button onClick={() => setEditing(true)} className="inline-flex items-center gap-2 bg-obsidian px-4 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-paper rounded-[3px]">
                 <Pencil className="h-3.5 w-3.5" /> Edit
               </button>
@@ -119,6 +227,9 @@ function PermitDetailPage() {
             </>
           ) : (
             <>
+              <button onClick={openExport} className="inline-flex items-center gap-2 border border-obsidian/20 bg-white px-3 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian rounded-[3px] hover:bg-obsidian/5">
+                <Download className="h-3.5 w-3.5" /> Export
+              </button>
               <button onClick={cancelEdit} disabled={saving} className="inline-flex items-center gap-2 border border-obsidian/20 bg-white px-3 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian rounded-[3px] disabled:opacity-60">
                 <X className="h-3.5 w-3.5" /> Cancel
               </button>
@@ -197,22 +308,22 @@ function PermitDetailPage() {
       <fieldset disabled={!editing} className="mt-6 grid gap-6 md:grid-cols-2 disabled:opacity-90">
         <div className="bg-white border border-obsidian/10 rounded-[3px] p-6 space-y-4">
           <div className="text-[11px] font-mono uppercase tracking-[0.18em] text-obsidian/75">Project</div>
-          <div><label className={labelCls("project_name")}>Project Name {flag("project_name")}</label><input className={inputCls("project_name")} value={e.project_name ?? ""} onChange={(ev) => set("project_name", ev.target.value)} /></div>
-          <div><label className={labelCls("job_address")}>Address {flag("job_address")}</label><input className={inputCls("job_address")} value={e.job_address ?? ""} onChange={(ev) => set("job_address", ev.target.value)} /></div>
+          <div><label className={labelCls("project_name")}>Project Name {flag("project_name")}{fieldDelBtn("project_name")}</label><input className={inputCls("project_name")} value={e.project_name ?? ""} onChange={(ev) => set("project_name", ev.target.value)} /></div>
+          <div><label className={labelCls("job_address")}>Address {flag("job_address")}{fieldDelBtn("job_address")}</label><input className={inputCls("job_address")} value={e.job_address ?? ""} onChange={(ev) => set("job_address", ev.target.value)} /></div>
           <div className="grid grid-cols-2 gap-3">
-            <div><label className={labelCls("city")}>City {flag("city")}</label><input className={inputCls("city")} value={e.city ?? ""} onChange={(ev) => set("city", ev.target.value)} /></div>
-            <div><label className={labelCls("county")}>County {flag("county")}</label><input className={inputCls("county")} value={e.county ?? ""} onChange={(ev) => set("county", ev.target.value)} /></div>
+            <div><label className={labelCls("city")}>City {flag("city")}{fieldDelBtn("city")}</label><input className={inputCls("city")} value={e.city ?? ""} onChange={(ev) => set("city", ev.target.value)} /></div>
+            <div><label className={labelCls("county")}>County {flag("county")}{fieldDelBtn("county")}</label><input className={inputCls("county")} value={e.county ?? ""} onChange={(ev) => set("county", ev.target.value)} /></div>
           </div>
-          <div><label className={labelCls("municipality")}>Municipality {flag("municipality")}</label><input className={inputCls("municipality")} value={e.municipality ?? ""} onChange={(ev) => set("municipality", ev.target.value)} /></div>
-          <div><label className={labelCls("permit_type")}>Permit Type {flag("permit_type")}</label><input className={inputCls("permit_type")} value={e.permit_type ?? ""} onChange={(ev) => set("permit_type", ev.target.value)} /></div>
-          <div><label className={labelCls("permit_number")}>Permit # {flag("permit_number")}</label><input className={inputCls("permit_number")} value={e.permit_number ?? ""} onChange={(ev) => set("permit_number", ev.target.value)} /></div>
+          <div><label className={labelCls("municipality")}>Municipality {flag("municipality")}{fieldDelBtn("municipality")}</label><input className={inputCls("municipality")} value={e.municipality ?? ""} onChange={(ev) => set("municipality", ev.target.value)} /></div>
+          <div><label className={labelCls("permit_type")}>Permit Type {flag("permit_type")}{fieldDelBtn("permit_type")}</label><input className={inputCls("permit_type")} value={e.permit_type ?? ""} onChange={(ev) => set("permit_type", ev.target.value)} /></div>
+          <div><label className={labelCls("permit_number")}>Permit # {flag("permit_number")}{fieldDelBtn("permit_number")}</label><input className={inputCls("permit_number")} value={e.permit_number ?? ""} onChange={(ev) => set("permit_number", ev.target.value)} /></div>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className={labelCls("construction_value_cents")}>Construction Value (USD) {flag("construction_value_cents")}</label>
+              <label className={labelCls("construction_value_cents")}>Construction Value (USD) {flag("construction_value_cents")}{fieldDelBtn("construction_value_cents")}</label>
               <input type="number" className={inputCls("construction_value_cents")} value={e.construction_value_cents ? Math.round(e.construction_value_cents / 100) : ""} onChange={(ev) => set("construction_value_cents", ev.target.value ? Math.round(Number(ev.target.value) * 100) : 0)} />
             </div>
             <div>
-              <label className={labelCls("pcn")}>PCN {flag("pcn")}</label>
+              <label className={labelCls("pcn")}>PCN {flag("pcn")}{fieldDelBtn("pcn")}</label>
               <div className="flex gap-1.5">
                 <input className={inputCls("pcn") + " flex-1"} value={e.pcn ?? ""} onChange={(ev) => set("pcn", ev.target.value)} />
                 <button
@@ -245,33 +356,34 @@ function PermitDetailPage() {
           </div>
 
 
-          <div><label className={labelCls("submitted_date")}>Submitted Date {flag("submitted_date")}</label><input type="date" className={inputCls("submitted_date")} value={e.submitted_date ?? ""} onChange={(ev) => set("submitted_date", ev.target.value)} /></div>
+          <div><label className={labelCls("submitted_date")}>Submitted Date {flag("submitted_date")}{fieldDelBtn("submitted_date")}</label><input type="date" className={inputCls("submitted_date")} value={e.submitted_date ?? ""} onChange={(ev) => set("submitted_date", ev.target.value)} /></div>
           <div>
             <label className={labelCls("status")}>Status</label>
             <select className={inputCls("status")} value={e.status ?? "submitted"} onChange={(ev) => set("status", ev.target.value as PermitStatus)}>
               {STATUSES.map((s) => <option key={s} value={s}>{s.replace(/_/g, " ")}</option>)}
             </select>
           </div>
-          <div><label className={labelCls("description")}>Description {flag("description")}</label><textarea rows={3} className={inputCls("description")} value={e.description ?? ""} onChange={(ev) => set("description", ev.target.value)} /></div>
+          <div><label className={labelCls("description")}>Description {flag("description")}{fieldDelBtn("description")}</label><textarea rows={3} className={inputCls("description")} value={e.description ?? ""} onChange={(ev) => set("description", ev.target.value)} /></div>
         </div>
 
         <div className="bg-white border border-obsidian/10 rounded-[3px] p-6 space-y-4">
           <div className="text-[11px] font-mono uppercase tracking-[0.18em] text-obsidian/75">Contractor & Owner</div>
-          <div><label className={labelCls("contractor_company")}>Contractor Company {flag("contractor_company")}</label><input className={inputCls("contractor_company")} value={e.contractor_company ?? ""} onChange={(ev) => set("contractor_company", ev.target.value)} /></div>
-          <div><label className={labelCls("contractor_qualifier")}>Qualifier {flag("contractor_qualifier")}</label><input className={inputCls("contractor_qualifier")} value={e.contractor_qualifier ?? ""} onChange={(ev) => set("contractor_qualifier", ev.target.value)} /></div>
-          <div><label className={labelCls("company_address")}>Company Address {flag("company_address")}</label><input className={inputCls("company_address")} value={e.company_address ?? ""} onChange={(ev) => set("company_address", ev.target.value)} /></div>
+          <div><label className={labelCls("contractor_company")}>Contractor Company {flag("contractor_company")}{fieldDelBtn("contractor_company")}</label><input className={inputCls("contractor_company")} value={e.contractor_company ?? ""} onChange={(ev) => set("contractor_company", ev.target.value)} /></div>
+          <div><label className={labelCls("contractor_qualifier")}>Qualifier {flag("contractor_qualifier")}{fieldDelBtn("contractor_qualifier")}</label><input className={inputCls("contractor_qualifier")} value={e.contractor_qualifier ?? ""} onChange={(ev) => set("contractor_qualifier", ev.target.value)} /></div>
+          <div><label className={labelCls("company_address")}>Company Address {flag("company_address")}{fieldDelBtn("company_address")}</label><input className={inputCls("company_address")} value={e.company_address ?? ""} onChange={(ev) => set("company_address", ev.target.value)} /></div>
           <div className="grid grid-cols-2 gap-3">
-            <div><label className={labelCls("poc")}>POC {flag("poc")}</label><input className={inputCls("poc")} value={e.poc ?? ""} onChange={(ev) => set("poc", ev.target.value)} /></div>
-            <div><label className={labelCls("poc_phone")}>POC Phone {flag("poc_phone")}</label><input className={inputCls("poc_phone")} value={e.poc_phone ?? ""} onChange={(ev) => set("poc_phone", ev.target.value)} /></div>
+            <div><label className={labelCls("poc")}>POC {flag("poc")}{fieldDelBtn("poc")}</label><input className={inputCls("poc")} value={e.poc ?? ""} onChange={(ev) => set("poc", ev.target.value)} /></div>
+            <div><label className={labelCls("poc_phone")}>POC Phone {flag("poc_phone")}{fieldDelBtn("poc_phone")}</label><input className={inputCls("poc_phone")} value={e.poc_phone ?? ""} onChange={(ev) => set("poc_phone", ev.target.value)} /></div>
           </div>
-          <div><label className={labelCls("poc_email")}>POC Email {flag("poc_email")}</label><input className={inputCls("poc_email")} value={e.poc_email ?? ""} onChange={(ev) => set("poc_email", ev.target.value)} /></div>
-          <div><label className={labelCls("license_number")}>License # {flag("license_number")}</label><input className={inputCls("license_number")} value={e.license_number ?? ""} onChange={(ev) => set("license_number", ev.target.value)} /></div>
+          <div><label className={labelCls("poc_email")}>POC Email {flag("poc_email")}{fieldDelBtn("poc_email")}</label><input className={inputCls("poc_email")} value={e.poc_email ?? ""} onChange={(ev) => set("poc_email", ev.target.value)} /></div>
+          <div><label className={labelCls("license_number")}>License # {flag("license_number")}{fieldDelBtn("license_number")}</label><input className={inputCls("license_number")} value={e.license_number ?? ""} onChange={(ev) => set("license_number", ev.target.value)} /></div>
           <div className="pt-2 border-t border-obsidian/10">
-            <label className={labelCls("owner_name")}>Owner Name {flag("owner_name")}</label><input className={inputCls("owner_name")} value={e.owner_name ?? ""} onChange={(ev) => set("owner_name", ev.target.value)} />
+            <label className={labelCls("owner_name")}>Owner Name {flag("owner_name")}{fieldDelBtn("owner_name")}</label><input className={inputCls("owner_name")} value={e.owner_name ?? ""} onChange={(ev) => set("owner_name", ev.target.value)} />
           </div>
-          <div><label className={labelCls("owner_entity")}>Owner Entity</label><input className={inputBase + " border-obsidian/15 focus:border-obsidian/40"} value={e.owner_entity ?? ""} onChange={(ev) => set("owner_entity", ev.target.value)} /></div>
+          <div><label className={labelCls("owner_entity")}>Owner Entity {fieldDelBtn("owner_entity")}</label><input className={inputCls("owner_entity")} value={e.owner_entity ?? ""} onChange={(ev) => set("owner_entity", ev.target.value)} /></div>
         </div>
       </fieldset>
+
 
 
       <div className="mt-6 bg-white border border-obsidian/10 rounded-[3px] p-6">
@@ -369,6 +481,51 @@ function PermitDetailPage() {
       <div className="mt-6 text-[11px] font-mono text-obsidian/45">
         Created {new Date(row.created_at).toLocaleString()} · Updated {new Date(row.updated_at).toLocaleString()}
       </div>
+
+      {exportOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-obsidian/40 p-4" onClick={() => !exporting && setExportOpen(false)}>
+          <div className="w-full max-w-md bg-white rounded-[3px] shadow-xl border border-obsidian/10" onClick={(ev) => ev.stopPropagation()}>
+            <div className="flex items-center justify-between px-5 py-4 border-b border-obsidian/10">
+              <div>
+                <div className="text-[11px] font-mono uppercase tracking-[0.18em] text-obsidian/60">Export Permit</div>
+                <div className="text-sm font-medium text-obsidian mt-0.5">{row.project_name}</div>
+              </div>
+              <button onClick={() => !exporting && setExportOpen(false)} className="text-obsidian/50 hover:text-obsidian" disabled={exporting}>
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+            <div className="px-5 py-5 space-y-4">
+              {exporting ? (
+                <div className="flex items-center gap-3 text-sm text-obsidian/70">
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Building PDF with attached documents…
+                </div>
+              ) : exportBlob ? (
+                <>
+                  <div className="text-[12px] text-obsidian/60">
+                    PDF is ready. Includes the permit summary plus every uploaded document merged inline.
+                    <div className="mt-1 font-mono text-[11px] text-obsidian/50">
+                      {suggestExportFilename(row)} · {(exportBlob.size / 1024).toFixed(0)} KB
+                    </div>
+                  </div>
+                  <div className="grid gap-2">
+                    <button onClick={downloadExport} className="inline-flex items-center justify-center gap-2 bg-obsidian px-4 py-2.5 font-mono text-[11px] uppercase tracking-[0.14em] text-paper rounded-[3px] hover:bg-obsidian/90">
+                      <Download className="h-3.5 w-3.5" /> Download PDF
+                    </button>
+                    <button onClick={shareExport} className="inline-flex items-center justify-center gap-2 border border-obsidian/20 bg-white px-4 py-2.5 font-mono text-[11px] uppercase tracking-[0.14em] text-obsidian rounded-[3px] hover:bg-obsidian/5">
+                      <Share2 className="h-3.5 w-3.5" /> Share…
+                    </button>
+                    <button onClick={uploadToDrive} disabled={driveUploading} className="inline-flex items-center justify-center gap-2 border border-obsidian/20 bg-white px-4 py-2.5 font-mono text-[11px] uppercase tracking-[0.14em] text-obsidian rounded-[3px] hover:bg-obsidian/5 disabled:opacity-60">
+                      {driveUploading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Cloud className="h-3.5 w-3.5" />}
+                      {driveUploading ? "Uploading…" : "Send to Google Drive"}
+                    </button>
+                  </div>
+                </>
+              ) : null}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
