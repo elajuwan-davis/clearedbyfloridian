@@ -481,6 +481,51 @@ function PermitDetailPage() {
       <div className="mt-6 text-[11px] font-mono text-obsidian/45">
         Created {new Date(row.created_at).toLocaleString()} · Updated {new Date(row.updated_at).toLocaleString()}
       </div>
+
+      {exportOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-obsidian/40 p-4" onClick={() => !exporting && setExportOpen(false)}>
+          <div className="w-full max-w-md bg-white rounded-[3px] shadow-xl border border-obsidian/10" onClick={(ev) => ev.stopPropagation()}>
+            <div className="flex items-center justify-between px-5 py-4 border-b border-obsidian/10">
+              <div>
+                <div className="text-[11px] font-mono uppercase tracking-[0.18em] text-obsidian/60">Export Permit</div>
+                <div className="text-sm font-medium text-obsidian mt-0.5">{row.project_name}</div>
+              </div>
+              <button onClick={() => !exporting && setExportOpen(false)} className="text-obsidian/50 hover:text-obsidian" disabled={exporting}>
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+            <div className="px-5 py-5 space-y-4">
+              {exporting ? (
+                <div className="flex items-center gap-3 text-sm text-obsidian/70">
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Building PDF with attached documents…
+                </div>
+              ) : exportBlob ? (
+                <>
+                  <div className="text-[12px] text-obsidian/60">
+                    PDF is ready. Includes the permit summary plus every uploaded document merged inline.
+                    <div className="mt-1 font-mono text-[11px] text-obsidian/50">
+                      {suggestExportFilename(row)} · {(exportBlob.size / 1024).toFixed(0)} KB
+                    </div>
+                  </div>
+                  <div className="grid gap-2">
+                    <button onClick={downloadExport} className="inline-flex items-center justify-center gap-2 bg-obsidian px-4 py-2.5 font-mono text-[11px] uppercase tracking-[0.14em] text-paper rounded-[3px] hover:bg-obsidian/90">
+                      <Download className="h-3.5 w-3.5" /> Download PDF
+                    </button>
+                    <button onClick={shareExport} className="inline-flex items-center justify-center gap-2 border border-obsidian/20 bg-white px-4 py-2.5 font-mono text-[11px] uppercase tracking-[0.14em] text-obsidian rounded-[3px] hover:bg-obsidian/5">
+                      <Share2 className="h-3.5 w-3.5" /> Share…
+                    </button>
+                    <button onClick={uploadToDrive} disabled={driveUploading} className="inline-flex items-center justify-center gap-2 border border-obsidian/20 bg-white px-4 py-2.5 font-mono text-[11px] uppercase tracking-[0.14em] text-obsidian rounded-[3px] hover:bg-obsidian/5 disabled:opacity-60">
+                      {driveUploading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Cloud className="h-3.5 w-3.5" />}
+                      {driveUploading ? "Uploading…" : "Send to Google Drive"}
+                    </button>
+                  </div>
+                </>
+              ) : null}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
