@@ -156,8 +156,21 @@ function fieldFilled(row: PermitRow, key: keyof PermitRow): boolean {
   return true;
 }
 
+export function getHiddenFieldKeys(row: PermitRow): string[] {
+  const raw = (row.intake_payload as { hidden_fields?: unknown } | null)?.hidden_fields;
+  return Array.isArray(raw) ? raw.filter((x): x is string => typeof x === "string") : [];
+}
+
+export function withHiddenFieldKeys(row: PermitRow, keys: string[]): Record<string, unknown> {
+  const base = (row.intake_payload ?? {}) as Record<string, unknown>;
+  return { ...base, hidden_fields: Array.from(new Set(keys)) };
+}
+
 export function missingRequiredFields(row: PermitRow): Array<{ key: string; label: string }> {
-  return REQUIRED_FIELDS.filter((f) => !fieldFilled(row, f.key)).map((f) => ({ key: String(f.key), label: f.label }));
+  const hidden = new Set(getHiddenFieldKeys(row));
+  return REQUIRED_FIELDS
+    .filter((f) => !hidden.has(String(f.key)) && !fieldFilled(row, f.key))
+    .map((f) => ({ key: String(f.key), label: f.label }));
 }
 
 export type PermitCompleteness = {
@@ -175,7 +188,9 @@ export type PermitCompleteness = {
 
 export function permitCompleteness(row: PermitRow): PermitCompleteness {
   const docs = getEffectiveDocs(row);
-  const fieldsTotal = REQUIRED_FIELDS.length;
+  const hidden = new Set(getHiddenFieldKeys(row));
+  const activeFields = REQUIRED_FIELDS.filter((f) => !hidden.has(String(f.key)));
+  const fieldsTotal = activeFields.length;
   const missingFields = missingRequiredFields(row);
   const fieldsDone = fieldsTotal - missingFields.length;
 
