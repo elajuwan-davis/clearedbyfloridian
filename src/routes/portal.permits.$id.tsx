@@ -8,7 +8,8 @@ import { PermitDocUploader } from "@/components/permit-doc-uploader";
 import { deletePermitFile } from "@/lib/permit-storage";
 import { fetchAppraiserRecord } from "@/lib/property-appraiser";
 import { generatePermitExportPdf, suggestExportFilename } from "@/lib/permit-export";
-import { uploadFileToGoogleDrive } from "@/lib/google-drive.functions";
+import { uploadFileToGoogleDrive, getGoogleDriveStatus, startGoogleDriveConnect, saveGoogleDriveConnection } from "@/lib/google-drive.functions";
+import { connectAppUser } from "@/integrations/lovable/appUserConnectorClient";
 
 
 export const Route = createFileRoute("/portal/permits/$id")({
