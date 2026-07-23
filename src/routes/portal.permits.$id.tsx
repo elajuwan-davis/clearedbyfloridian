@@ -508,46 +508,65 @@ function PermitDetailPage() {
       </div>
 
       {exportOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-obsidian/40 p-4" onClick={() => !exporting && setExportOpen(false)}>
-          <div className="w-full max-w-md bg-white rounded-[3px] shadow-xl border border-obsidian/10" onClick={(ev) => ev.stopPropagation()}>
-            <div className="flex items-center justify-between px-5 py-4 border-b border-obsidian/10">
-              <div>
-                <div className="text-[11px] font-mono uppercase tracking-[0.18em] text-obsidian/60">Export Permit</div>
-                <div className="text-sm font-medium text-obsidian mt-0.5">{row.project_name}</div>
-              </div>
-              <button onClick={() => !exporting && setExportOpen(false)} className="text-obsidian/50 hover:text-obsidian" disabled={exporting}>
+        <div className="fixed inset-0 z-50 flex flex-col bg-obsidian/70">
+          <div className="flex items-center justify-between gap-3 bg-white border-b border-obsidian/10 px-4 py-3">
+            <div className="min-w-0">
+              <div className="text-[10px] font-mono uppercase tracking-[0.18em] text-obsidian/60">Export Preview</div>
+              <div className="text-sm font-medium text-obsidian truncate">{row.project_name}</div>
+            </div>
+            <div className="flex items-center gap-2 flex-wrap justify-end">
+              {mergingAttachments && (
+                <span className="inline-flex items-center gap-1.5 text-[11px] font-mono text-obsidian/60">
+                  <Loader2 className="h-3 w-3 animate-spin" /> Merging attachments…
+                </span>
+              )}
+              <button
+                onClick={downloadExport}
+                disabled={!exportBlob}
+                className="inline-flex items-center gap-2 bg-obsidian px-3 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-paper rounded-[3px] hover:bg-obsidian/90 disabled:opacity-50"
+              >
+                <Download className="h-3.5 w-3.5" /> Download
+              </button>
+              <button
+                onClick={shareExport}
+                disabled={!exportBlob}
+                className="inline-flex items-center gap-2 border border-obsidian/20 bg-white px-3 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian rounded-[3px] hover:bg-obsidian/5 disabled:opacity-50"
+              >
+                <Share2 className="h-3.5 w-3.5" /> Share
+              </button>
+              <button
+                onClick={uploadToDrive}
+                disabled={!exportBlob || driveUploading}
+                className="inline-flex items-center gap-2 border border-obsidian/20 bg-white px-3 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian rounded-[3px] hover:bg-obsidian/5 disabled:opacity-50"
+              >
+                {driveUploading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Cloud className="h-3.5 w-3.5" />}
+                Drive
+              </button>
+              <button
+                onClick={closeExport}
+                aria-label="Close"
+                className="ml-1 inline-flex h-8 w-8 items-center justify-center border border-obsidian/20 bg-white text-obsidian rounded-[3px] hover:bg-obsidian/5"
+              >
                 <X className="h-4 w-4" />
               </button>
             </div>
-            <div className="px-5 py-5 space-y-4">
-              {exporting ? (
-                <div className="flex items-center gap-3 text-sm text-obsidian/70">
+          </div>
+          <div className="flex-1 bg-obsidian/10 min-h-0">
+            {exporting || !exportUrl ? (
+              <div className="h-full flex items-center justify-center text-paper/90">
+                <div className="inline-flex items-center gap-3 bg-white text-obsidian px-4 py-3 rounded-[3px] shadow">
                   <Loader2 className="h-4 w-4 animate-spin" />
-                  Building PDF with attached documents…
+                  <span className="text-sm">Building preview…</span>
                 </div>
-              ) : exportBlob ? (
-                <>
-                  <div className="text-[12px] text-obsidian/60">
-                    PDF is ready. Includes the permit summary plus every uploaded document merged inline.
-                    <div className="mt-1 font-mono text-[11px] text-obsidian/50">
-                      {suggestExportFilename(row)} · {(exportBlob.size / 1024).toFixed(0)} KB
-                    </div>
-                  </div>
-                  <div className="grid gap-2">
-                    <button onClick={downloadExport} className="inline-flex items-center justify-center gap-2 bg-obsidian px-4 py-2.5 font-mono text-[11px] uppercase tracking-[0.14em] text-paper rounded-[3px] hover:bg-obsidian/90">
-                      <Download className="h-3.5 w-3.5" /> Download PDF
-                    </button>
-                    <button onClick={shareExport} className="inline-flex items-center justify-center gap-2 border border-obsidian/20 bg-white px-4 py-2.5 font-mono text-[11px] uppercase tracking-[0.14em] text-obsidian rounded-[3px] hover:bg-obsidian/5">
-                      <Share2 className="h-3.5 w-3.5" /> Share…
-                    </button>
-                    <button onClick={uploadToDrive} disabled={driveUploading} className="inline-flex items-center justify-center gap-2 border border-obsidian/20 bg-white px-4 py-2.5 font-mono text-[11px] uppercase tracking-[0.14em] text-obsidian rounded-[3px] hover:bg-obsidian/5 disabled:opacity-60">
-                      {driveUploading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Cloud className="h-3.5 w-3.5" />}
-                      {driveUploading ? "Uploading…" : "Send to Google Drive"}
-                    </button>
-                  </div>
-                </>
-              ) : null}
-            </div>
+              </div>
+            ) : (
+              <iframe
+                key={exportUrl}
+                src={exportUrl}
+                title="Permit export preview"
+                className="w-full h-full border-0 bg-white"
+              />
+            )}
           </div>
         </div>
       )}
