@@ -191,3 +191,49 @@ export const importGoogleDriveFileToPermit = createServerFn({ method: "POST" })
 
     return { path, filename, mime, size: bytes.byteLength };
   });
+
+// Upload a base64-encoded file (usually a PDF) to the user's Google Drive root.
+export const uploadFileToGoogleDrive = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: { filename: string; mime: string; base64: string }) =>
+    z.object({
+      filename: z.string().min(1),
+      mime: z.string().min(1),
+      base64: z.string().min(1),
+    }).parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    const key = await getConnectionKeyForUser(context.userId, CONNECTOR_ID);
+    if (!key) throw new Error("Google Drive is not connected");
+
+    const bytes = Uint8Array.from(atob(data.base64), (c) => c.charCodeAt(0));
+    const boundary = `----clr${Math.random().toString(36).slice(2)}${Date.now()}`;
+    const meta = { name: data.filename, mimeType: data.mime };
+    const enc = new TextEncoder();
+    const head = enc.encode(
+      `--${boundary}\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n${JSON.stringify(meta)}\r\n` +
+      `--${boundary}\r\nContent-Type: ${data.mime}\r\n\r\n`,
+    );
+    const tail = enc.encode(`\r\n--${boundary}--`);
+    const body = new Uint8Array(head.length + bytes.length + tail.length);
+    body.set(head, 0);
+    body.set(bytes, head.length);
+    body.set(tail, head.length + bytes.length);
+
+    const res = await callAsAppUser({
+      gatewayBaseUrl: GATEWAY_BASE_URL,
+      connectionAPIKey: key,
+      connectorId: CONNECTOR_ID,
+      path: "/upload/drive/v3/files?uploadType=multipart&fields=id,name,webViewLink",
+      method: "POST",
+      headers: { "Content-Type": `multipart/related; boundary=${boundary}` },
+      body,
+    });
+    if (!res.ok) {
+      const text = await res.text();
+      throw new Error(`Drive upload failed (${res.status}): ${text}`);
+    }
+    const out = (await res.json()) as { id: string; name: string; webViewLink?: string };
+    return out;
+  });
+
