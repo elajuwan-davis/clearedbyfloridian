@@ -37,7 +37,9 @@ function PermitDetailPage() {
   const [showHidden, setShowHidden] = useState(false);
   const [exportOpen, setExportOpen] = useState(false);
   const [exporting, setExporting] = useState(false);
+  const [mergingAttachments, setMergingAttachments] = useState(false);
   const [exportBlob, setExportBlob] = useState<Blob | null>(null);
+  const [exportUrl, setExportUrl] = useState<string | null>(null);
   const [driveUploading, setDriveUploading] = useState(false);
 
 
