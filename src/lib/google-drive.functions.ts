@@ -225,9 +225,11 @@ export const uploadFileToGoogleDrive = createServerFn({ method: "POST" })
       connectionAPIKey: key,
       connectorId: CONNECTOR_ID,
       path: "/upload/drive/v3/files?uploadType=multipart&fields=id,name,webViewLink",
-      method: "POST",
-      headers: { "Content-Type": `multipart/related; boundary=${boundary}` },
-      body,
+      init: {
+        method: "POST",
+        headers: { "Content-Type": `multipart/related; boundary=${boundary}` },
+        body,
+      },
     });
     if (!res.ok) {
       const text = await res.text();
