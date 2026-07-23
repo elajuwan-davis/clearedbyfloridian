@@ -551,7 +551,7 @@ function PermitDetailPage() {
               </button>
             </div>
           </div>
-          <div className="flex-1 bg-obsidian/10 min-h-0">
+          <div className="flex-1 bg-obsidian/10 min-h-0 relative">
             {exporting || !exportUrl ? (
               <div className="h-full flex items-center justify-center text-paper/90">
                 <div className="inline-flex items-center gap-3 bg-white text-obsidian px-4 py-3 rounded-[3px] shadow">
@@ -560,12 +560,36 @@ function PermitDetailPage() {
                 </div>
               </div>
             ) : (
-              <iframe
-                key={exportUrl}
-                src={exportUrl}
-                title="Permit export preview"
-                className="w-full h-full border-0 bg-white"
-              />
+              <>
+                <object
+                  key={exportUrl}
+                  data={exportUrl}
+                  type="application/pdf"
+                  className="w-full h-full bg-white"
+                >
+                  <div className="h-full flex items-center justify-center p-6">
+                    <div className="max-w-md text-center bg-white border border-obsidian/10 rounded-[3px] p-6">
+                      <div className="text-sm text-obsidian mb-3">
+                        Your browser blocked the inline PDF preview. Open it in a new tab or download the file.
+                      </div>
+                      <div className="flex gap-2 justify-center">
+                        <button
+                          onClick={() => window.open(exportUrl!, "_blank", "noopener")}
+                          className="inline-flex items-center gap-2 bg-obsidian px-3 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-paper rounded-[3px]"
+                        >
+                          Open in new tab
+                        </button>
+                        <button
+                          onClick={downloadExport}
+                          className="inline-flex items-center gap-2 border border-obsidian/20 bg-white px-3 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian rounded-[3px]"
+                        >
+                          <Download className="h-3.5 w-3.5" /> Download
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </object>
+              </>
             )}
           </div>
         </div>
