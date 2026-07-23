@@ -172,6 +172,27 @@ function PermitDetailPage() {
     if (!exportBlob || !row) return;
     setDriveUploading(true);
     try {
+      // Ensure Google Drive is connected before attempting upload.
+      const status = await getGoogleDriveStatus();
+      if (!status.connected) {
+        toast.info("Connect your Google Drive to continue…");
+        const result = await connectAppUser({
+          connectorId: "google_drive",
+          gatewayBaseUrl: "https://connector-gateway.lovable.dev",
+          start: async (targetOrigin) => startGoogleDriveConnect({ data: targetOrigin }),
+        });
+        if (!result.success) {
+          toast.error(result.error ?? "Google sign-in failed");
+          return;
+        }
+        if (!result.connectionAPIKey) {
+          toast.error("Google returned no offline access — cannot upload");
+          return;
+        }
+        await saveGoogleDriveConnection({ data: { connectionAPIKey: result.connectionAPIKey } });
+        toast.success("Google Drive connected");
+      }
+
       const buf = new Uint8Array(await exportBlob.arrayBuffer());
       let bin = "";
       for (let i = 0; i < buf.length; i++) bin += String.fromCharCode(buf[i]);
@@ -183,9 +204,7 @@ function PermitDetailPage() {
       if (out?.webViewLink) window.open(out.webViewLink, "_blank", "noopener");
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
-      if (msg.includes("not connected")) {
-        toast.error("Connect Google Drive first from Documents section");
-      } else if (msg.includes("403") || msg.toLowerCase().includes("scope")) {
+      if (msg.includes("403") || msg.toLowerCase().includes("scope")) {
         toast.error("Reconnect Google Drive to grant upload permission");
       } else {
         toast.error("Drive upload failed: " + msg);
