@@ -7,10 +7,24 @@ export interface AppUserOAuthResult {
   connectorId: string;
   connectionAPIKey?: string;
   offlineAccessAllowed?: boolean;
+  requiresTopLevel?: boolean;
   error?: string;
 }
 
 const OAUTH_MESSAGE_TYPE = "appUserConnectorOAuth";
+
+export function isEmbeddedAppView(): boolean {
+  try {
+    return window.self !== window.top;
+  } catch {
+    return true;
+  }
+}
+
+export function openAppInTopLevelTab(): boolean {
+  const opened = window.open(window.location.href, "_blank", "noopener,noreferrer");
+  return Boolean(opened);
+}
 
 export async function connectAppUser(opts: {
   connectorId: string;
@@ -20,6 +34,18 @@ export async function connectAppUser(opts: {
   const { connectorId, gatewayBaseUrl, start } = opts;
   const gatewayOrigin = new URL(gatewayBaseUrl).origin;
   const targetOrigin = window.location.origin;
+
+  if (isEmbeddedAppView()) {
+    const opened = openAppInTopLevelTab();
+    return {
+      success: false,
+      connectorId,
+      requiresTopLevel: true,
+      error: opened
+        ? "Google blocks sign-in inside the embedded preview. I opened the portal in a new tab — connect Google Drive there."
+        : "Google blocks sign-in inside the embedded preview. Open the portal in a new browser tab, then connect Google Drive.",
+    };
+  }
 
   const popup = window.open("", "lovable-oauth", "width=600,height=720");
   if (!popup) {

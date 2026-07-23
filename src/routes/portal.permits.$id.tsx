@@ -9,7 +9,7 @@ import { deletePermitFile } from "@/lib/permit-storage";
 import { fetchAppraiserRecord } from "@/lib/property-appraiser";
 import { generatePermitExportPdf, suggestExportFilename } from "@/lib/permit-export";
 import { uploadFileToGoogleDrive, getGoogleDriveStatus, startGoogleDriveConnect, saveGoogleDriveConnection } from "@/lib/google-drive.functions";
-import { connectAppUser } from "@/integrations/lovable/appUserConnectorClient";
+import { connectAppUser, isEmbeddedAppView, openAppInTopLevelTab } from "@/integrations/lovable/appUserConnectorClient";
 
 
 export const Route = createFileRoute("/portal/permits/$id")({
@@ -170,6 +170,14 @@ function PermitDetailPage() {
 
   async function uploadToDrive() {
     if (!exportBlob || !row) return;
+    if (isEmbeddedAppView()) {
+      if (openAppInTopLevelTab()) {
+        toast.info("Google blocks sign-in inside the embedded preview. Continue from the new tab to upload to Drive.");
+      } else {
+        toast.error("Google blocks sign-in inside the embedded preview. Allow popups or open this portal page in a new tab.");
+      }
+      return;
+    }
     setDriveUploading(true);
     try {
       // Ensure Google Drive is connected before attempting upload.
@@ -182,7 +190,8 @@ function PermitDetailPage() {
           start: async (targetOrigin) => startGoogleDriveConnect({ data: targetOrigin }),
         });
         if (!result.success) {
-          toast.error(result.error ?? "Google sign-in failed");
+          if (result.requiresTopLevel) toast.info(result.error ?? "Open the portal in a new tab to connect Google Drive");
+          else toast.error(result.error ?? "Google sign-in failed");
           return;
         }
         if (!result.connectionAPIKey) {
@@ -564,11 +573,22 @@ function PermitDetailPage() {
               <button
                 onClick={uploadToDrive}
                 disabled={!exportBlob || driveUploading}
+                title={isEmbeddedAppView() ? "Google sign-in opens in a top-level tab from preview" : "Upload export to Google Drive"}
                 className="inline-flex items-center gap-2 border border-obsidian/20 bg-white px-3 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian rounded-[3px] hover:bg-obsidian/5 disabled:opacity-50"
               >
                 {driveUploading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Cloud className="h-3.5 w-3.5" />}
                 Drive
               </button>
+              {isEmbeddedAppView() && (
+                <button
+                  onClick={() => {
+                    if (!openAppInTopLevelTab()) toast.error("Popup blocked. Allow popups or copy this page URL into a new tab.");
+                  }}
+                  className="inline-flex items-center gap-2 border border-sky/50 bg-sky/15 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian rounded-[3px] hover:bg-sky/25"
+                >
+                  Open tab
+                </button>
+              )}
               <button
                 onClick={closeExport}
                 aria-label="Close"

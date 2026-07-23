@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Loader2, Search, FileText, Cloud, RefreshCw, LogOut } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { connectAppUser } from "@/integrations/lovable/appUserConnectorClient";
+import { connectAppUser, isEmbeddedAppView, openAppInTopLevelTab } from "@/integrations/lovable/appUserConnectorClient";
 import {
   startGoogleDriveConnect,
   saveGoogleDriveConnection,
@@ -90,7 +90,8 @@ export function GoogleDrivePickerDialog({
         start: async (targetOrigin) => startGoogleDriveConnect({ data: targetOrigin }),
       });
       if (!result.success) {
-        toast.error(result.error ?? "Google sign-in failed");
+        if (result.requiresTopLevel) toast.info(result.error ?? "Open the portal in a new tab to connect Google Drive");
+        else toast.error(result.error ?? "Google sign-in failed");
         return;
       }
       if (!result.connectionAPIKey) {
@@ -147,8 +148,21 @@ export function GoogleDrivePickerDialog({
         {status.state === "disconnected" && (
           <div className="py-8 text-center space-y-4">
             <p className="text-sm text-obsidian/70 max-w-md mx-auto">
-              Sign in with your Google account to import files directly from your Drive.
+              {isEmbeddedAppView()
+                ? "Google blocks sign-in inside the embedded preview. Open the portal in a new tab, then connect Google Drive there."
+                : "Sign in with your Google account to import files directly from your Drive."}
             </p>
+            {isEmbeddedAppView() && (
+              <button
+                type="button"
+                onClick={() => {
+                  if (!openAppInTopLevelTab()) toast.error("Popup blocked. Allow popups or copy this page URL into a new tab.");
+                }}
+                className="inline-flex items-center gap-2 border border-obsidian/20 bg-white px-4 py-2 font-mono text-[11px] uppercase tracking-[0.14em] text-obsidian rounded-[3px] hover:bg-obsidian/5"
+              >
+                Open portal in new tab
+              </button>
+            )}
             <button
               type="button"
               onClick={handleConnect}
