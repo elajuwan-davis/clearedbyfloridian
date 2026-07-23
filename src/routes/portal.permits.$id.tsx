@@ -302,22 +302,22 @@ function PermitDetailPage() {
       <fieldset disabled={!editing} className="mt-6 grid gap-6 md:grid-cols-2 disabled:opacity-90">
         <div className="bg-white border border-obsidian/10 rounded-[3px] p-6 space-y-4">
           <div className="text-[11px] font-mono uppercase tracking-[0.18em] text-obsidian/75">Project</div>
-          <div><label className={labelCls("project_name")}>Project Name {flag("project_name")}</label><input className={inputCls("project_name")} value={e.project_name ?? ""} onChange={(ev) => set("project_name", ev.target.value)} /></div>
-          <div><label className={labelCls("job_address")}>Address {flag("job_address")}</label><input className={inputCls("job_address")} value={e.job_address ?? ""} onChange={(ev) => set("job_address", ev.target.value)} /></div>
+          <div><label className={labelCls("project_name")}>Project Name {flag("project_name")}{fieldDelBtn("project_name")}</label><input className={inputCls("project_name")} value={e.project_name ?? ""} onChange={(ev) => set("project_name", ev.target.value)} /></div>
+          <div><label className={labelCls("job_address")}>Address {flag("job_address")}{fieldDelBtn("job_address")}</label><input className={inputCls("job_address")} value={e.job_address ?? ""} onChange={(ev) => set("job_address", ev.target.value)} /></div>
           <div className="grid grid-cols-2 gap-3">
-            <div><label className={labelCls("city")}>City {flag("city")}</label><input className={inputCls("city")} value={e.city ?? ""} onChange={(ev) => set("city", ev.target.value)} /></div>
-            <div><label className={labelCls("county")}>County {flag("county")}</label><input className={inputCls("county")} value={e.county ?? ""} onChange={(ev) => set("county", ev.target.value)} /></div>
+            <div><label className={labelCls("city")}>City {flag("city")}{fieldDelBtn("city")}</label><input className={inputCls("city")} value={e.city ?? ""} onChange={(ev) => set("city", ev.target.value)} /></div>
+            <div><label className={labelCls("county")}>County {flag("county")}{fieldDelBtn("county")}</label><input className={inputCls("county")} value={e.county ?? ""} onChange={(ev) => set("county", ev.target.value)} /></div>
           </div>
-          <div><label className={labelCls("municipality")}>Municipality {flag("municipality")}</label><input className={inputCls("municipality")} value={e.municipality ?? ""} onChange={(ev) => set("municipality", ev.target.value)} /></div>
-          <div><label className={labelCls("permit_type")}>Permit Type {flag("permit_type")}</label><input className={inputCls("permit_type")} value={e.permit_type ?? ""} onChange={(ev) => set("permit_type", ev.target.value)} /></div>
-          <div><label className={labelCls("permit_number")}>Permit # {flag("permit_number")}</label><input className={inputCls("permit_number")} value={e.permit_number ?? ""} onChange={(ev) => set("permit_number", ev.target.value)} /></div>
+          <div><label className={labelCls("municipality")}>Municipality {flag("municipality")}{fieldDelBtn("municipality")}</label><input className={inputCls("municipality")} value={e.municipality ?? ""} onChange={(ev) => set("municipality", ev.target.value)} /></div>
+          <div><label className={labelCls("permit_type")}>Permit Type {flag("permit_type")}{fieldDelBtn("permit_type")}</label><input className={inputCls("permit_type")} value={e.permit_type ?? ""} onChange={(ev) => set("permit_type", ev.target.value)} /></div>
+          <div><label className={labelCls("permit_number")}>Permit # {flag("permit_number")}{fieldDelBtn("permit_number")}</label><input className={inputCls("permit_number")} value={e.permit_number ?? ""} onChange={(ev) => set("permit_number", ev.target.value)} /></div>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className={labelCls("construction_value_cents")}>Construction Value (USD) {flag("construction_value_cents")}</label>
+              <label className={labelCls("construction_value_cents")}>Construction Value (USD) {flag("construction_value_cents")}{fieldDelBtn("construction_value_cents")}</label>
               <input type="number" className={inputCls("construction_value_cents")} value={e.construction_value_cents ? Math.round(e.construction_value_cents / 100) : ""} onChange={(ev) => set("construction_value_cents", ev.target.value ? Math.round(Number(ev.target.value) * 100) : 0)} />
             </div>
             <div>
-              <label className={labelCls("pcn")}>PCN {flag("pcn")}</label>
+              <label className={labelCls("pcn")}>PCN {flag("pcn")}{fieldDelBtn("pcn")}</label>
               <div className="flex gap-1.5">
                 <input className={inputCls("pcn") + " flex-1"} value={e.pcn ?? ""} onChange={(ev) => set("pcn", ev.target.value)} />
                 <button
@@ -350,33 +350,34 @@ function PermitDetailPage() {
           </div>
 
 
-          <div><label className={labelCls("submitted_date")}>Submitted Date {flag("submitted_date")}</label><input type="date" className={inputCls("submitted_date")} value={e.submitted_date ?? ""} onChange={(ev) => set("submitted_date", ev.target.value)} /></div>
+          <div><label className={labelCls("submitted_date")}>Submitted Date {flag("submitted_date")}{fieldDelBtn("submitted_date")}</label><input type="date" className={inputCls("submitted_date")} value={e.submitted_date ?? ""} onChange={(ev) => set("submitted_date", ev.target.value)} /></div>
           <div>
             <label className={labelCls("status")}>Status</label>
             <select className={inputCls("status")} value={e.status ?? "submitted"} onChange={(ev) => set("status", ev.target.value as PermitStatus)}>
               {STATUSES.map((s) => <option key={s} value={s}>{s.replace(/_/g, " ")}</option>)}
             </select>
           </div>
-          <div><label className={labelCls("description")}>Description {flag("description")}</label><textarea rows={3} className={inputCls("description")} value={e.description ?? ""} onChange={(ev) => set("description", ev.target.value)} /></div>
+          <div><label className={labelCls("description")}>Description {flag("description")}{fieldDelBtn("description")}</label><textarea rows={3} className={inputCls("description")} value={e.description ?? ""} onChange={(ev) => set("description", ev.target.value)} /></div>
         </div>
 
         <div className="bg-white border border-obsidian/10 rounded-[3px] p-6 space-y-4">
           <div className="text-[11px] font-mono uppercase tracking-[0.18em] text-obsidian/75">Contractor & Owner</div>
-          <div><label className={labelCls("contractor_company")}>Contractor Company {flag("contractor_company")}</label><input className={inputCls("contractor_company")} value={e.contractor_company ?? ""} onChange={(ev) => set("contractor_company", ev.target.value)} /></div>
-          <div><label className={labelCls("contractor_qualifier")}>Qualifier {flag("contractor_qualifier")}</label><input className={inputCls("contractor_qualifier")} value={e.contractor_qualifier ?? ""} onChange={(ev) => set("contractor_qualifier", ev.target.value)} /></div>
-          <div><label className={labelCls("company_address")}>Company Address {flag("company_address")}</label><input className={inputCls("company_address")} value={e.company_address ?? ""} onChange={(ev) => set("company_address", ev.target.value)} /></div>
+          <div><label className={labelCls("contractor_company")}>Contractor Company {flag("contractor_company")}{fieldDelBtn("contractor_company")}</label><input className={inputCls("contractor_company")} value={e.contractor_company ?? ""} onChange={(ev) => set("contractor_company", ev.target.value)} /></div>
+          <div><label className={labelCls("contractor_qualifier")}>Qualifier {flag("contractor_qualifier")}{fieldDelBtn("contractor_qualifier")}</label><input className={inputCls("contractor_qualifier")} value={e.contractor_qualifier ?? ""} onChange={(ev) => set("contractor_qualifier", ev.target.value)} /></div>
+          <div><label className={labelCls("company_address")}>Company Address {flag("company_address")}{fieldDelBtn("company_address")}</label><input className={inputCls("company_address")} value={e.company_address ?? ""} onChange={(ev) => set("company_address", ev.target.value)} /></div>
           <div className="grid grid-cols-2 gap-3">
-            <div><label className={labelCls("poc")}>POC {flag("poc")}</label><input className={inputCls("poc")} value={e.poc ?? ""} onChange={(ev) => set("poc", ev.target.value)} /></div>
-            <div><label className={labelCls("poc_phone")}>POC Phone {flag("poc_phone")}</label><input className={inputCls("poc_phone")} value={e.poc_phone ?? ""} onChange={(ev) => set("poc_phone", ev.target.value)} /></div>
+            <div><label className={labelCls("poc")}>POC {flag("poc")}{fieldDelBtn("poc")}</label><input className={inputCls("poc")} value={e.poc ?? ""} onChange={(ev) => set("poc", ev.target.value)} /></div>
+            <div><label className={labelCls("poc_phone")}>POC Phone {flag("poc_phone")}{fieldDelBtn("poc_phone")}</label><input className={inputCls("poc_phone")} value={e.poc_phone ?? ""} onChange={(ev) => set("poc_phone", ev.target.value)} /></div>
           </div>
-          <div><label className={labelCls("poc_email")}>POC Email {flag("poc_email")}</label><input className={inputCls("poc_email")} value={e.poc_email ?? ""} onChange={(ev) => set("poc_email", ev.target.value)} /></div>
-          <div><label className={labelCls("license_number")}>License # {flag("license_number")}</label><input className={inputCls("license_number")} value={e.license_number ?? ""} onChange={(ev) => set("license_number", ev.target.value)} /></div>
+          <div><label className={labelCls("poc_email")}>POC Email {flag("poc_email")}{fieldDelBtn("poc_email")}</label><input className={inputCls("poc_email")} value={e.poc_email ?? ""} onChange={(ev) => set("poc_email", ev.target.value)} /></div>
+          <div><label className={labelCls("license_number")}>License # {flag("license_number")}{fieldDelBtn("license_number")}</label><input className={inputCls("license_number")} value={e.license_number ?? ""} onChange={(ev) => set("license_number", ev.target.value)} /></div>
           <div className="pt-2 border-t border-obsidian/10">
-            <label className={labelCls("owner_name")}>Owner Name {flag("owner_name")}</label><input className={inputCls("owner_name")} value={e.owner_name ?? ""} onChange={(ev) => set("owner_name", ev.target.value)} />
+            <label className={labelCls("owner_name")}>Owner Name {flag("owner_name")}{fieldDelBtn("owner_name")}</label><input className={inputCls("owner_name")} value={e.owner_name ?? ""} onChange={(ev) => set("owner_name", ev.target.value)} />
           </div>
-          <div><label className={labelCls("owner_entity")}>Owner Entity</label><input className={inputBase + " border-obsidian/15 focus:border-obsidian/40"} value={e.owner_entity ?? ""} onChange={(ev) => set("owner_entity", ev.target.value)} /></div>
+          <div><label className={labelCls("owner_entity")}>Owner Entity {fieldDelBtn("owner_entity")}</label><input className={inputCls("owner_entity")} value={e.owner_entity ?? ""} onChange={(ev) => set("owner_entity", ev.target.value)} /></div>
         </div>
       </fieldset>
+
 
 
       <div className="mt-6 bg-white border border-obsidian/10 rounded-[3px] p-6">
