@@ -64,7 +64,8 @@ function wrap(text: string, font: import("pdf-lib").PDFFont, size: number, maxWi
   return out;
 }
 
-export async function generatePermitExportPdf(row: PermitRow): Promise<Blob> {
+export async function generatePermitExportPdf(row: PermitRow, opts: { includeAttachments?: boolean } = {}): Promise<Blob> {
+  const includeAttachments = opts.includeAttachments !== false;
   const merged = await PDFDocument.create();
   const font = await merged.embedFont(StandardFonts.Helvetica);
   const bold = await merged.embedFont(StandardFonts.HelveticaBold);
@@ -129,7 +130,7 @@ export async function generatePermitExportPdf(row: PermitRow): Promise<Blob> {
   drawLine(`Generated ${new Date().toLocaleString()}`, italic, 8, rgb(0.5, 0.5, 0.5), 0);
 
   // ---------- Attach each uploaded document ----------
-  for (const d of docs) {
+  for (const d of includeAttachments ? docs : []) {
     if (d.status !== "uploaded" || !d.path) continue;
     try {
       const blob = await downloadPermitFile(d.path);
