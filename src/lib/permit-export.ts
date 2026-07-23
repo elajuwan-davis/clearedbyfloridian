@@ -64,7 +64,8 @@ function wrap(text: string, font: import("pdf-lib").PDFFont, size: number, maxWi
   return out;
 }
 
-export async function generatePermitExportPdf(row: PermitRow): Promise<Blob> {
+export async function generatePermitExportPdf(row: PermitRow, opts: { includeAttachments?: boolean } = {}): Promise<Blob> {
+  const includeAttachments = opts.includeAttachments !== false;
   const merged = await PDFDocument.create();
   const font = await merged.embedFont(StandardFonts.Helvetica);
   const bold = await merged.embedFont(StandardFonts.HelveticaBold);
