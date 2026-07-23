@@ -9,7 +9,7 @@ import { deletePermitFile } from "@/lib/permit-storage";
 import { fetchAppraiserRecord } from "@/lib/property-appraiser";
 import { generatePermitExportPdf, suggestExportFilename } from "@/lib/permit-export";
 import { uploadFileToGoogleDrive, getGoogleDriveStatus, startGoogleDriveConnect, saveGoogleDriveConnection } from "@/lib/google-drive.functions";
-import { connectAppUser, isEmbeddedAppView, openAppInTopLevelTab } from "@/integrations/lovable/appUserConnectorClient";
+import { connectAppUser, getTopLevelAppUrl, isEmbeddedAppView, openAppInTopLevelTab } from "@/integrations/lovable/appUserConnectorClient";
 
 
 export const Route = createFileRoute("/portal/permits/$id")({
@@ -172,9 +172,9 @@ function PermitDetailPage() {
     if (!exportBlob || !row) return;
     if (isEmbeddedAppView()) {
       if (openAppInTopLevelTab()) {
-        toast.info("Google blocks sign-in inside the embedded preview. Continue from the new tab to upload to Drive.");
+        toast.info("Google blocks sign-in inside the embedded preview. Continue from the full preview tab to upload to Drive.");
       } else {
-        toast.error("Google blocks sign-in inside the embedded preview. Allow popups or open this portal page in a new tab.");
+        toast.error("Google blocks sign-in inside the embedded preview. Allow popups or open the full preview link manually.");
       }
       return;
     }
@@ -582,11 +582,11 @@ function PermitDetailPage() {
               {isEmbeddedAppView() && (
                 <button
                   onClick={() => {
-                    if (!openAppInTopLevelTab()) toast.error("Popup blocked. Allow popups or copy this page URL into a new tab.");
+                    if (!openAppInTopLevelTab()) toast.error("Popup blocked. Use the full preview link shown below.");
                   }}
                   className="inline-flex items-center gap-2 border border-sky/50 bg-sky/15 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian rounded-[3px] hover:bg-sky/25"
                 >
-                  Open tab
+                  Open full preview
                 </button>
               )}
               <button
@@ -619,6 +619,9 @@ function PermitDetailPage() {
                       <div className="text-sm text-obsidian mb-3">
                         Your browser blocked the inline PDF preview. Open it in a new tab or download the file.
                       </div>
+                      {isEmbeddedAppView() && (
+                        <div className="mb-3 break-all font-mono text-[10px] text-obsidian/50">{getTopLevelAppUrl()}</div>
+                      )}
                       <div className="flex gap-2 justify-center">
                         <button
                           onClick={() => window.open(exportUrl!, "_blank", "noopener")}

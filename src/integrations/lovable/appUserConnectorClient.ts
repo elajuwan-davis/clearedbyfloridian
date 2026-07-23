@@ -35,7 +35,8 @@ export function getTopLevelAppUrl(): string {
 
 export function openAppInTopLevelTab(): boolean {
   if (typeof window === "undefined") return false;
-  const opened = window.open(getTopLevelAppUrl(), "_blank", "noopener,noreferrer");
+  const opened = window.open(getTopLevelAppUrl(), "_blank");
+  if (opened) opened.opener = null;
   return Boolean(opened);
 }
 
