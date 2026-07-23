@@ -104,15 +104,38 @@ function PermitDetailPage() {
     setExportOpen(true);
     setExporting(true);
     setExportBlob(null);
+    if (exportUrl) { URL.revokeObjectURL(exportUrl); setExportUrl(null); }
     try {
-      const blob = await generatePermitExportPdf(row);
-      setExportBlob(blob);
+      // Phase 1: fast summary-only PDF for immediate preview
+      const summary = await generatePermitExportPdf(row, { includeAttachments: false });
+      setExportBlob(summary);
+      setExportUrl(URL.createObjectURL(summary));
+      setExporting(false);
+      // Phase 2: merge attachments in background
+      const hasAttachments = (row.documents ?? []).some((d) => d.status === "uploaded" && d.path);
+      if (hasAttachments) {
+        setMergingAttachments(true);
+        try {
+          const full = await generatePermitExportPdf(row, { includeAttachments: true });
+          setExportBlob(full);
+          setExportUrl((prev) => { if (prev) URL.revokeObjectURL(prev); return URL.createObjectURL(full); });
+        } catch (err) {
+          toast.error("Attachments merge failed: " + (err instanceof Error ? err.message : String(err)));
+        } finally {
+          setMergingAttachments(false);
+        }
+      }
     } catch (err) {
       toast.error("Export failed: " + (err instanceof Error ? err.message : String(err)));
       setExportOpen(false);
-    } finally {
       setExporting(false);
     }
+  }
+
+  function closeExport() {
+    setExportOpen(false);
+    if (exportUrl) { URL.revokeObjectURL(exportUrl); setExportUrl(null); }
+    setExportBlob(null);
   }
 
   function downloadExport() {
