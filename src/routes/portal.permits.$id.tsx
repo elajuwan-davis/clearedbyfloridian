@@ -35,6 +35,10 @@ function PermitDetailPage() {
   const [edit, setEdit] = useState<Partial<PermitRow>>({});
   const [pcnLoading, setPcnLoading] = useState(false);
   const [showHidden, setShowHidden] = useState(false);
+  const [exportOpen, setExportOpen] = useState(false);
+  const [exporting, setExporting] = useState(false);
+  const [exportBlob, setExportBlob] = useState<Blob | null>(null);
+  const [driveUploading, setDriveUploading] = useState(false);
 
 
 
@@ -79,20 +83,119 @@ function PermitDetailPage() {
     }
   }
 
+  async function toggleFieldHidden(k: string) {
+    if (!row) return;
+    const current = getHiddenFieldKeys(row);
+    const next = current.includes(k) ? current.filter((x) => x !== k) : [...current, k];
+    const payload = withHiddenFieldKeys(row, next);
+    try {
+      const updated = await updatePermit(row.id, { intake_payload: payload });
+      setRow(updated);
+      setEdit((p) => ({ ...p, intake_payload: updated.intake_payload }));
+    } catch (err) {
+      toast.error("Update failed: " + (err instanceof Error ? err.message : String(err)));
+    }
+  }
+
+  async function openExport() {
+    if (!row) return;
+    setExportOpen(true);
+    setExporting(true);
+    setExportBlob(null);
+    try {
+      const blob = await generatePermitExportPdf(row);
+      setExportBlob(blob);
+    } catch (err) {
+      toast.error("Export failed: " + (err instanceof Error ? err.message : String(err)));
+      setExportOpen(false);
+    } finally {
+      setExporting(false);
+    }
+  }
+
+  function downloadExport() {
+    if (!exportBlob || !row) return;
+    const url = URL.createObjectURL(exportBlob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = suggestExportFilename(row);
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
+
+  async function shareExport() {
+    if (!exportBlob || !row) return;
+    const filename = suggestExportFilename(row);
+    const file = new File([exportBlob], filename, { type: "application/pdf" });
+    const nav = navigator as Navigator & { canShare?: (data: ShareData) => boolean };
+    if (nav.canShare && nav.canShare({ files: [file] })) {
+      try {
+        await navigator.share({ files: [file], title: row.project_name, text: `Permit export: ${row.project_name}` });
+      } catch (err) {
+        if ((err as Error).name !== "AbortError") toast.error("Share failed: " + (err as Error).message);
+      }
+    } else {
+      downloadExport();
+      toast.info("Native sharing unavailable — file downloaded instead");
+    }
+  }
+
+  async function uploadToDrive() {
+    if (!exportBlob || !row) return;
+    setDriveUploading(true);
+    try {
+      const buf = new Uint8Array(await exportBlob.arrayBuffer());
+      let bin = "";
+      for (let i = 0; i < buf.length; i++) bin += String.fromCharCode(buf[i]);
+      const base64 = btoa(bin);
+      const out = await uploadFileToGoogleDrive({
+        data: { filename: suggestExportFilename(row), mime: "application/pdf", base64 },
+      });
+      toast.success("Uploaded to Google Drive");
+      if (out?.webViewLink) window.open(out.webViewLink, "_blank", "noopener");
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      if (msg.includes("not connected")) {
+        toast.error("Connect Google Drive first from Documents section");
+      } else if (msg.includes("403") || msg.toLowerCase().includes("scope")) {
+        toast.error("Reconnect Google Drive to grant upload permission");
+      } else {
+        toast.error("Drive upload failed: " + msg);
+      }
+    } finally {
+      setDriveUploading(false);
+    }
+  }
+
   if (loading) return <div className="mx-auto max-w-5xl px-6 py-12 text-obsidian/60">Loading…</div>;
   if (!row) return <div className="mx-auto max-w-5xl px-6 py-12 text-obsidian/60">Permit not found.</div>;
 
   const c = permitCompleteness(row);
   const missingFieldKeys = new Set(c.missingFields.map((f) => f.key));
+  const hiddenFieldSet = new Set(getHiddenFieldKeys(row));
   const barColor = c.percent === 100 ? "#16a34a" : c.percent >= 60 ? "#153157" : c.percent >= 30 ? "#d97706" : "#dc2626";
   const inputBase = "block w-full border bg-white px-3 py-2 text-sm text-obsidian rounded-[3px] focus:outline-none";
-  const inputCls = (k: string) => `${inputBase} ${missingFieldKeys.has(k) ? "border-red-500/60 focus:border-red-600" : "border-obsidian/15 focus:border-obsidian/40"}`;
-  const labelCls = (k: string) => `flex items-center gap-1.5 text-[11px] font-mono uppercase tracking-[0.14em] mb-1.5 ${missingFieldKeys.has(k) ? "text-red-700" : "text-obsidian/60"}`;
-  const flag = (k: string) => missingFieldKeys.has(k) ? <AlertTriangle className="h-3 w-3 text-red-600" /> : null;
+  const isHidden = (k: string) => hiddenFieldSet.has(k);
+  const inputCls = (k: string) => `${inputBase} ${isHidden(k) ? "border-obsidian/10 bg-obsidian/[0.03] text-obsidian/40 line-through" : missingFieldKeys.has(k) ? "border-red-500/60 focus:border-red-600" : "border-obsidian/15 focus:border-obsidian/40"}`;
+  const labelCls = (k: string) => `flex items-center gap-1.5 text-[11px] font-mono uppercase tracking-[0.14em] mb-1.5 ${isHidden(k) ? "text-obsidian/40 line-through" : missingFieldKeys.has(k) ? "text-red-700" : "text-obsidian/60"}`;
+  const flag = (k: string) => (!isHidden(k) && missingFieldKeys.has(k)) ? <AlertTriangle className="h-3 w-3 text-red-600" /> : null;
+  const fieldDelBtn = (k: string) => editing ? (
+    <button
+      type="button"
+      onClick={() => toggleFieldHidden(k)}
+      title={isHidden(k) ? "Restore field" : "Remove this field from this permit"}
+      className={`ml-auto inline-flex items-center rounded-[3px] p-0.5 ${isHidden(k) ? "text-obsidian/50 hover:text-obsidian" : "text-obsidian/30 hover:text-red-600"}`}
+    >
+      {isHidden(k) ? <RotateCcw className="h-3 w-3" /> : <Trash2 className="h-3 w-3" />}
+    </button>
+  ) : null;
 
   function set<K extends keyof PermitRow>(k: K, v: PermitRow[K]) { setEdit((p) => ({ ...p, [k]: v })); }
   const e = edit as PermitRow;
   const docs = getEffectiveDocs(row);
+
 
   return (
     <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
