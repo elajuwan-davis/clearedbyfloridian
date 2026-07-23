@@ -24,6 +24,13 @@ function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  function getSafeNext(fallback: string) {
+    if (typeof window === "undefined") return fallback;
+    const next = new URLSearchParams(window.location.search).get("next");
+    if (!next || !next.startsWith("/") || next.startsWith("//")) return fallback;
+    return next;
+  }
+
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
@@ -44,7 +51,7 @@ function LoginPage() {
           /* ignore */
         }
         setLoading(false);
-        navigate({ to: "/dashboard", replace: true });
+        navigate({ to: getSafeNext("/dashboard") as never, replace: true });
         return;
       }
       setLoading(false);
@@ -69,7 +76,7 @@ function LoginPage() {
       setError(error.message);
       return;
     }
-    navigate({ to: "/portal", replace: true });
+    navigate({ to: getSafeNext("/portal") as never, replace: true });
   }
 
 
