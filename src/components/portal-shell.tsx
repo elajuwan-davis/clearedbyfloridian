@@ -292,7 +292,7 @@ export function PortalShell({ children }: { children: ReactNode }) {
         }
         setAuthState("anon");
         if (shouldProtect && !signingOutRef.current) {
-          navigate({ to: "/login", replace: true });
+          navigate({ to: "/login", search: { next: pathname } as never, replace: true });
         }
       } else {
         setAuthState("authed");
@@ -307,7 +307,7 @@ export function PortalShell({ children }: { children: ReactNode }) {
         }
         setAuthState("anon");
         if (shouldProtect && !signingOutRef.current) {
-          navigate({ to: "/login", replace: true });
+          navigate({ to: "/login", search: { next: pathname } as never, replace: true });
         }
       } else {
         setAuthState("authed");
