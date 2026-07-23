@@ -215,6 +215,9 @@ function PermitDetailPage() {
               <span className="inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/50">
                 <Lock className="h-3 w-3" /> Read only
               </span>
+              <button onClick={openExport} className="inline-flex items-center gap-2 border border-obsidian/20 bg-white px-3 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian rounded-[3px] hover:bg-obsidian/5">
+                <Download className="h-3.5 w-3.5" /> Export
+              </button>
               <button onClick={() => setEditing(true)} className="inline-flex items-center gap-2 bg-obsidian px-4 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-paper rounded-[3px]">
                 <Pencil className="h-3.5 w-3.5" /> Edit
               </button>
@@ -224,6 +227,9 @@ function PermitDetailPage() {
             </>
           ) : (
             <>
+              <button onClick={openExport} className="inline-flex items-center gap-2 border border-obsidian/20 bg-white px-3 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian rounded-[3px] hover:bg-obsidian/5">
+                <Download className="h-3.5 w-3.5" /> Export
+              </button>
               <button onClick={cancelEdit} disabled={saving} className="inline-flex items-center gap-2 border border-obsidian/20 bg-white px-3 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian rounded-[3px] disabled:opacity-60">
                 <X className="h-3.5 w-3.5" /> Cancel
               </button>
