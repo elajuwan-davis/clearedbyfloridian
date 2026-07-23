@@ -170,6 +170,14 @@ function PermitDetailPage() {
 
   async function uploadToDrive() {
     if (!exportBlob || !row) return;
+    if (isEmbeddedAppView()) {
+      if (openAppInTopLevelTab()) {
+        toast.info("Google blocks sign-in inside the embedded preview. Continue from the new tab to upload to Drive.");
+      } else {
+        toast.error("Google blocks sign-in inside the embedded preview. Allow popups or open this portal page in a new tab.");
+      }
+      return;
+    }
     setDriveUploading(true);
     try {
       // Ensure Google Drive is connected before attempting upload.
