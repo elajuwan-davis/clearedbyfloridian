@@ -14,6 +14,7 @@ export interface AppUserOAuthResult {
 const OAUTH_MESSAGE_TYPE = "appUserConnectorOAuth";
 
 export function isEmbeddedAppView(): boolean {
+  if (typeof window === "undefined") return false;
   try {
     return window.self !== window.top;
   } catch {
@@ -21,8 +22,21 @@ export function isEmbeddedAppView(): boolean {
   }
 }
 
+export function getTopLevelAppUrl(): string {
+  if (typeof window === "undefined") return "/";
+  const url = new URL(window.location.href);
+  if (url.hostname.endsWith(".lovableproject.com")) {
+    const previewId = url.hostname.split(".")[0];
+    url.hostname = `id-preview--${previewId}.lovable.app`;
+    url.protocol = "https:";
+  }
+  return url.toString();
+}
+
 export function openAppInTopLevelTab(): boolean {
-  const opened = window.open(window.location.href, "_blank", "noopener,noreferrer");
+  if (typeof window === "undefined") return false;
+  const opened = window.open(getTopLevelAppUrl(), "_blank");
+  if (opened) opened.opener = null;
   return Boolean(opened);
 }
 
@@ -42,8 +56,8 @@ export async function connectAppUser(opts: {
       connectorId,
       requiresTopLevel: true,
       error: opened
-        ? "Google blocks sign-in inside the embedded preview. I opened the portal in a new tab — connect Google Drive there."
-        : "Google blocks sign-in inside the embedded preview. Open the portal in a new browser tab, then connect Google Drive.",
+        ? "Google blocks sign-in inside the embedded preview. I opened the full preview in a new tab — connect Google Drive there."
+        : "Google blocks sign-in inside the embedded preview. Open the full preview in a new browser tab, then connect Google Drive.",
     };
   }
 

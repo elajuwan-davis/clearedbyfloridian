@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Loader2, Search, FileText, Cloud, RefreshCw, LogOut } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { connectAppUser, isEmbeddedAppView, openAppInTopLevelTab } from "@/integrations/lovable/appUserConnectorClient";
+import { connectAppUser, getTopLevelAppUrl, isEmbeddedAppView, openAppInTopLevelTab } from "@/integrations/lovable/appUserConnectorClient";
 import {
   startGoogleDriveConnect,
   saveGoogleDriveConnection,
@@ -149,19 +149,22 @@ export function GoogleDrivePickerDialog({
           <div className="py-8 text-center space-y-4">
             <p className="text-sm text-obsidian/70 max-w-md mx-auto">
               {isEmbeddedAppView()
-                ? "Google blocks sign-in inside the embedded preview. Open the portal in a new tab, then connect Google Drive there."
+                ? "Google blocks sign-in inside the embedded preview. Open the full preview in a new tab, then connect Google Drive there."
                 : "Sign in with your Google account to import files directly from your Drive."}
             </p>
             {isEmbeddedAppView() && (
-              <button
-                type="button"
-                onClick={() => {
-                  if (!openAppInTopLevelTab()) toast.error("Popup blocked. Allow popups or copy this page URL into a new tab.");
-                }}
-                className="inline-flex items-center gap-2 border border-obsidian/20 bg-white px-4 py-2 font-mono text-[11px] uppercase tracking-[0.14em] text-obsidian rounded-[3px] hover:bg-obsidian/5"
-              >
-                Open portal in new tab
-              </button>
+              <div className="space-y-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (!openAppInTopLevelTab()) toast.error("Popup blocked. Use the full preview link shown below.");
+                  }}
+                  className="inline-flex items-center gap-2 border border-obsidian/20 bg-white px-4 py-2 font-mono text-[11px] uppercase tracking-[0.14em] text-obsidian rounded-[3px] hover:bg-obsidian/5"
+                >
+                  Open full preview
+                </button>
+                <div className="break-all font-mono text-[10px] text-obsidian/50">{getTopLevelAppUrl()}</div>
+              </div>
             )}
             <button
               type="button"
