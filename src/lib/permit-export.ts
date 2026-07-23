@@ -130,7 +130,7 @@ export async function generatePermitExportPdf(row: PermitRow, opts: { includeAtt
   drawLine(`Generated ${new Date().toLocaleString()}`, italic, 8, rgb(0.5, 0.5, 0.5), 0);
 
   // ---------- Attach each uploaded document ----------
-  for (const d of docs) {
+  for (const d of includeAttachments ? docs : []) {
     if (d.status !== "uploaded" || !d.path) continue;
     try {
       const blob = await downloadPermitFile(d.path);
