@@ -129,53 +129,58 @@ export async function generatePermitExportPdf(row: PermitRow, opts: { includeAtt
 
   drawLine(`Generated ${new Date().toLocaleString()}`, italic, 8, rgb(0.5, 0.5, 0.5), 0);
 
-  // ---------- Attach each uploaded document ----------
-  for (const d of includeAttachments ? docs : []) {
-    if (d.status !== "uploaded" || !d.path) continue;
-    try {
-      const blob = await downloadPermitFile(d.path);
-      const buf = new Uint8Array(await blob.arrayBuffer());
-      const mime = (d.mime || blob.type || "").toLowerCase();
-
-      // Section separator page
-      const sep = merged.addPage(A4);
-      sep.drawText("ATTACHMENT", { x: MARGIN, y: A4[1] - MARGIN - 12, size: 10, font: bold, color: rgb(0.4, 0.4, 0.4) });
-      const title = sanitize(d.label);
-      sep.drawText(title, { x: MARGIN, y: A4[1] - MARGIN - 40, size: 18, font: bold, color: ink });
-      if (d.filename) sep.drawText(sanitize(d.filename), { x: MARGIN, y: A4[1] - MARGIN - 62, size: 10, font, color: rgb(0.4, 0.4, 0.4) });
-
-      if (mime.includes("pdf") || (d.filename ?? "").toLowerCase().endsWith(".pdf")) {
-        try {
-          const src = await PDFDocument.load(buf, { ignoreEncryption: true });
-          const copied = await merged.copyPages(src, src.getPageIndices());
-          for (const p of copied) merged.addPage(p);
-        } catch (err) {
-          const p = merged.addPage(A4);
-          p.drawText(`Could not merge PDF: ${(err as Error).message}`, { x: MARGIN, y: A4[1] - MARGIN - 100, size: 10, font, color: rgb(0.7, 0.1, 0.1) });
-        }
-      } else if (mime.startsWith("image/")) {
-        try {
-          const img = mime.includes("png") ? await merged.embedPng(buf) : await merged.embedJpg(buf);
-          const p = merged.addPage(A4);
-          const maxW = A4[0] - MARGIN * 2;
-          const maxH = A4[1] - MARGIN * 2;
-          const scale = Math.min(maxW / img.width, maxH / img.height, 1);
-          const w = img.width * scale;
-          const h = img.height * scale;
-          p.drawImage(img, { x: (A4[0] - w) / 2, y: (A4[1] - h) / 2, width: w, height: h });
-        } catch (err) {
-          const p = merged.addPage(A4);
-          p.drawText(`Could not embed image: ${(err as Error).message}`, { x: MARGIN, y: A4[1] - MARGIN - 100, size: 10, font, color: rgb(0.7, 0.1, 0.1) });
-        }
-      } else {
-        const p = merged.addPage(A4);
-        p.drawText(`Attached file "${sanitize(d.filename ?? "")}" (${mime || "unknown type"}) cannot be inlined in this PDF.`,
-          { x: MARGIN, y: A4[1] - MARGIN - 100, size: 10, font, color: rgb(0.3, 0.3, 0.3) });
+  // ---------- Attach each uploaded document (parallel fetch) ----------
+  const attachDocs = includeAttachments ? docs.filter((d) => d.status === "uploaded" && d.path) : [];
+  const fetched = await Promise.all(
+    attachDocs.map(async (d) => {
+      try {
+        const blob = await downloadPermitFile(d.path!);
+        const buf = new Uint8Array(await blob.arrayBuffer());
+        return { d, buf, mime: (d.mime || blob.type || "").toLowerCase(), err: null as Error | null };
+      } catch (err) {
+        return { d, buf: null as Uint8Array | null, mime: "", err: err as Error };
       }
-    } catch (err) {
+    }),
+  );
+
+  for (const { d, buf, mime, err } of fetched) {
+    const sep = merged.addPage(A4);
+    sep.drawText("ATTACHMENT", { x: MARGIN, y: A4[1] - MARGIN - 12, size: 10, font: bold, color: rgb(0.4, 0.4, 0.4) });
+    sep.drawText(sanitize(d.label), { x: MARGIN, y: A4[1] - MARGIN - 40, size: 18, font: bold, color: ink });
+    if (d.filename) sep.drawText(sanitize(d.filename), { x: MARGIN, y: A4[1] - MARGIN - 62, size: 10, font, color: rgb(0.4, 0.4, 0.4) });
+
+    if (err || !buf) {
+      sep.drawText(`Failed to fetch file: ${err?.message ?? "unknown"}`, { x: MARGIN, y: A4[1] - MARGIN - 90, size: 10, font, color: rgb(0.7, 0.1, 0.1) });
+      continue;
+    }
+
+    if (mime.includes("pdf") || (d.filename ?? "").toLowerCase().endsWith(".pdf")) {
+      try {
+        const src = await PDFDocument.load(buf, { ignoreEncryption: true });
+        const copied = await merged.copyPages(src, src.getPageIndices());
+        for (const p of copied) merged.addPage(p);
+      } catch (e) {
+        const p = merged.addPage(A4);
+        p.drawText(`Could not merge PDF: ${(e as Error).message}`, { x: MARGIN, y: A4[1] - MARGIN - 100, size: 10, font, color: rgb(0.7, 0.1, 0.1) });
+      }
+    } else if (mime.startsWith("image/")) {
+      try {
+        const img = mime.includes("png") ? await merged.embedPng(buf) : await merged.embedJpg(buf);
+        const p = merged.addPage(A4);
+        const maxW = A4[0] - MARGIN * 2;
+        const maxH = A4[1] - MARGIN * 2;
+        const scale = Math.min(maxW / img.width, maxH / img.height, 1);
+        const w = img.width * scale;
+        const h = img.height * scale;
+        p.drawImage(img, { x: (A4[0] - w) / 2, y: (A4[1] - h) / 2, width: w, height: h });
+      } catch (e) {
+        const p = merged.addPage(A4);
+        p.drawText(`Could not embed image: ${(e as Error).message}`, { x: MARGIN, y: A4[1] - MARGIN - 100, size: 10, font, color: rgb(0.7, 0.1, 0.1) });
+      }
+    } else {
       const p = merged.addPage(A4);
-      p.drawText(`ATTACHMENT: ${sanitize(d.label)}`, { x: MARGIN, y: A4[1] - MARGIN - 40, size: 14, font: bold, color: ink });
-      p.drawText(`Failed to fetch file: ${(err as Error).message}`, { x: MARGIN, y: A4[1] - MARGIN - 70, size: 10, font, color: rgb(0.7, 0.1, 0.1) });
+      p.drawText(`Attached file "${sanitize(d.filename ?? "")}" (${mime || "unknown type"}) cannot be inlined in this PDF.`,
+        { x: MARGIN, y: A4[1] - MARGIN - 100, size: 10, font, color: rgb(0.3, 0.3, 0.3) });
     }
   }
 
