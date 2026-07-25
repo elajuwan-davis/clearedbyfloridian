@@ -593,7 +593,86 @@ function NewPermitPage() {
                 ))}
               </div>
             )}
-          </div>
+
+            {/* Inline subcontractor row per selected scope */}
+            {form.scopes.length > 0 && (
+              <div className="pt-4 space-y-4">
+                <div className={sectionCls}>Subcontractor per Trade</div>
+                <p className="text-[12px] text-obsidian/60 -mt-2">
+                  One sub per selected scope. Skip any row you'll fill in later — the trade stays on the permit.
+                </p>
+                {form.subs.map((s) => {
+                  const idx = form.subs.findIndex((x) => x.scope === s.scope);
+                  const reuse = reuseCandidateFor(idx);
+                  const optional = OPTIONAL_SCOPES.has(s.scope);
+                  return (
+                    <div key={s.scope} className="space-y-2">
+                      {reuse && !s.skipped && (
+                        <div className="flex items-start gap-3 border border-[#153157]/30 bg-[#B6DAEA]/15 rounded-[3px] px-4 py-3">
+                          <Sparkles className="mt-0.5 h-4 w-4 shrink-0 text-[#153157]" />
+                          <div className="flex-1 text-[13px] text-obsidian/85">
+                            <div className="text-obsidian font-medium">
+                              {s.trade} is already on this job — {reuse.companyName} is handling it.
+                            </div>
+                            <div className="mt-0.5 text-obsidian/60 text-[12px]">Reuse the same contractor to avoid a redundant sub entry.</div>
+                          </div>
+                          <div className="flex flex-col gap-1.5 shrink-0">
+                            <button
+                              type="button"
+                              onClick={() => applyReuse(idx, reuse)}
+                              className="inline-flex items-center justify-center bg-obsidian px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-paper hover:bg-obsidian/90 rounded-[3px]"
+                            >
+                              Use {reuse.companyName.length > 22 ? reuse.companyName.slice(0, 20) + "…" : reuse.companyName}
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => dismissReuse(idx)}
+                              className="font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/50 hover:text-obsidian"
+                            >
+                              Dismiss
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                      <div className={`border rounded-[3px] p-4 space-y-3 ${s.skipped ? "border-dashed border-obsidian/15 bg-obsidian/[0.02]" : "border-obsidian/12"}`}>
+                        <div className="flex items-center justify-between gap-3">
+                          <div className="flex items-center gap-2">
+                            <span className="inline-flex items-center bg-[#153157] text-white px-2 py-0.5 rounded-[3px] text-[10px] font-mono uppercase tracking-[0.12em]">
+                              {s.trade}
+                            </span>
+                            {optional && (
+                              <span className="text-[10px] font-mono uppercase tracking-[0.12em] text-obsidian/45">Optional</span>
+                            )}
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => toggleSubSkip(s.scope)}
+                            className="font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/55 hover:text-obsidian underline underline-offset-2"
+                          >
+                            {s.skipped ? "Add sub info" : "Skip for now"}
+                          </button>
+                        </div>
+                        {!s.skipped && (
+                          <div className="grid gap-3 sm:grid-cols-2">
+                            <div><label className={labelCls}>Company Name</label><input className={inputCls} value={s.companyName} onChange={(e) => updateSubByScope(s.scope, { companyName: e.target.value })} /></div>
+                            <div><label className={labelCls}>License #</label><input className={inputCls} value={s.licenseNumber} onChange={(e) => updateSubByScope(s.scope, { licenseNumber: e.target.value })} /></div>
+                            <div><label className={labelCls}>Contact Name</label><input className={inputCls} value={s.contactName} onChange={(e) => updateSubByScope(s.scope, { contactName: e.target.value })} /></div>
+                            <div><label className={labelCls}>Contact Email</label><input type="email" className={inputCls} value={s.contactEmail} onChange={(e) => updateSubByScope(s.scope, { contactEmail: e.target.value })} /></div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+                {filledSubs.length > 0 && (
+                  <div className="border-l-2 border-[#153157] bg-obsidian/[0.03] px-4 py-3 text-[12px] text-obsidian/80">
+                    {wantBundle
+                      ? <>This submission will cover <strong>{filledSubs.length} trades</strong> under one GC permit (auto-bundled).</>
+                      : <>1 trade added — add more scopes to bundle under a single GC permit.</>}
+                  </div>
+                )}
+              </div>
+            )}
 
           <div>
             <label className={labelCls}>Scope Narrative</label>
