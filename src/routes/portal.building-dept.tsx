@@ -19,6 +19,7 @@ import {
   subscribeMunicipalities, FL_COUNTIES, PORTAL_PLATFORMS,
   type CustomMunicipality, type PortalPlatform,
 } from "@/lib/municipalities-store";
+import { MUNICIPALITY_TREE } from "@/lib/municipalities-data";
 
 export const Route = createFileRoute("/portal/building-dept")({
   head: () => ({
