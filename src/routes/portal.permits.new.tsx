@@ -5,6 +5,8 @@ import { toast } from "sonner";
 import { CloudUploadButtons } from "@/components/cloud-upload-buttons";
 import { createPermit, type PermitDoc } from "@/lib/permits-api";
 import { listSubs, createSub, type SubRow } from "@/lib/subs-api";
+import { MUNICIPALITIES } from "@/lib/municipalities";
+import { getChecklist, DEFAULT_CHECKLIST } from "@/lib/permit-checklists";
 
 export const Route = createFileRoute("/portal/permits/new")({
   head: () => ({
@@ -17,19 +19,13 @@ export const Route = createFileRoute("/portal/permits/new")({
 });
 
 const PERMIT_TYPES = [
+  "Swimming Pool",
   "New Construction of Pool w/ Deck",
   "Pool Renovation",
   "Pool + Spa",
   "Full Hardscape",
   "Other",
 ];
-
-const REQUIRED_DOCS = [
-  { key: "stamped_plans", label: "Stamped Construction Plans", required: true, canDefer: true, desc: "Signed and sealed construction plans." },
-  { key: "site_survey", label: "Site / Spot Survey", required: false, canDefer: false, desc: "Boundary or spot survey." },
-  { key: "tdh_calculations", label: "TDH Calculations (Turnover Design and Hydraulics)", required: false, canDefer: false, desc: "Turnover design and hydraulics calculations." },
-  { key: "equipment_specification", label: "Equipment Specification", required: false, canDefer: false, desc: "Equipment specifications and cut sheets." },
-] as const;
 
 type DocState = { uploaded: string | null; na: boolean; deferred: boolean };
 
@@ -40,10 +36,6 @@ type SubIntake = {
   contactEmail: string;
   insuranceCarrierEmail: string;
 };
-
-const emptyDocs: Record<string, DocState> = Object.fromEntries(
-  REQUIRED_DOCS.map((d) => [d.key, { uploaded: null, na: false, deferred: false }]),
-);
 
 const emptySub: SubIntake = { companyName: "", qualifierName: "", licenseNumber: "", contactEmail: "", insuranceCarrierEmail: "" };
 
