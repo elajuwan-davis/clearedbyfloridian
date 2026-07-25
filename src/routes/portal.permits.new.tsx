@@ -72,10 +72,17 @@ const emptySub = (trade: string): SubIntake => ({
 
 function NewPermitPage() {
   const navigate = useNavigate();
+  const { edit: editId } = Route.useSearch();
+  const isEditing = !!editId;
   const [savedSubs, setSavedSubs] = useState<SubRow[]>([]);
+  const [savedPros, setSavedPros] = useState<DesignProRow[]>([]);
   const [saving, setSaving] = useState(false);
+  const [loadingEdit, setLoadingEdit] = useState(isEditing);
+  const [originalRow, setOriginalRow] = useState<PermitRow | null>(null);
   const [subsSkipped, setSubsSkipped] = useState(false);
   const [docsSkipped, setDocsSkipped] = useState(false);
+  const [saveArchitectToContacts, setSaveArchitectToContacts] = useState(false);
+  const [saveEngineerToContacts, setSaveEngineerToContacts] = useState(false);
   const [form, setForm] = useState({
     step: 1 as 1 | 2,
     projectName: "",
@@ -85,6 +92,14 @@ function NewPermitPage() {
     description: "",
     subs: [] as SubIntake[],
     submittedDate: new Date().toISOString().slice(0, 10),
+    architectFirm: "",
+    architectContact: "",
+    architectLicense: "",
+    architectEmail: "",
+    engineerFirm: "",
+    engineerContact: "",
+    engineerLicense: "",
+    engineerEmail: "",
     contractorCompany: "",
     contractorQualifier: "",
     companyAddress: "",
@@ -102,6 +117,68 @@ function NewPermitPage() {
   });
 
   useEffect(() => { listSubs().then(setSavedSubs).catch(() => {}); }, []);
+  useEffect(() => { listDesignPros().then(setSavedPros).catch(() => {}); }, []);
+
+  // Load existing permit for editing
+  useEffect(() => {
+    if (!editId) return;
+    getPermit(editId)
+      .then((r) => {
+        if (!r) { toast.error("Permit not found"); return; }
+        setOriginalRow(r);
+        const ip = (r.intake_payload ?? {}) as Record<string, any>;
+        const architect = (ip.architect ?? {}) as Record<string, string>;
+        const engineer = (ip.engineer ?? {}) as Record<string, string>;
+        const docsMap: Record<string, DocState> = {};
+        for (const d of r.documents ?? []) {
+          docsMap[d.key] = {
+            uploaded: d.status === "uploaded" ? d.filename : null,
+            na: d.status === "not_applicable",
+            deferred: d.status === "pending",
+          };
+        }
+        setForm((f) => ({
+          ...f,
+          projectName: r.project_name ?? "",
+          address: r.job_address ?? "",
+          municipality: r.municipality ?? "",
+          scopes: r.permit_type ? r.permit_type.split(" · ").filter(Boolean) : [],
+          description: r.description ?? "",
+          subs: (r.subs ?? []).map((s) => ({
+            trade: s.trade ?? "Other",
+            companyName: s.companyName ?? "",
+            licenseNumber: s.licenseNumber ?? "",
+            contactName: s.qualifierName ?? "",
+            contactEmail: s.contactEmail ?? "",
+          })),
+          submittedDate: r.submitted_date ?? f.submittedDate,
+          architectFirm: architect.firm ?? "",
+          architectContact: architect.contact ?? "",
+          architectLicense: architect.license ?? "",
+          architectEmail: architect.email ?? "",
+          engineerFirm: engineer.firm ?? "",
+          engineerContact: engineer.contact ?? "",
+          engineerLicense: engineer.license ?? "",
+          engineerEmail: engineer.email ?? "",
+          contractorCompany: r.contractor_company ?? "",
+          contractorQualifier: r.contractor_qualifier ?? "",
+          companyAddress: r.company_address ?? "",
+          poc: r.poc ?? f.poc,
+          pocPhone: r.poc_phone ?? f.pocPhone,
+          pocEmail: r.poc_email ?? f.pocEmail,
+          licenseNumber: r.license_number ?? "",
+          ownerName: r.owner_name ?? "",
+          ownerEntity: r.owner_entity ?? "",
+          signerPhone: r.signer_phone ?? "",
+          signerEmail: r.signer_email ?? "",
+          additionalNotes: r.additional_notes ?? "",
+          docs: docsMap,
+          extraDocs: r.extra_docs ?? [],
+        }));
+      })
+      .catch(() => toast.error("Could not load permit for editing"))
+      .finally(() => setLoadingEdit(false));
+  }, [editId]);
 
   function update<K extends keyof typeof form>(key: K, value: (typeof form)[K]) {
     setForm((f) => ({ ...f, [key]: value }));
@@ -109,6 +186,7 @@ function NewPermitPage() {
   function updateDoc(key: string, patch: Partial<DocState>) {
     setForm((f) => ({ ...f, docs: { ...f.docs, [key]: { ...f.docs[key], ...patch } } }));
   }
+
 
   function toggleScope(scope: string) {
     setForm((f) => ({
