@@ -375,7 +375,7 @@ function NewPermitPage() {
       <div className="border-b border-obsidian/10 pb-6">
         <div className="eyebrow text-obsidian/50">Permit Intake</div>
         <div className="mt-2 flex flex-wrap items-end justify-between gap-3">
-          <h1 className="display-serif text-4xl sm:text-5xl text-obsidian">New Permit</h1>
+          <h1 className="display-serif text-4xl sm:text-5xl text-obsidian">{isEditing ? "Edit Submission" : "New Permit"}</h1>
           <Link to="/my-permits" className="font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/55 hover:text-obsidian">Cancel</Link>
         </div>
         <div className="mt-6 flex items-center gap-3">
