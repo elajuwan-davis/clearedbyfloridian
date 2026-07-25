@@ -1,106 +1,53 @@
-# Bundled Permit Submission
+## Scope: 5 features
 
-Consolidates multi-trade permits into one GC-fee master package. Each trade becomes a tracked sub-permit; the GC submits full or partial packages to Ops.
+### 1. Sub License Verification (DBPR)
 
-## Data model
+DBPR (`myfloridalicense.com`) has no public API — it's a JS form. I'll implement a server route that hits their internal POST endpoint with the license number and parses the HTML response for holder name, type, status, expiration.
 
-Store bundle state on the existing `permits` row inside `intake_payload.bundle` (JSON) — no migration required. New `submissions` table for the Ops queue.
+- New column on `subcontractors`: `dbpr_verified_at`, `dbpr_status`, `dbpr_holder_name`, `dbpr_license_type`, `dbpr_expiration`.
+- Server route `src/routes/api/verify-license.ts` (auth-required) scrapes DBPR and returns parsed result.
+- Bundle sub card gets license input + "Verify" button + badge (green Active / red Expired / amber Not Found).
+- Result stored on the sub row. **Non-blocking** — informational only.
 
-`intake_payload.bundle` shape:
-```text
-{
-  enabled: boolean,
-  gc_fee_cents: number,
-  gc_license_number: string,
-  status: "draft" | "subs_signing" | "ready" | "submitted" | "partial",
-  trades: [{
-    key: "pool" | "gas" | "electric" | "plumbing" | "fencing" | ...,
-    label: string,
-    sub_id: string | null,          // references subcontractors.id
-    sub_snapshot: { company, contact, email, phone, license },
-    signature_status: "pending" | "sent" | "signed",
-    signature_sent_at, signature_signed_at,
-    doc_keys: string[],             // which permit-level docs belong to this trade
-    ready: boolean                   // Ops override / GC readiness flag
-  }]
-}
-```
+**Caveat:** DBPR HTML structure can change; if they break the page or add a captcha, verification stops working. That's the tradeoff of scraping.
 
-Migration (single call): create `public.submissions`
-- `permit_id uuid` FK to permits, `submitted_by uuid`, `type text` (`full`|`partial`),
-  `trades_included jsonb`, `trades_pending jsonb`, `fee_cents bigint`,
-  `package_manifest jsonb` (list of `{trade, doc_key, filename, storage_path}`),
-  `notes text`, `status text` default `received` (`received`|`in_review`|`submitted_to_muni`|`complete`),
-  `created_at`, `updated_at` + touch trigger.
-- GRANTs: `SELECT/INSERT/UPDATE/DELETE` to authenticated, `ALL` to service_role.
-- RLS: authenticated can view/insert/update all (matches existing permits policy).
+### 2. COI Expiration Tracking
 
-## Files
+- `subcontractors.coi_expiration` column already exists — I'll surface it in the Bundle sub card as an editable date field beside the COI upload.
+- Badge logic: green ≥60 days, amber <60 days, red past.
+- New page `/portal/compliance` listing every sub with COI expired or expiring in 60 days, grouped by permit. Linked from sidebar under Insurance.
 
-New:
-- `src/lib/bundle.ts` — types, `getBundle(permit)`, `setBundle(permit, patch)`, `bundleProgress(bundle)`, trade constants, pre-fill payload builder using `FLORIDIAN_FIRM`.
-- `src/lib/submissions-api.ts` — `createSubmission`, `listSubmissions`, `updateSubmissionStatus`, `getSubmission`, `downloadSubmissionZip` (uses JSZip on client side; signed URLs from `permit-files`).
-- `src/routes/portal.permits.$id.bundle.tsx` — bundle management page.
-- `src/routes/portal.submissions.tsx` — Ops queue list.
-- `src/routes/portal.submissions.$id.tsx` — Ops detail with package manifest + status controls + zip download.
-- `src/components/bundle-partial-submit-dialog.tsx` — modal with per-trade checkboxes and remaining-trades note.
+### 3. Notification Preferences + Bell
 
-Edited:
-- `src/routes/portal.permits.new.tsx` — add "Bundle Submission" toggle (shown when 2+ trades entered); on create, seed `intake_payload.bundle` from the trade rows, then redirect to `/portal/permits/$id/bundle` when toggle is on.
-- `src/routes/portal.permits.$id.tsx` — link to bundle view when `bundle.enabled`; hide per-trade fee inputs, show single GC Permit Fee.
-- `src/components/portal-shell.tsx` — add "Submissions" nav item under Projects, `FileStack` icon.
-- Financials page (`src/routes/portal.permit-fees.tsx` — closest match) — detect bundled permits, render one consolidated row with "Bundle" badge + trades tooltip.
+- New table `notification_prefs` (user_id, email_permit_issued, email_inspection_passed, …, sms_*, phone_number).
+- New table `notifications` (user_id, kind, title, body, permit_id, read_at, created_at) for the bell dropdown.
+- Settings section on `/portal/profile` with toggles per event + phone number field.
+- Bell in portal header with unread count, dropdown list, mark-as-read.
+- Trigger point: when `updatePermit` changes status client-side, we insert a notification row + send email via existing Lovable email infra (`sendTransactionalEmail`). SMS stubbed — if no Twilio secret, we log "SMS would send to X" and no-op.
+- **Not** a Supabase trigger — we fire from the app-side status update, which is where all status changes come from today. Simpler and reliable.
 
-## Bundle page layout (`/portal/permits/:id/bundle`)
+### 4. NTO Filing
 
-1. **Header card**: address, municipality, permit type, GC = Flōridian (locked), GC license (editable, persists to `bundle.gc_license_number`), GC Permit Fee input (cents), overall status pill.
-2. **Progress bar**: `X of Y trades signed`. Colored segments per trade.
-3. **Trade cards grid** (one per bundle trade):
-   - Sub picker (dropdown of `subcontractors` + inline "invite new" link).
-   - Doc count from permit `documents` filtered by `doc_keys`.
-   - Signature status badge with buttons: **Send to Sub** (POST to `signature-requests` lib with pre-filled payload — reuses existing Signwell scaffold; marks `signature_status: sent`), **Mark Signed** (manual override for now until Signwell webhook is wired).
-   - Row indicator: green = docs complete + signed; amber = signed but docs missing; red = not contacted.
-4. **Sticky action bar**: **Save Draft**, **Partial Submit**, **Submit Full Package** (disabled unless every trade signed).
+- `nto_filings` table linked to `permit_id`: owner name/address, property address, contractor name/address (defaults to Flōridian), work description, first-work date, status (`not_filed` | `draft` | `sent` | `confirmed`), sent_via, sent_at, pdf_path.
+- NTO section on `/portal/permits/$id` with form + generate button.
+- PDF generated client-side with `pdf-lib` (matches existing generator patterns) and uploaded to `permit-files/nto/{permit_id}.pdf`.
+- "Send via email" uses existing email infra to the owner email (add owner_email field). "Send via certified mail" = mark status `sent` + on-screen instruction to print and mail.
+- Warning banner on permit detail if `nto_status !== "sent"/"confirmed"` and permit is in intake/preparing.
 
-## Submit flow
+### 5. `/join` Landing + Access Request
 
-- **Submit Full Package**: build manifest from every trade's `doc_keys`, insert `submissions` row (`type=full`, `trades_included=all`, `trades_pending=[]`), set `bundle.status=submitted`, toast + navigate to `/portal/submissions`.
-- **Partial Submit**: dialog with checkboxes; submit selected trades, remaining trades stay in bundle, `bundle.status=partial`, submission row records pending list + note.
+- New public route `src/routes/join.tsx` (no auth gate).
+- Layout: obsidian hero, wordmark "Cléared by Flōridian", headline "Permitting, handled.", one-line subhead, single "Request Access" CTA opening a modal form (Name, Company, License #, Email, Phone).
+- Below fold: 3 stat blocks (400+ jurisdictions / Bundled submissions / Invite only). Simple footer.
+- New table `access_requests` (name, company, license_number, email, phone, status, created_at) with narrow `TO anon` INSERT policy.
+- On submit: insert row + email `team@floridianinc.com` via existing email infra.
 
-## Ops queue (`/portal/submissions`)
+## Ordering and DB work
 
-Table: address, submitted_at, `Full`/`Partial` badge, trades included, trades pending, doc count, status select, row link to detail. Detail page shows manifest grouped by trade with per-file **View** buttons (signed URLs) and **Download Package** (JSZip stream of all files).
+I'll batch DB migrations into 3 files (verification cols on subs, notifications tables + prefs, nto_filings + access_requests) and get them approved before wiring the UI so the types regenerate cleanly.
 
-## Financials integration
+## One decision I need from you
 
-On the fees page, group rows by `permit_id`; if `bundle.enabled`, render one row with:
-- Amount = `bundle.gc_fee_cents`
-- "Bundle" pill (obsidian bg, sky text)
-- Tooltip listing trades
-- Suppress per-trade manual fee rows for that permit.
+**Email sending.** You mentioned "existing email infrastructure (Resend/SendGrid)." This project uses Lovable's built-in email infra (React Email templates + queued sends), not Resend directly. That's what I'll use for the notification emails, NTO email-to-owner, and `/join` team notification. If you actually want Resend specifically, say so — I'll wire the Resend connector instead.
 
-## Sub pre-fill payload
-
-Built in `buildBundlePrefill(permit, trade)`:
-```text
-{
-  project_address, municipality, permit_type,
-  trade: trade.label,
-  gc_name: "Flōridian LLC",
-  gc_license: bundle.gc_license_number || FLORIDIAN_FIRM.license,
-  poc_name: "José Maceda Gutiérrez",
-  poc_email: "team@floridianinc.com",
-  poc_phone: "(772) 675-3274"
-}
-```
-Passed to the existing signature request lib.
-
-## Out of scope (this pass)
-
-- Real Signwell webhook wiring (Mark Signed stays manual — same pattern as existing signature scaffold).
-- Fee comparison "vs. per-trade est." — leave a `TODO` slot on the fees row for a later pass.
-- Ops role gating — Submissions page is visible to all authenticated portal users for now, matching current portal RLS posture.
-
-## Approval
-
-Reply "go" to build. I'll open the migration for the `submissions` table first (needs your approval), then ship all page/component code in a single follow-up.
+Everything else I'll proceed with as described unless you push back.
