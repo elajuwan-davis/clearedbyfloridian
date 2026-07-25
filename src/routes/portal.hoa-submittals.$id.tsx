@@ -12,9 +12,12 @@ import {
   Circle,
   Upload,
   Loader2,
+  Send,
+  Mail,
 } from "lucide-react";
 import { PortalShell } from "@/components/portal-shell";
 import { Button } from "@/components/ui/button";
+import { useSession } from "@/lib/use-session";
 import {
   getHoaSubmittal,
   updateHoaSubmittal,
@@ -30,6 +33,8 @@ import {
   type HoaProjectType,
   type HoaChecklistItem,
 } from "@/lib/hoa-submittals";
+import { getHoaTemplate, displayNameFor, type HoaTemplateRow } from "@/lib/hoa-templates";
+import { sendHoaSubmittal } from "@/lib/hoa-send";
 import { buildAndStoreBoilerplate, buildAndStoreRemovalAgreement } from "@/lib/hoa-pdf";
 
 export const Route = createFileRoute("/portal/hoa-submittals/$id")({
@@ -66,13 +71,21 @@ const PROJECT_TYPES: HoaProjectType[] = [
 function HoaSubmittalEditor() {
   const { id } = Route.useParams();
   const navigate = useNavigate();
+  const session = useSession();
   const [row, setRow] = useState<HoaSubmittalRow | null>(null);
+  const [template, setTemplate] = useState<HoaTemplateRow | null>(null);
   const [saving, setSaving] = useState(false);
+  const [sending, setSending] = useState(false);
   const [generating, setGenerating] = useState<"pdf" | "removal" | null>(null);
   const [err, setErr] = useState<string | null>(null);
 
   useEffect(() => {
-    getHoaSubmittal(id).then(setRow).catch((e) => setErr(String(e?.message ?? e)));
+    getHoaSubmittal(id).then(async (r) => {
+      setRow(r);
+      if (r?.template_id) {
+        try { setTemplate(await getHoaTemplate(r.template_id)); } catch { /* ignore */ }
+      }
+    }).catch((e) => setErr(String(e?.message ?? e)));
   }, [id]);
 
   function patch<K extends keyof HoaSubmittalRow>(key: K, value: HoaSubmittalRow[K]) {
@@ -121,7 +134,9 @@ function HoaSubmittalEditor() {
         plans_attached: row.plans_attached,
         checklist: row.checklist,
         notes: row.notes,
-      });
+        homeowner_name: row.homeowner_name,
+        homeowner_email: row.homeowner_email,
+      } as any);
       setRow(updated);
       toast.success("Saved");
     } catch (e: any) {
@@ -224,6 +239,49 @@ function HoaSubmittalEditor() {
     }
   }
 
+  async function sendToHoa() {
+    if (!row) return;
+    if (sending) return;
+    if (!template?.hoa_contact_email) {
+      toast.error("No HOA contact email on file. Add one to the template first.");
+      return;
+    }
+    if (!checklistComplete) {
+      const ok = confirm(
+        "Some required documents are still outstanding. Send to HOA anyway?",
+      );
+      if (!ok) return;
+    }
+    // Ensure we have a generated PDF to attach.
+    if (!row.generated_pdf_path) {
+      const generate = confirm(
+        "No Submittal PDF has been generated yet. Generate it now and include it in the send?",
+      );
+      if (generate) {
+        await generatePdf();
+      }
+    }
+    setSending(true);
+    try {
+      const res = await sendHoaSubmittal(row.id, {
+        tenantId: session.effectiveTenantId,
+        userId: session.userId,
+      });
+      const updated = await getHoaSubmittal(row.id);
+      if (updated) setRow(updated);
+      for (const w of res.warnings) toast.warning(w);
+      toast.success(
+        res.homeownerEmailId
+          ? "Queued: ARC package to HOA + deposit notice to homeowner"
+          : "Queued: ARC package to HOA",
+      );
+    } catch (e: any) {
+      toast.error(e?.message ?? "Failed to send");
+    } finally {
+      setSending(false);
+    }
+  }
+
   if (err) {
     return (
       <PortalShell>
@@ -267,11 +325,45 @@ function HoaSubmittalEditor() {
             <Button variant="dark" className="rounded-[3px] gap-2" onClick={save} disabled={saving}>
               <Save className="h-4 w-4" /> {saving ? "Saving…" : "Save"}
             </Button>
+            <Button
+              variant="dark"
+              className="rounded-[3px] gap-2 bg-emerald-700 hover:bg-emerald-800 text-white"
+              onClick={sendToHoa}
+              disabled={sending || Boolean(row.sent_to_hoa_at)}
+              title={row.sent_to_hoa_at ? `Sent ${new Date(row.sent_to_hoa_at).toLocaleString()}` : "Send ARC package to HOA and notify homeowner"}
+            >
+              {sending ? <><Loader2 className="h-4 w-4 animate-spin" /> Sending…</> : <><Send className="h-4 w-4" /> {row.sent_to_hoa_at ? "Sent" : "Send to HOA"}</>}
+            </Button>
             <Button variant="outline" className="rounded-[3px] gap-2 text-red-700 border-red-200 hover:bg-red-50" onClick={onDelete}>
               <Trash2 className="h-4 w-4" />
             </Button>
           </div>
         </div>
+
+        {template && (
+          <div className="border border-obsidian/10 bg-white rounded-[3px] px-4 py-3 text-sm flex flex-wrap items-center gap-x-6 gap-y-1">
+            <div className="text-xs uppercase tracking-wide text-obsidian/50">Template</div>
+            <div className="font-medium text-obsidian">{displayNameFor(template)}</div>
+            {template.hoa_contact_name && (
+              <div className="text-obsidian/70">{template.hoa_contact_name}</div>
+            )}
+            {template.hoa_contact_email && (
+              <div className="text-obsidian/60 inline-flex items-center gap-1">
+                <Mail className="h-3 w-3" /> {template.hoa_contact_email}
+              </div>
+            )}
+            {template.deposit_amount_cents > 0 && (
+              <div className="text-obsidian/60">Deposit ${(template.deposit_amount_cents / 100).toLocaleString()}</div>
+            )}
+          </div>
+        )}
+
+        {row.sent_to_hoa_at && (
+          <div className="border border-emerald-200 bg-emerald-50 text-emerald-900 text-sm px-4 py-3 rounded-[3px]">
+            Package sent to HOA {new Date(row.sent_to_hoa_at).toLocaleString()}.
+            {row.homeowner_notified_at && ` Homeowner deposit notice sent ${new Date(row.homeowner_notified_at).toLocaleString()}.`}
+          </div>
+        )}
 
         {isFence && (
           <div className="border border-amber-200 bg-amber-50 text-amber-900 text-sm px-4 py-3 rounded-[3px] flex gap-3">
@@ -303,6 +395,18 @@ function HoaSubmittalEditor() {
           <Field label="Lot"><Input value={row.lot ?? ""} onChange={(v) => patch("lot", v)} /></Field>
           <Field label="Block"><Input value={row.block ?? ""} onChange={(v) => patch("block", v)} /></Field>
           <Field label="Plat Name"><Input value={row.plat_name ?? ""} onChange={(v) => patch("plat_name", v)} /></Field>
+        </Section>
+
+        <Section title="Homeowner / Client">
+          <Field label="Homeowner Name">
+            <Input value={row.homeowner_name ?? ""} onChange={(v) => patch("homeowner_name", v)} />
+          </Field>
+          <Field label="Homeowner Email">
+            <Input value={row.homeowner_email ?? ""} onChange={(v) => patch("homeowner_email", v)} />
+          </Field>
+          <div className="md:col-span-2 text-xs text-muted-foreground">
+            When you Send to HOA, Cleard also emails the homeowner directly with any HOA deposit instructions — removing the GC from that conversation.
+          </div>
         </Section>
 
         <Section title="HOA / Community">

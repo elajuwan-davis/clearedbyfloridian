@@ -1,17 +1,21 @@
 import { createFileRoute, Link, useNavigate, useSearch } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
-import { ArrowLeft, FileUp, FileText, Loader2 } from "lucide-react";
+import { ArrowLeft, Plus, Search, Loader2, Building2 } from "lucide-react";
 import { PortalShell } from "@/components/portal-shell";
 import { Button } from "@/components/ui/button";
-import { supabase } from "@/integrations/supabase/client";
 import { useSession } from "@/lib/use-session";
 import { getPermit } from "@/lib/permits-api";
 import {
   createHoaSubmittal,
   checklistForType,
-  type HoaSource,
 } from "@/lib/hoa-submittals";
+import {
+  listHoaTemplates,
+  markTemplateUsed,
+  displayNameFor,
+  type HoaTemplateRow,
+} from "@/lib/hoa-templates";
 
 type NewSearch = { permitId?: string };
 
@@ -28,12 +32,45 @@ export const Route = createFileRoute("/portal/hoa-submittals/new")({
   component: NewHoaSubmittal,
 });
 
+function relDate(iso: string | null): string {
+  if (!iso) return "Never used";
+  const d = new Date(iso);
+  const now = new Date();
+  const diffMs = now.getTime() - d.getTime();
+  const days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+  if (days < 1) return "Today";
+  if (days < 7) return `${days}d ago`;
+  return d.toLocaleDateString("en-US", { month: "long", year: "numeric" });
+}
+
+function money(cents: number): string {
+  if (!cents) return "No deposit";
+  return `$${(cents / 100).toLocaleString("en-US")}`;
+}
+
 function NewHoaSubmittal() {
   const navigate = useNavigate();
   const { permitId } = useSearch({ from: "/portal/hoa-submittals/new" });
   const session = useSession();
-  const [busy, setBusy] = useState<HoaSource | null>(null);
-  const [uploaded, setUploaded] = useState<{ path: string; filename: string } | null>(null);
+  const [templates, setTemplates] = useState<HoaTemplateRow[] | null>(null);
+  const [query, setQuery] = useState("");
+  const [starting, setStarting] = useState<string | null>(null);
+
+  useEffect(() => {
+    listHoaTemplates().then(setTemplates).catch((e) => toast.error(String(e?.message ?? e)));
+  }, []);
+
+  const filtered = useMemo(() => {
+    const list = templates ?? [];
+    const q = query.trim().toLowerCase();
+    if (!q) return list;
+    return list.filter(
+      (t) =>
+        t.community_name.toLowerCase().includes(q) ||
+        t.city.toLowerCase().includes(q) ||
+        (t.hoa_contact_name ?? "").toLowerCase().includes(q),
+    );
+  }, [templates, query]);
 
   async function prefillFromPermit() {
     if (!permitId) return {};
@@ -56,139 +93,141 @@ function NewHoaSubmittal() {
     }
   }
 
-  async function startBoilerplate() {
-    if (busy) return;
-    setBusy("boilerplate");
+  async function useTemplate(tpl: HoaTemplateRow) {
+    if (starting) return;
+    setStarting(tpl.id);
     try {
       const prefill = await prefillFromPermit();
       const row = await createHoaSubmittal({
-        source: "boilerplate",
+        source: tpl.uploaded_form_path ? "uploaded_form" : "boilerplate",
         status: "draft",
         tenant_id: session.effectiveTenantId,
         created_by: session.userId,
+        template_id: tpl.id,
+        hoa_name: tpl.community_name,
+        community_name: tpl.community_name,
+        uploaded_form_path: tpl.uploaded_form_path,
+        deposit_amount_cents: tpl.deposit_amount_cents,
         checklist: checklistForType(null),
         documents: [],
         missing_fields: [],
-        extracted_fields: {},
+        extracted_fields: { source_template: tpl.id },
         ...prefill,
-      });
-      toast.success("Draft HOA submittal created");
+      } as any);
+      markTemplateUsed(tpl.id).catch(() => undefined);
+      toast.success(`Started from ${displayNameFor(tpl)}`);
       navigate({ to: "/portal/hoa-submittals/$id", params: { id: row.id } });
     } catch (e: any) {
-      toast.error(e?.message ?? "Failed to create HOA submittal");
-      setBusy(null);
-    }
-  }
-
-  async function onFilePicked(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    if (busy) return;
-    setBusy("uploaded_form");
-    try {
-      const tempKey = `hoa-uploads/${crypto.randomUUID()}/${Date.now()}-${file.name.replace(/[^\w.\-]+/g, "_")}`;
-      const { error } = await supabase.storage
-        .from("permit-files")
-        .upload(tempKey, file, { contentType: file.type, upsert: true });
-      if (error) throw error;
-      setUploaded({ path: tempKey, filename: file.name });
-    } catch (err: any) {
-      toast.error(err?.message ?? "Upload failed");
-      setBusy(null);
-    }
-  }
-
-  async function startFromUpload() {
-    if (!uploaded) return;
-    try {
-      const prefill = await prefillFromPermit();
-      const row = await createHoaSubmittal({
-        source: "uploaded_form",
-        status: "draft",
-        tenant_id: session.effectiveTenantId,
-        created_by: session.userId,
-        uploaded_form_path: uploaded.path,
-        checklist: checklistForType(null),
-        documents: [],
-        // Auto-fillable fields from project — the GC completes the rest in the editor.
-        extracted_fields: {
-          note: "Cleard auto-fills applicant, address, phone, email, and scope from your project. Complete Village, Model Type, and any HOA-specific fields in the next screen.",
-        },
-        missing_fields: ["village_name", "model_type", "project_description"],
-        ...prefill,
-      });
-      toast.success("Uploaded HOA form — auto-fill applied");
-      navigate({ to: "/portal/hoa-submittals/$id", params: { id: row.id } });
-    } catch (e: any) {
-      toast.error(e?.message ?? "Failed to start submittal");
-      setBusy(null);
+      toast.error(e?.message ?? "Failed to create submittal");
+      setStarting(null);
     }
   }
 
   return (
     <PortalShell>
-      <div className="space-y-8 max-w-4xl">
+      <div className="space-y-8 max-w-6xl">
         <div>
           <Link to="/portal/hoa-submittals" className="inline-flex items-center gap-1 text-xs text-obsidian/60 hover:text-obsidian">
             <ArrowLeft className="h-3 w-3" /> HOA Submittals
           </Link>
-          <h1 className="mt-4 font-display text-4xl tracking-tight text-obsidian">New HOA Submittal</h1>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Two ways to start: upload the HOA's own ARC form for pre-fill, or use the Cleard boilerplate template.
+          <h1 className="mt-4 font-display text-4xl tracking-tight text-obsidian">Start an HOA Submittal</h1>
+          <p className="mt-2 text-sm text-muted-foreground max-w-2xl">
+            Search the Cleard community repository. Every submittal builds this library — find your community and we pre-fill
+            everything we know. If it's not listed, add it and it becomes the template for every future submittal.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Path 1 — upload */}
-          <section className="border border-obsidian/10 rounded-[3px] bg-white p-6 space-y-4">
-            <div className="flex items-center gap-2">
-              <FileUp className="h-4 w-4 text-obsidian/70" />
-              <h2 className="font-display text-2xl text-obsidian">Upload HOA Form</h2>
-            </div>
-            <p className="text-sm text-muted-foreground">
-              Attach the HOA's ARC / architectural review PDF. Cleard pre-fills applicant, address, contact, and scope from your
-              project. You fill in the remaining HOA-specific fields (Village, Model Type, etc.) in the editor.
-            </p>
-            {!uploaded ? (
-              <label className="block cursor-pointer">
-                <input
-                  type="file"
-                  accept="application/pdf,image/*"
-                  className="hidden"
-                  onChange={onFilePicked}
-                  disabled={busy !== null}
-                />
-                <span className="inline-flex items-center gap-2 border border-obsidian/20 hover:bg-obsidian/5 px-4 py-2 text-sm rounded-[3px]">
-                  {busy === "uploaded_form" ? <><Loader2 className="h-4 w-4 animate-spin" /> Uploading…</> : <><FileUp className="h-4 w-4" /> Choose PDF</>}
-                </span>
-              </label>
-            ) : (
-              <div className="space-y-3">
-                <div className="text-sm text-obsidian/80">
-                  Uploaded: <span className="font-medium">{uploaded.filename}</span>
-                </div>
-                <Button variant="dark" className="rounded-[3px]" onClick={startFromUpload}>
-                  Continue with auto-fill →
-                </Button>
-              </div>
-            )}
-          </section>
-
-          {/* Path 2 — boilerplate */}
-          <section className="border border-obsidian/10 rounded-[3px] bg-white p-6 space-y-4">
-            <div className="flex items-center gap-2">
-              <FileText className="h-4 w-4 text-obsidian/70" />
-              <h2 className="font-display text-2xl text-obsidian">Use Boilerplate</h2>
-            </div>
-            <p className="text-sm text-muted-foreground">
-              Cleard's generic ARC submittal template covers the standard fields required by most South Florida HOAs and master
-              associations. We generate a clean PDF for review and signature on submit.
-            </p>
-            <Button variant="dark" className="rounded-[3px]" onClick={startBoilerplate} disabled={busy !== null}>
-              {busy === "boilerplate" ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Creating…</> : "Start boilerplate →"}
-            </Button>
-          </section>
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="relative flex-1 min-w-[280px]">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-obsidian/40" />
+            <input
+              type="text"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Search by community or city (Wellington, Ibis, Abacoa…)"
+              className="w-full border border-obsidian/20 bg-white pl-9 pr-3 py-2 text-sm rounded-[3px] focus:border-obsidian/40 focus:outline-none"
+            />
+          </div>
+          <Button asChild variant="dark" className="rounded-[3px] gap-2">
+            <Link
+              to="/portal/hoa-submittals/templates/new"
+              search={permitId ? { permitId } : {}}
+            >
+              <Plus className="h-4 w-4" /> Add new HOA
+            </Link>
+          </Button>
         </div>
+
+        {templates === null ? (
+          <div className="text-sm text-muted-foreground inline-flex items-center gap-2">
+            <Loader2 className="h-4 w-4 animate-spin" /> Loading repository…
+          </div>
+        ) : filtered.length === 0 ? (
+          <div className="border border-dashed border-obsidian/15 rounded-[3px] px-6 py-12 text-center">
+            <Building2 className="mx-auto h-8 w-8 text-obsidian/30" />
+            <div className="mt-4 font-display text-2xl text-obsidian">
+              {query ? "No matches" : "The repository is empty"}
+            </div>
+            <p className="mt-2 text-sm text-muted-foreground">
+              {query
+                ? "Try a shorter search or add this community to the repository."
+                : "Add your first HOA and every future submittal to that community pre-fills automatically."}
+            </p>
+            <Button asChild variant="dark" className="mt-6 rounded-[3px] gap-2">
+              <Link to="/portal/hoa-submittals/templates/new" search={permitId ? { permitId } : {}}>
+                <Plus className="h-4 w-4" /> Add new HOA
+              </Link>
+            </Button>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {filtered.map((tpl) => (
+              <article
+                key={tpl.id}
+                className="border border-obsidian/10 rounded-[3px] bg-white p-5 flex flex-col gap-3"
+              >
+                <div>
+                  <div className="font-display text-xl text-obsidian leading-tight">
+                    {tpl.community_name}
+                  </div>
+                  <div className="text-xs uppercase tracking-wide text-obsidian/50 mt-0.5">
+                    {tpl.city}
+                  </div>
+                </div>
+                <div className="text-sm text-obsidian/70 space-y-0.5">
+                  {tpl.hoa_contact_name && <div>{tpl.hoa_contact_name}</div>}
+                  {tpl.hoa_contact_email && (
+                    <div className="text-obsidian/60 text-xs">{tpl.hoa_contact_email}</div>
+                  )}
+                </div>
+                <dl className="grid grid-cols-2 gap-y-1 text-xs">
+                  <dt className="text-obsidian/50">Docs required</dt>
+                  <dd className="text-obsidian/80 text-right">
+                    {(tpl.required_documents ?? []).filter((d) => d.required).length} required
+                  </dd>
+                  <dt className="text-obsidian/50">Deposit</dt>
+                  <dd className="text-obsidian/80 text-right">{money(tpl.deposit_amount_cents)}</dd>
+                  <dt className="text-obsidian/50">Last used</dt>
+                  <dd className="text-obsidian/80 text-right">{relDate(tpl.last_used_at)}</dd>
+                </dl>
+                <div className="mt-auto pt-2">
+                  <Button
+                    variant="dark"
+                    className="w-full rounded-[3px]"
+                    onClick={() => useTemplate(tpl)}
+                    disabled={starting !== null}
+                  >
+                    {starting === tpl.id ? (
+                      <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Starting…</>
+                    ) : (
+                      <>Use Template →</>
+                    )}
+                  </Button>
+                </div>
+              </article>
+            ))}
+          </div>
+        )}
       </div>
     </PortalShell>
   );

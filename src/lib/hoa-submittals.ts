@@ -83,6 +83,11 @@ export type HoaSubmittalRow = {
   notes: string | null;
   created_at: string;
   updated_at: string;
+  template_id: string | null;
+  homeowner_name: string | null;
+  homeowner_email: string | null;
+  sent_to_hoa_at: string | null;
+  homeowner_notified_at: string | null;
 };
 
 export type HoaSubmittalInsert = Partial<Omit<HoaSubmittalRow, "id" | "created_at" | "updated_at">>;

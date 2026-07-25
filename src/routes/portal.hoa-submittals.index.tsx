@@ -48,6 +48,7 @@ function HoaSubmittalsIndex() {
             <h1 className="mt-4 font-display text-4xl tracking-tight text-obsidian">HOA Submittals</h1>
             <p className="mt-2 text-sm text-muted-foreground">
               ARC / architectural review applications, prepared alongside your permits.
+              Every submittal builds the shared community repository.
             </p>
           </div>
           <Button asChild variant="dark" className="rounded-[3px] gap-2">
