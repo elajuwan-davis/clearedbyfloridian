@@ -15,6 +15,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useExpirationAlerts } from "@/hooks/use-expiration-alerts";
 import { NotificationBell } from "@/components/notification-bell";
 import { VictoriaWidget } from "@/components/victoria-widget";
+import { useSession } from "@/lib/use-session";
 import type { Alert } from "@/lib/expiration-alerts";
 
 type AlertKey = "my-permits" | "request-coi" | "sub-insurance";
