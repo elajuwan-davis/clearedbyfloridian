@@ -20,6 +20,7 @@ import { Route as MunicipalitiesRouteImport } from './routes/municipalities'
 import { Route as MessagesRouteImport } from './routes/messages'
 import { Route as LpoaSigningRouteImport } from './routes/lpoa-signing'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as JoinRouteImport } from './routes/join'
 import { Route as InvoicesRouteImport } from './routes/invoices'
 import { Route as InsuranceRouteImport } from './routes/insurance'
 import { Route as GcPortalRouteImport } from './routes/gc-portal'
@@ -50,6 +51,7 @@ import { Route as PortalMunicipalitiesRouteImport } from './routes/portal.munici
 import { Route as PortalInspectionsRouteImport } from './routes/portal.inspections'
 import { Route as PortalFinancialsRouteImport } from './routes/portal.financials'
 import { Route as PortalEquipmentSpecsRouteImport } from './routes/portal.equipment-specs'
+import { Route as PortalComplianceRouteImport } from './routes/portal.compliance'
 import { Route as PortalBuildingDeptRouteImport } from './routes/portal.building-dept'
 import { Route as PermitCardIdRouteImport } from './routes/permit-card.$id'
 import { Route as FormsSubcontractorIntakeRouteImport } from './routes/forms.subcontractor-intake'
@@ -57,6 +59,7 @@ import { Route as FormsPermitIntakeRouteImport } from './routes/forms.permit-int
 import { Route as FormsPaymentAuthorizationRouteImport } from './routes/forms.payment-authorization'
 import { Route as BuildingDeptLoginsSubmitRouteImport } from './routes/building-dept-logins.submit'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
+import { Route as ApiVerifyLicenseRouteImport } from './routes/api/verify-license'
 import { Route as AdminContractorsRouteImport } from './routes/admin_.contractors'
 import { Route as AdminHubspotSimulateRouteImport } from './routes/admin.hubspot-simulate'
 import { Route as AdminGcClientsRouteImport } from './routes/admin.gc-clients'
@@ -76,6 +79,7 @@ import { Route as PortalBlogNewRouteImport } from './routes/portal.blog.new'
 import { Route as PortalBlogIdRouteImport } from './routes/portal.blog.$id'
 import { Route as ApiPublicSubIntakeUploadRouteImport } from './routes/api/public/sub-intake-upload'
 import { Route as ApiPublicSeedTeamRouteImport } from './routes/api/public/seed-team'
+import { Route as ApiPublicAccessRequestRouteImport } from './routes/api/public/access-request'
 import { Route as PortalPermitsIdBundleRouteImport } from './routes/portal.permits.$id.bundle'
 import { Route as ApiPublicHubspotDealWebhookRouteImport } from './routes/api/public/hubspot.deal-webhook'
 
@@ -132,6 +136,11 @@ const LpoaSigningRoute = LpoaSigningRouteImport.update({
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const JoinRoute = JoinRouteImport.update({
+  id: '/join',
+  path: '/join',
   getParentRoute: () => rootRouteImport,
 } as any)
 const InvoicesRoute = InvoicesRouteImport.update({
@@ -285,6 +294,11 @@ const PortalEquipmentSpecsRoute = PortalEquipmentSpecsRouteImport.update({
   path: '/equipment-specs',
   getParentRoute: () => PortalRoute,
 } as any)
+const PortalComplianceRoute = PortalComplianceRouteImport.update({
+  id: '/compliance',
+  path: '/compliance',
+  getParentRoute: () => PortalRoute,
+} as any)
 const PortalBuildingDeptRoute = PortalBuildingDeptRouteImport.update({
   id: '/building-dept',
   path: '/building-dept',
@@ -321,6 +335,11 @@ const BuildingDeptLoginsSubmitRoute =
 const BlogSlugRoute = BlogSlugRouteImport.update({
   id: '/blog/$slug',
   path: '/blog/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiVerifyLicenseRoute = ApiVerifyLicenseRouteImport.update({
+  id: '/api/verify-license',
+  path: '/api/verify-license',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminContractorsRoute = AdminContractorsRouteImport.update({
@@ -420,6 +439,11 @@ const ApiPublicSeedTeamRoute = ApiPublicSeedTeamRouteImport.update({
   path: '/api/public/seed-team',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicAccessRequestRoute = ApiPublicAccessRequestRouteImport.update({
+  id: '/api/public/access-request',
+  path: '/api/public/access-request',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PortalPermitsIdBundleRoute = PortalPermitsIdBundleRouteImport.update({
   id: '/bundle',
   path: '/bundle',
@@ -445,6 +469,7 @@ export interface FileRoutesByFullPath {
   '/gc-portal': typeof GcPortalRoute
   '/insurance': typeof InsuranceRoute
   '/invoices': typeof InvoicesRoute
+  '/join': typeof JoinRoute
   '/login': typeof LoginRoute
   '/lpoa-signing': typeof LpoaSigningRoute
   '/messages': typeof MessagesRoute
@@ -460,6 +485,7 @@ export interface FileRoutesByFullPath {
   '/admin/gc-clients': typeof AdminGcClientsRoute
   '/admin/hubspot-simulate': typeof AdminHubspotSimulateRoute
   '/admin/contractors': typeof AdminContractorsRoute
+  '/api/verify-license': typeof ApiVerifyLicenseRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/building-dept-logins/submit': typeof BuildingDeptLoginsSubmitRoute
   '/forms/payment-authorization': typeof FormsPaymentAuthorizationRoute
@@ -467,6 +493,7 @@ export interface FileRoutesByFullPath {
   '/forms/subcontractor-intake': typeof FormsSubcontractorIntakeRoute
   '/permit-card/$id': typeof PermitCardIdRoute
   '/portal/building-dept': typeof PortalBuildingDeptRoute
+  '/portal/compliance': typeof PortalComplianceRoute
   '/portal/equipment-specs': typeof PortalEquipmentSpecsRoute
   '/portal/financials': typeof PortalFinancialsRoute
   '/portal/inspections': typeof PortalInspectionsRoute
@@ -485,6 +512,7 @@ export interface FileRoutesByFullPath {
   '/sub-intake/$token': typeof SubIntakeTokenRoute
   '/blog/': typeof BlogIndexRoute
   '/portal/': typeof PortalIndexRoute
+  '/api/public/access-request': typeof ApiPublicAccessRequestRoute
   '/api/public/seed-team': typeof ApiPublicSeedTeamRoute
   '/api/public/sub-intake-upload': typeof ApiPublicSubIntakeUploadRoute
   '/portal/blog/$id': typeof PortalBlogIdRoute
@@ -516,6 +544,7 @@ export interface FileRoutesByTo {
   '/gc-portal': typeof GcPortalRoute
   '/insurance': typeof InsuranceRoute
   '/invoices': typeof InvoicesRoute
+  '/join': typeof JoinRoute
   '/login': typeof LoginRoute
   '/lpoa-signing': typeof LpoaSigningRoute
   '/messages': typeof MessagesRoute
@@ -530,6 +559,7 @@ export interface FileRoutesByTo {
   '/admin/gc-clients': typeof AdminGcClientsRoute
   '/admin/hubspot-simulate': typeof AdminHubspotSimulateRoute
   '/admin/contractors': typeof AdminContractorsRoute
+  '/api/verify-license': typeof ApiVerifyLicenseRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/building-dept-logins/submit': typeof BuildingDeptLoginsSubmitRoute
   '/forms/payment-authorization': typeof FormsPaymentAuthorizationRoute
@@ -537,6 +567,7 @@ export interface FileRoutesByTo {
   '/forms/subcontractor-intake': typeof FormsSubcontractorIntakeRoute
   '/permit-card/$id': typeof PermitCardIdRoute
   '/portal/building-dept': typeof PortalBuildingDeptRoute
+  '/portal/compliance': typeof PortalComplianceRoute
   '/portal/equipment-specs': typeof PortalEquipmentSpecsRoute
   '/portal/financials': typeof PortalFinancialsRoute
   '/portal/inspections': typeof PortalInspectionsRoute
@@ -553,6 +584,7 @@ export interface FileRoutesByTo {
   '/sub-intake/$token': typeof SubIntakeTokenRoute
   '/blog': typeof BlogIndexRoute
   '/portal': typeof PortalIndexRoute
+  '/api/public/access-request': typeof ApiPublicAccessRequestRoute
   '/api/public/seed-team': typeof ApiPublicSeedTeamRoute
   '/api/public/sub-intake-upload': typeof ApiPublicSubIntakeUploadRoute
   '/portal/blog/$id': typeof PortalBlogIdRoute
@@ -585,6 +617,7 @@ export interface FileRoutesById {
   '/gc-portal': typeof GcPortalRoute
   '/insurance': typeof InsuranceRoute
   '/invoices': typeof InvoicesRoute
+  '/join': typeof JoinRoute
   '/login': typeof LoginRoute
   '/lpoa-signing': typeof LpoaSigningRoute
   '/messages': typeof MessagesRoute
@@ -600,6 +633,7 @@ export interface FileRoutesById {
   '/admin/gc-clients': typeof AdminGcClientsRoute
   '/admin/hubspot-simulate': typeof AdminHubspotSimulateRoute
   '/admin_/contractors': typeof AdminContractorsRoute
+  '/api/verify-license': typeof ApiVerifyLicenseRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/building-dept-logins/submit': typeof BuildingDeptLoginsSubmitRoute
   '/forms/payment-authorization': typeof FormsPaymentAuthorizationRoute
@@ -607,6 +641,7 @@ export interface FileRoutesById {
   '/forms/subcontractor-intake': typeof FormsSubcontractorIntakeRoute
   '/permit-card/$id': typeof PermitCardIdRoute
   '/portal/building-dept': typeof PortalBuildingDeptRoute
+  '/portal/compliance': typeof PortalComplianceRoute
   '/portal/equipment-specs': typeof PortalEquipmentSpecsRoute
   '/portal/financials': typeof PortalFinancialsRoute
   '/portal/inspections': typeof PortalInspectionsRoute
@@ -625,6 +660,7 @@ export interface FileRoutesById {
   '/sub-intake/$token': typeof SubIntakeTokenRoute
   '/blog/': typeof BlogIndexRoute
   '/portal/': typeof PortalIndexRoute
+  '/api/public/access-request': typeof ApiPublicAccessRequestRoute
   '/api/public/seed-team': typeof ApiPublicSeedTeamRoute
   '/api/public/sub-intake-upload': typeof ApiPublicSubIntakeUploadRoute
   '/portal/blog/$id': typeof PortalBlogIdRoute
@@ -658,6 +694,7 @@ export interface FileRouteTypes {
     | '/gc-portal'
     | '/insurance'
     | '/invoices'
+    | '/join'
     | '/login'
     | '/lpoa-signing'
     | '/messages'
@@ -673,6 +710,7 @@ export interface FileRouteTypes {
     | '/admin/gc-clients'
     | '/admin/hubspot-simulate'
     | '/admin/contractors'
+    | '/api/verify-license'
     | '/blog/$slug'
     | '/building-dept-logins/submit'
     | '/forms/payment-authorization'
@@ -680,6 +718,7 @@ export interface FileRouteTypes {
     | '/forms/subcontractor-intake'
     | '/permit-card/$id'
     | '/portal/building-dept'
+    | '/portal/compliance'
     | '/portal/equipment-specs'
     | '/portal/financials'
     | '/portal/inspections'
@@ -698,6 +737,7 @@ export interface FileRouteTypes {
     | '/sub-intake/$token'
     | '/blog/'
     | '/portal/'
+    | '/api/public/access-request'
     | '/api/public/seed-team'
     | '/api/public/sub-intake-upload'
     | '/portal/blog/$id'
@@ -729,6 +769,7 @@ export interface FileRouteTypes {
     | '/gc-portal'
     | '/insurance'
     | '/invoices'
+    | '/join'
     | '/login'
     | '/lpoa-signing'
     | '/messages'
@@ -743,6 +784,7 @@ export interface FileRouteTypes {
     | '/admin/gc-clients'
     | '/admin/hubspot-simulate'
     | '/admin/contractors'
+    | '/api/verify-license'
     | '/blog/$slug'
     | '/building-dept-logins/submit'
     | '/forms/payment-authorization'
@@ -750,6 +792,7 @@ export interface FileRouteTypes {
     | '/forms/subcontractor-intake'
     | '/permit-card/$id'
     | '/portal/building-dept'
+    | '/portal/compliance'
     | '/portal/equipment-specs'
     | '/portal/financials'
     | '/portal/inspections'
@@ -766,6 +809,7 @@ export interface FileRouteTypes {
     | '/sub-intake/$token'
     | '/blog'
     | '/portal'
+    | '/api/public/access-request'
     | '/api/public/seed-team'
     | '/api/public/sub-intake-upload'
     | '/portal/blog/$id'
@@ -797,6 +841,7 @@ export interface FileRouteTypes {
     | '/gc-portal'
     | '/insurance'
     | '/invoices'
+    | '/join'
     | '/login'
     | '/lpoa-signing'
     | '/messages'
@@ -812,6 +857,7 @@ export interface FileRouteTypes {
     | '/admin/gc-clients'
     | '/admin/hubspot-simulate'
     | '/admin_/contractors'
+    | '/api/verify-license'
     | '/blog/$slug'
     | '/building-dept-logins/submit'
     | '/forms/payment-authorization'
@@ -819,6 +865,7 @@ export interface FileRouteTypes {
     | '/forms/subcontractor-intake'
     | '/permit-card/$id'
     | '/portal/building-dept'
+    | '/portal/compliance'
     | '/portal/equipment-specs'
     | '/portal/financials'
     | '/portal/inspections'
@@ -837,6 +884,7 @@ export interface FileRouteTypes {
     | '/sub-intake/$token'
     | '/blog/'
     | '/portal/'
+    | '/api/public/access-request'
     | '/api/public/seed-team'
     | '/api/public/sub-intake-upload'
     | '/portal/blog/$id'
@@ -869,6 +917,7 @@ export interface RootRouteChildren {
   GcPortalRoute: typeof GcPortalRoute
   InsuranceRoute: typeof InsuranceRoute
   InvoicesRoute: typeof InvoicesRoute
+  JoinRoute: typeof JoinRoute
   LoginRoute: typeof LoginRoute
   LpoaSigningRoute: typeof LpoaSigningRoute
   MessagesRoute: typeof MessagesRoute
@@ -881,10 +930,12 @@ export interface RootRouteChildren {
   ProjectsRoute: typeof ProjectsRouteWithChildren
   ServicesRoute: typeof ServicesRoute
   AdminContractorsRoute: typeof AdminContractorsRoute
+  ApiVerifyLicenseRoute: typeof ApiVerifyLicenseRoute
   BlogSlugRoute: typeof BlogSlugRoute
   PermitCardIdRoute: typeof PermitCardIdRoute
   SubIntakeTokenRoute: typeof SubIntakeTokenRoute
   BlogIndexRoute: typeof BlogIndexRoute
+  ApiPublicAccessRequestRoute: typeof ApiPublicAccessRequestRoute
   ApiPublicSeedTeamRoute: typeof ApiPublicSeedTeamRoute
   ApiPublicSubIntakeUploadRoute: typeof ApiPublicSubIntakeUploadRoute
   ApiPublicHubspotDealWebhookRoute: typeof ApiPublicHubspotDealWebhookRoute
@@ -967,6 +1018,13 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/join': {
+      id: '/join'
+      path: '/join'
+      fullPath: '/join'
+      preLoaderRoute: typeof JoinRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/invoices': {
@@ -1179,6 +1237,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PortalEquipmentSpecsRouteImport
       parentRoute: typeof PortalRoute
     }
+    '/portal/compliance': {
+      id: '/portal/compliance'
+      path: '/compliance'
+      fullPath: '/portal/compliance'
+      preLoaderRoute: typeof PortalComplianceRouteImport
+      parentRoute: typeof PortalRoute
+    }
     '/portal/building-dept': {
       id: '/portal/building-dept'
       path: '/building-dept'
@@ -1226,6 +1291,13 @@ declare module '@tanstack/react-router' {
       path: '/blog/$slug'
       fullPath: '/blog/$slug'
       preLoaderRoute: typeof BlogSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/verify-license': {
+      id: '/api/verify-license'
+      path: '/api/verify-license'
+      fullPath: '/api/verify-license'
+      preLoaderRoute: typeof ApiVerifyLicenseRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin_/contractors': {
@@ -1361,6 +1433,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicSeedTeamRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/access-request': {
+      id: '/api/public/access-request'
+      path: '/api/public/access-request'
+      fullPath: '/api/public/access-request'
+      preLoaderRoute: typeof ApiPublicAccessRequestRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/portal/permits/$id/bundle': {
       id: '/portal/permits/$id/bundle'
       path: '/bundle'
@@ -1472,6 +1551,7 @@ const PortalSubmissionsRouteWithChildren =
 
 interface PortalRouteChildren {
   PortalBuildingDeptRoute: typeof PortalBuildingDeptRoute
+  PortalComplianceRoute: typeof PortalComplianceRoute
   PortalEquipmentSpecsRoute: typeof PortalEquipmentSpecsRoute
   PortalFinancialsRoute: typeof PortalFinancialsRoute
   PortalInspectionsRoute: typeof PortalInspectionsRoute
@@ -1497,6 +1577,7 @@ interface PortalRouteChildren {
 
 const PortalRouteChildren: PortalRouteChildren = {
   PortalBuildingDeptRoute: PortalBuildingDeptRoute,
+  PortalComplianceRoute: PortalComplianceRoute,
   PortalEquipmentSpecsRoute: PortalEquipmentSpecsRoute,
   PortalFinancialsRoute: PortalFinancialsRoute,
   PortalInspectionsRoute: PortalInspectionsRoute,
@@ -1550,6 +1631,7 @@ const rootRouteChildren: RootRouteChildren = {
   GcPortalRoute: GcPortalRoute,
   InsuranceRoute: InsuranceRoute,
   InvoicesRoute: InvoicesRoute,
+  JoinRoute: JoinRoute,
   LoginRoute: LoginRoute,
   LpoaSigningRoute: LpoaSigningRoute,
   MessagesRoute: MessagesRoute,
@@ -1562,10 +1644,12 @@ const rootRouteChildren: RootRouteChildren = {
   ProjectsRoute: ProjectsRouteWithChildren,
   ServicesRoute: ServicesRoute,
   AdminContractorsRoute: AdminContractorsRoute,
+  ApiVerifyLicenseRoute: ApiVerifyLicenseRoute,
   BlogSlugRoute: BlogSlugRoute,
   PermitCardIdRoute: PermitCardIdRoute,
   SubIntakeTokenRoute: SubIntakeTokenRoute,
   BlogIndexRoute: BlogIndexRoute,
+  ApiPublicAccessRequestRoute: ApiPublicAccessRequestRoute,
   ApiPublicSeedTeamRoute: ApiPublicSeedTeamRoute,
   ApiPublicSubIntakeUploadRoute: ApiPublicSubIntakeUploadRoute,
   ApiPublicHubspotDealWebhookRoute: ApiPublicHubspotDealWebhookRoute,
