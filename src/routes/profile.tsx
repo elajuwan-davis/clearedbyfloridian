@@ -271,6 +271,10 @@ function ProfilePage() {
         {/* Team Members */}
         <TeamMembersSection />
 
+        {/* Team Onboarding paths */}
+        <TeamOnboardingSection />
+
+
 
         {/* Payment Authorization */}
         <Section title="Payment Authorization" subtitle="Authorize Cleard to charge for services and permit fees.">
