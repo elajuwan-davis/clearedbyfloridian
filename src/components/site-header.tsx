@@ -31,7 +31,6 @@ export function SiteHeader() {
           <LogoMark />
           <div className="flex flex-col leading-[1] min-w-0">
             <span className="wordmark text-2xl">Cleared</span>
-            <span className="wordmark-subline mt-1 truncate">by Flōridian</span>
           </div>
         </Link>
 
