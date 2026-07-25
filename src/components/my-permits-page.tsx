@@ -102,7 +102,7 @@ export function MyPermitsPage() {
 
   return (
     <PortalShell>
-      <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
         <div className="flex flex-wrap items-end justify-between gap-4 border-b border-obsidian/10 pb-8">
           <div>
             <div className="eyebrow text-obsidian/50">FL Statute 553.791 · Pipeline</div>
@@ -147,76 +147,84 @@ export function MyPermitsPage() {
                 <span className="ml-auto font-mono text-[11px] tabular-nums text-obsidian/55 border border-obsidian/15 px-2 py-0.5 rounded-[2px]">{g.items.length}</span>
               </button>
               {open[g.key] && (
-                <ul className="border-t border-obsidian/10 divide-y divide-obsidian/5">
+                <div className="border-t border-obsidian/10 p-4">
                   {g.items.length === 0 ? (
-                    <li className="px-5 py-6 text-center text-sm text-obsidian/45">No permits in this stage.</li>
+                    <div className="px-1 py-6 text-center text-sm text-obsidian/45">No permits in this stage.</div>
                   ) : (
-                    g.items.map((p) => {
-                      const c = permitCompleteness(p);
-                      const issued = p.status === "permit_issued";
-                      const barColor = c.percent === 100 ? "#16a34a" : c.percent >= 60 ? "#153157" : c.percent >= 30 ? "#d97706" : "#dc2626";
-                      return (
-                        <li key={p.id}>
-                          <Link to="/portal/permits/$id" params={{ id: p.id }} className="block px-5 py-4 hover:bg-paper-warm/40">
-                            <div className="flex flex-wrap items-center gap-3">
-                              <div className="min-w-0 flex-1">
-                                <div className="flex items-center gap-2 flex-wrap">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {g.items.map((p) => {
+                        const c = permitCompleteness(p);
+                        const issued = p.status === "permit_issued";
+                        const barColor = c.percent === 100 ? "#16a34a" : c.percent >= 60 ? "#153157" : c.percent >= 30 ? "#d97706" : "#dc2626";
+                        return (
+                          <div key={p.id} className="group relative flex flex-col border border-obsidian/10 bg-white hover:border-obsidian/30 transition-colors rounded-[3px]">
+                            <Link to="/portal/permits/$id" params={{ id: p.id }} className="flex-1 p-4">
+                              <div className="flex items-start justify-between gap-2">
+                                <div className="min-w-0 flex-1">
                                   <div className="text-sm font-medium text-obsidian truncate">{p.project_name}</div>
-                                  {c.missingFields.length > 0 && (
-                                    <span className="inline-flex items-center gap-1 border border-red-500/40 bg-red-50 px-1.5 py-0.5 text-[9px] font-mono uppercase tracking-[0.1em] text-red-700 rounded-[2px]">
-                                      <AlertTriangle className="h-2.5 w-2.5" /> {c.missingFields.length} field{c.missingFields.length === 1 ? "" : "s"}
-                                    </span>
-                                  )}
-                                  {c.missingDocs.length > 0 && (
-                                    <span className="inline-flex items-center gap-1 border border-amber-500/40 bg-amber-50 px-1.5 py-0.5 text-[9px] font-mono uppercase tracking-[0.1em] text-amber-700 rounded-[2px]">
-                                      <FileText className="h-2.5 w-2.5" /> {c.missingDocs.length} doc{c.missingDocs.length === 1 ? "" : "s"}
-                                    </span>
-                                  )}
+                                  <div className="mt-0.5 text-xs text-obsidian/55 truncate">{p.job_address}</div>
                                 </div>
-                                <div className="mt-0.5 text-xs text-obsidian/55 truncate">{p.job_address}</div>
+                                <span className="shrink-0 font-mono text-[9px] uppercase tracking-[0.1em] text-obsidian/70 border border-obsidian/15 px-1.5 py-0.5 rounded-[2px]">
+                                  {STATUS_LABEL[p.status]}
+                                </span>
                               </div>
-                              {p.permit_type && (
-                                <span className={`inline-flex items-center px-2 py-0.5 text-[10px] font-mono uppercase tracking-[0.1em] rounded-[2px] text-white ${issued ? "bg-[#16a34a]" : "bg-[#dc2626]"}`}>
-                                  {p.permit_type}
+
+                              <div className="mt-3 flex flex-wrap items-center gap-1.5">
+                                {p.permit_type && (
+                                  <span className={`inline-flex items-center px-1.5 py-0.5 text-[9px] font-mono uppercase tracking-[0.1em] rounded-[2px] text-white ${issued ? "bg-[#16a34a]" : "bg-[#dc2626]"}`}>
+                                    {p.permit_type}
+                                  </span>
+                                )}
+                                {p.municipality && (
+                                  <span className="inline-flex items-center border border-obsidian/15 bg-paper-warm px-1.5 py-0.5 text-[9px] font-mono uppercase tracking-[0.1em] text-obsidian/70 rounded-[2px]">
+                                    {p.municipality}
+                                  </span>
+                                )}
+                                {c.missingFields.length > 0 && (
+                                  <span className="inline-flex items-center gap-1 border border-red-500/40 bg-red-50 px-1.5 py-0.5 text-[9px] font-mono uppercase tracking-[0.1em] text-red-700 rounded-[2px]">
+                                    <AlertTriangle className="h-2.5 w-2.5" /> {c.missingFields.length}
+                                  </span>
+                                )}
+                                {c.missingDocs.length > 0 && (
+                                  <span className="inline-flex items-center gap-1 border border-amber-500/40 bg-amber-50 px-1.5 py-0.5 text-[9px] font-mono uppercase tracking-[0.1em] text-amber-700 rounded-[2px]">
+                                    <FileText className="h-2.5 w-2.5" /> {c.missingDocs.length}
+                                  </span>
+                                )}
+                              </div>
+
+                              <div className="mt-4 flex items-center gap-2">
+                                <div className="flex-1 h-1.5 bg-obsidian/10 rounded-full overflow-hidden">
+                                  <div className="h-full transition-all" style={{ width: `${c.percent}%`, background: barColor }} />
+                                </div>
+                                <span className="font-mono text-[10px] tabular-nums text-obsidian/60 shrink-0">
+                                  {c.percent}%
                                 </span>
-                              )}
-                              {p.municipality && (
-                                <span className="inline-flex items-center border border-obsidian/15 bg-paper-warm px-2 py-0.5 text-[10px] font-mono uppercase tracking-[0.1em] text-obsidian/70 rounded-[2px]">
-                                  {p.municipality}
-                                </span>
-                              )}
-                              <span className="font-mono text-[10px] uppercase tracking-[0.1em] text-obsidian/70 border border-obsidian/15 px-2 py-0.5 rounded-[2px]">
-                                {STATUS_LABEL[p.status]}
-                              </span>
+                              </div>
+
+                              <div className="mt-3 flex items-center justify-between font-mono text-[9px] tabular-nums text-obsidian/45">
+                                <span>{c.done}/{c.total} complete</span>
+                                <span>{new Date(p.updated_at).toLocaleDateString()}</span>
+                              </div>
+                            </Link>
+                            <div className="border-t border-obsidian/10 px-4 py-2">
                               <select
                                 value={p.status}
                                 disabled={updatingId === p.id}
-                                onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
-                                onChange={(e) => { e.preventDefault(); e.stopPropagation(); changeStatus(p.id, e.target.value as PermitStatus); }}
+                                onChange={(e) => changeStatus(p.id, e.target.value as PermitStatus)}
                                 title="Change status"
-                                className="font-mono text-[10px] uppercase tracking-[0.1em] text-obsidian bg-white border border-obsidian/20 px-1.5 py-0.5 rounded-[2px] hover:bg-paper-warm focus:outline-none focus:border-obsidian/50 disabled:opacity-50"
+                                className="w-full font-mono text-[10px] uppercase tracking-[0.1em] text-obsidian bg-white border border-obsidian/20 px-2 py-1 rounded-[2px] hover:bg-paper-warm focus:outline-none focus:border-obsidian/50 disabled:opacity-50"
                               >
                                 {STATUS_OPTIONS.map((s) => (
                                   <option key={s.value} value={s.value}>Move to: {s.label}</option>
                                 ))}
                               </select>
-                              <span className="font-mono text-[10px] tabular-nums text-obsidian/45 w-24 text-right shrink-0">{new Date(p.updated_at).toLocaleDateString()}</span>
-
                             </div>
-                            <div className="mt-2.5 flex items-center gap-3">
-                              <div className="flex-1 h-1.5 bg-obsidian/10 rounded-full overflow-hidden">
-                                <div className="h-full transition-all" style={{ width: `${c.percent}%`, background: barColor }} />
-                              </div>
-                              <span className="font-mono text-[10px] tabular-nums text-obsidian/60 shrink-0">
-                                {c.done}/{c.total} · {c.percent}%
-                              </span>
-                            </div>
-                          </Link>
-                        </li>
-                      );
-                    })
+                          </div>
+                        );
+                      })}
+                    </div>
                   )}
-                </ul>
+                </div>
               )}
             </div>
           ))}

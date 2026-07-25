@@ -80,7 +80,7 @@ export const ICI_DOC_SLOTS = [
   { key: "notice_to_building_official", label: "Notice to Building Official" },
   { key: "qualifications_statement", label: "Qualifications Statement" },
   { key: "duly_authorized_rep_form", label: "Duly Authorized Rep Form" },
-  { key: "ici_resumes", label: "ICI Resumes" },
+  { key: "ici_resumes", label: "Resumes" },
 ] as const;
 
 export type IciDocKey = (typeof ICI_DOC_SLOTS)[number]["key"];

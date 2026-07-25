@@ -105,22 +105,25 @@ function PortalOverview() {
           <h2 className="font-display text-2xl tracking-tight">Recent permits</h2>
           <Link to="/my-permits" className="font-mono text-xs text-accent hover:underline inline-flex items-center gap-1">View all <ArrowRight className="h-3 w-3" /></Link>
         </div>
-        <div className="border hairline divide-y">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {active.slice(0, 6).map((p) => (
-            <Link key={p.id} to="/portal/permits/$id" params={{ id: p.id }} className="p-5 grid md:grid-cols-12 gap-4 items-center hover:bg-secondary/40 transition-colors">
-              <div className="md:col-span-2 font-mono text-xs text-muted-foreground">{p.permit_number ?? "—"}</div>
-              <div className="md:col-span-6">
-                <div className="font-medium">{p.project_name}</div>
-                <div className="text-xs text-muted-foreground mt-1">{p.job_address}</div>
+            <Link key={p.id} to="/portal/permits/$id" params={{ id: p.id }} className="border hairline rounded-[3px] bg-background p-5 hover:border-obsidian/30 transition-colors flex flex-col gap-3">
+              <div className="flex items-start justify-between gap-2">
+                <div className="font-mono text-[10px] text-muted-foreground">{p.permit_number ?? "—"}</div>
+                <span className="inline-flex items-center border border-obsidian/20 px-2 py-0.5 text-[9px] font-mono uppercase tracking-[0.1em] rounded-[2px] shrink-0">{p.status.replace(/_/g, " ")}</span>
               </div>
-              <div className="md:col-span-2 text-xs text-muted-foreground">{p.municipality ?? p.county ?? "—"}</div>
-              <div className="md:col-span-2 md:text-right">
-                <span className="inline-flex items-center border border-obsidian/20 px-2 py-0.5 text-[10px] font-medium uppercase tracking-[0.1em]">{p.status.replace(/_/g, " ")}</span>
+              <div className="min-w-0">
+                <div className="font-medium truncate">{p.project_name}</div>
+                <div className="text-xs text-muted-foreground mt-1 truncate">{p.job_address}</div>
+              </div>
+              <div className="mt-auto flex items-center justify-between font-mono text-[10px] text-muted-foreground">
+                <span className="truncate">{p.municipality ?? p.county ?? "—"}</span>
+                {p.permit_type && <span className="truncate">{p.permit_type}</span>}
               </div>
             </Link>
           ))}
           {active.length === 0 && (
-            <div className="p-8 text-center text-sm text-muted-foreground">
+            <div className="col-span-full border hairline rounded-[3px] p-8 text-center text-sm text-muted-foreground">
               No active permits yet. <Link to="/portal/permits/new" className="underline">Create one</Link>.
             </div>
           )}
