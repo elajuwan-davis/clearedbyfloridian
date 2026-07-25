@@ -170,3 +170,152 @@
     font-weight: 300;
   }
 }
+
+/* =========================================================
+   MARKETING DARK THEME (scoped)
+   Applied via `.marketing-dark` wrapper on public pages only.
+   Portal is unaffected.
+   ========================================================= */
+.marketing-dark {
+  --md-bg: #0A0E17;
+  --md-surface: #111827;
+  --md-surface-2: #153157;
+  --md-border: #1E2533;
+  --md-text: #F5F5F0;
+  --md-muted: #8A8F9E;
+  --md-gold: #C8A97E;
+  --md-gold-soft: color-mix(in oklab, #C8A97E 18%, transparent);
+
+  background-color: var(--md-bg);
+  color: var(--md-text);
+  font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.marketing-dark ::selection {
+  background: var(--md-gold);
+  color: var(--md-bg);
+}
+
+.marketing-dark .md-serif {
+  font-family: "Playfair Display", "Cormorant Garamond", Georgia, serif;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+}
+.marketing-dark .md-serif em,
+.marketing-dark .md-serif .italic {
+  font-style: italic;
+  font-weight: 400;
+}
+
+.marketing-dark .md-eyebrow {
+  font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--md-gold);
+}
+
+.marketing-dark .md-muted { color: var(--md-muted); }
+.marketing-dark .md-gold { color: var(--md-gold); }
+
+.marketing-dark .md-card {
+  background: var(--md-surface);
+  border: 1px solid var(--md-border);
+  border-radius: 6px;
+}
+
+.marketing-dark .md-hairline { border-color: var(--md-border); }
+
+.marketing-dark .md-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  height: 48px;
+  padding: 0 1.5rem;
+  background: var(--md-gold);
+  color: var(--md-bg);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  border-radius: 4px;
+  border: 1px solid var(--md-gold);
+  transition: all 0.2s ease;
+}
+.marketing-dark .md-btn-primary:hover {
+  background: color-mix(in oklab, var(--md-gold) 90%, #fff);
+  transform: translateY(-1px);
+}
+
+.marketing-dark .md-btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  height: 48px;
+  padding: 0 1.5rem;
+  background: transparent;
+  color: var(--md-text);
+  font-size: 13px;
+  font-weight: 500;
+  border-radius: 4px;
+  border: 1px solid var(--md-border);
+  transition: all 0.2s ease;
+}
+.marketing-dark .md-btn-ghost:hover {
+  border-color: var(--md-gold);
+  color: var(--md-gold);
+}
+
+.marketing-dark .md-btn-gold-outline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  height: 40px;
+  padding: 0 1.125rem;
+  background: transparent;
+  color: var(--md-gold);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  border-radius: 3px;
+  border: 1px solid var(--md-gold);
+  transition: all 0.2s ease;
+}
+.marketing-dark .md-btn-gold-outline:hover {
+  background: var(--md-gold);
+  color: var(--md-bg);
+}
+
+.marketing-dark .md-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.4rem 0.85rem;
+  border: 1px solid var(--md-border);
+  border-radius: 999px;
+  font-size: 12px;
+  color: var(--md-text);
+  background: color-mix(in oklab, var(--md-surface) 80%, transparent);
+}
+
+.marketing-dark .md-grain {
+  background-image:
+    radial-gradient(circle at 20% 10%, color-mix(in oklab, var(--md-surface-2) 40%, transparent) 0%, transparent 45%),
+    radial-gradient(circle at 85% 80%, color-mix(in oklab, var(--md-gold) 8%, transparent) 0%, transparent 50%);
+}
+
+@keyframes mdFadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.marketing-dark .md-in {
+  animation: mdFadeUp 0.7s cubic-bezier(.2,.7,.2,1) both;
+}
+.marketing-dark .md-in-1 { animation-delay: 0.05s; }
+.marketing-dark .md-in-2 { animation-delay: 0.15s; }
+.marketing-dark .md-in-3 { animation-delay: 0.25s; }
+.marketing-dark .md-in-4 { animation-delay: 0.35s; }
