@@ -165,12 +165,22 @@ function HoaSubmittalEditor() {
 
   async function changeStatus(next: HoaStatus) {
     if (!row) return;
+    const prev = row.status;
     try {
       const updated = await updateHoaSubmittal(row.id, {
         status: next,
         submitted_at: next !== "draft" && !row.submitted_at ? new Date().toISOString() : row.submitted_at,
       });
       setRow(updated);
+      await logHoaEvent({
+        submittalId: row.id,
+        tenantId: session.effectiveTenantId,
+        actorId: session.userId,
+        kind: "status_changed",
+        summary: `Status: ${HOA_STATUS_LABELS[prev]} → ${HOA_STATUS_LABELS[next]}`,
+        details: { from: prev, to: next },
+      });
+      refreshTimeline();
       toast.success(`Status updated: ${HOA_STATUS_LABELS[next]}`);
     } catch (e: any) {
       toast.error(e?.message ?? "Failed to update status");
@@ -197,6 +207,15 @@ function HoaSubmittalEditor() {
       );
       setRow({ ...row, checklist: next });
       await updateHoaSubmittal(row.id, { checklist: next });
+      await logHoaEvent({
+        submittalId: row.id,
+        tenantId: session.effectiveTenantId,
+        actorId: session.userId,
+        kind: "document_added",
+        summary: `Uploaded ${up.filename} for ${row.checklist[idx].label}`,
+        details: { key: row.checklist[idx].key, path: up.path },
+      });
+      refreshTimeline();
       toast.success("Uploaded");
     } catch (e: any) {
       toast.error(e?.message ?? "Upload failed");
@@ -217,6 +236,15 @@ function HoaSubmittalEditor() {
       const path = await buildAndStoreBoilerplate({ ...latest, ...row });
       const updated = await getHoaSubmittal(row.id);
       if (updated) setRow(updated);
+      await logHoaEvent({
+        submittalId: row.id,
+        tenantId: session.effectiveTenantId,
+        actorId: session.userId,
+        kind: "pdf_generated",
+        summary: "Submittal PDF generated",
+        details: { path },
+      });
+      refreshTimeline();
       toast.success("Submittal PDF generated");
       const url = await getHoaFileSignedUrl(path);
       if (url) window.open(url, "_blank", "noopener");
@@ -234,6 +262,15 @@ function HoaSubmittalEditor() {
       const path = await buildAndStoreRemovalAgreement(row);
       const updated = await getHoaSubmittal(row.id);
       if (updated) setRow(updated);
+      await logHoaEvent({
+        submittalId: row.id,
+        tenantId: session.effectiveTenantId,
+        actorId: session.userId,
+        kind: "removal_agreement_generated",
+        summary: "Removal Agreement generated",
+        details: { path },
+      });
+      refreshTimeline();
       toast.success("Removal Agreement generated");
       const url = await getHoaFileSignedUrl(path);
       if (url) window.open(url, "_blank", "noopener");
@@ -243,6 +280,44 @@ function HoaSubmittalEditor() {
       setGenerating(null);
     }
   }
+
+  async function submitReply() {
+    if (!row || loggingReply) return;
+    const subject = replyDraft.subject.trim();
+    const body = replyDraft.body.trim();
+    if (!subject || !body) {
+      toast.error("Subject and body are required to log a reply.");
+      return;
+    }
+    setLoggingReply(true);
+    try {
+      await logHoaReply({
+        submittalId: row.id,
+        tenantId: session.effectiveTenantId,
+        loggedBy: session.userId,
+        direction: "inbound",
+        fromEmail: replyDraft.fromEmail || template?.hoa_contact_email || null,
+        fromName: template?.hoa_contact_name ?? null,
+        subject,
+        bodyText: body,
+      });
+      await logHoaEvent({
+        submittalId: row.id,
+        tenantId: session.effectiveTenantId,
+        actorId: session.userId,
+        kind: "hoa_reply_logged",
+        summary: `Reply logged: ${subject}`,
+      });
+      setReplyDraft({ subject: "", fromEmail: "", body: "" });
+      refreshTimeline();
+      toast.success("Reply logged");
+    } catch (e: any) {
+      toast.error(e?.message ?? "Failed to log reply");
+    } finally {
+      setLoggingReply(false);
+    }
+  }
+
 
   async function onDelete() {
     if (!row) return;
