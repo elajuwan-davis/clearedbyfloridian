@@ -135,17 +135,20 @@ export async function createPost(input: BlogInput): Promise<BlogPost> {
 
 export async function updatePost(id: string, input: Partial<BlogInput> & { existing: BlogPost }): Promise<BlogPost> {
   const { existing, ...patch } = input;
-  const next: Record<string, unknown> = { ...patch };
-  if (patch.title && !patch.slug) {
-    // keep existing slug on rename unless explicitly changed
-  }
-  if (patch.slug) {
-    next.slug = await ensureUniqueSlug(slugify(patch.slug), id);
-  }
-  if (patch.body !== undefined && patch.excerpt === undefined) {
+  const next: Partial<BlogPost> = {};
+  if (patch.title !== undefined) next.title = patch.title;
+  if (patch.slug) next.slug = await ensureUniqueSlug(slugify(patch.slug), id);
+  if (patch.body !== undefined) next.body = patch.body;
+  if (patch.category !== undefined) next.category = patch.category;
+  if (patch.tags !== undefined) next.tags = patch.tags;
+  if (patch.cover_image_url !== undefined) next.cover_image_url = patch.cover_image_url;
+  if (patch.excerpt !== undefined) {
+    next.excerpt = patch.excerpt;
+  } else if (patch.body !== undefined) {
     next.excerpt = excerptFrom(patch.body);
   }
   if (patch.status) {
+    next.status = patch.status;
     if (patch.status === "published" && existing.status !== "published") {
       next.published_at = new Date().toISOString();
     }
@@ -162,6 +165,7 @@ export async function updatePost(id: string, input: Partial<BlogInput> & { exist
   if (error) throw error;
   return data as BlogPost;
 }
+
 
 export async function deletePost(id: string): Promise<void> {
   const { error } = await supabase.from("blog_posts").delete().eq("id", id);
