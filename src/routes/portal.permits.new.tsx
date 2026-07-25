@@ -784,10 +784,12 @@ function ProContactBlock(props: {
       <label className={labelCls}>{props.label}</label>
       <ComboboxInput
         value={props.firm}
-        onChange={props.onFirm}
-        onSelect={(v) => {
-          const picked = options.find((p) => p.firm_name === v);
-          if (picked) props.onPick(picked);
+        onChange={(v, opt) => {
+          props.onFirm(v);
+          if (opt) {
+            const picked = options.find((p) => p.firm_name === opt.value);
+            if (picked) props.onPick(picked);
+          }
         }}
         options={options.map((p) => ({
           value: p.firm_name,
