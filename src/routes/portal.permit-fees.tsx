@@ -105,10 +105,6 @@ function PermitFeesPage() {
         </div>
       </div>
 
-      {/* Manually logged fees */}
-      <div className="mt-10">
-        <div className="flex items-end justify-between">
-          <h2 className="display-serif text-2xl text-obsidian">Logged Fees</h2>
       {bundledPermits.length > 0 && (
         <div className="mt-10">
           <div className="flex items-end justify-between">
