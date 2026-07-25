@@ -1,16 +1,18 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState, type ChangeEvent, type DragEvent } from "react";
-import { Upload, Check, FileText, ArrowLeft, Send, X, AlertCircle, Plus, Trash2 } from "lucide-react";
+import { Upload, Check, FileText, ArrowLeft, Send, X, AlertCircle, Plus, Trash2, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { CloudUploadButtons } from "@/components/cloud-upload-buttons";
 import { ComboboxInput } from "@/components/combobox-input";
-import { createPermit, updatePermit, getPermit, type PermitDoc, type PermitRow } from "@/lib/permits-api";
+import { createPermit, updatePermit, getPermit, type PermitDoc, type PermitRow, type PermitSub } from "@/lib/permits-api";
 import { listSubs, createSub, type SubRow } from "@/lib/subs-api";
 import { listDesignPros, createDesignPro, type DesignProRow, type DesignProRole } from "@/lib/design-pros-api";
 import { triggerNotification } from "@/lib/notifications-api";
 import { MUNICIPALITIES } from "@/lib/municipalities";
 import { getChecklist } from "@/lib/permit-checklists";
 import { bundleFromSubs } from "@/lib/bundle";
+import { NocAwarenessRibbon } from "@/components/noc-awareness-ribbon";
+import { TradesOnJobPanel } from "@/components/trades-on-job-panel";
 
 
 export const Route = createFileRoute("/portal/permits/new")({

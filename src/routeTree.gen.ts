@@ -38,6 +38,7 @@ import { Route as VersusIndexRouteImport } from './routes/versus.index'
 import { Route as PortalIndexRouteImport } from './routes/portal.index'
 import { Route as BlogIndexRouteImport } from './routes/blog.index'
 import { Route as VersusSlugRouteImport } from './routes/versus.$slug'
+import { Route as SubPortalTokenRouteImport } from './routes/sub-portal.$token'
 import { Route as SubIntakeTokenRouteImport } from './routes/sub-intake.$token'
 import { Route as ProjectsNewRouteImport } from './routes/projects.new'
 import { Route as ProjectsIdRouteImport } from './routes/projects.$id'
@@ -226,6 +227,11 @@ const BlogIndexRoute = BlogIndexRouteImport.update({
 const VersusSlugRoute = VersusSlugRouteImport.update({
   id: '/versus/$slug',
   path: '/versus/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SubPortalTokenRoute = SubPortalTokenRouteImport.update({
+  id: '/sub-portal/$token',
+  path: '/sub-portal/$token',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SubIntakeTokenRoute = SubIntakeTokenRouteImport.update({
@@ -508,6 +514,7 @@ export interface FileRoutesByFullPath {
   '/projects/$id': typeof ProjectsIdRoute
   '/projects/new': typeof ProjectsNewRoute
   '/sub-intake/$token': typeof SubIntakeTokenRoute
+  '/sub-portal/$token': typeof SubPortalTokenRoute
   '/versus/$slug': typeof VersusSlugRoute
   '/blog/': typeof BlogIndexRoute
   '/portal/': typeof PortalIndexRoute
@@ -580,6 +587,7 @@ export interface FileRoutesByTo {
   '/projects/$id': typeof ProjectsIdRoute
   '/projects/new': typeof ProjectsNewRoute
   '/sub-intake/$token': typeof SubIntakeTokenRoute
+  '/sub-portal/$token': typeof SubPortalTokenRoute
   '/versus/$slug': typeof VersusSlugRoute
   '/blog': typeof BlogIndexRoute
   '/portal': typeof PortalIndexRoute
@@ -656,6 +664,7 @@ export interface FileRoutesById {
   '/projects/$id': typeof ProjectsIdRoute
   '/projects/new': typeof ProjectsNewRoute
   '/sub-intake/$token': typeof SubIntakeTokenRoute
+  '/sub-portal/$token': typeof SubPortalTokenRoute
   '/versus/$slug': typeof VersusSlugRoute
   '/blog/': typeof BlogIndexRoute
   '/portal/': typeof PortalIndexRoute
@@ -733,6 +742,7 @@ export interface FileRouteTypes {
     | '/projects/$id'
     | '/projects/new'
     | '/sub-intake/$token'
+    | '/sub-portal/$token'
     | '/versus/$slug'
     | '/blog/'
     | '/portal/'
@@ -805,6 +815,7 @@ export interface FileRouteTypes {
     | '/projects/$id'
     | '/projects/new'
     | '/sub-intake/$token'
+    | '/sub-portal/$token'
     | '/versus/$slug'
     | '/blog'
     | '/portal'
@@ -880,6 +891,7 @@ export interface FileRouteTypes {
     | '/projects/$id'
     | '/projects/new'
     | '/sub-intake/$token'
+    | '/sub-portal/$token'
     | '/versus/$slug'
     | '/blog/'
     | '/portal/'
@@ -935,6 +947,7 @@ export interface RootRouteChildren {
   BlogSlugRoute: typeof BlogSlugRoute
   PermitCardIdRoute: typeof PermitCardIdRoute
   SubIntakeTokenRoute: typeof SubIntakeTokenRoute
+  SubPortalTokenRoute: typeof SubPortalTokenRoute
   VersusSlugRoute: typeof VersusSlugRoute
   BlogIndexRoute: typeof BlogIndexRoute
   VersusIndexRoute: typeof VersusIndexRoute
@@ -1147,6 +1160,13 @@ declare module '@tanstack/react-router' {
       path: '/versus/$slug'
       fullPath: '/versus/$slug'
       preLoaderRoute: typeof VersusSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sub-portal/$token': {
+      id: '/sub-portal/$token'
+      path: '/sub-portal/$token'
+      fullPath: '/sub-portal/$token'
+      preLoaderRoute: typeof SubPortalTokenRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/sub-intake/$token': {
@@ -1646,6 +1666,7 @@ const rootRouteChildren: RootRouteChildren = {
   BlogSlugRoute: BlogSlugRoute,
   PermitCardIdRoute: PermitCardIdRoute,
   SubIntakeTokenRoute: SubIntakeTokenRoute,
+  SubPortalTokenRoute: SubPortalTokenRoute,
   VersusSlugRoute: VersusSlugRoute,
   BlogIndexRoute: BlogIndexRoute,
   VersusIndexRoute: VersusIndexRoute,
