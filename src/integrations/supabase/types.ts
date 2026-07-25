@@ -289,6 +289,137 @@ export type Database = {
           },
         ]
       }
+      hoa_submittals: {
+        Row: {
+          applicant_email: string | null
+          applicant_name: string | null
+          applicant_phone: string | null
+          block: string | null
+          checklist: Json
+          coi_attached: boolean
+          community_name: string | null
+          contractor_license: string | null
+          contractor_name: string | null
+          created_at: string
+          created_by: string | null
+          deposit_amount_cents: number
+          documents: Json
+          estimated_start_date: string | null
+          extracted_fields: Json
+          generated_pdf_path: string | null
+          hoa_name: string | null
+          id: string
+          lot: string | null
+          missing_fields: Json
+          model_type: string | null
+          notes: string | null
+          permit_id: string | null
+          plans_attached: boolean
+          plat_name: string | null
+          project_description: string | null
+          project_type: string | null
+          property_address: string | null
+          removal_agreement_path: string | null
+          removal_agreement_signed: boolean
+          scope_of_work: string | null
+          source: string
+          status: string
+          submitted_at: string | null
+          tenant_id: string | null
+          updated_at: string
+          uploaded_form_path: string | null
+          village_name: string | null
+        }
+        Insert: {
+          applicant_email?: string | null
+          applicant_name?: string | null
+          applicant_phone?: string | null
+          block?: string | null
+          checklist?: Json
+          coi_attached?: boolean
+          community_name?: string | null
+          contractor_license?: string | null
+          contractor_name?: string | null
+          created_at?: string
+          created_by?: string | null
+          deposit_amount_cents?: number
+          documents?: Json
+          estimated_start_date?: string | null
+          extracted_fields?: Json
+          generated_pdf_path?: string | null
+          hoa_name?: string | null
+          id?: string
+          lot?: string | null
+          missing_fields?: Json
+          model_type?: string | null
+          notes?: string | null
+          permit_id?: string | null
+          plans_attached?: boolean
+          plat_name?: string | null
+          project_description?: string | null
+          project_type?: string | null
+          property_address?: string | null
+          removal_agreement_path?: string | null
+          removal_agreement_signed?: boolean
+          scope_of_work?: string | null
+          source?: string
+          status?: string
+          submitted_at?: string | null
+          tenant_id?: string | null
+          updated_at?: string
+          uploaded_form_path?: string | null
+          village_name?: string | null
+        }
+        Update: {
+          applicant_email?: string | null
+          applicant_name?: string | null
+          applicant_phone?: string | null
+          block?: string | null
+          checklist?: Json
+          coi_attached?: boolean
+          community_name?: string | null
+          contractor_license?: string | null
+          contractor_name?: string | null
+          created_at?: string
+          created_by?: string | null
+          deposit_amount_cents?: number
+          documents?: Json
+          estimated_start_date?: string | null
+          extracted_fields?: Json
+          generated_pdf_path?: string | null
+          hoa_name?: string | null
+          id?: string
+          lot?: string | null
+          missing_fields?: Json
+          model_type?: string | null
+          notes?: string | null
+          permit_id?: string | null
+          plans_attached?: boolean
+          plat_name?: string | null
+          project_description?: string | null
+          project_type?: string | null
+          property_address?: string | null
+          removal_agreement_path?: string | null
+          removal_agreement_signed?: boolean
+          scope_of_work?: string | null
+          source?: string
+          status?: string
+          submitted_at?: string | null
+          tenant_id?: string | null
+          updated_at?: string
+          uploaded_form_path?: string | null
+          village_name?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hoa_submittals_permit_id_fkey"
+            columns: ["permit_id"]
+            isOneToOne: false
+            referencedRelation: "permits"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notification_prefs: {
         Row: {
           created_at: string
