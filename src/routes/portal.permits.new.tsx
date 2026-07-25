@@ -262,6 +262,28 @@ function NewPermitPage() {
     }));
   }
 
+  /** Called when the address autocomplete resolves a Places selection.
+   *  Auto-fills municipality when the parsed city matches a known FL city. */
+  function handleAddressResolved(r: ResolvedAddress) {
+    setForm((f) => {
+      let municipality = f.municipality;
+      if (r.city) {
+        const norm = (s: string) => s.toLowerCase().replace(/[^a-z]/g, "");
+        const target = norm(r.city);
+        const match = MUNICIPALITIES.find((m) => norm(m.name) === target);
+        if (match) municipality = match.name;
+        else if (!f.municipality.trim()) municipality = r.city; // freeform fallback
+      }
+      return { ...f, address: r.streetLine || r.formatted, municipality };
+    });
+    if (r.city) {
+      const norm = (s: string) => s.toLowerCase().replace(/[^a-z]/g, "");
+      const target = norm(r.city);
+      const matched = MUNICIPALITIES.some((m) => norm(m.name) === target);
+      toast.success(matched ? `Matched municipality: ${r.city}` : `City set to ${r.city} (not in list — please verify)`);
+    }
+  }
+
   const primaryType = form.scopes[0] || "Other";
   const checklist = useMemo(() => getChecklist(form.municipality, primaryType), [form.municipality, primaryType]);
 
