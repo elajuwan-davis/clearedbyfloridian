@@ -13,6 +13,7 @@ import { Route as ServicesRouteImport } from './routes/services'
 import { Route as ProjectsRouteImport } from './routes/projects'
 import { Route as ProjectGuidesRouteImport } from './routes/project-guides'
 import { Route as ProfileRouteImport } from './routes/profile'
+import { Route as ProductsRouteImport } from './routes/products'
 import { Route as ProcessRouteImport } from './routes/process'
 import { Route as PortalRouteImport } from './routes/portal'
 import { Route as MyPermitsRouteImport } from './routes/my-permits'
@@ -33,8 +34,10 @@ import { Route as AskVictoriaRouteImport } from './routes/ask-victoria'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as VersusIndexRouteImport } from './routes/versus.index'
 import { Route as PortalIndexRouteImport } from './routes/portal.index'
 import { Route as BlogIndexRouteImport } from './routes/blog.index'
+import { Route as VersusSlugRouteImport } from './routes/versus.$slug'
 import { Route as SubIntakeTokenRouteImport } from './routes/sub-intake.$token'
 import { Route as ProjectsNewRouteImport } from './routes/projects.new'
 import { Route as ProjectsIdRouteImport } from './routes/projects.$id'
@@ -101,6 +104,11 @@ const ProjectGuidesRoute = ProjectGuidesRouteImport.update({
 const ProfileRoute = ProfileRouteImport.update({
   id: '/profile',
   path: '/profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProductsRoute = ProductsRouteImport.update({
+  id: '/products',
+  path: '/products',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProcessRoute = ProcessRouteImport.update({
@@ -203,6 +211,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const VersusIndexRoute = VersusIndexRouteImport.update({
+  id: '/versus/',
+  path: '/versus/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PortalIndexRoute = PortalIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -211,6 +224,11 @@ const PortalIndexRoute = PortalIndexRouteImport.update({
 const BlogIndexRoute = BlogIndexRouteImport.update({
   id: '/blog/',
   path: '/blog/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VersusSlugRoute = VersusSlugRouteImport.update({
+  id: '/versus/$slug',
+  path: '/versus/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SubIntakeTokenRoute = SubIntakeTokenRouteImport.update({
@@ -477,6 +495,7 @@ export interface FileRoutesByFullPath {
   '/my-permits': typeof MyPermitsRoute
   '/portal': typeof PortalRouteWithChildren
   '/process': typeof ProcessRoute
+  '/products': typeof ProductsRoute
   '/profile': typeof ProfileRoute
   '/project-guides': typeof ProjectGuidesRoute
   '/projects': typeof ProjectsRouteWithChildren
@@ -510,8 +529,10 @@ export interface FileRoutesByFullPath {
   '/projects/$id': typeof ProjectsIdRoute
   '/projects/new': typeof ProjectsNewRoute
   '/sub-intake/$token': typeof SubIntakeTokenRoute
+  '/versus/$slug': typeof VersusSlugRoute
   '/blog/': typeof BlogIndexRoute
   '/portal/': typeof PortalIndexRoute
+  '/versus/': typeof VersusIndexRoute
   '/api/public/access-request': typeof ApiPublicAccessRequestRoute
   '/api/public/seed-team': typeof ApiPublicSeedTeamRoute
   '/api/public/sub-intake-upload': typeof ApiPublicSubIntakeUploadRoute
@@ -551,6 +572,7 @@ export interface FileRoutesByTo {
   '/municipalities': typeof MunicipalitiesRoute
   '/my-permits': typeof MyPermitsRoute
   '/process': typeof ProcessRoute
+  '/products': typeof ProductsRoute
   '/profile': typeof ProfileRoute
   '/project-guides': typeof ProjectGuidesRoute
   '/projects': typeof ProjectsRouteWithChildren
@@ -582,8 +604,10 @@ export interface FileRoutesByTo {
   '/projects/$id': typeof ProjectsIdRoute
   '/projects/new': typeof ProjectsNewRoute
   '/sub-intake/$token': typeof SubIntakeTokenRoute
+  '/versus/$slug': typeof VersusSlugRoute
   '/blog': typeof BlogIndexRoute
   '/portal': typeof PortalIndexRoute
+  '/versus': typeof VersusIndexRoute
   '/api/public/access-request': typeof ApiPublicAccessRequestRoute
   '/api/public/seed-team': typeof ApiPublicSeedTeamRoute
   '/api/public/sub-intake-upload': typeof ApiPublicSubIntakeUploadRoute
@@ -625,6 +649,7 @@ export interface FileRoutesById {
   '/my-permits': typeof MyPermitsRoute
   '/portal': typeof PortalRouteWithChildren
   '/process': typeof ProcessRoute
+  '/products': typeof ProductsRoute
   '/profile': typeof ProfileRoute
   '/project-guides': typeof ProjectGuidesRoute
   '/projects': typeof ProjectsRouteWithChildren
@@ -658,8 +683,10 @@ export interface FileRoutesById {
   '/projects/$id': typeof ProjectsIdRoute
   '/projects/new': typeof ProjectsNewRoute
   '/sub-intake/$token': typeof SubIntakeTokenRoute
+  '/versus/$slug': typeof VersusSlugRoute
   '/blog/': typeof BlogIndexRoute
   '/portal/': typeof PortalIndexRoute
+  '/versus/': typeof VersusIndexRoute
   '/api/public/access-request': typeof ApiPublicAccessRequestRoute
   '/api/public/seed-team': typeof ApiPublicSeedTeamRoute
   '/api/public/sub-intake-upload': typeof ApiPublicSubIntakeUploadRoute
@@ -702,6 +729,7 @@ export interface FileRouteTypes {
     | '/my-permits'
     | '/portal'
     | '/process'
+    | '/products'
     | '/profile'
     | '/project-guides'
     | '/projects'
@@ -735,8 +763,10 @@ export interface FileRouteTypes {
     | '/projects/$id'
     | '/projects/new'
     | '/sub-intake/$token'
+    | '/versus/$slug'
     | '/blog/'
     | '/portal/'
+    | '/versus/'
     | '/api/public/access-request'
     | '/api/public/seed-team'
     | '/api/public/sub-intake-upload'
@@ -776,6 +806,7 @@ export interface FileRouteTypes {
     | '/municipalities'
     | '/my-permits'
     | '/process'
+    | '/products'
     | '/profile'
     | '/project-guides'
     | '/projects'
@@ -807,8 +838,10 @@ export interface FileRouteTypes {
     | '/projects/$id'
     | '/projects/new'
     | '/sub-intake/$token'
+    | '/versus/$slug'
     | '/blog'
     | '/portal'
+    | '/versus'
     | '/api/public/access-request'
     | '/api/public/seed-team'
     | '/api/public/sub-intake-upload'
@@ -849,6 +882,7 @@ export interface FileRouteTypes {
     | '/my-permits'
     | '/portal'
     | '/process'
+    | '/products'
     | '/profile'
     | '/project-guides'
     | '/projects'
@@ -882,8 +916,10 @@ export interface FileRouteTypes {
     | '/projects/$id'
     | '/projects/new'
     | '/sub-intake/$token'
+    | '/versus/$slug'
     | '/blog/'
     | '/portal/'
+    | '/versus/'
     | '/api/public/access-request'
     | '/api/public/seed-team'
     | '/api/public/sub-intake-upload'
@@ -925,6 +961,7 @@ export interface RootRouteChildren {
   MyPermitsRoute: typeof MyPermitsRoute
   PortalRoute: typeof PortalRouteWithChildren
   ProcessRoute: typeof ProcessRoute
+  ProductsRoute: typeof ProductsRoute
   ProfileRoute: typeof ProfileRoute
   ProjectGuidesRoute: typeof ProjectGuidesRoute
   ProjectsRoute: typeof ProjectsRouteWithChildren
@@ -934,7 +971,9 @@ export interface RootRouteChildren {
   BlogSlugRoute: typeof BlogSlugRoute
   PermitCardIdRoute: typeof PermitCardIdRoute
   SubIntakeTokenRoute: typeof SubIntakeTokenRoute
+  VersusSlugRoute: typeof VersusSlugRoute
   BlogIndexRoute: typeof BlogIndexRoute
+  VersusIndexRoute: typeof VersusIndexRoute
   ApiPublicAccessRequestRoute: typeof ApiPublicAccessRequestRoute
   ApiPublicSeedTeamRoute: typeof ApiPublicSeedTeamRoute
   ApiPublicSubIntakeUploadRoute: typeof ApiPublicSubIntakeUploadRoute
@@ -969,6 +1008,13 @@ declare module '@tanstack/react-router' {
       path: '/profile'
       fullPath: '/profile'
       preLoaderRoute: typeof ProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/products': {
+      id: '/products'
+      path: '/products'
+      fullPath: '/products'
+      preLoaderRoute: typeof ProductsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/process': {
@@ -1111,6 +1157,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/versus/': {
+      id: '/versus/'
+      path: '/versus'
+      fullPath: '/versus/'
+      preLoaderRoute: typeof VersusIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/portal/': {
       id: '/portal/'
       path: '/'
@@ -1123,6 +1176,13 @@ declare module '@tanstack/react-router' {
       path: '/blog'
       fullPath: '/blog/'
       preLoaderRoute: typeof BlogIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/versus/$slug': {
+      id: '/versus/$slug'
+      path: '/versus/$slug'
+      fullPath: '/versus/$slug'
+      preLoaderRoute: typeof VersusSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/sub-intake/$token': {
@@ -1639,6 +1699,7 @@ const rootRouteChildren: RootRouteChildren = {
   MyPermitsRoute: MyPermitsRoute,
   PortalRoute: PortalRouteWithChildren,
   ProcessRoute: ProcessRoute,
+  ProductsRoute: ProductsRoute,
   ProfileRoute: ProfileRoute,
   ProjectGuidesRoute: ProjectGuidesRoute,
   ProjectsRoute: ProjectsRouteWithChildren,
@@ -1648,7 +1709,9 @@ const rootRouteChildren: RootRouteChildren = {
   BlogSlugRoute: BlogSlugRoute,
   PermitCardIdRoute: PermitCardIdRoute,
   SubIntakeTokenRoute: SubIntakeTokenRoute,
+  VersusSlugRoute: VersusSlugRoute,
   BlogIndexRoute: BlogIndexRoute,
+  VersusIndexRoute: VersusIndexRoute,
   ApiPublicAccessRequestRoute: ApiPublicAccessRequestRoute,
   ApiPublicSeedTeamRoute: ApiPublicSeedTeamRoute,
   ApiPublicSubIntakeUploadRoute: ApiPublicSubIntakeUploadRoute,
