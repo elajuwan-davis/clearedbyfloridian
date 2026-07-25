@@ -11,6 +11,7 @@ import {
   type CityDocs,
 } from "@/lib/municipality-docs-store";
 import { toast } from "sonner";
+import { MunicipalityMapHero } from "@/components/municipality-map";
 
 export const Route = createFileRoute("/portal/municipalities")({
   head: () => ({
