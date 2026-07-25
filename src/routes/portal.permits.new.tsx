@@ -263,12 +263,8 @@ function NewPermitPage() {
       toast.error("Project name and address are required");
       return;
     }
-    const nocState = form.docs[NOC_DOC_KEY];
-    if (!nocState?.uploaded) {
-      toast.error("Notice of Commencement is required to submit this permit.");
-      update("step", 2);
-      return;
-    }
+
+
     setSaving(true);
     try {
       for (const s of filledSubs) {
