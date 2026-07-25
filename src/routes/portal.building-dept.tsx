@@ -48,12 +48,6 @@ function BuildingDeptPage() {
     return subscribeMunicipalities(() => setCustom(listMunicipalities()));
   }, []);
 
-  const seedRows = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    if (!q) return SEED;
-    return SEED.filter((r) => r.name.toLowerCase().includes(q));
-  }, [query]);
-
   const customRows = useMemo(() => {
     const q = query.trim().toLowerCase();
     if (!q) return custom;
@@ -63,21 +57,7 @@ function BuildingDeptPage() {
   }, [custom, query]);
 
   const statewideRows = useMemo(() => {
-    const seedUrls = new Map(SEED.map((s) => [s.name.toLowerCase(), s.url]));
-    const map = new Map<string, { city: string; portalUrl?: string }>();
-    for (const region of MUNICIPALITY_TREE) {
-      for (const county of region.counties) {
-        for (const city of county.cities) {
-          const key = city.name.toLowerCase();
-          map.set(key, { city: city.name, portalUrl: city.portalUrl ?? seedUrls.get(key) });
-        }
-      }
-    }
-    for (const s of SEED) {
-      const key = s.name.toLowerCase();
-      if (!map.has(key)) map.set(key, { city: s.name, portalUrl: s.url });
-    }
-    const rows = Array.from(map.values()).sort((a, b) => a.city.localeCompare(b.city));
+    const rows = MUNICIPALITIES.map((m) => ({ city: m.name, portalUrl: m.url }));
     const q = query.trim().toLowerCase();
     if (!q) return rows;
     return rows.filter((r) => r.city.toLowerCase().includes(q));
