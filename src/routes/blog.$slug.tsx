@@ -142,7 +142,7 @@ function BlogDetail() {
               More in <em>{post.category}</em>
             </h2>
             <div className="mt-8 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-              {related.map((p) => (
+              {related.map((p: typeof post) => (
                 <PostCard key={p.id} post={p} />
               ))}
             </div>
