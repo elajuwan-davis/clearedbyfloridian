@@ -207,11 +207,19 @@ function PortalGuidesIndex() {
                       </div>
                     </AccordionTrigger>
                     <AccordionContent className="pb-5">
+                      {trade === "Pool / Spa Construction" && list.length > 0 && (
+                        <div className="mb-4 rounded-[3px] border border-obsidian/12 bg-paper/60 px-4 py-3 text-sm text-obsidian/75">
+                          These manufacturer specification sheets are commonly required for pool construction permit submittals. Include relevant specs with your submittal package.
+                        </div>
+                      )}
                       {list.length === 0 ? (
                         <div className="border border-dashed border-obsidian/15 rounded-[3px] p-6 text-center">
                           <FileText className="mx-auto h-5 w-5 text-obsidian/40" strokeWidth={1.5} />
                           <div className="mt-2 font-mono text-[11px] uppercase tracking-[0.14em] text-obsidian/50">
-                            No specs uploaded yet
+                            {trade === "Electrical" && "Electrical spec sheets coming soon"}
+                            {trade === "Plumbing" && "Plumbing spec sheets coming soon"}
+                            {trade === "Structural / Hardscape" && "Structural spec sheets coming soon"}
+                            {trade === "Pool / Spa Construction" && "No specs uploaded yet"}
                           </div>
                         </div>
                       ) : (
@@ -229,7 +237,10 @@ function PortalGuidesIndex() {
                               </div>
                               <div className="flex-1 min-w-0">
                                 <div className="text-sm text-obsidian leading-snug">{s.title}</div>
-                                <div className="mt-1 inline-flex items-center gap-1 font-mono text-[10px] uppercase tracking-[0.18em] text-obsidian/55 group-hover:text-obsidian">
+                                <div className="mt-0.5 font-mono text-[9px] uppercase tracking-[0.2em] text-obsidian/45">
+                                  Manufacturer Spec Sheet
+                                </div>
+                                <div className="mt-2 inline-flex items-center gap-1 font-mono text-[10px] uppercase tracking-[0.18em] text-obsidian/70 group-hover:text-obsidian">
                                   Open <ExternalLink className="h-3 w-3" strokeWidth={1.75} />
                                 </div>
                               </div>
@@ -238,6 +249,7 @@ function PortalGuidesIndex() {
                         </div>
                       )}
                     </AccordionContent>
+
                   </AccordionItem>
                 );
               })}
