@@ -56,10 +56,11 @@ export function NtoSection({ permitId, propertyAddress, ownerName, contractorCom
   }
 
   async function generatePdf() {
+    if (!row) return;
     try {
       const bytes = await buildNtoPdfBytes(row);
-      downloadPdf(bytes, `NTO-${propertyAddress || permitId}.pdf`).valueOf?.();
-      downloadPdf(bytes, `NTO-${(propertyAddress || permitId).replace(/[^A-Za-z0-9._-]+/g, "-")}.pdf`);
+      const safe = String(propertyAddress || permitId).replace(/[^A-Za-z0-9._-]+/g, "-");
+      downloadPdf(bytes, `NTO-${safe}.pdf`);
       if (status === "not_filed") await save("draft");
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "PDF failed");
