@@ -14,6 +14,9 @@ import { getChecklist } from "@/lib/permit-checklists";
 import { bundleFromSubs } from "@/lib/bundle";
 import { NocAwarenessRibbon } from "@/components/noc-awareness-ribbon";
 import { TradesOnJobPanel } from "@/components/trades-on-job-panel";
+import { VictoriaIntelligencePanel } from "@/components/victoria-intelligence-panel";
+import { logPermitIntelligence } from "@/lib/intelligence";
+
 
 
 export const Route = createFileRoute("/portal/permits/new")({
