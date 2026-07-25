@@ -762,6 +762,24 @@ function PermitDetailPage() {
           </div>
         </div>
       )}
+
+      {/* CO Checklist */}
+      <section id="co-checklist" className="mt-10">
+        <div className="eyebrow text-obsidian/50 mb-3">Certificate of Occupancy</div>
+        <CoChecklistPanel permitId={row.id} projectName={row.project_name} tenantId={row.tenant_id ?? null} />
+      </section>
+
+      {/* Lien Releases */}
+      <section id="lien-releases" className="mt-10">
+        <div className="eyebrow text-obsidian/50 mb-3">Lien Releases</div>
+        <LienReleasesPanel permit={row} />
+      </section>
+
+      {/* Victoria Alerts (this permit) */}
+      <section id="victoria-alerts" className="mt-10 mb-4">
+        <div className="eyebrow text-obsidian/50 mb-3">Victoria Alerts</div>
+        <PermitAlertsInline permitId={row.id} />
+      </section>
     </div>
   );
 }
