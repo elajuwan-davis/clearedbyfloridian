@@ -11,12 +11,16 @@ import {
   Package,
   Loader2,
   Copy,
+  Plus,
+  UserPlus,
+  Trash2,
 } from "lucide-react";
 import {
   getPermit,
   updatePermit,
   getEffectiveDocs,
   type PermitRow,
+  type PermitSub,
 } from "@/lib/permits-api";
 import {
   getBundle,
@@ -25,8 +29,13 @@ import {
   tradeRowStatus,
   buildBundlePrefill,
   withBundle,
+  newEmptyTrade,
+  tradeCardState,
+  bundleBudgetedTotal,
+  subToSnapshot,
   type Bundle,
   type BundleTrade,
+  type TradeCardState,
 } from "@/lib/bundle";
 import { createSubmission, type ManifestEntry } from "@/lib/submissions-api";
 import { BundlePartialSubmitDialog } from "@/components/bundle-partial-submit-dialog";
@@ -157,6 +166,61 @@ function BundleManagementPage() {
       t.key === trade.key ? { ...t, signature_status: "pending" as const, signature_sent_at: null, signature_signed_at: null } : t,
     );
     setBundle({ ...bundle, trades: nextTrades });
+  }
+
+  function addTrade() {
+    if (!bundle) return;
+    const label = window.prompt("Trade name (e.g. Pool, Gas, Electric)")?.trim();
+    if (!label) return;
+    const next: Bundle = {
+      ...bundle,
+      trades: [...bundle.trades, newEmptyTrade(label, bundle.trades.map((t) => t.key))],
+    };
+    persist(next, { silent: true });
+  }
+
+  function removeTrade(trade: BundleTrade) {
+    if (!bundle) return;
+    if (!window.confirm(`Remove ${trade.label} from this bundle?`)) return;
+    const next: Bundle = { ...bundle, trades: bundle.trades.filter((t) => t.key !== trade.key) };
+    persist(next, { silent: true });
+  }
+
+  function assignSubToTrade(trade: BundleTrade, sub: PermitSub) {
+    if (!bundle) return;
+    const nextTrades = bundle.trades.map((t) =>
+      t.key === trade.key
+        ? { ...t, sub_snapshot: subToSnapshot(sub), signature_status: "pending" as const, signature_sent_at: null, signature_signed_at: null }
+        : t,
+    );
+    persist({ ...bundle, trades: nextTrades }, { silent: true });
+  }
+
+  function unassignSub(trade: BundleTrade) {
+    if (!bundle) return;
+    const nextTrades = bundle.trades.map((t) =>
+      t.key === trade.key
+        ? { ...t, sub_snapshot: null, signature_status: "pending" as const, signature_sent_at: null, signature_signed_at: null }
+        : t,
+    );
+    persist({ ...bundle, trades: nextTrades }, { silent: true });
+  }
+
+  function updateTradeFee(trade: BundleTrade, dollars: string) {
+    if (!bundle) return;
+    const cents = Math.max(0, Math.round(parseFloat(dollars || "0") * 100)) || 0;
+    if (cents === (trade.budgeted_fee_cents ?? 0)) return;
+    updateTrade(trade.key, { budgeted_fee_cents: cents });
+  }
+
+  function toggleTradeFeeConfirmed(trade: BundleTrade) {
+    if (!bundle) return;
+    const next = !trade.fee_confirmed;
+    const nextBundle: Bundle = {
+      ...bundle,
+      trades: bundle.trades.map((t) => (t.key === trade.key ? { ...t, fee_confirmed: next } : t)),
+    };
+    persist(nextBundle, { silent: true });
   }
 
   function buildManifest(includeKeys: string[]): { manifest: ManifestEntry[]; includedLabels: string[] } {
@@ -332,61 +396,156 @@ function BundleManagementPage() {
 
       {/* Trade cards */}
       <div className="mt-6 space-y-4">
+        <div className="flex items-center justify-between">
+          <div className="eyebrow text-obsidian/60">Trades in this Bundle</div>
+          <button
+            onClick={addTrade}
+            className="inline-flex items-center gap-2 border border-obsidian/20 bg-white px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian rounded-[3px] hover:bg-obsidian/5"
+          >
+            <Plus className="h-3.5 w-3.5" /> Add Trade
+          </button>
+        </div>
         {bundle.trades.length === 0 && (
           <div className="border border-obsidian/12 rounded-[3px] p-6 text-sm text-obsidian/60 bg-white">
-            No trades attached to this bundle. Return to the permit and add subs.
+            No trades yet. Click <span className="font-mono">Add Trade</span> to start capturing budgeted fees — subs can be assigned later.
           </div>
         )}
         {bundle.trades.map((trade) => {
+          const cardState: TradeCardState = tradeCardState(trade);
           const rowStatus = tradeRowStatus(trade, docs);
           const tradeDocs = docs.filter((d) => trade.doc_keys.length === 0 || trade.doc_keys.includes(d.key));
           const uploadedCount = tradeDocs.filter((d) => d.status === "uploaded").length;
+          const chipStyle: Record<TradeCardState, string> = {
+            no_sub: "border-obsidian/20 bg-obsidian/[0.04] text-obsidian/60",
+            invited: "border-amber-500/40 bg-amber-50 text-amber-800",
+            active: "border-sky-500/40 bg-sky-50 text-sky-800",
+            signed: "border-emerald-600/40 bg-emerald-50 text-emerald-800",
+          };
+          const chipLabel: Record<TradeCardState, string> = {
+            no_sub: "No Sub Assigned",
+            invited: "Sub Invited",
+            active: "Sub Active",
+            signed: "Sub Signed",
+          };
           const iconMap: Record<string, React.ReactNode> = {
-            not_contacted: <XCircle className="h-4 w-4 text-red-600" />,
+            not_contacted: <XCircle className="h-4 w-4 text-obsidian/40" />,
             sent: <Loader2 className="h-4 w-4 text-amber-600 animate-spin" />,
             signed_docs_missing: <AlertTriangle className="h-4 w-4 text-amber-700" />,
             signed_complete: <CheckCircle2 className="h-4 w-4 text-emerald-600" />,
           };
-          const statusLabel: Record<string, string> = {
-            not_contacted: "Not contacted",
-            sent: "Awaiting signature",
-            signed_docs_missing: "Signed · docs incomplete",
-            signed_complete: "Ready",
-          };
+          const feeDollars = ((trade.budgeted_fee_cents ?? 0) / 100).toFixed(2);
+          const availableSubs = (row.subs ?? []).filter((s) => s.companyName?.trim());
           return (
             <div key={trade.key} className="bg-white border border-obsidian/10 rounded-[3px] p-5">
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div className="flex items-start gap-3">
                   <div className="mt-0.5">{iconMap[rowStatus]}</div>
                   <div>
-                    <div className="font-mono text-[11px] uppercase tracking-[0.16em] text-obsidian">{trade.label}</div>
+                    <div className="flex items-center gap-2">
+                      <div className="font-mono text-[11px] uppercase tracking-[0.16em] text-obsidian">{trade.label}</div>
+                      <span className={`inline-flex items-center border rounded-[3px] px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-[0.14em] ${chipStyle[cardState]}`}>
+                        {chipLabel[cardState]}
+                      </span>
+                    </div>
                     <div className="mt-1 text-sm text-obsidian">
                       {trade.sub_snapshot?.company ?? <span className="text-obsidian/50 italic">No sub assigned</span>}
                     </div>
                     <div className="mt-0.5 text-[12px] text-obsidian/60">
                       {trade.sub_snapshot?.contact ? `${trade.sub_snapshot.contact} · ` : ""}
-                      {trade.sub_snapshot?.email ?? "no email"}
+                      {trade.sub_snapshot?.email ?? (trade.sub_snapshot ? "no email" : "GC can upload docs & set fee before assigning sub")}
                     </div>
                   </div>
                 </div>
                 <div className="text-right">
-                  <div className="font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/60">{statusLabel[rowStatus]}</div>
                   <div className="mt-1 text-[12px] text-obsidian/60">
                     Docs: <span className="tabular-nums text-obsidian">{uploadedCount}</span>/{tradeDocs.length}
                   </div>
+                  <button
+                    onClick={() => removeTrade(trade)}
+                    title="Remove trade from bundle"
+                    className="mt-2 inline-flex items-center gap-1 text-[11px] font-mono uppercase tracking-[0.14em] text-obsidian/50 hover:text-red-700"
+                  >
+                    <Trash2 className="h-3 w-3" /> Remove
+                  </button>
                 </div>
               </div>
 
-              <div className="mt-4 flex flex-wrap gap-2">
-                {trade.signature_status === "pending" && (
-                  <button
-                    onClick={() => sendToSub(trade)}
-                    className="inline-flex items-center gap-2 bg-obsidian px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-paper rounded-[3px]"
-                  >
-                    <Send className="h-3.5 w-3.5" /> Send to Sub
-                  </button>
+              {/* Budgeted fee row */}
+              <div className="mt-4 flex flex-wrap items-center gap-3 border-t border-obsidian/10 pt-4">
+                <div className="text-[11px] font-mono uppercase tracking-[0.14em] text-obsidian/60">
+                  Permit Fee
+                </div>
+                <div className="relative">
+                  <span className="absolute inset-y-0 left-3 grid place-items-center text-obsidian/40">$</span>
+                  <input
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    defaultValue={feeDollars}
+                    onBlur={(e) => updateTradeFee(trade, e.target.value)}
+                    placeholder="0.00"
+                    className="w-32 border border-obsidian/15 bg-white pl-6 pr-2 py-1.5 text-sm text-obsidian rounded-[3px] focus:border-obsidian/40 focus:outline-none"
+                  />
+                </div>
+                {trade.fee_confirmed ? (
+                  <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-emerald-700">Confirmed</span>
+                ) : (
+                  <span className="italic text-[12px] text-obsidian/55">Budgeted</span>
                 )}
-                {trade.signature_status === "sent" && (
+                <label className="inline-flex items-center gap-1.5 text-[11px] text-obsidian/60 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={!!trade.fee_confirmed}
+                    onChange={() => toggleTradeFeeConfirmed(trade)}
+                    className="h-3 w-3"
+                  />
+                  Mark as actual
+                </label>
+              </div>
+
+              <div className="mt-4 flex flex-wrap gap-2">
+                {cardState === "no_sub" && (
+                  availableSubs.length > 0 ? (
+                    <div className="inline-flex items-center gap-2">
+                      <UserPlus className="h-3.5 w-3.5 text-obsidian/50" />
+                      <select
+                        onChange={(e) => {
+                          const sub = availableSubs.find((s) => s.companyName === e.target.value);
+                          if (sub) assignSubToTrade(trade, sub);
+                          e.currentTarget.value = "";
+                        }}
+                        defaultValue=""
+                        className="border border-obsidian/20 bg-white px-2 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian rounded-[3px]"
+                      >
+                        <option value="" disabled>Assign sub…</option>
+                        {availableSubs.map((s) => (
+                          <option key={s.companyName} value={s.companyName}>{s.companyName}</option>
+                        ))}
+                      </select>
+                    </div>
+                  ) : (
+                    <span className="text-[11px] font-mono uppercase tracking-[0.14em] text-obsidian/50">
+                      Add a sub to this permit to assign
+                    </span>
+                  )
+                )}
+                {cardState === "active" && (
+                  <>
+                    <button
+                      onClick={() => sendToSub(trade)}
+                      className="inline-flex items-center gap-2 bg-obsidian px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-paper rounded-[3px]"
+                    >
+                      <Send className="h-3.5 w-3.5" /> Send to Sub
+                    </button>
+                    <button
+                      onClick={() => unassignSub(trade)}
+                      className="inline-flex items-center gap-2 border border-obsidian/20 bg-white px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian rounded-[3px] hover:bg-obsidian/5"
+                    >
+                      Unassign
+                    </button>
+                  </>
+                )}
+                {cardState === "invited" && (
                   <button
                     onClick={() => markSigned(trade)}
                     className="inline-flex items-center gap-2 border border-emerald-600/40 text-emerald-700 px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] rounded-[3px] hover:bg-emerald-50"
@@ -402,13 +561,15 @@ function BundleManagementPage() {
                     Reset
                   </button>
                 )}
-                <button
-                  onClick={() => copyPrefill(trade)}
-                  className="inline-flex items-center gap-2 border border-obsidian/20 bg-white px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian rounded-[3px] hover:bg-obsidian/5"
-                  title="Copy pre-fill data for this sub's forms"
-                >
-                  <Copy className="h-3.5 w-3.5" /> Copy Pre-fill
-                </button>
+                {trade.sub_snapshot && (
+                  <button
+                    onClick={() => copyPrefill(trade)}
+                    className="inline-flex items-center gap-2 border border-obsidian/20 bg-white px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian rounded-[3px] hover:bg-obsidian/5"
+                    title="Copy pre-fill data for this sub's forms"
+                  >
+                    <Copy className="h-3.5 w-3.5" /> Copy Pre-fill
+                  </button>
+                )}
               </div>
 
               <div className="mt-3 text-[11px] text-obsidian/50 font-mono uppercase tracking-[0.14em]">
@@ -418,6 +579,7 @@ function BundleManagementPage() {
           );
         })}
       </div>
+
 
       {/* Actions */}
       <div className="mt-8 flex flex-wrap items-center justify-between gap-3 pt-6 border-t border-obsidian/10">
