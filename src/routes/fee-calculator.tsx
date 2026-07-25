@@ -32,42 +32,8 @@ export const Route = createFileRoute("/fee-calculator")({
   component: FeeCalculatorPage,
 });
 
-const MUNICIPALITIES = [
-  "Palm Beach County",
-  "Town of Palm Beach",
-  "Town of Manalapan",
-  "Town of Gulf Stream",
-  "Town of Ocean Ridge",
-  "Town of Highland Beach",
-  "Town of Jupiter",
-  "Town of Jupiter Island",
-  "City of West Palm Beach",
-  "City of Boca Raton",
-  "City of Delray Beach",
-  "City of Boynton Beach",
-  "City of Lake Worth Beach",
-  "City of Wellington",
-  "Village of Tequesta",
-  "Village of North Palm Beach",
-  "Martin County",
-  "City of Stuart",
-  "Town of Sewall's Point",
-  "Town of Jupiter Island (Martin)",
-  "City of Hobe Sound",
-  "St. Lucie County",
-  "City of Port St. Lucie",
-  "City of Fort Pierce",
-  "Indian River County",
-  "City of Vero Beach",
-  "Town of Indian River Shores",
-  "Town of Orchid",
-  "Broward County",
-  "City of Fort Lauderdale",
-  "City of Coral Springs",
-  "City of Hollywood",
-  "City of Pompano Beach",
-  "City of Deerfield Beach",
-];
+import { MUNICIPALITIES as SHARED_MUNICIPALITIES } from "@/lib/municipalities";
+const MUNICIPALITIES = SHARED_MUNICIPALITIES.map((m) => m.name);
 
 type FeeRow = { id: string; description: string; amount: string };
 
