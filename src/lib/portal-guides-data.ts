@@ -742,6 +742,7 @@ const OUTDOOR_PLUMBING_ROUGH: PortalGuide = {
 // ---------- REGISTRY ----------
 
 import { COMMERCIAL_GUIDES } from "./portal-guides-commercial";
+import { COMMERCIAL_GUIDES_2 } from "./portal-guides-commercial-2";
 import { SINGLE_FAMILY_GUIDES } from "./portal-guides-single-family";
 import { SINGLE_FAMILY_GUIDES_2 } from "./portal-guides-single-family-2";
 import { SINGLE_FAMILY_GUIDES_3 } from "./portal-guides-single-family-3";
