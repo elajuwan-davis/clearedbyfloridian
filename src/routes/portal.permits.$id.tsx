@@ -1,7 +1,8 @@
 import { createFileRoute, Link, useNavigate, notFound } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { ArrowLeft, Trash2, Save, AlertTriangle, FileText, Pencil, X, Lock, Plus, Search, Loader2, Eye, EyeOff, Download, Share2, RotateCcw, Cloud } from "lucide-react";
+import { ArrowLeft, Trash2, Save, AlertTriangle, FileText, Pencil, X, Lock, Plus, Search, Loader2, Eye, EyeOff, Download, Share2, RotateCcw, Cloud, Package } from "lucide-react";
+import { getBundle } from "@/lib/bundle";
 
 import { getPermit, updatePermit, deletePermit, permitCompleteness, getEffectiveDocs, getHiddenFieldKeys, withHiddenFieldKeys, type PermitRow, type PermitStatus, type PermitDoc } from "@/lib/permits-api";
 import { PermitDocUploader } from "@/components/permit-doc-uploader";
@@ -266,6 +267,15 @@ function PermitDetailPage() {
         <div className="flex items-center gap-2">
           {!editing ? (
             <>
+              {getBundle(row)?.enabled && (
+                <Link
+                  to="/portal/permits/$id/bundle"
+                  params={{ id: row.id }}
+                  className="inline-flex items-center gap-2 border border-obsidian/20 bg-obsidian/[0.03] px-3 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian rounded-[3px] hover:bg-obsidian/[0.06]"
+                >
+                  <Package className="h-3.5 w-3.5" /> Bundle
+                </Link>
+              )}
               <span className="inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/50">
                 <Lock className="h-3 w-3" /> Read only
               </span>
