@@ -754,6 +754,7 @@ import { GUIDES_BATCH_7 } from "./portal-guides-batch-7";
 import { GUIDES_BATCH_8 } from "./portal-guides-batch-8";
 import { GUIDES_BATCH_9 } from "./portal-guides-batch-9";
 import { GUIDES_BATCH_10 } from "./portal-guides-batch-10";
+import { GUIDES_BATCH_11 } from "./portal-guides-batch-11";
 
 
 export const PORTAL_GUIDES: PortalGuide[] = [
@@ -804,6 +805,7 @@ export const PORTAL_GUIDES: PortalGuide[] = [
   ...GUIDES_BATCH_8,
   ...GUIDES_BATCH_9,
   ...GUIDES_BATCH_10,
+  ...GUIDES_BATCH_11,
 
 ];
 
