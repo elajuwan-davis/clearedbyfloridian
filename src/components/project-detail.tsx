@@ -341,7 +341,8 @@ function DocumentsTab({ project, internal }: { project: Project; internal: boole
 
   return (
     <div className="space-y-6">
-      {/* Generate Forms — pre-filled private provider PDFs */}
+      {/* Generate Forms — pre-filled private provider PDFs (internal only) */}
+      {internal && (
       <div className="border border-obsidian/12 bg-white rounded-[3px]">
         <div className="flex items-center justify-between border-b border-obsidian/10 bg-paper-warm px-4 py-2.5">
           <div className="font-mono text-[11px] uppercase tracking-[0.14em] text-obsidian/70">
