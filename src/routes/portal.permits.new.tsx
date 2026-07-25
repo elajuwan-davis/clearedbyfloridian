@@ -17,9 +17,8 @@ import { TradesOnJobPanel } from "@/components/trades-on-job-panel";
 
 
 export const Route = createFileRoute("/portal/permits/new")({
-  validateSearch: (search: Record<string, unknown>) => ({
-    edit: typeof search.edit === "string" ? search.edit : undefined,
-  }),
+  validateSearch: (search: Record<string, unknown>): { edit?: string } =>
+    typeof search.edit === "string" ? { edit: search.edit } : {},
   head: () => ({
     meta: [
       { title: "New Permit Intake — Cleard by Flōridian" },
