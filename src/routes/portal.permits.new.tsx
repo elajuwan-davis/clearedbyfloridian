@@ -750,7 +750,7 @@ function NewPermitPage() {
               <ArrowLeft className="h-3.5 w-3.5" /> Back
             </button>
             <button type="button" disabled={saving} onClick={submit} className="inline-flex items-center gap-2 px-5 py-2.5 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian rounded-[3px] disabled:opacity-60" style={{ backgroundColor: "#E4B93B" }}>
-              <Send className="h-3.5 w-3.5" /> {saving ? "Saving…" : "Submit Permit Intake"}
+              <Send className="h-3.5 w-3.5" /> {saving ? "Saving…" : isEditing ? "Save Changes" : "Submit Permit Intake"}
             </button>
           </div>
         </div>
