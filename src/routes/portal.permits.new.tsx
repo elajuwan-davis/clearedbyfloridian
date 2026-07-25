@@ -353,6 +353,8 @@ function NewPermitPage() {
       } else {
         const row = await createPermit({ ...permitPatch, status: "submitted" });
         rowId = row.id;
+        // Auto-generate internal NTO (hidden from GC). Best-effort.
+        void import("@/lib/nto-auto").then((m) => m.autoGenerateNTOForPermit(row));
         toast.success(wantBundle ? "Bundle permit created" : "Permit created");
         if (wantBundle) navigate({ to: "/portal/permits/$id/bundle", params: { id: rowId } });
         else navigate({ to: "/portal/permits/$id", params: { id: rowId } });
