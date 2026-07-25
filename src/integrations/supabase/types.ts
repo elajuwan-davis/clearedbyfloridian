@@ -195,6 +195,74 @@ export type Database = {
           },
         ]
       }
+      email_outbox: {
+        Row: {
+          attachments: Json
+          body_html: string | null
+          body_text: string
+          cc_emails: string[]
+          created_at: string
+          created_by: string | null
+          error: string | null
+          id: string
+          kind: string
+          related_submittal_id: string | null
+          sent_at: string | null
+          status: string
+          subject: string
+          tenant_id: string | null
+          to_email: string
+          to_name: string | null
+          updated_at: string
+        }
+        Insert: {
+          attachments?: Json
+          body_html?: string | null
+          body_text: string
+          cc_emails?: string[]
+          created_at?: string
+          created_by?: string | null
+          error?: string | null
+          id?: string
+          kind: string
+          related_submittal_id?: string | null
+          sent_at?: string | null
+          status?: string
+          subject: string
+          tenant_id?: string | null
+          to_email: string
+          to_name?: string | null
+          updated_at?: string
+        }
+        Update: {
+          attachments?: Json
+          body_html?: string | null
+          body_text?: string
+          cc_emails?: string[]
+          created_at?: string
+          created_by?: string | null
+          error?: string | null
+          id?: string
+          kind?: string
+          related_submittal_id?: string | null
+          sent_at?: string | null
+          status?: string
+          subject?: string
+          tenant_id?: string | null
+          to_email?: string
+          to_name?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "email_outbox_related_submittal_id_fkey"
+            columns: ["related_submittal_id"]
+            isOneToOne: false
+            referencedRelation: "hoa_submittals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       gc_coi_minimums: {
         Row: {
           created_at: string
@@ -308,6 +376,9 @@ export type Database = {
           extracted_fields: Json
           generated_pdf_path: string | null
           hoa_name: string | null
+          homeowner_email: string | null
+          homeowner_name: string | null
+          homeowner_notified_at: string | null
           id: string
           lot: string | null
           missing_fields: Json
@@ -322,9 +393,11 @@ export type Database = {
           removal_agreement_path: string | null
           removal_agreement_signed: boolean
           scope_of_work: string | null
+          sent_to_hoa_at: string | null
           source: string
           status: string
           submitted_at: string | null
+          template_id: string | null
           tenant_id: string | null
           updated_at: string
           uploaded_form_path: string | null
@@ -348,6 +421,9 @@ export type Database = {
           extracted_fields?: Json
           generated_pdf_path?: string | null
           hoa_name?: string | null
+          homeowner_email?: string | null
+          homeowner_name?: string | null
+          homeowner_notified_at?: string | null
           id?: string
           lot?: string | null
           missing_fields?: Json
@@ -362,9 +438,11 @@ export type Database = {
           removal_agreement_path?: string | null
           removal_agreement_signed?: boolean
           scope_of_work?: string | null
+          sent_to_hoa_at?: string | null
           source?: string
           status?: string
           submitted_at?: string | null
+          template_id?: string | null
           tenant_id?: string | null
           updated_at?: string
           uploaded_form_path?: string | null
@@ -388,6 +466,9 @@ export type Database = {
           extracted_fields?: Json
           generated_pdf_path?: string | null
           hoa_name?: string | null
+          homeowner_email?: string | null
+          homeowner_name?: string | null
+          homeowner_notified_at?: string | null
           id?: string
           lot?: string | null
           missing_fields?: Json
@@ -402,9 +483,11 @@ export type Database = {
           removal_agreement_path?: string | null
           removal_agreement_signed?: boolean
           scope_of_work?: string | null
+          sent_to_hoa_at?: string | null
           source?: string
           status?: string
           submitted_at?: string | null
+          template_id?: string | null
           tenant_id?: string | null
           updated_at?: string
           uploaded_form_path?: string | null
@@ -418,7 +501,83 @@ export type Database = {
             referencedRelation: "permits"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "hoa_submittals_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "hoa_templates"
+            referencedColumns: ["id"]
+          },
         ]
+      }
+      hoa_templates: {
+        Row: {
+          arc_meeting_notes: string | null
+          city: string
+          community_name: string
+          created_at: string
+          created_by: string | null
+          created_by_tenant_id: string | null
+          deposit_amount_cents: number
+          deposit_type: string | null
+          form_template: Json
+          hoa_contact_email: string | null
+          hoa_contact_name: string | null
+          hoa_contact_phone: string | null
+          id: string
+          last_used_at: string | null
+          required_documents: Json
+          submission_method: string | null
+          submission_portal_url: string | null
+          updated_at: string
+          uploaded_form_path: string | null
+          usage_count: number
+        }
+        Insert: {
+          arc_meeting_notes?: string | null
+          city: string
+          community_name: string
+          created_at?: string
+          created_by?: string | null
+          created_by_tenant_id?: string | null
+          deposit_amount_cents?: number
+          deposit_type?: string | null
+          form_template?: Json
+          hoa_contact_email?: string | null
+          hoa_contact_name?: string | null
+          hoa_contact_phone?: string | null
+          id?: string
+          last_used_at?: string | null
+          required_documents?: Json
+          submission_method?: string | null
+          submission_portal_url?: string | null
+          updated_at?: string
+          uploaded_form_path?: string | null
+          usage_count?: number
+        }
+        Update: {
+          arc_meeting_notes?: string | null
+          city?: string
+          community_name?: string
+          created_at?: string
+          created_by?: string | null
+          created_by_tenant_id?: string | null
+          deposit_amount_cents?: number
+          deposit_type?: string | null
+          form_template?: Json
+          hoa_contact_email?: string | null
+          hoa_contact_name?: string | null
+          hoa_contact_phone?: string | null
+          id?: string
+          last_used_at?: string | null
+          required_documents?: Json
+          submission_method?: string | null
+          submission_portal_url?: string | null
+          updated_at?: string
+          uploaded_form_path?: string | null
+          usage_count?: number
+        }
+        Relationships: []
       }
       notification_prefs: {
         Row: {
