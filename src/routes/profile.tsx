@@ -43,7 +43,7 @@ function ProfilePage() {
     address: "",
   });
   const [language, setLanguage] = useState("en");
-  const [emails, setEmails] = useState<string[]>(["team@floridianinc.com"]);
+  const [emails, setEmails] = useState<string[]>(["info@cleard.com"]);
   const [newEmail, setNewEmail] = useState("");
   const [license] = useState({ number: "CPC1459161", type: "CPC (Certified Pool/Spa Contractor)", expires: "2027-08-31" });
   const [pwd, setPwd] = useState({ current: "", next: "", confirm: "" });

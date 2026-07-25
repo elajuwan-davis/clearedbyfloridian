@@ -5,7 +5,7 @@ export const FLORIDIAN_FIRM = {
   addressLine1: "1000 S Pine Island Rd, Suite 155",
   addressLine2: "Plantation, FL 33324",
   telephone: "(561) 555-0100",
-  email: "team@floridianinc.com",
+  email: "info@cleard.com",
   licenseNumber: "CPC1459161",
   signatoryType: "Corporation" as const,
   printNameCorporation: "Flōridian",
