@@ -434,6 +434,8 @@ function FinancialsPage() {
           </div>
         )}
       </div>
+      </>
+      )}
     </div>
   );
 }
