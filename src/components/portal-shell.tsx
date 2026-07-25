@@ -28,7 +28,6 @@ const navGroups: NavGroup[] = [
       { to: "/portal/permits", label: "My Permits", alertKey: "my-permits" },
       { to: "/portal/permits/new", label: "New Permit" },
       { to: "/portal/submissions", label: "Submissions" },
-      { to: "/portal/new-permit", label: "Bundle Submission" },
     ],
   },
   {
@@ -45,7 +44,6 @@ const navGroups: NavGroup[] = [
     items: [
       { to: "/portal/equipment-specs", label: "Equipment Specs" },
       { to: "/portal/building-dept", label: "Building Departments" },
-      { to: "/portal/municipalities", label: "Municipalities" },
       { to: "/forms", label: "Forms" },
     ],
   },
