@@ -69,6 +69,7 @@ function NewPermitPage() {
     additionalNotes: "",
     docs: {} as Record<string, DocState>,
     extraDocs: [] as string[],
+    bundleEnabled: false,
   });
 
   useEffect(() => { listSubs().then(setSavedSubs).catch(() => {}); }, []);
@@ -260,6 +261,23 @@ function NewPermitPage() {
                 </div>
               );
             })}
+          </div>
+
+          <div className="border border-obsidian/12 rounded-[3px] p-4 bg-obsidian/[0.02]">
+            <label className="flex items-start gap-3 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={form.bundleEnabled}
+                onChange={(e) => update("bundleEnabled", e.target.checked)}
+                className="mt-1 h-4 w-4"
+              />
+              <div>
+                <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-obsidian">Bundle Submission</div>
+                <div className="mt-1 text-[12px] text-obsidian/65 leading-relaxed">
+                  Submit all trades under a single GC permit package. One consolidated fee, sub-permits tracked inside the master.
+                </div>
+              </div>
+            </label>
           </div>
 
           <div>
