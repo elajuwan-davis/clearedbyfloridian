@@ -200,6 +200,45 @@ export type Database = {
         }
         Relationships: []
       }
+      prior_permits: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          date_pulled: string | null
+          id: string
+          notes: string | null
+          permit_number: string | null
+          project_label: string
+          total_cents: number
+          trades: Json
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          date_pulled?: string | null
+          id?: string
+          notes?: string | null
+          permit_number?: string | null
+          project_label: string
+          total_cents?: number
+          trades?: Json
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          date_pulled?: string | null
+          id?: string
+          notes?: string | null
+          permit_number?: string | null
+          project_label?: string
+          total_cents?: number
+          trades?: Json
+          updated_at?: string
+        }
+        Relationships: []
+      }
       subcontractors: {
         Row: {
           coi_expiration: string | null

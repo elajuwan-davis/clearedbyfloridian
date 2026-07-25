@@ -16,9 +16,13 @@ import {
 import contestReport from "@/assets/fee-contest-report.pdf.asset.json";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { isInternalUser } from "@/lib/is-internal-user";
+import { SavingsCalculator } from "@/components/savings-calculator";
 
 
 export const Route = createFileRoute("/fee-calculator")({
+  validateSearch: (search: Record<string, unknown>) => ({
+    mode: (search.mode === "savings" ? "savings" : undefined) as "savings" | undefined,
+  }),
   head: () => ({
     meta: [
       { title: "Fee Calculator — Cleared by Flōridian" },
@@ -75,6 +79,8 @@ function uid() {
 }
 
 function FeeCalculatorPage() {
+  const search = Route.useSearch();
+  const [mode, setMode] = useState<"audit" | "savings">(search.mode === "savings" ? "savings" : "audit");
   const [permitNo, setPermitNo] = useState("");
   const [muniQuery, setMuniQuery] = useState("");
   const [muni, setMuni] = useState("");
@@ -157,7 +163,32 @@ function FeeCalculatorPage() {
           </div>
         </div>
 
+        {/* Mode Tabs */}
+        <div className="mt-6 flex gap-1 border-b border-obsidian/10">
+          {([
+            { k: "audit", l: "Fee Audit" },
+            { k: "savings", l: "Savings Mode" },
+          ] as const).map((t) => {
+            const active = mode === t.k;
+            return (
+              <button
+                key={t.k}
+                onClick={() => setMode(t.k)}
+                className="px-4 py-2.5 font-mono text-[11px] uppercase tracking-[0.16em] border-b-2 -mb-px transition-colors"
+                style={{
+                  borderColor: active ? "var(--obsidian)" : "transparent",
+                  color: active ? "var(--obsidian)" : "rgba(21,49,87,0.5)",
+                }}
+              >
+                {t.l}
+              </button>
+            );
+          })}
+        </div>
 
+        {mode === "savings" ? (
+          <div className="mt-8"><SavingsCalculator /></div>
+        ) : (
         <div className="mt-8 grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-8">
           {/* Inputs */}
           <div className="space-y-6">
@@ -365,6 +396,7 @@ function FeeCalculatorPage() {
             </div>
           </aside>
         </div>
+        )}
       </div>
 
       <Dialog open={reportOpen} onOpenChange={setReportOpen}>
