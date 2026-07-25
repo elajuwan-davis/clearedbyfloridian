@@ -49,10 +49,52 @@ function PermitDetailPage() {
 
   useEffect(() => {
     getPermit(id)
-      .then((r) => { if (!r) throw notFound(); setRow(r); setEdit(r); })
+      .then(async (r) => {
+        if (!r) throw notFound();
+        // Backfill accessTokens for legacy subs (created before per-sub
+        // portal tokens existed). Best-effort — never blocks render.
+        const { subs: withTokens, mutated } = ensureSubTokens(r.subs);
+        if (mutated) {
+          try {
+            const updated = await updatePermit(r.id, { subs: withTokens });
+            setRow(updated); setEdit(updated);
+            return;
+          } catch { /* fall through to raw row */ }
+        }
+        setRow(r); setEdit(r);
+      })
       .catch(() => toast.error("Could not load permit"))
       .finally(() => setLoading(false));
   }, [id]);
+
+  async function toggleSubConfirmed(idx: number) {
+    if (!row) return;
+    const current = row.subs?.[idx];
+    if (!current) return;
+    const nextSubs: PermitSub[] = (row.subs ?? []).map((s, i) =>
+      i === idx
+        ? { ...s, confirmed: !s.confirmed, confirmedAt: !s.confirmed ? new Date().toISOString() : s.confirmedAt }
+        : s,
+    );
+    try {
+      const updated = await updatePermit(row.id, { subs: nextSubs });
+      setRow(updated); setEdit(updated);
+      toast.success(nextSubs[idx].confirmed ? `Confirmed ${current.companyName}` : `Unconfirmed ${current.companyName}`);
+    } catch (e) {
+      toast.error("Could not update: " + (e instanceof Error ? e.message : String(e)));
+    }
+  }
+
+  async function copySubPortalLink(sub: PermitSub) {
+    if (!sub.accessToken) { toast.error("No access token — save the permit first."); return; }
+    const url = `${window.location.origin}/sub-portal/${sub.accessToken}`;
+    try {
+      await navigator.clipboard.writeText(url);
+      toast.success("Sub portal link copied");
+    } catch {
+      window.prompt("Copy sub portal link:", url);
+    }
+  }
 
   async function save() {
     if (!row) return;
