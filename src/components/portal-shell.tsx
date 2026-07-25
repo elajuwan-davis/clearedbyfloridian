@@ -45,6 +45,7 @@ const portalNav: NavSection[] = [
     items: [
       { to: "/portal/guides", label: "Project Guides", icon: BookOpen },
       { to: "/portal/equipment-specs", label: "Equipment Specs", icon: Wrench },
+      { to: "/portal/blog", label: "Blog", icon: FileText },
     ],
   },
   {
