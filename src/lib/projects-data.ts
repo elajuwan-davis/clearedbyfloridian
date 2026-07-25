@@ -1,4 +1,4 @@
-// Canonical active Flōridian projects — 24 real jobs.
+// Canonical active Cleard projects — 24 real jobs.
 // Consumed by /my-permits, /projects, /projects/$id, /portal, /portal/projects.
 
 import type { ProjectStatus } from "./status-badges";

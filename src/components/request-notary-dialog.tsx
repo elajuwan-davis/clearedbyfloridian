@@ -53,7 +53,7 @@ export function RequestNotaryDialog({
       <DialogContent className="max-w-md rounded-[3px]">
         <DialogTitle className="display-serif text-2xl text-obsidian">Request Notary</DialogTitle>
         <DialogDescription className="text-sm text-obsidian/70">
-          Flōridian's in-house notary will handle this as part of your service and return the notarized
+          Cleard's in-house notary will handle this as part of your service and return the notarized
           document to this project.
         </DialogDescription>
 

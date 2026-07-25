@@ -17,7 +17,7 @@ const STANDARD_DOWNLOADS: GuideDownload[] = [
 const NTBO_OWNER: GuideDoc[] = [
   {
     name: "Notice to Building Official (NTBO)",
-    description: "Required when using a private provider (Flōridian). Download below.",
+    description: "Required when using a private provider (Cleard). Download below.",
     required: "conditional",
   },
   {
@@ -741,7 +741,7 @@ const COMMERCIAL_ELECTRICAL_ONLY: PortalGuide = {
       title: "Plan review applicability (FBC 107.3.5)",
       tags: ["Documentation"],
       description:
-        "Per FBC-B 107.3.5, plan review is not required for minor electrical repairs (Exemption #3). Flōridian performs this review only when the building department requires plan review or the client opts in.",
+        "Per FBC-B 107.3.5, plan review is not required for minor electrical repairs (Exemption #3). Cleard performs this review only when the building department requires plan review or the client opts in.",
       code: "FBC-B 107.3.5",
     },
   ],

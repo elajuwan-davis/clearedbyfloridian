@@ -110,7 +110,7 @@ function buildEmail(
     case "project_complete":
       return {
         subject: `Project complete — ${addr}`,
-        body: `Your project at ${addr} is complete. Certificate of Completion is attached. Thank you for choosing Flōridian.`,
+        body: `Your project at ${addr} is complete. Certificate of Completion is attached. Thank you for choosing Cleard.`,
       };
   }
 }

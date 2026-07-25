@@ -42,7 +42,7 @@ function PublicBlogIndex() {
           </h1>
           <p className="mt-4 max-w-2xl text-sm text-primary-foreground/80 sm:text-base">
             Notes on private-provider permitting, municipality changes across South Florida, and
-            what we're building at Flōridian.
+            what we're building at Cleard.
           </p>
         </div>
       </section>

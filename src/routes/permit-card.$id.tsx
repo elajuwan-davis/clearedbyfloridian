@@ -85,7 +85,7 @@ function PermitCard({ project }: { project: Project }) {
             <Field label="Permit Number" value={project.permit_no || "— pending —"} mono big />
             <Field label="Job Site Address" value={fullAddress(project)} full />
             <Field label="Scope of Work" value={project.scope || "Pool, Spa & Hardscape"} />
-            <Field label="Contractor of Record" value="Flōridian" />
+            <Field label="Contractor of Record" value="Cleard" />
             <Field label="Florida License" value="CPC1459161" mono />
             <Field label="Issue Date" value={issueDate} mono />
             <Field label="Municipality" value={portal?.name ?? project.city} />

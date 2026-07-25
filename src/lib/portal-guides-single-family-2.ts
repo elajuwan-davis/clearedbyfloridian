@@ -17,7 +17,7 @@ const STANDARD_DOWNLOADS: GuideDownload[] = [
 const NTBO_OWNER: GuideDoc[] = [
   {
     name: "Notice to Building Official (NTBO)",
-    description: "Required when using a private provider (Flōridian). Download below.",
+    description: "Required when using a private provider (Cleard). Download below.",
     required: "conditional",
   },
   {
@@ -44,7 +44,7 @@ const SF_ELECTRICAL_ONLY: PortalGuide = {
   planReview: [
     { n: "01", title: "AFCI and GFCI protection", tags: ["Life Safety"], description: "AFCI protection for dwelling unit branch circuits per NEC 210.12; GFCI per NEC 210.8 at required locations.", code: "NEC 210.8 · NEC 210.12" },
     { n: "02", title: "Service size and load calculation", tags: ["Code"], description: "Electrical service and feeder sizing supported by NEC Article 220 load calculation.", code: "NEC 220 · NEC 230" },
-    { n: "03", title: "Plan review applicability (FBC 107.3.5)", tags: ["Documentation"], description: "Per FBC-B 107.3.5, plan review is not required for minor electrical repairs (Exemption #3). Flōridian performs this review only when the building department requires plan review or the client opts in.", code: "FBC-B 107.3.5" },
+    { n: "03", title: "Plan review applicability (FBC 107.3.5)", tags: ["Documentation"], description: "Per FBC-B 107.3.5, plan review is not required for minor electrical repairs (Exemption #3). Cleard performs this review only when the building department requires plan review or the client opts in.", code: "FBC-B 107.3.5" },
   ],
   inspections: [
     {
@@ -95,7 +95,7 @@ const SF_FENCE: PortalGuide = {
   downloads: STANDARD_DOWNLOADS,
   planReview: [
     { n: "01", title: "Pool Barrier Compliance", tags: ["Life Safety"], description: "If the fence encloses a swimming pool or serves as the required pool barrier, it must comply with ISPSC / FBC-R pool barrier requirements: minimum height, opening limits, latch height, and gate direction.", code: "FBC-R R4501.17 · ISPSC 305" },
-    { n: "02", title: "Plan Review Applicability", tags: ["Documentation"], description: "Fences are not listed in FBC-B 107.3.5 minimum plan review criteria for one- and two-family dwellings. Flōridian reviews when building department requires or client opts in.", code: "FBC-B 107.3.5" },
+    { n: "02", title: "Plan Review Applicability", tags: ["Documentation"], description: "Fences are not listed in FBC-B 107.3.5 minimum plan review criteria for one- and two-family dwellings. Cleard reviews when building department requires or client opts in.", code: "FBC-B 107.3.5" },
     { n: "03", title: "Wind Load for Tall or Solid Fences", tags: ["Code"], description: "Tall (over 6 feet) or solid fences in high-wind zones require engineered design or manufacturer product approval.", code: "FBC-B 1609 · ASCE 7" },
   ],
   inspections: [

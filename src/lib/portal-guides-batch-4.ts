@@ -9,7 +9,7 @@ export const STANDARD_DOWNLOADS: GuideDownload[] = [
 ];
 
 export const NTBO_OWNER: GuideDoc[] = [
-  { name: "Notice to Building Official (NTBO)", description: "Required when using a private provider (Flōridian). Download below.", required: "conditional" },
+  { name: "Notice to Building Official (NTBO)", description: "Required when using a private provider (Cleard). Download below.", required: "conditional" },
   { name: "Owner Authorization Form", description: "Private Provider Owner Authorization & Indemnification. Download below.", required: "conditional" },
 ];
 
@@ -197,7 +197,7 @@ const SF_RE_ROOF: PortalGuide = {
     { n: "02", title: "Secondary Water Barrier", tags: ["Life Safety"], description: "Verify secondary water barrier is specified when required by the jurisdiction or when applying HVHZ provisions.", code: "FBC-B 1503.9 · FBC-R R905.1.2" },
     { n: "03", title: "Florida Product Approval", tags: ["Code"], description: "Verify FL Product Approval or Miami-Dade NOA is listed for the new roof covering, matching the project's wind zone.", code: "FBC-B 1504 · 1708 · FBC-R R905" },
     { n: "04", title: "Underlayment Specification", tags: ["Code"], description: "Underlayment type and layers must be specified consistent with the roof covering and jurisdictional wind speed.", code: "FBC-R R905.1.1 · FBC-B 1507" },
-    { n: "05", title: "Plan Review Applicability", tags: ["Documentation"], description: "Per FBC-B 107.3.5, plan review is not required for re-roofs. Flōridian performs this review only when the building department requires plan review or the client opts in.", code: "FBC-B 107.3.5" },
+    { n: "05", title: "Plan Review Applicability", tags: ["Documentation"], description: "Per FBC-B 107.3.5, plan review is not required for re-roofs. Cleard performs this review only when the building department requires plan review or the client opts in.", code: "FBC-B 107.3.5" },
   ],
   inspections: [
     {

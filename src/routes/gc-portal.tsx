@@ -123,7 +123,7 @@ function GCPortal() {
             ))}
             {projects.length === 0 && (
               <div className="border hairline rounded-[3px] p-8 text-center text-sm text-muted-foreground italic">
-                No projects assigned yet. Contact Flōridian to set up your first permit.
+                No projects assigned yet. Contact Cleard to set up your first permit.
               </div>
             )}
           </div>

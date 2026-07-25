@@ -17,7 +17,7 @@ const STANDARD_DOWNLOADS: GuideDownload[] = [
 const NTBO_OWNER: GuideDoc[] = [
   {
     name: "Notice to Building Official (NTBO)",
-    description: "Required when using a private provider (Flōridian). Download below.",
+    description: "Required when using a private provider (Cleard). Download below.",
     required: "conditional",
   },
   {
@@ -280,7 +280,7 @@ const SF_PLUMBING_ONLY: PortalGuide = {
   downloads: STANDARD_DOWNLOADS,
   planReview: [
     { n: "01", title: "Re-pipe materials and scope", tags: ["Code"], description: "Re-pipe scope must show approved materials, routing, and fixture count consistent with DWV sizing.", code: "FBC-P 603 · FBC-P 709" },
-    { n: "02", title: "Plan review applicability", tags: ["Documentation"], description: "Plan review not required for minor plumbing repairs under exemption #3; Flōridian reviews only when building department requires or client opts in.", code: "FBC-B 107.3.5" },
+    { n: "02", title: "Plan review applicability", tags: ["Documentation"], description: "Plan review not required for minor plumbing repairs under exemption #3; Cleard reviews only when building department requires or client opts in.", code: "FBC-B 107.3.5" },
   ],
   inspections: [
     {
@@ -437,7 +437,7 @@ const SF_PREMANUFACTURED_SHED: PortalGuide = {
       code: "101",
       title: "Footing, Slab, UFER",
       tags: ["Structural"],
-      checks: ["Inspection criteria coming soon — your Flōridian inspector will walk you through this inspection on-site."],
+      checks: ["Inspection criteria coming soon — your Cleard inspector will walk you through this inspection on-site."],
       refs: "FBC-R R403.1",
     },
     {
@@ -472,7 +472,7 @@ const SF_RE_PIPE: PortalGuide = {
   downloads: STANDARD_DOWNLOADS,
   planReview: [
     { n: "01", title: "Re-pipe materials and scope", tags: ["Code"], description: "Re-pipe scope must show approved materials, routing, and fixture count consistent with DWV sizing.", code: "FBC-P 603 · FBC-P 709" },
-    { n: "02", title: "Plan review applicability", tags: ["Documentation"], description: "Per FBC-B 107.3.5, plan review is not required for minor plumbing repairs. Flōridian reviews only when building department requires or client opts in.", code: "FBC-B 107.3.5" },
+    { n: "02", title: "Plan review applicability", tags: ["Documentation"], description: "Per FBC-B 107.3.5, plan review is not required for minor plumbing repairs. Cleard reviews only when building department requires or client opts in.", code: "FBC-B 107.3.5" },
   ],
   inspections: [
     {

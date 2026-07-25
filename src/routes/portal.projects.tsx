@@ -29,7 +29,7 @@ function ProjectsPage() {
         <div className="label-eyebrow">◇ Projects</div>
         <h1 className="mt-4 font-display text-4xl tracking-tight">All permits</h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          {PROJECTS.length} of 32 active Flōridian jobs currently visible.
+          {PROJECTS.length} of 32 active Cleard jobs currently visible.
         </p>
       </div>
 

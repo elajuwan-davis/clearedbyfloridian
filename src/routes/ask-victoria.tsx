@@ -89,10 +89,10 @@ function mockReply(q: string): string {
     return COUNTIES_ANSWER;
 
   if (t.includes("contact") || t.includes("email") || t.includes("reach") || t.includes("get started") || t.includes("sign up") || t.includes("onboard"))
-    return "Cleard is available **exclusively to GC clients of Flōridian**. For onboarding or project submittals, reach the team at **permits@floridianinc.com**.";
+    return "Cleard is available **exclusively to GC clients of Cleard**. For onboarding or project submittals, reach the team at **permits@floridianinc.com**.";
 
   if (t.includes("who") && (t.includes("you") || t.includes("cleared") || t.includes("victoria")))
-    return "I'm **Victoria**, the AI permitting assistant for **Cleard** — Flōridian's private-provider permitting arm under FS §553.791. I can answer questions about our service counties, fees, statutory timelines, and inspection process. Ask me anything about a project in Broward, Palm Beach, Martin, St. Lucie, or Indian River County.";
+    return "I'm **Victoria**, the AI permitting assistant for **Cleard** — Cleard's private-provider permitting arm under FS §553.791. I can answer questions about our service counties, fees, statutory timelines, and inspection process. Ask me anything about a project in Broward, Palm Beach, Martin, St. Lucie, or Indian River County.";
 
   return "I can answer questions about **Cleard** — our five service counties (Broward, Palm Beach, Martin, St. Lucie, Indian River), private-provider services under FS §553.791, statutory timelines (10 / 10 / 48hr / 2 business days), and fees (1.5% + $8,856 flat at submittal). What would you like to know?";
 }

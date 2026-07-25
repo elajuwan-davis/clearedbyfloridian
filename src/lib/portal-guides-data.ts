@@ -1,4 +1,4 @@
-// Data for /portal/guides — Florida permitting reference across all Flōridian scopes.
+// Data for /portal/guides — Florida permitting reference across all Cleard scopes.
 
 export type GuideDoc = {
   name: string;
@@ -86,7 +86,7 @@ const D = {
   }),
   ntbo: (): GuideDoc => ({
     name: "Notice to Building Official (NTBO)",
-    description: "Required when using a private provider (Flōridian). Download below.",
+    description: "Required when using a private provider (Cleard). Download below.",
     required: "conditional",
   }),
   ownerAuth: (): GuideDoc => ({

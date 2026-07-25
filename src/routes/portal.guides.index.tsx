@@ -100,7 +100,7 @@ function PortalGuidesIndex() {
               className="mt-2 max-w-2xl text-sm md:text-base leading-relaxed"
               style={{ color: "color-mix(in oklab, var(--paper) 60%, transparent)" }}
             >
-              A printable reference for every project type Flōridian permits. Find your
+              A printable reference for every project type Cleard permits. Find your
               project below.
             </p>
 

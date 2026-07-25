@@ -7,7 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { generateNTBO, type NTBOFields } from "@/lib/private-provider-forms";
 import type { PermitRow } from "@/lib/permits-api";
 
-// Hardcoded Flōridian private-provider identity.
+// Hardcoded Cleard private-provider identity.
 const FLORIDIAN = {
   firmName: "Flōridian LLC",
   privateProvider: "Cleard",

@@ -35,7 +35,7 @@ type TeamMember = { user_id: string; email: string; role: string };
 function ProfilePage() {
   const [displayName, setDisplayName] = useState("Elajuwan Davis");
   const [company, setCompany] = useState({
-    name: "Flōridian",
+    name: "Cleard",
     website: "https://floridianinc.com",
     phone: "(561) 555-0144",
     address: "",

@@ -1,4 +1,4 @@
-// Flōridian firm data used to pre-fill official forms.
+// Cleard firm data used to pre-fill official forms.
 export const FLORIDIAN_FIRM = {
   firmName: "Cleard",
   privateProvider: "Elajuwan Davis",

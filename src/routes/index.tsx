@@ -245,7 +245,7 @@ function HowItWorks() {
     {
       n: "03",
       t: "We Handle the Rest",
-      d: "Flōridian submits to the building department on your behalf. You track status in real time.",
+      d: "Cleard submits to the building department on your behalf. You track status in real time.",
     },
   ];
   return (

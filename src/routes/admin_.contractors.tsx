@@ -58,7 +58,7 @@ function AdminContractorsPage() {
           <ShieldCheck className="mx-auto h-8 w-8 text-obsidian/40" />
           <h1 className="display-serif mt-4 text-3xl text-obsidian">Staff Only</h1>
           <p className="mt-2 text-sm text-obsidian/60">
-            Contractor registry is limited to Flōridian internal users.
+            Contractor registry is limited to Cleard internal users.
           </p>
           <Button asChild variant="outline" className="mt-6 rounded-[3px]">
             <Link to="/portal">Back to Portal</Link>

@@ -19,13 +19,13 @@ function fmt(dateStr?: string | null) {
 function RenewalButton({ sub, onSent }: { sub: SubRecord; onSent: () => void }) {
   function send() {
     const dateStr = fmt(sub.coiExpiration);
-    const subject = encodeURIComponent("Certificate of Insurance renewal — Flōridian");
+    const subject = encodeURIComponent("Certificate of Insurance renewal — Cleard");
     const body = encodeURIComponent(
       `Hi ${sub.contactFirstName || sub.companyName},\n\n` +
-        `Your Certificate of Insurance on file with Flōridian expires on ${dateStr}. ` +
+        `Your Certificate of Insurance on file with Cleard expires on ${dateStr}. ` +
         `Please submit your updated COI at ${window.location.origin}/portal/subcontractors ` +
         `so we can keep you cleared for active projects.\n\n` +
-        `Thank you,\nFlōridian`,
+        `Thank you,\nCleard`,
     );
     if (sub.email) {
       window.open(`mailto:${sub.email}?subject=${subject}&body=${body}`, "_blank");

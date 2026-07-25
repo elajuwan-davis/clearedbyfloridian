@@ -326,7 +326,7 @@ function BundleManagementPage() {
         <h1 className="display-serif mt-2 text-4xl text-obsidian">{row.project_name}</h1>
         <div className="mt-2 text-sm text-obsidian/60">{row.job_address}</div>
         <div className="mt-3 flex flex-wrap items-center gap-3 text-[11px] font-mono uppercase tracking-[0.14em] text-obsidian/60">
-          <span>GC: <span className="text-obsidian">Flōridian</span></span>
+          <span>GC: <span className="text-obsidian">Cleard</span></span>
           <span>·</span>
           <span>{row.municipality || "—"}</span>
           <span>·</span>
