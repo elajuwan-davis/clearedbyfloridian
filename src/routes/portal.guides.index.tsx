@@ -1,6 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { PortalShell } from "@/components/portal-shell";
 import { Input } from "@/components/ui/input";
 import { Search, FileText, ClipboardCheck, ArrowRight } from "lucide-react";
 import { PORTAL_GUIDES, PORTAL_GUIDE_CATEGORIES } from "@/lib/portal-guides-data";
@@ -35,7 +34,7 @@ function PortalGuidesIndex() {
   }, [guides]);
 
   return (
-    <PortalShell>
+    <>
       <div className="-mx-4 sm:-mx-6 md:-mx-8 -mt-6 md:-mt-10">
         {/* Obsidian header */}
         <section
@@ -139,6 +138,6 @@ function PortalGuidesIndex() {
           </div>
         </section>
       </div>
-    </PortalShell>
+    </>
   );
 }

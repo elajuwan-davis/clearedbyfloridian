@@ -1,6 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { PortalShell } from "@/components/portal-shell";
 import { listSubs, coiLifecycle, updateSubApi, type SubRow } from "@/lib/subs-api";
 import { verifyDbprLicense, dbprLookupUrl, type DbprResult } from "@/lib/dbpr-api";
 import { AlertTriangle, ShieldCheck, Loader2, ExternalLink } from "lucide-react";
@@ -72,7 +71,7 @@ function CompliancePage() {
   });
 
   return (
-    <PortalShell>
+    <>
       <div className="max-w-6xl mx-auto">
         <header className="mb-8">
           <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-obsidian/50 mb-2">
@@ -195,7 +194,7 @@ function CompliancePage() {
           </div>
         </section>
       </div>
-    </PortalShell>
+    </>
   );
 }
 

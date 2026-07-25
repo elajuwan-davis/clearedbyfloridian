@@ -1,6 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { PortalShell } from "@/components/portal-shell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Stamp, CheckCircle2 } from "lucide-react";
@@ -28,7 +27,7 @@ function NotaryQueuePage() {
   }, []);
 
   return (
-    <PortalShell>
+    <>
       <div className="mx-auto max-w-5xl px-6 py-10">
         <div className="font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/55">Internal · Ops Queue</div>
         <h1 className="display-serif mt-1 text-4xl text-obsidian">Notary Requests</h1>
@@ -46,7 +45,7 @@ function NotaryQueuePage() {
           {reqs.map((r) => <NotaryRow key={r.id} r={r} />)}
         </div>
       </div>
-    </PortalShell>
+    </>
   );
 }
 
