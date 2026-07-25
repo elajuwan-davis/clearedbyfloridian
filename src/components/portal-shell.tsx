@@ -20,6 +20,7 @@ import {
   Menu,
   User,
   Map,
+  TrendingUp,
 } from "lucide-react";
 
 
