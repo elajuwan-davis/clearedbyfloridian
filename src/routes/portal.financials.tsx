@@ -178,6 +178,35 @@ function FinancialsPage() {
         </p>
       </header>
 
+      {/* Tabs */}
+      <div className="mt-6 flex gap-1 border-b border-obsidian/10">
+        {([
+          { k: "with", l: "With Cléared" },
+          { k: "before", l: "Before Cléared" },
+        ] as const).map((t) => {
+          const active = tab === t.k;
+          return (
+            <button
+              key={t.k}
+              onClick={() => setTab(t.k)}
+              className="px-4 py-2.5 font-mono text-[11px] uppercase tracking-[0.16em] border-b-2 -mb-px transition-colors"
+              style={{
+                borderColor: active ? OBSIDIAN : "transparent",
+                color: active ? OBSIDIAN : "rgba(21,49,87,0.5)",
+              }}
+            >
+              {t.l}
+            </button>
+          );
+        })}
+      </div>
+
+      {tab === "before" ? (
+        <div className="mt-8">
+          <BeforeClearedPanel withClearedTotal={totals.combined} />
+        </div>
+      ) : (
+      <>
       {/* Summary Cards */}
       <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <SummaryCard label="Total Permit Fees" value={fmtUsd(totals.permitFees)} accent />
