@@ -492,10 +492,20 @@ function NewPermitPage() {
         // Auto-generate NOC (Palm Beach County std form) pre-filled from
         // permit data — surfaces in the permit detail as "Review & Sign".
         void import("@/lib/noc-auto").then((m) => m.autoGenerateNOCForPermit(row));
+        // Log to Victoria's intelligence pool.
+        void logPermitIntelligence({
+          tenantId: (row as unknown as { tenant_id?: string | null }).tenant_id ?? null,
+          permitId: row.id,
+          municipalityName: form.municipality || null,
+          trades: form.scopes,
+          scopeOfWork: form.description || null,
+          submittedDate: form.submittedDate ? new Date(form.submittedDate).toISOString() : null,
+        });
 
         toast.success(wantBundle ? "Bundle permit created" : "Permit created");
         if (wantBundle) navigate({ to: "/portal/permits/$id/bundle", params: { id: rowId } });
         else navigate({ to: "/portal/permits/$id", params: { id: rowId } });
+
       }
     } catch (e) {
       toast.error((isEditing ? "Failed to update permit: " : "Failed to create permit: ") + (e instanceof Error ? e.message : String(e)));
