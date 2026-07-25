@@ -2,12 +2,12 @@ import { useState, type ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
 import { Menu, X, ArrowRight } from "lucide-react";
 
-const NAV_LINKS = [
+const NAV_LINKS: Array<{ to: string; label: string; soon?: boolean }> = [
   { to: "/products", label: "Products" },
   { to: "/process", label: "How It Works" },
   { to: "/join", label: "For Builders" },
   { to: "/pricing", label: "Pricing", soon: true },
-] as const;
+];
 
 function MarketingNav() {
   const [open, setOpen] = useState(false);
