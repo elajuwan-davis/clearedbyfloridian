@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { TrendingUp, ChevronDown, ChevronRight, Pencil, Check, X } from "lucide-react";
 import { listPermits, updatePermit, type PermitRow, type PermitStatus } from "@/lib/permits-api";
 import { listAllFees, fmtUsd, parseDollarsToCents, type ManualFee } from "@/lib/manual-fees";
+import { BeforeClearedPanel } from "@/components/before-cleared-panel";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/portal/financials")({
