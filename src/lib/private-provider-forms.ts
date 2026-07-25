@@ -30,6 +30,26 @@ export type OwnerAuthFields = {
   licenseNumber: string;
 };
 
+export type NOCFields = {
+  propertyAddress: string;
+  parcelTaxId: string;
+  legalDescription: string;
+  ownerName: string;
+  ownerAddress: string;
+  contractorName: string;
+  contractorAddress: string;
+  contractorLicense: string;
+  contractorPhone: string;
+  lenderName: string;
+  lenderAddress: string;
+  suretyName: string;
+  suretyAddress: string;
+  suretyBondAmount: string;
+  designProfessional: string;
+  designProfessionalAddress: string;
+  improvementDescription: string;
+};
+
 // -------- helpers --------
 
 type DrawCtx = {
