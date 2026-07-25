@@ -75,7 +75,7 @@ export const listPortalLoginFlags = createServerFn({ method: "GET" })
       .select("municipality_slug, city_name, notes, updated_at")
       .eq("user_id", context.userId);
     if (error) throw new Error(error.message);
-    return (data ?? []) as Array<{
+    return (data ?? []) as unknown as Array<{
       municipality_slug: string;
       city_name: string;
       notes: string | null;
