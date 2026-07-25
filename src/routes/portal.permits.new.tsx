@@ -578,11 +578,16 @@ function NewPermitPage() {
             <div className="flex flex-wrap gap-2">
               {SCOPE_OPTIONS.map((s) => {
                 const selected = form.scopes.includes(s);
+                const helper =
+                  s === "Structural"
+                    ? "Includes pergolas, outdoor kitchens, summer kitchens, shade structures, retaining walls, and hardscape extensions."
+                    : undefined;
                 return (
                   <button
                     key={s}
                     type="button"
                     onClick={() => toggleScope(s)}
+                    title={helper}
                     className={`px-3 py-1.5 rounded-[3px] text-[12px] border transition-colors ${
                       selected
                         ? "bg-obsidian text-white border-obsidian"
@@ -594,6 +599,7 @@ function NewPermitPage() {
                   </button>
                 );
               })}
+
             </div>
             {form.scopes.length > 0 && (
               <div className="flex flex-wrap gap-1.5 pt-1">
