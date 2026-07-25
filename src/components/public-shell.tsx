@@ -81,9 +81,11 @@ export function PublicFooter() {
       <div className="mx-auto max-w-7xl px-6 lg:px-10 py-14 grid gap-10 md:grid-cols-3 items-start">
         <div>
           <div className="md-serif text-3xl" style={{ color: "var(--md-text)" }}>Cléared</div>
-          <div className="mt-1 text-[11px] uppercase tracking-[0.24em] md-muted">
-            By Flōridian · Est. 1998
-          </div>
+          <div className="mt-4 text-[11px] uppercase tracking-[0.24em] md-muted">Coverage</div>
+          <p className="mt-2 text-sm md-muted leading-relaxed">
+            South Florida — Miami-Dade · Broward · Palm Beach · Martin · St. Lucie · Indian River<br />
+            Central Florida — Orange · Seminole · Osceola · Brevard · Hillsborough · Pinellas · Polk · Manatee · Sarasota
+          </p>
         </div>
         <div className="flex flex-wrap gap-x-6 gap-y-2 md:justify-center text-sm">
           <Link to="/products" className="hover:md-gold" style={{ color: "var(--md-text)" }}>Products</Link>
