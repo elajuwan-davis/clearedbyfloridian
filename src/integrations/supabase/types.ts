@@ -206,6 +206,42 @@ export type Database = {
         }
         Relationships: []
       }
+      gc_portal_logins: {
+        Row: {
+          city_name: string
+          created_at: string
+          id: string
+          municipality_slug: string
+          notes: string | null
+          password_ciphertext: string
+          updated_at: string
+          user_id: string
+          username_ciphertext: string
+        }
+        Insert: {
+          city_name: string
+          created_at?: string
+          id?: string
+          municipality_slug: string
+          notes?: string | null
+          password_ciphertext: string
+          updated_at?: string
+          user_id: string
+          username_ciphertext: string
+        }
+        Update: {
+          city_name?: string
+          created_at?: string
+          id?: string
+          municipality_slug?: string
+          notes?: string | null
+          password_ciphertext?: string
+          updated_at?: string
+          user_id?: string
+          username_ciphertext?: string
+        }
+        Relationships: []
+      }
       notification_prefs: {
         Row: {
           created_at: string

@@ -168,7 +168,7 @@ export function ProjectDetail({ project }: { project: Project }) {
             />
 
           </TabsContent>
-          <TabsContent value="documents" className="mt-6"><DocumentsTab project={project} /></TabsContent>
+          <TabsContent value="documents" className="mt-6"><DocumentsTab project={project} internal={internal} /></TabsContent>
           <TabsContent value="subs" className="mt-6"><SubsTab project={project} /></TabsContent>
           <TabsContent value="compliance" className="mt-6"><ProjectComplianceTab /></TabsContent>
           <TabsContent value="fees" className="mt-6"><FeesTab project={project} internal={internal} /></TabsContent>
@@ -304,7 +304,7 @@ function OverviewTab({ project }: { project: Project }) {
 
 /* -------------------------------- DOCUMENTS ------------------------------- */
 
-function DocumentsTab({ project }: { project: Project }) {
+function DocumentsTab({ project, internal }: { project: Project; internal: boolean }) {
   const [docs, setDocs] = useState<ProjectDoc[]>([]);
   const [open, setOpen] = useState(false);
   const [ntboOpen, setNtboOpen] = useState(false);
@@ -341,7 +341,8 @@ function DocumentsTab({ project }: { project: Project }) {
 
   return (
     <div className="space-y-6">
-      {/* Generate Forms — pre-filled private provider PDFs */}
+      {/* Generate Forms — pre-filled private provider PDFs (internal only) */}
+      {internal && (
       <div className="border border-obsidian/12 bg-white rounded-[3px]">
         <div className="flex items-center justify-between border-b border-obsidian/10 bg-paper-warm px-4 py-2.5">
           <div className="font-mono text-[11px] uppercase tracking-[0.14em] text-obsidian/70">
@@ -377,6 +378,7 @@ function DocumentsTab({ project }: { project: Project }) {
           />
         </div>
       </div>
+      )}
 
       <div className="flex items-center justify-between">
         <div className="text-sm text-obsidian/60">{docs.length} document{docs.length === 1 ? "" : "s"} on file</div>

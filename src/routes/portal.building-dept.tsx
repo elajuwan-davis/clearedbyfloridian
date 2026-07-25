@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
 import { PortalShell } from "@/components/portal-shell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,7 +13,8 @@ import {
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
-import { ExternalLink, Building2, Plus, Eye, EyeOff, Check, Trash2, Pencil, Search } from "lucide-react";
+import { ExternalLink, Building2, Plus, Eye, EyeOff, Check, Trash2, Pencil, Search, Lock } from "lucide-react";
+import { toast } from "sonner";
 import { isInternalUser } from "@/lib/is-internal-user";
 import {
   listMunicipalities, addMunicipality, updateMunicipality, deleteMunicipality,
@@ -20,6 +22,11 @@ import {
   type CustomMunicipality, type PortalPlatform,
 } from "@/lib/municipalities-store";
 import { MUNICIPALITIES } from "@/lib/municipalities";
+import { savePortalLogin, deletePortalLogin, listPortalLoginFlags } from "@/lib/portal-logins.functions";
+
+function slugifyCity(name: string): string {
+  return name.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+}
 
 const EMPTY_FORM = {
   municipality_name: "",
@@ -42,6 +49,67 @@ function BuildingDeptPage() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState(EMPTY_FORM);
   const [showPw, setShowPw] = useState(false);
+
+  // GC portal credentials (per-user, per-municipality). Stored encrypted server-side.
+  const listFlags = useServerFn(listPortalLoginFlags);
+  const saveFn = useServerFn(savePortalLogin);
+  const deleteFn = useServerFn(deletePortalLogin);
+  const [savedSlugs, setSavedSlugs] = useState<Set<string>>(new Set());
+  const [loginDialog, setLoginDialog] = useState<{ city: string; slug: string } | null>(null);
+  const [loginForm, setLoginForm] = useState({ username: "", password: "", notes: "" });
+  const [loginShowPw, setLoginShowPw] = useState(false);
+  const [loginSaving, setLoginSaving] = useState(false);
+
+  async function refreshFlags() {
+    try {
+      const rows = await listFlags();
+      setSavedSlugs(new Set(rows.map((r) => r.municipality_slug)));
+    } catch { /* signed-out ok */ }
+  }
+  useEffect(() => { void refreshFlags(); }, []);
+
+  function openLogin(city: string) {
+    setLoginDialog({ city, slug: slugifyCity(city) });
+    setLoginForm({ username: "", password: "", notes: "" });
+    setLoginShowPw(false);
+  }
+  async function submitLogin() {
+    if (!loginDialog) return;
+    if (!loginForm.username.trim() || !loginForm.password.trim()) {
+      toast.error("Username and password are required");
+      return;
+    }
+    setLoginSaving(true);
+    try {
+      await saveFn({
+        data: {
+          municipality_slug: loginDialog.slug,
+          city_name: loginDialog.city,
+          username: loginForm.username.trim(),
+          password: loginForm.password,
+          notes: loginForm.notes.trim() || null,
+        },
+      });
+      toast.success(`Login saved for ${loginDialog.city}`);
+      setLoginDialog(null);
+      await refreshFlags();
+    } catch (e) {
+      toast.error("Failed to save login: " + (e instanceof Error ? e.message : String(e)));
+    } finally {
+      setLoginSaving(false);
+    }
+  }
+  async function clearLogin(city: string) {
+    const slug = slugifyCity(city);
+    if (!confirm(`Remove saved login for ${city}?`)) return;
+    try {
+      await deleteFn({ data: { municipality_slug: slug } });
+      toast.success("Login removed");
+      await refreshFlags();
+    } catch (e) {
+      toast.error("Failed to remove: " + (e instanceof Error ? e.message : String(e)));
+    }
+  }
 
   useEffect(() => {
     setCustom(listMunicipalities());
@@ -149,21 +217,52 @@ function BuildingDeptPage() {
             <div className="text-xs text-muted-foreground">{statewideRows.length} cities</div>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
-            {statewideRows.map((r) => (
-              <div key={r.city} className="border hairline bg-white rounded-[3px] p-4 flex items-center justify-between gap-3">
-                <div className="text-sm font-semibold text-obsidian truncate">{r.city}</div>
-                {r.portalUrl ? (
-                  <a href={r.portalUrl} target="_blank" rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 border border-sky/60 bg-sky/10 hover:bg-sky/20 text-obsidian px-2.5 py-1 rounded-[3px] font-mono text-[10px] uppercase tracking-[0.12em] shrink-0">
-                    Open Portal <ExternalLink className="h-3 w-3" />
-                  </a>
-                ) : (
-                  <span className="inline-flex items-center border border-border bg-secondary/60 text-muted-foreground px-2.5 py-1 rounded-[3px] font-mono text-[10px] uppercase tracking-[0.12em] shrink-0">
-                    Contact Dept.
-                  </span>
-                )}
-              </div>
-            ))}
+            {statewideRows.map((r) => {
+              const slug = slugifyCity(r.city);
+              const hasLogin = savedSlugs.has(slug);
+              return (
+                <div key={r.city} className="border hairline bg-white rounded-[3px] p-4 flex flex-col gap-2.5">
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="text-sm font-semibold text-obsidian truncate">{r.city}</div>
+                    {r.portalUrl ? (
+                      <a href={r.portalUrl} target="_blank" rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 border border-sky/60 bg-sky/10 hover:bg-sky/20 text-obsidian px-2.5 py-1 rounded-[3px] font-mono text-[10px] uppercase tracking-[0.12em] shrink-0">
+                        Open Portal <ExternalLink className="h-3 w-3" />
+                      </a>
+                    ) : (
+                      <span className="inline-flex items-center border border-border bg-secondary/60 text-muted-foreground px-2.5 py-1 rounded-[3px] font-mono text-[10px] uppercase tracking-[0.12em] shrink-0">
+                        Contact Dept.
+                      </span>
+                    )}
+                  </div>
+                  {hasLogin ? (
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="inline-flex items-center gap-1.5 text-emerald-700 font-mono text-[10px] uppercase tracking-[0.12em]">
+                        <Check className="h-3 w-3" /> Login Saved
+                      </span>
+                      <div className="flex items-center gap-1.5">
+                        <button
+                          onClick={() => openLogin(r.city)}
+                          className="font-mono text-[10px] uppercase tracking-[0.12em] text-obsidian/70 hover:text-obsidian underline underline-offset-2"
+                        >Edit</button>
+                        <span className="text-obsidian/25">·</span>
+                        <button
+                          onClick={() => clearLogin(r.city)}
+                          className="font-mono text-[10px] uppercase tracking-[0.12em] text-obsidian/70 hover:text-red-700 underline underline-offset-2"
+                        >Remove</button>
+                      </div>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => openLogin(r.city)}
+                      className="inline-flex items-center gap-1.5 self-start font-mono text-[10px] uppercase tracking-[0.12em] text-obsidian/70 hover:text-obsidian underline underline-offset-2"
+                    >
+                      <Lock className="h-3 w-3" /> Add Login
+                    </button>
+                  )}
+                </div>
+              );
+            })}
           </div>
         </section>
       </div>
@@ -246,6 +345,64 @@ function BuildingDeptPage() {
             <Button variant="outline" onClick={() => setOpen(false)} className="rounded-[3px]">Cancel</Button>
             <Button variant="dark" onClick={save} className="rounded-[3px]">
               {editingId ? "Save Changes" : "Add Municipality"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      {/* GC Portal Login credential dialog */}
+      <Dialog open={!!loginDialog} onOpenChange={(o) => !o && setLoginDialog(null)}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Portal Login — {loginDialog?.city}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-2">
+            <p className="text-xs text-obsidian/60 leading-relaxed">
+              Your credentials are encrypted at rest and used solely by Flōridian staff to
+              submit permit documents to this building department on your behalf.
+            </p>
+            <div>
+              <Label>Username / Email</Label>
+              <Input
+                value={loginForm.username}
+                onChange={(e) => setLoginForm((f) => ({ ...f, username: e.target.value }))}
+                autoComplete="off"
+              />
+            </div>
+            <div>
+              <Label>Password</Label>
+              <div className="relative">
+                <Input
+                  type={loginShowPw ? "text" : "password"}
+                  value={loginForm.password}
+                  onChange={(e) => setLoginForm((f) => ({ ...f, password: e.target.value }))}
+                  autoComplete="new-password"
+                />
+                <button
+                  type="button"
+                  onClick={() => setLoginShowPw((s) => !s)}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-obsidian/50 hover:text-obsidian"
+                  aria-label={loginShowPw ? "Hide password" : "Show password"}
+                >
+                  {loginShowPw ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
+            </div>
+            <div>
+              <Label>Notes (optional)</Label>
+              <Textarea
+                rows={2}
+                placeholder="e.g. use secondary email, MFA on file, etc."
+                value={loginForm.notes}
+                onChange={(e) => setLoginForm((f) => ({ ...f, notes: e.target.value }))}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setLoginDialog(null)} disabled={loginSaving}>
+              Cancel
+            </Button>
+            <Button variant="dark" onClick={submitLogin} disabled={loginSaving}>
+              {loginSaving ? "Saving…" : "Save Login"}
             </Button>
           </DialogFooter>
         </DialogContent>
