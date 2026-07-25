@@ -1464,6 +1464,44 @@ export type Database = {
           },
         ]
       }
+      tenant_invites: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          id: string
+          revoked_at: string | null
+          tenant_id: string
+          token: string
+          uses: number
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          revoked_at?: string | null
+          tenant_id: string
+          token?: string
+          uses?: number
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          revoked_at?: string | null
+          tenant_id?: string
+          token?: string
+          uses?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tenant_invites_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       tenant_members: {
         Row: {
           created_at: string
@@ -1498,6 +1536,7 @@ export type Database = {
       }
       tenants: {
         Row: {
+          allowed_domain: string | null
           created_at: string
           id: string
           license_number: string | null
@@ -1509,6 +1548,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          allowed_domain?: string | null
           created_at?: string
           id?: string
           license_number?: string | null
@@ -1520,6 +1560,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          allowed_domain?: string | null
           created_at?: string
           id?: string
           license_number?: string | null
@@ -1558,6 +1599,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      consume_invite_token: { Args: { _token: string }; Returns: string }
       current_tenant_id: { Args: never; Returns: string }
       current_user_email: { Args: never; Returns: string }
       has_role: {
