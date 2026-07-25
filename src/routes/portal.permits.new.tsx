@@ -80,9 +80,11 @@ function NewPermitPage() {
     setForm((f) => ({ ...f, docs: { ...f.docs, [key]: { ...f.docs[key], ...patch } } }));
   }
 
+  const checklist = useMemo(() => getChecklist(form.municipality, form.permitType), [form.municipality, form.permitType]);
+
   const docsComplete = useMemo(
-    () => REQUIRED_DOCS.filter((d) => { const s = form.docs[d.key]; return s && (s.uploaded || s.na || s.deferred); }).length,
-    [form.docs],
+    () => checklist.filter((d) => { const s = form.docs[d.key]; return s && (s.uploaded || s.na || s.deferred); }).length,
+    [form.docs, checklist],
   );
 
   function handleFile(key: string, e: ChangeEvent<HTMLInputElement>) {
