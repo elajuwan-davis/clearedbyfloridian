@@ -98,7 +98,7 @@ function BlogDetail() {
         </div>
         {post.tags.length > 0 && (
           <div className="mt-12 flex flex-wrap gap-2 border-t hairline pt-6">
-            {post.tags.map((t) => (
+            {post.tags.map((t: string) => (
               <span
                 key={t}
                 className="rounded-[3px] border hairline bg-secondary px-2 py-1 text-xs text-muted-foreground"
