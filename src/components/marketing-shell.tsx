@@ -39,11 +39,15 @@ function MarketingNav() {
           )}
         </nav>
 
-        <div className="hidden md:block">
+        <div className="hidden md:flex items-center gap-3">
           <Link to="/join" hash="request" className="md-btn-gold-outline">
             Request Access
           </Link>
+          <Link to="/portal" className="md-btn-gold">
+            Client Portal
+          </Link>
         </div>
+
 
         <button
           className="md:hidden p-2 -mr-2"
@@ -78,6 +82,10 @@ function MarketingNav() {
             <Link to="/join" hash="request" onClick={() => setOpen(false)} className="md-btn-gold-outline w-full">
               Request Access
             </Link>
+            <Link to="/portal" onClick={() => setOpen(false)} className="md-btn-gold w-full">
+              Client Portal
+            </Link>
+
           </div>
         </div>
       )}
