@@ -57,6 +57,7 @@ import { Route as PortalFinancialsRouteImport } from './routes/portal.financials
 import { Route as PortalComplianceRouteImport } from './routes/portal.compliance'
 import { Route as PortalBuildingDeptRouteImport } from './routes/portal.building-dept'
 import { Route as PermitCardIdRouteImport } from './routes/permit-card.$id'
+import { Route as JoinTokenRouteImport } from './routes/join.$token'
 import { Route as FormsSubcontractorIntakeRouteImport } from './routes/forms.subcontractor-intake'
 import { Route as FormsPermitIntakeRouteImport } from './routes/forms.permit-intake'
 import { Route as FormsPaymentAuthorizationRouteImport } from './routes/forms.payment-authorization'
@@ -334,6 +335,11 @@ const PermitCardIdRoute = PermitCardIdRouteImport.update({
   path: '/permit-card/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const JoinTokenRoute = JoinTokenRouteImport.update({
+  id: '/$token',
+  path: '/$token',
+  getParentRoute: () => JoinRoute,
+} as any)
 const FormsSubcontractorIntakeRoute =
   FormsSubcontractorIntakeRouteImport.update({
     id: '/subcontractor-intake',
@@ -532,7 +538,7 @@ export interface FileRoutesByFullPath {
   '/gc-portal': typeof GcPortalRoute
   '/insurance': typeof InsuranceRoute
   '/invoices': typeof InvoicesRoute
-  '/join': typeof JoinRoute
+  '/join': typeof JoinRouteWithChildren
   '/login': typeof LoginRoute
   '/lpoa-signing': typeof LpoaSigningRoute
   '/messages': typeof MessagesRoute
@@ -558,6 +564,7 @@ export interface FileRoutesByFullPath {
   '/forms/payment-authorization': typeof FormsPaymentAuthorizationRoute
   '/forms/permit-intake': typeof FormsPermitIntakeRoute
   '/forms/subcontractor-intake': typeof FormsSubcontractorIntakeRoute
+  '/join/$token': typeof JoinTokenRoute
   '/permit-card/$id': typeof PermitCardIdRoute
   '/portal/building-dept': typeof PortalBuildingDeptRoute
   '/portal/compliance': typeof PortalComplianceRoute
@@ -617,7 +624,7 @@ export interface FileRoutesByTo {
   '/gc-portal': typeof GcPortalRoute
   '/insurance': typeof InsuranceRoute
   '/invoices': typeof InvoicesRoute
-  '/join': typeof JoinRoute
+  '/join': typeof JoinRouteWithChildren
   '/login': typeof LoginRoute
   '/lpoa-signing': typeof LpoaSigningRoute
   '/messages': typeof MessagesRoute
@@ -642,6 +649,7 @@ export interface FileRoutesByTo {
   '/forms/payment-authorization': typeof FormsPaymentAuthorizationRoute
   '/forms/permit-intake': typeof FormsPermitIntakeRoute
   '/forms/subcontractor-intake': typeof FormsSubcontractorIntakeRoute
+  '/join/$token': typeof JoinTokenRoute
   '/permit-card/$id': typeof PermitCardIdRoute
   '/portal/building-dept': typeof PortalBuildingDeptRoute
   '/portal/compliance': typeof PortalComplianceRoute
@@ -700,7 +708,7 @@ export interface FileRoutesById {
   '/gc-portal': typeof GcPortalRoute
   '/insurance': typeof InsuranceRoute
   '/invoices': typeof InvoicesRoute
-  '/join': typeof JoinRoute
+  '/join': typeof JoinRouteWithChildren
   '/login': typeof LoginRoute
   '/lpoa-signing': typeof LpoaSigningRoute
   '/messages': typeof MessagesRoute
@@ -726,6 +734,7 @@ export interface FileRoutesById {
   '/forms/payment-authorization': typeof FormsPaymentAuthorizationRoute
   '/forms/permit-intake': typeof FormsPermitIntakeRoute
   '/forms/subcontractor-intake': typeof FormsSubcontractorIntakeRoute
+  '/join/$token': typeof JoinTokenRoute
   '/permit-card/$id': typeof PermitCardIdRoute
   '/portal/building-dept': typeof PortalBuildingDeptRoute
   '/portal/compliance': typeof PortalComplianceRoute
@@ -813,6 +822,7 @@ export interface FileRouteTypes {
     | '/forms/payment-authorization'
     | '/forms/permit-intake'
     | '/forms/subcontractor-intake'
+    | '/join/$token'
     | '/permit-card/$id'
     | '/portal/building-dept'
     | '/portal/compliance'
@@ -897,6 +907,7 @@ export interface FileRouteTypes {
     | '/forms/payment-authorization'
     | '/forms/permit-intake'
     | '/forms/subcontractor-intake'
+    | '/join/$token'
     | '/permit-card/$id'
     | '/portal/building-dept'
     | '/portal/compliance'
@@ -980,6 +991,7 @@ export interface FileRouteTypes {
     | '/forms/payment-authorization'
     | '/forms/permit-intake'
     | '/forms/subcontractor-intake'
+    | '/join/$token'
     | '/permit-card/$id'
     | '/portal/building-dept'
     | '/portal/compliance'
@@ -1040,7 +1052,7 @@ export interface RootRouteChildren {
   GcPortalRoute: typeof GcPortalRoute
   InsuranceRoute: typeof InsuranceRoute
   InvoicesRoute: typeof InvoicesRoute
-  JoinRoute: typeof JoinRoute
+  JoinRoute: typeof JoinRouteWithChildren
   LoginRoute: typeof LoginRoute
   LpoaSigningRoute: typeof LpoaSigningRoute
   MessagesRoute: typeof MessagesRoute
@@ -1409,6 +1421,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PermitCardIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/join/$token': {
+      id: '/join/$token'
+      path: '/$token'
+      fullPath: '/join/$token'
+      preLoaderRoute: typeof JoinTokenRouteImport
+      parentRoute: typeof JoinRoute
+    }
     '/forms/subcontractor-intake': {
       id: '/forms/subcontractor-intake'
       path: '/subcontractor-intake'
@@ -1698,6 +1717,16 @@ const FormsRouteChildren: FormsRouteChildren = {
 
 const FormsRouteWithChildren = FormsRoute._addFileChildren(FormsRouteChildren)
 
+interface JoinRouteChildren {
+  JoinTokenRoute: typeof JoinTokenRoute
+}
+
+const JoinRouteChildren: JoinRouteChildren = {
+  JoinTokenRoute: JoinTokenRoute,
+}
+
+const JoinRouteWithChildren = JoinRoute._addFileChildren(JoinRouteChildren)
+
 interface PortalPermitsIdRouteChildren {
   PortalPermitsIdBundleRoute: typeof PortalPermitsIdBundleRoute
 }
@@ -1847,7 +1876,7 @@ const rootRouteChildren: RootRouteChildren = {
   GcPortalRoute: GcPortalRoute,
   InsuranceRoute: InsuranceRoute,
   InvoicesRoute: InvoicesRoute,
-  JoinRoute: JoinRoute,
+  JoinRoute: JoinRouteWithChildren,
   LoginRoute: LoginRoute,
   LpoaSigningRoute: LpoaSigningRoute,
   MessagesRoute: MessagesRoute,
