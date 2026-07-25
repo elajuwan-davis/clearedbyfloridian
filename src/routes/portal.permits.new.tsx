@@ -9,9 +9,9 @@ import { listSubs, createSub, type SubRow } from "@/lib/subs-api";
 import { listDesignPros, createDesignPro, type DesignProRow, type DesignProRole } from "@/lib/design-pros-api";
 import { triggerNotification } from "@/lib/notifications-api";
 import { MUNICIPALITIES } from "@/lib/municipalities";
-import { getChecklist, NOC_DOC_KEY } from "@/lib/permit-checklists";
+import { getChecklist } from "@/lib/permit-checklists";
 import { bundleFromSubs } from "@/lib/bundle";
-import { generateNOC, downloadPdf, type NOCFields } from "@/lib/private-provider-forms";
+
 
 export const Route = createFileRoute("/portal/permits/new")({
   validateSearch: (search: Record<string, unknown>) => ({
