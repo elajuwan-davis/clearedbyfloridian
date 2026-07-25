@@ -221,8 +221,8 @@ function NewPermitPage() {
 
           <div className="pt-2 space-y-5">
             <div className={sectionCls}>Subcontractors</div>
-            {(["subPlumbing", "subElectrical", "subGas"] as const).map((k) => {
-              const trade = k === "subPlumbing" ? "Plumbing" : k === "subElectrical" ? "Electrical" : "Gas";
+            {(["subFencing", "subPlumbing", "subElectrical", "subGas"] as const).map((k) => {
+              const trade = k === "subFencing" ? "Fencing" : k === "subPlumbing" ? "Plumbing" : k === "subElectrical" ? "Electrical" : "Gas";
               const s = form[k];
               const set = (patch: Partial<SubIntake>) => update(k, { ...s, ...patch });
               return (
