@@ -201,13 +201,17 @@ export function permitCompleteness(row: PermitRow): PermitCompleteness {
 
   const total = fieldsTotal + docsTotal;
   const done = fieldsDone + docsDone;
+  // Issued permits are considered fully complete regardless of stored field/doc state.
+  const isIssued = row.status === "permit_issued";
+  const percent = isIssued ? 100 : (total === 0 ? 0 : Math.round((done / total) * 100));
   return {
-    fieldsTotal, fieldsDone,
-    docsTotal, docsDone,
-    total, done,
-    percent: total === 0 ? 0 : Math.round((done / total) * 100),
-    missingFields,
-    missingDocs: missingDocsList,
-    pendingDocs: pendingDocsList,
+    fieldsTotal, fieldsDone: isIssued ? fieldsTotal : fieldsDone,
+    docsTotal, docsDone: isIssued ? docsTotal : docsDone,
+    total, done: isIssued ? total : done,
+    percent,
+    missingFields: isIssued ? [] : missingFields,
+    missingDocs: isIssued ? [] : missingDocsList,
+    pendingDocs: isIssued ? [] : pendingDocsList,
   };
 }
+
