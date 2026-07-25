@@ -968,3 +968,60 @@ function ClientNotificationsToggle({ projectId }: { projectId: string }) {
 // Keeps a stable import so tree-shakers don't drop PROJECTS re-export uses.
 
 export const _ALL_PROJECTS = PROJECTS;
+
+function HoaSubmittalTab({ project }: { project: Project }) {
+  const [rows, setRows] = useState<import("@/lib/hoa-submittals").HoaSubmittalRow[] | null>(null);
+  useEffect(() => {
+    let cancelled = false;
+    import("@/lib/hoa-submittals").then(async (m) => {
+      const all = await m.listHoaSubmittals();
+      const address = `${project.address}, ${project.city}`.toLowerCase();
+      const scoped = all.filter((r) => (r.property_address ?? "").toLowerCase().includes(project.address.toLowerCase())
+        || (r.property_address ?? "").toLowerCase().includes(address));
+      if (!cancelled) setRows(scoped);
+    }).catch(() => { if (!cancelled) setRows([]); });
+    return () => { cancelled = true; };
+  }, [project.address, project.city]);
+
+  return (
+    <section className="border border-obsidian/10 rounded-[3px] bg-white p-6 space-y-4">
+      <div className="flex items-center justify-between gap-3">
+        <div>
+          <h2 className="font-display text-2xl text-obsidian">HOA / ARC Submittal</h2>
+          <p className="text-sm text-muted-foreground">
+            Manage HOA approval alongside the building permit. Cleard pre-fills applicant, address, and scope from this project.
+          </p>
+        </div>
+        <Button asChild variant="dark" className="rounded-[3px] gap-2">
+          <Link to="/portal/hoa-submittals/new"><Plus className="h-4 w-4" /> New HOA Submittal</Link>
+        </Button>
+      </div>
+      {rows === null ? (
+        <div className="text-sm text-muted-foreground">Loading…</div>
+      ) : rows.length === 0 ? (
+        <div className="text-sm text-muted-foreground">
+          No HOA submittals for this project yet.
+        </div>
+      ) : (
+        <ul className="divide-y divide-obsidian/10 border border-obsidian/10 rounded-[3px]">
+          {rows.map((r) => (
+            <li key={r.id} className="px-4 py-3 flex flex-wrap items-center gap-3">
+              <div className="flex-1 min-w-[220px]">
+                <Link to="/portal/hoa-submittals/$id" params={{ id: r.id }} className="font-medium text-obsidian hover:underline">
+                  {r.hoa_name || r.community_name || r.property_address || "HOA Submittal"}
+                </Link>
+                <div className="text-xs text-muted-foreground">
+                  {[r.project_type, r.village_name].filter(Boolean).join(" · ")}
+                </div>
+              </div>
+              <span className="text-xs uppercase tracking-wide text-obsidian/70">{r.status.replace(/_/g, " ")}</span>
+              <Link to="/portal/hoa-submittals/$id" params={{ id: r.id }} className="text-sm text-obsidian underline underline-offset-4">
+                Open →
+              </Link>
+            </li>
+          ))}
+        </ul>
+      )}
+    </section>
+  );
+}
