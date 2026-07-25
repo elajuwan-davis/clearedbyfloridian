@@ -121,13 +121,9 @@ function FeeCalculatorPage() {
             <p className="mt-2 text-sm text-obsidian/60">
               Verify the county charged you correctly and generate a dispute letter if needed.
             </p>
-            <div className="mt-4 inline-flex items-center gap-2 border border-emerald-600/40 bg-emerald-50 px-3 py-1.5 rounded-[3px]">
-              <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-emerald-800">
-                30% fee reduction applied for private provider permits
-              </span>
-            </div>
           </div>
         </div>
+
 
         {/* Mode Tabs */}
         <div className="mt-6 flex gap-1 border-b border-obsidian/10">
@@ -230,8 +226,9 @@ function FeeCalculatorPage() {
                   ))}
                 </div>
                 {ppOnFile && (
-                  <p className="mt-2 text-xs text-obsidian/55">30% fee reduction required under FS §553.791(2)(b).</p>
+                  <p className="mt-2 text-xs text-obsidian/55">Private-provider fee reduction required under FS §553.791(2)(b).</p>
                 )}
+
               </div>
             </div>
 
