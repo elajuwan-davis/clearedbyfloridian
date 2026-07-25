@@ -81,6 +81,18 @@ function HoaSubmittalEditor() {
   const [sending, setSending] = useState(false);
   const [generating, setGenerating] = useState<"pdf" | "removal" | null>(null);
   const [err, setErr] = useState<string | null>(null);
+  const [events, setEvents] = useState<HoaSubmittalEvent[]>([]);
+  const [replies, setReplies] = useState<HoaReplyRow[]>([]);
+  const [replyDraft, setReplyDraft] = useState({ subject: "", fromEmail: "", body: "" });
+  const [loggingReply, setLoggingReply] = useState(false);
+
+  async function refreshTimeline() {
+    try {
+      const [ev, rp] = await Promise.all([listHoaEvents(id), listHoaReplies(id)]);
+      setEvents(ev);
+      setReplies(rp);
+    } catch { /* ignore */ }
+  }
 
   useEffect(() => {
     getHoaSubmittal(id).then(async (r) => {
@@ -89,6 +101,8 @@ function HoaSubmittalEditor() {
         try { setTemplate(await getHoaTemplate(r.template_id)); } catch { /* ignore */ }
       }
     }).catch((e) => setErr(String(e?.message ?? e)));
+    refreshTimeline();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   function patch<K extends keyof HoaSubmittalRow>(key: K, value: HoaSubmittalRow[K]) {
