@@ -7,6 +7,7 @@ import { createPermit, type PermitDoc } from "@/lib/permits-api";
 import { listSubs, createSub, type SubRow } from "@/lib/subs-api";
 import { MUNICIPALITIES } from "@/lib/municipalities";
 import { getChecklist } from "@/lib/permit-checklists";
+import { bundleFromSubs } from "@/lib/bundle";
 
 export const Route = createFileRoute("/portal/permits/new")({
   head: () => ({
