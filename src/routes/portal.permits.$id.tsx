@@ -5,7 +5,7 @@ import { ArrowLeft, Trash2, Save, AlertTriangle, FileText, Pencil, X, Lock, Plus
 import { NtoSection } from "@/components/nto-section";
 import { getBundle } from "@/lib/bundle";
 
-import { getPermit, updatePermit, deletePermit, permitCompleteness, getEffectiveDocs, getHiddenFieldKeys, withHiddenFieldKeys, type PermitRow, type PermitStatus, type PermitDoc } from "@/lib/permits-api";
+import { getPermit, updatePermit, deletePermit, permitCompleteness, getEffectiveDocs, getHiddenFieldKeys, withHiddenFieldKeys, ensureSubTokens, type PermitRow, type PermitStatus, type PermitDoc, type PermitSub } from "@/lib/permits-api";
 import { PermitDocUploader } from "@/components/permit-doc-uploader";
 import { deletePermitFile } from "@/lib/permit-storage";
 import { fetchAppraiserRecord } from "@/lib/property-appraiser";
