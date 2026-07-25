@@ -158,20 +158,31 @@ function NewPermitPage() {
             deferred: d.status === "pending",
           };
         }
+        const loadedScopes = r.permit_type ? r.permit_type.split(" · ").filter(Boolean) : [];
+        // Reunite persisted subs with the scopes that spawned them; scopes
+        // with no matching persisted sub get an empty row.
+        const loadedSubs: SubIntake[] = loadedScopes.map((scope) => {
+          const trade = SCOPE_TO_TRADE[scope] ?? scope;
+          const match = (r.subs ?? []).find((s) => (s.trade ?? "") === trade);
+          if (!match) return emptySub(scope);
+          return {
+            scope,
+            trade,
+            companyName: match.companyName ?? "",
+            licenseNumber: match.licenseNumber ?? "",
+            contactName: match.qualifierName ?? "",
+            contactEmail: match.contactEmail ?? "",
+            skipped: false,
+          };
+        });
         setForm((f) => ({
           ...f,
           projectName: r.project_name ?? "",
           address: r.job_address ?? "",
           municipality: r.municipality ?? "",
-          scopes: r.permit_type ? r.permit_type.split(" · ").filter(Boolean) : [],
+          scopes: loadedScopes,
           description: r.description ?? "",
-          subs: (r.subs ?? []).map((s) => ({
-            trade: s.trade ?? "Other",
-            companyName: s.companyName ?? "",
-            licenseNumber: s.licenseNumber ?? "",
-            contactName: s.qualifierName ?? "",
-            contactEmail: s.contactEmail ?? "",
-          })),
+          subs: loadedSubs,
           submittedDate: r.submitted_date ?? f.submittedDate,
           architectFirm: architect.firm ?? "",
           architectContact: architect.contact ?? "",
