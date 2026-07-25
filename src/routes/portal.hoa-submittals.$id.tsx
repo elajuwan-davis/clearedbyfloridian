@@ -14,6 +14,8 @@ import {
   Loader2,
   Send,
   Mail,
+  Clock,
+  MessageSquare,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useSession } from "@/lib/use-session";
@@ -35,6 +37,8 @@ import {
 import { getHoaTemplate, displayNameFor, type HoaTemplateRow } from "@/lib/hoa-templates";
 import { sendHoaSubmittal } from "@/lib/hoa-send";
 import { buildAndStoreBoilerplate, buildAndStoreRemovalAgreement } from "@/lib/hoa-pdf";
+import { logHoaEvent, listHoaEvents, type HoaSubmittalEvent } from "@/lib/hoa-events";
+import { logHoaReply, listHoaReplies, type HoaReplyRow } from "@/lib/hoa-replies";
 
 export const Route = createFileRoute("/portal/hoa-submittals/$id")({
   head: () => ({
