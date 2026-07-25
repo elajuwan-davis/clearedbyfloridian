@@ -58,6 +58,7 @@ import { Route as PortalFinancialsRouteImport } from './routes/portal.financials
 import { Route as PortalFeatureRequestsRouteImport } from './routes/portal.feature-requests'
 import { Route as PortalComplianceRouteImport } from './routes/portal.compliance'
 import { Route as PortalBuildingDeptRouteImport } from './routes/portal.building-dept'
+import { Route as PortalAlertsRouteImport } from './routes/portal.alerts'
 import { Route as PermitCardIdRouteImport } from './routes/permit-card.$id'
 import { Route as JoinTokenRouteImport } from './routes/join.$token'
 import { Route as FormsSubcontractorIntakeRouteImport } from './routes/forms.subcontractor-intake'
@@ -346,6 +347,11 @@ const PortalBuildingDeptRoute = PortalBuildingDeptRouteImport.update({
   path: '/building-dept',
   getParentRoute: () => PortalRoute,
 } as any)
+const PortalAlertsRoute = PortalAlertsRouteImport.update({
+  id: '/alerts',
+  path: '/alerts',
+  getParentRoute: () => PortalRoute,
+} as any)
 const PermitCardIdRoute = PermitCardIdRouteImport.update({
   id: '/permit-card/$id',
   path: '/permit-card/$id',
@@ -604,6 +610,7 @@ export interface FileRoutesByFullPath {
   '/forms/subcontractor-intake': typeof FormsSubcontractorIntakeRoute
   '/join/$token': typeof JoinTokenRoute
   '/permit-card/$id': typeof PermitCardIdRoute
+  '/portal/alerts': typeof PortalAlertsRoute
   '/portal/building-dept': typeof PortalBuildingDeptRoute
   '/portal/compliance': typeof PortalComplianceRoute
   '/portal/feature-requests': typeof PortalFeatureRequestsRoute
@@ -695,6 +702,7 @@ export interface FileRoutesByTo {
   '/forms/subcontractor-intake': typeof FormsSubcontractorIntakeRoute
   '/join/$token': typeof JoinTokenRoute
   '/permit-card/$id': typeof PermitCardIdRoute
+  '/portal/alerts': typeof PortalAlertsRoute
   '/portal/building-dept': typeof PortalBuildingDeptRoute
   '/portal/compliance': typeof PortalComplianceRoute
   '/portal/feature-requests': typeof PortalFeatureRequestsRoute
@@ -786,6 +794,7 @@ export interface FileRoutesById {
   '/forms/subcontractor-intake': typeof FormsSubcontractorIntakeRoute
   '/join/$token': typeof JoinTokenRoute
   '/permit-card/$id': typeof PermitCardIdRoute
+  '/portal/alerts': typeof PortalAlertsRoute
   '/portal/building-dept': typeof PortalBuildingDeptRoute
   '/portal/compliance': typeof PortalComplianceRoute
   '/portal/feature-requests': typeof PortalFeatureRequestsRoute
@@ -880,6 +889,7 @@ export interface FileRouteTypes {
     | '/forms/subcontractor-intake'
     | '/join/$token'
     | '/permit-card/$id'
+    | '/portal/alerts'
     | '/portal/building-dept'
     | '/portal/compliance'
     | '/portal/feature-requests'
@@ -971,6 +981,7 @@ export interface FileRouteTypes {
     | '/forms/subcontractor-intake'
     | '/join/$token'
     | '/permit-card/$id'
+    | '/portal/alerts'
     | '/portal/building-dept'
     | '/portal/compliance'
     | '/portal/feature-requests'
@@ -1061,6 +1072,7 @@ export interface FileRouteTypes {
     | '/forms/subcontractor-intake'
     | '/join/$token'
     | '/permit-card/$id'
+    | '/portal/alerts'
     | '/portal/building-dept'
     | '/portal/compliance'
     | '/portal/feature-requests'
@@ -1500,6 +1512,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PortalBuildingDeptRouteImport
       parentRoute: typeof PortalRoute
     }
+    '/portal/alerts': {
+      id: '/portal/alerts'
+      path: '/alerts'
+      fullPath: '/portal/alerts'
+      preLoaderRoute: typeof PortalAlertsRouteImport
+      parentRoute: typeof PortalRoute
+    }
     '/permit-card/$id': {
       id: '/permit-card/$id'
       path: '/permit-card/$id'
@@ -1913,6 +1932,7 @@ const PortalSubmissionsRouteWithChildren =
   PortalSubmissionsRoute._addFileChildren(PortalSubmissionsRouteChildren)
 
 interface PortalRouteChildren {
+  PortalAlertsRoute: typeof PortalAlertsRoute
   PortalBuildingDeptRoute: typeof PortalBuildingDeptRoute
   PortalComplianceRoute: typeof PortalComplianceRoute
   PortalFeatureRequestsRoute: typeof PortalFeatureRequestsRoute
@@ -1942,6 +1962,7 @@ interface PortalRouteChildren {
 }
 
 const PortalRouteChildren: PortalRouteChildren = {
+  PortalAlertsRoute: PortalAlertsRoute,
   PortalBuildingDeptRoute: PortalBuildingDeptRoute,
   PortalComplianceRoute: PortalComplianceRoute,
   PortalFeatureRequestsRoute: PortalFeatureRequestsRoute,
