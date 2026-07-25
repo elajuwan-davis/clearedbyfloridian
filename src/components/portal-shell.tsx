@@ -20,6 +20,7 @@ import {
   Menu,
   User,
   Map,
+  TrendingUp,
 } from "lucide-react";
 
 
@@ -63,6 +64,7 @@ const portalNav: NavSection[] = [
     label: "Finance",
     items: [
       { to: "/invoices", label: "Invoices", icon: Receipt },
+      { to: "/portal/financials", label: "Financials", icon: TrendingUp },
       { to: "/portal/permit-fees", label: "Permit Fees", icon: Wallet },
       { to: "/fee-calculator", label: "Fee Calculator", icon: Calculator },
     ],

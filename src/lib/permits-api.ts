@@ -49,6 +49,7 @@ export type PermitRow = {
   permit_type: string | null;
   permit_number: string | null;
   construction_value_cents: number | null;
+  cleared_fee_cents: number | null;
   status: PermitStatus;
   pcn: string | null;
   description: string | null;

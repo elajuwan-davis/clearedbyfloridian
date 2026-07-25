@@ -1,0 +1,1 @@
+ALTER TABLE public.permits ADD COLUMN IF NOT EXISTS cleared_fee_cents bigint NOT NULL DEFAULT 0;

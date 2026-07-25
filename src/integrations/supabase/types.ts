@@ -96,6 +96,7 @@ export type Database = {
         Row: {
           additional_notes: string | null
           city: string | null
+          cleared_fee_cents: number
           company_address: string | null
           construction_value_cents: number | null
           contractor_company: string | null
@@ -130,6 +131,7 @@ export type Database = {
         Insert: {
           additional_notes?: string | null
           city?: string | null
+          cleared_fee_cents?: number
           company_address?: string | null
           construction_value_cents?: number | null
           contractor_company?: string | null
@@ -164,6 +166,7 @@ export type Database = {
         Update: {
           additional_notes?: string | null
           city?: string | null
+          cleared_fee_cents?: number
           company_address?: string | null
           construction_value_cents?: number | null
           contractor_company?: string | null
