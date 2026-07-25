@@ -200,7 +200,13 @@ function NewPermitPage() {
           <div className="grid gap-5 sm:grid-cols-2">
             <div><label className={labelCls}>Project Name *</label><input required className={inputCls} value={form.projectName} onChange={(e) => update("projectName", e.target.value)} /></div>
             <div><label className={labelCls}>Property Address *</label><input required className={inputCls} value={form.address} onChange={(e) => update("address", e.target.value)} /></div>
-            <div><label className={labelCls}>Municipality / City *</label><input required className={inputCls} value={form.municipality} onChange={(e) => update("municipality", e.target.value)} /></div>
+            <div>
+              <label className={labelCls}>Municipality / City *</label>
+              <select required className={inputCls} value={form.municipality} onChange={(e) => update("municipality", e.target.value)}>
+                <option value="">Select municipality…</option>
+                {MUNICIPALITIES.map((m) => <option key={m.name} value={m.name}>{m.name}</option>)}
+              </select>
+            </div>
             <div>
               <label className={labelCls}>Permit Type</label>
               <select className={inputCls} value={form.permitType} onChange={(e) => update("permitType", e.target.value)}>
