@@ -207,67 +207,23 @@ function BuildingDeptPage() {
           </section>
         )}
 
-        {/* Seed table */}
-        <section>
-          <div className="label-eyebrow text-obsidian/60 mb-3">Reference directory</div>
-          <div className="border hairline overflow-hidden bg-background">
-            <div className="grid grid-cols-12 gap-4 px-5 py-3 border-b hairline bg-secondary/40 label-eyebrow">
-              <div className="col-span-4">Municipality</div>
-              <div className="col-span-5">Notes</div>
-              <div className="col-span-3 text-right">Portal Link</div>
-            </div>
-            <div className="divide-y">
-              {seedRows.map((m) => (
-                <div key={m.name} className="grid grid-cols-12 gap-4 items-center px-5 py-4 hover:bg-secondary/30 transition-colors">
-                  <div className="col-span-4 flex items-center gap-3">
-                    <Building2 className="h-4 w-4 text-obsidian/60" strokeWidth={1.5} />
-                    <div className="text-sm font-medium text-obsidian">{m.name}</div>
-                  </div>
-                  <div className="col-span-5 text-xs text-muted-foreground">
-                    {m.note ? <span className="italic">{m.note}</span> : <span className="text-muted-foreground/40">—</span>}
-                  </div>
-                  <div className="col-span-3 flex justify-end">
-                    {m.url ? (
-                      <a href={m.url} target="_blank" rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1.5 border border-sky/60 bg-sky/10 hover:bg-sky/20 text-obsidian px-3 py-1.5 rounded-[3px] font-mono text-[11px] uppercase tracking-[0.12em] transition-colors">
-                        Open Portal <ExternalLink className="h-3 w-3" />
-                      </a>
-                    ) : (
-                      <span className="inline-flex items-center border border-border bg-secondary/60 text-muted-foreground px-3 py-1.5 rounded-[3px] font-mono text-[11px] uppercase tracking-[0.12em]">
-                        Link Coming
-                      </span>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
         {/* Statewide municipalities */}
         <section>
           <div className="flex items-baseline justify-between gap-3 flex-wrap mb-3">
-            <div className="label-eyebrow text-obsidian/60">Statewide municipalities</div>
+            <div className="label-eyebrow text-obsidian/60">Building Departments</div>
             <div className="text-xs text-muted-foreground">{statewideRows.length} cities</div>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
             {statewideRows.map((r) => (
-              <div key={`${r.region}-${r.county}-${r.city}`} className="border hairline bg-white rounded-[3px] p-4 space-y-2">
-                <div className="flex items-start gap-2">
-                  <Building2 className="h-4 w-4 text-obsidian/60 mt-0.5 shrink-0" strokeWidth={1.5} />
-                  <div className="min-w-0 flex-1">
-                    <div className="text-sm font-semibold text-obsidian truncate">{r.city}</div>
-                    <div className="text-[11px] text-muted-foreground">{r.county} County · {r.region}</div>
-                    {r.deptName && <div className="text-[11px] text-obsidian/60 mt-0.5 truncate">{r.deptName}</div>}
-                  </div>
-                </div>
+              <div key={r.city} className="border hairline bg-white rounded-[3px] p-4 flex items-center justify-between gap-3">
+                <div className="text-sm font-semibold text-obsidian truncate">{r.city}</div>
                 {r.portalUrl ? (
                   <a href={r.portalUrl} target="_blank" rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 border border-sky/60 bg-sky/10 hover:bg-sky/20 text-obsidian px-2.5 py-1 rounded-[3px] font-mono text-[10px] uppercase tracking-[0.12em]">
+                    className="inline-flex items-center gap-1.5 border border-sky/60 bg-sky/10 hover:bg-sky/20 text-obsidian px-2.5 py-1 rounded-[3px] font-mono text-[10px] uppercase tracking-[0.12em] shrink-0">
                     Open Portal <ExternalLink className="h-3 w-3" />
                   </a>
                 ) : (
-                  <span className="inline-flex items-center border border-border bg-secondary/60 text-muted-foreground px-2.5 py-1 rounded-[3px] font-mono text-[10px] uppercase tracking-[0.12em]">
+                  <span className="inline-flex items-center border border-border bg-secondary/60 text-muted-foreground px-2.5 py-1 rounded-[3px] font-mono text-[10px] uppercase tracking-[0.12em] shrink-0">
                     Contact Dept.
                   </span>
                 )}
@@ -276,6 +232,7 @@ function BuildingDeptPage() {
           </div>
         </section>
       </div>
+
 
       {/* Add / Edit dialog */}
       <Dialog open={open} onOpenChange={setOpen}>
