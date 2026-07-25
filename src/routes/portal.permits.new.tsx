@@ -758,3 +758,57 @@ function NewPermitPage() {
     </div>
   );
 }
+
+function ProContactBlock(props: {
+  role: DesignProRole;
+  label: string;
+  options: DesignProRow[];
+  firm: string;
+  contact: string;
+  license: string;
+  email: string;
+  onFirm: (v: string) => void;
+  onContact: (v: string) => void;
+  onLicense: (v: string) => void;
+  onEmail: (v: string) => void;
+  onPick: (p: DesignProRow) => void;
+  saveNew: boolean;
+  onSaveNew: (v: boolean) => void;
+  inputCls: string;
+  labelCls: string;
+}) {
+  const { options, inputCls, labelCls } = props;
+  const knownMatch = options.find((p) => p.firm_name.trim().toLowerCase() === props.firm.trim().toLowerCase());
+  return (
+    <div className="space-y-2 border border-obsidian/10 rounded-[3px] p-3">
+      <label className={labelCls}>{props.label}</label>
+      <ComboboxInput
+        value={props.firm}
+        onChange={props.onFirm}
+        onSelect={(v) => {
+          const picked = options.find((p) => p.firm_name === v);
+          if (picked) props.onPick(picked);
+        }}
+        options={options.map((p) => ({
+          value: p.firm_name,
+          label: p.firm_name,
+          sublabel: [p.contact_name, p.license_number].filter(Boolean).join(" · ") || undefined,
+        }))}
+        placeholder="Search firm or enter new…"
+        allowFreeform
+      />
+      <div className="grid gap-2 sm:grid-cols-2">
+        <input className={inputCls} value={props.contact} onChange={(e) => props.onContact(e.target.value)} placeholder="Contact name" />
+        <input className={inputCls} value={props.license} onChange={(e) => props.onLicense(e.target.value)} placeholder="License #" />
+        <input className={`${inputCls} sm:col-span-2`} type="email" value={props.email} onChange={(e) => props.onEmail(e.target.value)} placeholder="Email" />
+      </div>
+      {props.firm.trim() && !knownMatch && (
+        <label className="flex items-center gap-2 text-[11px] text-obsidian/70 pt-1">
+          <input type="checkbox" checked={props.saveNew} onChange={(e) => props.onSaveNew(e.target.checked)} />
+          Save to contacts for future permits
+        </label>
+      )}
+    </div>
+  );
+}
+
