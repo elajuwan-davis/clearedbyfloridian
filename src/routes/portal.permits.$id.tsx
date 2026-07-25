@@ -2,6 +2,7 @@ import { createFileRoute, Link, useNavigate, notFound } from "@tanstack/react-ro
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { ArrowLeft, Trash2, Save, AlertTriangle, FileText, Pencil, X, Lock, Plus, Search, Loader2, Eye, EyeOff, Download, Share2, RotateCcw, Cloud, Package } from "lucide-react";
+import { NtoSection } from "@/components/nto-section";
 import { getBundle } from "@/lib/bundle";
 
 import { getPermit, updatePermit, deletePermit, permitCompleteness, getEffectiveDocs, getHiddenFieldKeys, withHiddenFieldKeys, type PermitRow, type PermitStatus, type PermitDoc } from "@/lib/permits-api";
