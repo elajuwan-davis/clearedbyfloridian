@@ -9,7 +9,21 @@ export type ChecklistDoc = {
   desc?: string;
 };
 
+// NOC (Notice of Commencement) is mandatory statewide in Florida. Must be
+// uploaded at intake — non-deferrable. `NOC_DOC_KEY` is exported so form
+// logic can enforce it without stringly-typed lookups.
+export const NOC_DOC_KEY = "notice_of_commencement";
+
+export const NOC_DOC: ChecklistDoc = {
+  key: NOC_DOC_KEY,
+  label: "Notice of Commencement",
+  required: true,
+  canDefer: false,
+  desc: "Recorded Notice of Commencement (FL Statute §713.13). Required for all Florida jobs before permit submission.",
+};
+
 export const DEFAULT_CHECKLIST: ChecklistDoc[] = [
+  NOC_DOC,
   { key: "stamped_plans", label: "Stamped Construction Plans", required: true, canDefer: true, desc: "Signed and sealed construction plans." },
   { key: "site_survey", label: "Site / Spot Survey", required: false, canDefer: false, desc: "Boundary or spot survey." },
   { key: "tdh_calculations", label: "TDH Calculations (Turnover Design and Hydraulics)", required: false, canDefer: false, desc: "Turnover design and hydraulics calculations." },
@@ -49,10 +63,17 @@ const CHECKLISTS: Record<string, Record<string, ChecklistDoc[]>> = {
 };
 
 export function getChecklist(municipality: string | null | undefined, permitType: string | null | undefined): ChecklistDoc[] {
-  if (!municipality || !permitType) return DEFAULT_CHECKLIST;
-  const m = municipality.trim().toLowerCase();
-  const p = permitType.trim().toLowerCase();
-  const byMuni = CHECKLISTS[m];
-  if (byMuni && byMuni[p]) return byMuni[p];
-  return DEFAULT_CHECKLIST;
+  const base = (() => {
+    if (!municipality || !permitType) return DEFAULT_CHECKLIST;
+    const m = municipality.trim().toLowerCase();
+    const p = permitType.trim().toLowerCase();
+    const byMuni = CHECKLISTS[m];
+    if (byMuni && byMuni[p]) return byMuni[p];
+    return DEFAULT_CHECKLIST;
+  })();
+
+  // NOC is mandatory statewide. Ensure it exists exactly once at the top,
+  // upgraded to required + non-deferrable regardless of any legacy entry.
+  const withoutNoc = base.filter((d) => d.key !== NOC_DOC_KEY);
+  return [NOC_DOC, ...withoutNoc];
 }
