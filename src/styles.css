@@ -172,59 +172,64 @@
 }
 
 /* =========================================================
-   MARKETING DARK THEME (scoped)
-   Applied via `.marketing-dark` wrapper on public pages only.
+   MARKETING THEME (scoped, light/white)
+   Applied via `.marketing-dark` wrapper on public pages (name kept
+   for backwards compat; visually now light/editorial).
    Portal is unaffected.
    ========================================================= */
 .marketing-dark {
-  --md-bg: #0A0E17;
-  --md-surface: #111827;
+  --md-bg: #FFFFFF;
+  --md-surface: #F5F4F1;
   --md-surface-2: #153157;
-  --md-border: #1E2533;
-  --md-text: #F5F5F0;
-  --md-muted: #8A8F9E;
+  --md-border: #E5E7EB;
+  --md-text: #1A1A1A;
+  --md-muted: #6B7280;
+  --md-obsidian: #153157;
   --md-gold: #C8A97E;
-  --md-gold-soft: color-mix(in oklab, #C8A97E 18%, transparent);
+  --md-gold-soft: color-mix(in oklab, #C8A97E 14%, transparent);
 
   background-color: var(--md-bg);
   color: var(--md-text);
-  font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
+  font-family: "DM Sans", ui-sans-serif, system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 
 .marketing-dark ::selection {
-  background: var(--md-gold);
-  color: var(--md-bg);
+  background: var(--md-obsidian);
+  color: #fff;
 }
 
 .marketing-dark .md-serif {
-  font-family: "Playfair Display", "Cormorant Garamond", Georgia, serif;
-  font-weight: 500;
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-weight: 600;
   letter-spacing: -0.02em;
   line-height: 1.05;
+  color: var(--md-obsidian);
 }
 .marketing-dark .md-serif em,
 .marketing-dark .md-serif .italic {
   font-style: italic;
-  font-weight: 400;
+  font-weight: 500;
 }
 
 .marketing-dark .md-eyebrow {
-  font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
+  font-family: "DM Sans", ui-sans-serif, system-ui, sans-serif;
   font-size: 11px;
   font-weight: 500;
-  letter-spacing: 0.24em;
+  letter-spacing: 0.15em;
   text-transform: uppercase;
-  color: var(--md-gold);
+  color: var(--md-obsidian);
 }
 
 .marketing-dark .md-muted { color: var(--md-muted); }
 .marketing-dark .md-gold { color: var(--md-gold); }
+.marketing-dark .hover\:md-gold:hover { color: var(--md-obsidian); }
 
 .marketing-dark .md-card {
-  background: var(--md-surface);
+  background: #FFFFFF;
   border: 1px solid var(--md-border);
   border-radius: 6px;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04), 0 4px 12px rgba(15, 23, 42, 0.04);
 }
 
 .marketing-dark .md-hairline { border-color: var(--md-border); }
@@ -236,18 +241,18 @@
   gap: 0.5rem;
   height: 48px;
   padding: 0 1.5rem;
-  background: var(--md-gold);
-  color: var(--md-bg);
+  background: var(--md-obsidian);
+  color: #FFFFFF;
+  font-family: "DM Sans", ui-sans-serif, system-ui, sans-serif;
   font-size: 13px;
   font-weight: 500;
   letter-spacing: 0.02em;
-  border-radius: 4px;
-  border: 1px solid var(--md-gold);
+  border-radius: 3px;
+  border: 1px solid var(--md-obsidian);
   transition: all 0.2s ease;
 }
 .marketing-dark .md-btn-primary:hover {
-  background: color-mix(in oklab, var(--md-gold) 90%, #fff);
-  transform: translateY(-1px);
+  background: color-mix(in oklab, var(--md-obsidian) 88%, #000);
 }
 
 .marketing-dark .md-btn-ghost {
@@ -258,16 +263,17 @@
   height: 48px;
   padding: 0 1.5rem;
   background: transparent;
-  color: var(--md-text);
+  color: var(--md-obsidian);
+  font-family: "DM Sans", ui-sans-serif, system-ui, sans-serif;
   font-size: 13px;
   font-weight: 500;
-  border-radius: 4px;
+  border-radius: 3px;
   border: 1px solid var(--md-border);
   transition: all 0.2s ease;
 }
 .marketing-dark .md-btn-ghost:hover {
-  border-color: var(--md-gold);
-  color: var(--md-gold);
+  border-color: var(--md-obsidian);
+  color: var(--md-obsidian);
 }
 
 .marketing-dark .md-btn-gold-outline {
@@ -278,17 +284,18 @@
   height: 40px;
   padding: 0 1.125rem;
   background: transparent;
-  color: var(--md-gold);
+  color: var(--md-obsidian);
+  font-family: "DM Sans", ui-sans-serif, system-ui, sans-serif;
   font-size: 12px;
   font-weight: 500;
   letter-spacing: 0.04em;
   border-radius: 3px;
-  border: 1px solid var(--md-gold);
+  border: 1px solid var(--md-obsidian);
   transition: all 0.2s ease;
 }
 .marketing-dark .md-btn-gold-outline:hover {
-  background: var(--md-gold);
-  color: var(--md-bg);
+  background: var(--md-obsidian);
+  color: #FFFFFF;
 }
 
 .marketing-dark .md-btn-gold {
@@ -298,20 +305,20 @@
   gap: 0.5rem;
   height: 40px;
   padding: 0 1.125rem;
-  background: var(--md-gold);
-  color: var(--md-bg);
+  background: var(--md-obsidian);
+  color: #FFFFFF;
+  font-family: "DM Sans", ui-sans-serif, system-ui, sans-serif;
   font-size: 12px;
   font-weight: 600;
   letter-spacing: 0.04em;
   border-radius: 3px;
-  border: 1px solid var(--md-gold);
+  border: 1px solid var(--md-obsidian);
   transition: all 0.2s ease;
 }
 .marketing-dark .md-btn-gold:hover {
-  background: transparent;
-  color: var(--md-gold);
+  background: #FFFFFF;
+  color: var(--md-obsidian);
 }
-
 
 .marketing-dark .md-chip {
   display: inline-flex;
@@ -321,14 +328,29 @@
   border-radius: 999px;
   font-size: 12px;
   color: var(--md-text);
-  background: color-mix(in oklab, var(--md-surface) 80%, transparent);
+  background: #FFFFFF;
 }
 
 .marketing-dark .md-grain {
   background-image:
-    radial-gradient(circle at 20% 10%, color-mix(in oklab, var(--md-surface-2) 40%, transparent) 0%, transparent 45%),
-    radial-gradient(circle at 85% 80%, color-mix(in oklab, var(--md-gold) 8%, transparent) 0%, transparent 50%);
+    radial-gradient(circle at 15% 10%, color-mix(in oklab, var(--md-obsidian) 6%, transparent) 0%, transparent 55%),
+    radial-gradient(circle at 85% 90%, color-mix(in oklab, var(--md-gold) 8%, transparent) 0%, transparent 55%);
 }
+
+/* Contrast/cream section */
+.marketing-dark .md-section-alt {
+  background: var(--md-surface);
+}
+
+/* Dark emphasis sections (CTA / footer) */
+.marketing-dark .md-section-dark {
+  background: var(--md-obsidian);
+  color: #FFFFFF;
+}
+.marketing-dark .md-section-dark .md-serif { color: #FFFFFF; }
+.marketing-dark .md-section-dark .md-muted { color: color-mix(in oklab, #FFFFFF 70%, transparent); }
+.marketing-dark .md-section-dark .md-hairline,
+.marketing-dark .md-section-dark.md-hairline { border-color: color-mix(in oklab, #FFFFFF 18%, transparent); }
 
 @keyframes mdFadeUp {
   from { opacity: 0; transform: translateY(16px); }
@@ -341,3 +363,4 @@
 .marketing-dark .md-in-2 { animation-delay: 0.15s; }
 .marketing-dark .md-in-3 { animation-delay: 0.25s; }
 .marketing-dark .md-in-4 { animation-delay: 0.35s; }
+

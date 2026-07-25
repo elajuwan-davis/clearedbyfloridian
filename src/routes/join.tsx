@@ -1,6 +1,8 @@
 import { useState } from "react";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { FileStack, Map, Users } from "lucide-react";
+import { MarketingShell } from "@/components/marketing-shell";
+
 
 export const Route = createFileRoute("/join")({
   component: JoinPage,
@@ -54,25 +56,9 @@ function JoinPage() {
   }
 
   return (
-    <div style={{ backgroundColor: "#ffffff", color: OBSIDIAN, fontFamily: "'DM Sans', 'Inter', sans-serif" }}>
-      {/* NAV */}
-      <header
-        className="sticky top-0 z-40 bg-white"
-        style={{ borderBottom: `1px solid ${HAIRLINE}` }}
-      >
-        <div className="max-w-7xl mx-auto px-6 lg:px-10 h-16 flex items-center justify-between">
-          <Link to="/" className="wordmark text-2xl leading-none" style={{ color: OBSIDIAN }}>
-            Cleard
-          </Link>
-          <a
-            href="#request"
-            className="inline-flex items-center px-5 h-10 text-[11px] font-mono uppercase tracking-[0.2em] transition-opacity hover:opacity-85"
-            style={{ backgroundColor: OBSIDIAN, color: "#fff", borderRadius: 0 }}
-          >
-            Get Started
-          </a>
-        </div>
-      </header>
+    <MarketingShell>
+    <div style={{ color: OBSIDIAN, fontFamily: "'DM Sans', sans-serif" }}>
+
 
       {/* HERO */}
       <section className="px-6 lg:px-10 py-20 lg:py-28">
@@ -391,18 +377,9 @@ function JoinPage() {
         </div>
       </section>
 
-      {/* FOOTER */}
-      <footer className="py-10 px-6 text-center">
-        <div
-          className="text-[12px]"
-          style={{ color: "color-mix(in oklab, " + OBSIDIAN + " 40%, transparent)" }}
-        >
-          Cleard · © 2026 ·{" "}
-          <a href="https://floridianinc.com" className="hover:underline">
-            floridianinc.com
-          </a>
-        </div>
-      </footer>
+      {/* Footer handled by MarketingShell */}
     </div>
+    </MarketingShell>
   );
 }
+
