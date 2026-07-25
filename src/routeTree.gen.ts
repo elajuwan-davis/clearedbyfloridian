@@ -55,6 +55,7 @@ import { Route as PortalPermitFeesRouteImport } from './routes/portal.permit-fee
 import { Route as PortalNotaryQueueRouteImport } from './routes/portal.notary-queue'
 import { Route as PortalInspectionsRouteImport } from './routes/portal.inspections'
 import { Route as PortalFinancialsRouteImport } from './routes/portal.financials'
+import { Route as PortalFeatureRequestsRouteImport } from './routes/portal.feature-requests'
 import { Route as PortalComplianceRouteImport } from './routes/portal.compliance'
 import { Route as PortalBuildingDeptRouteImport } from './routes/portal.building-dept'
 import { Route as PermitCardIdRouteImport } from './routes/permit-card.$id'
@@ -68,6 +69,7 @@ import { Route as ApiVerifyLicenseRouteImport } from './routes/api/verify-licens
 import { Route as AdminContractorsRouteImport } from './routes/admin_.contractors'
 import { Route as AdminHubspotSimulateRouteImport } from './routes/admin.hubspot-simulate'
 import { Route as AdminGcClientsRouteImport } from './routes/admin.gc-clients'
+import { Route as AdminFeatureRequestsRouteImport } from './routes/admin.feature-requests'
 import { Route as AdminBuildersRouteImport } from './routes/admin.builders'
 import { Route as AdminBlogRouteImport } from './routes/admin.blog'
 import { Route as AdminAccessRequestsRouteImport } from './routes/admin.access-requests'
@@ -329,6 +331,11 @@ const PortalFinancialsRoute = PortalFinancialsRouteImport.update({
   path: '/financials',
   getParentRoute: () => PortalRoute,
 } as any)
+const PortalFeatureRequestsRoute = PortalFeatureRequestsRouteImport.update({
+  id: '/feature-requests',
+  path: '/feature-requests',
+  getParentRoute: () => PortalRoute,
+} as any)
 const PortalComplianceRoute = PortalComplianceRouteImport.update({
   id: '/compliance',
   path: '/compliance',
@@ -395,6 +402,11 @@ const AdminHubspotSimulateRoute = AdminHubspotSimulateRouteImport.update({
 const AdminGcClientsRoute = AdminGcClientsRouteImport.update({
   id: '/gc-clients',
   path: '/gc-clients',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminFeatureRequestsRoute = AdminFeatureRequestsRouteImport.update({
+  id: '/feature-requests',
+  path: '/feature-requests',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminBuildersRoute = AdminBuildersRouteImport.update({
@@ -580,6 +592,7 @@ export interface FileRoutesByFullPath {
   '/admin/access-requests': typeof AdminAccessRequestsRoute
   '/admin/blog': typeof AdminBlogRouteWithChildren
   '/admin/builders': typeof AdminBuildersRoute
+  '/admin/feature-requests': typeof AdminFeatureRequestsRoute
   '/admin/gc-clients': typeof AdminGcClientsRoute
   '/admin/hubspot-simulate': typeof AdminHubspotSimulateRoute
   '/admin/contractors': typeof AdminContractorsRoute
@@ -593,6 +606,7 @@ export interface FileRoutesByFullPath {
   '/permit-card/$id': typeof PermitCardIdRoute
   '/portal/building-dept': typeof PortalBuildingDeptRoute
   '/portal/compliance': typeof PortalComplianceRoute
+  '/portal/feature-requests': typeof PortalFeatureRequestsRoute
   '/portal/financials': typeof PortalFinancialsRoute
   '/portal/inspections': typeof PortalInspectionsRoute
   '/portal/notary-queue': typeof PortalNotaryQueueRoute
@@ -669,6 +683,7 @@ export interface FileRoutesByTo {
   '/admin/access-requests': typeof AdminAccessRequestsRoute
   '/admin/blog': typeof AdminBlogRouteWithChildren
   '/admin/builders': typeof AdminBuildersRoute
+  '/admin/feature-requests': typeof AdminFeatureRequestsRoute
   '/admin/gc-clients': typeof AdminGcClientsRoute
   '/admin/hubspot-simulate': typeof AdminHubspotSimulateRoute
   '/admin/contractors': typeof AdminContractorsRoute
@@ -682,6 +697,7 @@ export interface FileRoutesByTo {
   '/permit-card/$id': typeof PermitCardIdRoute
   '/portal/building-dept': typeof PortalBuildingDeptRoute
   '/portal/compliance': typeof PortalComplianceRoute
+  '/portal/feature-requests': typeof PortalFeatureRequestsRoute
   '/portal/financials': typeof PortalFinancialsRoute
   '/portal/inspections': typeof PortalInspectionsRoute
   '/portal/notary-queue': typeof PortalNotaryQueueRoute
@@ -758,6 +774,7 @@ export interface FileRoutesById {
   '/admin/access-requests': typeof AdminAccessRequestsRoute
   '/admin/blog': typeof AdminBlogRouteWithChildren
   '/admin/builders': typeof AdminBuildersRoute
+  '/admin/feature-requests': typeof AdminFeatureRequestsRoute
   '/admin/gc-clients': typeof AdminGcClientsRoute
   '/admin/hubspot-simulate': typeof AdminHubspotSimulateRoute
   '/admin_/contractors': typeof AdminContractorsRoute
@@ -771,6 +788,7 @@ export interface FileRoutesById {
   '/permit-card/$id': typeof PermitCardIdRoute
   '/portal/building-dept': typeof PortalBuildingDeptRoute
   '/portal/compliance': typeof PortalComplianceRoute
+  '/portal/feature-requests': typeof PortalFeatureRequestsRoute
   '/portal/financials': typeof PortalFinancialsRoute
   '/portal/inspections': typeof PortalInspectionsRoute
   '/portal/notary-queue': typeof PortalNotaryQueueRoute
@@ -850,6 +868,7 @@ export interface FileRouteTypes {
     | '/admin/access-requests'
     | '/admin/blog'
     | '/admin/builders'
+    | '/admin/feature-requests'
     | '/admin/gc-clients'
     | '/admin/hubspot-simulate'
     | '/admin/contractors'
@@ -863,6 +882,7 @@ export interface FileRouteTypes {
     | '/permit-card/$id'
     | '/portal/building-dept'
     | '/portal/compliance'
+    | '/portal/feature-requests'
     | '/portal/financials'
     | '/portal/inspections'
     | '/portal/notary-queue'
@@ -939,6 +959,7 @@ export interface FileRouteTypes {
     | '/admin/access-requests'
     | '/admin/blog'
     | '/admin/builders'
+    | '/admin/feature-requests'
     | '/admin/gc-clients'
     | '/admin/hubspot-simulate'
     | '/admin/contractors'
@@ -952,6 +973,7 @@ export interface FileRouteTypes {
     | '/permit-card/$id'
     | '/portal/building-dept'
     | '/portal/compliance'
+    | '/portal/feature-requests'
     | '/portal/financials'
     | '/portal/inspections'
     | '/portal/notary-queue'
@@ -1027,6 +1049,7 @@ export interface FileRouteTypes {
     | '/admin/access-requests'
     | '/admin/blog'
     | '/admin/builders'
+    | '/admin/feature-requests'
     | '/admin/gc-clients'
     | '/admin/hubspot-simulate'
     | '/admin_/contractors'
@@ -1040,6 +1063,7 @@ export interface FileRouteTypes {
     | '/permit-card/$id'
     | '/portal/building-dept'
     | '/portal/compliance'
+    | '/portal/feature-requests'
     | '/portal/financials'
     | '/portal/inspections'
     | '/portal/notary-queue'
@@ -1455,6 +1479,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PortalFinancialsRouteImport
       parentRoute: typeof PortalRoute
     }
+    '/portal/feature-requests': {
+      id: '/portal/feature-requests'
+      path: '/feature-requests'
+      fullPath: '/portal/feature-requests'
+      preLoaderRoute: typeof PortalFeatureRequestsRouteImport
+      parentRoute: typeof PortalRoute
+    }
     '/portal/compliance': {
       id: '/portal/compliance'
       path: '/compliance'
@@ -1544,6 +1575,13 @@ declare module '@tanstack/react-router' {
       path: '/gc-clients'
       fullPath: '/admin/gc-clients'
       preLoaderRoute: typeof AdminGcClientsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/feature-requests': {
+      id: '/admin/feature-requests'
+      path: '/feature-requests'
+      fullPath: '/admin/feature-requests'
+      preLoaderRoute: typeof AdminFeatureRequestsRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/builders': {
@@ -1770,6 +1808,7 @@ interface AdminRouteChildren {
   AdminAccessRequestsRoute: typeof AdminAccessRequestsRoute
   AdminBlogRoute: typeof AdminBlogRouteWithChildren
   AdminBuildersRoute: typeof AdminBuildersRoute
+  AdminFeatureRequestsRoute: typeof AdminFeatureRequestsRoute
   AdminGcClientsRoute: typeof AdminGcClientsRoute
   AdminHubspotSimulateRoute: typeof AdminHubspotSimulateRoute
 }
@@ -1778,6 +1817,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminAccessRequestsRoute: AdminAccessRequestsRoute,
   AdminBlogRoute: AdminBlogRouteWithChildren,
   AdminBuildersRoute: AdminBuildersRoute,
+  AdminFeatureRequestsRoute: AdminFeatureRequestsRoute,
   AdminGcClientsRoute: AdminGcClientsRoute,
   AdminHubspotSimulateRoute: AdminHubspotSimulateRoute,
 }
@@ -1875,6 +1915,7 @@ const PortalSubmissionsRouteWithChildren =
 interface PortalRouteChildren {
   PortalBuildingDeptRoute: typeof PortalBuildingDeptRoute
   PortalComplianceRoute: typeof PortalComplianceRoute
+  PortalFeatureRequestsRoute: typeof PortalFeatureRequestsRoute
   PortalFinancialsRoute: typeof PortalFinancialsRoute
   PortalInspectionsRoute: typeof PortalInspectionsRoute
   PortalNotaryQueueRoute: typeof PortalNotaryQueueRoute
@@ -1903,6 +1944,7 @@ interface PortalRouteChildren {
 const PortalRouteChildren: PortalRouteChildren = {
   PortalBuildingDeptRoute: PortalBuildingDeptRoute,
   PortalComplianceRoute: PortalComplianceRoute,
+  PortalFeatureRequestsRoute: PortalFeatureRequestsRoute,
   PortalFinancialsRoute: PortalFinancialsRoute,
   PortalInspectionsRoute: PortalInspectionsRoute,
   PortalNotaryQueueRoute: PortalNotaryQueueRoute,
