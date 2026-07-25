@@ -63,7 +63,7 @@ function MunicipalitiesPage() {
         </div>
         <h1 className="display-serif text-3xl md:text-4xl leading-tight">Municipalities</h1>
         <p className="text-sm text-muted-foreground max-w-2xl">
-          Region → County → City. Access each building department portal and manage the five ICI private-provider documents required per jurisdiction.
+          Region → County → City. Access each building department portal and manage the five private-provider documents required per jurisdiction.
         </p>
       </header>
 
