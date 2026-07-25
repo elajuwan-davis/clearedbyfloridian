@@ -124,23 +124,9 @@ export const Route = createFileRoute("/api/public/victoria-scan")({
           }
         }
 
-        // 4. Upcoming inspections — scheduled 12–36h from now.
-        const { data: insp } = await (supabaseAdmin.from("inspections" as any) as any)
-          .select("id, permit_id, trade, scheduled_at, permits:permit_id ( id, tenant_id, project_name )")
-          .gte("scheduled_at", new Date(now + 12 * 3600 * 1000).toISOString())
-          .lte("scheduled_at", new Date(now + 36 * 3600 * 1000).toISOString())
-          .limit(500);
-        for (const i of (insp ?? []) as any[]) {
-          const p = i.permits;
-          if (!p) continue;
-          const timeLabel = new Date(i.scheduled_at).toLocaleString();
-          await insertAlert({
-            tenant_id: p.tenant_id, permit_id: p.id, kind: "inspection_upcoming", severity: "info",
-            title: `Inspection tomorrow — ${p.project_name}`,
-            body: `${i.trade || "Inspection"} scheduled at ${timeLabel}. Ensure site access is available.`,
-            dedupe_key: `inspection::${i.id}`,
-          });
-        }
+        // 4. Upcoming inspections — placeholder. Inspection scheduling table
+        //    is not yet in this project; wire up once inspections are stored.
+
 
         // 5. Lien release overdue — sub hasn't responded in 5+ business days.
         const { data: openReleases } = await (supabaseAdmin.from("lien_releases" as any) as any)
