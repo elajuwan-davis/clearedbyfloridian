@@ -16,14 +16,7 @@ export function SiteFooter() {
         <div>
           <div className="label-eyebrow mb-4">Coverage</div>
           <p className="text-sm leading-relaxed">
-            <span className="font-medium">South Florida</span><br />
-            Miami-Dade · Broward · Palm Beach<br />
-            Martin · St. Lucie · Indian River
-          </p>
-          <p className="mt-4 text-sm leading-relaxed">
-            <span className="font-medium">Central Florida</span><br />
-            Orange · Seminole · Osceola · Brevard<br />
-            Hillsborough · Pinellas · Polk · Manatee · Sarasota
+            Statewide coverage across Florida.
           </p>
           <p className="mt-4 text-sm font-mono">team@floridianinc.com</p>
         </div>
