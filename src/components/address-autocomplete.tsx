@@ -48,18 +48,20 @@ const FLORIDA_BOUNDS = {
   high: { latitude: 31.000968, longitude: -79.974307 },
 };
 
-let mapsLoader: Promise<typeof google> | null = null;
-function loadMapsJs(): Promise<typeof google> {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type GoogleNS = any;
+
+let mapsLoader: Promise<GoogleNS> | null = null;
+function loadMapsJs(): Promise<GoogleNS> {
   if (typeof window === "undefined") return Promise.reject(new Error("no window"));
-  if ((window as unknown as { google?: typeof google }).google?.maps) {
-    return Promise.resolve((window as unknown as { google: typeof google }).google);
-  }
+  const w = window as unknown as { google?: GoogleNS };
+  if (w.google?.maps) return Promise.resolve(w.google);
   if (mapsLoader) return mapsLoader;
   if (!MAPS_KEY) return Promise.reject(new Error("no-key"));
   mapsLoader = new Promise((resolve, reject) => {
     const cbName = `__lovableMapsInit_${Math.random().toString(36).slice(2)}`;
     (window as unknown as Record<string, unknown>)[cbName] = () => {
-      const g = (window as unknown as { google?: typeof google }).google;
+      const g = (window as unknown as { google?: GoogleNS }).google;
       if (g?.maps) resolve(g);
       else reject(new Error("maps-not-ready"));
       delete (window as unknown as Record<string, unknown>)[cbName];
