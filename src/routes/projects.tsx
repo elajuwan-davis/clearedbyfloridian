@@ -46,7 +46,7 @@ function ProjectsPage() {
             </p>
           </div>
           <Button asChild variant="dark">
-            <Link to="/portal/new-permit">
+            <Link to="/portal/permits/new">
               <Plus className="mr-2 h-4 w-4" />
               New Project
             </Link>
