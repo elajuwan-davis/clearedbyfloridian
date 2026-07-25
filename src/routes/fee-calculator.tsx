@@ -396,6 +396,7 @@ function FeeCalculatorPage() {
             </div>
           </aside>
         </div>
+        )}
       </div>
 
       <Dialog open={reportOpen} onOpenChange={setReportOpen}>
