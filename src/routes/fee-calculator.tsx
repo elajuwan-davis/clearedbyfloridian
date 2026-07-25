@@ -16,9 +16,13 @@ import {
 import contestReport from "@/assets/fee-contest-report.pdf.asset.json";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { isInternalUser } from "@/lib/is-internal-user";
+import { SavingsCalculator } from "@/components/savings-calculator";
 
 
 export const Route = createFileRoute("/fee-calculator")({
+  validateSearch: (search: Record<string, unknown>) => ({
+    mode: (search.mode === "savings" ? "savings" : undefined) as "savings" | undefined,
+  }),
   head: () => ({
     meta: [
       { title: "Fee Calculator — Cleared by Flōridian" },
