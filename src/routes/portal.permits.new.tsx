@@ -3,13 +3,19 @@ import { useEffect, useMemo, useState, type ChangeEvent, type DragEvent } from "
 import { Upload, Check, FileText, ArrowLeft, Send, X, AlertCircle, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { CloudUploadButtons } from "@/components/cloud-upload-buttons";
-import { createPermit, type PermitDoc } from "@/lib/permits-api";
+import { ComboboxInput } from "@/components/combobox-input";
+import { createPermit, updatePermit, getPermit, type PermitDoc, type PermitRow } from "@/lib/permits-api";
 import { listSubs, createSub, type SubRow } from "@/lib/subs-api";
+import { listDesignPros, createDesignPro, type DesignProRow, type DesignProRole } from "@/lib/design-pros-api";
+import { triggerNotification } from "@/lib/notifications-api";
 import { MUNICIPALITIES } from "@/lib/municipalities";
 import { getChecklist } from "@/lib/permit-checklists";
 import { bundleFromSubs } from "@/lib/bundle";
 
 export const Route = createFileRoute("/portal/permits/new")({
+  validateSearch: (search: Record<string, unknown>) => ({
+    edit: typeof search.edit === "string" ? search.edit : undefined,
+  }),
   head: () => ({
     meta: [
       { title: "New Permit Intake — Cleared by Flōridian" },
@@ -18,6 +24,7 @@ export const Route = createFileRoute("/portal/permits/new")({
   }),
   component: NewPermitPage,
 });
+
 
 const SCOPE_OPTIONS = [
   "Pool / Spa",
