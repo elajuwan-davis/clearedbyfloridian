@@ -15,6 +15,7 @@ import {
   FileCheck2,
   ShieldAlert,
   Wallet,
+  Package,
   LogOut,
   Menu,
   User,
@@ -49,6 +50,7 @@ const portalNav: NavSection[] = [
       { to: "/messages", label: "Messages", icon: MessageSquare },
       { to: "/portal/building-dept", label: "Building Dept", icon: Building2 },
       { to: "/portal/municipalities", label: "Municipalities", icon: Map },
+      { to: "/portal/submissions", label: "Submissions", icon: Package },
     ],
   },
   {

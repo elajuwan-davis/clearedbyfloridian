@@ -1,70 +1,106 @@
+# Bundled Permit Submission
 
-# MVP: Real Backend for Permits + Subcontractors
+Consolidates multi-trade permits into one GC-fee master package. Each trade becomes a tracked sub-permit; the GC submits full or partial packages to Ops.
 
-Right now Permits and Subcontractors are hard-coded arrays + `localStorage`. This plan turns those two flows into a real product on Lovable Cloud, leaves everything else (guides, HubSpot sim, fee calculator, etc.) untouched, and makes the dashboard reflect the real numbers.
+## Data model
 
-## 1. Enable Lovable Cloud
+Store bundle state on the existing `permits` row inside `intake_payload.bundle` (JSON) — no migration required. New `submissions` table for the Ops queue.
 
-Enable the built-in backend (managed Postgres + Auth + Storage). No external accounts.
+`intake_payload.bundle` shape:
+```text
+{
+  enabled: boolean,
+  gc_fee_cents: number,
+  gc_license_number: string,
+  status: "draft" | "subs_signing" | "ready" | "submitted" | "partial",
+  trades: [{
+    key: "pool" | "gas" | "electric" | "plumbing" | "fencing" | ...,
+    label: string,
+    sub_id: string | null,          // references subcontractors.id
+    sub_snapshot: { company, contact, email, phone, license },
+    signature_status: "pending" | "sent" | "signed",
+    signature_sent_at, signature_signed_at,
+    doc_keys: string[],             // which permit-level docs belong to this trade
+    ready: boolean                   // Ops override / GC readiness flag
+  }]
+}
+```
 
-## 2. Database schema (one migration)
+Migration (single call): create `public.submissions`
+- `permit_id uuid` FK to permits, `submitted_by uuid`, `type text` (`full`|`partial`),
+  `trades_included jsonb`, `trades_pending jsonb`, `fee_cents bigint`,
+  `package_manifest jsonb` (list of `{trade, doc_key, filename, storage_path}`),
+  `notes text`, `status text` default `received` (`received`|`in_review`|`submitted_to_muni`|`complete`),
+  `created_at`, `updated_at` + touch trigger.
+- GRANTs: `SELECT/INSERT/UPDATE/DELETE` to authenticated, `ALL` to service_role.
+- RLS: authenticated can view/insert/update all (matches existing permits policy).
 
-Two tables, both RLS-protected. Any signed-in Cleared user can read/write for the MVP — we can tighten to per-firm ownership later.
+## Files
 
-**`permits`**
-- `id` uuid pk, `created_at`, `updated_at`, `created_by` (auth.uid)
-- `project_name`, `owner_name`, `job_address`, `city`, `county`, `municipality_key`
-- `permit_number` (nullable), `permit_type`, `construction_value_cents` (bigint)
-- `status` enum: `intake` | `submitted` | `in_review` | `corrections_required` | `approved` | `permit_issued` | `on_hold` | `outsourced` | `complete`
-- `pcn` nullable, `notes` text
-- `documents` jsonb — array of `{ key, label, required, fileName, filePath, status: 'uploaded'|'deferred'|'missing' }` (Storage paths, not blobs)
-- `intake_payload` jsonb — full form snapshot so the detail page can render exactly what was submitted
+New:
+- `src/lib/bundle.ts` — types, `getBundle(permit)`, `setBundle(permit, patch)`, `bundleProgress(bundle)`, trade constants, pre-fill payload builder using `FLORIDIAN_FIRM`.
+- `src/lib/submissions-api.ts` — `createSubmission`, `listSubmissions`, `updateSubmissionStatus`, `getSubmission`, `downloadSubmissionZip` (uses JSZip on client side; signed URLs from `permit-files`).
+- `src/routes/portal.permits.$id.bundle.tsx` — bundle management page.
+- `src/routes/portal.submissions.tsx` — Ops queue list.
+- `src/routes/portal.submissions.$id.tsx` — Ops detail with package manifest + status controls + zip download.
+- `src/components/bundle-partial-submit-dialog.tsx` — modal with per-trade checkboxes and remaining-trades note.
 
-**`subcontractors`**
-- `id` uuid pk, `created_at`, `updated_at`, `created_by`
-- `company_name`, `trade`, `qualifier_name`, `license_number`, `license_type`, `license_expiration`, `license_file_path`
-- `contact_first_name`, `contact_last_name`, `email`, `phone`, `company_address`
-- `insurance_carrier_name`, `insurance_carrier_email`, `coi_file_path`, `coi_expiration`
-- `w9_file_path`
-- `completion_token` uuid unique — public tokenized signup link
-- `status` enum: `invited` | `in_progress` | `complete`
+Edited:
+- `src/routes/portal.permits.new.tsx` — add "Bundle Submission" toggle (shown when 2+ trades entered); on create, seed `intake_payload.bundle` from the trade rows, then redirect to `/portal/permits/$id/bundle` when toggle is on.
+- `src/routes/portal.permits.$id.tsx` — link to bundle view when `bundle.enabled`; hide per-trade fee inputs, show single GC Permit Fee.
+- `src/components/portal-shell.tsx` — add "Submissions" nav item under Projects, `FileStack` icon.
+- Financials page (`src/routes/portal.permit-fees.tsx` — closest match) — detect bundled permits, render one consolidated row with "Bundle" badge + trades tooltip.
 
-**Storage bucket** `permit-files` (private) — used for both permit docs and sub COI/license/W-9 uploads. Signed URLs on read.
+## Bundle page layout (`/portal/permits/:id/bundle`)
 
-**RLS**
-- `permits`, `subcontractors`: `SELECT/INSERT/UPDATE/DELETE` to `authenticated`.
-- `subcontractors`: additional narrow `SELECT` + `UPDATE` policy `TO anon` restricted to `completion_token = current_setting('request.jwt.claims', true)::json` — no, simpler: add a server function `submitSubIntake({ token, patch })` that uses the service role, so no anon policy is needed. Public link stays fully server-mediated.
+1. **Header card**: address, municipality, permit type, GC = Flōridian (locked), GC license (editable, persists to `bundle.gc_license_number`), GC Permit Fee input (cents), overall status pill.
+2. **Progress bar**: `X of Y trades signed`. Colored segments per trade.
+3. **Trade cards grid** (one per bundle trade):
+   - Sub picker (dropdown of `subcontractors` + inline "invite new" link).
+   - Doc count from permit `documents` filtered by `doc_keys`.
+   - Signature status badge with buttons: **Send to Sub** (POST to `signature-requests` lib with pre-filled payload — reuses existing Signwell scaffold; marks `signature_status: sent`), **Mark Signed** (manual override for now until Signwell webhook is wired).
+   - Row indicator: green = docs complete + signed; amber = signed but docs missing; red = not contacted.
+4. **Sticky action bar**: **Save Draft**, **Partial Submit**, **Submit Full Package** (disabled unless every trade signed).
 
-## 3. Data layer
+## Submit flow
 
-Replace the localStorage stores with thin Supabase-backed hooks (TanStack Query):
+- **Submit Full Package**: build manifest from every trade's `doc_keys`, insert `submissions` row (`type=full`, `trades_included=all`, `trades_pending=[]`), set `bundle.status=submitted`, toast + navigate to `/portal/submissions`.
+- **Partial Submit**: dialog with checkboxes; submit selected trades, remaining trades stay in bundle, `bundle.status=partial`, submission row records pending list + note.
 
-- `src/lib/permits-api.ts` — `listPermits`, `getPermit`, `createPermit`, `updatePermit`, `deletePermit`, `uploadPermitDoc`.
-- `src/lib/subs-api.ts` — `listSubs`, `getSub`, `createSub`, `updateSub`, `deleteSub`, `uploadSubFile`, `getSubByToken` (server fn, public), `submitSubIntake` (server fn, public).
+## Ops queue (`/portal/submissions`)
 
-Hard-coded `PROJECTS`/`SEED` and `loadSubLibrary` become deprecated for these flows — Guides/HubSpot sim keep working off their own data untouched.
+Table: address, submitted_at, `Full`/`Partial` badge, trades included, trades pending, doc count, status select, row link to detail. Detail page shows manifest grouped by trade with per-file **View** buttons (signed URLs) and **Download Package** (JSZip stream of all files).
 
-## 4. UI wiring
+## Financials integration
 
-- **My Permits (`/portal/permits`)** — reads from `permits` table via `useQuery`. Each row is a link to `/portal/permits/$id`. Status badges + inspection counter stay. Empty state when 0 rows.
-- **New Permit (`/portal/permits/new`)** — existing wizard, but on submit calls `createPermit` + uploads any attached files to Storage, then routes to the new detail page. "Defer" saves the document row with `status: 'deferred'`.
-- **Permit Detail (`/portal/permits/$id`)** — NEW route. Shows every field from `intake_payload`, a "Missing information" banner listing empty required fields + deferred docs (with inline upload buttons that patch the row), an Edit button (opens the wizard pre-filled), and a Delete button (confirm dialog).
-- **Subcontractors index (`/portal/subcontractors`)** — DB-driven list, "Copy intake link" builds `${origin}/sub-intake/{completion_token}`, Delete + Edit buttons.
-- **New Subcontractor (`/portal/subcontractors/new`)** — creates a real row with a generated `completion_token` and shows the copy-link CTA.
-- **Public intake (`/sub-intake/$token`)** — calls `getSubByToken` server fn (no auth), lets the sub upload license/COI/W-9 to Storage via signed URLs, and calls `submitSubIntake` server fn to mark `status = complete`.
-- **Dashboard (`/portal` + `/dashboard`)** — replaces mock stat cards with live counts:
-  - Permits: total, in-review, issued, on-hold
-  - Subcontractors: total, complete, missing COI, expired COI
-  - "Recent activity" list = 5 most recent permits + subs.
+On the fees page, group rows by `permit_id`; if `bundle.enabled`, render one row with:
+- Amount = `bundle.gc_fee_cents`
+- "Bundle" pill (obsidian bg, sky text)
+- Tooltip listing trades
+- Suppress per-trade manual fee rows for that permit.
 
-## 5. Out of scope for this pass
+## Sub pre-fill payload
 
-Guides, Vicky, Signwell, HubSpot sim, Notary queue, permit-status auto-sync, invoices, gc-clients — untouched. Once you sign off, I'll ship the permit + sub slice end-to-end and we'll layer the rest onto the same schema.
+Built in `buildBundlePrefill(permit, trade)`:
+```text
+{
+  project_address, municipality, permit_type,
+  trade: trade.label,
+  gc_name: "Flōridian LLC",
+  gc_license: bundle.gc_license_number || FLORIDIAN_FIRM.license,
+  poc_name: "José Maceda Gutiérrez",
+  poc_email: "team@floridianinc.com",
+  poc_phone: "(772) 675-3274"
+}
+```
+Passed to the existing signature request lib.
 
-## Technical notes
+## Out of scope (this pass)
 
-- Files uploaded via Supabase Storage `permit-files` bucket, path pattern `{permit_id}/{doc_key}/{filename}` and `subs/{sub_id}/{kind}/{filename}`.
-- Server functions live in `src/lib/subs-public.functions.ts` (`getSubByToken`, `submitSubIntake`) — public, token-gated, use `supabaseAdmin` inside the handler.
-- All authenticated reads/writes use the browser `supabase` client under RLS.
-- Migration file will `CREATE TABLE` + `GRANT SELECT,INSERT,UPDATE,DELETE ... TO authenticated` + `ENABLE RLS` + policies, per project rules.
-- No changes to routing structure other than adding `/portal/permits/$id`.
+- Real Signwell webhook wiring (Mark Signed stays manual — same pattern as existing signature scaffold).
+- Fee comparison "vs. per-trade est." — leave a `TODO` slot on the fees row for a later pass.
+- Ops role gating — Submissions page is visible to all authenticated portal users for now, matching current portal RLS posture.
+
+## Approval
+
+Reply "go" to build. I'll open the migration for the `submissions` table first (needs your approval), then ship all page/component code in a single follow-up.
