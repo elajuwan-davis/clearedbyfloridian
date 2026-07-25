@@ -5,6 +5,8 @@ import { toast } from "sonner";
 import { CloudUploadButtons } from "@/components/cloud-upload-buttons";
 import { createPermit, type PermitDoc } from "@/lib/permits-api";
 import { listSubs, createSub, type SubRow } from "@/lib/subs-api";
+import { MUNICIPALITIES } from "@/lib/municipalities";
+import { getChecklist } from "@/lib/permit-checklists";
 
 export const Route = createFileRoute("/portal/permits/new")({
   head: () => ({
@@ -17,19 +19,13 @@ export const Route = createFileRoute("/portal/permits/new")({
 });
 
 const PERMIT_TYPES = [
+  "Swimming Pool",
   "New Construction of Pool w/ Deck",
   "Pool Renovation",
   "Pool + Spa",
   "Full Hardscape",
   "Other",
 ];
-
-const REQUIRED_DOCS = [
-  { key: "stamped_plans", label: "Stamped Construction Plans", required: true, canDefer: true, desc: "Signed and sealed construction plans." },
-  { key: "site_survey", label: "Site / Spot Survey", required: false, canDefer: false, desc: "Boundary or spot survey." },
-  { key: "tdh_calculations", label: "TDH Calculations (Turnover Design and Hydraulics)", required: false, canDefer: false, desc: "Turnover design and hydraulics calculations." },
-  { key: "equipment_specification", label: "Equipment Specification", required: false, canDefer: false, desc: "Equipment specifications and cut sheets." },
-] as const;
 
 type DocState = { uploaded: string | null; na: boolean; deferred: boolean };
 
@@ -40,10 +36,6 @@ type SubIntake = {
   contactEmail: string;
   insuranceCarrierEmail: string;
 };
-
-const emptyDocs: Record<string, DocState> = Object.fromEntries(
-  REQUIRED_DOCS.map((d) => [d.key, { uploaded: null, na: false, deferred: false }]),
-);
 
 const emptySub: SubIntake = { companyName: "", qualifierName: "", licenseNumber: "", contactEmail: "", insuranceCarrierEmail: "" };
 
@@ -58,6 +50,7 @@ function NewPermitPage() {
     municipality: "",
     permitType: PERMIT_TYPES[0],
     description: "",
+    subFencing: { ...emptySub },
     subPlumbing: { ...emptySub },
     subElectrical: { ...emptySub },
     subGas: { ...emptySub },
@@ -74,7 +67,7 @@ function NewPermitPage() {
     signerPhone: "",
     signerEmail: "",
     additionalNotes: "",
-    docs: emptyDocs,
+    docs: {} as Record<string, DocState>,
     extraDocs: [] as string[],
   });
 
@@ -87,9 +80,11 @@ function NewPermitPage() {
     setForm((f) => ({ ...f, docs: { ...f.docs, [key]: { ...f.docs[key], ...patch } } }));
   }
 
+  const checklist = useMemo(() => getChecklist(form.municipality, form.permitType), [form.municipality, form.permitType]);
+
   const docsComplete = useMemo(
-    () => REQUIRED_DOCS.filter((d) => { const s = form.docs[d.key]; return s && (s.uploaded || s.na || s.deferred); }).length,
-    [form.docs],
+    () => checklist.filter((d) => { const s = form.docs[d.key]; return s && (s.uploaded || s.na || s.deferred); }).length,
+    [form.docs, checklist],
   );
 
   function handleFile(key: string, e: ChangeEvent<HTMLInputElement>) {
@@ -114,7 +109,7 @@ function NewPermitPage() {
     setSaving(true);
     try {
       // Persist referenced subs to DB so they're centrally available
-      for (const s of [form.subPlumbing, form.subElectrical, form.subGas]) {
+      for (const s of [form.subFencing, form.subPlumbing, form.subElectrical, form.subGas]) {
         if (!s.companyName.trim()) continue;
         // Only create when the company isn't already saved
         const exists = savedSubs.find((x) => x.company_name.trim().toLowerCase() === s.companyName.trim().toLowerCase());
@@ -129,8 +124,8 @@ function NewPermitPage() {
         }
       }
 
-      const documents: PermitDoc[] = REQUIRED_DOCS.map((d) => {
-        const s = form.docs[d.key];
+      const documents: PermitDoc[] = checklist.map((d) => {
+        const s = form.docs[d.key] ?? { uploaded: null, na: false, deferred: false };
         const status: PermitDoc["status"] = s.uploaded ? "uploaded" : s.deferred ? "pending" : s.na ? "not_applicable" : "missing";
         return { key: d.key, label: d.label, required: d.required, status, filename: s.uploaded };
       });
@@ -156,6 +151,7 @@ function NewPermitPage() {
         submitted_date: form.submittedDate || null,
         status: "submitted",
         subs: [
+          { trade: "Fencing", companyName: form.subFencing.companyName, qualifierName: form.subFencing.qualifierName, licenseNumber: form.subFencing.licenseNumber, contactEmail: form.subFencing.contactEmail, insuranceCarrierEmail: form.subFencing.insuranceCarrierEmail },
           { trade: "Plumbing", companyName: form.subPlumbing.companyName, qualifierName: form.subPlumbing.qualifierName, licenseNumber: form.subPlumbing.licenseNumber, contactEmail: form.subPlumbing.contactEmail, insuranceCarrierEmail: form.subPlumbing.insuranceCarrierEmail },
           { trade: "Electrical", companyName: form.subElectrical.companyName, qualifierName: form.subElectrical.qualifierName, licenseNumber: form.subElectrical.licenseNumber, contactEmail: form.subElectrical.contactEmail, insuranceCarrierEmail: form.subElectrical.insuranceCarrierEmail },
           { trade: "Gas", companyName: form.subGas.companyName, qualifierName: form.subGas.qualifierName, licenseNumber: form.subGas.licenseNumber, contactEmail: form.subGas.contactEmail, insuranceCarrierEmail: form.subGas.insuranceCarrierEmail },
@@ -204,7 +200,13 @@ function NewPermitPage() {
           <div className="grid gap-5 sm:grid-cols-2">
             <div><label className={labelCls}>Project Name *</label><input required className={inputCls} value={form.projectName} onChange={(e) => update("projectName", e.target.value)} /></div>
             <div><label className={labelCls}>Property Address *</label><input required className={inputCls} value={form.address} onChange={(e) => update("address", e.target.value)} /></div>
-            <div><label className={labelCls}>Municipality / City *</label><input required className={inputCls} value={form.municipality} onChange={(e) => update("municipality", e.target.value)} /></div>
+            <div>
+              <label className={labelCls}>Municipality / City *</label>
+              <select required className={inputCls} value={form.municipality} onChange={(e) => update("municipality", e.target.value)}>
+                <option value="">Select municipality…</option>
+                {MUNICIPALITIES.map((m) => <option key={m.name} value={m.name}>{m.name}</option>)}
+              </select>
+            </div>
             <div>
               <label className={labelCls}>Permit Type</label>
               <select className={inputCls} value={form.permitType} onChange={(e) => update("permitType", e.target.value)}>
@@ -219,8 +221,8 @@ function NewPermitPage() {
 
           <div className="pt-2 space-y-5">
             <div className={sectionCls}>Subcontractors</div>
-            {(["subPlumbing", "subElectrical", "subGas"] as const).map((k) => {
-              const trade = k === "subPlumbing" ? "Plumbing" : k === "subElectrical" ? "Electrical" : "Gas";
+            {(["subFencing", "subPlumbing", "subElectrical", "subGas"] as const).map((k) => {
+              const trade = k === "subFencing" ? "Fencing" : k === "subPlumbing" ? "Plumbing" : k === "subElectrical" ? "Electrical" : "Gas";
               const s = form[k];
               const set = (patch: Partial<SubIntake>) => update(k, { ...s, ...patch });
               return (
@@ -309,16 +311,16 @@ function NewPermitPage() {
                 <p className="mt-1 text-[12px] text-obsidian/60">Required document checklist.</p>
               </div>
               <div className="text-right">
-                <div className="font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/55">{docsComplete} of {REQUIRED_DOCS.length} complete</div>
+                <div className="font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/55">{docsComplete} of {checklist.length} complete</div>
                 <div className="mt-1.5 h-1.5 w-40 bg-obsidian/10 rounded-full overflow-hidden">
-                  <div className="h-full bg-emerald-500" style={{ width: `${(docsComplete / REQUIRED_DOCS.length) * 100}%` }} />
+                  <div className="h-full bg-emerald-500" style={{ width: `${checklist.length ? (docsComplete / checklist.length) * 100 : 0}%` }} />
                 </div>
               </div>
             </div>
 
             <ul className="space-y-3">
-              {REQUIRED_DOCS.map((d) => {
-                const s = form.docs[d.key];
+              {checklist.map((d) => {
+                const s = form.docs[d.key] ?? { uploaded: null, na: false, deferred: false };
                 const done = s.uploaded || s.na || s.deferred;
                 return (
                   <li key={d.key} className="border border-obsidian/10 rounded-[3px] p-4">
