@@ -11,29 +11,9 @@ export const COMPETITORS: Competitor[] = [
     positioning: "Florida-specific permit management, purpose-built for GCs — not just a permit expediter.",
   },
   {
-    slug: "manual-permitting",
-    name: "Manual Permitting",
-    positioning: "Replace the spreadsheets, sticky notes, and endless email threads with a single system of record.",
-  },
-  {
-    slug: "procore",
-    name: "Procore",
-    positioning: "Procore manages construction. Cleard manages permits — every jurisdiction, every trade.",
-  },
-  {
-    slug: "buildertrend",
-    name: "Buildertrend",
-    positioning: "Buildertrend is a scheduling tool. Cleard is a permit operations platform for Florida contractors.",
-  },
-  {
     slug: "permit-flow",
     name: "Permit Flow",
     positioning: "Built for Florida's 400+ jurisdictions with private provider workflows baked in.",
-  },
-  {
-    slug: "permitzip",
-    name: "PermitZIP",
-    positioning: "Bundled multi-trade submissions, sub coordination, and Florida jurisdiction intelligence in one platform.",
   },
   {
     slug: "in-house-permit-runner",
