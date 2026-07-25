@@ -3,6 +3,7 @@
 import { getHoaSubmittal, updateHoaSubmittal, type HoaSubmittalRow } from "@/lib/hoa-submittals";
 import { getHoaTemplate, markTemplateUsed, displayNameFor, type HoaTemplateRow } from "@/lib/hoa-templates";
 import { enqueueEmail, type OutboxAttachment } from "@/lib/email-outbox";
+import { logHoaEvent } from "@/lib/hoa-events";
 
 const FLORIDIAN_FROM = "info@cleard.com";
 
