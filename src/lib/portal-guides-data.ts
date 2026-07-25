@@ -803,6 +803,7 @@ export const PORTAL_GUIDES: PortalGuide[] = [
   ...GUIDES_BATCH_7,
   ...GUIDES_BATCH_8,
   ...GUIDES_BATCH_9,
+  ...GUIDES_BATCH_10,
 
 ];
 
