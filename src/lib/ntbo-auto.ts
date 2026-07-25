@@ -1,7 +1,7 @@
-// Auto-generate NTO (Notice to Building Official) on permit submission.
+// Auto-generate NTBO (Notice to Building Official) on permit submission.
 // Runs on the GC's browser after createPermit; the GC never sees the file.
-// Uploads the PDF to storage and inserts an nto_filings row.
-// Failures are swallowed — permit creation must not fail because of NTO.
+// Uploads the PDF to storage under ntbo/<permitId>/…-ntbo.pdf.
+// Failures are swallowed — permit creation must not fail because of NTBO.
 
 import { supabase } from "@/integrations/supabase/client";
 import { generateNTBO, type NTBOFields } from "@/lib/private-provider-forms";
@@ -18,13 +18,7 @@ const FLORIDIAN = {
   licenseNumber: "CGC1234567",
 };
 
-function scopeSummary(row: PermitRow): string {
-  const scope = (row.intake_payload as any)?.scope;
-  if (Array.isArray(scope) && scope.length) return scope.join(", ");
-  return row.permit_type ?? row.description ?? "General construction";
-}
-
-export async function autoGenerateNTOForPermit(permit: PermitRow): Promise<void> {
+export async function autoGenerateNTBOForPermit(permit: PermitRow): Promise<void> {
   try {
     const fields: NTBOFields = {
       projectName: permit.project_name,
@@ -42,7 +36,7 @@ export async function autoGenerateNTOForPermit(permit: PermitRow): Promise<void>
       representativeName: FLORIDIAN.privateProvider,
     };
     const bytes = await generateNTBO(fields);
-    const path = `nto/${permit.id}/${Date.now()}-nto.pdf`;
+    const path = `ntbo/${permit.id}/${Date.now()}-ntbo.pdf`;
     const { error: upErr } = await supabase.storage
       .from("permit-files")
       .upload(path, new Blob([bytes as any], { type: "application/pdf" }), {
@@ -50,25 +44,9 @@ export async function autoGenerateNTOForPermit(permit: PermitRow): Promise<void>
         upsert: true,
       });
     if (upErr) throw upErr;
-
-    const workDescription = scopeSummary(permit);
-    const contractorAddress =
-      permit.company_address ?? permit.job_address ?? "";
-    await supabase.from("nto_filings" as any).insert({
-      permit_id: permit.id,
-      owner_name: permit.owner_name,
-      owner_address: permit.job_address,
-      property_address: permit.job_address,
-      contractor_name: permit.contractor_company ?? FLORIDIAN.firmName,
-      contractor_address: contractorAddress || FLORIDIAN.addressLine1,
-      work_description: workDescription,
-      first_work_date: permit.submitted_date,
-      status: "generated",
-      pdf_path: path,
-    });
   } catch (e) {
     // Best-effort — do not surface to GC.
     // eslint-disable-next-line no-console
-    console.warn("[NTO] auto-generate failed", e);
+    console.warn("[NTBO] auto-generate failed", e);
   }
 }
