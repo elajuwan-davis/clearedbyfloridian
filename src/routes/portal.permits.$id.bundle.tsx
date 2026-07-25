@@ -11,12 +11,16 @@ import {
   Package,
   Loader2,
   Copy,
+  Plus,
+  UserPlus,
+  Trash2,
 } from "lucide-react";
 import {
   getPermit,
   updatePermit,
   getEffectiveDocs,
   type PermitRow,
+  type PermitSub,
 } from "@/lib/permits-api";
 import {
   getBundle,
@@ -25,8 +29,13 @@ import {
   tradeRowStatus,
   buildBundlePrefill,
   withBundle,
+  newEmptyTrade,
+  tradeCardState,
+  bundleBudgetedTotal,
+  subToSnapshot,
   type Bundle,
   type BundleTrade,
+  type TradeCardState,
 } from "@/lib/bundle";
 import { createSubmission, type ManifestEntry } from "@/lib/submissions-api";
 import { BundlePartialSubmitDialog } from "@/components/bundle-partial-submit-dialog";
