@@ -191,6 +191,15 @@ function BuildingDeptPage() {
           )}
         </div>
 
+        <Link
+          to="/portal/guides"
+          className="inline-flex items-center gap-2 rounded-[3px] border border-obsidian/15 bg-paper/60 px-4 py-3 text-sm text-obsidian hover:border-obsidian/35 hover:bg-paper transition-colors"
+        >
+          <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-obsidian/55">Reference</span>
+          <span>Need submittal spec sheets? View Project Guides →</span>
+        </Link>
+
+
         {/* Search */}
         <div className="relative max-w-md">
           <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-obsidian/40" />
