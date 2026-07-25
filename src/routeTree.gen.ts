@@ -69,6 +69,7 @@ import { Route as AdminContractorsRouteImport } from './routes/admin_.contractor
 import { Route as AdminHubspotSimulateRouteImport } from './routes/admin.hubspot-simulate'
 import { Route as AdminGcClientsRouteImport } from './routes/admin.gc-clients'
 import { Route as AdminBuildersRouteImport } from './routes/admin.builders'
+import { Route as AdminBlogRouteImport } from './routes/admin.blog'
 import { Route as AdminAccessRequestsRouteImport } from './routes/admin.access-requests'
 import { Route as PortalSubmissionsIndexRouteImport } from './routes/portal.submissions.index'
 import { Route as PortalSubcontractorsIndexRouteImport } from './routes/portal.subcontractors.index'
@@ -90,6 +91,8 @@ import { Route as ApiPublicSubIntakeUploadRouteImport } from './routes/api/publi
 import { Route as ApiPublicSeedTeamRouteImport } from './routes/api/public/seed-team'
 import { Route as ApiPublicHoaReplyRouteImport } from './routes/api/public/hoa-reply'
 import { Route as ApiPublicAccessRequestRouteImport } from './routes/api/public/access-request'
+import { Route as AdminBlogNewRouteImport } from './routes/admin.blog.new'
+import { Route as AdminBlogIdRouteImport } from './routes/admin.blog.$id'
 import { Route as PortalPermitsIdBundleRouteImport } from './routes/portal.permits.$id.bundle'
 import { Route as PortalHoaSubmittalsTemplatesNewRouteImport } from './routes/portal.hoa-submittals.templates.new'
 import { Route as ApiPublicHubspotDealWebhookRouteImport } from './routes/api/public/hubspot.deal-webhook'
@@ -399,6 +402,11 @@ const AdminBuildersRoute = AdminBuildersRouteImport.update({
   path: '/builders',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminBlogRoute = AdminBlogRouteImport.update({
+  id: '/blog',
+  path: '/blog',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminAccessRequestsRoute = AdminAccessRequestsRouteImport.update({
   id: '/access-requests',
   path: '/access-requests',
@@ -507,6 +515,16 @@ const ApiPublicAccessRequestRoute = ApiPublicAccessRequestRouteImport.update({
   path: '/api/public/access-request',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminBlogNewRoute = AdminBlogNewRouteImport.update({
+  id: '/new',
+  path: '/new',
+  getParentRoute: () => AdminBlogRoute,
+} as any)
+const AdminBlogIdRoute = AdminBlogIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => AdminBlogRoute,
+} as any)
 const PortalPermitsIdBundleRoute = PortalPermitsIdBundleRouteImport.update({
   id: '/bundle',
   path: '/bundle',
@@ -560,6 +578,7 @@ export interface FileRoutesByFullPath {
   '/services': typeof ServicesRoute
   '/sub-portal': typeof SubPortalRouteWithChildren
   '/admin/access-requests': typeof AdminAccessRequestsRoute
+  '/admin/blog': typeof AdminBlogRouteWithChildren
   '/admin/builders': typeof AdminBuildersRoute
   '/admin/gc-clients': typeof AdminGcClientsRoute
   '/admin/hubspot-simulate': typeof AdminHubspotSimulateRoute
@@ -593,6 +612,8 @@ export interface FileRoutesByFullPath {
   '/blog/': typeof BlogIndexRoute
   '/portal/': typeof PortalIndexRoute
   '/versus/': typeof VersusIndexRoute
+  '/admin/blog/$id': typeof AdminBlogIdRoute
+  '/admin/blog/new': typeof AdminBlogNewRoute
   '/api/public/access-request': typeof ApiPublicAccessRequestRoute
   '/api/public/hoa-reply': typeof ApiPublicHoaReplyRoute
   '/api/public/seed-team': typeof ApiPublicSeedTeamRoute
@@ -646,6 +667,7 @@ export interface FileRoutesByTo {
   '/services': typeof ServicesRoute
   '/sub-portal': typeof SubPortalRouteWithChildren
   '/admin/access-requests': typeof AdminAccessRequestsRoute
+  '/admin/blog': typeof AdminBlogRouteWithChildren
   '/admin/builders': typeof AdminBuildersRoute
   '/admin/gc-clients': typeof AdminGcClientsRoute
   '/admin/hubspot-simulate': typeof AdminHubspotSimulateRoute
@@ -677,6 +699,8 @@ export interface FileRoutesByTo {
   '/blog': typeof BlogIndexRoute
   '/portal': typeof PortalIndexRoute
   '/versus': typeof VersusIndexRoute
+  '/admin/blog/$id': typeof AdminBlogIdRoute
+  '/admin/blog/new': typeof AdminBlogNewRoute
   '/api/public/access-request': typeof ApiPublicAccessRequestRoute
   '/api/public/hoa-reply': typeof ApiPublicHoaReplyRoute
   '/api/public/seed-team': typeof ApiPublicSeedTeamRoute
@@ -732,6 +756,7 @@ export interface FileRoutesById {
   '/services': typeof ServicesRoute
   '/sub-portal': typeof SubPortalRouteWithChildren
   '/admin/access-requests': typeof AdminAccessRequestsRoute
+  '/admin/blog': typeof AdminBlogRouteWithChildren
   '/admin/builders': typeof AdminBuildersRoute
   '/admin/gc-clients': typeof AdminGcClientsRoute
   '/admin/hubspot-simulate': typeof AdminHubspotSimulateRoute
@@ -765,6 +790,8 @@ export interface FileRoutesById {
   '/blog/': typeof BlogIndexRoute
   '/portal/': typeof PortalIndexRoute
   '/versus/': typeof VersusIndexRoute
+  '/admin/blog/$id': typeof AdminBlogIdRoute
+  '/admin/blog/new': typeof AdminBlogNewRoute
   '/api/public/access-request': typeof ApiPublicAccessRequestRoute
   '/api/public/hoa-reply': typeof ApiPublicHoaReplyRoute
   '/api/public/seed-team': typeof ApiPublicSeedTeamRoute
@@ -821,6 +848,7 @@ export interface FileRouteTypes {
     | '/services'
     | '/sub-portal'
     | '/admin/access-requests'
+    | '/admin/blog'
     | '/admin/builders'
     | '/admin/gc-clients'
     | '/admin/hubspot-simulate'
@@ -854,6 +882,8 @@ export interface FileRouteTypes {
     | '/blog/'
     | '/portal/'
     | '/versus/'
+    | '/admin/blog/$id'
+    | '/admin/blog/new'
     | '/api/public/access-request'
     | '/api/public/hoa-reply'
     | '/api/public/seed-team'
@@ -907,6 +937,7 @@ export interface FileRouteTypes {
     | '/services'
     | '/sub-portal'
     | '/admin/access-requests'
+    | '/admin/blog'
     | '/admin/builders'
     | '/admin/gc-clients'
     | '/admin/hubspot-simulate'
@@ -938,6 +969,8 @@ export interface FileRouteTypes {
     | '/blog'
     | '/portal'
     | '/versus'
+    | '/admin/blog/$id'
+    | '/admin/blog/new'
     | '/api/public/access-request'
     | '/api/public/hoa-reply'
     | '/api/public/seed-team'
@@ -992,6 +1025,7 @@ export interface FileRouteTypes {
     | '/services'
     | '/sub-portal'
     | '/admin/access-requests'
+    | '/admin/blog'
     | '/admin/builders'
     | '/admin/gc-clients'
     | '/admin/hubspot-simulate'
@@ -1025,6 +1059,8 @@ export interface FileRouteTypes {
     | '/blog/'
     | '/portal/'
     | '/versus/'
+    | '/admin/blog/$id'
+    | '/admin/blog/new'
     | '/api/public/access-request'
     | '/api/public/hoa-reply'
     | '/api/public/seed-team'
@@ -1517,6 +1553,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminBuildersRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/blog': {
+      id: '/admin/blog'
+      path: '/blog'
+      fullPath: '/admin/blog'
+      preLoaderRoute: typeof AdminBlogRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/access-requests': {
       id: '/admin/access-requests'
       path: '/access-requests'
@@ -1664,6 +1707,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicAccessRequestRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/blog/new': {
+      id: '/admin/blog/new'
+      path: '/new'
+      fullPath: '/admin/blog/new'
+      preLoaderRoute: typeof AdminBlogNewRouteImport
+      parentRoute: typeof AdminBlogRoute
+    }
+    '/admin/blog/$id': {
+      id: '/admin/blog/$id'
+      path: '/$id'
+      fullPath: '/admin/blog/$id'
+      preLoaderRoute: typeof AdminBlogIdRouteImport
+      parentRoute: typeof AdminBlogRoute
+    }
     '/portal/permits/$id/bundle': {
       id: '/portal/permits/$id/bundle'
       path: '/bundle'
@@ -1695,8 +1752,23 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AdminBlogRouteChildren {
+  AdminBlogIdRoute: typeof AdminBlogIdRoute
+  AdminBlogNewRoute: typeof AdminBlogNewRoute
+}
+
+const AdminBlogRouteChildren: AdminBlogRouteChildren = {
+  AdminBlogIdRoute: AdminBlogIdRoute,
+  AdminBlogNewRoute: AdminBlogNewRoute,
+}
+
+const AdminBlogRouteWithChildren = AdminBlogRoute._addFileChildren(
+  AdminBlogRouteChildren,
+)
+
 interface AdminRouteChildren {
   AdminAccessRequestsRoute: typeof AdminAccessRequestsRoute
+  AdminBlogRoute: typeof AdminBlogRouteWithChildren
   AdminBuildersRoute: typeof AdminBuildersRoute
   AdminGcClientsRoute: typeof AdminGcClientsRoute
   AdminHubspotSimulateRoute: typeof AdminHubspotSimulateRoute
@@ -1704,6 +1776,7 @@ interface AdminRouteChildren {
 
 const AdminRouteChildren: AdminRouteChildren = {
   AdminAccessRequestsRoute: AdminAccessRequestsRoute,
+  AdminBlogRoute: AdminBlogRouteWithChildren,
   AdminBuildersRoute: AdminBuildersRoute,
   AdminGcClientsRoute: AdminGcClientsRoute,
   AdminHubspotSimulateRoute: AdminHubspotSimulateRoute,

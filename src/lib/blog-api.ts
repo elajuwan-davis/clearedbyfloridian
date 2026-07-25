@@ -1,14 +1,15 @@
 import { supabase } from "@/integrations/supabase/client";
 
 export const BLOG_CATEGORIES = [
-  "Permitting Tips",
-  "Municipality Updates",
-  "Industry News",
-  "Company Updates",
+  "Code Updates",
+  "Municipality News",
+  "Private Providers",
+  "Industry",
 ] as const;
 
 export type BlogCategory = (typeof BLOG_CATEGORIES)[number];
 export type BlogStatus = "draft" | "published";
+
 
 export type BlogPost = {
   id: string;
