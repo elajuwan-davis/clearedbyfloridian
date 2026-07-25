@@ -1,9 +1,10 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState, type ChangeEvent, type DragEvent } from "react";
-import { Upload, Check, FileText, ArrowLeft, Send, X, AlertCircle, Plus, Trash2, Sparkles } from "lucide-react";
+import { Upload, Check, FileText, ArrowLeft, Send, X, AlertCircle, Plus, Trash2, Sparkles, MapPin } from "lucide-react";
 import { toast } from "sonner";
 import { CloudUploadButtons } from "@/components/cloud-upload-buttons";
 import { ComboboxInput } from "@/components/combobox-input";
+import { AddressAutocomplete, type ResolvedAddress } from "@/components/address-autocomplete";
 import { createPermit, updatePermit, getPermit, type PermitDoc, type PermitRow, type PermitSub } from "@/lib/permits-api";
 import { listSubs, createSub, type SubRow } from "@/lib/subs-api";
 import { listDesignPros, createDesignPro, type DesignProRow, type DesignProRole } from "@/lib/design-pros-api";
@@ -43,34 +44,51 @@ const SCOPE_OPTIONS = [
   "Other",
 ] as const;
 
-const SUB_TRADES = [
-  "Electrical",
-  "Plumbing",
-  "Gas / LP",
-  "Pool / Spa",
-  "Fence",
-  "Mechanical / HVAC",
+// Every scope option maps to a subcontractor trade label. Trades in
+// OPTIONAL_SCOPES don't strictly require a sub license (structural/hardscape/
+// demo/other) — the row still renders but is labelled "optional".
+const SCOPE_TO_TRADE: Record<string, string> = {
+  "Pool / Spa": "Pool / Spa",
+  "Hardscape / Pavers": "Hardscape / Pavers",
+  "Electrical": "Electrical",
+  "Plumbing": "Plumbing",
+  "Gas": "Gas / LP",
+  "Mechanical / HVAC": "Mechanical / HVAC",
+  "Structural": "Structural",
+  "Roofing": "Roofing",
+  "Fence": "Fence",
+  "Demolition": "Demolition",
+  "Other": "Other",
+};
+const OPTIONAL_SCOPES = new Set([
+  "Hardscape / Pavers",
   "Structural",
-  "Roofing",
+  "Demolition",
   "Other",
-] as const;
+]);
 
 type DocState = { uploaded: string | null; na: boolean; deferred: boolean };
 
 type SubIntake = {
+  /** The scope name that spawned this row (stable key). */
+  scope: string;
   trade: string;
   companyName: string;
   licenseNumber: string;
   contactName: string;
   contactEmail: string;
+  /** GC clicked "Skip for now" on this specific trade row. */
+  skipped: boolean;
 };
 
-const emptySub = (trade: string): SubIntake => ({
-  trade,
+const emptySub = (scope: string): SubIntake => ({
+  scope,
+  trade: SCOPE_TO_TRADE[scope] ?? scope,
   companyName: "",
   licenseNumber: "",
   contactName: "",
   contactEmail: "",
+  skipped: false,
 });
 
 function NewPermitPage() {
@@ -140,20 +158,31 @@ function NewPermitPage() {
             deferred: d.status === "pending",
           };
         }
+        const loadedScopes = r.permit_type ? r.permit_type.split(" · ").filter(Boolean) : [];
+        // Reunite persisted subs with the scopes that spawned them; scopes
+        // with no matching persisted sub get an empty row.
+        const loadedSubs: SubIntake[] = loadedScopes.map((scope) => {
+          const trade = SCOPE_TO_TRADE[scope] ?? scope;
+          const match = (r.subs ?? []).find((s) => (s.trade ?? "") === trade);
+          if (!match) return emptySub(scope);
+          return {
+            scope,
+            trade,
+            companyName: match.companyName ?? "",
+            licenseNumber: match.licenseNumber ?? "",
+            contactName: match.qualifierName ?? "",
+            contactEmail: match.contactEmail ?? "",
+            skipped: false,
+          };
+        });
         setForm((f) => ({
           ...f,
           projectName: r.project_name ?? "",
           address: r.job_address ?? "",
           municipality: r.municipality ?? "",
-          scopes: r.permit_type ? r.permit_type.split(" · ").filter(Boolean) : [],
+          scopes: loadedScopes,
           description: r.description ?? "",
-          subs: (r.subs ?? []).map((s) => ({
-            trade: s.trade ?? "Other",
-            companyName: s.companyName ?? "",
-            licenseNumber: s.licenseNumber ?? "",
-            contactName: s.qualifierName ?? "",
-            contactEmail: s.contactEmail ?? "",
-          })),
+          subs: loadedSubs,
           submittedDate: r.submitted_date ?? f.submittedDate,
           architectFirm: architect.firm ?? "",
           architectContact: architect.contact ?? "",
@@ -191,22 +220,68 @@ function NewPermitPage() {
   }
 
 
+  /** Toggling a scope also spawns / retires its inline sub row (1:1). */
   function toggleScope(scope: string) {
+    setForm((f) => {
+      const has = f.scopes.includes(scope);
+      if (has) {
+        return {
+          ...f,
+          scopes: f.scopes.filter((s) => s !== scope),
+          subs: f.subs.filter((s) => s.scope !== scope),
+        };
+      }
+      const trade = SCOPE_TO_TRADE[scope] ?? scope;
+      // If a filled sub already exists for the same trade (e.g. Pool
+      // and Pool/Spa both mapping to Pool trade), reuse its data.
+      const existing = f.subs.find((s) => s.trade === trade && s.companyName.trim() && !s.skipped);
+      const seed: SubIntake = existing
+        ? { ...existing, scope, skipped: false }
+        : emptySub(scope);
+      return { ...f, scopes: [...f.scopes, scope], subs: [...f.subs, seed] };
+    });
+  }
+
+  function updateSubByScope(scope: string, patch: Partial<SubIntake>) {
     setForm((f) => ({
       ...f,
-      scopes: f.scopes.includes(scope) ? f.scopes.filter((s) => s !== scope) : [...f.scopes, scope],
+      subs: f.subs.map((s) => (s.scope === scope ? { ...s, ...patch } : s)),
     }));
   }
 
-  function addSub(trade: string) {
-    setSubsSkipped(false);
-    setForm((f) => ({ ...f, subs: [...f.subs, emptySub(trade)] }));
+  function toggleSubSkip(scope: string) {
+    setForm((f) => ({
+      ...f,
+      subs: f.subs.map((s) =>
+        s.scope === scope
+          ? (s.skipped
+              ? { ...s, skipped: false }
+              : { ...s, skipped: true, companyName: "", licenseNumber: "", contactName: "", contactEmail: "" })
+          : s,
+      ),
+    }));
   }
-  function updateSub(idx: number, patch: Partial<SubIntake>) {
-    setForm((f) => ({ ...f, subs: f.subs.map((s, i) => (i === idx ? { ...s, ...patch } : s)) }));
-  }
-  function removeSub(idx: number) {
-    setForm((f) => ({ ...f, subs: f.subs.filter((_, i) => i !== idx) }));
+
+  /** Called when the address autocomplete resolves a Places selection.
+   *  Auto-fills municipality when the parsed city matches a known FL city. */
+  function handleAddressResolved(r: ResolvedAddress) {
+    setForm((f) => {
+      let municipality = f.municipality;
+      if (r.city) {
+        const norm = (s: string) => s.toLowerCase().replace(/[^a-z]/g, "");
+        const target = norm(r.city);
+        const match = MUNICIPALITIES.find((m) => norm(m.name) === target);
+        if (match) municipality = match.name;
+        else if (!f.municipality.trim()) municipality = r.city; // freeform fallback
+      }
+      return { ...f, address: r.streetLine || r.formatted, municipality };
+    });
+    if (r.city) {
+      const norm = (s: string) => s.toLowerCase().replace(/[^a-z]/g, "");
+      const target = norm(r.city);
+      const matched = MUNICIPALITIES.some((m) => norm(m.name) === target);
+      toast.success(matched ? `Matched municipality: ${r.city}` : `City set to ${r.city} (not in list — please verify)`);
+    }
   }
 
   const primaryType = form.scopes[0] || "Other";
@@ -458,7 +533,19 @@ function NewPermitPage() {
         <div className="mt-6 space-y-6 bg-white border border-obsidian/10 rounded-[3px] p-6 sm:p-8">
           <div className="grid gap-5 sm:grid-cols-2">
             <div><label className={labelCls}>Project Name *</label><input required className={inputCls} value={form.projectName} onChange={(e) => update("projectName", e.target.value)} /></div>
-            <div><label className={labelCls}>Property Address *</label><input required className={inputCls} value={form.address} onChange={(e) => update("address", e.target.value)} /></div>
+            <div>
+              <label className={labelCls}>Property Address *</label>
+              <AddressAutocomplete
+                required
+                className={inputCls}
+                value={form.address}
+                onChange={(v) => update("address", v)}
+                onResolved={(r) => handleAddressResolved(r)}
+              />
+              <p className="mt-1 text-[11px] text-obsidian/45 flex items-center gap-1.5">
+                <MapPin className="h-3 w-3" /> Florida addresses only — city auto-selects the municipality below.
+              </p>
+            </div>
             <div className="sm:col-span-2">
               <label className={labelCls}>Municipality / City *</label>
               <ComboboxInput
@@ -506,7 +593,88 @@ function NewPermitPage() {
                 ))}
               </div>
             )}
+
+            {/* Inline subcontractor row per selected scope */}
+            {form.scopes.length > 0 && (
+              <div className="pt-4 space-y-4">
+                <div className={sectionCls}>Subcontractor per Trade</div>
+                <p className="text-[12px] text-obsidian/60 -mt-2">
+                  One sub per selected scope. Skip any row you'll fill in later — the trade stays on the permit.
+                </p>
+                {form.subs.map((s) => {
+                  const idx = form.subs.findIndex((x) => x.scope === s.scope);
+                  const reuse = reuseCandidateFor(idx);
+                  const optional = OPTIONAL_SCOPES.has(s.scope);
+                  return (
+                    <div key={s.scope} className="space-y-2">
+                      {reuse && !s.skipped && (
+                        <div className="flex items-start gap-3 border border-[#153157]/30 bg-[#B6DAEA]/15 rounded-[3px] px-4 py-3">
+                          <Sparkles className="mt-0.5 h-4 w-4 shrink-0 text-[#153157]" />
+                          <div className="flex-1 text-[13px] text-obsidian/85">
+                            <div className="text-obsidian font-medium">
+                              {s.trade} is already on this job — {reuse.companyName} is handling it.
+                            </div>
+                            <div className="mt-0.5 text-obsidian/60 text-[12px]">Reuse the same contractor to avoid a redundant sub entry.</div>
+                          </div>
+                          <div className="flex flex-col gap-1.5 shrink-0">
+                            <button
+                              type="button"
+                              onClick={() => applyReuse(idx, reuse)}
+                              className="inline-flex items-center justify-center bg-obsidian px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-paper hover:bg-obsidian/90 rounded-[3px]"
+                            >
+                              Use {reuse.companyName.length > 22 ? reuse.companyName.slice(0, 20) + "…" : reuse.companyName}
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => dismissReuse(idx)}
+                              className="font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/50 hover:text-obsidian"
+                            >
+                              Dismiss
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                      <div className={`border rounded-[3px] p-4 space-y-3 ${s.skipped ? "border-dashed border-obsidian/15 bg-obsidian/[0.02]" : "border-obsidian/12"}`}>
+                        <div className="flex items-center justify-between gap-3">
+                          <div className="flex items-center gap-2">
+                            <span className="inline-flex items-center bg-[#153157] text-white px-2 py-0.5 rounded-[3px] text-[10px] font-mono uppercase tracking-[0.12em]">
+                              {s.trade}
+                            </span>
+                            {optional && (
+                              <span className="text-[10px] font-mono uppercase tracking-[0.12em] text-obsidian/45">Optional</span>
+                            )}
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => toggleSubSkip(s.scope)}
+                            className="font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/55 hover:text-obsidian underline underline-offset-2"
+                          >
+                            {s.skipped ? "Add sub info" : "Skip for now"}
+                          </button>
+                        </div>
+                        {!s.skipped && (
+                          <div className="grid gap-3 sm:grid-cols-2">
+                            <div><label className={labelCls}>Company Name</label><input className={inputCls} value={s.companyName} onChange={(e) => updateSubByScope(s.scope, { companyName: e.target.value })} /></div>
+                            <div><label className={labelCls}>License #</label><input className={inputCls} value={s.licenseNumber} onChange={(e) => updateSubByScope(s.scope, { licenseNumber: e.target.value })} /></div>
+                            <div><label className={labelCls}>Contact Name</label><input className={inputCls} value={s.contactName} onChange={(e) => updateSubByScope(s.scope, { contactName: e.target.value })} /></div>
+                            <div><label className={labelCls}>Contact Email</label><input type="email" className={inputCls} value={s.contactEmail} onChange={(e) => updateSubByScope(s.scope, { contactEmail: e.target.value })} /></div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+                {filledSubs.length > 0 && (
+                  <div className="border-l-2 border-[#153157] bg-obsidian/[0.03] px-4 py-3 text-[12px] text-obsidian/80">
+                    {wantBundle
+                      ? <>This submission will cover <strong>{filledSubs.length} trades</strong> under one GC permit (auto-bundled).</>
+                      : <>1 trade added — add more scopes to bundle under a single GC permit.</>}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
+
 
           <div>
             <label className={labelCls}>Scope Narrative</label>
@@ -578,115 +746,8 @@ function NewPermitPage() {
             />
           )}
 
-          {/* Subcontractors */}
-          <div className="pt-2 space-y-4">
-            <div className="flex items-center justify-between gap-3 flex-wrap">
-              <div>
-                <div className={sectionCls}>Subcontractors</div>
-                <p className="mt-1 text-[12px] text-obsidian/60">Add subs by trade — all optional. Multiple subs per trade OK.</p>
-              </div>
-              <button
-                type="button"
-                onClick={() => { setSubsSkipped(true); update("subs", []); }}
-                className="font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/55 hover:text-obsidian underline underline-offset-2"
-              >
-                Skip for now
-              </button>
-            </div>
 
-            {!subsSkipped && form.subs.length === 0 && (
-              <div className="text-[12px] text-obsidian/50 border border-dashed border-obsidian/15 rounded-[3px] p-4 text-center">
-                No subs added yet. Choose a trade below to begin.
-              </div>
-            )}
 
-            {subsSkipped && (
-              <div className="text-[12px] text-obsidian/60 bg-obsidian/[0.03] border border-obsidian/10 rounded-[3px] p-3">
-                Skipped — you can add subs later from the project dashboard.
-              </div>
-            )}
-
-            {form.subs.map((s, i) => {
-              const reuse = reuseCandidateFor(i);
-              return (
-              <div key={i} className="space-y-2">
-                {reuse && (
-                  <div className="flex items-start gap-3 border border-[#153157]/30 bg-[#B6DAEA]/15 rounded-[3px] px-4 py-3">
-                    <Sparkles className="mt-0.5 h-4 w-4 shrink-0 text-[#153157]" />
-                    <div className="flex-1 text-[13px] text-obsidian/85">
-                      <div className="text-obsidian font-medium">Save on this job — {s.trade} is already on file with {reuse.companyName}.</div>
-                      <div className="mt-0.5 text-obsidian/60 text-[12px]">Reuse an existing trade instead of pulling a redundant permit.</div>
-                    </div>
-                    <div className="flex flex-col gap-1.5 shrink-0">
-                      <button
-                        type="button"
-                        onClick={() => applyReuse(i, reuse)}
-                        className="inline-flex items-center justify-center bg-obsidian px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-paper hover:bg-obsidian/90 rounded-[3px]"
-                      >
-                        Use {reuse.companyName.length > 22 ? reuse.companyName.slice(0, 20) + "…" : reuse.companyName}
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => dismissReuse(i)}
-                        className="font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/50 hover:text-obsidian"
-                      >
-                        Dismiss
-                      </button>
-                    </div>
-                  </div>
-                )}
-                <div className="border border-obsidian/12 rounded-[3px] p-4 space-y-3">
-                  <div className="flex items-center justify-between gap-3">
-                    <select
-                      value={s.trade}
-                      onChange={(e) => updateSub(i, { trade: e.target.value })}
-                      className="border border-obsidian/20 rounded-[3px] px-2 py-1.5 text-[12px] font-mono uppercase tracking-[0.12em] bg-white"
-                    >
-                      {SUB_TRADES.map((t) => <option key={t} value={t}>{t}</option>)}
-                    </select>
-                    <button
-                      type="button"
-                      onClick={() => removeSub(i)}
-                      className="text-obsidian/40 hover:text-oxblood"
-                      aria-label="Remove sub"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </button>
-                  </div>
-                  <div className="grid gap-3 sm:grid-cols-2">
-                    <div><label className={labelCls}>Company Name</label><input className={inputCls} value={s.companyName} onChange={(e) => updateSub(i, { companyName: e.target.value })} /></div>
-                    <div><label className={labelCls}>License #</label><input className={inputCls} value={s.licenseNumber} onChange={(e) => updateSub(i, { licenseNumber: e.target.value })} /></div>
-                    <div><label className={labelCls}>Contact Name</label><input className={inputCls} value={s.contactName} onChange={(e) => updateSub(i, { contactName: e.target.value })} /></div>
-                    <div><label className={labelCls}>Contact Email</label><input type="email" className={inputCls} value={s.contactEmail} onChange={(e) => updateSub(i, { contactEmail: e.target.value })} /></div>
-                  </div>
-                </div>
-              </div>
-              );
-            })}
-
-            {!subsSkipped && (
-              <div className="flex flex-wrap gap-2 pt-1">
-                {SUB_TRADES.map((t) => (
-                  <button
-                    key={t}
-                    type="button"
-                    onClick={() => addSub(t)}
-                    className="inline-flex items-center gap-1.5 border border-obsidian/20 hover:border-obsidian/40 px-3 py-1.5 rounded-[3px] text-[11px] font-mono uppercase tracking-[0.12em] text-obsidian/75 hover:text-obsidian"
-                  >
-                    <Plus className="h-3 w-3" /> {t}
-                  </button>
-                ))}
-              </div>
-            )}
-
-            {filledSubs.length > 0 && (
-              <div className="border-l-2 border-[#153157] bg-obsidian/[0.03] px-4 py-3 text-[12px] text-obsidian/80">
-                {wantBundle
-                  ? <>This submission will cover <strong>{filledSubs.length} trades</strong> under one GC permit.</>
-                  : <>1 trade added — add more to bundle under a single GC permit.</>}
-              </div>
-            )}
-          </div>
 
           <div>
             <label className={labelCls}>Submitted Date</label>
