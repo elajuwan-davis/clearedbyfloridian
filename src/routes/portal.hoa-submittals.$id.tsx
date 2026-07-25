@@ -361,6 +361,7 @@ function HoaSubmittalEditor() {
       });
       const updated = await getHoaSubmittal(row.id);
       if (updated) setRow(updated);
+      refreshTimeline();
       for (const w of res.warnings) toast.warning(w);
       toast.success(
         res.homeownerEmailId
