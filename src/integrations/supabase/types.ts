@@ -142,6 +142,59 @@ export type Database = {
         }
         Relationships: []
       }
+      co_checklist_items: {
+        Row: {
+          complete: boolean
+          completed_at: string | null
+          completed_by: string | null
+          completed_by_label: string | null
+          created_at: string
+          id: string
+          item_key: string
+          item_label: string
+          ord: number
+          permit_id: string
+          tenant_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          complete?: boolean
+          completed_at?: string | null
+          completed_by?: string | null
+          completed_by_label?: string | null
+          created_at?: string
+          id?: string
+          item_key: string
+          item_label: string
+          ord?: number
+          permit_id: string
+          tenant_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          complete?: boolean
+          completed_at?: string | null
+          completed_by?: string | null
+          completed_by_label?: string | null
+          created_at?: string
+          id?: string
+          item_key?: string
+          item_label?: string
+          ord?: number
+          permit_id?: string
+          tenant_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "co_checklist_items_permit_id_fkey"
+            columns: ["permit_id"]
+            isOneToOne: false
+            referencedRelation: "permits"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       design_professionals: {
         Row: {
           contact_name: string | null
@@ -823,6 +876,77 @@ export type Database = {
           usage_count?: number
         }
         Relationships: []
+      }
+      lien_releases: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          filed_at: string | null
+          id: string
+          last_reminder_at: string | null
+          notarized_at: string | null
+          notes: string | null
+          permit_id: string
+          requested_at: string | null
+          signed_at: string | null
+          signwell_id: string | null
+          status: string
+          sub_company: string
+          sub_email: string | null
+          sub_key: string
+          tenant_id: string | null
+          trade: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          filed_at?: string | null
+          id?: string
+          last_reminder_at?: string | null
+          notarized_at?: string | null
+          notes?: string | null
+          permit_id: string
+          requested_at?: string | null
+          signed_at?: string | null
+          signwell_id?: string | null
+          status?: string
+          sub_company: string
+          sub_email?: string | null
+          sub_key: string
+          tenant_id?: string | null
+          trade?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          filed_at?: string | null
+          id?: string
+          last_reminder_at?: string | null
+          notarized_at?: string | null
+          notes?: string | null
+          permit_id?: string
+          requested_at?: string | null
+          signed_at?: string | null
+          signwell_id?: string | null
+          status?: string
+          sub_company?: string
+          sub_email?: string | null
+          sub_key?: string
+          tenant_id?: string | null
+          trade?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lien_releases_permit_id_fkey"
+            columns: ["permit_id"]
+            isOneToOne: false
+            referencedRelation: "permits"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       notification_prefs: {
         Row: {
@@ -1679,6 +1803,59 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      victoria_alerts: {
+        Row: {
+          acknowledged_at: string | null
+          action_url: string | null
+          body: string | null
+          created_at: string
+          dedupe_key: string | null
+          id: string
+          kind: string
+          permit_id: string | null
+          severity: string
+          tenant_id: string | null
+          title: string
+          user_id: string | null
+        }
+        Insert: {
+          acknowledged_at?: string | null
+          action_url?: string | null
+          body?: string | null
+          created_at?: string
+          dedupe_key?: string | null
+          id?: string
+          kind: string
+          permit_id?: string | null
+          severity?: string
+          tenant_id?: string | null
+          title: string
+          user_id?: string | null
+        }
+        Update: {
+          acknowledged_at?: string | null
+          action_url?: string | null
+          body?: string | null
+          created_at?: string
+          dedupe_key?: string | null
+          id?: string
+          kind?: string
+          permit_id?: string | null
+          severity?: string
+          tenant_id?: string | null
+          title?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "victoria_alerts_permit_id_fkey"
+            columns: ["permit_id"]
+            isOneToOne: false
+            referencedRelation: "permits"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
