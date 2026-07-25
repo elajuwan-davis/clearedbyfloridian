@@ -217,21 +217,52 @@ function BuildingDeptPage() {
             <div className="text-xs text-muted-foreground">{statewideRows.length} cities</div>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
-            {statewideRows.map((r) => (
-              <div key={r.city} className="border hairline bg-white rounded-[3px] p-4 flex items-center justify-between gap-3">
-                <div className="text-sm font-semibold text-obsidian truncate">{r.city}</div>
-                {r.portalUrl ? (
-                  <a href={r.portalUrl} target="_blank" rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 border border-sky/60 bg-sky/10 hover:bg-sky/20 text-obsidian px-2.5 py-1 rounded-[3px] font-mono text-[10px] uppercase tracking-[0.12em] shrink-0">
-                    Open Portal <ExternalLink className="h-3 w-3" />
-                  </a>
-                ) : (
-                  <span className="inline-flex items-center border border-border bg-secondary/60 text-muted-foreground px-2.5 py-1 rounded-[3px] font-mono text-[10px] uppercase tracking-[0.12em] shrink-0">
-                    Contact Dept.
-                  </span>
-                )}
-              </div>
-            ))}
+            {statewideRows.map((r) => {
+              const slug = slugifyCity(r.city);
+              const hasLogin = savedSlugs.has(slug);
+              return (
+                <div key={r.city} className="border hairline bg-white rounded-[3px] p-4 flex flex-col gap-2.5">
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="text-sm font-semibold text-obsidian truncate">{r.city}</div>
+                    {r.portalUrl ? (
+                      <a href={r.portalUrl} target="_blank" rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 border border-sky/60 bg-sky/10 hover:bg-sky/20 text-obsidian px-2.5 py-1 rounded-[3px] font-mono text-[10px] uppercase tracking-[0.12em] shrink-0">
+                        Open Portal <ExternalLink className="h-3 w-3" />
+                      </a>
+                    ) : (
+                      <span className="inline-flex items-center border border-border bg-secondary/60 text-muted-foreground px-2.5 py-1 rounded-[3px] font-mono text-[10px] uppercase tracking-[0.12em] shrink-0">
+                        Contact Dept.
+                      </span>
+                    )}
+                  </div>
+                  {hasLogin ? (
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="inline-flex items-center gap-1.5 text-emerald-700 font-mono text-[10px] uppercase tracking-[0.12em]">
+                        <Check className="h-3 w-3" /> Login Saved
+                      </span>
+                      <div className="flex items-center gap-1.5">
+                        <button
+                          onClick={() => openLogin(r.city)}
+                          className="font-mono text-[10px] uppercase tracking-[0.12em] text-obsidian/70 hover:text-obsidian underline underline-offset-2"
+                        >Edit</button>
+                        <span className="text-obsidian/25">·</span>
+                        <button
+                          onClick={() => clearLogin(r.city)}
+                          className="font-mono text-[10px] uppercase tracking-[0.12em] text-obsidian/70 hover:text-red-700 underline underline-offset-2"
+                        >Remove</button>
+                      </div>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => openLogin(r.city)}
+                      className="inline-flex items-center gap-1.5 self-start font-mono text-[10px] uppercase tracking-[0.12em] text-obsidian/70 hover:text-obsidian underline underline-offset-2"
+                    >
+                      <Lock className="h-3 w-3" /> Add Login
+                    </button>
+                  )}
+                </div>
+              );
+            })}
           </div>
         </section>
       </div>
