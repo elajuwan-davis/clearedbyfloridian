@@ -6,7 +6,7 @@ import { CloudUploadButtons } from "@/components/cloud-upload-buttons";
 import { createPermit, type PermitDoc } from "@/lib/permits-api";
 import { listSubs, createSub, type SubRow } from "@/lib/subs-api";
 import { MUNICIPALITIES } from "@/lib/municipalities";
-import { getChecklist, DEFAULT_CHECKLIST } from "@/lib/permit-checklists";
+import { getChecklist } from "@/lib/permit-checklists";
 
 export const Route = createFileRoute("/portal/permits/new")({
   head: () => ({
