@@ -61,6 +61,7 @@ import { Route as PortalSubmissionsIndexRouteImport } from './routes/portal.subm
 import { Route as PortalSubcontractorsIndexRouteImport } from './routes/portal.subcontractors.index'
 import { Route as PortalPermitsIndexRouteImport } from './routes/portal.permits.index'
 import { Route as PortalGuidesIndexRouteImport } from './routes/portal.guides.index'
+import { Route as PortalBlogIndexRouteImport } from './routes/portal.blog.index'
 import { Route as PortalSubmissionsIdRouteImport } from './routes/portal.submissions.$id'
 import { Route as PortalSubcontractorsNewRouteImport } from './routes/portal.subcontractors.new'
 import { Route as PortalProjectsIdRouteImport } from './routes/portal.projects.$id'
@@ -337,6 +338,11 @@ const PortalGuidesIndexRoute = PortalGuidesIndexRouteImport.update({
   path: '/guides/',
   getParentRoute: () => PortalRoute,
 } as any)
+const PortalBlogIndexRoute = PortalBlogIndexRouteImport.update({
+  id: '/blog/',
+  path: '/blog/',
+  getParentRoute: () => PortalRoute,
+} as any)
 const PortalSubmissionsIdRoute = PortalSubmissionsIdRouteImport.update({
   id: '/$id',
   path: '/$id',
@@ -447,6 +453,7 @@ export interface FileRoutesByFullPath {
   '/portal/projects/$id': typeof PortalProjectsIdRoute
   '/portal/subcontractors/new': typeof PortalSubcontractorsNewRoute
   '/portal/submissions/$id': typeof PortalSubmissionsIdRoute
+  '/portal/blog/': typeof PortalBlogIndexRoute
   '/portal/guides/': typeof PortalGuidesIndexRoute
   '/portal/permits/': typeof PortalPermitsIndexRoute
   '/portal/subcontractors/': typeof PortalSubcontractorsIndexRoute
@@ -508,6 +515,7 @@ export interface FileRoutesByTo {
   '/portal/projects/$id': typeof PortalProjectsIdRoute
   '/portal/subcontractors/new': typeof PortalSubcontractorsNewRoute
   '/portal/submissions/$id': typeof PortalSubmissionsIdRoute
+  '/portal/blog': typeof PortalBlogIndexRoute
   '/portal/guides': typeof PortalGuidesIndexRoute
   '/portal/permits': typeof PortalPermitsIndexRoute
   '/portal/subcontractors': typeof PortalSubcontractorsIndexRoute
@@ -573,6 +581,7 @@ export interface FileRoutesById {
   '/portal/projects/$id': typeof PortalProjectsIdRoute
   '/portal/subcontractors/new': typeof PortalSubcontractorsNewRoute
   '/portal/submissions/$id': typeof PortalSubmissionsIdRoute
+  '/portal/blog/': typeof PortalBlogIndexRoute
   '/portal/guides/': typeof PortalGuidesIndexRoute
   '/portal/permits/': typeof PortalPermitsIndexRoute
   '/portal/subcontractors/': typeof PortalSubcontractorsIndexRoute
@@ -639,6 +648,7 @@ export interface FileRouteTypes {
     | '/portal/projects/$id'
     | '/portal/subcontractors/new'
     | '/portal/submissions/$id'
+    | '/portal/blog/'
     | '/portal/guides/'
     | '/portal/permits/'
     | '/portal/subcontractors/'
@@ -700,6 +710,7 @@ export interface FileRouteTypes {
     | '/portal/projects/$id'
     | '/portal/subcontractors/new'
     | '/portal/submissions/$id'
+    | '/portal/blog'
     | '/portal/guides'
     | '/portal/permits'
     | '/portal/subcontractors'
@@ -764,6 +775,7 @@ export interface FileRouteTypes {
     | '/portal/projects/$id'
     | '/portal/subcontractors/new'
     | '/portal/submissions/$id'
+    | '/portal/blog/'
     | '/portal/guides/'
     | '/portal/permits/'
     | '/portal/subcontractors/'
@@ -1169,6 +1181,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PortalGuidesIndexRouteImport
       parentRoute: typeof PortalRoute
     }
+    '/portal/blog/': {
+      id: '/portal/blog/'
+      path: '/blog'
+      fullPath: '/portal/blog/'
+      preLoaderRoute: typeof PortalBlogIndexRouteImport
+      parentRoute: typeof PortalRoute
+    }
     '/portal/submissions/$id': {
       id: '/portal/submissions/$id'
       path: '/$id'
@@ -1351,6 +1370,7 @@ interface PortalRouteChildren {
   PortalIndexRoute: typeof PortalIndexRoute
   PortalGuidesSlugRoute: typeof PortalGuidesSlugRoute
   PortalSubcontractorsNewRoute: typeof PortalSubcontractorsNewRoute
+  PortalBlogIndexRoute: typeof PortalBlogIndexRoute
   PortalGuidesIndexRoute: typeof PortalGuidesIndexRoute
   PortalSubcontractorsIndexRoute: typeof PortalSubcontractorsIndexRoute
 }
@@ -1372,6 +1392,7 @@ const PortalRouteChildren: PortalRouteChildren = {
   PortalIndexRoute: PortalIndexRoute,
   PortalGuidesSlugRoute: PortalGuidesSlugRoute,
   PortalSubcontractorsNewRoute: PortalSubcontractorsNewRoute,
+  PortalBlogIndexRoute: PortalBlogIndexRoute,
   PortalGuidesIndexRoute: PortalGuidesIndexRoute,
   PortalSubcontractorsIndexRoute: PortalSubcontractorsIndexRoute,
 }
