@@ -128,6 +128,42 @@ export type Database = {
         }
         Relationships: []
       }
+      gc_coi_minimums: {
+        Row: {
+          created_at: string
+          gc_name: string
+          gl_aggregate_cents: number
+          gl_per_occurrence_cents: number
+          id: string
+          owner_id: string | null
+          umbrella_cents: number
+          updated_at: string
+          wc_required: boolean
+        }
+        Insert: {
+          created_at?: string
+          gc_name?: string
+          gl_aggregate_cents?: number
+          gl_per_occurrence_cents?: number
+          id?: string
+          owner_id?: string | null
+          umbrella_cents?: number
+          updated_at?: string
+          wc_required?: boolean
+        }
+        Update: {
+          created_at?: string
+          gc_name?: string
+          gl_aggregate_cents?: number
+          gl_per_occurrence_cents?: number
+          id?: string
+          owner_id?: string | null
+          umbrella_cents?: number
+          updated_at?: string
+          wc_required?: boolean
+        }
+        Relationships: []
+      }
       notification_prefs: {
         Row: {
           created_at: string
@@ -422,8 +458,12 @@ export type Database = {
       subcontractors: {
         Row: {
           coi_expiration: string | null
+          coi_extracted: Json | null
           coi_file_name: string | null
           coi_file_path: string | null
+          coi_flags: Json | null
+          coi_status: string | null
+          coi_verified_at: string | null
           company_address: string | null
           company_name: string
           completion_token: string
@@ -444,19 +484,28 @@ export type Database = {
           license_file_name: string | null
           license_file_path: string | null
           license_number: string | null
+          license_status: string | null
           license_type: string | null
           phone: string | null
           qualifier_name: string | null
           status: string
           trade: string | null
           updated_at: string
+          w9_extracted: Json | null
           w9_file_name: string | null
           w9_file_path: string | null
+          w9_flags: Json | null
+          w9_status: string | null
+          w9_verified_at: string | null
         }
         Insert: {
           coi_expiration?: string | null
+          coi_extracted?: Json | null
           coi_file_name?: string | null
           coi_file_path?: string | null
+          coi_flags?: Json | null
+          coi_status?: string | null
+          coi_verified_at?: string | null
           company_address?: string | null
           company_name: string
           completion_token?: string
@@ -477,19 +526,28 @@ export type Database = {
           license_file_name?: string | null
           license_file_path?: string | null
           license_number?: string | null
+          license_status?: string | null
           license_type?: string | null
           phone?: string | null
           qualifier_name?: string | null
           status?: string
           trade?: string | null
           updated_at?: string
+          w9_extracted?: Json | null
           w9_file_name?: string | null
           w9_file_path?: string | null
+          w9_flags?: Json | null
+          w9_status?: string | null
+          w9_verified_at?: string | null
         }
         Update: {
           coi_expiration?: string | null
+          coi_extracted?: Json | null
           coi_file_name?: string | null
           coi_file_path?: string | null
+          coi_flags?: Json | null
+          coi_status?: string | null
+          coi_verified_at?: string | null
           company_address?: string | null
           company_name?: string
           completion_token?: string
@@ -510,14 +568,19 @@ export type Database = {
           license_file_name?: string | null
           license_file_path?: string | null
           license_number?: string | null
+          license_status?: string | null
           license_type?: string | null
           phone?: string | null
           qualifier_name?: string | null
           status?: string
           trade?: string | null
           updated_at?: string
+          w9_extracted?: Json | null
           w9_file_name?: string | null
           w9_file_path?: string | null
+          w9_flags?: Json | null
+          w9_status?: string | null
+          w9_verified_at?: string | null
         }
         Relationships: []
       }
