@@ -46,7 +46,7 @@ const navGroups: NavGroup[] = [
   {
     label: "Documents",
     items: [
-      { to: "/portal/equipment-specs", label: "Equipment Specs" },
+      
       { to: "/portal/building-dept", label: "Building Departments" },
       { to: "/forms", label: "Forms" },
     ],
