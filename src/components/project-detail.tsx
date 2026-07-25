@@ -168,7 +168,7 @@ export function ProjectDetail({ project }: { project: Project }) {
             />
 
           </TabsContent>
-          <TabsContent value="documents" className="mt-6"><DocumentsTab project={project} /></TabsContent>
+          <TabsContent value="documents" className="mt-6"><DocumentsTab project={project} internal={internal} /></TabsContent>
           <TabsContent value="subs" className="mt-6"><SubsTab project={project} /></TabsContent>
           <TabsContent value="compliance" className="mt-6"><ProjectComplianceTab /></TabsContent>
           <TabsContent value="fees" className="mt-6"><FeesTab project={project} internal={internal} /></TabsContent>
