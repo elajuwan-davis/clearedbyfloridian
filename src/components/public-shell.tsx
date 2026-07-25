@@ -91,8 +91,7 @@ export function PublicFooter() {
           <div className="md-serif text-3xl" style={{ color: "var(--md-text)" }}>Cleard</div>
           <div className="mt-4 text-[11px] uppercase tracking-[0.24em] md-muted">Coverage</div>
           <p className="mt-2 text-sm md-muted leading-relaxed">
-            South Florida — Miami-Dade · Broward · Palm Beach · Martin · St. Lucie · Indian River<br />
-            Central Florida — Orange · Seminole · Osceola · Brevard · Hillsborough · Pinellas · Polk · Manatee · Sarasota
+            Statewide coverage across Florida.
           </p>
         </div>
         <div className="flex flex-wrap gap-x-6 gap-y-2 md:justify-center text-sm">
