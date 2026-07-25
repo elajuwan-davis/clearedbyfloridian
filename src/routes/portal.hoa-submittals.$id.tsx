@@ -325,11 +325,45 @@ function HoaSubmittalEditor() {
             <Button variant="dark" className="rounded-[3px] gap-2" onClick={save} disabled={saving}>
               <Save className="h-4 w-4" /> {saving ? "Saving…" : "Save"}
             </Button>
+            <Button
+              variant="dark"
+              className="rounded-[3px] gap-2 bg-emerald-700 hover:bg-emerald-800 text-white"
+              onClick={sendToHoa}
+              disabled={sending || Boolean(row.sent_to_hoa_at)}
+              title={row.sent_to_hoa_at ? `Sent ${new Date(row.sent_to_hoa_at).toLocaleString()}` : "Send ARC package to HOA and notify homeowner"}
+            >
+              {sending ? <><Loader2 className="h-4 w-4 animate-spin" /> Sending…</> : <><Send className="h-4 w-4" /> {row.sent_to_hoa_at ? "Sent" : "Send to HOA"}</>}
+            </Button>
             <Button variant="outline" className="rounded-[3px] gap-2 text-red-700 border-red-200 hover:bg-red-50" onClick={onDelete}>
               <Trash2 className="h-4 w-4" />
             </Button>
           </div>
         </div>
+
+        {template && (
+          <div className="border border-obsidian/10 bg-white rounded-[3px] px-4 py-3 text-sm flex flex-wrap items-center gap-x-6 gap-y-1">
+            <div className="text-xs uppercase tracking-wide text-obsidian/50">Template</div>
+            <div className="font-medium text-obsidian">{displayNameFor(template)}</div>
+            {template.hoa_contact_name && (
+              <div className="text-obsidian/70">{template.hoa_contact_name}</div>
+            )}
+            {template.hoa_contact_email && (
+              <div className="text-obsidian/60 inline-flex items-center gap-1">
+                <Mail className="h-3 w-3" /> {template.hoa_contact_email}
+              </div>
+            )}
+            {template.deposit_amount_cents > 0 && (
+              <div className="text-obsidian/60">Deposit ${(template.deposit_amount_cents / 100).toLocaleString()}</div>
+            )}
+          </div>
+        )}
+
+        {row.sent_to_hoa_at && (
+          <div className="border border-emerald-200 bg-emerald-50 text-emerald-900 text-sm px-4 py-3 rounded-[3px]">
+            Package sent to HOA {new Date(row.sent_to_hoa_at).toLocaleString()}.
+            {row.homeowner_notified_at && ` Homeowner deposit notice sent ${new Date(row.homeowner_notified_at).toLocaleString()}.`}
+          </div>
+        )}
 
         {isFence && (
           <div className="border border-amber-200 bg-amber-50 text-amber-900 text-sm px-4 py-3 rounded-[3px] flex gap-3">
