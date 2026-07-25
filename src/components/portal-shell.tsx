@@ -38,6 +38,11 @@ const portalNav: NavSection[] = [
   {
     items: [
       { to: "/portal", label: "Dashboard", icon: LayoutDashboard, exact: true },
+    ],
+  },
+  {
+    label: "Resources",
+    items: [
       { to: "/portal/guides", label: "Project Guides", icon: BookOpen },
       { to: "/portal/equipment-specs", label: "Equipment Specs", icon: Wrench },
     ],

@@ -60,7 +60,7 @@ function NewPermitPage() {
     contractorQualifier: "",
     companyAddress: "",
     poc: "José Maceda Gutiérrez",
-    pocPhone: "(772) 675-3274",
+    pocPhone: "(551) 830-6606",
     pocEmail: "team@floridianinc.com",
     licenseNumber: "",
     ownerName: "",
