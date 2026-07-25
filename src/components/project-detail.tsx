@@ -378,6 +378,7 @@ function DocumentsTab({ project, internal }: { project: Project; internal: boole
           />
         </div>
       </div>
+      )}
 
       <div className="flex items-center justify-between">
         <div className="text-sm text-obsidian/60">{docs.length} document{docs.length === 1 ? "" : "s"} on file</div>
