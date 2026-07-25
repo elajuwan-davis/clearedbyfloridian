@@ -92,6 +92,7 @@ export async function requestLienRelease(row: LienRelease, projectName: string, 
   }).eq("id", row.id);
 
   if (row.sub_email) {
+    const { data: auth } = await supabase.auth.getUser();
     await enqueueEmail({
       kind: "lien_release_request",
       to_email: row.sub_email,
@@ -107,6 +108,8 @@ export async function requestLienRelease(row: LienRelease, projectName: string, 
         ``,
         `— Cleard on behalf of the General Contractor`,
       ].join("\n"),
+      tenant_id: row.tenant_id,
+      created_by: auth?.user?.id ?? null,
     });
   }
 }
@@ -115,6 +118,7 @@ export async function sendLienReminder(row: LienRelease, projectName: string): P
   const now = new Date().toISOString();
   await supabase.from("lien_releases" as any).update({ last_reminder_at: now }).eq("id", row.id);
   if (row.sub_email) {
+    const { data: auth } = await supabase.auth.getUser();
     await enqueueEmail({
       kind: "lien_release_reminder",
       to_email: row.sub_email,
@@ -128,6 +132,8 @@ export async function sendLienReminder(row: LienRelease, projectName: string): P
         ``,
         `— Cleard`,
       ].join("\n"),
+      tenant_id: row.tenant_id,
+      created_by: auth?.user?.id ?? null,
     });
   }
 }
