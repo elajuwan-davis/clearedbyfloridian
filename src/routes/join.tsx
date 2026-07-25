@@ -377,18 +377,9 @@ function JoinPage() {
         </div>
       </section>
 
-      {/* FOOTER */}
-      <footer className="py-10 px-6 text-center">
-        <div
-          className="text-[12px]"
-          style={{ color: "color-mix(in oklab, " + OBSIDIAN + " 40%, transparent)" }}
-        >
-          Cleard · © 2026 ·{" "}
-          <a href="https://floridianinc.com" className="hover:underline">
-            floridianinc.com
-          </a>
-        </div>
-      </footer>
+      {/* Footer handled by MarketingShell */}
     </div>
+    </MarketingShell>
   );
 }
+
