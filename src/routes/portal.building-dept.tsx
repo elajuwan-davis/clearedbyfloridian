@@ -40,6 +40,17 @@ const EMPTY_FORM = {
   verified: false,
 };
 
+export const Route = createFileRoute("/portal/building-dept")({
+  head: () => ({
+    meta: [
+      { title: "Building Department Logins — Cleard by Flōridian" },
+      { name: "robots", content: "noindex" },
+    ],
+  }),
+  component: BuildingDeptPage,
+});
+
+
 function BuildingDeptPage() {
   const internal = isInternalUser();
   const [custom, setCustom] = useState<CustomMunicipality[]>([]);
