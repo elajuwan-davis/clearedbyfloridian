@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
 import { PortalShell } from "@/components/portal-shell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,7 +13,8 @@ import {
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
-import { ExternalLink, Building2, Plus, Eye, EyeOff, Check, Trash2, Pencil, Search } from "lucide-react";
+import { ExternalLink, Building2, Plus, Eye, EyeOff, Check, Trash2, Pencil, Search, Lock } from "lucide-react";
+import { toast } from "sonner";
 import { isInternalUser } from "@/lib/is-internal-user";
 import {
   listMunicipalities, addMunicipality, updateMunicipality, deleteMunicipality,
@@ -20,6 +22,11 @@ import {
   type CustomMunicipality, type PortalPlatform,
 } from "@/lib/municipalities-store";
 import { MUNICIPALITIES } from "@/lib/municipalities";
+import { savePortalLogin, deletePortalLogin, listPortalLoginFlags } from "@/lib/portal-logins.functions";
+
+function slugifyCity(name: string): string {
+  return name.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+}
 
 const EMPTY_FORM = {
   municipality_name: "",
