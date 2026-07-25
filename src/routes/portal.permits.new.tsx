@@ -360,6 +360,10 @@ function NewPermitPage() {
         rowId = row.id;
         // Auto-generate internal NTBO (hidden from GC). Best-effort.
         void import("@/lib/ntbo-auto").then((m) => m.autoGenerateNTBOForPermit(row));
+        // Auto-generate NOC (Palm Beach County std form) pre-filled from
+        // permit data — surfaces in the permit detail as "Review & Sign".
+        void import("@/lib/noc-auto").then((m) => m.autoGenerateNOCForPermit(row));
+
         toast.success(wantBundle ? "Bundle permit created" : "Permit created");
         if (wantBundle) navigate({ to: "/portal/permits/$id/bundle", params: { id: rowId } });
         else navigate({ to: "/portal/permits/$id", params: { id: rowId } });
