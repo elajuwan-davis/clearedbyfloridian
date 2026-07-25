@@ -1,16 +1,18 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState, type ChangeEvent, type DragEvent } from "react";
-import { Upload, Check, FileText, ArrowLeft, Send, X, AlertCircle, Plus, Trash2 } from "lucide-react";
+import { Upload, Check, FileText, ArrowLeft, Send, X, AlertCircle, Plus, Trash2, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { CloudUploadButtons } from "@/components/cloud-upload-buttons";
 import { ComboboxInput } from "@/components/combobox-input";
-import { createPermit, updatePermit, getPermit, type PermitDoc, type PermitRow } from "@/lib/permits-api";
+import { createPermit, updatePermit, getPermit, type PermitDoc, type PermitRow, type PermitSub } from "@/lib/permits-api";
 import { listSubs, createSub, type SubRow } from "@/lib/subs-api";
 import { listDesignPros, createDesignPro, type DesignProRow, type DesignProRole } from "@/lib/design-pros-api";
 import { triggerNotification } from "@/lib/notifications-api";
 import { MUNICIPALITIES } from "@/lib/municipalities";
 import { getChecklist } from "@/lib/permit-checklists";
 import { bundleFromSubs } from "@/lib/bundle";
+import { NocAwarenessRibbon } from "@/components/noc-awareness-ribbon";
+import { TradesOnJobPanel } from "@/components/trades-on-job-panel";
 
 
 export const Route = createFileRoute("/portal/permits/new")({
@@ -218,6 +220,45 @@ function NewPermitPage() {
   const filledSubs = form.subs.filter((s) => s.companyName.trim());
   const wantBundle = filledSubs.length >= 2;
 
+  // True once this permit exists AND has an auto-generated NOC on file.
+  const hasNoc = useMemo(
+    () => (originalRow?.documents ?? []).some(
+      (d) => d.key === "notice_of_commencement_review" && d.status === "uploaded",
+    ),
+    [originalRow],
+  );
+
+  // Trades already added to this permit (edit mode) or being added right
+  // now (new mode) — feeds the "Trades on this Job" panel and the reuse
+  // suggestion logic.
+  const jobTrades = useMemo(
+    () => filledSubs.map((s) => ({ trade: s.trade, companyName: s.companyName })),
+    [filledSubs],
+  );
+
+  const [dismissedReuse, setDismissedReuse] = useState<Set<number>>(new Set());
+  function dismissReuse(idx: number) {
+    setDismissedReuse((prev) => { const n = new Set(prev); n.add(idx); return n; });
+  }
+
+  /** For an empty sub row of a given trade, find an already-filled sub on
+   *  the same job with the same trade — that's the reuse candidate. */
+  function reuseCandidateFor(idx: number): SubIntake | null {
+    if (dismissedReuse.has(idx)) return null;
+    const row = form.subs[idx];
+    if (!row || row.companyName.trim()) return null;
+    const match = form.subs.find((s, i) => i !== idx && s.trade === row.trade && s.companyName.trim());
+    return match ?? null;
+  }
+
+  function applyReuse(idx: number, source: SubIntake) {
+    setForm((f) => ({
+      ...f,
+      subs: f.subs.map((s, i) => (i === idx ? { ...source, trade: s.trade } : s)),
+    }));
+  }
+
+
   function handleFile(key: string, e: ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (file) updateDoc(key, { uploaded: file.name, na: false, deferred: false });
@@ -289,13 +330,24 @@ function NewPermitPage() {
         return { key: d.key, label: d.label, required: d.required, status, filename: s.uploaded };
       });
 
-      const subs = filledSubs.map((s) => ({
-        trade: s.trade,
-        companyName: s.companyName,
-        qualifierName: s.contactName,
-        licenseNumber: s.licenseNumber,
-        contactEmail: s.contactEmail,
-      }));
+      const priorSubs = (originalRow?.subs ?? []) as PermitSub[];
+      const subs: PermitSub[] = filledSubs.map((s) => {
+        // Preserve existing per-sub state (accessToken, confirmed) when
+        // this permit is being edited and the same company reappears.
+        const prior = priorSubs.find(
+          (p) => (p.companyName ?? "").trim().toLowerCase() === s.companyName.trim().toLowerCase(),
+        );
+        return {
+          trade: s.trade,
+          companyName: s.companyName,
+          qualifierName: s.contactName,
+          licenseNumber: s.licenseNumber,
+          contactEmail: s.contactEmail,
+          accessToken: prior?.accessToken ?? crypto.randomUUID(),
+          confirmed: prior?.confirmed ?? false,
+          confirmedAt: prior?.confirmedAt,
+        };
+      });
 
       const priorPayload = (originalRow?.intake_payload ?? {}) as Record<string, unknown>;
       const intake_payload: Record<string, unknown> = {
@@ -514,6 +566,18 @@ function NewPermitPage() {
           </div>
 
 
+          {hasNoc && (
+            <NocAwarenessRibbon scopeKey={`permits:${editId ?? "new"}`} />
+          )}
+
+          {jobTrades.length > 0 && (
+            <TradesOnJobPanel
+              trades={jobTrades}
+              title="Trades on this Job"
+              emptyLabel="No trades added yet."
+            />
+          )}
+
           {/* Subcontractors */}
           <div className="pt-2 space-y-4">
             <div className="flex items-center justify-between gap-3 flex-wrap">
@@ -542,33 +606,63 @@ function NewPermitPage() {
               </div>
             )}
 
-            {form.subs.map((s, i) => (
-              <div key={i} className="border border-obsidian/12 rounded-[3px] p-4 space-y-3">
-                <div className="flex items-center justify-between gap-3">
-                  <select
-                    value={s.trade}
-                    onChange={(e) => updateSub(i, { trade: e.target.value })}
-                    className="border border-obsidian/20 rounded-[3px] px-2 py-1.5 text-[12px] font-mono uppercase tracking-[0.12em] bg-white"
-                  >
-                    {SUB_TRADES.map((t) => <option key={t} value={t}>{t}</option>)}
-                  </select>
-                  <button
-                    type="button"
-                    onClick={() => removeSub(i)}
-                    className="text-obsidian/40 hover:text-oxblood"
-                    aria-label="Remove sub"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </button>
-                </div>
-                <div className="grid gap-3 sm:grid-cols-2">
-                  <div><label className={labelCls}>Company Name</label><input className={inputCls} value={s.companyName} onChange={(e) => updateSub(i, { companyName: e.target.value })} /></div>
-                  <div><label className={labelCls}>License #</label><input className={inputCls} value={s.licenseNumber} onChange={(e) => updateSub(i, { licenseNumber: e.target.value })} /></div>
-                  <div><label className={labelCls}>Contact Name</label><input className={inputCls} value={s.contactName} onChange={(e) => updateSub(i, { contactName: e.target.value })} /></div>
-                  <div><label className={labelCls}>Contact Email</label><input type="email" className={inputCls} value={s.contactEmail} onChange={(e) => updateSub(i, { contactEmail: e.target.value })} /></div>
+            {form.subs.map((s, i) => {
+              const reuse = reuseCandidateFor(i);
+              return (
+              <div key={i} className="space-y-2">
+                {reuse && (
+                  <div className="flex items-start gap-3 border border-[#153157]/30 bg-[#B6DAEA]/15 rounded-[3px] px-4 py-3">
+                    <Sparkles className="mt-0.5 h-4 w-4 shrink-0 text-[#153157]" />
+                    <div className="flex-1 text-[13px] text-obsidian/85">
+                      <div className="text-obsidian font-medium">Save on this job — {s.trade} is already on file with {reuse.companyName}.</div>
+                      <div className="mt-0.5 text-obsidian/60 text-[12px]">Reuse an existing trade instead of pulling a redundant permit.</div>
+                    </div>
+                    <div className="flex flex-col gap-1.5 shrink-0">
+                      <button
+                        type="button"
+                        onClick={() => applyReuse(i, reuse)}
+                        className="inline-flex items-center justify-center bg-obsidian px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-paper hover:bg-obsidian/90 rounded-[3px]"
+                      >
+                        Use {reuse.companyName.length > 22 ? reuse.companyName.slice(0, 20) + "…" : reuse.companyName}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => dismissReuse(i)}
+                        className="font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/50 hover:text-obsidian"
+                      >
+                        Dismiss
+                      </button>
+                    </div>
+                  </div>
+                )}
+                <div className="border border-obsidian/12 rounded-[3px] p-4 space-y-3">
+                  <div className="flex items-center justify-between gap-3">
+                    <select
+                      value={s.trade}
+                      onChange={(e) => updateSub(i, { trade: e.target.value })}
+                      className="border border-obsidian/20 rounded-[3px] px-2 py-1.5 text-[12px] font-mono uppercase tracking-[0.12em] bg-white"
+                    >
+                      {SUB_TRADES.map((t) => <option key={t} value={t}>{t}</option>)}
+                    </select>
+                    <button
+                      type="button"
+                      onClick={() => removeSub(i)}
+                      className="text-obsidian/40 hover:text-oxblood"
+                      aria-label="Remove sub"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  </div>
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <div><label className={labelCls}>Company Name</label><input className={inputCls} value={s.companyName} onChange={(e) => updateSub(i, { companyName: e.target.value })} /></div>
+                    <div><label className={labelCls}>License #</label><input className={inputCls} value={s.licenseNumber} onChange={(e) => updateSub(i, { licenseNumber: e.target.value })} /></div>
+                    <div><label className={labelCls}>Contact Name</label><input className={inputCls} value={s.contactName} onChange={(e) => updateSub(i, { contactName: e.target.value })} /></div>
+                    <div><label className={labelCls}>Contact Email</label><input type="email" className={inputCls} value={s.contactEmail} onChange={(e) => updateSub(i, { contactEmail: e.target.value })} /></div>
+                  </div>
                 </div>
               </div>
-            ))}
+              );
+            })}
 
             {!subsSkipped && (
               <div className="flex flex-wrap gap-2 pt-1">

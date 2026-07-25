@@ -5,7 +5,7 @@ import { ArrowLeft, Trash2, Save, AlertTriangle, FileText, Pencil, X, Lock, Plus
 import { NtoSection } from "@/components/nto-section";
 import { getBundle } from "@/lib/bundle";
 
-import { getPermit, updatePermit, deletePermit, permitCompleteness, getEffectiveDocs, getHiddenFieldKeys, withHiddenFieldKeys, type PermitRow, type PermitStatus, type PermitDoc } from "@/lib/permits-api";
+import { getPermit, updatePermit, deletePermit, permitCompleteness, getEffectiveDocs, getHiddenFieldKeys, withHiddenFieldKeys, ensureSubTokens, type PermitRow, type PermitStatus, type PermitDoc, type PermitSub } from "@/lib/permits-api";
 import { PermitDocUploader } from "@/components/permit-doc-uploader";
 import { deletePermitFile } from "@/lib/permit-storage";
 import { fetchAppraiserRecord } from "@/lib/property-appraiser";
@@ -49,10 +49,52 @@ function PermitDetailPage() {
 
   useEffect(() => {
     getPermit(id)
-      .then((r) => { if (!r) throw notFound(); setRow(r); setEdit(r); })
+      .then(async (r) => {
+        if (!r) throw notFound();
+        // Backfill accessTokens for legacy subs (created before per-sub
+        // portal tokens existed). Best-effort — never blocks render.
+        const { subs: withTokens, mutated } = ensureSubTokens(r.subs);
+        if (mutated) {
+          try {
+            const updated = await updatePermit(r.id, { subs: withTokens });
+            setRow(updated); setEdit(updated);
+            return;
+          } catch { /* fall through to raw row */ }
+        }
+        setRow(r); setEdit(r);
+      })
       .catch(() => toast.error("Could not load permit"))
       .finally(() => setLoading(false));
   }, [id]);
+
+  async function toggleSubConfirmed(idx: number) {
+    if (!row) return;
+    const current = row.subs?.[idx];
+    if (!current) return;
+    const nextSubs: PermitSub[] = (row.subs ?? []).map((s, i) =>
+      i === idx
+        ? { ...s, confirmed: !s.confirmed, confirmedAt: !s.confirmed ? new Date().toISOString() : s.confirmedAt }
+        : s,
+    );
+    try {
+      const updated = await updatePermit(row.id, { subs: nextSubs });
+      setRow(updated); setEdit(updated);
+      toast.success(nextSubs[idx].confirmed ? `Confirmed ${current.companyName}` : `Unconfirmed ${current.companyName}`);
+    } catch (e) {
+      toast.error("Could not update: " + (e instanceof Error ? e.message : String(e)));
+    }
+  }
+
+  async function copySubPortalLink(sub: PermitSub) {
+    if (!sub.accessToken) { toast.error("No access token — save the permit first."); return; }
+    const url = `${window.location.origin}/sub-portal/${sub.accessToken}`;
+    try {
+      await navigator.clipboard.writeText(url);
+      toast.success("Sub portal link copied");
+    } catch {
+      window.prompt("Copy sub portal link:", url);
+    }
+  }
 
   async function save() {
     if (!row) return;
@@ -548,12 +590,49 @@ function PermitDetailPage() {
 
       {row.subs && row.subs.length > 0 && (
         <div className="mt-6 bg-white border border-obsidian/10 rounded-[3px] p-6">
-          <div className="text-[11px] font-mono uppercase tracking-[0.18em] text-obsidian/75 mb-4">Subcontractors on this Permit</div>
+          <div className="flex items-baseline justify-between mb-4 gap-3 flex-wrap">
+            <div className="text-[11px] font-mono uppercase tracking-[0.18em] text-obsidian/75">Subcontractors on this Permit</div>
+            <div className="text-[10px] font-mono text-obsidian/45">Confirm a sub to grant them read-only project-doc access.</div>
+          </div>
           <ul className="divide-y divide-obsidian/10">
             {row.subs.map((s, i) => (
-              <li key={i} className="py-3 text-sm">
-                <div className="text-obsidian font-medium">{s.companyName} <span className="text-obsidian/50 text-[12px] font-normal">— {s.trade}</span></div>
-                <div className="text-[12px] text-obsidian/60">{s.qualifierName} · Lic {s.licenseNumber} · {s.contactEmail}</div>
+              <li key={i} className="py-3 text-sm flex items-start justify-between gap-4 flex-wrap">
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="text-obsidian font-medium">{s.companyName}</span>
+                    <span className="text-obsidian/50 text-[12px]">— {s.trade}</span>
+                    {s.confirmed ? (
+                      <span className="inline-flex items-center border border-emerald-600/40 bg-emerald-50 text-emerald-800 px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-[0.1em] rounded-[3px]">
+                        Confirmed on job
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center border border-obsidian/20 bg-obsidian/[0.03] text-obsidian/60 px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-[0.1em] rounded-[3px]">
+                        Not confirmed
+                      </span>
+                    )}
+                  </div>
+                  <div className="text-[12px] text-obsidian/60 mt-0.5">
+                    {[s.qualifierName, s.licenseNumber && `Lic ${s.licenseNumber}`, s.contactEmail].filter(Boolean).join(" · ")}
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 shrink-0">
+                  <button
+                    type="button"
+                    onClick={() => toggleSubConfirmed(i)}
+                    className="inline-flex items-center border border-obsidian/20 bg-white px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian rounded-[3px] hover:bg-obsidian/5"
+                  >
+                    {s.confirmed ? "Unconfirm" : "Confirm on job"}
+                  </button>
+                  {s.confirmed && (
+                    <button
+                      type="button"
+                      onClick={() => copySubPortalLink(s)}
+                      className="inline-flex items-center gap-1.5 border border-obsidian bg-obsidian px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-paper rounded-[3px] hover:bg-obsidian/90"
+                    >
+                      <Share2 className="h-3 w-3" /> Copy portal link
+                    </button>
+                  )}
+                </div>
               </li>
             ))}
           </ul>

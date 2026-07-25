@@ -1,53 +1,83 @@
-## Scope: 5 features
+## Overview
 
-### 1. Sub License Verification (DBPR)
+Three connected features layered onto the existing permit → subs data model. Today subs are stored inline as a JSON array on `permits.subs` (denormalized; no separate join table). We'll extend that structure with a per-sub access token + confirmation state, and add a new public sub portal route that reads project-level documents only.
 
-DBPR (`myfloridalicense.com`) has no public API — it's a JS form. I'll implement a server route that hits their internal POST endpoint with the license number and parses the HTML response for holder name, type, status, expiration.
+## Assumptions (flag if wrong)
 
-- New column on `subcontractors`: `dbpr_verified_at`, `dbpr_status`, `dbpr_holder_name`, `dbpr_license_type`, `dbpr_expiration`.
-- Server route `src/routes/api/verify-license.ts` (auth-required) scrapes DBPR and returns parsed result.
-- Bundle sub card gets license input + "Verify" button + badge (green Active / red Expired / amber Not Found).
-- Result stored on the sub row. **Non-blocking** — informational only.
+- "Confirmed and fully submitted" = a `subs[]` entry on the permit whose `confirmed: true` flag has been set by the GC or ops (we'll add a "Confirm" toggle in the permit detail Subcontractors tab). It is NOT the library-level `subcontractors.status = complete` — that's the sub's Cleared profile, not per-job confirmation.
+- "Project" = a single permit row. There is no separate projects table; job address + permit is the project. Cross-trade visibility is scoped to the same permit's `subs[]`.
+- Sub portal access is via a shareable link (UUID token per sub-per-permit), emailed/copied by the GC — not a login. Consistent with existing `/sub-intake/$token` pattern.
+- NOC "on file" = the permit has a `notice_of_commencement_review` document entry (the auto-generated draft counts — the sub still doesn't need to file their own).
 
-**Caveat:** DBPR HTML structure can change; if they break the page or add a captcha, verification stops working. That's the tradeoff of scraping.
+## Technical Details
 
-### 2. COI Expiration Tracking
+### 1. Data model changes
 
-- `subcontractors.coi_expiration` column already exists — I'll surface it in the Bundle sub card as an editable date field beside the COI upload.
-- Badge logic: green ≥60 days, amber <60 days, red past.
-- New page `/portal/compliance` listing every sub with COI expired or expiring in 60 days, grouped by permit. Linked from sidebar under Insurance.
+Extend the inline `PermitSub` type on `permits.subs`:
+```ts
+type PermitSub = {
+  companyName, trade, license, contactName, contactEmail, // existing
+  accessToken?: string;   // uuid, generated when sub is added
+  confirmed?: boolean;    // toggled true in permit detail Subs tab
+  confirmedAt?: string;   // iso timestamp
+};
+```
+No migration needed — the column is already `jsonb`. Backfill on read: generate tokens for existing subs the first time the permit detail loads (lazy upsert via `updatePermit`).
 
-### 3. Notification Preferences + Bell
+### 2. Public sub portal route
 
-- New table `notification_prefs` (user_id, email_permit_issued, email_inspection_passed, …, sms_*, phone_number).
-- New table `notifications` (user_id, kind, title, body, permit_id, read_at, created_at) for the bell dropdown.
-- Settings section on `/portal/profile` with toggles per event + phone number field.
-- Bell in portal header with unread count, dropdown list, mark-as-read.
-- Trigger point: when `updatePermit` changes status client-side, we insert a notification row + send email via existing Lovable email infra (`sendTransactionalEmail`). SMS stubbed — if no Twilio secret, we log "SMS would send to X" and no-op.
-- **Not** a Supabase trigger — we fire from the app-side status update, which is where all status changes come from today. Simpler and reliable.
+New file `src/routes/sub-portal.$token.tsx` (public, `noindex`). Route calls a new server fn `getSubProjectViewFn({ token })` that:
+- Uses `supabaseAdmin` to find the permit whose `subs` JSON contains a sub with `accessToken = token AND confirmed = true`.
+- Returns: permit summary (project_name, job_address, city, permit_number, status, submitted_date), the sub's own trade/company, the sanitized `documents[]` (only sub-visible entries), and the sanitized `subs[]` (trade + company only).
+- Signed URLs for viewable documents are minted on demand via `getSubProjectDocUrlFn({ token, path })` — path must start with `noc/<permit.id>/` or `documents/<permit.id>/` etc.
 
-### 4. NTO Filing
+**Sub-visible doc filter** — allowlist by key:
+- `notice_of_commencement_review` (NOC)
+- `stamped_plans`, `site_survey`, `tdh_calculations`, `equipment_specification` (project-level plans)
+- `permit_card` / issued permit PDF once status = `permit_issued`
+- Excluded: anything with `source: "internal"`, key starting `ntbo`, `coi_*`, `w9_*`, `license_*` (sub compliance docs), private-provider forms.
 
-- `nto_filings` table linked to `permit_id`: owner name/address, property address, contractor name/address (defaults to Flōridian), work description, first-work date, status (`not_filed` | `draft` | `sent` | `confirmed`), sent_via, sent_at, pdf_path.
-- NTO section on `/portal/permits/$id` with form + generate button.
-- PDF generated client-side with `pdf-lib` (matches existing generator patterns) and uploaded to `permit-files/nto/{permit_id}.pdf`.
-- "Send via email" uses existing email infra to the owner email (add owner_email field). "Send via certified mail" = mark status `sent` + on-screen instruction to print and mail.
-- Warning banner on permit detail if `nto_status !== "sent"/"confirmed"` and permit is in intake/preparing.
+### 3. NOC awareness ribbon
 
-### 5. `/join` Landing + Access Request
+Component `src/components/noc-awareness-ribbon.tsx` (dismissible, sessionStorage-keyed). Shown when the sub-facing view has an NOC document. Copy verbatim:
+> "A Notice of Commencement is already on file for this project. You do not need to file a separate NOC."
 
-- New public route `src/routes/join.tsx` (no auth gate).
-- Layout: obsidian hero, wordmark "Cléared by Flōridian", headline "Permitting, handled.", one-line subhead, single "Request Access" CTA opening a modal form (Name, Company, License #, Email, Phone).
-- Below fold: 3 stat blocks (400+ jurisdictions / Bundled submissions / Invite only). Simple footer.
-- New table `access_requests` (name, company, license_number, email, phone, status, created_at) with narrow `TO anon` INSERT policy.
-- On submit: insert row + email `team@floridianinc.com` via existing email infra.
+Displayed on:
+- `sub-portal.$token.tsx` (top of page).
+- `portal.permits.new.tsx` when in `edit` mode AND the permit has NOC — appears above the Subcontractors section so the GC sees it while adding trades.
 
-## Ordering and DB work
+### 4. Cross-trade visibility panel
 
-I'll batch DB migrations into 3 files (verification cols on subs, notifications tables + prefs, nto_filings + access_requests) and get them approved before wiring the UI so the types regenerate cleanly.
+Component `src/components/trades-on-job-panel.tsx`. Renders a compact list of confirmed subs on the permit: `Trade — Company` only. No contact info, no license, no compliance status.
 
-## One decision I need from you
+Displayed on:
+- `sub-portal.$token.tsx` (both before-first-login and after-submission; the sub always sees the panel).
+- `portal.permits.new.tsx` Subcontractors step (shows already-added trades on the current permit).
 
-**Email sending.** You mentioned "existing email infrastructure (Resend/SendGrid)." This project uses Lovable's built-in email infra (React Email templates + queued sends), not Resend directly. That's what I'll use for the notification emails, NTO email-to-owner, and `/join` team notification. If you actually want Resend specifically, say so — I'll wire the Resend connector instead.
+### 5. Trade-reuse suggestion
 
-Everything else I'll proceed with as described unless you push back.
+Inside `portal.permits.new.tsx`, when the GC picks a trade for a new sub row and `form.subs` already contains a sub with that trade + `companyName`, render an inline suggestion card above that row:
+> "Save on this job — {Trade} is already on file with {Company Name}."
+> [Use {Company Name}] [Dismiss]
+
+Clicking "Use" copies companyName / license / contact into the new row. Dismiss hides the suggestion for that row (local state).
+
+For a cross-permit variant (same job address on other permits), we can extend later — out of scope for this build to keep it tight.
+
+### 6. Permit detail: confirm subs
+
+In `src/components/project-detail.tsx` Subcontractors tab: add a "Confirm on job" toggle per sub row and a "Copy portal link" button that reveals `${origin}/sub-portal/${accessToken}`. Confirmation writes back to `permits.subs[i].confirmed = true`.
+
+## Files touched
+
+- New: `src/routes/sub-portal.$token.tsx`, `src/lib/sub-portal.functions.ts`, `src/components/noc-awareness-ribbon.tsx`, `src/components/trades-on-job-panel.tsx`
+- Edit: `src/lib/permits-api.ts` (extend `PermitSub` type, token backfill helper), `src/routes/portal.permits.new.tsx` (ribbon + trades panel + reuse suggestion + token generation on save), `src/components/project-detail.tsx` (confirm toggle + copy link in Subs tab)
+
+## Out of scope
+
+- Sub authentication (still token-based link, no account).
+- Cross-permit trade suggestions across the same property.
+- Notifying subs by email when confirmed — link is copied by GC for now.
+- New table for per-job sub confirmations — keeps everything in `permits.subs` JSON.
+
+Approve and I'll ship all six files in one pass.
