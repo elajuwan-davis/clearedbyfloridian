@@ -450,17 +450,58 @@ function NewPermitPage() {
             <textarea rows={3} className={inputCls} value={form.description} onChange={(e) => update("description", e.target.value)} placeholder="Describe the work in more detail…" />
           </div>
 
-          {/* Architect / Engineer */}
+          {/* Architect / Engineer — from shared contacts */}
           <div className="grid gap-5 sm:grid-cols-2 pt-2">
-            <div>
-              <label className={labelCls}>Architect of Record</label>
-              <input className={inputCls} value={form.contractorCompany} onChange={(e) => update("contractorCompany", e.target.value)} placeholder="Studio Aire" />
-            </div>
-            <div>
-              <label className={labelCls}>Engineer</label>
-              <input className={inputCls} value={form.contractorQualifier} onChange={(e) => update("contractorQualifier", e.target.value)} placeholder="Coastal Structures Inc." />
-            </div>
+            <ProContactBlock
+              role="architect"
+              label="Architect of Record"
+              options={savedPros.filter((p) => p.role === "architect")}
+              firm={form.architectFirm}
+              contact={form.architectContact}
+              license={form.architectLicense}
+              email={form.architectEmail}
+              onFirm={(v) => update("architectFirm", v)}
+              onContact={(v) => update("architectContact", v)}
+              onLicense={(v) => update("architectLicense", v)}
+              onEmail={(v) => update("architectEmail", v)}
+              onPick={(p) => setForm((f) => ({
+                ...f,
+                architectFirm: p.firm_name,
+                architectContact: p.contact_name ?? "",
+                architectLicense: p.license_number ?? "",
+                architectEmail: p.email ?? "",
+              }))}
+              saveNew={saveArchitectToContacts}
+              onSaveNew={setSaveArchitectToContacts}
+              inputCls={inputCls}
+              labelCls={labelCls}
+            />
+            <ProContactBlock
+              role="engineer"
+              label="Engineer"
+              options={savedPros.filter((p) => p.role === "engineer")}
+              firm={form.engineerFirm}
+              contact={form.engineerContact}
+              license={form.engineerLicense}
+              email={form.engineerEmail}
+              onFirm={(v) => update("engineerFirm", v)}
+              onContact={(v) => update("engineerContact", v)}
+              onLicense={(v) => update("engineerLicense", v)}
+              onEmail={(v) => update("engineerEmail", v)}
+              onPick={(p) => setForm((f) => ({
+                ...f,
+                engineerFirm: p.firm_name,
+                engineerContact: p.contact_name ?? "",
+                engineerLicense: p.license_number ?? "",
+                engineerEmail: p.email ?? "",
+              }))}
+              saveNew={saveEngineerToContacts}
+              onSaveNew={setSaveEngineerToContacts}
+              inputCls={inputCls}
+              labelCls={labelCls}
+            />
           </div>
+
 
           {/* Subcontractors */}
           <div className="pt-2 space-y-4">
