@@ -54,7 +54,6 @@ import { Route as PortalPermitFeesRouteImport } from './routes/portal.permit-fee
 import { Route as PortalNotaryQueueRouteImport } from './routes/portal.notary-queue'
 import { Route as PortalInspectionsRouteImport } from './routes/portal.inspections'
 import { Route as PortalFinancialsRouteImport } from './routes/portal.financials'
-import { Route as PortalEquipmentSpecsRouteImport } from './routes/portal.equipment-specs'
 import { Route as PortalComplianceRouteImport } from './routes/portal.compliance'
 import { Route as PortalBuildingDeptRouteImport } from './routes/portal.building-dept'
 import { Route as PermitCardIdRouteImport } from './routes/permit-card.$id'
@@ -320,11 +319,6 @@ const PortalFinancialsRoute = PortalFinancialsRouteImport.update({
   path: '/financials',
   getParentRoute: () => PortalRoute,
 } as any)
-const PortalEquipmentSpecsRoute = PortalEquipmentSpecsRouteImport.update({
-  id: '/equipment-specs',
-  path: '/equipment-specs',
-  getParentRoute: () => PortalRoute,
-} as any)
 const PortalComplianceRoute = PortalComplianceRouteImport.update({
   id: '/compliance',
   path: '/compliance',
@@ -567,7 +561,6 @@ export interface FileRoutesByFullPath {
   '/permit-card/$id': typeof PermitCardIdRoute
   '/portal/building-dept': typeof PortalBuildingDeptRoute
   '/portal/compliance': typeof PortalComplianceRoute
-  '/portal/equipment-specs': typeof PortalEquipmentSpecsRoute
   '/portal/financials': typeof PortalFinancialsRoute
   '/portal/inspections': typeof PortalInspectionsRoute
   '/portal/notary-queue': typeof PortalNotaryQueueRoute
@@ -652,7 +645,6 @@ export interface FileRoutesByTo {
   '/permit-card/$id': typeof PermitCardIdRoute
   '/portal/building-dept': typeof PortalBuildingDeptRoute
   '/portal/compliance': typeof PortalComplianceRoute
-  '/portal/equipment-specs': typeof PortalEquipmentSpecsRoute
   '/portal/financials': typeof PortalFinancialsRoute
   '/portal/inspections': typeof PortalInspectionsRoute
   '/portal/notary-queue': typeof PortalNotaryQueueRoute
@@ -737,7 +729,6 @@ export interface FileRoutesById {
   '/permit-card/$id': typeof PermitCardIdRoute
   '/portal/building-dept': typeof PortalBuildingDeptRoute
   '/portal/compliance': typeof PortalComplianceRoute
-  '/portal/equipment-specs': typeof PortalEquipmentSpecsRoute
   '/portal/financials': typeof PortalFinancialsRoute
   '/portal/inspections': typeof PortalInspectionsRoute
   '/portal/notary-queue': typeof PortalNotaryQueueRoute
@@ -825,7 +816,6 @@ export interface FileRouteTypes {
     | '/permit-card/$id'
     | '/portal/building-dept'
     | '/portal/compliance'
-    | '/portal/equipment-specs'
     | '/portal/financials'
     | '/portal/inspections'
     | '/portal/notary-queue'
@@ -910,7 +900,6 @@ export interface FileRouteTypes {
     | '/permit-card/$id'
     | '/portal/building-dept'
     | '/portal/compliance'
-    | '/portal/equipment-specs'
     | '/portal/financials'
     | '/portal/inspections'
     | '/portal/notary-queue'
@@ -994,7 +983,6 @@ export interface FileRouteTypes {
     | '/permit-card/$id'
     | '/portal/building-dept'
     | '/portal/compliance'
-    | '/portal/equipment-specs'
     | '/portal/financials'
     | '/portal/inspections'
     | '/portal/notary-queue'
@@ -1400,13 +1388,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PortalFinancialsRouteImport
       parentRoute: typeof PortalRoute
     }
-    '/portal/equipment-specs': {
-      id: '/portal/equipment-specs'
-      path: '/equipment-specs'
-      fullPath: '/portal/equipment-specs'
-      preLoaderRoute: typeof PortalEquipmentSpecsRouteImport
-      parentRoute: typeof PortalRoute
-    }
     '/portal/compliance': {
       id: '/portal/compliance'
       path: '/compliance'
@@ -1773,7 +1754,6 @@ const PortalSubmissionsRouteWithChildren =
 interface PortalRouteChildren {
   PortalBuildingDeptRoute: typeof PortalBuildingDeptRoute
   PortalComplianceRoute: typeof PortalComplianceRoute
-  PortalEquipmentSpecsRoute: typeof PortalEquipmentSpecsRoute
   PortalFinancialsRoute: typeof PortalFinancialsRoute
   PortalInspectionsRoute: typeof PortalInspectionsRoute
   PortalNotaryQueueRoute: typeof PortalNotaryQueueRoute
@@ -1801,7 +1781,6 @@ interface PortalRouteChildren {
 const PortalRouteChildren: PortalRouteChildren = {
   PortalBuildingDeptRoute: PortalBuildingDeptRoute,
   PortalComplianceRoute: PortalComplianceRoute,
-  PortalEquipmentSpecsRoute: PortalEquipmentSpecsRoute,
   PortalFinancialsRoute: PortalFinancialsRoute,
   PortalInspectionsRoute: PortalInspectionsRoute,
   PortalNotaryQueueRoute: PortalNotaryQueueRoute,
@@ -1901,13 +1880,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
