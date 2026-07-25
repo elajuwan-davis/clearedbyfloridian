@@ -220,6 +220,45 @@ function NewPermitPage() {
   const filledSubs = form.subs.filter((s) => s.companyName.trim());
   const wantBundle = filledSubs.length >= 2;
 
+  // True once this permit exists AND has an auto-generated NOC on file.
+  const hasNoc = useMemo(
+    () => (originalRow?.documents ?? []).some(
+      (d) => d.key === "notice_of_commencement_review" && d.status === "uploaded",
+    ),
+    [originalRow],
+  );
+
+  // Trades already added to this permit (edit mode) or being added right
+  // now (new mode) — feeds the "Trades on this Job" panel and the reuse
+  // suggestion logic.
+  const jobTrades = useMemo(
+    () => filledSubs.map((s) => ({ trade: s.trade, companyName: s.companyName })),
+    [filledSubs],
+  );
+
+  const [dismissedReuse, setDismissedReuse] = useState<Set<number>>(new Set());
+  function dismissReuse(idx: number) {
+    setDismissedReuse((prev) => { const n = new Set(prev); n.add(idx); return n; });
+  }
+
+  /** For an empty sub row of a given trade, find an already-filled sub on
+   *  the same job with the same trade — that's the reuse candidate. */
+  function reuseCandidateFor(idx: number): SubIntake | null {
+    if (dismissedReuse.has(idx)) return null;
+    const row = form.subs[idx];
+    if (!row || row.companyName.trim()) return null;
+    const match = form.subs.find((s, i) => i !== idx && s.trade === row.trade && s.companyName.trim());
+    return match ?? null;
+  }
+
+  function applyReuse(idx: number, source: SubIntake) {
+    setForm((f) => ({
+      ...f,
+      subs: f.subs.map((s, i) => (i === idx ? { ...source, trade: s.trade } : s)),
+    }));
+  }
+
+
   function handleFile(key: string, e: ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (file) updateDoc(key, { uploaded: file.name, na: false, deferred: false });
