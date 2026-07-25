@@ -14,6 +14,42 @@ export type Database = {
   }
   public: {
     Tables: {
+      access_requests: {
+        Row: {
+          company: string | null
+          created_at: string
+          email: string
+          id: string
+          license_number: string | null
+          name: string
+          notes: string | null
+          phone: string | null
+          status: string
+        }
+        Insert: {
+          company?: string | null
+          created_at?: string
+          email: string
+          id?: string
+          license_number?: string | null
+          name: string
+          notes?: string | null
+          phone?: string | null
+          status?: string
+        }
+        Update: {
+          company?: string | null
+          created_at?: string
+          email?: string
+          id?: string
+          license_number?: string | null
+          name?: string
+          notes?: string | null
+          phone?: string | null
+          status?: string
+        }
+        Relationships: []
+      }
       app_user_connections: {
         Row: {
           connection_key_ciphertext: string
@@ -89,6 +125,150 @@ export type Database = {
           tags?: string[]
           title?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      notification_prefs: {
+        Row: {
+          created_at: string
+          email_action_required: boolean
+          email_inspection_failed: boolean
+          email_inspection_passed: boolean
+          email_permit_issued: boolean
+          email_submission_received: boolean
+          phone_number: string | null
+          sms_action_required: boolean
+          sms_inspection_failed: boolean
+          sms_inspection_passed: boolean
+          sms_permit_issued: boolean
+          sms_submission_received: boolean
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          email_action_required?: boolean
+          email_inspection_failed?: boolean
+          email_inspection_passed?: boolean
+          email_permit_issued?: boolean
+          email_submission_received?: boolean
+          phone_number?: string | null
+          sms_action_required?: boolean
+          sms_inspection_failed?: boolean
+          sms_inspection_passed?: boolean
+          sms_permit_issued?: boolean
+          sms_submission_received?: boolean
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          email_action_required?: boolean
+          email_inspection_failed?: boolean
+          email_inspection_passed?: boolean
+          email_permit_issued?: boolean
+          email_submission_received?: boolean
+          phone_number?: string | null
+          sms_action_required?: boolean
+          sms_inspection_failed?: boolean
+          sms_inspection_passed?: boolean
+          sms_permit_issued?: boolean
+          sms_submission_received?: boolean
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      notifications: {
+        Row: {
+          body: string | null
+          created_at: string
+          id: string
+          kind: string
+          permit_id: string | null
+          read_at: string | null
+          title: string
+          user_id: string
+        }
+        Insert: {
+          body?: string | null
+          created_at?: string
+          id?: string
+          kind: string
+          permit_id?: string | null
+          read_at?: string | null
+          title: string
+          user_id: string
+        }
+        Update: {
+          body?: string | null
+          created_at?: string
+          id?: string
+          kind?: string
+          permit_id?: string | null
+          read_at?: string | null
+          title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      nto_filings: {
+        Row: {
+          contractor_address: string
+          contractor_name: string
+          created_at: string
+          created_by: string | null
+          first_work_date: string | null
+          id: string
+          owner_address: string | null
+          owner_email: string | null
+          owner_name: string | null
+          pdf_path: string | null
+          permit_id: string
+          property_address: string | null
+          sent_at: string | null
+          sent_via: string | null
+          status: string
+          updated_at: string
+          work_description: string | null
+        }
+        Insert: {
+          contractor_address?: string
+          contractor_name?: string
+          created_at?: string
+          created_by?: string | null
+          first_work_date?: string | null
+          id?: string
+          owner_address?: string | null
+          owner_email?: string | null
+          owner_name?: string | null
+          pdf_path?: string | null
+          permit_id: string
+          property_address?: string | null
+          sent_at?: string | null
+          sent_via?: string | null
+          status?: string
+          updated_at?: string
+          work_description?: string | null
+        }
+        Update: {
+          contractor_address?: string
+          contractor_name?: string
+          created_at?: string
+          created_by?: string | null
+          first_work_date?: string | null
+          id?: string
+          owner_address?: string | null
+          owner_email?: string | null
+          owner_name?: string | null
+          pdf_path?: string | null
+          permit_id?: string
+          property_address?: string | null
+          sent_at?: string | null
+          sent_via?: string | null
+          status?: string
+          updated_at?: string
+          work_description?: string | null
         }
         Relationships: []
       }
@@ -251,6 +431,11 @@ export type Database = {
           contact_last_name: string | null
           created_at: string
           created_by: string | null
+          dbpr_expiration: string | null
+          dbpr_holder_name: string | null
+          dbpr_license_type: string | null
+          dbpr_status: string | null
+          dbpr_verified_at: string | null
           email: string | null
           id: string
           insurance_carrier_email: string | null
@@ -279,6 +464,11 @@ export type Database = {
           contact_last_name?: string | null
           created_at?: string
           created_by?: string | null
+          dbpr_expiration?: string | null
+          dbpr_holder_name?: string | null
+          dbpr_license_type?: string | null
+          dbpr_status?: string | null
+          dbpr_verified_at?: string | null
           email?: string | null
           id?: string
           insurance_carrier_email?: string | null
@@ -307,6 +497,11 @@ export type Database = {
           contact_last_name?: string | null
           created_at?: string
           created_by?: string | null
+          dbpr_expiration?: string | null
+          dbpr_holder_name?: string | null
+          dbpr_license_type?: string | null
+          dbpr_status?: string | null
+          dbpr_verified_at?: string | null
           email?: string | null
           id?: string
           insurance_carrier_email?: string | null
