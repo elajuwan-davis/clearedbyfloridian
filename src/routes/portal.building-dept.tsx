@@ -50,6 +50,67 @@ function BuildingDeptPage() {
   const [form, setForm] = useState(EMPTY_FORM);
   const [showPw, setShowPw] = useState(false);
 
+  // GC portal credentials (per-user, per-municipality). Stored encrypted server-side.
+  const listFlags = useServerFn(listPortalLoginFlags);
+  const saveFn = useServerFn(savePortalLogin);
+  const deleteFn = useServerFn(deletePortalLogin);
+  const [savedSlugs, setSavedSlugs] = useState<Set<string>>(new Set());
+  const [loginDialog, setLoginDialog] = useState<{ city: string; slug: string } | null>(null);
+  const [loginForm, setLoginForm] = useState({ username: "", password: "", notes: "" });
+  const [loginShowPw, setLoginShowPw] = useState(false);
+  const [loginSaving, setLoginSaving] = useState(false);
+
+  async function refreshFlags() {
+    try {
+      const rows = await listFlags();
+      setSavedSlugs(new Set(rows.map((r) => r.municipality_slug)));
+    } catch { /* signed-out ok */ }
+  }
+  useEffect(() => { void refreshFlags(); }, []);
+
+  function openLogin(city: string) {
+    setLoginDialog({ city, slug: slugifyCity(city) });
+    setLoginForm({ username: "", password: "", notes: "" });
+    setLoginShowPw(false);
+  }
+  async function submitLogin() {
+    if (!loginDialog) return;
+    if (!loginForm.username.trim() || !loginForm.password.trim()) {
+      toast.error("Username and password are required");
+      return;
+    }
+    setLoginSaving(true);
+    try {
+      await saveFn({
+        data: {
+          municipality_slug: loginDialog.slug,
+          city_name: loginDialog.city,
+          username: loginForm.username.trim(),
+          password: loginForm.password,
+          notes: loginForm.notes.trim() || null,
+        },
+      });
+      toast.success(`Login saved for ${loginDialog.city}`);
+      setLoginDialog(null);
+      await refreshFlags();
+    } catch (e) {
+      toast.error("Failed to save login: " + (e instanceof Error ? e.message : String(e)));
+    } finally {
+      setLoginSaving(false);
+    }
+  }
+  async function clearLogin(city: string) {
+    const slug = slugifyCity(city);
+    if (!confirm(`Remove saved login for ${city}?`)) return;
+    try {
+      await deleteFn({ data: { municipality_slug: slug } });
+      toast.success("Login removed");
+      await refreshFlags();
+    } catch (e) {
+      toast.error("Failed to remove: " + (e instanceof Error ? e.message : String(e)));
+    }
+  }
+
   useEffect(() => {
     setCustom(listMunicipalities());
     return subscribeMunicipalities(() => setCustom(listMunicipalities()));
