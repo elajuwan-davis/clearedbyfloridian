@@ -11,11 +11,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Upload, Plus, Trash2, FileText, CheckCircle2, AlertTriangle, CreditCard, ArrowRight, Users, Mail } from "lucide-react";
+import { Upload, Plus, Trash2, FileText, CheckCircle2, AlertTriangle, CreditCard, ArrowRight, Users, Mail, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { loadPaymentAuth, clearPaymentAuth, type PaymentAuthRecord } from "@/lib/payment-auth";
 import { supabase } from "@/integrations/supabase/client";
 import { NotificationPrefsSection } from "@/components/notification-prefs-section";
+import { useServerFn } from "@tanstack/react-start";
+import { inviteTeamMemberFn, listMyTeamFn, removeTeamMemberFn } from "@/lib/tenants.functions";
+import { useSession } from "@/lib/use-session";
 
 export const Route = createFileRoute("/profile")({
   head: () => ({
@@ -27,12 +30,7 @@ export const Route = createFileRoute("/profile")({
   component: ProfilePage,
 });
 
-const TEAM_MEMBERS: Array<{ name: string; email: string; role: string }> = [
-  { name: "Elajuwan Davis", email: "elajuwan@floridianinc.com", role: "Owner" },
-  { name: "Jose", email: "jose@floridianinc.com", role: "Admin" },
-  { name: "Eman", email: "eman@floridianinc.com", role: "Admin" },
-  { name: "Paul", email: "paul@floridianinc.com", role: "Admin" },
-];
+type TeamMember = { user_id: string; email: string; role: string };
 
 function ProfilePage() {
   const [displayName, setDisplayName] = useState("Elajuwan Davis");
@@ -271,42 +269,8 @@ function ProfilePage() {
         </Section>
 
         {/* Team Members */}
-        <Section
-          title="Team Members"
-          subtitle="Everyone with access to your Cleard workspace."
-        >
-          <div className="border border-obsidian/15 bg-white rounded-[3px] divide-y divide-obsidian/10">
-            {TEAM_MEMBERS.map((m) => (
-              <div key={m.email} className="flex items-center gap-4 px-4 py-3">
-                <div className="h-9 w-9 grid place-items-center rounded-[3px] bg-paper-warm border border-obsidian/10 shrink-0">
-                  <span className="font-display text-sm text-obsidian/70">
-                    {m.name.split(" ").map((s) => s[0]).join("").slice(0, 2)}
-                  </span>
-                </div>
-                <div className="min-w-0 flex-1">
-                  <div className="text-sm text-obsidian font-medium truncate">{m.name}</div>
-                  <div className="mt-0.5 flex items-center gap-1.5 text-xs text-obsidian/55 truncate">
-                    <Mail className="h-3 w-3 shrink-0" />
-                    {m.email}
-                  </div>
-                </div>
-                <span
-                  className={`inline-flex items-center border px-2 py-0.5 text-[10px] font-mono uppercase tracking-[0.12em] rounded-[2px] ${
-                    m.role === "Owner"
-                      ? "bg-obsidian text-paper border-obsidian"
-                      : "bg-paper-warm text-obsidian/70 border-obsidian/15"
-                  }`}
-                >
-                  {m.role}
-                </span>
-              </div>
-            ))}
-          </div>
-          <p className="mt-3 flex items-center gap-1.5 text-xs text-obsidian/55">
-            <Users className="h-3 w-3" />
-            {TEAM_MEMBERS.length} members with access
-          </p>
-        </Section>
+        <TeamMembersSection />
+
 
         {/* Payment Authorization */}
         <Section title="Payment Authorization" subtitle="Authorize Cleard by Flōridian to charge for services and permit fees.">
@@ -429,5 +393,131 @@ function Meta({ label, value, mono }: { label: string; value: string; mono?: boo
       <div className="font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/55 mb-1">{label}</div>
       <div className={`text-sm text-obsidian ${mono ? "font-mono tabular-nums" : ""}`}>{value}</div>
     </div>
+  );
+}
+
+function TeamMembersSection() {
+  const session = useSession();
+  const list = useServerFn(listMyTeamFn);
+  const invite = useServerFn(inviteTeamMemberFn);
+  const remove = useServerFn(removeTeamMemberFn);
+  const [rows, setRows] = useState<TeamMember[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [email, setEmail] = useState("");
+  const [sending, setSending] = useState(false);
+
+  const canInvite = session.role === "gc_owner" || session.role === "admin";
+
+  async function refresh() {
+    setLoading(true);
+    try {
+      const data = await list();
+      setRows(data as TeamMember[]);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    if (!session.loading && session.userId) refresh();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [session.loading, session.userId]);
+
+  async function onInvite(e: React.FormEvent) {
+    e.preventDefault();
+    if (!email.trim()) return;
+    setSending(true);
+    try {
+      await invite({ data: { email: email.trim(), redirect_to: `${window.location.origin}/onboarding` } });
+      toast.success(`Invitation sent to ${email}`);
+      setEmail("");
+      refresh();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Invite failed");
+    } finally {
+      setSending(false);
+    }
+  }
+
+  async function onRemove(user_id: string, memberEmail: string) {
+    if (!confirm(`Remove ${memberEmail} from the team?`)) return;
+    try {
+      await remove({ data: { user_id } });
+      toast.success("Removed");
+      refresh();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Remove failed");
+    }
+  }
+
+  return (
+    <section className="mt-10">
+      <div className="mb-4">
+        <h2 className="display-serif text-2xl text-obsidian">Team Members</h2>
+        <p className="mt-1 text-sm text-obsidian/60">Everyone with access to your Cleard workspace.</p>
+      </div>
+      <div className="border border-obsidian/15 bg-white rounded-[3px] divide-y divide-obsidian/10">
+        {loading && (
+          <div className="px-4 py-6 text-sm text-obsidian/50 flex items-center gap-2">
+            <Loader2 className="h-4 w-4 animate-spin" /> Loading team…
+          </div>
+        )}
+        {!loading && rows.length === 0 && (
+          <div className="px-4 py-6 text-sm text-obsidian/50">No team members yet.</div>
+        )}
+        {!loading && rows.map((m) => (
+          <div key={m.user_id} className="flex items-center gap-4 px-4 py-3">
+            <div className="h-9 w-9 grid place-items-center rounded-[3px] bg-paper-warm border border-obsidian/10 shrink-0">
+              <span className="font-display text-sm text-obsidian/70">{(m.email || "?").slice(0, 2).toUpperCase()}</span>
+            </div>
+            <div className="min-w-0 flex-1">
+              <div className="text-sm text-obsidian font-medium truncate flex items-center gap-1.5">
+                <Mail className="h-3 w-3 text-obsidian/45" />
+                {m.email}
+              </div>
+            </div>
+            <span
+              className={`inline-flex items-center border px-2 py-0.5 text-[10px] font-mono uppercase tracking-[0.12em] rounded-[2px] ${
+                m.role === "gc_owner" ? "bg-obsidian text-paper border-obsidian" : "bg-paper-warm text-obsidian/70 border-obsidian/15"
+              }`}
+            >
+              {m.role === "gc_owner" ? "Owner" : m.role === "gc_member" ? "Member" : m.role}
+            </span>
+            {canInvite && m.user_id !== session.userId && m.role !== "gc_owner" && (
+              <button onClick={() => onRemove(m.user_id, m.email)} className="text-obsidian/40 hover:text-red-700" title="Remove">
+                <Trash2 className="h-3.5 w-3.5" />
+              </button>
+            )}
+          </div>
+        ))}
+      </div>
+      <p className="mt-3 flex items-center gap-1.5 text-xs text-obsidian/55">
+        <Users className="h-3 w-3" />
+        {rows.length} {rows.length === 1 ? "member" : "members"} with access
+      </p>
+
+      {canInvite && (
+        <form onSubmit={onInvite} className="mt-4 flex items-stretch gap-2 flex-wrap">
+          <input
+            type="email"
+            required
+            placeholder="teammate@company.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="flex-1 min-w-[240px] border border-obsidian/15 bg-white px-3 py-2 text-sm text-obsidian focus:border-obsidian/40 focus:outline-none rounded-[3px]"
+          />
+          <button
+            type="submit"
+            disabled={sending}
+            className="inline-flex items-center gap-2 bg-obsidian px-4 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-paper hover:bg-obsidian/90 rounded-[3px] disabled:opacity-60"
+          >
+            {sending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Plus className="h-3.5 w-3.5" />}
+            {sending ? "Sending…" : "Invite Member"}
+          </button>
+        </form>
+      )}
+    </section>
   );
 }

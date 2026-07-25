@@ -941,6 +941,10 @@ export type Database = {
         Returns: boolean
       }
       is_admin: { Args: never; Returns: boolean }
+      permit_in_current_tenant: {
+        Args: { _permit_id: string }
+        Returns: boolean
+      }
       sub_can_see_permit: { Args: { _permit_id: string }; Returns: boolean }
     }
     Enums: {

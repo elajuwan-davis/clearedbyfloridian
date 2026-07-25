@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SubPortalRouteImport } from './routes/sub-portal'
 import { Route as ServicesRouteImport } from './routes/services'
 import { Route as ProjectsRouteImport } from './routes/projects'
 import { Route as ProjectGuidesRouteImport } from './routes/project-guides'
@@ -86,6 +87,11 @@ import { Route as ApiPublicAccessRequestRouteImport } from './routes/api/public/
 import { Route as PortalPermitsIdBundleRouteImport } from './routes/portal.permits.$id.bundle'
 import { Route as ApiPublicHubspotDealWebhookRouteImport } from './routes/api/public/hubspot.deal-webhook'
 
+const SubPortalRoute = SubPortalRouteImport.update({
+  id: '/sub-portal',
+  path: '/sub-portal',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ServicesRoute = ServicesRouteImport.update({
   id: '/services',
   path: '/services',
@@ -237,9 +243,9 @@ const VersusSlugRoute = VersusSlugRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const SubPortalTokenRoute = SubPortalTokenRouteImport.update({
-  id: '/sub-portal/$token',
-  path: '/sub-portal/$token',
-  getParentRoute: () => rootRouteImport,
+  id: '/$token',
+  path: '/$token',
+  getParentRoute: () => SubPortalRoute,
 } as any)
 const SubIntakeTokenRoute = SubIntakeTokenRouteImport.update({
   id: '/sub-intake/$token',
@@ -501,6 +507,7 @@ export interface FileRoutesByFullPath {
   '/project-guides': typeof ProjectGuidesRoute
   '/projects': typeof ProjectsRouteWithChildren
   '/services': typeof ServicesRoute
+  '/sub-portal': typeof SubPortalRouteWithChildren
   '/admin/access-requests': typeof AdminAccessRequestsRoute
   '/admin/builders': typeof AdminBuildersRoute
   '/admin/gc-clients': typeof AdminGcClientsRoute
@@ -578,6 +585,7 @@ export interface FileRoutesByTo {
   '/project-guides': typeof ProjectGuidesRoute
   '/projects': typeof ProjectsRouteWithChildren
   '/services': typeof ServicesRoute
+  '/sub-portal': typeof SubPortalRouteWithChildren
   '/admin/access-requests': typeof AdminAccessRequestsRoute
   '/admin/builders': typeof AdminBuildersRoute
   '/admin/gc-clients': typeof AdminGcClientsRoute
@@ -655,6 +663,7 @@ export interface FileRoutesById {
   '/project-guides': typeof ProjectGuidesRoute
   '/projects': typeof ProjectsRouteWithChildren
   '/services': typeof ServicesRoute
+  '/sub-portal': typeof SubPortalRouteWithChildren
   '/admin/access-requests': typeof AdminAccessRequestsRoute
   '/admin/builders': typeof AdminBuildersRoute
   '/admin/gc-clients': typeof AdminGcClientsRoute
@@ -735,6 +744,7 @@ export interface FileRouteTypes {
     | '/project-guides'
     | '/projects'
     | '/services'
+    | '/sub-portal'
     | '/admin/access-requests'
     | '/admin/builders'
     | '/admin/gc-clients'
@@ -812,6 +822,7 @@ export interface FileRouteTypes {
     | '/project-guides'
     | '/projects'
     | '/services'
+    | '/sub-portal'
     | '/admin/access-requests'
     | '/admin/builders'
     | '/admin/gc-clients'
@@ -888,6 +899,7 @@ export interface FileRouteTypes {
     | '/project-guides'
     | '/projects'
     | '/services'
+    | '/sub-portal'
     | '/admin/access-requests'
     | '/admin/builders'
     | '/admin/gc-clients'
@@ -967,12 +979,12 @@ export interface RootRouteChildren {
   ProjectGuidesRoute: typeof ProjectGuidesRoute
   ProjectsRoute: typeof ProjectsRouteWithChildren
   ServicesRoute: typeof ServicesRoute
+  SubPortalRoute: typeof SubPortalRouteWithChildren
   AdminContractorsRoute: typeof AdminContractorsRoute
   ApiVerifyLicenseRoute: typeof ApiVerifyLicenseRoute
   BlogSlugRoute: typeof BlogSlugRoute
   PermitCardIdRoute: typeof PermitCardIdRoute
   SubIntakeTokenRoute: typeof SubIntakeTokenRoute
-  SubPortalTokenRoute: typeof SubPortalTokenRoute
   VersusSlugRoute: typeof VersusSlugRoute
   BlogIndexRoute: typeof BlogIndexRoute
   VersusIndexRoute: typeof VersusIndexRoute
@@ -984,6 +996,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/sub-portal': {
+      id: '/sub-portal'
+      path: '/sub-portal'
+      fullPath: '/sub-portal'
+      preLoaderRoute: typeof SubPortalRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/services': {
       id: '/services'
       path: '/services'
@@ -1196,10 +1215,10 @@ declare module '@tanstack/react-router' {
     }
     '/sub-portal/$token': {
       id: '/sub-portal/$token'
-      path: '/sub-portal/$token'
+      path: '/$token'
       fullPath: '/sub-portal/$token'
       preLoaderRoute: typeof SubPortalTokenRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof SubPortalRoute
     }
     '/sub-intake/$token': {
       id: '/sub-intake/$token'
@@ -1676,6 +1695,18 @@ const ProjectsRouteWithChildren = ProjectsRoute._addFileChildren(
   ProjectsRouteChildren,
 )
 
+interface SubPortalRouteChildren {
+  SubPortalTokenRoute: typeof SubPortalTokenRoute
+}
+
+const SubPortalRouteChildren: SubPortalRouteChildren = {
+  SubPortalTokenRoute: SubPortalTokenRoute,
+}
+
+const SubPortalRouteWithChildren = SubPortalRoute._addFileChildren(
+  SubPortalRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
@@ -1703,12 +1734,12 @@ const rootRouteChildren: RootRouteChildren = {
   ProjectGuidesRoute: ProjectGuidesRoute,
   ProjectsRoute: ProjectsRouteWithChildren,
   ServicesRoute: ServicesRoute,
+  SubPortalRoute: SubPortalRouteWithChildren,
   AdminContractorsRoute: AdminContractorsRoute,
   ApiVerifyLicenseRoute: ApiVerifyLicenseRoute,
   BlogSlugRoute: BlogSlugRoute,
   PermitCardIdRoute: PermitCardIdRoute,
   SubIntakeTokenRoute: SubIntakeTokenRoute,
-  SubPortalTokenRoute: SubPortalTokenRoute,
   VersusSlugRoute: VersusSlugRoute,
   BlogIndexRoute: BlogIndexRoute,
   VersusIndexRoute: VersusIndexRoute,

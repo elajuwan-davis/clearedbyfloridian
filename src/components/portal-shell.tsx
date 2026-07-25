@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
-import { ChevronDown, LogOut, Menu, X } from "lucide-react";
+import { ChevronDown, LogOut, Menu, X, Building2, Check } from "lucide-react";
+import { useServerFn } from "@tanstack/react-start";
 
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import {
@@ -15,7 +16,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useExpirationAlerts } from "@/hooks/use-expiration-alerts";
 import { NotificationBell } from "@/components/notification-bell";
 import { VictoriaWidget } from "@/components/victoria-widget";
-import { useSession } from "@/lib/use-session";
+import { useSession, setImpersonatedTenant, type AppRole } from "@/lib/use-session";
+import { listAllTenantsFn } from "@/lib/tenants.functions";
 import type { Alert } from "@/lib/expiration-alerts";
 
 type AlertKey = "my-permits" | "request-coi" | "sub-insurance";
@@ -58,6 +60,23 @@ const navGroups: NavGroup[] = [
   },
 ];
 
+// Subs only see a slim nav — their attached projects + their own compliance uploads.
+const subNavGroups: NavGroup[] = [
+  {
+    label: "Projects",
+    items: [{ to: "/sub-portal", label: "My Projects" }],
+  },
+  {
+    label: "Compliance",
+    items: [{ to: "/profile", label: "Documents" }],
+  },
+];
+
+function navGroupsForRole(role: AppRole | null): NavGroup[] {
+  if (role === "subcontractor") return subNavGroups;
+  return navGroups;
+}
+
 const settingsGroup: NavGroup = {
   label: "Settings",
   items: [
@@ -65,6 +84,11 @@ const settingsGroup: NavGroup = {
     { to: "/profile", label: "Notifications" },
     { to: "/portal/subcontractors", label: "Team" },
   ],
+};
+
+const subSettingsGroup: NavGroup = {
+  label: "Settings",
+  items: [{ to: "/profile", label: "Profile" }],
 };
 
 const protectedPortalPrefixes = [
@@ -173,13 +197,17 @@ function MobileDrawer({
   alertKeys,
   onNavigate,
   onSignOut,
+  role,
 }: {
   pathname: string;
   alertKeys: Set<AlertKey>;
   onNavigate: () => void;
   onSignOut: () => void;
+  role: AppRole | null;
 }) {
-  const all = [...navGroups, settingsGroup];
+  const groups = navGroupsForRole(role);
+  const settings = role === "subcontractor" ? subSettingsGroup : settingsGroup;
+  const all = [...groups, settings];
   return (
     <div className="flex h-full flex-col bg-white">
       <div className="h-14 flex items-center justify-between px-5 border-b">
@@ -351,10 +379,13 @@ export function PortalShell({ children }: { children: ReactNode }) {
 
         {/* Desktop nav */}
         <nav className="hidden lg:flex items-center ml-8 h-14">
-          {navGroups.map((g) => (
+          {navGroupsForRole(session.role).map((g) => (
             <NavDropdown key={g.label} group={g} pathname={pathname} alertKeys={alertKeys} />
           ))}
         </nav>
+
+        {/* Admin tenant switcher */}
+        {session.isAdmin && <AdminTenantSwitcher />}
 
         <div className="ml-auto flex items-center gap-2">
           <NotificationBell />
@@ -378,7 +409,7 @@ export function PortalShell({ children }: { children: ReactNode }) {
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                {settingsGroup.items.map((item, i) => (
+                {(session.role === "subcontractor" ? subSettingsGroup : settingsGroup).items.map((item, i) => (
                   <DropdownMenuItem key={`${item.to}-${i}`} asChild>
                     <Link to={item.to as never} className="px-3 py-2 text-[13px] rounded-[2px] cursor-pointer" style={{ color: "var(--obsidian)" }}>
                       {item.label}
@@ -411,6 +442,7 @@ export function PortalShell({ children }: { children: ReactNode }) {
               <MobileDrawer
                 pathname={pathname}
                 alertKeys={alertKeys}
+                role={session.role}
                 onNavigate={() => setOpen(false)}
                 onSignOut={() => {
                   setOpen(false);
@@ -421,6 +453,25 @@ export function PortalShell({ children }: { children: ReactNode }) {
           </Sheet>
         </div>
       </header>
+
+      {session.isAdmin && session.impersonatingTenantName && (
+        <div
+          className="sticky top-14 z-30 flex items-center justify-between gap-3 px-4 sm:px-6 lg:px-8 py-2 text-[12px]"
+          style={{ backgroundColor: "var(--obsidian)", color: "white" }}
+        >
+          <div className="flex items-center gap-2 min-w-0">
+            <Building2 className="h-3.5 w-3.5 shrink-0" strokeWidth={1.5} />
+            <span className="font-mono text-[10px] tracking-[0.18em] uppercase opacity-70">Viewing as</span>
+            <span className="truncate">{session.impersonatingTenantName}</span>
+          </div>
+          <button
+            onClick={() => setImpersonatedTenant(null)}
+            className="font-mono text-[10px] tracking-[0.16em] uppercase underline underline-offset-2 hover:opacity-80"
+          >
+            Exit impersonation
+          </button>
+        </div>
+      )}
 
       <main className="min-h-[calc(100vh-3.5rem)] px-4 sm:px-6 lg:px-8 py-6 md:py-10">
         {children}
@@ -443,4 +494,73 @@ function InternalOnlyVictoria() {
   }, []);
   if (!show) return null;
   return <VictoriaWidget />;
+}
+
+function AdminTenantSwitcher() {
+  const session = useSession();
+  const list = useServerFn(listAllTenantsFn);
+  const [tenants, setTenants] = useState<Array<{ id: string; name: string }>>([]);
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    list()
+      .then((rows: any) => {
+        if (cancelled) return;
+        setTenants((rows ?? []).map((r: any) => ({ id: r.id, name: r.name })));
+        setLoaded(true);
+      })
+      .catch(() => setLoaded(true));
+    return () => { cancelled = true; };
+  }, [list]);
+
+  const current = session.impersonatingTenantId;
+  const currentName = session.impersonatingTenantName ?? "All Tenants";
+
+  return (
+    <div className="hidden md:block ml-4">
+      <DropdownMenu>
+        <DropdownMenuTrigger
+          className="flex items-center gap-2 h-9 px-3 border rounded-[3px] hover:bg-secondary outline-none"
+          style={{ borderColor: "color-mix(in oklab, var(--obsidian) 15%, transparent)" }}
+        >
+          <Building2 className="h-3.5 w-3.5" strokeWidth={1.5} style={{ color: "var(--obsidian)" }} />
+          <span className="font-mono text-[10px] tracking-[0.16em] uppercase" style={{ color: "var(--obsidian)" }}>
+            {currentName}
+          </span>
+          <ChevronDown className="h-3 w-3 opacity-60" strokeWidth={1.5} />
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="start" className="min-w-[260px] max-h-[380px] overflow-y-auto rounded-[3px] p-1">
+          <DropdownMenuLabel className="px-3 py-2 font-mono text-[9px] tracking-[0.2em] uppercase" style={{ color: "color-mix(in oklab, var(--obsidian) 55%, transparent)" }}>
+            Impersonate tenant
+          </DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem
+            onSelect={() => setImpersonatedTenant(null)}
+            className="px-3 py-2 text-[13px] rounded-[2px] cursor-pointer flex items-center justify-between"
+            style={{ color: "var(--obsidian)" }}
+          >
+            <span>All Tenants (admin view)</span>
+            {!current && <Check className="h-3.5 w-3.5" strokeWidth={1.5} />}
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          {!loaded && <div className="px-3 py-2 text-[12px] text-obsidian/50">Loading…</div>}
+          {loaded && tenants.length === 0 && (
+            <div className="px-3 py-2 text-[12px] text-obsidian/50">No tenants yet.</div>
+          )}
+          {tenants.map((t) => (
+            <DropdownMenuItem
+              key={t.id}
+              onSelect={() => setImpersonatedTenant({ id: t.id, name: t.name })}
+              className="px-3 py-2 text-[13px] rounded-[2px] cursor-pointer flex items-center justify-between gap-3"
+              style={{ color: "var(--obsidian)" }}
+            >
+              <span className="truncate">{t.name}</span>
+              {current === t.id && <Check className="h-3.5 w-3.5 shrink-0" strokeWidth={1.5} />}
+            </DropdownMenuItem>
+          ))}
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
+  );
 }
