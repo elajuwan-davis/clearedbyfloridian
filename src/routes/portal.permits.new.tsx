@@ -673,6 +673,8 @@ function NewPermitPage() {
                 )}
               </div>
             )}
+          </div>
+
 
           <div>
             <label className={labelCls}>Scope Narrative</label>
