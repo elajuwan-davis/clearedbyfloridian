@@ -173,7 +173,7 @@ function BundleManagementPage() {
           doc_key: d.key,
           doc_label: d.label,
           filename: d.filename ?? d.label,
-          storage_path: d.storage_path ?? null,
+          storage_path: d.path ?? null,
           external_url: d.external_url ?? null,
           required: !!d.required,
         });
@@ -412,7 +412,7 @@ function BundleManagementPage() {
               </div>
 
               <div className="mt-3 text-[11px] text-obsidian/50 font-mono uppercase tracking-[0.14em]">
-                Pre-fill: {row.job_address} · {row.municipality || "—"} · GC {FLORIDIAN_FIRM.name} · Lic {bundle.gc_license_number}
+                Pre-fill: {row.job_address} · {row.municipality || "—"} · GC {FLORIDIAN_FIRM.firmName} · Lic {bundle.gc_license_number}
               </div>
             </div>
           );
