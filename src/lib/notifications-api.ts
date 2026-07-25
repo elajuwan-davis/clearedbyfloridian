@@ -93,7 +93,7 @@ export async function getPrefs(): Promise<NotifPrefs | null> {
     .select("*")
     .eq("user_id", uid)
     .maybeSingle();
-  return (data as NotifPrefs) ?? null;
+  return ((data as unknown) as NotifPrefs) ?? null;
 }
 
 export async function upsertPrefs(patch: Partial<NotifPrefs>): Promise<void> {
