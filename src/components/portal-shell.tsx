@@ -55,10 +55,12 @@ const navGroups: NavGroup[] = [
     label: "Operations",
     items: [
       { to: "/messages", label: "Messages" },
+      { to: "/portal/reports", label: "Reports" },
       { to: "/portal/guides", label: "Project Guides" },
       { to: "/portal/blog", label: "Blog" },
     ],
   },
+
 ];
 
 // Subs only see a slim nav — their attached projects + their own compliance uploads.
