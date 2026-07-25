@@ -70,13 +70,26 @@ function LoginPage() {
     }
 
 
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    setLoading(false);
+    const { error, data: signIn } = await supabase.auth.signInWithPassword({ email, password });
     if (error) {
+      setLoading(false);
       setError(error.message);
       return;
     }
-    navigate({ to: getSafeNext("/portal") as never, replace: true });
+    // Route by role
+    const userId = signIn.user?.id;
+    let target = getSafeNext("/portal");
+    if (userId) {
+      const { data: roles } = await (supabase.from("user_roles" as any) as any)
+        .select("role")
+        .eq("user_id", userId);
+      const set = new Set((roles ?? []).map((r: any) => r.role));
+      if (set.has("admin")) target = "/admin";
+      else if (set.has("subcontractor")) target = "/sub-portal";
+      else target = getSafeNext("/portal");
+    }
+    setLoading(false);
+    navigate({ to: target as never, replace: true });
   }
 
 
