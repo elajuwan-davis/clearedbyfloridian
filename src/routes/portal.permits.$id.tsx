@@ -283,8 +283,15 @@ function PermitDetailPage() {
               <button onClick={openExport} className="inline-flex items-center gap-2 border border-obsidian/20 bg-white px-3 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian rounded-[3px] hover:bg-obsidian/5">
                 <Download className="h-3.5 w-3.5" /> Export
               </button>
+              <Link
+                to="/portal/permits/new"
+                search={{ edit: row.id }}
+                className="inline-flex items-center gap-2 border border-obsidian/20 bg-white px-3 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian rounded-[3px] hover:bg-obsidian/5"
+              >
+                <Pencil className="h-3.5 w-3.5" /> Edit Submission
+              </Link>
               <button onClick={() => setEditing(true)} className="inline-flex items-center gap-2 bg-obsidian px-4 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-paper rounded-[3px]">
-                <Pencil className="h-3.5 w-3.5" /> Edit
+                <Pencil className="h-3.5 w-3.5" /> Quick Edit
               </button>
               <button onClick={remove} className="inline-flex items-center gap-2 border border-red-600/30 text-red-700 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.14em] rounded-[3px] hover:bg-red-50">
                 <Trash2 className="h-3.5 w-3.5" /> Delete
