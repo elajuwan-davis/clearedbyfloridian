@@ -14,7 +14,7 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { useExpirationAlerts } from "@/hooks/use-expiration-alerts";
 import { NotificationBell } from "@/components/notification-bell";
-import { VickyWidget } from "@/components/vicky-widget";
+import { VictoriaWidget } from "@/components/victoria-widget";
 import type { Alert } from "@/lib/expiration-alerts";
 
 type AlertKey = "my-permits" | "request-coi" | "sub-insurance";
@@ -404,12 +404,12 @@ export function PortalShell({ children }: { children: ReactNode }) {
         {children}
       </main>
 
-      <InternalOnlyVicky />
+      <InternalOnlyVictoria />
     </div>
   );
 }
 
-function InternalOnlyVicky() {
+function InternalOnlyVictoria() {
   const [show, setShow] = useState(false);
   useEffect(() => {
     try {
@@ -420,5 +420,5 @@ function InternalOnlyVicky() {
     }
   }, []);
   if (!show) return null;
-  return <VickyWidget />;
+  return <VictoriaWidget />;
 }
