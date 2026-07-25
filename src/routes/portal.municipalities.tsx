@@ -200,7 +200,7 @@ function CityCard({ slug, city }: { slug: string; city: CityEntry }) {
 
       <div className="pt-3 border-t border-border/60">
         <div className="font-mono text-[9px] tracking-[0.22em] uppercase text-muted-foreground mb-2">
-          ICI Private Provider Docs
+          Private Provider Docs
         </div>
         <div className="space-y-1.5">
           {ICI_DOC_SLOTS.map((slot) => (
