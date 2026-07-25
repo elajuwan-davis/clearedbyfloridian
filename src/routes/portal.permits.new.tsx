@@ -1,9 +1,10 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState, type ChangeEvent, type DragEvent } from "react";
-import { Upload, Check, FileText, ArrowLeft, Send, X, AlertCircle, Plus, Trash2, Sparkles } from "lucide-react";
+import { Upload, Check, FileText, ArrowLeft, Send, X, AlertCircle, Plus, Trash2, Sparkles, MapPin } from "lucide-react";
 import { toast } from "sonner";
 import { CloudUploadButtons } from "@/components/cloud-upload-buttons";
 import { ComboboxInput } from "@/components/combobox-input";
+import { AddressAutocomplete, type ResolvedAddress } from "@/components/address-autocomplete";
 import { createPermit, updatePermit, getPermit, type PermitDoc, type PermitRow, type PermitSub } from "@/lib/permits-api";
 import { listSubs, createSub, type SubRow } from "@/lib/subs-api";
 import { listDesignPros, createDesignPro, type DesignProRow, type DesignProRole } from "@/lib/design-pros-api";
