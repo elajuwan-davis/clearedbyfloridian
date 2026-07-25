@@ -398,10 +398,13 @@ function NewPermitPage() {
             <div><label className={labelCls}>Property Address *</label><input required className={inputCls} value={form.address} onChange={(e) => update("address", e.target.value)} /></div>
             <div className="sm:col-span-2">
               <label className={labelCls}>Municipality / City *</label>
-              <select required className={inputCls} value={form.municipality} onChange={(e) => update("municipality", e.target.value)}>
-                <option value="">Select municipality…</option>
-                {MUNICIPALITIES.map((m) => <option key={m.name} value={m.name}>{m.name}</option>)}
-              </select>
+              <ComboboxInput
+                value={form.municipality}
+                onChange={(v) => update("municipality", v)}
+                options={MUNICIPALITIES.map((m) => ({ value: m.name, label: m.name, sublabel: m.note }))}
+                placeholder="Type to search or enter freeform…"
+                allowFreeform
+              />
             </div>
           </div>
 
