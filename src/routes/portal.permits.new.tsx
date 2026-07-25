@@ -9,9 +9,9 @@ import { listSubs, createSub, type SubRow } from "@/lib/subs-api";
 import { listDesignPros, createDesignPro, type DesignProRow, type DesignProRole } from "@/lib/design-pros-api";
 import { triggerNotification } from "@/lib/notifications-api";
 import { MUNICIPALITIES } from "@/lib/municipalities";
-import { getChecklist, NOC_DOC_KEY } from "@/lib/permit-checklists";
+import { getChecklist } from "@/lib/permit-checklists";
 import { bundleFromSubs } from "@/lib/bundle";
-import { generateNOC, downloadPdf, type NOCFields } from "@/lib/private-provider-forms";
+
 
 export const Route = createFileRoute("/portal/permits/new")({
   validateSearch: (search: Record<string, unknown>) => ({
@@ -232,35 +232,7 @@ function NewPermitPage() {
     if (files.length) update("extraDocs", [...form.extraDocs, ...files.map((f) => f.name)]);
   }
 
-  async function generateNocDraft() {
-    try {
-      const fields: NOCFields = {
-        propertyAddress: form.address,
-        parcelTaxId: "",
-        legalDescription: "",
-        ownerName: [form.ownerName, form.ownerEntity].filter(Boolean).join(" — "),
-        ownerAddress: "",
-        contractorName: form.contractorCompany,
-        contractorAddress: form.companyAddress,
-        contractorLicense: form.licenseNumber,
-        contractorPhone: form.pocPhone,
-        lenderName: "",
-        lenderAddress: "",
-        suretyName: "",
-        suretyAddress: "",
-        suretyBondAmount: "",
-        designProfessional: form.architectFirm || form.engineerFirm,
-        designProfessionalAddress: "",
-        improvementDescription: form.scopes.join(", ") || form.description,
-      };
-      const bytes = await generateNOC(fields);
-      const slug = (form.projectName || "permit").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
-      downloadPdf(bytes, `NOC_${slug}.pdf`);
-      toast.success("NOC draft downloaded. Sign, notarize, record with the County Clerk, then upload here.");
-    } catch (e) {
-      toast.error("Could not generate NOC: " + (e instanceof Error ? e.message : String(e)));
-    }
-  }
+
 
   async function maybeSaveDesignPro(
     role: DesignProRole,
@@ -291,12 +263,8 @@ function NewPermitPage() {
       toast.error("Project name and address are required");
       return;
     }
-    const nocState = form.docs[NOC_DOC_KEY];
-    if (!nocState?.uploaded) {
-      toast.error("Notice of Commencement is required to submit this permit.");
-      update("step", 2);
-      return;
-    }
+
+
     setSaving(true);
     try {
       for (const s of filledSubs) {
@@ -392,6 +360,10 @@ function NewPermitPage() {
         rowId = row.id;
         // Auto-generate internal NTBO (hidden from GC). Best-effort.
         void import("@/lib/ntbo-auto").then((m) => m.autoGenerateNTBOForPermit(row));
+        // Auto-generate NOC (Palm Beach County std form) pre-filled from
+        // permit data — surfaces in the permit detail as "Review & Sign".
+        void import("@/lib/noc-auto").then((m) => m.autoGenerateNOCForPermit(row));
+
         toast.success(wantBundle ? "Bundle permit created" : "Permit created");
         if (wantBundle) navigate({ to: "/portal/permits/$id/bundle", params: { id: rowId } });
         else navigate({ to: "/portal/permits/$id", params: { id: rowId } });
@@ -736,20 +708,7 @@ function NewPermitPage() {
                               </label>
                             </p>
                             <CloudUploadButtons />
-                            {d.key === NOC_DOC_KEY && (
-                              <div className="mt-3 pt-3 border-t border-obsidian/10">
-                                <p className="text-[11px] text-obsidian/60 mb-2">
-                                  Need the form? Generate a pre-filled Florida NOC (§713.13) from this permit's data — review, sign &amp; notarize, record with the County Clerk, then upload here.
-                                </p>
-                                <button
-                                  type="button"
-                                  onClick={generateNocDraft}
-                                  className="inline-flex items-center gap-2 border border-obsidian/25 bg-white px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian rounded-[3px] hover:bg-obsidian/5"
-                                >
-                                  <FileText className="h-3.5 w-3.5" /> Generate NOC (draft)
-                                </button>
-                              </div>
-                            )}
+
                           </div>
                         )}
 
