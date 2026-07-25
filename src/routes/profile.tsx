@@ -642,7 +642,7 @@ function TeamOnboardingSection() {
             <Plus className="h-3.5 w-3.5" /> Create Invite Link
           </button>
           <ul className="mt-4 space-y-2">
-            {(state?.invites ?? []).map((inv) => (
+            {((state?.invites ?? []) as Array<{ id: string; token: string; uses: number; revoked_at: string | null }>).map((inv) => (
               <li key={inv.id} className="flex items-center gap-2 border hairline p-2 rounded-[3px]">
                 <code className="flex-1 truncate text-[11px] font-mono text-obsidian/80">{joinUrl(inv.token)}</code>
                 <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-obsidian/50">{inv.uses} used</span>
