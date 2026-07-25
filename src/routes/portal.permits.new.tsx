@@ -151,6 +151,7 @@ function NewPermitPage() {
         submitted_date: form.submittedDate || null,
         status: "submitted",
         subs: [
+          { trade: "Fencing", companyName: form.subFencing.companyName, qualifierName: form.subFencing.qualifierName, licenseNumber: form.subFencing.licenseNumber, contactEmail: form.subFencing.contactEmail, insuranceCarrierEmail: form.subFencing.insuranceCarrierEmail },
           { trade: "Plumbing", companyName: form.subPlumbing.companyName, qualifierName: form.subPlumbing.qualifierName, licenseNumber: form.subPlumbing.licenseNumber, contactEmail: form.subPlumbing.contactEmail, insuranceCarrierEmail: form.subPlumbing.insuranceCarrierEmail },
           { trade: "Electrical", companyName: form.subElectrical.companyName, qualifierName: form.subElectrical.qualifierName, licenseNumber: form.subElectrical.licenseNumber, contactEmail: form.subElectrical.contactEmail, insuranceCarrierEmail: form.subElectrical.insuranceCarrierEmail },
           { trade: "Gas", companyName: form.subGas.companyName, qualifierName: form.subGas.qualifierName, licenseNumber: form.subGas.licenseNumber, contactEmail: form.subGas.contactEmail, insuranceCarrierEmail: form.subGas.insuranceCarrierEmail },
