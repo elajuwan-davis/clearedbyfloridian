@@ -15,6 +15,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useExpirationAlerts } from "@/hooks/use-expiration-alerts";
 import { NotificationBell } from "@/components/notification-bell";
 import { VictoriaWidget } from "@/components/victoria-widget";
+import { useSession } from "@/lib/use-session";
 import type { Alert } from "@/lib/expiration-alerts";
 
 type AlertKey = "my-permits" | "request-coi" | "sub-insurance";
@@ -252,6 +253,7 @@ export function PortalShell({ children }: { children: ReactNode }) {
   const [open, setOpen] = useState(false);
   const [authState, setAuthState] = useState<"checking" | "authed" | "anon">("checking");
   const signingOutRef = useRef(false);
+  const session = useSession();
 
   useEffect(() => {
     let cancelled = false;
@@ -326,6 +328,26 @@ export function PortalShell({ children }: { children: ReactNode }) {
             by Flōridian
           </span>
         </Link>
+        {session.tenantName && (
+          <div
+            className="hidden md:flex items-center ml-4 pl-4 border-l gap-2 min-w-0"
+            style={{ borderColor: "color-mix(in oklab, var(--obsidian) 12%, transparent)" }}
+          >
+            <span
+              className="font-mono text-[9px] tracking-[0.22em] uppercase"
+              style={{ color: "color-mix(in oklab, var(--obsidian) 50%, transparent)" }}
+            >
+              {session.isAdmin ? "Cleard Admin" : "Tenant"}
+            </span>
+            <span
+              className="text-[13px] truncate max-w-[220px]"
+              style={{ color: "var(--obsidian)" }}
+              title={session.tenantName}
+            >
+              {session.tenantName}
+            </span>
+          </div>
+        )}
 
         {/* Desktop nav */}
         <nav className="hidden lg:flex items-center ml-8 h-14">

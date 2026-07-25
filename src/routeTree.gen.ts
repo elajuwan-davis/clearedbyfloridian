@@ -16,6 +16,7 @@ import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as ProductsRouteImport } from './routes/products'
 import { Route as ProcessRouteImport } from './routes/process'
 import { Route as PortalRouteImport } from './routes/portal'
+import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as MyPermitsRouteImport } from './routes/my-permits'
 import { Route as MunicipalitiesRouteImport } from './routes/municipalities'
 import { Route as MessagesRouteImport } from './routes/messages'
@@ -65,6 +66,7 @@ import { Route as AdminContractorsRouteImport } from './routes/admin_.contractor
 import { Route as AdminHubspotSimulateRouteImport } from './routes/admin.hubspot-simulate'
 import { Route as AdminGcClientsRouteImport } from './routes/admin.gc-clients'
 import { Route as AdminBuildersRouteImport } from './routes/admin.builders'
+import { Route as AdminAccessRequestsRouteImport } from './routes/admin.access-requests'
 import { Route as PortalSubmissionsIndexRouteImport } from './routes/portal.submissions.index'
 import { Route as PortalSubcontractorsIndexRouteImport } from './routes/portal.subcontractors.index'
 import { Route as PortalPermitsIndexRouteImport } from './routes/portal.permits.index'
@@ -117,6 +119,11 @@ const ProcessRoute = ProcessRouteImport.update({
 const PortalRoute = PortalRouteImport.update({
   id: '/portal',
   path: '/portal',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OnboardingRoute = OnboardingRouteImport.update({
+  id: '/onboarding',
+  path: '/onboarding',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MyPermitsRoute = MyPermitsRouteImport.update({
@@ -368,6 +375,11 @@ const AdminBuildersRoute = AdminBuildersRouteImport.update({
   path: '/builders',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminAccessRequestsRoute = AdminAccessRequestsRouteImport.update({
+  id: '/access-requests',
+  path: '/access-requests',
+  getParentRoute: () => AdminRoute,
+} as any)
 const PortalSubmissionsIndexRoute = PortalSubmissionsIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -481,6 +493,7 @@ export interface FileRoutesByFullPath {
   '/messages': typeof MessagesRoute
   '/municipalities': typeof MunicipalitiesRoute
   '/my-permits': typeof MyPermitsRoute
+  '/onboarding': typeof OnboardingRoute
   '/portal': typeof PortalRouteWithChildren
   '/process': typeof ProcessRoute
   '/products': typeof ProductsRoute
@@ -488,6 +501,7 @@ export interface FileRoutesByFullPath {
   '/project-guides': typeof ProjectGuidesRoute
   '/projects': typeof ProjectsRouteWithChildren
   '/services': typeof ServicesRoute
+  '/admin/access-requests': typeof AdminAccessRequestsRoute
   '/admin/builders': typeof AdminBuildersRoute
   '/admin/gc-clients': typeof AdminGcClientsRoute
   '/admin/hubspot-simulate': typeof AdminHubspotSimulateRoute
@@ -557,12 +571,14 @@ export interface FileRoutesByTo {
   '/messages': typeof MessagesRoute
   '/municipalities': typeof MunicipalitiesRoute
   '/my-permits': typeof MyPermitsRoute
+  '/onboarding': typeof OnboardingRoute
   '/process': typeof ProcessRoute
   '/products': typeof ProductsRoute
   '/profile': typeof ProfileRoute
   '/project-guides': typeof ProjectGuidesRoute
   '/projects': typeof ProjectsRouteWithChildren
   '/services': typeof ServicesRoute
+  '/admin/access-requests': typeof AdminAccessRequestsRoute
   '/admin/builders': typeof AdminBuildersRoute
   '/admin/gc-clients': typeof AdminGcClientsRoute
   '/admin/hubspot-simulate': typeof AdminHubspotSimulateRoute
@@ -631,6 +647,7 @@ export interface FileRoutesById {
   '/messages': typeof MessagesRoute
   '/municipalities': typeof MunicipalitiesRoute
   '/my-permits': typeof MyPermitsRoute
+  '/onboarding': typeof OnboardingRoute
   '/portal': typeof PortalRouteWithChildren
   '/process': typeof ProcessRoute
   '/products': typeof ProductsRoute
@@ -638,6 +655,7 @@ export interface FileRoutesById {
   '/project-guides': typeof ProjectGuidesRoute
   '/projects': typeof ProjectsRouteWithChildren
   '/services': typeof ServicesRoute
+  '/admin/access-requests': typeof AdminAccessRequestsRoute
   '/admin/builders': typeof AdminBuildersRoute
   '/admin/gc-clients': typeof AdminGcClientsRoute
   '/admin/hubspot-simulate': typeof AdminHubspotSimulateRoute
@@ -709,6 +727,7 @@ export interface FileRouteTypes {
     | '/messages'
     | '/municipalities'
     | '/my-permits'
+    | '/onboarding'
     | '/portal'
     | '/process'
     | '/products'
@@ -716,6 +735,7 @@ export interface FileRouteTypes {
     | '/project-guides'
     | '/projects'
     | '/services'
+    | '/admin/access-requests'
     | '/admin/builders'
     | '/admin/gc-clients'
     | '/admin/hubspot-simulate'
@@ -785,12 +805,14 @@ export interface FileRouteTypes {
     | '/messages'
     | '/municipalities'
     | '/my-permits'
+    | '/onboarding'
     | '/process'
     | '/products'
     | '/profile'
     | '/project-guides'
     | '/projects'
     | '/services'
+    | '/admin/access-requests'
     | '/admin/builders'
     | '/admin/gc-clients'
     | '/admin/hubspot-simulate'
@@ -858,6 +880,7 @@ export interface FileRouteTypes {
     | '/messages'
     | '/municipalities'
     | '/my-permits'
+    | '/onboarding'
     | '/portal'
     | '/process'
     | '/products'
@@ -865,6 +888,7 @@ export interface FileRouteTypes {
     | '/project-guides'
     | '/projects'
     | '/services'
+    | '/admin/access-requests'
     | '/admin/builders'
     | '/admin/gc-clients'
     | '/admin/hubspot-simulate'
@@ -935,6 +959,7 @@ export interface RootRouteChildren {
   MessagesRoute: typeof MessagesRoute
   MunicipalitiesRoute: typeof MunicipalitiesRoute
   MyPermitsRoute: typeof MyPermitsRoute
+  OnboardingRoute: typeof OnboardingRoute
   PortalRoute: typeof PortalRouteWithChildren
   ProcessRoute: typeof ProcessRoute
   ProductsRoute: typeof ProductsRoute
@@ -1006,6 +1031,13 @@ declare module '@tanstack/react-router' {
       path: '/portal'
       fullPath: '/portal'
       preLoaderRoute: typeof PortalRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/onboarding': {
+      id: '/onboarding'
+      path: '/onboarding'
+      fullPath: '/onboarding'
+      preLoaderRoute: typeof OnboardingRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/my-permits': {
@@ -1351,6 +1383,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminBuildersRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/access-requests': {
+      id: '/admin/access-requests'
+      path: '/access-requests'
+      fullPath: '/admin/access-requests'
+      preLoaderRoute: typeof AdminAccessRequestsRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/portal/submissions/': {
       id: '/portal/submissions/'
       path: '/'
@@ -1481,12 +1520,14 @@ declare module '@tanstack/react-router' {
 }
 
 interface AdminRouteChildren {
+  AdminAccessRequestsRoute: typeof AdminAccessRequestsRoute
   AdminBuildersRoute: typeof AdminBuildersRoute
   AdminGcClientsRoute: typeof AdminGcClientsRoute
   AdminHubspotSimulateRoute: typeof AdminHubspotSimulateRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
+  AdminAccessRequestsRoute: AdminAccessRequestsRoute,
   AdminBuildersRoute: AdminBuildersRoute,
   AdminGcClientsRoute: AdminGcClientsRoute,
   AdminHubspotSimulateRoute: AdminHubspotSimulateRoute,
@@ -1654,6 +1695,7 @@ const rootRouteChildren: RootRouteChildren = {
   MessagesRoute: MessagesRoute,
   MunicipalitiesRoute: MunicipalitiesRoute,
   MyPermitsRoute: MyPermitsRoute,
+  OnboardingRoute: OnboardingRoute,
   PortalRoute: PortalRouteWithChildren,
   ProcessRoute: ProcessRoute,
   ProductsRoute: ProductsRoute,
