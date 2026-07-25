@@ -23,7 +23,18 @@ export type BundleTrade = {
   signature_signed_at?: string | null;
   doc_keys: string[];              // permit-level document keys assigned to this trade
   ready: boolean;                  // GC readiness flag (for partial-submit selection)
+  budgeted_fee_cents?: number;     // GC's day-one budget for this trade's permit fee
+  fee_confirmed?: boolean;         // false = budgeted (italic), true = actual logged
 };
+
+export type TradeCardState = "no_sub" | "invited" | "active" | "signed";
+
+export function tradeCardState(t: BundleTrade): TradeCardState {
+  if (t.signature_status === "signed") return "signed";
+  if (t.signature_status === "sent") return "invited";
+  if (t.sub_snapshot?.company) return "active";
+  return "no_sub";
+}
 
 export type Bundle = {
   enabled: boolean;
