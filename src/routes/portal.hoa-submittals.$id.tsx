@@ -397,6 +397,18 @@ function HoaSubmittalEditor() {
           <Field label="Plat Name"><Input value={row.plat_name ?? ""} onChange={(v) => patch("plat_name", v)} /></Field>
         </Section>
 
+        <Section title="Homeowner / Client">
+          <Field label="Homeowner Name">
+            <Input value={row.homeowner_name ?? ""} onChange={(v) => patch("homeowner_name", v)} />
+          </Field>
+          <Field label="Homeowner Email">
+            <Input value={row.homeowner_email ?? ""} onChange={(v) => patch("homeowner_email", v)} />
+          </Field>
+          <div className="md:col-span-2 text-xs text-muted-foreground">
+            When you Send to HOA, Cleard also emails the homeowner directly with any HOA deposit instructions — removing the GC from that conversation.
+          </div>
+        </Section>
+
         <Section title="HOA / Community">
           <Field label="HOA / Association Name"><Input value={row.hoa_name ?? ""} onChange={(v) => patch("hoa_name", v)} /></Field>
           <Field label="Community"><Input value={row.community_name ?? ""} onChange={(v) => patch("community_name", v)} /></Field>
