@@ -108,26 +108,24 @@ function BuildingDeptPage() {
   }, [custom, query]);
 
   const statewideRows = useMemo(() => {
-    const rows: { city: string; county: string; region: string; portalUrl?: string; deptName?: string }[] = [];
+    const seedUrls = new Map(SEED.map((s) => [s.name.toLowerCase(), s.url]));
+    const map = new Map<string, { city: string; portalUrl?: string }>();
     for (const region of MUNICIPALITY_TREE) {
       for (const county of region.counties) {
         for (const city of county.cities) {
-          rows.push({
-            city: city.name,
-            county: county.name,
-            region: region.name,
-            portalUrl: city.portalUrl,
-            deptName: city.deptName,
-          });
+          const key = city.name.toLowerCase();
+          map.set(key, { city: city.name, portalUrl: city.portalUrl ?? seedUrls.get(key) });
         }
       }
     }
-    rows.sort((a, b) => a.city.localeCompare(b.city));
+    for (const s of SEED) {
+      const key = s.name.toLowerCase();
+      if (!map.has(key)) map.set(key, { city: s.name, portalUrl: s.url });
+    }
+    const rows = Array.from(map.values()).sort((a, b) => a.city.localeCompare(b.city));
     const q = query.trim().toLowerCase();
     if (!q) return rows;
-    return rows.filter((r) =>
-      r.city.toLowerCase().includes(q) || r.county.toLowerCase().includes(q),
-    );
+    return rows.filter((r) => r.city.toLowerCase().includes(q));
   }, [query]);
 
   function openAdd() {
