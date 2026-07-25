@@ -233,6 +233,59 @@ export type Database = {
         }
         Relationships: []
       }
+      submissions: {
+        Row: {
+          created_at: string
+          fee_cents: number
+          id: string
+          notes: string | null
+          package_manifest: Json
+          permit_id: string
+          status: string
+          submitted_by: string | null
+          trades_included: Json
+          trades_pending: Json
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          fee_cents?: number
+          id?: string
+          notes?: string | null
+          package_manifest?: Json
+          permit_id: string
+          status?: string
+          submitted_by?: string | null
+          trades_included?: Json
+          trades_pending?: Json
+          type?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          fee_cents?: number
+          id?: string
+          notes?: string | null
+          package_manifest?: Json
+          permit_id?: string
+          status?: string
+          submitted_by?: string | null
+          trades_included?: Json
+          trades_pending?: Json
+          type?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "submissions_permit_id_fkey"
+            columns: ["permit_id"]
+            isOneToOne: false
+            referencedRelation: "permits"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
