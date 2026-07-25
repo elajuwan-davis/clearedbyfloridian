@@ -239,6 +239,49 @@ function HoaSubmittalEditor() {
     }
   }
 
+  async function sendToHoa() {
+    if (!row) return;
+    if (sending) return;
+    if (!template?.hoa_contact_email) {
+      toast.error("No HOA contact email on file. Add one to the template first.");
+      return;
+    }
+    if (!checklistComplete) {
+      const ok = confirm(
+        "Some required documents are still outstanding. Send to HOA anyway?",
+      );
+      if (!ok) return;
+    }
+    // Ensure we have a generated PDF to attach.
+    if (!row.generated_pdf_path) {
+      const generate = confirm(
+        "No Submittal PDF has been generated yet. Generate it now and include it in the send?",
+      );
+      if (generate) {
+        await generatePdf();
+      }
+    }
+    setSending(true);
+    try {
+      const res = await sendHoaSubmittal(row.id, {
+        tenantId: session.effectiveTenantId,
+        userId: session.userId,
+      });
+      const updated = await getHoaSubmittal(row.id);
+      if (updated) setRow(updated);
+      for (const w of res.warnings) toast.warning(w);
+      toast.success(
+        res.homeownerEmailId
+          ? "Queued: ARC package to HOA + deposit notice to homeowner"
+          : "Queued: ARC package to HOA",
+      );
+    } catch (e: any) {
+      toast.error(e?.message ?? "Failed to send");
+    } finally {
+      setSending(false);
+    }
+  }
+
   if (err) {
     return (
       <PortalShell>
