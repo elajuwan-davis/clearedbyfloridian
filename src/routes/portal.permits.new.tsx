@@ -124,8 +124,8 @@ function NewPermitPage() {
         }
       }
 
-      const documents: PermitDoc[] = REQUIRED_DOCS.map((d) => {
-        const s = form.docs[d.key];
+      const documents: PermitDoc[] = checklist.map((d) => {
+        const s = form.docs[d.key] ?? { uploaded: null, na: false, deferred: false };
         const status: PermitDoc["status"] = s.uploaded ? "uploaded" : s.deferred ? "pending" : s.na ? "not_applicable" : "missing";
         return { key: d.key, label: d.label, required: d.required, status, filename: s.uploaded };
       });
