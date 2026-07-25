@@ -175,6 +175,25 @@ export async function sendHoaSubmittal(
     markTemplateUsed(submittal.template_id).catch(() => undefined);
   }
 
+  await logHoaEvent({
+    submittalId: submittal.id,
+    tenantId: ctx.tenantId,
+    actorId: ctx.userId,
+    kind: "sent_to_hoa",
+    summary: `ARC package queued to ${hoaEmail}`,
+    details: { hoa_email: hoaEmail, attachments: attachments.length, warnings },
+  });
+  if (homeownerEmailId) {
+    await logHoaEvent({
+      submittalId: submittal.id,
+      tenantId: ctx.tenantId,
+      actorId: ctx.userId,
+      kind: "homeowner_notified",
+      summary: `Deposit notice queued to ${homeownerEmail}`,
+      details: { homeowner_email: homeownerEmail },
+    });
+  }
+
   return {
     hoaEmailId: hoaEmailRow.id,
     homeownerEmailId,
