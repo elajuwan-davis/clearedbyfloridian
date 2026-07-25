@@ -109,7 +109,7 @@ function NewPermitPage() {
     setSaving(true);
     try {
       // Persist referenced subs to DB so they're centrally available
-      for (const s of [form.subPlumbing, form.subElectrical, form.subGas]) {
+      for (const s of [form.subFencing, form.subPlumbing, form.subElectrical, form.subGas]) {
         if (!s.companyName.trim()) continue;
         // Only create when the company isn't already saved
         const exists = savedSubs.find((x) => x.company_name.trim().toLowerCase() === s.companyName.trim().toLowerCase());
