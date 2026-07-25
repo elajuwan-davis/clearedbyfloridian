@@ -40,7 +40,7 @@ export async function listNotifications(limit = 50): Promise<NotifRow[]> {
     .order("created_at", { ascending: false })
     .limit(limit);
   if (error) throw error;
-  return (data ?? []) as NotifRow[];
+  return ((data ?? []) as unknown) as NotifRow[];
 }
 
 export async function unreadCount(): Promise<number> {
