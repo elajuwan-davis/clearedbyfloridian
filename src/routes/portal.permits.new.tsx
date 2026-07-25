@@ -14,6 +14,9 @@ import { getChecklist } from "@/lib/permit-checklists";
 import { bundleFromSubs } from "@/lib/bundle";
 import { NocAwarenessRibbon } from "@/components/noc-awareness-ribbon";
 import { TradesOnJobPanel } from "@/components/trades-on-job-panel";
+import { VictoriaIntelligencePanel } from "@/components/victoria-intelligence-panel";
+import { logPermitIntelligence } from "@/lib/intelligence";
+
 
 
 export const Route = createFileRoute("/portal/permits/new")({
@@ -489,10 +492,20 @@ function NewPermitPage() {
         // Auto-generate NOC (Palm Beach County std form) pre-filled from
         // permit data — surfaces in the permit detail as "Review & Sign".
         void import("@/lib/noc-auto").then((m) => m.autoGenerateNOCForPermit(row));
+        // Log to Victoria's intelligence pool.
+        void logPermitIntelligence({
+          tenantId: (row as unknown as { tenant_id?: string | null }).tenant_id ?? null,
+          permitId: row.id,
+          municipalityName: form.municipality || null,
+          trades: form.scopes,
+          scopeOfWork: form.description || null,
+          submittedDate: form.submittedDate ? new Date(form.submittedDate).toISOString() : null,
+        });
 
         toast.success(wantBundle ? "Bundle permit created" : "Permit created");
         if (wantBundle) navigate({ to: "/portal/permits/$id/bundle", params: { id: rowId } });
         else navigate({ to: "/portal/permits/$id", params: { id: rowId } });
+
       }
     } catch (e) {
       toast.error((isEditing ? "Failed to update permit: " : "Failed to create permit: ") + (e instanceof Error ? e.message : String(e)));
@@ -508,7 +521,9 @@ function NewPermitPage() {
   const sectionCls = "text-[11px] font-mono uppercase tracking-[0.18em] text-obsidian/75";
 
   return (
-    <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
+    <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-8 lg:py-12 grid gap-8 lg:grid-cols-[minmax(0,1fr)_320px]">
+    <div className="min-w-0">
+
       <div className="border-b border-obsidian/10 pb-6">
         <div className="eyebrow text-obsidian/50">Permit Intake</div>
         <div className="mt-2 flex flex-wrap items-end justify-between gap-3">
@@ -922,7 +937,17 @@ function NewPermitPage() {
         </div>
       )}
     </div>
+      <VictoriaIntelligencePanel
+        mode="permit"
+        municipality={form.municipality}
+        trades={form.scopes}
+        docsProvided={docsComplete}
+        docsRequired={checklist.length}
+        className="lg:sticky lg:top-6 self-start"
+      />
+    </div>
   );
+
 }
 
 function ProContactBlock(props: {

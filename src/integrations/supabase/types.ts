@@ -1286,6 +1286,184 @@ export type Database = {
           },
         ]
       }
+      submittal_corrections: {
+        Row: {
+          code_section: string | null
+          correction_text: string
+          created_at: string
+          document_type_flagged: string | null
+          first_seen_at: string
+          id: string
+          intelligence_id: string | null
+          last_seen_at: string
+          logged_by: string | null
+          municipality_name: string | null
+          municipality_slug: string | null
+          occurrences: number
+          reason_category: string | null
+          resolution_notes: string | null
+          source: string
+          tenant_id: string | null
+          trade: string | null
+          updated_at: string
+        }
+        Insert: {
+          code_section?: string | null
+          correction_text: string
+          created_at?: string
+          document_type_flagged?: string | null
+          first_seen_at?: string
+          id?: string
+          intelligence_id?: string | null
+          last_seen_at?: string
+          logged_by?: string | null
+          municipality_name?: string | null
+          municipality_slug?: string | null
+          occurrences?: number
+          reason_category?: string | null
+          resolution_notes?: string | null
+          source?: string
+          tenant_id?: string | null
+          trade?: string | null
+          updated_at?: string
+        }
+        Update: {
+          code_section?: string | null
+          correction_text?: string
+          created_at?: string
+          document_type_flagged?: string | null
+          first_seen_at?: string
+          id?: string
+          intelligence_id?: string | null
+          last_seen_at?: string
+          logged_by?: string | null
+          municipality_name?: string | null
+          municipality_slug?: string | null
+          occurrences?: number
+          reason_category?: string | null
+          resolution_notes?: string | null
+          source?: string
+          tenant_id?: string | null
+          trade?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "submittal_corrections_intelligence_id_fkey"
+            columns: ["intelligence_id"]
+            isOneToOne: false
+            referencedRelation: "submittal_intelligence"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "submittal_corrections_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      submittal_intelligence: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          days_to_first_response: number | null
+          days_to_resolution: number | null
+          final_outcome: string | null
+          first_response_at: string | null
+          hoa_community: string | null
+          hoa_submittal_id: string | null
+          homeowner_name: string | null
+          id: string
+          jurisdiction: string | null
+          municipality_name: string | null
+          municipality_slug: string | null
+          notes: string | null
+          permit_fee_cents: number | null
+          permit_id: string | null
+          resolved_at: string | null
+          scope_of_work: string | null
+          source: string
+          submitted_at: string | null
+          tenant_id: string | null
+          trades: Json
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          days_to_first_response?: number | null
+          days_to_resolution?: number | null
+          final_outcome?: string | null
+          first_response_at?: string | null
+          hoa_community?: string | null
+          hoa_submittal_id?: string | null
+          homeowner_name?: string | null
+          id?: string
+          jurisdiction?: string | null
+          municipality_name?: string | null
+          municipality_slug?: string | null
+          notes?: string | null
+          permit_fee_cents?: number | null
+          permit_id?: string | null
+          resolved_at?: string | null
+          scope_of_work?: string | null
+          source: string
+          submitted_at?: string | null
+          tenant_id?: string | null
+          trades?: Json
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          days_to_first_response?: number | null
+          days_to_resolution?: number | null
+          final_outcome?: string | null
+          first_response_at?: string | null
+          hoa_community?: string | null
+          hoa_submittal_id?: string | null
+          homeowner_name?: string | null
+          id?: string
+          jurisdiction?: string | null
+          municipality_name?: string | null
+          municipality_slug?: string | null
+          notes?: string | null
+          permit_fee_cents?: number | null
+          permit_id?: string | null
+          resolved_at?: string | null
+          scope_of_work?: string | null
+          source?: string
+          submitted_at?: string | null
+          tenant_id?: string | null
+          trades?: Json
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "submittal_intelligence_hoa_submittal_id_fkey"
+            columns: ["hoa_submittal_id"]
+            isOneToOne: false
+            referencedRelation: "hoa_submittals"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "submittal_intelligence_permit_id_fkey"
+            columns: ["permit_id"]
+            isOneToOne: false
+            referencedRelation: "permits"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "submittal_intelligence_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       tenant_members: {
         Row: {
           created_at: string
@@ -1388,6 +1566,28 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      intel_common_corrections: {
+        Args: { _limit?: number; _slug: string; _trade?: string }
+        Returns: {
+          code_section: string
+          correction_text: string
+          document_type_flagged: string
+          id: string
+          last_seen_at: string
+          occurrences: number
+          trade: string
+        }[]
+      }
+      intel_municipality_stats: {
+        Args: { _slug: string }
+        Returns: {
+          approval_rate: number
+          avg_days_to_resolution: number
+          avg_days_to_response: number
+          avg_permit_fee_cents: number
+          sample_size: number
+        }[]
       }
       is_admin: { Args: never; Returns: boolean }
       permit_in_current_tenant: {
