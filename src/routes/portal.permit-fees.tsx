@@ -144,7 +144,21 @@ function PermitFeesPage() {
                   </div>
                   <div className="text-obsidian/70 text-[13px]">{p.municipality || "—"}</div>
                   <div className="text-obsidian/70 text-[12px] truncate">{tradeLabels.join(", ") || "—"}</div>
-                  <div className="text-right font-mono text-obsidian">{fmtUsd(b.gc_fee_cents)}</div>
+                  <div className="text-right font-mono text-obsidian">
+                    {(() => {
+                      const budgeted = bundleBudgetedTotal(b);
+                      const total = budgeted || b.gc_fee_cents;
+                      const confirmed = bundleAllFeesConfirmed(b);
+                      return (
+                        <div>
+                          <div>{fmtUsd(total)}</div>
+                          {!confirmed && (
+                            <div className="mt-0.5 italic text-[10px] text-obsidian/55 font-sans normal-case tracking-normal">Budgeted</div>
+                          )}
+                        </div>
+                      );
+                    })()}
+                  </div>
                   <div>
                     <Link
                       to="/portal/permits/$id/bundle"
