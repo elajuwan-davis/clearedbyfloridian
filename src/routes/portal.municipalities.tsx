@@ -11,6 +11,7 @@ import {
   type CityDocs,
 } from "@/lib/municipality-docs-store";
 import { toast } from "sonner";
+import { MunicipalityMapHero } from "@/components/municipality-map";
 
 export const Route = createFileRoute("/portal/municipalities")({
   head: () => ({
@@ -65,6 +66,9 @@ function MunicipalitiesPage() {
           Region → County → City. Access each building department portal and manage the five ICI private-provider documents required per jurisdiction.
         </p>
       </header>
+
+      <MunicipalityMapHero />
+
 
       <div className="relative">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" strokeWidth={1.5} />
