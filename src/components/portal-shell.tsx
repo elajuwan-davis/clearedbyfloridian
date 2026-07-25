@@ -18,6 +18,7 @@ import {
   LogOut,
   Menu,
   User,
+  Map,
 } from "lucide-react";
 
 
@@ -47,6 +48,7 @@ const portalNav: NavSection[] = [
       { to: "/portal/subcontractors", label: "Subcontractors", icon: User },
       { to: "/messages", label: "Messages", icon: MessageSquare },
       { to: "/portal/building-dept", label: "Building Dept", icon: Building2 },
+      { to: "/portal/municipalities", label: "Municipalities", icon: Map },
     ],
   },
   {
