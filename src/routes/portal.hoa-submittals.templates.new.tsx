@@ -2,7 +2,6 @@ import { createFileRoute, Link, useNavigate, useSearch } from "@tanstack/react-r
 import { useState } from "react";
 import { toast } from "sonner";
 import { ArrowLeft, Save, Loader2, FileUp } from "lucide-react";
-import { PortalShell } from "@/components/portal-shell";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useSession } from "@/lib/use-session";
@@ -191,7 +190,7 @@ function NewHoaTemplate() {
   }
 
   return (
-    <PortalShell>
+    <>
       <div className="space-y-8 max-w-4xl">
         <div>
           <Link to="/portal/hoa-submittals/new" className="inline-flex items-center gap-1 text-xs text-obsidian/60 hover:text-obsidian">
@@ -324,7 +323,7 @@ function NewHoaTemplate() {
           </Link>
         </div>
       </div>
-    </PortalShell>
+    </>
   );
 }
 

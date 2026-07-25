@@ -1,6 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { PortalShell } from "@/components/portal-shell";
 import { BlogEditor } from "@/components/blog-editor";
 import { getPost } from "@/lib/blog-api";
 
@@ -22,7 +21,7 @@ function EditPost() {
   });
 
   return (
-    <PortalShell>
+    <>
       {isLoading ? (
         <div className="mx-auto max-w-4xl px-4 py-16 text-center text-sm text-muted-foreground">
           Loading…
@@ -40,6 +39,6 @@ function EditPost() {
       ) : (
         <BlogEditor post={data} />
       )}
-    </PortalShell>
+    </>
   );
 }

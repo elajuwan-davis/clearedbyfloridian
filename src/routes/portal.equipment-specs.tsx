@@ -1,6 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { ExternalLink, FileText } from "lucide-react";
-import { PortalShell } from "@/components/portal-shell";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
@@ -31,7 +30,7 @@ const SPECS: { title: string; url: string }[] = [
 
 function EquipmentSpecsPage() {
   return (
-    <PortalShell>
+    <>
       <div className="mx-auto max-w-6xl px-6 py-10 space-y-8">
         <header className="space-y-2">
           <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Resources</p>
@@ -63,6 +62,6 @@ function EquipmentSpecsPage() {
           ))}
         </div>
       </div>
-    </PortalShell>
+    </>
   );
 }

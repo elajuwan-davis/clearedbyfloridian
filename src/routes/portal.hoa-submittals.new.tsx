@@ -2,7 +2,6 @@ import { createFileRoute, Link, useNavigate, useSearch } from "@tanstack/react-r
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { ArrowLeft, Plus, Search, Loader2, Building2 } from "lucide-react";
-import { PortalShell } from "@/components/portal-shell";
 import { Button } from "@/components/ui/button";
 import { useSession } from "@/lib/use-session";
 import { getPermit } from "@/lib/permits-api";
@@ -124,7 +123,7 @@ function NewHoaSubmittal() {
   }
 
   return (
-    <PortalShell>
+    <>
       <div className="space-y-8 max-w-6xl">
         <div>
           <Link to="/portal/hoa-submittals" className="inline-flex items-center gap-1 text-xs text-obsidian/60 hover:text-obsidian">
@@ -229,6 +228,6 @@ function NewHoaSubmittal() {
           </div>
         )}
       </div>
-    </PortalShell>
+    </>
   );
 }

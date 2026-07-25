@@ -1,7 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { PortalShell } from "@/components/portal-shell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -162,7 +161,7 @@ function BuildingDeptPage() {
   }
 
   return (
-    <PortalShell>
+    <>
       <div className="space-y-8 max-w-5xl">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
@@ -407,7 +406,7 @@ function BuildingDeptPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </PortalShell>
+    </>
   );
 }
 

@@ -1,7 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Plus, FileText } from "lucide-react";
-import { PortalShell } from "@/components/portal-shell";
 import { Button } from "@/components/ui/button";
 import {
   listHoaSubmittals,
@@ -40,7 +39,7 @@ function HoaSubmittalsIndex() {
   }, []);
 
   return (
-    <PortalShell>
+    <>
       <div className="space-y-8 max-w-6xl">
         <header className="flex flex-wrap items-end justify-between gap-4">
           <div>
@@ -123,6 +122,6 @@ function HoaSubmittalsIndex() {
           </div>
         )}
       </div>
-    </PortalShell>
+    </>
   );
 }

@@ -1,5 +1,4 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { PortalShell } from "@/components/portal-shell";
 import { Button } from "@/components/ui/button";
 import {
   ChevronRight,
@@ -28,9 +27,9 @@ export const Route = createFileRoute("/portal/guides/$slug")({
     return { guide };
   },
   notFoundComponent: () => (
-    <PortalShell>
+    <>
       <div className="text-center py-20 text-sm text-obsidian/60">Guide not found.</div>
-    </PortalShell>
+    </>
   ),
   component: GuideDetail,
 });
@@ -39,7 +38,7 @@ function GuideDetail() {
   const { guide } = Route.useLoaderData() as { guide: PortalGuide };
 
   return (
-    <PortalShell>
+    <>
       <div className="-mx-4 sm:-mx-6 md:-mx-8 -mt-6 md:-mt-10 print:mx-0 print:mt-0">
         {/* Obsidian header */}
         <section
@@ -248,7 +247,7 @@ function GuideDetail() {
           </div>
         </div>
       </div>
-    </PortalShell>
+    </>
   );
 }
 

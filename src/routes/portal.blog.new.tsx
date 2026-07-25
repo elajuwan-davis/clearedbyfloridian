@@ -1,5 +1,4 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { PortalShell } from "@/components/portal-shell";
 import { BlogEditor } from "@/components/blog-editor";
 
 export const Route = createFileRoute("/portal/blog/new")({
@@ -10,8 +9,8 @@ export const Route = createFileRoute("/portal/blog/new")({
     ],
   }),
   component: () => (
-    <PortalShell>
+    <>
       <BlogEditor />
-    </PortalShell>
+    </>
   ),
 });
