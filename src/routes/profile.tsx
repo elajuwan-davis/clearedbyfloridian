@@ -17,7 +17,7 @@ import { loadPaymentAuth, clearPaymentAuth, type PaymentAuthRecord } from "@/lib
 import { supabase } from "@/integrations/supabase/client";
 import { NotificationPrefsSection } from "@/components/notification-prefs-section";
 import { useServerFn } from "@tanstack/react-start";
-import { inviteTeamMemberFn, listMyTeamFn, removeTeamMemberFn } from "@/lib/tenants.functions";
+import { inviteTeamMemberFn, listMyTeamFn, removeTeamMemberFn, getMyTenantOnboardingFn, setTenantAllowedDomainFn, createInviteTokenFn, revokeInviteTokenFn } from "@/lib/tenants.functions";
 import { useSession } from "@/lib/use-session";
 
 export const Route = createFileRoute("/profile")({
