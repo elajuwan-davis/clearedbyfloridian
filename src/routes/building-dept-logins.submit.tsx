@@ -17,15 +17,8 @@ export const Route = createFileRoute("/building-dept-logins/submit")({
   component: SubmitLoginPage,
 });
 
-const MUNICIPALITIES = [
-  "Palm Beach County", "Town of Palm Beach", "Town of Manalapan", "Town of Gulf Stream",
-  "Town of Ocean Ridge", "Town of Highland Beach", "Town of Jupiter", "Town of Jupiter Island",
-  "City of West Palm Beach", "City of Boca Raton", "City of Delray Beach", "City of Boynton Beach",
-  "City of Wellington", "Village of Tequesta", "Village of North Palm Beach",
-  "Martin County", "City of Stuart", "Town of Sewall's Point",
-  "St. Lucie County", "City of Port St. Lucie", "City of Fort Pierce",
-  "Indian River County", "City of Vero Beach", "Town of Indian River Shores", "Town of Orchid",
-];
+import { MUNICIPALITIES as SHARED_MUNICIPALITIES } from "@/lib/municipalities";
+const MUNICIPALITIES = SHARED_MUNICIPALITIES.map((m) => m.name);
 
 const REGISTRATIONS = [
   "Existing County Contractor Registration",

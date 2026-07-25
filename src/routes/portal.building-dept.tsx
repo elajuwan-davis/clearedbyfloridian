@@ -19,52 +19,7 @@ import {
   subscribeMunicipalities, FL_COUNTIES, PORTAL_PLATFORMS,
   type CustomMunicipality, type PortalPlatform,
 } from "@/lib/municipalities-store";
-import { MUNICIPALITY_TREE } from "@/lib/municipalities-data";
-
-export const Route = createFileRoute("/portal/building-dept")({
-  head: () => ({
-    meta: [
-      { title: "Building Department Portals — Cleared by Flōridian" },
-      { name: "robots", content: "noindex" },
-    ],
-  }),
-  component: BuildingDeptPage,
-});
-
-type Row = { name: string; url?: string; note?: string };
-
-const SEED: Row[] = [
-  { name: "Coral Springs", url: "https://etrakit.coralsprings.gov/etrakit/" },
-  { name: "Greenacres", url: "https://portal.greenacresfl.gov/", note: "Need to register in their office" },
-  { name: "Jupiter", url: "https://cds.jupiter.fl.us/EnerGov_Prod/selfservice/JupiterFLProd", note: "Log-in details not working" },
-  { name: "Palm Beach", url: "https://eden.townofpalmbeach.com/Default.aspx?Build=PM.PermitsHome&ShowLogon=ShowLogon" },
-  { name: "Wellington", url: "https://wellingtonfl-energovweb.tylerhost.net/apps/SelfService" },
-  { name: "Palm Beach Gardens", url: "https://palmbeachgardensfl-energovweb.tylerhost.net/apps/SelfService#/home" },
-  { name: "Fort Lauderdale", url: "https://aca-prod.accela.com/FTL/Login.aspx" },
-  { name: "City of Port St. Lucie", url: "https://county-taxes.net/stlucie/stlucie/property-tax/", note: "Property search link" },
-  { name: "West Palm Beach", url: "https://permit-planner.wpb.org/" },
-  { name: "Miramar", url: "https://mss.miramarfl.gov/css/default.aspx", note: "No login required" },
-  { name: "Boca Raton", url: "https://www.bocaehub.com", note: "Uses EHub Boca system" },
-  { name: "Pembroke Pines", url: "https://pembrokepinesfl-energovweb.tylerhost.net/apps/selfservice", note: "No login required" },
-  { name: "Miami-Dade County", url: "https://www.miamidade.gov/Apps/RER/EPSPortal" },
-  { name: "Oakland Park", url: "https://cityofoaklandparkfl.tylerportico.com/portal/launcher/" },
-  { name: "Weston", url: "https://aca-prod.accela.com/WESTON/Login.aspx" },
-  { name: "Wilton Manors", url: "https://www.citizenserve.com/Portal/PortalController?Action=showHomePage&ctzPagePrefix=Portal_&installationID=125" },
-  { name: "Davie", url: "https://esuite.davie-fl.gov/eSuite.Permits/AdvancedSearchPage/AdvancedSearch.aspx" },
-  { name: "Martin County / Stuart", url: "https://aca-prod.accela.com/MARTINCO/Default.aspx" },
-  { name: "Boynton Beach", url: "https://www.sagesgov.com/boyntonbeach-fl" },
-  { name: "Royal Palm Beach", url: "https://click2gov.royalpalmbeach.com/Click2GovBP/index.html" },
-  { name: "Fort Myers", url: "https://cdservices.cityftmyers.com/energovprod/selfservice" },
-  { name: "Westlake", url: "https://cityviewportal.westlakegov.com/Permit/Locator" },
-  { name: "Doral", url: "https://doralfl-energovweb.tylerhost.net/apps/SelfService" },
-  { name: "Parkland", url: "https://www.mgoconnect.org/cp/portal" },
-  { name: "North Palm Beach", url: "https://www.mgoconnect.org/cp/portal", note: "Select North Palm Beach on login" },
-  { name: "Plantation", url: "https://aca.plantation.org/CitizenAccess/Default.aspx" },
-  { name: "Tequesta", url: "https://bsaonline.com/Account/LogOn?uid=2607" },
-  { name: "Miami Beach", url: "https://energovcss.miamibeachfl.gov/energovprod/selfservice#/home" },
-  { name: "Lighthouse Point", url: "https://ci-lighthousepoint-fl.smartgovcommunity.com/" },
-  { name: "County of PSL", url: "https://www.stlucieco.gov/departments-and-services/planning-and-development-services/energov-online-platform" },
-];
+import { MUNICIPALITIES } from "@/lib/municipalities";
 
 const EMPTY_FORM = {
   municipality_name: "",
@@ -93,12 +48,6 @@ function BuildingDeptPage() {
     return subscribeMunicipalities(() => setCustom(listMunicipalities()));
   }, []);
 
-  const seedRows = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    if (!q) return SEED;
-    return SEED.filter((r) => r.name.toLowerCase().includes(q));
-  }, [query]);
-
   const customRows = useMemo(() => {
     const q = query.trim().toLowerCase();
     if (!q) return custom;
@@ -108,21 +57,7 @@ function BuildingDeptPage() {
   }, [custom, query]);
 
   const statewideRows = useMemo(() => {
-    const seedUrls = new Map(SEED.map((s) => [s.name.toLowerCase(), s.url]));
-    const map = new Map<string, { city: string; portalUrl?: string }>();
-    for (const region of MUNICIPALITY_TREE) {
-      for (const county of region.counties) {
-        for (const city of county.cities) {
-          const key = city.name.toLowerCase();
-          map.set(key, { city: city.name, portalUrl: city.portalUrl ?? seedUrls.get(key) });
-        }
-      }
-    }
-    for (const s of SEED) {
-      const key = s.name.toLowerCase();
-      if (!map.has(key)) map.set(key, { city: s.name, portalUrl: s.url });
-    }
-    const rows = Array.from(map.values()).sort((a, b) => a.city.localeCompare(b.city));
+    const rows = MUNICIPALITIES.map((m) => ({ city: m.name, portalUrl: m.url }));
     const q = query.trim().toLowerCase();
     if (!q) return rows;
     return rows.filter((r) => r.city.toLowerCase().includes(q));
