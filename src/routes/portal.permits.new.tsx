@@ -3,13 +3,19 @@ import { useEffect, useMemo, useState, type ChangeEvent, type DragEvent } from "
 import { Upload, Check, FileText, ArrowLeft, Send, X, AlertCircle, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { CloudUploadButtons } from "@/components/cloud-upload-buttons";
-import { createPermit, type PermitDoc } from "@/lib/permits-api";
+import { ComboboxInput } from "@/components/combobox-input";
+import { createPermit, updatePermit, getPermit, type PermitDoc, type PermitRow } from "@/lib/permits-api";
 import { listSubs, createSub, type SubRow } from "@/lib/subs-api";
+import { listDesignPros, createDesignPro, type DesignProRow, type DesignProRole } from "@/lib/design-pros-api";
+import { triggerNotification } from "@/lib/notifications-api";
 import { MUNICIPALITIES } from "@/lib/municipalities";
 import { getChecklist } from "@/lib/permit-checklists";
 import { bundleFromSubs } from "@/lib/bundle";
 
 export const Route = createFileRoute("/portal/permits/new")({
+  validateSearch: (search: Record<string, unknown>) => ({
+    edit: typeof search.edit === "string" ? search.edit : undefined,
+  }),
   head: () => ({
     meta: [
       { title: "New Permit Intake — Cleared by Flōridian" },
@@ -18,6 +24,7 @@ export const Route = createFileRoute("/portal/permits/new")({
   }),
   component: NewPermitPage,
 });
+
 
 const SCOPE_OPTIONS = [
   "Pool / Spa",
@@ -65,10 +72,17 @@ const emptySub = (trade: string): SubIntake => ({
 
 function NewPermitPage() {
   const navigate = useNavigate();
+  const { edit: editId } = Route.useSearch();
+  const isEditing = !!editId;
   const [savedSubs, setSavedSubs] = useState<SubRow[]>([]);
+  const [savedPros, setSavedPros] = useState<DesignProRow[]>([]);
   const [saving, setSaving] = useState(false);
+  const [loadingEdit, setLoadingEdit] = useState(isEditing);
+  const [originalRow, setOriginalRow] = useState<PermitRow | null>(null);
   const [subsSkipped, setSubsSkipped] = useState(false);
   const [docsSkipped, setDocsSkipped] = useState(false);
+  const [saveArchitectToContacts, setSaveArchitectToContacts] = useState(false);
+  const [saveEngineerToContacts, setSaveEngineerToContacts] = useState(false);
   const [form, setForm] = useState({
     step: 1 as 1 | 2,
     projectName: "",
@@ -78,6 +92,14 @@ function NewPermitPage() {
     description: "",
     subs: [] as SubIntake[],
     submittedDate: new Date().toISOString().slice(0, 10),
+    architectFirm: "",
+    architectContact: "",
+    architectLicense: "",
+    architectEmail: "",
+    engineerFirm: "",
+    engineerContact: "",
+    engineerLicense: "",
+    engineerEmail: "",
     contractorCompany: "",
     contractorQualifier: "",
     companyAddress: "",
@@ -95,6 +117,68 @@ function NewPermitPage() {
   });
 
   useEffect(() => { listSubs().then(setSavedSubs).catch(() => {}); }, []);
+  useEffect(() => { listDesignPros().then(setSavedPros).catch(() => {}); }, []);
+
+  // Load existing permit for editing
+  useEffect(() => {
+    if (!editId) return;
+    getPermit(editId)
+      .then((r) => {
+        if (!r) { toast.error("Permit not found"); return; }
+        setOriginalRow(r);
+        const ip = (r.intake_payload ?? {}) as Record<string, any>;
+        const architect = (ip.architect ?? {}) as Record<string, string>;
+        const engineer = (ip.engineer ?? {}) as Record<string, string>;
+        const docsMap: Record<string, DocState> = {};
+        for (const d of r.documents ?? []) {
+          docsMap[d.key] = {
+            uploaded: d.status === "uploaded" ? d.filename : null,
+            na: d.status === "not_applicable",
+            deferred: d.status === "pending",
+          };
+        }
+        setForm((f) => ({
+          ...f,
+          projectName: r.project_name ?? "",
+          address: r.job_address ?? "",
+          municipality: r.municipality ?? "",
+          scopes: r.permit_type ? r.permit_type.split(" · ").filter(Boolean) : [],
+          description: r.description ?? "",
+          subs: (r.subs ?? []).map((s) => ({
+            trade: s.trade ?? "Other",
+            companyName: s.companyName ?? "",
+            licenseNumber: s.licenseNumber ?? "",
+            contactName: s.qualifierName ?? "",
+            contactEmail: s.contactEmail ?? "",
+          })),
+          submittedDate: r.submitted_date ?? f.submittedDate,
+          architectFirm: architect.firm ?? "",
+          architectContact: architect.contact ?? "",
+          architectLicense: architect.license ?? "",
+          architectEmail: architect.email ?? "",
+          engineerFirm: engineer.firm ?? "",
+          engineerContact: engineer.contact ?? "",
+          engineerLicense: engineer.license ?? "",
+          engineerEmail: engineer.email ?? "",
+          contractorCompany: r.contractor_company ?? "",
+          contractorQualifier: r.contractor_qualifier ?? "",
+          companyAddress: r.company_address ?? "",
+          poc: r.poc ?? f.poc,
+          pocPhone: r.poc_phone ?? f.pocPhone,
+          pocEmail: r.poc_email ?? f.pocEmail,
+          licenseNumber: r.license_number ?? "",
+          ownerName: r.owner_name ?? "",
+          ownerEntity: r.owner_entity ?? "",
+          signerPhone: r.signer_phone ?? "",
+          signerEmail: r.signer_email ?? "",
+          additionalNotes: r.additional_notes ?? "",
+          docs: docsMap,
+          extraDocs: r.extra_docs ?? [],
+        }));
+      })
+      .catch(() => toast.error("Could not load permit for editing"))
+      .finally(() => setLoadingEdit(false));
+  }, [editId]);
 
   function update<K extends keyof typeof form>(key: K, value: (typeof form)[K]) {
     setForm((f) => ({ ...f, [key]: value }));
@@ -102,6 +186,7 @@ function NewPermitPage() {
   function updateDoc(key: string, patch: Partial<DocState>) {
     setForm((f) => ({ ...f, docs: { ...f.docs, [key]: { ...f.docs[key], ...patch } } }));
   }
+
 
   function toggleScope(scope: string) {
     setForm((f) => ({
@@ -146,6 +231,30 @@ function NewPermitPage() {
     if (files.length) update("extraDocs", [...form.extraDocs, ...files.map((f) => f.name)]);
   }
 
+  async function maybeSaveDesignPro(
+    role: DesignProRole,
+    save: boolean,
+    firm: string,
+    contact: string,
+    license: string,
+    email: string,
+  ) {
+    if (!save || !firm.trim()) return;
+    const exists = savedPros.find(
+      (p) => p.role === role && p.firm_name.trim().toLowerCase() === firm.trim().toLowerCase(),
+    );
+    if (exists) return;
+    try {
+      await createDesignPro({
+        role,
+        firm_name: firm.trim(),
+        contact_name: contact || null,
+        license_number: license || null,
+        email: email || null,
+      });
+    } catch { /* best-effort */ }
+  }
+
   async function submit() {
     if (!form.projectName.trim() || !form.address.trim()) {
       toast.error("Project name and address are required");
@@ -166,6 +275,9 @@ function NewPermitPage() {
         }
       }
 
+      await maybeSaveDesignPro("architect", saveArchitectToContacts, form.architectFirm, form.architectContact, form.architectLicense, form.architectEmail);
+      await maybeSaveDesignPro("engineer", saveEngineerToContacts, form.engineerFirm, form.engineerContact, form.engineerLicense, form.engineerEmail);
+
       const documents: PermitDoc[] = checklist.map((d) => {
         const s = form.docs[d.key] ?? { uploaded: null, na: false, deferred: false };
         const status: PermitDoc["status"] = s.uploaded ? "uploaded" : s.deferred ? "pending" : s.na ? "not_applicable" : "missing";
@@ -180,9 +292,26 @@ function NewPermitPage() {
         contactEmail: s.contactEmail,
       }));
 
-      const intake_payload = wantBundle ? { bundle: bundleFromSubs(subs) } : null;
+      const priorPayload = (originalRow?.intake_payload ?? {}) as Record<string, unknown>;
+      const intake_payload: Record<string, unknown> = {
+        ...priorPayload,
+        architect: {
+          firm: form.architectFirm || "",
+          contact: form.architectContact || "",
+          license: form.architectLicense || "",
+          email: form.architectEmail || "",
+        },
+        engineer: {
+          firm: form.engineerFirm || "",
+          contact: form.engineerContact || "",
+          license: form.engineerLicense || "",
+          email: form.engineerEmail || "",
+        },
+      };
+      if (wantBundle) intake_payload.bundle = bundleFromSubs(subs);
+      if (isEditing) intake_payload.last_edited_at = new Date().toISOString();
 
-      const row = await createPermit({
+      const permitPatch = {
         project_name: form.projectName,
         job_address: form.address,
         municipality: form.municipality || null,
@@ -201,25 +330,40 @@ function NewPermitPage() {
         signer_phone: form.signerPhone || null,
         signer_email: form.signerEmail || null,
         submitted_date: form.submittedDate || null,
-        status: "submitted",
         subs,
         documents,
         extra_docs: form.extraDocs,
         intake_payload,
-      });
+      };
 
-      toast.success(wantBundle ? "Bundle permit created" : "Permit created");
-      if (wantBundle) {
-        navigate({ to: "/portal/permits/$id/bundle", params: { id: row.id } });
+      let rowId: string;
+      if (isEditing && editId) {
+        const updated = await updatePermit(editId, permitPatch);
+        rowId = updated.id;
+        try {
+          await triggerNotification({
+            kind: "submission_received",
+            title: `Permit submission updated — ${updated.project_name}`,
+            body: `${form.contractorCompany || "GC"} updated permit submission on ${new Date().toLocaleDateString()}. Review changes.`,
+            permit_id: updated.id,
+          });
+        } catch { /* best-effort */ }
+        toast.success("Submission updated");
+        navigate({ to: "/portal/permits/$id", params: { id: rowId } });
       } else {
-        navigate({ to: "/portal/permits/$id", params: { id: row.id } });
+        const row = await createPermit({ ...permitPatch, status: "submitted" });
+        rowId = row.id;
+        toast.success(wantBundle ? "Bundle permit created" : "Permit created");
+        if (wantBundle) navigate({ to: "/portal/permits/$id/bundle", params: { id: rowId } });
+        else navigate({ to: "/portal/permits/$id", params: { id: rowId } });
       }
     } catch (e) {
-      toast.error("Failed to create permit: " + (e instanceof Error ? e.message : String(e)));
+      toast.error((isEditing ? "Failed to update permit: " : "Failed to create permit: ") + (e instanceof Error ? e.message : String(e)));
     } finally {
       setSaving(false);
     }
   }
+
 
   const inputCls =
     "block w-full border border-obsidian/15 bg-white px-3 py-2 text-sm text-obsidian placeholder:text-obsidian/40 focus:border-obsidian/40 focus:outline-none rounded-[3px]";
@@ -231,7 +375,7 @@ function NewPermitPage() {
       <div className="border-b border-obsidian/10 pb-6">
         <div className="eyebrow text-obsidian/50">Permit Intake</div>
         <div className="mt-2 flex flex-wrap items-end justify-between gap-3">
-          <h1 className="display-serif text-4xl sm:text-5xl text-obsidian">New Permit</h1>
+          <h1 className="display-serif text-4xl sm:text-5xl text-obsidian">{isEditing ? "Edit Submission" : "New Permit"}</h1>
           <Link to="/my-permits" className="font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/55 hover:text-obsidian">Cancel</Link>
         </div>
         <div className="mt-6 flex items-center gap-3">
@@ -254,10 +398,13 @@ function NewPermitPage() {
             <div><label className={labelCls}>Property Address *</label><input required className={inputCls} value={form.address} onChange={(e) => update("address", e.target.value)} /></div>
             <div className="sm:col-span-2">
               <label className={labelCls}>Municipality / City *</label>
-              <select required className={inputCls} value={form.municipality} onChange={(e) => update("municipality", e.target.value)}>
-                <option value="">Select municipality…</option>
-                {MUNICIPALITIES.map((m) => <option key={m.name} value={m.name}>{m.name}</option>)}
-              </select>
+              <ComboboxInput
+                value={form.municipality}
+                onChange={(v) => update("municipality", v)}
+                options={MUNICIPALITIES.map((m) => ({ value: m.name, label: m.name, sublabel: m.note }))}
+                placeholder="Type to search or enter freeform…"
+                allowFreeform
+              />
             </div>
           </div>
 
@@ -303,17 +450,58 @@ function NewPermitPage() {
             <textarea rows={3} className={inputCls} value={form.description} onChange={(e) => update("description", e.target.value)} placeholder="Describe the work in more detail…" />
           </div>
 
-          {/* Architect / Engineer */}
+          {/* Architect / Engineer — from shared contacts */}
           <div className="grid gap-5 sm:grid-cols-2 pt-2">
-            <div>
-              <label className={labelCls}>Architect of Record</label>
-              <input className={inputCls} value={form.contractorCompany} onChange={(e) => update("contractorCompany", e.target.value)} placeholder="Studio Aire" />
-            </div>
-            <div>
-              <label className={labelCls}>Engineer</label>
-              <input className={inputCls} value={form.contractorQualifier} onChange={(e) => update("contractorQualifier", e.target.value)} placeholder="Coastal Structures Inc." />
-            </div>
+            <ProContactBlock
+              role="architect"
+              label="Architect of Record"
+              options={savedPros.filter((p) => p.role === "architect")}
+              firm={form.architectFirm}
+              contact={form.architectContact}
+              license={form.architectLicense}
+              email={form.architectEmail}
+              onFirm={(v) => update("architectFirm", v)}
+              onContact={(v) => update("architectContact", v)}
+              onLicense={(v) => update("architectLicense", v)}
+              onEmail={(v) => update("architectEmail", v)}
+              onPick={(p) => setForm((f) => ({
+                ...f,
+                architectFirm: p.firm_name,
+                architectContact: p.contact_name ?? "",
+                architectLicense: p.license_number ?? "",
+                architectEmail: p.email ?? "",
+              }))}
+              saveNew={saveArchitectToContacts}
+              onSaveNew={setSaveArchitectToContacts}
+              inputCls={inputCls}
+              labelCls={labelCls}
+            />
+            <ProContactBlock
+              role="engineer"
+              label="Engineer"
+              options={savedPros.filter((p) => p.role === "engineer")}
+              firm={form.engineerFirm}
+              contact={form.engineerContact}
+              license={form.engineerLicense}
+              email={form.engineerEmail}
+              onFirm={(v) => update("engineerFirm", v)}
+              onContact={(v) => update("engineerContact", v)}
+              onLicense={(v) => update("engineerLicense", v)}
+              onEmail={(v) => update("engineerEmail", v)}
+              onPick={(p) => setForm((f) => ({
+                ...f,
+                engineerFirm: p.firm_name,
+                engineerContact: p.contact_name ?? "",
+                engineerLicense: p.license_number ?? "",
+                engineerEmail: p.email ?? "",
+              }))}
+              saveNew={saveEngineerToContacts}
+              onSaveNew={setSaveEngineerToContacts}
+              inputCls={inputCls}
+              labelCls={labelCls}
+            />
           </div>
+
 
           {/* Subcontractors */}
           <div className="pt-2 space-y-4">
@@ -562,7 +750,7 @@ function NewPermitPage() {
               <ArrowLeft className="h-3.5 w-3.5" /> Back
             </button>
             <button type="button" disabled={saving} onClick={submit} className="inline-flex items-center gap-2 px-5 py-2.5 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian rounded-[3px] disabled:opacity-60" style={{ backgroundColor: "#E4B93B" }}>
-              <Send className="h-3.5 w-3.5" /> {saving ? "Saving…" : "Submit Permit Intake"}
+              <Send className="h-3.5 w-3.5" /> {saving ? "Saving…" : isEditing ? "Save Changes" : "Submit Permit Intake"}
             </button>
           </div>
         </div>
@@ -570,3 +758,59 @@ function NewPermitPage() {
     </div>
   );
 }
+
+function ProContactBlock(props: {
+  role: DesignProRole;
+  label: string;
+  options: DesignProRow[];
+  firm: string;
+  contact: string;
+  license: string;
+  email: string;
+  onFirm: (v: string) => void;
+  onContact: (v: string) => void;
+  onLicense: (v: string) => void;
+  onEmail: (v: string) => void;
+  onPick: (p: DesignProRow) => void;
+  saveNew: boolean;
+  onSaveNew: (v: boolean) => void;
+  inputCls: string;
+  labelCls: string;
+}) {
+  const { options, inputCls, labelCls } = props;
+  const knownMatch = options.find((p) => p.firm_name.trim().toLowerCase() === props.firm.trim().toLowerCase());
+  return (
+    <div className="space-y-2 border border-obsidian/10 rounded-[3px] p-3">
+      <label className={labelCls}>{props.label}</label>
+      <ComboboxInput
+        value={props.firm}
+        onChange={(v, opt) => {
+          props.onFirm(v);
+          if (opt) {
+            const picked = options.find((p) => p.firm_name === opt.value);
+            if (picked) props.onPick(picked);
+          }
+        }}
+        options={options.map((p) => ({
+          value: p.firm_name,
+          label: p.firm_name,
+          sublabel: [p.contact_name, p.license_number].filter(Boolean).join(" · ") || undefined,
+        }))}
+        placeholder="Search firm or enter new…"
+        allowFreeform
+      />
+      <div className="grid gap-2 sm:grid-cols-2">
+        <input className={inputCls} value={props.contact} onChange={(e) => props.onContact(e.target.value)} placeholder="Contact name" />
+        <input className={inputCls} value={props.license} onChange={(e) => props.onLicense(e.target.value)} placeholder="License #" />
+        <input className={`${inputCls} sm:col-span-2`} type="email" value={props.email} onChange={(e) => props.onEmail(e.target.value)} placeholder="Email" />
+      </div>
+      {props.firm.trim() && !knownMatch && (
+        <label className="flex items-center gap-2 text-[11px] text-obsidian/70 pt-1">
+          <input type="checkbox" checked={props.saveNew} onChange={(e) => props.onSaveNew(e.target.checked)} />
+          Save to contacts for future permits
+        </label>
+      )}
+    </div>
+  );
+}
+
