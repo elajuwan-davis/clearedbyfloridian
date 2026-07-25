@@ -511,7 +511,19 @@ function NewPermitPage() {
         <div className="mt-6 space-y-6 bg-white border border-obsidian/10 rounded-[3px] p-6 sm:p-8">
           <div className="grid gap-5 sm:grid-cols-2">
             <div><label className={labelCls}>Project Name *</label><input required className={inputCls} value={form.projectName} onChange={(e) => update("projectName", e.target.value)} /></div>
-            <div><label className={labelCls}>Property Address *</label><input required className={inputCls} value={form.address} onChange={(e) => update("address", e.target.value)} /></div>
+            <div>
+              <label className={labelCls}>Property Address *</label>
+              <AddressAutocomplete
+                required
+                className={inputCls}
+                value={form.address}
+                onChange={(v) => update("address", v)}
+                onResolved={(r) => handleAddressResolved(r)}
+              />
+              <p className="mt-1 text-[11px] text-obsidian/45 flex items-center gap-1.5">
+                <MapPin className="h-3 w-3" /> Florida addresses only — city auto-selects the municipality below.
+              </p>
+            </div>
             <div className="sm:col-span-2">
               <label className={labelCls}>Municipality / City *</label>
               <ComboboxInput
