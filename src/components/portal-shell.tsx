@@ -253,6 +253,7 @@ export function PortalShell({ children }: { children: ReactNode }) {
   const [open, setOpen] = useState(false);
   const [authState, setAuthState] = useState<"checking" | "authed" | "anon">("checking");
   const signingOutRef = useRef(false);
+  const session = useSession();
 
   useEffect(() => {
     let cancelled = false;
