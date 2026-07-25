@@ -31,6 +31,7 @@ const navGroups: NavGroup[] = [
       { to: "/portal/permits", label: "My Permits", alertKey: "my-permits" },
       { to: "/portal/permits/new", label: "New Permit" },
       { to: "/portal/submissions", label: "Submissions" },
+      { to: "/portal/hoa-submittals", label: "HOA Submittals" },
     ],
   },
   {
