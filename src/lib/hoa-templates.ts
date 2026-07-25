@@ -32,6 +32,8 @@ export type HoaTemplateRow = {
   created_by_tenant_id: string | null;
   created_at: string;
   updated_at: string;
+  current_version: number;
+  current_version_at: string;
 };
 
 export type HoaTemplateInsert = Partial<
