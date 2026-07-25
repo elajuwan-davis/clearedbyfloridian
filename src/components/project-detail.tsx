@@ -304,7 +304,7 @@ function OverviewTab({ project }: { project: Project }) {
 
 /* -------------------------------- DOCUMENTS ------------------------------- */
 
-function DocumentsTab({ project }: { project: Project }) {
+function DocumentsTab({ project, internal }: { project: Project; internal: boolean }) {
   const [docs, setDocs] = useState<ProjectDoc[]>([]);
   const [open, setOpen] = useState(false);
   const [ntboOpen, setNtboOpen] = useState(false);
