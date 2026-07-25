@@ -291,6 +291,28 @@
   color: var(--md-bg);
 }
 
+.marketing-dark .md-btn-gold {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  height: 40px;
+  padding: 0 1.125rem;
+  background: var(--md-gold);
+  color: var(--md-bg);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  border-radius: 3px;
+  border: 1px solid var(--md-gold);
+  transition: all 0.2s ease;
+}
+.marketing-dark .md-btn-gold:hover {
+  background: transparent;
+  color: var(--md-gold);
+}
+
+
 .marketing-dark .md-chip {
   display: inline-flex;
   align-items: center;
