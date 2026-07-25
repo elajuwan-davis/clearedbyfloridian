@@ -16,6 +16,7 @@ export type Database = {
     Tables: {
       access_requests: {
         Row: {
+          approved_tenant_id: string | null
           company: string | null
           created_at: string
           email: string
@@ -24,9 +25,11 @@ export type Database = {
           name: string
           notes: string | null
           phone: string | null
+          service_areas: string[]
           status: string
         }
         Insert: {
+          approved_tenant_id?: string | null
           company?: string | null
           created_at?: string
           email: string
@@ -35,9 +38,11 @@ export type Database = {
           name: string
           notes?: string | null
           phone?: string | null
+          service_areas?: string[]
           status?: string
         }
         Update: {
+          approved_tenant_id?: string | null
           company?: string | null
           created_at?: string
           email?: string
@@ -46,9 +51,18 @@ export type Database = {
           name?: string
           notes?: string | null
           phone?: string | null
+          service_areas?: string[]
           status?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "access_requests_approved_tenant_id_fkey"
+            columns: ["approved_tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       app_user_connections: {
         Row: {
@@ -140,6 +154,7 @@ export type Database = {
           notes: string | null
           phone: string | null
           role: string
+          tenant_id: string | null
           updated_at: string
         }
         Insert: {
@@ -153,6 +168,7 @@ export type Database = {
           notes?: string | null
           phone?: string | null
           role?: string
+          tenant_id?: string | null
           updated_at?: string
         }
         Update: {
@@ -166,9 +182,18 @@ export type Database = {
           notes?: string | null
           phone?: string | null
           role?: string
+          tenant_id?: string | null
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "design_professionals_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       gc_coi_minimums: {
         Row: {
@@ -178,6 +203,7 @@ export type Database = {
           gl_per_occurrence_cents: number
           id: string
           owner_id: string | null
+          tenant_id: string | null
           umbrella_cents: number
           updated_at: string
           wc_required: boolean
@@ -189,6 +215,7 @@ export type Database = {
           gl_per_occurrence_cents?: number
           id?: string
           owner_id?: string | null
+          tenant_id?: string | null
           umbrella_cents?: number
           updated_at?: string
           wc_required?: boolean
@@ -200,11 +227,20 @@ export type Database = {
           gl_per_occurrence_cents?: number
           id?: string
           owner_id?: string | null
+          tenant_id?: string | null
           umbrella_cents?: number
           updated_at?: string
           wc_required?: boolean
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "gc_coi_minimums_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       gc_portal_logins: {
         Row: {
@@ -214,6 +250,7 @@ export type Database = {
           municipality_slug: string
           notes: string | null
           password_ciphertext: string
+          tenant_id: string | null
           updated_at: string
           user_id: string
           username_ciphertext: string
@@ -225,6 +262,7 @@ export type Database = {
           municipality_slug: string
           notes?: string | null
           password_ciphertext: string
+          tenant_id?: string | null
           updated_at?: string
           user_id: string
           username_ciphertext: string
@@ -236,11 +274,20 @@ export type Database = {
           municipality_slug?: string
           notes?: string | null
           password_ciphertext?: string
+          tenant_id?: string | null
           updated_at?: string
           user_id?: string
           username_ciphertext?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "gc_portal_logins_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       notification_prefs: {
         Row: {
@@ -343,6 +390,7 @@ export type Database = {
           sent_at: string | null
           sent_via: string | null
           status: string
+          tenant_id: string | null
           updated_at: string
           work_description: string | null
         }
@@ -362,6 +410,7 @@ export type Database = {
           sent_at?: string | null
           sent_via?: string | null
           status?: string
+          tenant_id?: string | null
           updated_at?: string
           work_description?: string | null
         }
@@ -381,10 +430,19 @@ export type Database = {
           sent_at?: string | null
           sent_via?: string | null
           status?: string
+          tenant_id?: string | null
           updated_at?: string
           work_description?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "nto_filings_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       permits: {
         Row: {
@@ -420,6 +478,7 @@ export type Database = {
           status: string
           submitted_date: string | null
           subs: Json
+          tenant_id: string | null
           updated_at: string
         }
         Insert: {
@@ -455,6 +514,7 @@ export type Database = {
           status?: string
           submitted_date?: string | null
           subs?: Json
+          tenant_id?: string | null
           updated_at?: string
         }
         Update: {
@@ -490,9 +550,18 @@ export type Database = {
           status?: string
           submitted_date?: string | null
           subs?: Json
+          tenant_id?: string | null
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "permits_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       prior_permits: {
         Row: {
@@ -503,6 +572,7 @@ export type Database = {
           notes: string | null
           permit_number: string | null
           project_label: string
+          tenant_id: string | null
           total_cents: number
           trades: Json
           updated_at: string
@@ -515,6 +585,7 @@ export type Database = {
           notes?: string | null
           permit_number?: string | null
           project_label: string
+          tenant_id?: string | null
           total_cents?: number
           trades?: Json
           updated_at?: string
@@ -527,9 +598,39 @@ export type Database = {
           notes?: string | null
           permit_number?: string | null
           project_label?: string
+          tenant_id?: string | null
           total_cents?: number
           trades?: Json
           updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "prior_permits_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sub_accounts: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -567,6 +668,7 @@ export type Database = {
           phone: string | null
           qualifier_name: string | null
           status: string
+          tenant_id: string | null
           trade: string | null
           updated_at: string
           w9_extracted: Json | null
@@ -609,6 +711,7 @@ export type Database = {
           phone?: string | null
           qualifier_name?: string | null
           status?: string
+          tenant_id?: string | null
           trade?: string | null
           updated_at?: string
           w9_extracted?: Json | null
@@ -651,6 +754,7 @@ export type Database = {
           phone?: string | null
           qualifier_name?: string | null
           status?: string
+          tenant_id?: string | null
           trade?: string | null
           updated_at?: string
           w9_extracted?: Json | null
@@ -660,7 +764,15 @@ export type Database = {
           w9_status?: string | null
           w9_verified_at?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "subcontractors_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       submissions: {
         Row: {
@@ -672,6 +784,7 @@ export type Database = {
           permit_id: string
           status: string
           submitted_by: string | null
+          tenant_id: string | null
           trades_included: Json
           trades_pending: Json
           type: string
@@ -686,6 +799,7 @@ export type Database = {
           permit_id: string
           status?: string
           submitted_by?: string | null
+          tenant_id?: string | null
           trades_included?: Json
           trades_pending?: Json
           type?: string
@@ -700,6 +814,7 @@ export type Database = {
           permit_id?: string
           status?: string
           submitted_by?: string | null
+          tenant_id?: string | null
           trades_included?: Json
           trades_pending?: Json
           type?: string
@@ -713,17 +828,123 @@ export type Database = {
             referencedRelation: "permits"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "submissions_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
         ]
+      }
+      tenant_members: {
+        Row: {
+          created_at: string
+          id: string
+          role: string
+          tenant_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role?: string
+          tenant_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: string
+          tenant_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tenant_members_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tenants: {
+        Row: {
+          created_at: string
+          id: string
+          license_number: string | null
+          name: string
+          primary_coi_path: string | null
+          primary_license_path: string | null
+          service_areas: string[]
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          license_number?: string | null
+          name: string
+          primary_coi_path?: string | null
+          primary_license_path?: string | null
+          service_areas?: string[]
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          license_number?: string | null
+          name?: string
+          primary_coi_path?: string | null
+          primary_license_path?: string | null
+          service_areas?: string[]
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
       }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      current_tenant_id: { Args: never; Returns: string }
+      current_user_email: { Args: never; Returns: string }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
+      is_admin: { Args: never; Returns: boolean }
+      sub_can_see_permit: { Args: { _permit_id: string }; Returns: boolean }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "gc_owner" | "gc_member" | "subcontractor"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -850,6 +1071,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "gc_owner", "gc_member", "subcontractor"],
+    },
   },
 } as const
