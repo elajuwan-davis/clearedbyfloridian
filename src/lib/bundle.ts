@@ -79,6 +79,8 @@ export function bundleFromSubs(subs: PermitSub[] | null | undefined): Bundle {
       signature_status: "pending",
       doc_keys: [],
       ready: false,
+      budgeted_fee_cents: 0,
+      fee_confirmed: false,
     };
   });
   return {
@@ -88,6 +90,33 @@ export function bundleFromSubs(subs: PermitSub[] | null | undefined): Bundle {
     gc_license_number: FLORIDIAN_FIRM.licenseNumber,
     trades,
   };
+}
+
+export function newEmptyTrade(label: string, existingKeys: string[] = []): BundleTrade {
+  const base = slugTrade(label) || `trade_${Math.random().toString(36).slice(2, 6)}`;
+  let key = base;
+  let i = 2;
+  while (existingKeys.includes(key)) key = `${base}_${i++}`;
+  return {
+    key,
+    label: label.trim() || "Trade",
+    sub_id: null,
+    sub_snapshot: null,
+    signature_status: "pending",
+    doc_keys: [],
+    ready: false,
+    budgeted_fee_cents: 0,
+    fee_confirmed: false,
+  };
+}
+
+export function bundleBudgetedTotal(b: Bundle | null | undefined): number {
+  return (b?.trades ?? []).reduce((sum, t) => sum + (t.budgeted_fee_cents ?? 0), 0);
+}
+
+export function bundleAllFeesConfirmed(b: Bundle | null | undefined): boolean {
+  const list = b?.trades ?? [];
+  return list.length > 0 && list.every((t) => t.fee_confirmed);
 }
 
 export function getBundle(row: PermitRow | null | undefined): Bundle | null {
