@@ -1,6 +1,8 @@
 import { useState } from "react";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { FileStack, Map, Users } from "lucide-react";
+import { MarketingShell } from "@/components/marketing-shell";
+
 
 export const Route = createFileRoute("/join")({
   component: JoinPage,
