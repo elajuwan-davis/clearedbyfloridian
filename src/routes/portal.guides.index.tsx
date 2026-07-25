@@ -15,13 +15,24 @@ type TradeKey =
   | "Pool / Spa Construction"
   | "Electrical"
   | "Plumbing"
-  | "Structural / Hardscape";
+  | "Structural, Hardscape & Outdoor Living";
 
 const TRADE_ORDER: TradeKey[] = [
   "Pool / Spa Construction",
   "Electrical",
   "Plumbing",
-  "Structural / Hardscape",
+  "Structural, Hardscape & Outdoor Living",
+];
+
+const TRADE_DESCRIPTIONS: Partial<Record<TradeKey, string>> = {
+  "Structural, Hardscape & Outdoor Living":
+    "Commonly permitted structures include pergolas, shade structures, outdoor kitchens, summer kitchens, fire features, retaining walls, and paver extensions.",
+};
+
+const STRUCTURAL_PLACEHOLDERS = [
+  "Structural spec sheets for pergolas and shade structures — coming soon",
+  "Outdoor kitchen and summer kitchen submittal requirements — coming soon",
+  "Retaining wall structural details — coming soon",
 ];
 
 function tradeFor(title: string): TradeKey {
@@ -37,9 +48,10 @@ const SPECS_BY_TRADE: Record<TradeKey, { title: string; url: string }[]> = {
   "Pool / Spa Construction": [],
   Electrical: [],
   Plumbing: [],
-  "Structural / Hardscape": [],
+  "Structural, Hardscape & Outdoor Living": [],
 };
 for (const s of EQUIPMENT_SPECS) SPECS_BY_TRADE[tradeFor(s.title)].push(s);
+
 
 export const Route = createFileRoute("/portal/guides/")({
   head: () => ({
