@@ -1,9 +1,11 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState, type ChangeEvent } from "react";
-import { Wallet, Upload, CheckCircle2, X, Plus, Pencil, Trash2 } from "lucide-react";
+import { Wallet, Upload, CheckCircle2, X, Plus, Pencil, Trash2, Package } from "lucide-react";
 import { LogPermitFeeDialog } from "@/components/log-permit-fee-dialog";
 import { listAllFees, deleteFee, fmtUsd, type ManualFee } from "@/lib/manual-fees";
 import { PROJECTS } from "@/lib/projects-data";
+import { listPermits, type PermitRow } from "@/lib/permits-api";
+import { getBundle } from "@/lib/bundle";
 
 export const Route = createFileRoute("/portal/permit-fees")({
   head: () => ({
@@ -41,11 +43,15 @@ function PermitFeesPage() {
   const [manualFees, setManualFees] = useState<ManualFee[]>([]);
   const [logOpen, setLogOpen] = useState(false);
   const [editing, setEditing] = useState<ManualFee | null>(null);
+  const [bundledPermits, setBundledPermits] = useState<PermitRow[]>([]);
 
   useEffect(() => {
     const refresh = () => setManualFees(listAllFees());
     refresh();
     window.addEventListener("manual-fees:changed", refresh);
+    listPermits()
+      .then((rows) => setBundledPermits(rows.filter((r) => getBundle(r)?.enabled)))
+      .catch(() => {});
     return () => window.removeEventListener("manual-fees:changed", refresh);
   }, []);
 
@@ -98,6 +104,66 @@ function PermitFeesPage() {
           </button>
         </div>
       </div>
+
+      {/* Manually logged fees */}
+      <div className="mt-10">
+        <div className="flex items-end justify-between">
+          <h2 className="display-serif text-2xl text-obsidian">Logged Fees</h2>
+      {bundledPermits.length > 0 && (
+        <div className="mt-10">
+          <div className="flex items-end justify-between">
+            <h2 className="display-serif text-2xl text-obsidian flex items-center gap-2">
+              <Package className="h-5 w-5" /> Bundled Permit Fees
+            </h2>
+            <div className="font-mono text-[11px] uppercase tracking-[0.14em] text-obsidian/60">
+              {bundledPermits.length} bundle{bundledPermits.length === 1 ? "" : "s"}
+            </div>
+          </div>
+          <div className="mt-4 border border-obsidian/10 bg-white rounded-[3px] overflow-hidden">
+            <div className="grid grid-cols-[1.6fr_1.4fr_1.6fr_0.9fr_auto] gap-4 px-5 py-3 border-b border-obsidian/10 bg-obsidian/5 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/60">
+              <div>Project</div>
+              <div>Municipality</div>
+              <div>Trades</div>
+              <div className="text-right">GC Fee</div>
+              <div></div>
+            </div>
+            {bundledPermits.map((p) => {
+              const b = getBundle(p)!;
+              const tradeLabels = b.trades.map((t) => t.label);
+              return (
+                <div key={p.id} className="grid grid-cols-[1.6fr_1.4fr_1.6fr_0.9fr_auto] gap-4 px-5 py-4 border-b border-obsidian/10 last:border-b-0 items-center text-sm">
+                  <div className="min-w-0">
+                    <Link to="/portal/permits/$id/bundle" params={{ id: p.id }} className="text-obsidian hover:underline font-medium">
+                      {p.project_name}
+                    </Link>
+                    <div className="mt-0.5 flex items-center gap-1.5">
+                      <span
+                        title={`Covers ${tradeLabels.length} trades: ${tradeLabels.join(", ")}`}
+                        className="inline-flex items-center gap-1 border border-obsidian/20 bg-obsidian/[0.04] rounded-[3px] px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian"
+                      >
+                        <Package className="h-3 w-3" /> Bundle
+                      </span>
+                      <span className="text-[11px] text-obsidian/50 font-mono">{b.status.replace("_", " ")}</span>
+                    </div>
+                  </div>
+                  <div className="text-obsidian/70 text-[13px]">{p.municipality || "—"}</div>
+                  <div className="text-obsidian/70 text-[12px] truncate">{tradeLabels.join(", ") || "—"}</div>
+                  <div className="text-right font-mono text-obsidian">{fmtUsd(b.gc_fee_cents)}</div>
+                  <div>
+                    <Link
+                      to="/portal/permits/$id/bundle"
+                      params={{ id: p.id }}
+                      className="inline-flex items-center border border-obsidian/20 bg-white px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian rounded-[3px] hover:bg-obsidian/5"
+                    >
+                      Manage
+                    </Link>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {/* Manually logged fees */}
       <div className="mt-10">
