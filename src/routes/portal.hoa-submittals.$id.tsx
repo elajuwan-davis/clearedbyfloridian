@@ -12,9 +12,12 @@ import {
   Circle,
   Upload,
   Loader2,
+  Send,
+  Mail,
 } from "lucide-react";
 import { PortalShell } from "@/components/portal-shell";
 import { Button } from "@/components/ui/button";
+import { useSession } from "@/lib/use-session";
 import {
   getHoaSubmittal,
   updateHoaSubmittal,
@@ -30,6 +33,8 @@ import {
   type HoaProjectType,
   type HoaChecklistItem,
 } from "@/lib/hoa-submittals";
+import { getHoaTemplate, displayNameFor, type HoaTemplateRow } from "@/lib/hoa-templates";
+import { sendHoaSubmittal } from "@/lib/hoa-send";
 import { buildAndStoreBoilerplate, buildAndStoreRemovalAgreement } from "@/lib/hoa-pdf";
 
 export const Route = createFileRoute("/portal/hoa-submittals/$id")({
