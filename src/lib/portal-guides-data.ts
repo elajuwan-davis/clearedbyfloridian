@@ -787,6 +787,7 @@ export const PORTAL_GUIDES: PortalGuide[] = [
   OUTDOOR_PLUMBING_ROUGH,
   // Commercial
   ...COMMERCIAL_GUIDES,
+  ...COMMERCIAL_GUIDES_2,
   // Single Family
   ...SINGLE_FAMILY_GUIDES,
   ...SINGLE_FAMILY_GUIDES_2,
