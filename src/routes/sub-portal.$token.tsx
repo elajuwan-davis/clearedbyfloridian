@@ -8,7 +8,7 @@ import { TradesOnJobPanel } from "@/components/trades-on-job-panel";
 export const Route = createFileRoute("/sub-portal/$token")({
   head: () => ({
     meta: [
-      { title: "Project Documents — Cleard by Flōridian" },
+      { title: "Project Documents — Cleard" },
       { name: "robots", content: "noindex" },
     ],
   }),
@@ -68,7 +68,7 @@ function SubPortalPage() {
       <div className="mx-auto max-w-3xl">
         <div className="text-center">
           <div className="wordmark text-4xl text-obsidian">Cleard</div>
-          <div className="wordmark-subline mt-1 text-obsidian/55">by Flōridian</div>
+          <div className="wordmark-subline mt-1 text-obsidian/55"></div>
         </div>
 
         <div className="mt-10 border-b border-obsidian/10 pb-6">

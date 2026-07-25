@@ -9,7 +9,7 @@ export const Route = createFileRoute("/process")({
       {
         name: "description",
         content:
-          "From submittal to certificate of occupancy: how Cleard moves Flōridian-affiliated residential permits through plan review and inspection under Florida's private provider statute.",
+          "From submittal to certificate of occupancy: how Cleard moves Cleard-affiliated residential permits through plan review and inspection under Florida's private provider statute.",
       },
       { property: "og:title", content: "Cleard Process" },
       { property: "og:description", content: "From submittal to CO — the private provider workflow." },

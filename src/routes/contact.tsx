@@ -31,8 +31,8 @@ function ContactPage() {
     <MarketingShell>
       <PageHeader
         eyebrow="Request access"
-        title="Tell us about the Flōridian project."
-        intro="Cleard is offered by invitation to the licensed GCs delivering Flōridian's work. A principal will respond within four business hours to verify your project and begin intake."
+        title="Tell us about the Cleard project."
+        intro="Cleard is offered by invitation to the licensed GCs delivering Cleard's work. A principal will respond within four business hours to verify your project and begin intake."
       />
 
       <section className="mx-auto max-w-6xl px-4 sm:px-6 py-24 grid md:grid-cols-12 gap-12">
@@ -80,8 +80,8 @@ function ContactPage() {
             <Field label="Project address">
               <Input required name="address" placeholder="1217 S Ocean Blvd, Manalapan, FL" className="h-11 rounded-sm" />
             </Field>
-            <Field label="Flōridian project / scope">
-              <Textarea required name="scope" rows={5} placeholder="Flōridian pool & summer kitchen + new 4,200 sqft SFR. Drawings ready." className="rounded-sm" />
+            <Field label="Cleard project / scope">
+              <Textarea required name="scope" rows={5} placeholder="Cleard pool & summer kitchen + new 4,200 sqft SFR. Drawings ready." className="rounded-sm" />
             </Field>
             <div className="flex items-center justify-between pt-2">
               <p className="font-mono text-[11px] text-muted-foreground">
@@ -111,7 +111,7 @@ function ContactPage() {
             <div className="label-eyebrow text-accent">Access policy</div>
             <p className="mt-2 text-sm">
               Cleard is offered exclusively to licensed GCs on active
-              Flōridian projects. New requests are verified against our
+              Cleard projects. New requests are verified against our
               project ledger before intake begins.
             </p>
           </div>

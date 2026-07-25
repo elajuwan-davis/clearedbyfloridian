@@ -20,7 +20,7 @@ const EVT = "contractors:changed";
 const SEED: Contractor[] = [
   {
     id: "seed-floridian",
-    firm_name: "Flōridian",
+    firm_name: "Cleard",
     contact_name: "Elajuwan Davis",
     address: "1000 S Pine Island Rd, Suite 155, Plantation, FL 33324",
     phone: "(561) 555-0100",

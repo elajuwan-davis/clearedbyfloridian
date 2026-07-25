@@ -10,7 +10,7 @@ import { getAppraiser } from "@/lib/property-appraiser";
 export const Route = createFileRoute("/permit-card/$id")({
   head: () => ({
     meta: [
-      { title: "Digital Permit Card — Cleard by Flōridian" },
+      { title: "Digital Permit Card — Cleard" },
       { name: "description", content: "Public digital permit card with live inspection status." },
       { name: "robots", content: "noindex" },
     ],
@@ -66,7 +66,7 @@ function PermitCard({ project }: { project: Project }) {
             <div className="flex items-start justify-between gap-6">
               <div>
                 <div className="font-mono text-[10px] uppercase tracking-[0.24em] text-[#B6DAEA]">
-                  Cleard by Flōridian · Private Provider
+                  Cleard · Private Provider
                 </div>
                 <h1 className="mt-1 display-serif text-3xl">Digital Permit Card</h1>
                 <div className="mt-1 font-mono text-[11px] uppercase tracking-[0.14em] text-white/70">
@@ -85,7 +85,7 @@ function PermitCard({ project }: { project: Project }) {
             <Field label="Permit Number" value={project.permit_no || "— pending —"} mono big />
             <Field label="Job Site Address" value={fullAddress(project)} full />
             <Field label="Scope of Work" value={project.scope || "Pool, Spa & Hardscape"} />
-            <Field label="Contractor of Record" value="Flōridian" />
+            <Field label="Contractor of Record" value="Cleard" />
             <Field label="Florida License" value="CPC1459161" mono />
             <Field label="Issue Date" value={issueDate} mono />
             <Field label="Municipality" value={portal?.name ?? project.city} />

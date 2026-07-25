@@ -185,7 +185,7 @@ export function buildBundlePrefill(row: PermitRow, trade: BundleTrade, bundle: B
     permit_type: row.permit_type ?? "",
     permit_number: row.permit_number ?? "",
     trade: trade.label,
-    gc_name: "Flōridian",
+    gc_name: "Cleard",
     gc_license: bundle.gc_license_number || FLORIDIAN_FIRM.licenseNumber,
     poc_name: "José Maceda Gutiérrez",
     poc_email: "info@cleard.com",

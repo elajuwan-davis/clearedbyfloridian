@@ -23,7 +23,7 @@ import {
 export const Route = createFileRoute("/messages")({
   head: () => ({
     meta: [
-      { title: "Messages — Cleard by Flōridian" },
+      { title: "Messages — Cleard" },
       { name: "robots", content: "noindex" },
     ],
   }),

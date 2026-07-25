@@ -17,13 +17,13 @@ import { loadPaymentAuth, clearPaymentAuth, type PaymentAuthRecord } from "@/lib
 import { supabase } from "@/integrations/supabase/client";
 import { NotificationPrefsSection } from "@/components/notification-prefs-section";
 import { useServerFn } from "@tanstack/react-start";
-import { inviteTeamMemberFn, listMyTeamFn, removeTeamMemberFn } from "@/lib/tenants.functions";
+import { inviteTeamMemberFn, listMyTeamFn, removeTeamMemberFn, getMyTenantOnboardingFn, setTenantAllowedDomainFn, createInviteTokenFn, revokeInviteTokenFn } from "@/lib/tenants.functions";
 import { useSession } from "@/lib/use-session";
 
 export const Route = createFileRoute("/profile")({
   head: () => ({
     meta: [
-      { title: "Profile — Cleard by Flōridian" },
+      { title: "Profile — Cleard" },
       { name: "robots", content: "noindex" },
     ],
   }),
@@ -35,7 +35,7 @@ type TeamMember = { user_id: string; email: string; role: string };
 function ProfilePage() {
   const [displayName, setDisplayName] = useState("Elajuwan Davis");
   const [company, setCompany] = useState({
-    name: "Flōridian",
+    name: "Cleard",
     website: "https://floridianinc.com",
     phone: "(561) 555-0144",
     address: "",
@@ -271,9 +271,13 @@ function ProfilePage() {
         {/* Team Members */}
         <TeamMembersSection />
 
+        {/* Team Onboarding paths */}
+        <TeamOnboardingSection />
+
+
 
         {/* Payment Authorization */}
-        <Section title="Payment Authorization" subtitle="Authorize Cleard by Flōridian to charge for services and permit fees.">
+        <Section title="Payment Authorization" subtitle="Authorize Cleard to charge for services and permit fees.">
           {paymentAuth ? (
             <div
               className="border bg-white p-5 rounded-[3px]"
@@ -521,3 +525,144 @@ function TeamMembersSection() {
     </section>
   );
 }
+
+function TeamOnboardingSection() {
+  const session = useSession();
+  const getOnb = useServerFn(getMyTenantOnboardingFn);
+  const setDomain = useServerFn(setTenantAllowedDomainFn);
+  const createInvite = useServerFn(createInviteTokenFn);
+  const revokeInvite = useServerFn(revokeInviteTokenFn);
+  const [state, setState] = useState<Awaited<ReturnType<typeof getOnb>> | null>(null);
+  const [domain, setDomainInput] = useState("");
+  const [busy, setBusy] = useState(false);
+
+  const canManage = session.role === "gc_owner" || session.role === "admin";
+
+  async function refresh() {
+    try {
+      const d = await getOnb();
+      setState(d);
+      setDomainInput(d?.tenant?.allowed_domain ?? "");
+    } catch (e) { console.error(e); }
+  }
+  useEffect(() => {
+    if (!session.loading && session.userId && canManage) refresh();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [session.loading, session.userId, canManage]);
+
+  if (!canManage) return null;
+
+  async function saveDomain() {
+    setBusy(true);
+    try {
+      await setDomain({ data: { allowed_domain: domain.trim() || null } });
+      toast.success("Domain saved. New signups with this email domain auto-join your team.");
+      await refresh();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Save failed");
+    } finally { setBusy(false); }
+  }
+  async function makeLink() {
+    setBusy(true);
+    try {
+      await createInvite();
+      toast.success("Invite link created");
+      await refresh();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Create failed");
+    } finally { setBusy(false); }
+  }
+  async function revoke(id: string) {
+    if (!confirm("Revoke this invite link?")) return;
+    try {
+      await revokeInvite({ data: { id } });
+      toast.success("Revoked");
+      await refresh();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Revoke failed");
+    }
+  }
+  function joinUrl(token: string) {
+    return `${window.location.origin}/join/${token}`;
+  }
+  async function copy(text: string) {
+    try { await navigator.clipboard.writeText(text); toast.success("Copied"); } catch { toast.error("Copy failed"); }
+  }
+
+  return (
+    <section className="mt-10">
+      <div className="mb-4">
+        <h2 className="display-serif text-2xl text-obsidian">Team Access</h2>
+        <p className="mt-1 text-sm text-obsidian/60">Two ways to bring your team onto Cleard — pick one or use both.</p>
+      </div>
+
+      <div className="grid gap-6 md:grid-cols-2">
+        {/* Path A: Domain */}
+        <div className="border hairline bg-white p-5 rounded-[3px]">
+          <div className="label-eyebrow text-obsidian/60">◇ Path A</div>
+          <div className="mt-2 text-sm font-semibold text-obsidian">Email domain auto-join</div>
+          <p className="mt-1 text-xs text-obsidian/60 leading-relaxed">
+            Anyone who signs up with an email at this domain is added to your team automatically.
+          </p>
+          <div className="mt-4 flex items-center gap-2">
+            <span className="font-mono text-xs text-obsidian/50">@</span>
+            <input
+              value={domain}
+              onChange={(e) => setDomainInput(e.target.value)}
+              placeholder="yourcompany.com"
+              className="flex-1 border border-obsidian/15 bg-white px-3 py-2 text-sm rounded-[3px] focus:border-obsidian/40 focus:outline-none"
+            />
+            <button
+              onClick={saveDomain}
+              disabled={busy}
+              className="bg-obsidian px-3 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-paper hover:bg-obsidian/90 rounded-[3px] disabled:opacity-60"
+            >
+              Save
+            </button>
+          </div>
+          {state?.tenant?.allowed_domain && (
+            <div className="mt-3 text-[11px] text-emerald-800 font-mono uppercase tracking-[0.12em]">
+              Active — new @{state.tenant.allowed_domain} signups auto-join.
+            </div>
+          )}
+        </div>
+
+        {/* Path B: Invite Links */}
+        <div className="border hairline bg-white p-5 rounded-[3px]">
+          <div className="label-eyebrow text-obsidian/60">◇ Path B</div>
+          <div className="mt-2 text-sm font-semibold text-obsidian">Shareable invite link</div>
+          <p className="mt-1 text-xs text-obsidian/60 leading-relaxed">
+            Send a single link. Anyone who signs up through it joins your team. Revoke any time.
+          </p>
+          <button
+            onClick={makeLink}
+            disabled={busy}
+            className="mt-4 inline-flex items-center gap-2 bg-obsidian px-3 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-paper hover:bg-obsidian/90 rounded-[3px] disabled:opacity-60"
+          >
+            <Plus className="h-3.5 w-3.5" /> Create Invite Link
+          </button>
+          <ul className="mt-4 space-y-2">
+            {((state?.invites ?? []) as Array<{ id: string; token: string; uses: number; revoked_at: string | null }>).map((inv) => (
+              <li key={inv.id} className="flex items-center gap-2 border hairline p-2 rounded-[3px]">
+                <code className="flex-1 truncate text-[11px] font-mono text-obsidian/80">{joinUrl(inv.token)}</code>
+                <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-obsidian/50">{inv.uses} used</span>
+                {inv.revoked_at ? (
+                  <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-oxblood">Revoked</span>
+                ) : (
+                  <>
+                    <button onClick={() => copy(joinUrl(inv.token))} className="font-mono text-[10px] uppercase tracking-[0.12em] text-obsidian/70 hover:text-obsidian underline underline-offset-2">Copy</button>
+                    <button onClick={() => revoke(inv.id)} className="font-mono text-[10px] uppercase tracking-[0.12em] text-oxblood hover:opacity-80 underline underline-offset-2">Revoke</button>
+                  </>
+                )}
+              </li>
+            ))}
+            {state && state.invites.length === 0 && (
+              <li className="text-xs text-obsidian/50 italic">No invite links yet.</li>
+            )}
+          </ul>
+        </div>
+      </div>
+    </section>
+  );
+}
+

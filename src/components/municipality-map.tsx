@@ -90,7 +90,7 @@ export default function MunicipalityMap() {
         className="w-full h-auto block"
         style={{ maxHeight: 820 }}
         role="img"
-        aria-label="Municipalities where Flōridian is registered"
+        aria-label="Municipalities where Cleard is registered"
       >
         <defs>
           <pattern id="wave-pattern" width="14" height="14" patternUnits="userSpaceOnUse" patternTransform="rotate(-45)">

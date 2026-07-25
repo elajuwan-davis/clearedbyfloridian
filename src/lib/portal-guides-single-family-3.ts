@@ -1,7 +1,7 @@
 // Single Family project guides — batch 3.
 import type { PortalGuide, GuideDownload, GuideDoc, InspectionPhase } from "./portal-guides-data";
 
-const REVIEWED = "Reviewed by Flōridian permitting staff — July 2026";
+const REVIEWED = "Reviewed by Cleard permitting staff — July 2026";
 
 const STANDARD_DOWNLOADS: GuideDownload[] = [
   { title: "Notice to Building Official — Use of Private Provider", meta: "Form 61G20-2.005 · FL Statute §553.791" },
@@ -9,7 +9,7 @@ const STANDARD_DOWNLOADS: GuideDownload[] = [
 ];
 
 const NTBO_OWNER: GuideDoc[] = [
-  { name: "Notice to Building Official (NTBO)", description: "Required when using a private provider (Flōridian). Download below.", required: "conditional" },
+  { name: "Notice to Building Official (NTBO)", description: "Required when using a private provider (Cleard). Download below.", required: "conditional" },
   { name: "Owner Authorization Form", description: "Private Provider Owner Authorization & Indemnification. Download below.", required: "conditional" },
 ];
 
@@ -518,7 +518,7 @@ const SF_CONCRETE_FOOTING: PortalGuide = {
   planReview: [
     { n: "01", title: "Design wind speed & exposure", tags: ["Life Safety"], description: "Structural drawings must declare design wind speed (Vult) and exposure category matching the jurisdiction's wind speed map.", code: "FBC-R R301.2.1 · ASCE 7-22" },
     { n: "02", title: "Footing / foundation design", tags: ["Life Safety"], description: "Footing or foundation design must show dimensions, reinforcement, depth, and connection to the structure above.", code: "FBC-R R403 · FBC-B 1809" },
-    { n: "03", title: "Plan review applicability (FBC 107.3.5)", tags: ["Documentation"], description: "Standalone footing scope without superstructure is not a typical plan review trigger under FBC-B 107.3.5 for 1 & 2 family. Flōridian performs this review only when the building department requires plan review or the client opts in.", code: "FBC-B 107.3.5" },
+    { n: "03", title: "Plan review applicability (FBC 107.3.5)", tags: ["Documentation"], description: "Standalone footing scope without superstructure is not a typical plan review trigger under FBC-B 107.3.5 for 1 & 2 family. Cleard performs this review only when the building department requires plan review or the client opts in.", code: "FBC-B 107.3.5" },
     { n: "04", title: "Engineer of record seal", tags: ["Documentation"], description: "Structural drawings must bear a current Florida-licensed engineer's seal and signature.", code: "FL Statutes Ch. 471 · FBC-B 107.3.5" },
   ],
   inspections: [FOOTING_SLAB_UFER, FINAL_BUILDING],

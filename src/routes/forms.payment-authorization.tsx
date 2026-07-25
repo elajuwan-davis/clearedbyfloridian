@@ -188,7 +188,7 @@ function PaymentAuthPage() {
           <h2 className="display-serif text-2xl text-obsidian">Terms and Conditions</h2>
           <div className="border border-obsidian/15 bg-paper-warm rounded-[3px] p-5 text-sm text-obsidian/75 leading-relaxed max-h-72 overflow-y-auto space-y-3">
             <p>
-              By submitting this payment authorization form, I give full authorization to Cleard by Flōridian and its associates for payment of services, permit fees, and any other charges associated with any project under the contractor.
+              By submitting this payment authorization form, I give full authorization to Cleard and its associates for payment of services, permit fees, and any other charges associated with any project under the contractor.
             </p>
             <p>
               <strong>ACH Payment Notice:</strong> If submitting an ACH payment for Payment of Services, a Debit or Credit card must be on file for payment of municipality permit fees.

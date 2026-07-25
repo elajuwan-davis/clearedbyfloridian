@@ -201,7 +201,7 @@ const MF_PLUMBING_ONLY: PortalGuide = {
   downloads: STANDARD_DOWNLOADS,
   planReview: [
     { n: "01", title: "Re-pipe / Fixture Addition Materials", tags: ["Code"], description: "Approved pipe materials, DWV sizing, and firestop at rated-wall penetrations.", code: "FBC-P 603 · 709 · FBC-B 714" },
-    { n: "02", title: "Plan Review Applicability (Minor Repairs)", tags: ["Documentation"], description: "Per FBC-B 107.3.5, plan review not required for minor plumbing repairs. Flōridian reviews when the building department requires or client opts in.", code: "FBC-B 107.3.5" },
+    { n: "02", title: "Plan Review Applicability (Minor Repairs)", tags: ["Documentation"], description: "Per FBC-B 107.3.5, plan review not required for minor plumbing repairs. Cleard reviews when the building department requires or client opts in.", code: "FBC-B 107.3.5" },
   ],
   inspections: [ROUGH_PLUMBING, FINAL_PLUMBING],
 };
@@ -245,7 +245,7 @@ const MF_REPIPE: PortalGuide = {
   downloads: STANDARD_DOWNLOADS,
   planReview: [
     { n: "01", title: "Re-Pipe Materials and Scope", tags: ["Code"], description: "Re-pipe scope must show approved materials, routing, and fixture count consistent with DWV sizing.", code: "FBC-P 603 · 709" },
-    { n: "02", title: "Plan Review Applicability", tags: ["Documentation"], description: "Per FBC-B 107.3.5, plan review is not required for minor plumbing repairs. Flōridian performs this review only when the building department requires plan review or the client opts in.", code: "FBC-B 107.3.5" },
+    { n: "02", title: "Plan Review Applicability", tags: ["Documentation"], description: "Per FBC-B 107.3.5, plan review is not required for minor plumbing repairs. Cleard performs this review only when the building department requires plan review or the client opts in.", code: "FBC-B 107.3.5" },
   ],
   inspections: [{
     phase: "Final Plumbing", code: "618", title: "Final Plumbing — Re-Pipe",

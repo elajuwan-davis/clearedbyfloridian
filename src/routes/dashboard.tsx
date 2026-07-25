@@ -15,7 +15,7 @@ import {
 export const Route = createFileRoute("/dashboard")({
   head: () => ({
     meta: [
-      { title: "Dashboard — Cleard by Flōridian" },
+      { title: "Dashboard — Cleard" },
       { name: "robots", content: "noindex" },
     ],
   }),

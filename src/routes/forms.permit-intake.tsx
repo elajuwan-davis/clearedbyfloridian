@@ -53,7 +53,7 @@ function defaultStep1(): Step1 {
     category: "Residential",
     projectName: "",
     address: "",
-    privateProvider: "Cleard by Flōridian",
+    privateProvider: "Cleard",
     existingPermit: "",
     municipality: "",
     subtrades: [],
@@ -174,7 +174,7 @@ function PermitIntakePage() {
                 <Select value={s1.privateProvider} onValueChange={(v) => setS1({ ...s1, privateProvider: v })}>
                   <SelectTrigger className="rounded-[3px]"><SelectValue /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Cleard by Flōridian">Cleard by Flōridian</SelectItem>
+                    <SelectItem value="Cleard">Cleard</SelectItem>
                   </SelectContent>
                 </Select>
               </Field>

@@ -1,6 +1,6 @@
-// Flōridian firm data used to pre-fill official forms.
+// Cleard firm data used to pre-fill official forms.
 export const FLORIDIAN_FIRM = {
-  firmName: "Flōridian",
+  firmName: "Cleard",
   privateProvider: "Elajuwan Davis",
   addressLine1: "1000 S Pine Island Rd, Suite 155",
   addressLine2: "Plantation, FL 33324",
@@ -8,6 +8,6 @@ export const FLORIDIAN_FIRM = {
   email: "info@cleard.com",
   licenseNumber: "CPC1459161",
   signatoryType: "Corporation" as const,
-  printNameCorporation: "Flōridian",
+  printNameCorporation: "Cleard",
   representativeName: "Elajuwan Davis",
 };

@@ -43,7 +43,7 @@ import { logHoaReply, listHoaReplies, type HoaReplyRow } from "@/lib/hoa-replies
 export const Route = createFileRoute("/portal/hoa-submittals/$id")({
   head: () => ({
     meta: [
-      { title: "HOA Submittal — Cleard by Flōridian" },
+      { title: "HOA Submittal — Cleard" },
       { name: "robots", content: "noindex" },
     ],
   }),

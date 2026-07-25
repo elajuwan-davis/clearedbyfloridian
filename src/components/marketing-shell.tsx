@@ -115,7 +115,7 @@ function MarketingFooter() {
       </div>
       <div className="border-t md-hairline">
         <div className="mx-auto max-w-7xl px-6 lg:px-10 py-5 text-[11px] md-muted">
-          © 2026 Flōridian Inc. All rights reserved.
+          © 2026 Cleard Inc. All rights reserved.
         </div>
       </div>
     </footer>

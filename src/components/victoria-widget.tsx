@@ -145,7 +145,7 @@ export function VictoriaWidget() {
               </div>
               <div>
                 <div className="text-sm font-medium">Victoria</div>
-                <div className="text-[10px] uppercase tracking-[0.15em] opacity-70">Flōridian AI</div>
+                <div className="text-[10px] uppercase tracking-[0.15em] opacity-70">Cleard AI</div>
               </div>
             </div>
             <button onClick={() => setOpen(false)} aria-label="Close" className="opacity-80 hover:opacity-100">

@@ -34,7 +34,7 @@ function AboutPage() {
         </div>
         <div className="md:col-span-7 space-y-6 text-muted-foreground text-pretty">
           <p>
-            Flōridian was founded in West Palm Beach to build pools and
+            Cleard was founded in West Palm Beach to build pools and
             hardscape for South Florida's most demanding estates without
             compromising on detail.
           </p>

@@ -10,7 +10,7 @@ import { getBundle, bundleBudgetedTotal, bundleAllFeesConfirmed } from "@/lib/bu
 export const Route = createFileRoute("/portal/permit-fees")({
   head: () => ({
     meta: [
-      { title: "Permit Fees — Cleard by Flōridian" },
+      { title: "Permit Fees — Cleard" },
       { name: "robots", content: "noindex" },
     ],
   }),
@@ -286,7 +286,7 @@ function PermitFeesPage() {
                 className="font-mono text-[10px] uppercase tracking-[0.18em]"
                 style={{ color: "color-mix(in oklab, var(--paper) 60%, transparent)" }}
               >
-                Total Savings via Flōridian
+                Total Savings via Cleard
               </div>
               <div className="font-display text-3xl tabular-nums mt-1 text-emerald-300">
                 {fmt(totalSavings)}

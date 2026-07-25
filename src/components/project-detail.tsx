@@ -872,7 +872,7 @@ function NotesTab({ project }: { project: Project }) {
     <div className="space-y-4">
       <div className="border border-obsidian/10 bg-white p-4">
         <div className="font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/55">
-          Internal note · Visible to Flōridian staff only
+          Internal note · Visible to Cleard staff only
         </div>
         <textarea
           value={body}

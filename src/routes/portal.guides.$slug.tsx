@@ -17,7 +17,7 @@ import { FLORIDIAN_FIRM } from "@/lib/floridian-firm";
 export const Route = createFileRoute("/portal/guides/$slug")({
   head: () => ({
     meta: [
-      { title: "Project Guide — Cleard by Flōridian" },
+      { title: "Project Guide — Cleard" },
       { name: "robots", content: "noindex" },
     ],
   }),
@@ -93,7 +93,7 @@ function GuideDetail() {
               <ShieldAlert className="h-5 w-5 shrink-0 mt-0.5" style={{ color: "var(--sky)" }} strokeWidth={1.5}/>
               <div>
                 <div className="font-semibold text-paper mb-1">Reference only</div>
-                Requirements vary by jurisdiction. Confirm scope with your Flōridian permit
+                Requirements vary by jurisdiction. Confirm scope with your Cleard permit
                 coordinator before submitting. This guide reflects the private provider
                 workflow under FL Statute §553.791.
               </div>
@@ -192,7 +192,7 @@ function GuideDetail() {
             </Section>
 
             {/* SECTION 2 — Plan Review */}
-            <Section eyebrow="02" icon={BookOpen} title="Plan Review" subtitle="What Flōridian reviews before approving your permit application.">
+            <Section eyebrow="02" icon={BookOpen} title="Plan Review" subtitle="What Cleard reviews before approving your permit application.">
               <ol className="space-y-5">
                 {guide.planReview.map((p) => (
                   <li key={p.n} className="flex gap-5 border-t border-obsidian/10 pt-5 first:border-0 first:pt-0">

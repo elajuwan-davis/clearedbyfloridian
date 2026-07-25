@@ -14,8 +14,8 @@ import { updatePermit, type PermitDoc, type PermitRow } from "@/lib/permits-api"
 export const NOC_REVIEW_DOC_KEY = "notice_of_commencement_review";
 export const NOC_REVIEW_DOC_LABEL = "Notice of Commencement — Review & Sign";
 
-// Flōridian is the private provider / surety on record.
-const FLORIDIAN_PRIVATE_PROVIDER = "Cleard by Flōridian (Flōridian LLC)";
+// Cleard is the private provider / surety on record.
+const FLORIDIAN_PRIVATE_PROVIDER = "Cleard";
 const FLORIDIAN_PROVIDER_ADDRESS = "215 Clematis Street, West Palm Beach, FL 33401";
 
 export async function autoGenerateNOCForPermit(permit: PermitRow): Promise<void> {

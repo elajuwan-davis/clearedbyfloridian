@@ -154,7 +154,7 @@ const MF_ELECTRICAL_ONLY: PortalGuide = {
   planReview: [
     { n: "01", title: "AFCI and GFCI Protection", tags: ["Life Safety"], description: "AFCI protection for dwelling unit circuits; GFCI at required locations.", code: "NEC 210.8 · 210.12" },
     { n: "02", title: "Service Size and Load Calculation", tags: ["Code"], description: "Electrical service and feeder sizing supported by NEC Article 220 load calculation.", code: "NEC 220 · 230" },
-    { n: "03", title: "Plan Review Applicability (Minor Repairs)", tags: ["Documentation"], description: "Per FBC-B 107.3.5, plan review not required for minor electrical repairs. Flōridian reviews when the building department requires or client opts in.", code: "FBC-B 107.3.5" },
+    { n: "03", title: "Plan Review Applicability (Minor Repairs)", tags: ["Documentation"], description: "Per FBC-B 107.3.5, plan review not required for minor electrical repairs. Cleard reviews when the building department requires or client opts in.", code: "FBC-B 107.3.5" },
   ],
   inspections: [ELECTRICAL_ONLY_ROUGH, FINAL_ELECTRICAL],
 };
@@ -237,7 +237,7 @@ const MF_GENERATOR: PortalGuide = {
   planReview: [
     { n: "01", title: "Generator Disconnect, Transfer Switch, and Labeling", tags: ["Life Safety"], description: "Disconnect, transfer switch, and labeling requirements per NEC.", code: "NEC 230.82 · 445 · 702" },
     { n: "02", title: "Grounding and Bonding", tags: ["Life Safety"], description: "Grounding electrode, equipment grounding, and bonding per NEC Article 250.", code: "NEC 250" },
-    { n: "03", title: "Plan Review Applicability", tags: ["Documentation"], description: "Per FBC-B 107.3.5, plan review not required for minor scope. Flōridian reviews when required by building department or client.", code: "FBC-B 107.3.5" },
+    { n: "03", title: "Plan Review Applicability", tags: ["Documentation"], description: "Per FBC-B 107.3.5, plan review not required for minor scope. Cleard reviews when required by building department or client.", code: "FBC-B 107.3.5" },
   ],
   inspections: [GENERATOR_ROUGH_ELECTRICAL, GENERATOR_FINAL_ELECTRICAL],
 };

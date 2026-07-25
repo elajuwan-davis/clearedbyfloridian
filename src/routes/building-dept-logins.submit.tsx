@@ -10,7 +10,7 @@ import { toast } from "sonner";
 export const Route = createFileRoute("/building-dept-logins/submit")({
   head: () => ({
     meta: [
-      { title: "Submit Login — Cleard by Flōridian" },
+      { title: "Submit Login — Cleard" },
       { name: "robots", content: "noindex" },
     ],
   }),

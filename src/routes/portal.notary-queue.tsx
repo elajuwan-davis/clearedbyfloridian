@@ -86,7 +86,7 @@ function NotaryRow({ r }: { r: NotaryRequest }) {
             const name = notarizedFilename.trim();
             completeNotary(r.id, name);
             try {
-              await addDoc({ projectId: r.projectId, type: "Civil / Other", filename: `[Notarized] ${name}`, uploadedBy: "Flōridian Notary" });
+              await addDoc({ projectId: r.projectId, type: "Civil / Other", filename: `[Notarized] ${name}`, uploadedBy: "Cleard Notary" });
             } catch { /* non-blocking */ }
           }}>
             <CheckCircle2 className="h-4 w-4 mr-2" /> Mark Complete

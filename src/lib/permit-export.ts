@@ -97,7 +97,7 @@ export async function generatePermitExportPdf(row: PermitRow, opts: { includeAtt
     y -= extraGap;
   };
 
-  drawLine("CLEARED BY FLORIDIAN", bold, 10, rgb(0.4, 0.4, 0.4));
+  drawLine("CLEARD", bold, 10, rgb(0.4, 0.4, 0.4));
   drawLine(row.project_name || "Permit", bold, 22, ink, 4);
   drawLine(row.job_address || "", font, 11, rgb(0.35, 0.35, 0.35), 12);
 

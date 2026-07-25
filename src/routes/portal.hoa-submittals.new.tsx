@@ -24,7 +24,7 @@ export const Route = createFileRoute("/portal/hoa-submittals/new")({
   }),
   head: () => ({
     meta: [
-      { title: "New HOA Submittal — Cleard by Flōridian" },
+      { title: "New HOA Submittal — Cleard" },
       { name: "robots", content: "noindex" },
     ],
   }),

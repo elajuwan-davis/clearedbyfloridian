@@ -7,7 +7,7 @@ import { CloudUploadButtons } from "@/components/cloud-upload-buttons";
 export const Route = createFileRoute("/portal/request-coi")({
   head: () => ({
     meta: [
-      { title: "Request COI — Cleard by Flōridian" },
+      { title: "Request COI — Cleard" },
       { name: "robots", content: "noindex" },
     ],
   }),
@@ -120,12 +120,12 @@ function RequestCOIPage() {
           <div className="font-mono text-[10px] uppercase tracking-[0.18em] opacity-70">
             Reference
           </div>
-          <div className="mt-1 font-display text-lg">COI Requirements — Flōridian</div>
+          <div className="mt-1 font-display text-lg">COI Requirements — Cleard</div>
           <ul className="mt-3 space-y-1.5 text-[13px] leading-relaxed">
             <li>· General Liability: $1,000,000 per occurrence / $2,000,000 aggregate</li>
             <li>· Workers' Compensation: Statutory limits (Florida)</li>
             <li>· Auto Liability: $1,000,000 combined single limit</li>
-            <li>· Certificate Holder: Flōridian, 1000 S Pine Island Rd, Suite 155, Plantation, FL 33324</li>
+            <li>· Certificate Holder: Cleard, 1000 S Pine Island Rd, Suite 155, Plantation, FL 33324</li>
             <li>· Additional Insured endorsement required on GL policy</li>
             <li>· 30-day notice of cancellation required</li>
             <li>· Policy must be active for the full duration of the project</li>

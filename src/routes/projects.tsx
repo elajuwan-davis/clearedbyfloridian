@@ -6,7 +6,7 @@ import { Plus, ArrowUpRight } from "lucide-react";
 export const Route = createFileRoute("/projects")({
   head: () => ({
     meta: [
-      { title: "Projects — Cleard by Flōridian" },
+      { title: "Projects — Cleard" },
       { name: "robots", content: "noindex" },
     ],
   }),

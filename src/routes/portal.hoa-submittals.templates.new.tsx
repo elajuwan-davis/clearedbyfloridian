@@ -22,7 +22,7 @@ export const Route = createFileRoute("/portal/hoa-submittals/templates/new")({
   }),
   head: () => ({
     meta: [
-      { title: "Add HOA to Repository — Cleard by Flōridian" },
+      { title: "Add HOA to Repository — Cleard" },
       { name: "robots", content: "noindex" },
     ],
   }),

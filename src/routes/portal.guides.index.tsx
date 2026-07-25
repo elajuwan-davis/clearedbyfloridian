@@ -44,7 +44,7 @@ for (const s of EQUIPMENT_SPECS) SPECS_BY_TRADE[tradeFor(s.title)].push(s);
 export const Route = createFileRoute("/portal/guides/")({
   head: () => ({
     meta: [
-      { title: "Project Guides & Building Specs — Cleard by Flōridian" },
+      { title: "Project Guides & Building Specs — Cleard" },
       { name: "robots", content: "noindex" },
     ],
   }),
@@ -100,7 +100,7 @@ function PortalGuidesIndex() {
               className="mt-2 max-w-2xl text-sm md:text-base leading-relaxed"
               style={{ color: "color-mix(in oklab, var(--paper) 60%, transparent)" }}
             >
-              A printable reference for every project type Flōridian permits. Find your
+              A printable reference for every project type Cleard permits. Find your
               project below.
             </p>
 

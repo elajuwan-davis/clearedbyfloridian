@@ -1,5 +1,5 @@
 // LocalStorage-backed notary request store.
-// Flōridian performs remote online notarization in-house per FL Stat §117.265.
+// Cleard performs remote online notarization in-house per FL Stat §117.265.
 
 export type NotaryStatus = "requested" | "completed";
 

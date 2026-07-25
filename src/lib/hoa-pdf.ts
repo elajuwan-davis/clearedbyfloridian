@@ -59,7 +59,7 @@ export async function generateBoilerplatePdf(row: HoaSubmittalRow): Promise<Uint
   const { page, font, bold, y: startY } = await drawHeader(
     pdf,
     "HOA / ARC Submittal Application",
-    `Prepared via Cleard by Flōridian · ${new Date().toLocaleDateString("en-US")}`,
+    `Prepared via Cleard · ${new Date().toLocaleDateString("en-US")}`,
   );
 
   let y = startY;
