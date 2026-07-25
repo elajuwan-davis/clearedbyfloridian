@@ -311,16 +311,16 @@ function NewPermitPage() {
                 <p className="mt-1 text-[12px] text-obsidian/60">Required document checklist.</p>
               </div>
               <div className="text-right">
-                <div className="font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/55">{docsComplete} of {REQUIRED_DOCS.length} complete</div>
+                <div className="font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/55">{docsComplete} of {checklist.length} complete</div>
                 <div className="mt-1.5 h-1.5 w-40 bg-obsidian/10 rounded-full overflow-hidden">
-                  <div className="h-full bg-emerald-500" style={{ width: `${(docsComplete / REQUIRED_DOCS.length) * 100}%` }} />
+                  <div className="h-full bg-emerald-500" style={{ width: `${checklist.length ? (docsComplete / checklist.length) * 100 : 0}%` }} />
                 </div>
               </div>
             </div>
 
             <ul className="space-y-3">
-              {REQUIRED_DOCS.map((d) => {
-                const s = form.docs[d.key];
+              {checklist.map((d) => {
+                const s = form.docs[d.key] ?? { uploaded: null, na: false, deferred: false };
                 const done = s.uploaded || s.na || s.deferred;
                 return (
                   <li key={d.key} className="border border-obsidian/10 rounded-[3px] p-4">
