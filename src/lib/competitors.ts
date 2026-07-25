@@ -40,6 +40,26 @@ export const COMPETITORS: Competitor[] = [
     name: "In-House Permit Runner",
     positioning: "One platform replaces the runner, the tracker, and the follow-up calls.",
   },
+  {
+    slug: "freedom-code-compliance",
+    name: "Freedom Code Compliance",
+    positioning: "Fast plan reviews and inspections — but no software, no sub coordination, and no permit management platform.",
+  },
+  {
+    slug: "construct-cc",
+    name: "Construct CC",
+    positioning: "Florida permitting admin support — but without the bundled submission capability, jurisdiction intelligence, or integrated sub signing that Cléared delivers.",
+  },
+  {
+    slug: "tew-and-taylor",
+    name: "Tew & Taylor",
+    positioning: "Respected private provider services — but a human-staffed service bureau, not a platform your team operates inside.",
+  },
+  {
+    slug: "ues",
+    name: "UES (Team UES)",
+    positioning: "Engineering-backed inspections at scale — but no GC-facing permit management, no document workflows, and no fee savings tools.",
+  },
 ];
 
 export type FeatureRow = {
