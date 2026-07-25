@@ -4,7 +4,9 @@ import {
   ArrowLeft, MapPin, Building2, Hash, ExternalLink, Download,
   Upload, FileText, Trash2, Plus, MessageSquare, Users, DollarSign,
   ClipboardCheck, LayoutGrid, Pencil, CheckCircle2, Circle, AlertTriangle,
+  ShieldCheck,
 } from "lucide-react";
+import { ProjectComplianceTab } from "@/components/project-compliance-tab";
 import { PortalShell } from "@/components/portal-shell";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
