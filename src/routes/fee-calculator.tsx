@@ -79,6 +79,8 @@ function uid() {
 }
 
 function FeeCalculatorPage() {
+  const search = Route.useSearch();
+  const [mode, setMode] = useState<"audit" | "savings">(search.mode === "savings" ? "savings" : "audit");
   const [permitNo, setPermitNo] = useState("");
   const [muniQuery, setMuniQuery] = useState("");
   const [muni, setMuni] = useState("");
