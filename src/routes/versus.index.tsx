@@ -8,7 +8,7 @@ export const Route = createFileRoute("/versus/")({
   head: () => ({
     meta: [
       { title: "Cleard vs the Alternatives — Compare Permit Software" },
-      { name: "description", content: "See how Cleard compares to Procore, Buildertrend, PermitZIP, and manual permitting for Florida contractors." },
+      { name: "description", content: "See how Cleard compares to the alternatives for Florida contractors." },
       { property: "og:title", content: "Better than the alternative: Build with Cleard" },
       { property: "og:description", content: "Exploring other ways to handle permitting in Florida? See how Cleard compares." },
       { property: "og:type", content: "website" },
