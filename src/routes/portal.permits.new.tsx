@@ -291,13 +291,24 @@ function NewPermitPage() {
         return { key: d.key, label: d.label, required: d.required, status, filename: s.uploaded };
       });
 
-      const subs = filledSubs.map((s) => ({
-        trade: s.trade,
-        companyName: s.companyName,
-        qualifierName: s.contactName,
-        licenseNumber: s.licenseNumber,
-        contactEmail: s.contactEmail,
-      }));
+      const priorSubs = (originalRow?.subs ?? []) as PermitSub[];
+      const subs: PermitSub[] = filledSubs.map((s) => {
+        // Preserve existing per-sub state (accessToken, confirmed) when
+        // this permit is being edited and the same company reappears.
+        const prior = priorSubs.find(
+          (p) => (p.companyName ?? "").trim().toLowerCase() === s.companyName.trim().toLowerCase(),
+        );
+        return {
+          trade: s.trade,
+          companyName: s.companyName,
+          qualifierName: s.contactName,
+          licenseNumber: s.licenseNumber,
+          contactEmail: s.contactEmail,
+          accessToken: prior?.accessToken ?? crypto.randomUUID(),
+          confirmed: prior?.confirmed ?? false,
+          confirmedAt: prior?.confirmedAt,
+        };
+      });
 
       const priorPayload = (originalRow?.intake_payload ?? {}) as Record<string, unknown>;
       const intake_payload: Record<string, unknown> = {
