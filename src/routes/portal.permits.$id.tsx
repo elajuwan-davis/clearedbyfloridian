@@ -264,6 +264,16 @@ function PermitDetailPage() {
           <div className="eyebrow text-obsidian/50">Permit</div>
           <h1 className="display-serif mt-2 text-4xl text-obsidian">{row.project_name}</h1>
           <div className="mt-2 text-sm text-obsidian/60">{row.job_address}</div>
+          {(() => {
+            const ip = (row.intake_payload ?? {}) as Record<string, unknown>;
+            const le = typeof ip.last_edited_at === "string" ? ip.last_edited_at : null;
+            if (!le) return null;
+            return (
+              <div className="mt-1 font-mono text-[10px] uppercase tracking-[0.14em] text-amber-700">
+                Last edited {new Date(le).toLocaleString()}
+              </div>
+            );
+          })()}
         </div>
         <div className="flex items-center gap-2">
           {!editing ? (
