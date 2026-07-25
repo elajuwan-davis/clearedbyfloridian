@@ -5,13 +5,13 @@ import { SiteFooter } from "@/components/site-footer";
 export const Route = createFileRoute("/municipalities")({
   head: () => ({
     meta: [
-      { title: "Statewide Coverage — Cléared" },
+      { title: "Statewide Coverage — Cleard" },
       {
         name: "description",
         content:
-          "Cléared operates across 160+ municipalities and 9 counties statewide — a registered private provider from South Florida to Central Florida.",
+          "Cleard operates across 160+ municipalities and 9 counties statewide — a registered private provider from South Florida to Central Florida.",
       },
-      { property: "og:title", content: "Statewide Coverage — Cléared" },
+      { property: "og:title", content: "Statewide Coverage — Cleard" },
       {
         property: "og:description",
         content: "160+ Municipalities · 9 Counties · Statewide Coverage.",
@@ -93,7 +93,7 @@ function MunicipalitiesPublicPage() {
               160+ Municipalities <em>Across Florida</em>
             </h1>
             <p className="mt-6 max-w-2xl text-base md:text-lg text-muted-foreground">
-              Cléared is a registered private provider under Florida Statute
+              Cleard is a registered private provider under Florida Statute
               553.791 — delivering 2-day plan review and same-day inspections
               across nine counties statewide.
             </p>

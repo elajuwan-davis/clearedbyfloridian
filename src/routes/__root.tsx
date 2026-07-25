@@ -94,14 +94,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Cleared by Flōridian — Private Provider Permitting for South Florida" },
+      { title: "Cleard by Flōridian — Private Provider Permitting for South Florida" },
       {
         name: "description",
         content:
-          "Cleared is the private-provider permitting partner for South Florida's elite general contractors — plan review, inspections, and permit coordination on a statutory clock.",
+          "Cleard is the private-provider permitting partner for South Florida's elite general contractors — plan review, inspections, and permit coordination on a statutory clock.",
       },
-      { name: "author", content: "Cleared by Flōridian" },
-      { property: "og:title", content: "Cleared by Flōridian — Private Provider Permitting for South Florida" },
+      { name: "author", content: "Cleard by Flōridian" },
+      { property: "og:title", content: "Cleard by Flōridian — Private Provider Permitting for South Florida" },
       {
         property: "og:description",
         content:
@@ -109,7 +109,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
-      { name: "twitter:title", content: "Cleared by Flōridian — Private Provider Permitting for South Florida" },
+      { name: "twitter:title", content: "Cleard by Flōridian — Private Provider Permitting for South Florida" },
       { name: "description", content: "Clëared is a full-stack permitting portal and marketing website for residential builders." },
       { property: "og:description", content: "Clëared is a full-stack permitting portal and marketing website for residential builders." },
       { name: "twitter:description", content: "Clëared is a full-stack permitting portal and marketing website for residential builders." },

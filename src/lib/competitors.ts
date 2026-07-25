@@ -18,12 +18,12 @@ export const COMPETITORS: Competitor[] = [
   {
     slug: "procore",
     name: "Procore",
-    positioning: "Procore manages construction. Cléared manages permits — every jurisdiction, every trade.",
+    positioning: "Procore manages construction. Cleard manages permits — every jurisdiction, every trade.",
   },
   {
     slug: "buildertrend",
     name: "Buildertrend",
-    positioning: "Buildertrend is a scheduling tool. Cléared is a permit operations platform for Florida contractors.",
+    positioning: "Buildertrend is a scheduling tool. Cleard is a permit operations platform for Florida contractors.",
   },
   {
     slug: "permit-flow",
@@ -48,7 +48,7 @@ export const COMPETITORS: Competitor[] = [
   {
     slug: "construct-cc",
     name: "Construct CC",
-    positioning: "Florida permitting admin support — but without the bundled submission capability, jurisdiction intelligence, or integrated sub signing that Cléared delivers.",
+    positioning: "Florida permitting admin support — but without the bundled submission capability, jurisdiction intelligence, or integrated sub signing that Cleard delivers.",
   },
   {
     slug: "tew-and-taylor",

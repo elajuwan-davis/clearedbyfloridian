@@ -23,7 +23,7 @@ import {
 export const Route = createFileRoute("/messages")({
   head: () => ({
     meta: [
-      { title: "Messages — Cleared by Flōridian" },
+      { title: "Messages — Cleard by Flōridian" },
       { name: "robots", content: "noindex" },
     ],
   }),
@@ -120,7 +120,7 @@ function MessagesPage() {
         const isAdmin = String(m.sender_role ?? "") !== "builder";
         t.messages.push({
           id: String(m.id),
-          author: isAdmin ? "Cleared" : "You",
+          author: isAdmin ? "Cleard" : "You",
           fromAdmin: isAdmin,
           body: String(m.body ?? ""),
           at: m.created_at ? new Date(String(m.created_at)).toLocaleString() : "",

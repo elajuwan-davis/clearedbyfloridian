@@ -17,7 +17,7 @@ import {
 export const Route = createFileRoute("/lpoa-signing")({
   head: () => ({
     meta: [
-      { title: "LPOA Signing — Cleared by Flōridian" },
+      { title: "LPOA Signing — Cleard by Flōridian" },
       { name: "robots", content: "noindex" },
     ],
   }),
@@ -68,7 +68,7 @@ function LpoaSigningPage() {
             Limited Power <em>of Attorney</em>
           </h1>
           <p className="mt-2 max-w-2xl text-sm text-obsidian/60">
-            Authorizes Cleared by Flōridian to act as your firm's private provider of record on
+            Authorizes Cleard by Flōridian to act as your firm's private provider of record on
             permits filed through this account.
           </p>
         </div>
@@ -102,14 +102,14 @@ function LpoaSigningPage() {
             <p className="mt-6">
               The undersigned, being the duly authorized qualifying agent for the licensed General
               Contractor of record, does hereby designate and appoint{" "}
-              <strong className="text-obsidian">Cleared by Flōridian</strong> as the{" "}
+              <strong className="text-obsidian">Cleard by Flōridian</strong> as the{" "}
               <em>private provider of record</em> for permit applications submitted through this
               portal.
             </p>
 
             <ol className="mt-6 space-y-4 [counter-reset:lpoa] list-none pl-0">
               <Clause n={1} title="Scope of Authority">
-                Cleared is empowered to prepare, sign, and submit the affidavit of compliance under
+                Cleard is empowered to prepare, sign, and submit the affidavit of compliance under
                 FL Statute 553.791; to perform plans review and inspections to verify compliance
                 with the Florida Building Code; and to issue the certificate of compliance to the
                 authority having jurisdiction.
@@ -123,12 +123,12 @@ function LpoaSigningPage() {
                 <strong className="text-obsidian">2 business days</strong>.
               </Clause>
               <Clause n={3} title="Inspections">
-                Cleared may perform inspections directly or through duly licensed inspectors
+                Cleard may perform inspections directly or through duly licensed inspectors
                 operating under its supervision. Real-time virtual inspections are conducted with a
                 48-hour correction window per round.
               </Clause>
               <Clause n={4} title="Fees">
-                I acknowledge that Cleared's fees — a permitting fee equal to{" "}
+                I acknowledge that Cleard's fees — a permitting fee equal to{" "}
                 <strong className="text-obsidian">1.5% of construction value</strong> and a flat
                 private-provider administration fee of{" "}
                 <strong className="text-obsidian">$8,856.00</strong> per filing — are invoiced
@@ -141,9 +141,9 @@ function LpoaSigningPage() {
                 not affect inspections or certificates already issued.
               </Clause>
               <Clause n={6} title="Indemnification">
-                Cleared shall be indemnified against losses arising from materially false or
+                Cleard shall be indemnified against losses arising from materially false or
                 incomplete information supplied by the GC, its design professionals, or its
-                subcontractors. Cleared remains liable for its own negligent acts in performing
+                subcontractors. Cleard remains liable for its own negligent acts in performing
                 plans review and inspections to the extent provided by Florida law.
               </Clause>
             </ol>
@@ -242,7 +242,7 @@ function LpoaSigningPage() {
                 className="mt-0.5 rounded-[2px]"
               />
               <span className="text-sm text-obsidian">
-                I authorize Cleared by Flōridian to act as private provider under FL Statute
+                I authorize Cleard by Flōridian to act as private provider under FL Statute
                 553.791, including filing affidavits of compliance and certificates of compliance
                 with the AHJ on this firm's behalf.
               </span>

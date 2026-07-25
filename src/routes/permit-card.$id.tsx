@@ -10,7 +10,7 @@ import { getAppraiser } from "@/lib/property-appraiser";
 export const Route = createFileRoute("/permit-card/$id")({
   head: () => ({
     meta: [
-      { title: "Digital Permit Card — Cleared by Flōridian" },
+      { title: "Digital Permit Card — Cleard by Flōridian" },
       { name: "description", content: "Public digital permit card with live inspection status." },
       { name: "robots", content: "noindex" },
     ],
@@ -66,7 +66,7 @@ function PermitCard({ project }: { project: Project }) {
             <div className="flex items-start justify-between gap-6">
               <div>
                 <div className="font-mono text-[10px] uppercase tracking-[0.24em] text-[#B6DAEA]">
-                  Cleared by Flōridian · Private Provider
+                  Cleard by Flōridian · Private Provider
                 </div>
                 <h1 className="mt-1 display-serif text-3xl">Digital Permit Card</h1>
                 <div className="mt-1 font-mono text-[11px] uppercase tracking-[0.14em] text-white/70">

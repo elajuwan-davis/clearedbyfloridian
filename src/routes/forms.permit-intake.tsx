@@ -12,7 +12,7 @@ import { toast } from "sonner";
 import { CloudUploadButtons } from "@/components/cloud-upload-buttons";
 
 export const Route = createFileRoute("/forms/permit-intake")({
-  head: () => ({ meta: [{ title: "Permit Intake — Cleared" }, { name: "robots", content: "noindex" }] }),
+  head: () => ({ meta: [{ title: "Permit Intake — Cleard" }, { name: "robots", content: "noindex" }] }),
   component: PermitIntakePage,
 });
 
@@ -53,7 +53,7 @@ function defaultStep1(): Step1 {
     category: "Residential",
     projectName: "",
     address: "",
-    privateProvider: "Cleared by Flōridian",
+    privateProvider: "Cleard by Flōridian",
     existingPermit: "",
     municipality: "",
     subtrades: [],
@@ -174,7 +174,7 @@ function PermitIntakePage() {
                 <Select value={s1.privateProvider} onValueChange={(v) => setS1({ ...s1, privateProvider: v })}>
                   <SelectTrigger className="rounded-[3px]"><SelectValue /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Cleared by Flōridian">Cleared by Flōridian</SelectItem>
+                    <SelectItem value="Cleard by Flōridian">Cleard by Flōridian</SelectItem>
                   </SelectContent>
                 </Select>
               </Field>

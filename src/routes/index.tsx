@@ -6,13 +6,13 @@ import { MarketingShell } from "@/components/marketing-shell";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Cléared — Permitting, handled." },
+      { title: "Cleard — Permitting, handled." },
       {
         name: "description",
         content:
-          "Cléared gives general contractors one intelligent platform to submit, track, and close permits across Florida — powered by Vicky, your AI assistant.",
+          "Cleard gives general contractors one intelligent platform to submit, track, and close permits across Florida — powered by Vicky, your AI assistant.",
       },
-      { property: "og:title", content: "Cléared — Permitting, handled." },
+      { property: "og:title", content: "Cleard — Permitting, handled." },
       {
         property: "og:description",
         content:
@@ -67,7 +67,7 @@ function Hero() {
           Permitting, <em className="italic md-gold">handled.</em>
         </h1>
         <p className="mt-8 mx-auto max-w-2xl text-lg md-muted md-in md-in-3">
-          Cléared gives general contractors one intelligent platform to submit,
+          Cleard gives general contractors one intelligent platform to submit,
           track, and close permits across Florida — powered by Vicky, your AI
           assistant.
         </p>
@@ -112,7 +112,7 @@ function PortalMockup() {
           <div className="h-2.5 w-2.5 rounded-full" style={{ background: "#F59E0B" }} />
           <div className="h-2.5 w-2.5 rounded-full" style={{ background: "#10B981" }} />
         </div>
-        <div className="text-[11px] uppercase tracking-[0.24em] md-muted">Cléared · Permit Pipeline</div>
+        <div className="text-[11px] uppercase tracking-[0.24em] md-muted">Cleard · Permit Pipeline</div>
         <div className="text-[11px] md-gold flex items-center gap-1.5">
           <Sparkles className="h-3 w-3" /> Vicky
         </div>
@@ -298,7 +298,7 @@ function Features() {
       icon: FileSignature,
       label: "Document Generation",
       title: "NOC, NTBO, and every required form — auto-filled.",
-      body: "Cléared drafts your statutory forms directly from your permit data. Review, sign, done.",
+      body: "Cleard drafts your statutory forms directly from your permit data. Review, sign, done.",
       visual: "docs",
     },
   ];
@@ -471,7 +471,7 @@ function BuildersCTA() {
             Built for the GC who <em className="italic md-gold">moves fast.</em>
           </h2>
           <p className="mt-6 md-muted text-lg max-w-xl mx-auto">
-            Cléared is invite-only. Request access and our team will reach out
+            Cleard is invite-only. Request access and our team will reach out
             within 24 hours.
           </p>
           <div className="mt-10">

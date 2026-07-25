@@ -9,8 +9,8 @@ import { toast } from "sonner";
 export const Route = createFileRoute("/portal/financials")({
   head: () => ({
     meta: [
-      { title: "Permit Financials — Cleared by Flōridian" },
-      { name: "description", content: "Running financial summary across all permits — municipal permit fees plus Cléared service fees." },
+      { title: "Permit Financials — Cleard by Flōridian" },
+      { name: "description", content: "Running financial summary across all permits — municipal permit fees plus Cleard service fees." },
       { name: "robots", content: "noindex" },
     ],
   }),
@@ -159,7 +159,7 @@ function FinancialsPage() {
       const updated = await updatePermit(id, { cleared_fee_cents: cents });
       setPermits((rows) => rows.map((r) => (r.id === id ? updated : r)));
       setEditId(null);
-      toast.success("Cléared fee updated");
+      toast.success("Cleard fee updated");
     } catch (err) {
       toast.error("Failed to save fee");
       console.error(err);
@@ -174,15 +174,15 @@ function FinancialsPage() {
         </div>
         <h1 className="display-serif mt-3 text-4xl sm:text-5xl text-obsidian">Permit Financials</h1>
         <p className="mt-3 text-sm text-obsidian/60 max-w-2xl">
-          Running summary of municipal permit fees and Cléared service fees across every project.
+          Running summary of municipal permit fees and Cleard service fees across every project.
         </p>
       </header>
 
       {/* Tabs */}
       <div className="mt-6 flex gap-1 border-b border-obsidian/10">
         {([
-          { k: "with", l: "With Cléared" },
-          { k: "before", l: "Before Cléared" },
+          { k: "with", l: "With Cleard" },
+          { k: "before", l: "Before Cleard" },
         ] as const).map((t) => {
           const active = tab === t.k;
           return (
@@ -210,7 +210,7 @@ function FinancialsPage() {
       {/* Summary Cards */}
       <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <SummaryCard label="Total Permit Fees" value={fmtUsd(totals.permitFees)} accent />
-        <SummaryCard label="Total Cléared Fees" value={fmtUsd(totals.clearedFees)} accent />
+        <SummaryCard label="Total Cleard Fees" value={fmtUsd(totals.clearedFees)} accent />
         <SummaryCard label="Combined Investment" value={fmtUsd(totals.combined)} dark />
         <SummaryCard label="Active Permits" value={String(totals.active)} accent />
       </div>
@@ -291,7 +291,7 @@ function FinancialsPage() {
           <div>Municipality</div>
           <div>Status</div>
           <div className="text-right">Permit Fee(s)</div>
-          <div className="text-right">Cléared Fee</div>
+          <div className="text-right">Cleard Fee</div>
           <div className="text-right">Total</div>
           <div>Permit #</div>
         </div>
@@ -376,7 +376,7 @@ function FinancialsPage() {
                         <button
                           onClick={() => openEdit(p)}
                           className="text-obsidian/40 hover:text-obsidian"
-                          aria-label="Edit Cléared fee"
+                          aria-label="Edit Cleard fee"
                         >
                           <Pencil className="h-3 w-3" />
                         </button>

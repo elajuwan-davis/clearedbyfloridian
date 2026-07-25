@@ -8,7 +8,7 @@ import { TradesOnJobPanel } from "@/components/trades-on-job-panel";
 export const Route = createFileRoute("/sub-portal/$token")({
   head: () => ({
     meta: [
-      { title: "Project Documents — Cleared by Flōridian" },
+      { title: "Project Documents — Cleard by Flōridian" },
       { name: "robots", content: "noindex" },
     ],
   }),
@@ -53,7 +53,7 @@ function SubPortalPage() {
     return (
       <div className="min-h-screen grid place-items-center bg-paper-warm/40 px-4">
         <div className="max-w-md text-center">
-          <div className="wordmark text-4xl text-obsidian">Cleared</div>
+          <div className="wordmark text-4xl text-obsidian">Cleard</div>
           <p className="mt-6 text-sm text-obsidian/65">
             This project access link is invalid, expired, or the general contractor hasn't confirmed you on this job yet.
             Please contact your GC.
@@ -67,7 +67,7 @@ function SubPortalPage() {
     <div className="min-h-screen bg-paper-warm/40 px-4 py-10">
       <div className="mx-auto max-w-3xl">
         <div className="text-center">
-          <div className="wordmark text-4xl text-obsidian">Cleared</div>
+          <div className="wordmark text-4xl text-obsidian">Cleard</div>
           <div className="wordmark-subline mt-1 text-obsidian/55">by Flōridian</div>
         </div>
 

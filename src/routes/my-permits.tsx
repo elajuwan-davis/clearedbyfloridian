@@ -4,7 +4,7 @@ import { MyPermitsPage } from "@/components/my-permits-page";
 export const Route = createFileRoute("/my-permits")({
   head: () => ({
     meta: [
-      { title: "My Permits — Cleared by Flōridian" },
+      { title: "My Permits — Cleard by Flōridian" },
       { name: "robots", content: "noindex" },
     ],
   }),

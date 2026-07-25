@@ -6,11 +6,11 @@ import { ShieldCheck, ExternalLink } from "lucide-react";
 export const Route = createFileRoute("/insurance")({
   head: () => ({
     meta: [
-      { title: "Insurance — Cleared by Flōridian" },
+      { title: "Insurance — Cleard by Flōridian" },
       {
         name: "description",
         content:
-          "Preferred insurance partners for Cleared clients — WithCoverage and Harper Insurance, both specialists in construction coverage.",
+          "Preferred insurance partners for Cleard clients — WithCoverage and Harper Insurance, both specialists in construction coverage.",
       },
       { name: "robots", content: "noindex" },
     ],
@@ -69,7 +69,7 @@ function InsurancePage() {
             Insurance, built for builders.
           </h1>
           <p className="mt-3 max-w-2xl text-sm sm:text-base text-obsidian/65 leading-relaxed">
-            Cleared clients receive a preferred introduction to two construction-first brokerages.
+            Cleard clients receive a preferred introduction to two construction-first brokerages.
             Choose whichever fits — both know the trade and both move fast.
           </p>
         </div>
@@ -128,7 +128,7 @@ function InsurancePage() {
         </div>
 
         <p className="mt-8 text-[11px] font-mono uppercase tracking-[0.14em] text-obsidian/45 leading-relaxed">
-          WithCoverage and Harper Insurance are independent brokerages. Cleared by Flōridian does
+          WithCoverage and Harper Insurance are independent brokerages. Cleard by Flōridian does
           not underwrite policies and receives no compensation for referrals. All coverage decisions
           rest with the applicant and the carrier.
         </p>

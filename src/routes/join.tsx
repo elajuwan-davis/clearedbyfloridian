@@ -6,8 +6,8 @@ export const Route = createFileRoute("/join")({
   component: JoinPage,
   head: () => ({
     meta: [
-      { title: "Cléared — Permit management for Florida contractors" },
-      { name: "description", content: "Cléared handles jurisdiction requirements, sub coordination, document collection, and submission so your projects don't stall." },
+      { title: "Cleard — Permit management for Florida contractors" },
+      { name: "description", content: "Cleard handles jurisdiction requirements, sub coordination, document collection, and submission so your projects don't stall." },
       { property: "og:title", content: "Stop losing weeks to the permit process." },
       { property: "og:description", content: "One platform. Every permit. Every trade. Built for Florida contractors." },
       { property: "og:type", content: "website" },
@@ -62,7 +62,7 @@ function JoinPage() {
       >
         <div className="max-w-7xl mx-auto px-6 lg:px-10 h-16 flex items-center justify-between">
           <Link to="/" className="wordmark text-2xl leading-none" style={{ color: OBSIDIAN }}>
-            Cleared
+            Cleard
           </Link>
           <a
             href="#request"
@@ -98,7 +98,7 @@ function JoinPage() {
               className="text-lg mb-10 max-w-xl"
               style={{ color: MUTED, lineHeight: 1.55 }}
             >
-              Cléared is the permit management platform that handles jurisdiction requirements, sub coordination, document collection, and submission — so your projects don't stall.
+              Cleard is the permit management platform that handles jurisdiction requirements, sub coordination, document collection, and submission — so your projects don't stall.
             </p>
             <div className="flex items-center gap-8">
               <a
@@ -240,7 +240,7 @@ function JoinPage() {
             className="display-serif font-bold leading-[1.05] mb-4 max-w-3xl"
             style={{ color: OBSIDIAN, fontSize: "clamp(1.75rem, 4vw, 3rem)", letterSpacing: "-0.02em" }}
           >
-            Cléared fixes all of it.
+            Cleard fixes all of it.
           </h2>
           <p className="text-lg mb-16 max-w-2xl" style={{ color: MUTED }}>
             One platform. Every permit. Every trade.
@@ -397,7 +397,7 @@ function JoinPage() {
           className="text-[12px]"
           style={{ color: "color-mix(in oklab, " + OBSIDIAN + " 40%, transparent)" }}
         >
-          Cléared · © 2026 ·{" "}
+          Cleard · © 2026 ·{" "}
           <a href="https://floridianinc.com" className="hover:underline">
             floridianinc.com
           </a>

@@ -7,7 +7,7 @@ import { CloudUploadButtons } from "@/components/cloud-upload-buttons";
 export const Route = createFileRoute("/portal/request-coi")({
   head: () => ({
     meta: [
-      { title: "Request COI — Cleared by Flōridian" },
+      { title: "Request COI — Cleard by Flōridian" },
       { name: "robots", content: "noindex" },
     ],
   }),
@@ -62,7 +62,7 @@ function RequestCOIPage() {
           <CheckCircle2 className="mx-auto h-10 w-10 text-emerald-600" strokeWidth={1.5} />
           <h1 className="display-serif mt-4 text-3xl text-obsidian">Request Received</h1>
           <p className="mt-3 text-sm text-obsidian/65 leading-relaxed">
-            Your COI request has been submitted. Cleared will follow up within 1 business day.
+            Your COI request has been submitted. Cleard will follow up within 1 business day.
           </p>
           <button
             type="button"
@@ -84,7 +84,7 @@ function RequestCOIPage() {
         </div>
         <h1 className="display-serif mt-3 text-4xl sm:text-5xl text-obsidian">Request COI</h1>
         <p className="mt-3 text-sm text-obsidian/60 max-w-xl">
-          Select the subcontractor needing an updated certificate. Cleared will coordinate with their carrier and deliver the certificate to the holder.
+          Select the subcontractor needing an updated certificate. Cleard will coordinate with their carrier and deliver the certificate to the holder.
         </p>
       </div>
 

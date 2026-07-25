@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 export const Route = createFileRoute("/portal/equipment-specs")({
   head: () => ({
     meta: [
-      { title: "Equipment Specs — Cléared" },
+      { title: "Equipment Specs — Cleard" },
       { name: "description", content: "Manufacturer spec sheets for pool equipment used on Flōridian projects." },
     ],
   }),

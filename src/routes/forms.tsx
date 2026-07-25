@@ -3,7 +3,7 @@ import { PortalShell } from "@/components/portal-shell";
 import { FileText, Users, CreditCard, ArrowRight } from "lucide-react";
 
 export const Route = createFileRoute("/forms")({
-  head: () => ({ meta: [{ title: "Forms — Cleared" }, { name: "robots", content: "noindex" }] }),
+  head: () => ({ meta: [{ title: "Forms — Cleard" }, { name: "robots", content: "noindex" }] }),
   component: FormsIndex,
 });
 
@@ -26,7 +26,7 @@ const forms = [
     to: "/forms/payment-authorization",
     code: "03",
     title: "Payment Authorization",
-    body: "Authorize Cleared by Flōridian to charge a card or ACH on file for services and permit fees.",
+    body: "Authorize Cleard by Flōridian to charge a card or ACH on file for services and permit fees.",
     icon: CreditCard,
   },
 ] as const;

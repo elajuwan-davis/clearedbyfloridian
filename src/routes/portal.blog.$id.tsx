@@ -7,7 +7,7 @@ import { getPost } from "@/lib/blog-api";
 export const Route = createFileRoute("/portal/blog/$id")({
   head: () => ({
     meta: [
-      { title: "Edit Post — Cleared Portal" },
+      { title: "Edit Post — Cleard Portal" },
       { name: "robots", content: "noindex" },
     ],
   }),

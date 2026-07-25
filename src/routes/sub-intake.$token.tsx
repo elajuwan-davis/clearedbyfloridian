@@ -6,7 +6,7 @@ import { getSubByTokenFn, submitSubIntakeFn, type PublicSubRecord } from "@/lib/
 export const Route = createFileRoute("/sub-intake/$token")({
   head: () => ({
     meta: [
-      { title: "Complete Your Cleared Profile" },
+      { title: "Complete Your Cleard Profile" },
       { name: "robots", content: "noindex" },
     ],
   }),
@@ -126,7 +126,7 @@ function SubIntakeTokenPage() {
     return (
       <div className="min-h-screen grid place-items-center bg-paper-warm/40 px-4">
         <div className="max-w-md text-center">
-          <div className="wordmark text-4xl text-obsidian">Cleared</div>
+          <div className="wordmark text-4xl text-obsidian">Cleard</div>
           <p className="mt-6 text-sm text-obsidian/65">
             This completion link is invalid or has expired. Please contact your general contractor for a new link.
           </p>
@@ -139,7 +139,7 @@ function SubIntakeTokenPage() {
     <div className="min-h-screen bg-paper-warm/40 px-4 py-10">
       <div className="mx-auto max-w-2xl">
         <div className="text-center">
-          <div className="wordmark text-4xl text-obsidian">Cleared</div>
+          <div className="wordmark text-4xl text-obsidian">Cleard</div>
           <div className="wordmark-subline mt-1 text-obsidian/55">by Flōridian</div>
         </div>
 
@@ -147,14 +147,14 @@ function SubIntakeTokenPage() {
           <div className="mt-10 bg-white border border-obsidian/10 rounded-[3px] p-10 text-center">
             <CheckCircle2 className="mx-auto h-10 w-10 text-emerald-600" strokeWidth={1.5} />
             <h1 className="display-serif mt-4 text-3xl text-obsidian">Thank you.</h1>
-            <p className="mt-3 text-sm text-obsidian/65">Your information has been received by Cleared.</p>
+            <p className="mt-3 text-sm text-obsidian/65">Your information has been received by Cleard.</p>
           </div>
         ) : sub && (
           <>
             <div className="mt-10 border-b border-obsidian/10 pb-6">
               <div className="eyebrow text-obsidian/50">Subcontractor Onboarding</div>
               <h1 className="display-serif mt-3 text-3xl sm:text-4xl text-obsidian">
-                {isBlankInvite ? "Complete Your Cleared Profile" : `Complete Your Cleared Profile — ${sub.company_name}`}
+                {isBlankInvite ? "Complete Your Cleard Profile" : `Complete Your Cleard Profile — ${sub.company_name}`}
               </h1>
               <p className="mt-3 text-sm text-obsidian/60">
                 Please fill in your company details and upload the required documents.

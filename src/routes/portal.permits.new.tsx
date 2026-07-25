@@ -22,7 +22,7 @@ export const Route = createFileRoute("/portal/permits/new")({
   }),
   head: () => ({
     meta: [
-      { title: "New Permit Intake — Cleared by Flōridian" },
+      { title: "New Permit Intake — Cleard by Flōridian" },
       { name: "robots", content: "noindex" },
     ],
   }),

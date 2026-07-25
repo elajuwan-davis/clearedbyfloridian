@@ -9,7 +9,7 @@ import {
 export const Route = createFileRoute("/building-dept-logins")({
   head: () => ({
     meta: [
-      { title: "Building Dept Logins — Cleared by Flōridian" },
+      { title: "Building Dept Logins — Cleard by Flōridian" },
       { name: "robots", content: "noindex" },
     ],
   }),

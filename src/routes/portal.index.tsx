@@ -44,7 +44,7 @@ function PortalOverview() {
       <div>
         <div className="label-eyebrow">Overview</div>
         <h1 className="mt-4 font-display text-4xl tracking-tight">Good morning.</h1>
-        <p className="mt-2 text-muted-foreground">Live status of your Cleared permits and subcontractors.</p>
+        <p className="mt-2 text-muted-foreground">Live status of your Cleard permits and subcontractors.</p>
       </div>
 
       {!dismissed && alerts.length > 0 && (

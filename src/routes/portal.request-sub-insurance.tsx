@@ -6,7 +6,7 @@ import { loadSubLibrary, type SubRecord } from "@/lib/subcontractor-library";
 export const Route = createFileRoute("/portal/request-sub-insurance")({
   head: () => ({
     meta: [
-      { title: "Sub Insurance Request — Cleared by Flōridian" },
+      { title: "Sub Insurance Request — Cleard by Flōridian" },
       { name: "robots", content: "noindex" },
     ],
   }),
@@ -44,7 +44,7 @@ function RequestSubInsurancePage() {
           <CheckCircle2 className="mx-auto h-10 w-10 text-emerald-600" strokeWidth={1.5} />
           <h1 className="display-serif mt-4 text-3xl text-obsidian">Request Received</h1>
           <p className="mt-3 text-sm text-obsidian/65 leading-relaxed">
-            Your request has been submitted. Cleared will follow up within 1 business day.
+            Your request has been submitted. Cleard will follow up within 1 business day.
           </p>
           <button
             type="button"
@@ -66,7 +66,7 @@ function RequestSubInsurancePage() {
         </div>
         <h1 className="display-serif mt-3 text-4xl sm:text-5xl text-obsidian">Sub Insurance Request</h1>
         <p className="mt-3 text-sm text-obsidian/60 max-w-xl">
-          Flag a subcontractor whose insurance needs to be updated. Cleared will contact their carrier directly.
+          Flag a subcontractor whose insurance needs to be updated. Cleard will contact their carrier directly.
         </p>
       </div>
 

@@ -16,7 +16,7 @@ function MarketingNav() {
       style={{ background: "color-mix(in oklab, #0A0E17 82%, transparent)" }}>
       <div className="mx-auto max-w-7xl px-6 lg:px-10 h-16 flex items-center justify-between">
         <Link to="/" className="flex items-baseline gap-2 min-w-0">
-          <span className="md-serif text-2xl leading-none" style={{ color: "var(--md-text)" }}>Cléared</span>
+          <span className="md-serif text-2xl leading-none" style={{ color: "var(--md-text)" }}>Cleard</span>
         </Link>
 
         <nav className="hidden md:flex items-center gap-9">
@@ -98,7 +98,7 @@ function MarketingFooter() {
     <footer className="border-t md-hairline mt-24">
       <div className="mx-auto max-w-7xl px-6 lg:px-10 py-14 grid gap-10 md:grid-cols-3 items-start">
         <div>
-          <div className="md-serif text-3xl" style={{ color: "var(--md-text)" }}>Cléared</div>
+          <div className="md-serif text-3xl" style={{ color: "var(--md-text)" }}>Cleard</div>
           <div className="mt-4 text-[11px] uppercase tracking-[0.24em] md-muted">Coverage</div>
           <p className="mt-2 text-sm md-muted leading-relaxed">
             South Florida — Miami-Dade · Broward · Palm Beach · Martin · St. Lucie · Indian River<br />

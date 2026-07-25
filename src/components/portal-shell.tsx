@@ -36,7 +36,7 @@ const navGroups: NavGroup[] = [
       { to: "/portal/financials", label: "Overview" },
       { to: "/portal/permit-fees", label: "Permit Fees" },
       { to: "/fee-calculator", label: "Savings Calculator" },
-      { to: "/portal/financials", label: "Before Cléared" },
+      { to: "/portal/financials", label: "Before Cleard" },
     ],
   },
   {
@@ -183,7 +183,7 @@ function MobileDrawer({
     <div className="flex h-full flex-col bg-white">
       <div className="h-14 flex items-center justify-between px-5 border-b">
         <Link to="/" onClick={onNavigate} className="wordmark text-2xl" style={{ color: "var(--obsidian)" }}>
-          Cleared
+          Cleard
         </Link>
       </div>
       <div className="flex-1 overflow-y-auto py-4">
@@ -318,7 +318,7 @@ export function PortalShell({ children }: { children: ReactNode }) {
       >
         {/* Logo */}
         <Link to="/" className="flex items-baseline gap-2 leading-none shrink-0">
-          <span className="wordmark text-2xl" style={{ color: "var(--obsidian)" }}>Cleared</span>
+          <span className="wordmark text-2xl" style={{ color: "var(--obsidian)" }}>Cleard</span>
           <span
             className="hidden sm:inline font-mono text-[9px] tracking-[0.22em] uppercase"
             style={{ color: "color-mix(in oklab, var(--obsidian) 50%, transparent)" }}

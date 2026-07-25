@@ -7,10 +7,10 @@ export const Route = createFileRoute("/versus/")({
   component: VersusHub,
   head: () => ({
     meta: [
-      { title: "Cléared vs the Alternatives — Compare Permit Software" },
-      { name: "description", content: "See how Cléared compares to Procore, Buildertrend, PermitZIP, and manual permitting for Florida contractors." },
-      { property: "og:title", content: "Better than the alternative: Build with Cléared" },
-      { property: "og:description", content: "Exploring other ways to handle permitting in Florida? See how Cléared compares." },
+      { title: "Cleard vs the Alternatives — Compare Permit Software" },
+      { name: "description", content: "See how Cleard compares to Procore, Buildertrend, PermitZIP, and manual permitting for Florida contractors." },
+      { property: "og:title", content: "Better than the alternative: Build with Cleard" },
+      { property: "og:description", content: "Exploring other ways to handle permitting in Florida? See how Cleard compares." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -33,10 +33,10 @@ function VersusHub() {
             className="display-serif font-bold leading-[1.05] mb-8"
             style={{ color: "#fff", fontSize: "clamp(2.25rem, 5.5vw, 4.5rem)", letterSpacing: "-0.02em" }}
           >
-            Better than the alternative:<br />Build with Cléared.
+            Better than the alternative:<br />Build with Cleard.
           </h1>
           <p className="text-lg mb-12 max-w-2xl mx-auto" style={{ color: "rgba(255,255,255,0.7)" }}>
-            Exploring other ways to handle permitting in Florida? See how Cléared compares.
+            Exploring other ways to handle permitting in Florida? See how Cleard compares.
           </p>
           <Link
             to="/join"
@@ -80,7 +80,7 @@ function VersusHub() {
                   <Square size={22} strokeWidth={1.25} style={{ color: MUTED }} />
                 </div>
                 <div className="font-mono text-[9px] uppercase mb-2" style={{ color: MUTED, letterSpacing: "0.22em" }}>
-                  Cléared vs
+                  Cleard vs
                 </div>
                 <div
                   className="display-serif font-bold leading-tight"

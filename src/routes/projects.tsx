@@ -6,7 +6,7 @@ import { Plus, ArrowUpRight } from "lucide-react";
 export const Route = createFileRoute("/projects")({
   head: () => ({
     meta: [
-      { title: "Projects — Cleared by Flōridian" },
+      { title: "Projects — Cleard by Flōridian" },
       { name: "robots", content: "noindex" },
     ],
   }),
@@ -42,7 +42,7 @@ function ProjectsPage() {
             <div className="eyebrow text-obsidian/50">FL Statute 553.791 · Active Portfolio</div>
             <h1 className="display-serif mt-3 text-5xl text-obsidian">Projects</h1>
             <p className="mt-2 text-sm text-obsidian/60">
-              All permits filed through Cleared on behalf of your firm.
+              All permits filed through Cleard on behalf of your firm.
             </p>
           </div>
           <Button asChild variant="dark">

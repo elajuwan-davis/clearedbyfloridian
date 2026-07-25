@@ -31,7 +31,7 @@ import {
 export const Route = createFileRoute("/admin")({
   head: () => ({
     meta: [
-      { title: "Admin · Operations — Cleared by Flōridian" },
+      { title: "Admin · Operations — Cleard by Flōridian" },
       { name: "robots", content: "noindex" },
     ],
   }),
@@ -116,7 +116,7 @@ function AdminPage() {
         {/* Header */}
         <div className="border-b border-obsidian/10 pb-8">
           <div className="flex flex-wrap items-center gap-2">
-            <span className="eyebrow text-obsidian/50">Cleared Operations</span>
+            <span className="eyebrow text-obsidian/50">Cleard Operations</span>
             <span className="border border-oxblood/30 bg-oxblood/10 px-1.5 py-0.5 font-mono text-[9px] font-medium uppercase tracking-[0.12em] text-oxblood">
               Admin · Staff Only
             </span>

@@ -11,14 +11,14 @@ export const Route = createFileRoute("/versus/$slug")({
   },
   head: ({ loaderData }) => {
     if (!loaderData) {
-      return { meta: [{ title: "Comparison — Cléared" }, { name: "robots", content: "noindex" }] };
+      return { meta: [{ title: "Comparison — Cleard" }, { name: "robots", content: "noindex" }] };
     }
     const { competitor } = loaderData;
     return {
       meta: [
-        { title: `Cléared vs ${competitor.name} — Permit Management Compared` },
+        { title: `Cleard vs ${competitor.name} — Permit Management Compared` },
         { name: "description", content: competitor.positioning },
-        { property: "og:title", content: `Cléared vs ${competitor.name}` },
+        { property: "og:title", content: `Cleard vs ${competitor.name}` },
         { property: "og:description", content: competitor.positioning },
         { property: "og:type", content: "website" },
         { name: "twitter:card", content: "summary_large_image" },
@@ -62,7 +62,7 @@ function VersusDetail() {
             className="display-serif font-bold leading-[1.05] mb-8"
             style={{ color: "#fff", fontSize: "clamp(2rem, 5vw, 4rem)", letterSpacing: "-0.02em" }}
           >
-            Cléared vs {competitor.name}
+            Cleard vs {competitor.name}
           </h1>
           <p className="text-lg max-w-2xl mx-auto" style={{ color: "rgba(255,255,255,0.75)", lineHeight: 1.55 }}>
             {competitor.positioning}
@@ -95,7 +95,7 @@ function VersusDetail() {
                 Feature
               </div>
               <div className="px-6 py-4 text-center font-mono text-[10px] uppercase" style={{ color: OBSIDIAN, letterSpacing: "0.22em" }}>
-                Cléared
+                Cleard
               </div>
               <div className="px-6 py-4 text-center font-mono text-[10px] uppercase" style={{ color: MUTED, letterSpacing: "0.22em" }}>
                 {competitor.name}

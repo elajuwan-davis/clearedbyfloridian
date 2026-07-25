@@ -6,17 +6,17 @@ import { listPublishedPosts, formatDate } from "@/lib/blog-api";
 export const Route = createFileRoute("/blog/")({
   head: () => ({
     meta: [
-      { title: "Blog — Cleared by Flōridian" },
+      { title: "Blog — Cleard by Flōridian" },
       {
         name: "description",
         content:
-          "Permitting insights, municipality updates, and industry news from Cleared by Flōridian.",
+          "Permitting insights, municipality updates, and industry news from Cleard by Flōridian.",
       },
-      { property: "og:title", content: "Blog — Cleared by Flōridian" },
+      { property: "og:title", content: "Blog — Cleard by Flōridian" },
       {
         property: "og:description",
         content:
-          "Permitting insights, municipality updates, and industry news from Cleared by Flōridian.",
+          "Permitting insights, municipality updates, and industry news from Cleard by Flōridian.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -38,7 +38,7 @@ function PublicBlogIndex() {
         <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 sm:py-24">
           <div className="label-eyebrow text-primary-foreground/70">Editorial</div>
           <h1 className="mt-4 font-display text-5xl tracking-tight sm:text-6xl">
-            The <em>Cleared</em> journal.
+            The <em>Cleard</em> journal.
           </h1>
           <p className="mt-4 max-w-2xl text-sm text-primary-foreground/80 sm:text-base">
             Notes on private-provider permitting, municipality changes across South Florida, and

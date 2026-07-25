@@ -4,13 +4,13 @@ import { MarketingShell, PageHeader } from "@/components/marketing-shell";
 export const Route = createFileRoute("/about")({
   head: () => ({
     meta: [
-      { title: "About — Cléared" },
+      { title: "About — Cleard" },
       {
         name: "description",
         content:
-          "Cléared is a private-provider permitting practice for Florida's elite general contractors.",
+          "Cleard is a private-provider permitting practice for Florida's elite general contractors.",
       },
-      { property: "og:title", content: "About Cléared" },
+      { property: "og:title", content: "About Cleard" },
       { property: "og:description", content: "Built inside a luxury construction firm. Applied to permitting." },
     ],
   }),
@@ -24,7 +24,7 @@ function AboutPage() {
       <PageHeader
         eyebrow="About"
         title="A permitting practice built inside a luxury construction firm."
-        intro="Cleared is what happens when decades of running our own permits gets handed to the team building yours — same in-house engineers, architects, and inspectors, now standing in for the building official under FL Statute 553.791."
+        intro="Cleard is what happens when decades of running our own permits gets handed to the team building yours — same in-house engineers, architects, and inspectors, now standing in for the building official under FL Statute 553.791."
       />
 
       <section className="mx-auto max-w-6xl px-4 sm:px-6 py-24 grid md:grid-cols-12 gap-12">
@@ -46,7 +46,7 @@ function AboutPage() {
             general contractors working alongside us.
           </p>
           <p>
-            That service is Cleared. It's the same team, the same standards,
+            That service is Cleard. It's the same team, the same standards,
             scaled to whatever your firm is building.
           </p>
         </div>

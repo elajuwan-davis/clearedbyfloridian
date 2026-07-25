@@ -24,7 +24,7 @@ import {
 export const Route = createFileRoute("/projects/new")({
   head: () => ({
     meta: [
-      { title: "New Project — Cleared by Flōridian" },
+      { title: "New Project — Cleard by Flōridian" },
       { name: "robots", content: "noindex" },
     ],
   }),
@@ -114,7 +114,7 @@ function NewProjectPage() {
             New <em>Project</em>
           </h1>
           <p className="mt-2 max-w-2xl text-sm text-obsidian/60">
-            Cleared files this permit on your firm's behalf as the private provider of record.
+            Cleard files this permit on your firm's behalf as the private provider of record.
             Fees are auto-invoiced at submittal.
           </p>
         </div>
@@ -176,7 +176,7 @@ function NewProjectPage() {
               </div>
               {constructionValue > 0 && constructionValue < 1_000_000 && (
                 <p className="mt-2 font-mono text-[10px] uppercase tracking-[0.12em] text-oxblood">
-                  Cleared serves $1M+ custom residential only
+                  Cleard serves $1M+ custom residential only
                 </p>
               )}
             </Field>
@@ -285,9 +285,9 @@ function NewProjectPage() {
             <div className="px-6 py-5 text-sm leading-relaxed text-obsidian/75">
               <p>
                 I, as the qualifying agent for the licensed General Contractor of record,
-                authorize <strong className="text-obsidian">Cleared by Flōridian</strong> to act
+                authorize <strong className="text-obsidian">Cleard by Flōridian</strong> to act
                 as the private provider for this permit application under FL Statute 553.791.
-                Cleared is empowered to submit the affidavit of compliance, perform plan review
+                Cleard is empowered to submit the affidavit of compliance, perform plan review
                 and inspections, and issue the certificate of compliance to the authority having
                 jurisdiction on this project's behalf.
               </p>
@@ -306,7 +306,7 @@ function NewProjectPage() {
                   className="mt-0.5 rounded-[2px]"
                 />
                 <span className="text-sm text-obsidian">
-                  I am the qualifying agent and authorize Cleared to act as private provider on
+                  I am the qualifying agent and authorize Cleard to act as private provider on
                   this project.
                 </span>
               </label>

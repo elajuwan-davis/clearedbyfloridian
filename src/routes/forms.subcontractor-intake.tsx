@@ -10,7 +10,7 @@ import { toast } from "sonner";
 import { loadSubLibrary, upsertSub, type SubRecord as LibSub } from "@/lib/subcontractor-library";
 
 export const Route = createFileRoute("/forms/subcontractor-intake")({
-  head: () => ({ meta: [{ title: "Subcontractor Intake — Cleared" }, { name: "robots", content: "noindex" }] }),
+  head: () => ({ meta: [{ title: "Subcontractor Intake — Cleard" }, { name: "robots", content: "noindex" }] }),
   component: SubcontractorIntakePage,
 });
 

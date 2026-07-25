@@ -20,7 +20,7 @@ import { NotificationPrefsSection } from "@/components/notification-prefs-sectio
 export const Route = createFileRoute("/profile")({
   head: () => ({
     meta: [
-      { title: "Profile — Cleared by Flōridian" },
+      { title: "Profile — Cleard by Flōridian" },
       { name: "robots", content: "noindex" },
     ],
   }),
@@ -273,7 +273,7 @@ function ProfilePage() {
         {/* Team Members */}
         <Section
           title="Team Members"
-          subtitle="Everyone with access to your Cleared workspace."
+          subtitle="Everyone with access to your Cleard workspace."
         >
           <div className="border border-obsidian/15 bg-white rounded-[3px] divide-y divide-obsidian/10">
             {TEAM_MEMBERS.map((m) => (
@@ -309,7 +309,7 @@ function ProfilePage() {
         </Section>
 
         {/* Payment Authorization */}
-        <Section title="Payment Authorization" subtitle="Authorize Cleared by Flōridian to charge for services and permit fees.">
+        <Section title="Payment Authorization" subtitle="Authorize Cleard by Flōridian to charge for services and permit fees.">
           {paymentAuth ? (
             <div
               className="border bg-white p-5 rounded-[3px]"
@@ -360,7 +360,7 @@ function ProfilePage() {
                 <div className="flex-1 min-w-0">
                   <div className="text-sm text-obsidian font-medium">No payment authorization on file</div>
                   <p className="mt-1 text-xs text-obsidian/55 max-w-md">
-                    A payment authorization is required before Cleared can disburse municipality permit fees on your behalf.
+                    A payment authorization is required before Cleard can disburse municipality permit fees on your behalf.
                   </p>
                 </div>
               </div>

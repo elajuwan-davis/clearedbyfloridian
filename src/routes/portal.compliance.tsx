@@ -9,7 +9,7 @@ import { toast } from "sonner";
 export const Route = createFileRoute("/portal/compliance")({
   head: () => ({
     meta: [
-      { title: "Compliance — Cleared by Flōridian" },
+      { title: "Compliance — Cleard by Flōridian" },
       { name: "robots", content: "noindex" },
     ],
   }),
