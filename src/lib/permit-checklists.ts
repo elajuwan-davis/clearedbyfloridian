@@ -9,26 +9,18 @@ export type ChecklistDoc = {
   desc?: string;
 };
 
-// NOC (Notice of Commencement) is mandatory statewide in Florida. Must be
-// uploaded at intake — non-deferrable. `NOC_DOC_KEY` is exported so form
-// logic can enforce it without stringly-typed lookups.
-export const NOC_DOC_KEY = "notice_of_commencement";
-
-export const NOC_DOC: ChecklistDoc = {
-  key: NOC_DOC_KEY,
-  label: "Notice of Commencement",
-  required: true,
-  canDefer: false,
-  desc: "Recorded Notice of Commencement (FL Statute §713.13). Required for all Florida jobs before permit submission.",
-};
+// NOC (Notice of Commencement) is NOT collected at intake — the system
+// auto-generates a pre-filled Palm Beach County NOC on permit submission
+// using intake data. The GC reviews, signs, and records it with the
+// County Clerk. See `src/lib/noc-auto.ts`.
 
 export const DEFAULT_CHECKLIST: ChecklistDoc[] = [
-  NOC_DOC,
   { key: "stamped_plans", label: "Stamped Construction Plans", required: true, canDefer: true, desc: "Signed and sealed construction plans." },
   { key: "site_survey", label: "Site / Spot Survey", required: false, canDefer: false, desc: "Boundary or spot survey." },
   { key: "tdh_calculations", label: "TDH Calculations (Turnover Design and Hydraulics)", required: false, canDefer: false, desc: "Turnover design and hydraulics calculations." },
   { key: "equipment_specification", label: "Equipment Specification", required: false, canDefer: false, desc: "Equipment specifications and cut sheets." },
 ];
+
 
 const WELLINGTON_POOL: ChecklistDoc[] = [
   { key: "building_permit_application", label: "Building Permit Application", required: true, canDefer: true, desc: "Universal County-Wide form. Auto-fillable with contractor + subcontractor info." },
