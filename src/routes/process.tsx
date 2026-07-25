@@ -12,7 +12,7 @@ export const Route = createFileRoute("/process")({
           "From submittal to certificate of occupancy: how Cleared moves Flōridian-affiliated residential permits through plan review and inspection under Florida's private provider statute.",
       },
       { property: "og:title", content: "Cleared Process" },
-      { property: "og:description", content: "From submittal to CO — the private provider workflow, by Flōridian." },
+      { property: "og:description", content: "From submittal to CO — the private provider workflow." },
     ],
   }),
   component: ProcessPage,

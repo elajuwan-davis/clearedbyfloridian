@@ -155,46 +155,50 @@ export const inspections: Inspection[] = [
 export const services = [
   {
     code: "01",
-    title: "Private Plan Review",
+    title: "Permit Administration",
     summary:
-      "Licensed third-party plan review for residential permits on Flōridian projects — 2-day plan review turnaround.",
+      "We manage the full permit lifecycle — intake, submittal, corrections, and close-out — so your team stays on site, not in line at the building department.",
     bullets: [
-      "Structural, architectural, MEP, and energy review",
-      "Florida Building Code, 8th Edition (2023) compliant",
-      "Direct coordination with the Flōridian design team",
+      "Permit intake and document preparation",
+      "Jurisdiction submittal and corrections",
+      "Status tracking through the Cléared portal",
+      "Records archival and close-out",
     ],
   },
   {
     code: "02",
-    title: "Private Provider Inspections",
+    title: "Subcontractor Coordination",
     summary:
-      "Same-day inspections on your schedule. We meet your crew on site — no four-hour windows, no missed days.",
+      "Cléared verifies every sub's license, insurance, and compliance documentation before they touch the job — automatically.",
     bullets: [
-      "Same-day inspections",
-      "Digital reports delivered within 2 hours",
-      "Failed-item re-inspections within 24 hours",
+      "DBPR license verification",
+      "COI, Workers' Comp, and Umbrella review",
+      "W-9 and onboarding document collection",
+      "Real-time compliance status dashboard",
     ],
   },
   {
     code: "03",
-    title: "Permit Coordination",
+    title: "Private Plan Review & Inspection",
     summary:
-      "We handle the building department from intake to close-out so your superintendents stay on the jobsite.",
+      "As a registered private provider under Florida Statute 553.791, we deliver 2-day plan review and same-day inspections — on a statutory clock.",
     bullets: [
-      "Jurisdiction submittal and corrections",
-      "Status visibility through the Cleared portal",
-      "Close-out, CO, and records archival",
+      "Structural, mechanical, electrical, and plumbing review",
+      "High-velocity hurricane zone (HVHZ) compliance",
+      "Same-day field inspection scheduling",
+      "Code red-line and constructibility feedback",
     ],
   },
   {
     code: "04",
-    title: "Pre-Construction Code Review",
+    title: "Certificate of Occupancy",
     summary:
-      "Engaged early with your design team to surface code issues while they are still pencil edits, not field changes.",
+      "We coordinate final inspections, punch through outstanding corrections, and drive every job to CO — without leaving it on someone else's desk.",
     bullets: [
-      "Constructibility and code red-line",
-      "High-velocity hurricane zone (HVHZ) detailing",
-      "Hardening, flood, and resiliency strategy",
+      "Final inspection coordination",
+      "CO and TCO tracking",
+      "Lien release and NTO compliance",
+      "Project close-out documentation",
     ],
   },
 ];

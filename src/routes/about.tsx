@@ -4,13 +4,13 @@ import { MarketingShell, PageHeader } from "@/components/marketing-shell";
 export const Route = createFileRoute("/about")({
   head: () => ({
     meta: [
-      { title: "About — Cleared by Flōridian" },
+      { title: "About — Cléared" },
       {
         name: "description",
         content:
-          "Cleared by Flōridian is a private-provider permitting practice for South Florida's elite general contractors.",
+          "Cléared is a private-provider permitting practice for Florida's elite general contractors.",
       },
-      { property: "og:title", content: "About Cleared by Flōridian" },
+      { property: "og:title", content: "About Cléared" },
       { property: "og:description", content: "Built inside a luxury construction firm. Applied to permitting." },
     ],
   }),

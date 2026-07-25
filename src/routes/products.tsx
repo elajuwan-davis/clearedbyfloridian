@@ -7,7 +7,7 @@ export const Route = createFileRoute("/products")({
   component: ProductsPage,
   head: () => ({
     meta: [
-      { title: "Products — Cléared by Flōridian" },
+      { title: "Products — Cléared" },
       { name: "description", content: "Six purpose-built products for Florida permit operations: administration, private provider, COI, sub coordination, jurisdictions, and Victoria AI." },
       { property: "og:title", content: "Every tool your permit operation needs." },
       { property: "og:description", content: "Six purpose-built products. One platform." },

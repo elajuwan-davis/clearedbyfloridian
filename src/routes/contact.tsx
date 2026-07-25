@@ -12,7 +12,7 @@ import { toast } from "sonner";
 export const Route = createFileRoute("/contact")({
   head: () => ({
     meta: [
-      { title: "Request Access — Cleared by Flōridian" },
+      { title: "Request Access — Cléared" },
       {
         name: "description",
         content:

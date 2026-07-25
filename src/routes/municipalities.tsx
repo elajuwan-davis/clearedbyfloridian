@@ -1,21 +1,20 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
-import { MunicipalityMapHero, REGISTERED_MUNIS } from "@/components/municipality-map";
 
 export const Route = createFileRoute("/municipalities")({
   head: () => ({
     meta: [
-      { title: "Where We're Registered — Cleared by Flōridian" },
+      { title: "Statewide Coverage — Cléared" },
       {
         name: "description",
         content:
-          "Flōridian pulls permits across South Florida — from Miami Beach to Vero Beach. See every municipality where we are a registered private provider.",
+          "Cléared operates across 160+ municipalities and 9 counties statewide — a registered private provider from South Florida to Central Florida.",
       },
-      { property: "og:title", content: "Where We're Registered — Cleared by Flōridian" },
+      { property: "og:title", content: "Statewide Coverage — Cléared" },
       {
         property: "og:description",
-        content: "Registered across Miami-Dade, Broward, Palm Beach, Martin, St. Lucie, and Indian River counties.",
+        content: "160+ Municipalities · 9 Counties · Statewide Coverage.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -23,6 +22,59 @@ export const Route = createFileRoute("/municipalities")({
   }),
   component: MunicipalitiesPublicPage,
 });
+
+const REGIONS = [
+  {
+    label: "South Florida",
+    counties: [
+      "Miami-Dade",
+      "Broward",
+      "Palm Beach",
+      "Martin",
+      "St. Lucie",
+      "Indian River",
+    ],
+  },
+  {
+    label: "Central Florida",
+    counties: [
+      "Orange",
+      "Seminole",
+      "Osceola",
+      "Brevard",
+      "Hillsborough",
+      "Pinellas",
+      "Polk",
+      "Manatee",
+      "Sarasota",
+    ],
+  },
+];
+
+function FloridaOutline() {
+  return (
+    <svg
+      viewBox="0 0 400 400"
+      className="w-full h-auto max-w-md mx-auto"
+      aria-hidden="true"
+    >
+      {/* Stylized outline of Florida */}
+      <path
+        d="M50 60 L340 60 L340 120 L310 150 L305 190 L285 215 L270 235 L255 265 L235 295 L205 325 L175 355 L150 375 L130 380 L118 365 L128 335 L145 305 L155 275 L145 245 L120 215 L95 190 L75 165 L60 130 Z"
+        fill="none"
+        stroke="#153157"
+        strokeWidth="2"
+        strokeLinejoin="round"
+        opacity="0.35"
+      />
+      <path
+        d="M50 60 L340 60 L340 120 L310 150 L305 190 L285 215 L270 235 L255 265 L235 295 L205 325 L175 355 L150 375 L130 380 L118 365 L128 335 L145 305 L155 275 L145 245 L120 215 L95 190 L75 165 L60 130 Z"
+        fill="#153157"
+        opacity="0.06"
+      />
+    </svg>
+  );
+}
 
 function MunicipalitiesPublicPage() {
   return (
@@ -32,51 +84,82 @@ function MunicipalitiesPublicPage() {
         <section className="border-b" style={{ borderColor: "rgba(21,49,87,0.12)" }}>
           <div className="max-w-6xl mx-auto px-6 py-16 md:py-20">
             <div className="font-mono text-[10px] tracking-[0.24em] uppercase text-[color:var(--muted-foreground)]">
-              Coverage · South Florida
+              Coverage · Statewide
             </div>
             <h1
               className="display-serif mt-4 leading-[0.95]"
               style={{ fontSize: "clamp(44px, 6vw, 84px)", letterSpacing: "-0.02em" }}
             >
-              Where We're <em>Registered</em>
+              160+ Municipalities <em>Across Florida</em>
             </h1>
             <p className="mt-6 max-w-2xl text-base md:text-lg text-muted-foreground">
-              From Miami Beach to Vero Beach — we pull permits where you build. As a registered
-              private provider under Florida Statute 553.791, Flōridian delivers a 2-day plan review
-              and same-day inspections across South Florida's coastal corridor.
+              Cléared is a registered private provider under Florida Statute
+              553.791 — delivering 2-day plan review and same-day inspections
+              across nine counties statewide.
             </p>
           </div>
         </section>
 
+        {/* Stat callout */}
         <section className="max-w-6xl mx-auto px-6 py-12 md:py-16">
-          <MunicipalityMapHero />
-        </section>
-
-        <section className="max-w-6xl mx-auto px-6 pb-20">
-          <div className="font-mono text-[10px] tracking-[0.24em] uppercase text-muted-foreground mb-6">
-            Full Registered List · {REGISTERED_MUNIS.length} Municipalities
-          </div>
-          <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-3">
-            {REGISTERED_MUNIS.map((m) => (
+          <div
+            className="grid md:grid-cols-3 border"
+            style={{ borderColor: "rgba(21,49,87,0.15)", background: "#fff" }}
+          >
+            {[
+              { k: "160+", v: "Municipalities" },
+              { k: "9", v: "Counties" },
+              { k: "Statewide", v: "Coverage" },
+            ].map((s, i) => (
               <div
-                key={m.name}
-                className="border rounded-sm p-4 bg-white flex items-start gap-3"
+                key={s.v}
+                className={`p-8 md:p-10 ${i < 2 ? "md:border-r" : ""} border-b md:border-b-0`}
                 style={{ borderColor: "rgba(21,49,87,0.15)" }}
               >
-                <span
-                  className="mt-1.5 w-2.5 h-2.5 rounded-full shrink-0"
-                  style={{ background: "#153157" }}
-                />
-                <div>
-                  <div className="text-sm font-semibold" style={{ color: "#153157" }}>
-                    {m.name}
-                  </div>
-                  <div className="font-mono text-[10px] tracking-[0.18em] uppercase text-muted-foreground mt-1">
-                    {m.county} County
-                  </div>
+                <div
+                  className="display-serif leading-none"
+                  style={{ fontSize: "clamp(40px, 5vw, 64px)", color: "#153157" }}
+                >
+                  {s.k}
+                </div>
+                <div className="font-mono text-[11px] tracking-[0.22em] uppercase text-muted-foreground mt-4">
+                  {s.v}
                 </div>
               </div>
             ))}
+          </div>
+        </section>
+
+        {/* Outline + counties */}
+        <section className="max-w-6xl mx-auto px-6 pb-20">
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            <div>
+              <FloridaOutline />
+            </div>
+            <div className="space-y-10">
+              {REGIONS.map((r) => (
+                <div key={r.label}>
+                  <div className="font-mono text-[11px] tracking-[0.22em] uppercase text-muted-foreground mb-3">
+                    {r.label}
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {r.counties.map((c) => (
+                      <span
+                        key={c}
+                        className="text-sm px-3 py-1.5 border rounded-sm"
+                        style={{
+                          borderColor: "rgba(21,49,87,0.2)",
+                          color: "#153157",
+                          background: "#fff",
+                        }}
+                      >
+                        {c}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </section>
       </main>
