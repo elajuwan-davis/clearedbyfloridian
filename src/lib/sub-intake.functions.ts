@@ -153,6 +153,7 @@ export const submitSubIntakeFn = createServerFn({ method: "POST" })
         .select("id")
         .single();
       if (insertErr) throw new Error(insertErr.message);
+      await triggerComplianceScans(newRow.id, data.patch);
       return { ok: true, id: newRow.id };
     }
 
