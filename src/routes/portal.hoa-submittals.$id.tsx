@@ -71,13 +71,21 @@ const PROJECT_TYPES: HoaProjectType[] = [
 function HoaSubmittalEditor() {
   const { id } = Route.useParams();
   const navigate = useNavigate();
+  const session = useSession();
   const [row, setRow] = useState<HoaSubmittalRow | null>(null);
+  const [template, setTemplate] = useState<HoaTemplateRow | null>(null);
   const [saving, setSaving] = useState(false);
+  const [sending, setSending] = useState(false);
   const [generating, setGenerating] = useState<"pdf" | "removal" | null>(null);
   const [err, setErr] = useState<string | null>(null);
 
   useEffect(() => {
-    getHoaSubmittal(id).then(setRow).catch((e) => setErr(String(e?.message ?? e)));
+    getHoaSubmittal(id).then(async (r) => {
+      setRow(r);
+      if (r?.template_id) {
+        try { setTemplate(await getHoaTemplate(r.template_id)); } catch { /* ignore */ }
+      }
+    }).catch((e) => setErr(String(e?.message ?? e)));
   }, [id]);
 
   function patch<K extends keyof HoaSubmittalRow>(key: K, value: HoaSubmittalRow[K]) {
