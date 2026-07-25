@@ -90,6 +90,7 @@ import { Route as PortalHoaSubmittalsIdRouteImport } from './routes/portal.hoa-s
 import { Route as PortalGuidesSlugRouteImport } from './routes/portal.guides.$slug'
 import { Route as PortalBlogNewRouteImport } from './routes/portal.blog.new'
 import { Route as PortalBlogIdRouteImport } from './routes/portal.blog.$id'
+import { Route as ApiPublicVictoriaScanRouteImport } from './routes/api/public/victoria-scan'
 import { Route as ApiPublicSubIntakeUploadRouteImport } from './routes/api/public/sub-intake-upload'
 import { Route as ApiPublicSeedTeamRouteImport } from './routes/api/public/seed-team'
 import { Route as ApiPublicHoaReplyRouteImport } from './routes/api/public/hoa-reply'
@@ -512,6 +513,11 @@ const PortalBlogIdRoute = PortalBlogIdRouteImport.update({
   path: '/blog/$id',
   getParentRoute: () => PortalRoute,
 } as any)
+const ApiPublicVictoriaScanRoute = ApiPublicVictoriaScanRouteImport.update({
+  id: '/api/public/victoria-scan',
+  path: '/api/public/victoria-scan',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicSubIntakeUploadRoute =
   ApiPublicSubIntakeUploadRouteImport.update({
     id: '/api/public/sub-intake-upload',
@@ -639,6 +645,7 @@ export interface FileRoutesByFullPath {
   '/api/public/hoa-reply': typeof ApiPublicHoaReplyRoute
   '/api/public/seed-team': typeof ApiPublicSeedTeamRoute
   '/api/public/sub-intake-upload': typeof ApiPublicSubIntakeUploadRoute
+  '/api/public/victoria-scan': typeof ApiPublicVictoriaScanRoute
   '/portal/blog/$id': typeof PortalBlogIdRoute
   '/portal/blog/new': typeof PortalBlogNewRoute
   '/portal/guides/$slug': typeof PortalGuidesSlugRoute
@@ -729,6 +736,7 @@ export interface FileRoutesByTo {
   '/api/public/hoa-reply': typeof ApiPublicHoaReplyRoute
   '/api/public/seed-team': typeof ApiPublicSeedTeamRoute
   '/api/public/sub-intake-upload': typeof ApiPublicSubIntakeUploadRoute
+  '/api/public/victoria-scan': typeof ApiPublicVictoriaScanRoute
   '/portal/blog/$id': typeof PortalBlogIdRoute
   '/portal/blog/new': typeof PortalBlogNewRoute
   '/portal/guides/$slug': typeof PortalGuidesSlugRoute
@@ -823,6 +831,7 @@ export interface FileRoutesById {
   '/api/public/hoa-reply': typeof ApiPublicHoaReplyRoute
   '/api/public/seed-team': typeof ApiPublicSeedTeamRoute
   '/api/public/sub-intake-upload': typeof ApiPublicSubIntakeUploadRoute
+  '/api/public/victoria-scan': typeof ApiPublicVictoriaScanRoute
   '/portal/blog/$id': typeof PortalBlogIdRoute
   '/portal/blog/new': typeof PortalBlogNewRoute
   '/portal/guides/$slug': typeof PortalGuidesSlugRoute
@@ -918,6 +927,7 @@ export interface FileRouteTypes {
     | '/api/public/hoa-reply'
     | '/api/public/seed-team'
     | '/api/public/sub-intake-upload'
+    | '/api/public/victoria-scan'
     | '/portal/blog/$id'
     | '/portal/blog/new'
     | '/portal/guides/$slug'
@@ -1008,6 +1018,7 @@ export interface FileRouteTypes {
     | '/api/public/hoa-reply'
     | '/api/public/seed-team'
     | '/api/public/sub-intake-upload'
+    | '/api/public/victoria-scan'
     | '/portal/blog/$id'
     | '/portal/blog/new'
     | '/portal/guides/$slug'
@@ -1101,6 +1112,7 @@ export interface FileRouteTypes {
     | '/api/public/hoa-reply'
     | '/api/public/seed-team'
     | '/api/public/sub-intake-upload'
+    | '/api/public/victoria-scan'
     | '/portal/blog/$id'
     | '/portal/blog/new'
     | '/portal/guides/$slug'
@@ -1163,6 +1175,7 @@ export interface RootRouteChildren {
   ApiPublicHoaReplyRoute: typeof ApiPublicHoaReplyRoute
   ApiPublicSeedTeamRoute: typeof ApiPublicSeedTeamRoute
   ApiPublicSubIntakeUploadRoute: typeof ApiPublicSubIntakeUploadRoute
+  ApiPublicVictoriaScanRoute: typeof ApiPublicVictoriaScanRoute
   ApiPublicEmailOutboxProcessRoute: typeof ApiPublicEmailOutboxProcessRoute
   ApiPublicHubspotDealWebhookRoute: typeof ApiPublicHubspotDealWebhookRoute
 }
@@ -1736,6 +1749,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PortalBlogIdRouteImport
       parentRoute: typeof PortalRoute
     }
+    '/api/public/victoria-scan': {
+      id: '/api/public/victoria-scan'
+      path: '/api/public/victoria-scan'
+      fullPath: '/api/public/victoria-scan'
+      preLoaderRoute: typeof ApiPublicVictoriaScanRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/sub-intake-upload': {
       id: '/api/public/sub-intake-upload'
       path: '/api/public/sub-intake-upload'
@@ -2060,6 +2080,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicHoaReplyRoute: ApiPublicHoaReplyRoute,
   ApiPublicSeedTeamRoute: ApiPublicSeedTeamRoute,
   ApiPublicSubIntakeUploadRoute: ApiPublicSubIntakeUploadRoute,
+  ApiPublicVictoriaScanRoute: ApiPublicVictoriaScanRoute,
   ApiPublicEmailOutboxProcessRoute: ApiPublicEmailOutboxProcessRoute,
   ApiPublicHubspotDealWebhookRoute: ApiPublicHubspotDealWebhookRoute,
 }
