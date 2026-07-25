@@ -16,7 +16,7 @@ import { Trash2, UserPlus } from "lucide-react";
 export const Route = createFileRoute("/admin/gc-clients")({
   head: () => ({
     meta: [
-      { title: "GC Clients — Admin — Cleared by Flōridian" },
+      { title: "GC Clients — Admin — Cleard by Flōridian" },
       { name: "robots", content: "noindex" },
     ],
   }),

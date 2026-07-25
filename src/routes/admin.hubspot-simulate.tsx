@@ -9,7 +9,7 @@ import { useEffect } from "react";
 import { CheckCircle2, ExternalLink, Trash2 } from "lucide-react";
 
 export const Route = createFileRoute("/admin/hubspot-simulate")({
-  head: () => ({ meta: [{ title: "HubSpot Simulator — Cleared" }, { name: "robots", content: "noindex" }] }),
+  head: () => ({ meta: [{ title: "HubSpot Simulator — Cleard" }, { name: "robots", content: "noindex" }] }),
   component: HubspotSimulate,
 });
 
@@ -52,9 +52,9 @@ function HubspotSimulate() {
       <div className="mx-auto max-w-5xl px-6 py-10 space-y-8">
         <header className="border-b border-obsidian/10 pb-6">
           <div className="eyebrow text-obsidian/50">Internal · Integration</div>
-          <h1 className="display-serif mt-3 text-4xl text-obsidian">HubSpot → Cléared</h1>
+          <h1 className="display-serif mt-3 text-4xl text-obsidian">HubSpot → Cleard</h1>
           <p className="mt-3 max-w-2xl text-sm text-obsidian/70">
-            When a HubSpot deal is marked <strong>Closed Won</strong>, a project auto-creates in Cléared under the
+            When a HubSpot deal is marked <strong>Closed Won</strong>, a project auto-creates in Cleard under the
             <em> Intake </em> stage. Use this page to simulate the webhook and to review configuration for Eman.
           </p>
         </header>

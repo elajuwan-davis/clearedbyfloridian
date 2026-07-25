@@ -18,7 +18,7 @@ import { FLORIDIAN_FIRM } from "@/lib/floridian-firm";
 export const Route = createFileRoute("/portal/guides/$slug")({
   head: () => ({
     meta: [
-      { title: "Project Guide — Cleared by Flōridian" },
+      { title: "Project Guide — Cleard by Flōridian" },
       { name: "robots", content: "noindex" },
     ],
   }),

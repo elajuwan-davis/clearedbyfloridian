@@ -10,7 +10,7 @@ import { getBundle, bundleBudgetedTotal, bundleAllFeesConfirmed } from "@/lib/bu
 export const Route = createFileRoute("/portal/permit-fees")({
   head: () => ({
     meta: [
-      { title: "Permit Fees — Cleared by Flōridian" },
+      { title: "Permit Fees — Cleard by Flōridian" },
       { name: "robots", content: "noindex" },
     ],
   }),

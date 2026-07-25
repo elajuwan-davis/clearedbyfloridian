@@ -12,13 +12,13 @@ import { toast } from "sonner";
 export const Route = createFileRoute("/contact")({
   head: () => ({
     meta: [
-      { title: "Request Access — Cléared" },
+      { title: "Request Access — Cleard" },
       {
         name: "description",
         content:
-          "Licensed Florida general contractor? Request Cleared private-provider permitting access. West Palm Beach, all of South Florida.",
+          "Licensed Florida general contractor? Request Cleard private-provider permitting access. West Palm Beach, all of South Florida.",
       },
-      { property: "og:title", content: "Request Cleared access" },
+      { property: "og:title", content: "Request Cleard access" },
       { property: "og:description", content: "Private-provider permitting for South Florida's elite general contractors." },
     ],
   }),
@@ -32,7 +32,7 @@ function ContactPage() {
       <PageHeader
         eyebrow="Request access"
         title="Tell us about the Flōridian project."
-        intro="Cleared is offered by invitation to the licensed GCs delivering Flōridian's work. A principal will respond within four business hours to verify your project and begin intake."
+        intro="Cleard is offered by invitation to the licensed GCs delivering Flōridian's work. A principal will respond within four business hours to verify your project and begin intake."
       />
 
       <section className="mx-auto max-w-6xl px-4 sm:px-6 py-24 grid md:grid-cols-12 gap-12">
@@ -110,7 +110,7 @@ function ContactPage() {
           <div className="border hairline bg-secondary/40 p-5">
             <div className="label-eyebrow text-accent">Access policy</div>
             <p className="mt-2 text-sm">
-              Cleared is offered exclusively to licensed GCs on active
+              Cleard is offered exclusively to licensed GCs on active
               Flōridian projects. New requests are verified against our
               project ledger before intake begins.
             </p>

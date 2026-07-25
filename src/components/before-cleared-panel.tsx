@@ -128,7 +128,7 @@ export function BeforeClearedPanel({ withClearedTotal }: { withClearedTotal: num
           <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-6">
             <div>
               <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-white/55">
-                Before Cléared
+                Before Cleard
               </div>
               <div
                 className="mt-2 tabular-nums"
@@ -142,7 +142,7 @@ export function BeforeClearedPanel({ withClearedTotal }: { withClearedTotal: num
             </div>
             <div>
               <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-white/55">
-                With Cléared
+                With Cleard
               </div>
               <div
                 className="mt-2 tabular-nums"
@@ -150,7 +150,7 @@ export function BeforeClearedPanel({ withClearedTotal }: { withClearedTotal: num
               >
                 {fmtUsd(withClearedTotal)}
               </div>
-              <div className="text-[11px] text-white/50 mt-1">Permit + Cléared fees, live system</div>
+              <div className="text-[11px] text-white/50 mt-1">Permit + Cleard fees, live system</div>
             </div>
             <div
               className="rounded-[3px] p-5 border"
@@ -188,7 +188,7 @@ export function BeforeClearedPanel({ withClearedTotal }: { withClearedTotal: num
         </div>
         <div className="border-t border-white/10 px-6 sm:px-8 py-4 flex flex-wrap gap-3 items-center justify-between bg-black/10">
           <div className="text-[11px] text-white/55">
-            Log every permit you pulled before Cléared to build your baseline.
+            Log every permit you pulled before Cleard to build your baseline.
           </div>
           <div className="flex gap-2">
             <Link

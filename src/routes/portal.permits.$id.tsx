@@ -17,7 +17,7 @@ import { connectAppUser, getTopLevelAppUrl, isEmbeddedAppView, openAppInTopLevel
 export const Route = createFileRoute("/portal/permits/$id")({
   head: () => ({
     meta: [
-      { title: "Permit — Cleared by Flōridian" },
+      { title: "Permit — Cleard by Flōridian" },
       { name: "robots", content: "noindex" },
     ],
   }),

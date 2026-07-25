@@ -10,7 +10,7 @@ import { FileSignature, Stamp, FolderOpen, Plus, LogOut } from "lucide-react";
 export const Route = createFileRoute("/gc-portal")({
   head: () => ({
     meta: [
-      { title: "Builder Portal — Cleared by Flōridian" },
+      { title: "Builder Portal — Cleard by Flōridian" },
       { name: "robots", content: "noindex" },
     ],
   }),
@@ -60,7 +60,7 @@ function GCPortal() {
       <header className="border-b hairline">
         <div className="max-w-6xl mx-auto px-6 py-5 flex items-center justify-between">
           <div>
-            <div className="wordmark text-2xl">Cleared</div>
+            <div className="wordmark text-2xl">Cleard</div>
             <div className="wordmark-subline">Builder Portal</div>
           </div>
           <div className="flex items-center gap-4">

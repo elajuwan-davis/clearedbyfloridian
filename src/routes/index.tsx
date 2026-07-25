@@ -6,17 +6,17 @@ import { MarketingShell } from "@/components/marketing-shell";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Cléared — Permitting, handled." },
+      { title: "Cleard — Permitting, handled." },
       {
         name: "description",
         content:
-          "Cléared gives general contractors one intelligent platform to submit, track, and close permits across Florida — powered by Vicky, your AI assistant.",
+          "Cleard gives general contractors one intelligent platform to submit, track, and close permits across Florida — powered by Victoria, your AI assistant.",
       },
-      { property: "og:title", content: "Cléared — Permitting, handled." },
+      { property: "og:title", content: "Cleard — Permitting, handled." },
       {
         property: "og:description",
         content:
-          "One intelligent platform to submit, track, and close permits across Florida — powered by Vicky.",
+          "One intelligent platform to submit, track, and close permits across Florida — powered by Victoria.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -29,7 +29,7 @@ function HomePage() {
   return (
     <MarketingShell>
       <Hero />
-      <VickyIntro />
+      <VictoriaIntro />
       <HowItWorks />
       <Features />
       <TrustStrip />
@@ -53,7 +53,7 @@ function Hero() {
       />
       <div className="relative mx-auto max-w-7xl px-6 lg:px-10 pt-24 pb-24 md:pt-36 md:pb-32 text-center">
         <div className="md-eyebrow md-in md-in-1 justify-center inline-flex items-center gap-2">
-          <Sparkles className="h-3 w-3" /> Now with Vicky · AI Assistant
+          <Sparkles className="h-3 w-3" /> Now with Victoria · AI Assistant
         </div>
         <h1
           className="mt-8 md-serif md-in md-in-2 mx-auto max-w-5xl"
@@ -67,8 +67,8 @@ function Hero() {
           Permitting, <em className="italic md-gold">handled.</em>
         </h1>
         <p className="mt-8 mx-auto max-w-2xl text-lg md-muted md-in md-in-3">
-          Cléared gives general contractors one intelligent platform to submit,
-          track, and close permits across Florida — powered by Vicky, your AI
+          Cleard gives general contractors one intelligent platform to submit,
+          track, and close permits across Florida — powered by Victoria, your AI
           assistant.
         </p>
         <div className="mt-10 flex flex-col sm:flex-row gap-3 justify-center md-in md-in-4">
@@ -112,9 +112,9 @@ function PortalMockup() {
           <div className="h-2.5 w-2.5 rounded-full" style={{ background: "#F59E0B" }} />
           <div className="h-2.5 w-2.5 rounded-full" style={{ background: "#10B981" }} />
         </div>
-        <div className="text-[11px] uppercase tracking-[0.24em] md-muted">Cléared · Permit Pipeline</div>
+        <div className="text-[11px] uppercase tracking-[0.24em] md-muted">Cleard · Permit Pipeline</div>
         <div className="text-[11px] md-gold flex items-center gap-1.5">
-          <Sparkles className="h-3 w-3" /> Vicky
+          <Sparkles className="h-3 w-3" /> Victoria
         </div>
       </div>
       <div className="mt-6 grid grid-cols-3 gap-4">
@@ -161,9 +161,9 @@ function StatusPill({ tone, children }: { tone: "gold" | "green" | "amber" | "bl
   );
 }
 
-/* --------------------------------- VICKY ---------------------------------- */
+/* --------------------------------- VICTORIA ---------------------------------- */
 
-function VickyIntro() {
+function VictoriaIntro() {
   return (
     <section className="mx-auto max-w-7xl px-6 lg:px-10 py-24">
       <div
@@ -171,15 +171,15 @@ function VickyIntro() {
         style={{ background: "linear-gradient(135deg, #111827 0%, #153157 100%)" }}
       >
         <div className="md:col-span-5 p-10 md:p-14 flex items-center justify-center border-b md:border-b-0 md:border-r md-hairline">
-          <VickyMark />
+          <VictoriaMark />
         </div>
         <div className="md:col-span-7 p-10 md:p-14">
-          <div className="md-eyebrow">Meet Vicky</div>
+          <div className="md-eyebrow">Meet Victoria</div>
           <h2 className="mt-4 md-serif text-4xl md:text-5xl" style={{ color: "var(--md-text)" }}>
             Your AI permitting <em className="italic md-gold">assistant.</em><br /> Always on.
           </h2>
           <p className="mt-6 md-muted text-lg max-w-lg">
-            Vicky monitors your permits, flags compliance gaps, notifies your
+            Victoria monitors your permits, flags compliance gaps, notifies your
             subs, and answers questions at every stage — so nothing slips
             through.
           </p>
@@ -194,7 +194,7 @@ function VickyIntro() {
   );
 }
 
-function VickyMark() {
+function VictoriaMark() {
   return (
     <div className="relative w-56 h-56">
       <div
@@ -206,7 +206,7 @@ function VickyMark() {
       />
       <svg viewBox="0 0 200 200" className="relative w-full h-full">
         <defs>
-          <linearGradient id="vickyGrad" x1="0" y1="0" x2="1" y2="1">
+          <linearGradient id="victoriaGrad" x1="0" y1="0" x2="1" y2="1">
             <stop offset="0%" stopColor="#F4E4C3" />
             <stop offset="50%" stopColor="#C8A97E" />
             <stop offset="100%" stopColor="#8B6F47" />
@@ -217,7 +217,7 @@ function VickyMark() {
         <path
           d="M 55 55 L 100 150 L 145 55"
           fill="none"
-          stroke="url(#vickyGrad)"
+          stroke="url(#victoriaGrad)"
           strokeWidth="3"
           strokeLinecap="round"
           strokeLinejoin="round"
@@ -239,8 +239,8 @@ function HowItWorks() {
     },
     {
       n: "02",
-      t: "Vicky Reviews",
-      d: "Vicky scans every document for compliance gaps, flags missing coverage, and verifies licenses before submission.",
+      t: "Victoria Reviews",
+      d: "Victoria scans every document for compliance gaps, flags missing coverage, and verifies licenses before submission.",
     },
     {
       n: "03",
@@ -284,7 +284,7 @@ function Features() {
       icon: ShieldCheck,
       label: "Sub Compliance",
       title: "Every subcontractor, verified before they step on site.",
-      body: "Vicky automatically verifies insurance, license, and W-9 for every sub. You see green, amber, or red at a glance.",
+      body: "Victoria automatically verifies insurance, license, and W-9 for every sub. You see green, amber, or red at a glance.",
       visual: "compliance",
     },
     {
@@ -298,7 +298,7 @@ function Features() {
       icon: FileSignature,
       label: "Document Generation",
       title: "NOC, NTBO, and every required form — auto-filled.",
-      body: "Cléared drafts your statutory forms directly from your permit data. Review, sign, done.",
+      body: "Cleard drafts your statutory forms directly from your permit data. Review, sign, done.",
       visual: "docs",
     },
   ];
@@ -471,7 +471,7 @@ function BuildersCTA() {
             Built for the GC who <em className="italic md-gold">moves fast.</em>
           </h2>
           <p className="mt-6 md-muted text-lg max-w-xl mx-auto">
-            Cléared is invite-only. Request access and our team will reach out
+            Cleard is invite-only. Request access and our team will reach out
             within 24 hours.
           </p>
           <div className="mt-10">

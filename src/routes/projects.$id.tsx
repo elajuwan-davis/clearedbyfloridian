@@ -20,7 +20,7 @@ import {
 export const Route = createFileRoute("/projects/$id")({
   head: ({ params }) => ({
     meta: [
-      { title: `Project ${params.id} — Cleared by Flōridian` },
+      { title: `Project ${params.id} — Cleard by Flōridian` },
       { name: "robots", content: "noindex" },
     ],
   }),
@@ -35,7 +35,7 @@ export const Route = createFileRoute("/projects/$id")({
         <div className="eyebrow text-obsidian/50">404</div>
         <h1 className="display-serif mt-3 text-4xl text-obsidian">Project not found</h1>
         <p className="mt-3 text-sm text-obsidian/60">
-          This permit number isn't on file with Cleared.
+          This permit number isn't on file with Cleard.
         </p>
         <Button asChild variant="dark" className="mt-8">
           <Link to="/projects">Back to projects</Link>
@@ -112,7 +112,7 @@ const PROJECTS: Record<string, Project> = Object.fromEntries(
       ],
       messages: [
         { id: "m1", author: p.client, role: `Client · ${p.client}`, at: `${p.submitted_at} · 9:14 AM`, body: `Intake submitted for ${p.name}${p.scope ? ` — ${p.scope}` : ""}.` },
-        { id: "m2", author: "Cleared", role: "Private Provider", from_cleared: true, at: `${p.submitted_at} · 11:02 AM`, body: `Affidavit filed with ${p.county} County. Statutory 10-business-day clock started.` },
+        { id: "m2", author: "Cleard", role: "Private Provider", from_cleared: true, at: `${p.submitted_at} · 11:02 AM`, body: `Affidavit filed with ${p.county} County. Statutory 10-business-day clock started.` },
       ],
       history: [
         { id: "h1", label: "Project created", at: p.submitted_at, done: true },
@@ -192,7 +192,7 @@ function ProjectDetailPage() {
             </Button>
             <Button variant="dark">
               <Send className="mr-2 h-4 w-4" />
-              Message Cleared
+              Message Cleard
             </Button>
           </div>
         </div>
@@ -246,7 +246,7 @@ function ProjectDetailPage() {
             </DetailSection>
 
             {/* Messages */}
-            <DetailSection step="03" title="Messages" description="Thread with Cleared plan review">
+            <DetailSection step="03" title="Messages" description="Thread with Cleard plan review">
               <div className="border border-obsidian/10 bg-white">
                 <div className="divide-y divide-obsidian/5">
                   {project.messages.map((m) => (
@@ -256,7 +256,7 @@ function ProjectDetailPage() {
                           <span className="font-medium text-obsidian">{m.author}</span>
                           {m.from_cleared && (
                             <span className="border border-sky/30 bg-sky/10 px-1.5 py-0.5 font-mono text-[9px] font-medium uppercase tracking-[0.12em] text-sky">
-                              Cleared
+                              Cleard
                             </span>
                           )}
                         </div>
@@ -275,7 +275,7 @@ function ProjectDetailPage() {
                   <textarea
                     value={reply}
                     onChange={(e) => setReply(e.target.value)}
-                    placeholder="Reply to Cleared…"
+                    placeholder="Reply to Cleard…"
                     rows={3}
                     className="block w-full resize-none border border-obsidian/15 bg-white px-3 py-2 text-sm text-obsidian placeholder:text-obsidian/40 focus:border-obsidian/40 focus:outline-none"
                   />
@@ -447,7 +447,7 @@ function ProjectDetailPage() {
                 <div className="min-w-0">
                   <div className="text-xs font-medium text-obsidian">{project.permit_no}</div>
                   <div className="mt-0.5 font-mono text-[10px] uppercase tracking-[0.12em] text-obsidian/50">
-                    Cleared file number
+                    Cleard file number
                   </div>
                 </div>
               </div>

@@ -11,29 +11,9 @@ export const COMPETITORS: Competitor[] = [
     positioning: "Florida-specific permit management, purpose-built for GCs — not just a permit expediter.",
   },
   {
-    slug: "manual-permitting",
-    name: "Manual Permitting",
-    positioning: "Replace the spreadsheets, sticky notes, and endless email threads with a single system of record.",
-  },
-  {
-    slug: "procore",
-    name: "Procore",
-    positioning: "Procore manages construction. Cléared manages permits — every jurisdiction, every trade.",
-  },
-  {
-    slug: "buildertrend",
-    name: "Buildertrend",
-    positioning: "Buildertrend is a scheduling tool. Cléared is a permit operations platform for Florida contractors.",
-  },
-  {
     slug: "permit-flow",
     name: "Permit Flow",
     positioning: "Built for Florida's 400+ jurisdictions with private provider workflows baked in.",
-  },
-  {
-    slug: "permitzip",
-    name: "PermitZIP",
-    positioning: "Bundled multi-trade submissions, sub coordination, and Florida jurisdiction intelligence in one platform.",
   },
   {
     slug: "in-house-permit-runner",
@@ -48,7 +28,7 @@ export const COMPETITORS: Competitor[] = [
   {
     slug: "construct-cc",
     name: "Construct CC",
-    positioning: "Florida permitting admin support — but without the bundled submission capability, jurisdiction intelligence, or integrated sub signing that Cléared delivers.",
+    positioning: "Florida permitting admin support — but without the bundled submission capability, jurisdiction intelligence, or integrated sub signing that Cleard delivers.",
   },
   {
     slug: "tew-and-taylor",

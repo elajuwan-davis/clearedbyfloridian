@@ -4,7 +4,7 @@ import { PROJECTS } from "@/lib/projects-data";
 import { loadInspections, buildInspections, type Inspection } from "@/lib/inspections";
 import { loadSubLibrary, coiLifecycleStatus, type SubRecord } from "@/lib/subcontractor-library";
 
-type Msg = { role: "user" | "vicky"; text: string };
+type Msg = { role: "user" | "victoria"; text: string };
 
 // Phase 1 — canned + light live queries against seeded data.
 // Note for Eman: swap `answer()` with a Claude API call passing project context.
@@ -86,11 +86,11 @@ function answer(input: string): string {
   return "I can answer questions about pending inspections, expired COIs, missing documents, permit statuses, and project details. Try asking about a specific project by name.";
 }
 
-export function VickyWidget() {
+export function VictoriaWidget() {
   const [open, setOpen] = useState(false);
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<Msg[]>([
-    { role: "vicky", text: "Hi, I'm Vicky. Ask me about pending inspections, COIs, permits, or a specific project." },
+    { role: "victoria", text: "Hi, I'm Victoria. Ask me about pending inspections, COIs, permits, or a specific project." },
   ]);
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -110,7 +110,7 @@ export function VickyWidget() {
   function send(text: string) {
     const t = text.trim();
     if (!t) return;
-    setMessages((m) => [...m, { role: "user", text: t }, { role: "vicky", text: answer(t) }]);
+    setMessages((m) => [...m, { role: "user", text: t }, { role: "victoria", text: answer(t) }]);
     setInput("");
   }
 
@@ -119,7 +119,7 @@ export function VickyWidget() {
       {!open && (
         <button
           onClick={() => setOpen(true)}
-          aria-label="Open Vicky assistant"
+          aria-label="Open Victoria assistant"
           className="fixed bottom-6 right-6 z-50 h-14 w-14 rounded-full shadow-lg flex items-center justify-center hover:scale-105 transition"
           style={{ backgroundColor: "var(--obsidian)", color: "var(--paper)" }}
         >
@@ -144,7 +144,7 @@ export function VickyWidget() {
                 <span className="display-serif text-lg">V</span>
               </div>
               <div>
-                <div className="text-sm font-medium">Vicky</div>
+                <div className="text-sm font-medium">Victoria</div>
                 <div className="text-[10px] uppercase tracking-[0.15em] opacity-70">Flōridian AI</div>
               </div>
             </div>
@@ -194,7 +194,7 @@ export function VickyWidget() {
             <input
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="Ask Vicky..."
+              placeholder="Ask Victoria..."
               className="flex-1 h-10 px-3 text-sm border hairline rounded-[3px] bg-transparent focus:outline-none focus:ring-1 focus:ring-[var(--obsidian)]"
             />
             <button
@@ -213,4 +213,4 @@ export function VickyWidget() {
 }
 
 // Hide from icon-only import warnings
-export { MessageCircle as VickyIcon };
+export { MessageCircle as VictoriaIcon };

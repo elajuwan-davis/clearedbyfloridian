@@ -12,7 +12,7 @@ import { GUIDES_EXTRA } from "@/lib/project-guides-extras";
 const GUIDES: Guide[] = [...BASE_GUIDES, ...GUIDES_EXTRA];
 
 export const Route = createFileRoute("/project-guides")({
-  head: () => ({ meta: [{ title: "Project Guides — Cleared" }, { name: "robots", content: "noindex" }] }),
+  head: () => ({ meta: [{ title: "Project Guides — Cleard" }, { name: "robots", content: "noindex" }] }),
   component: ProjectGuidesPage,
 });
 
@@ -43,7 +43,7 @@ function ProjectGuidesPage() {
           <div className="eyebrow text-obsidian/50">Reference / Florida Permit Library</div>
           <h1 className="display-serif mt-3 text-4xl text-obsidian">Project Guides</h1>
           <p className="mt-3 text-sm text-obsidian/70 max-w-2xl">
-            Florida-specific document, inspection, and code requirements for every project type Cleared permits.
+            Florida-specific document, inspection, and code requirements for every project type Cleard permits.
           </p>
         </div>
 

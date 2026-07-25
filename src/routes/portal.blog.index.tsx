@@ -16,8 +16,8 @@ import {
 export const Route = createFileRoute("/portal/blog/")({
   head: () => ({
     meta: [
-      { title: "Blog — Cleared Portal" },
-      { name: "description", content: "Manage internal blog posts for Cleared by Flōridian." },
+      { title: "Blog — Cleard Portal" },
+      { name: "description", content: "Manage internal blog posts for Cleard by Flōridian." },
       { name: "robots", content: "noindex" },
     ],
   }),

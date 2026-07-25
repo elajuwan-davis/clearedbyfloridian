@@ -5,13 +5,13 @@ import { ArrowRight } from "lucide-react";
 export const Route = createFileRoute("/process")({
   head: () => ({
     meta: [
-      { title: "Process — How Cleared Moves Your Permit" },
+      { title: "Process — How Cleard Moves Your Permit" },
       {
         name: "description",
         content:
-          "From submittal to certificate of occupancy: how Cleared moves Flōridian-affiliated residential permits through plan review and inspection under Florida's private provider statute.",
+          "From submittal to certificate of occupancy: how Cleard moves Flōridian-affiliated residential permits through plan review and inspection under Florida's private provider statute.",
       },
-      { property: "og:title", content: "Cleared Process" },
+      { property: "og:title", content: "Cleard Process" },
       { property: "og:description", content: "From submittal to CO — the private provider workflow." },
     ],
   }),
@@ -23,7 +23,7 @@ const steps = [
     n: "01",
     day: "Day 0",
     t: "Intake",
-    d: "Upload drawings, structural calcs, energy compliance, and product approvals into the Cleared portal. We confirm scope within 4 business hours and issue a fixed-fee proposal.",
+    d: "Upload drawings, structural calcs, energy compliance, and product approvals into the Cleard portal. We confirm scope within 4 business hours and issue a fixed-fee proposal.",
     out: "Signed agreement · Project number · Reviewer assigned",
   },
   {
@@ -62,7 +62,7 @@ function ProcessPage() {
       <PageHeader
         eyebrow="Process"
         title="From submittal to CO. Five phases. No surprises."
-        intro="Every Cleared project follows the same documented workflow under Florida Statute 553.791. Here is exactly what to expect and when."
+        intro="Every Cleard project follows the same documented workflow under Florida Statute 553.791. Here is exactly what to expect and when."
       />
 
       <section className="mx-auto max-w-6xl px-4 sm:px-6 py-24">

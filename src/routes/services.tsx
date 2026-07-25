@@ -5,13 +5,13 @@ import { services } from "@/lib/mock-data";
 export const Route = createFileRoute("/services")({
   head: () => ({
     meta: [
-      { title: "Services — Cléared" },
+      { title: "Services — Cleard" },
       {
         name: "description",
         content:
           "Permit administration, subcontractor coordination, private plan review & inspection, and certificate of occupancy — the full permitting lifecycle.",
       },
-      { property: "og:title", content: "Cléared Services" },
+      { property: "og:title", content: "Cleard Services" },
       {
         property: "og:description",
         content:
@@ -92,7 +92,7 @@ function ServicesPage() {
       <PageHeader
         eyebrow="Services"
         title="Four services. One contract."
-        intro="Florida Statute 553.791 lets a licensed private provider act in place of the building official for plan review and inspections. Cléared delivers the full permitting lifecycle on a statutory clock."
+        intro="Florida Statute 553.791 lets a licensed private provider act in place of the building official for plan review and inspections. Cleard delivers the full permitting lifecycle on a statutory clock."
       />
 
       <section className="mx-auto max-w-7xl px-6 lg:px-10 py-16 md:py-24 space-y-16 md:space-y-24">

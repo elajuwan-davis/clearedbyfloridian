@@ -9,7 +9,7 @@ import { ArrowRight, Loader2 } from "lucide-react";
 export const Route = createFileRoute("/login")({
   head: () => ({
     meta: [
-      { title: "Sign in — Cleared by Flōridian" },
+      { title: "Sign in — Cleard by Flōridian" },
       { name: "description", content: "Builder portal sign in. By invitation only." },
       { name: "robots", content: "noindex" },
     ],
@@ -106,7 +106,7 @@ function LoginPage() {
 
         <div className="relative">
           <Link to="/" className="inline-block leading-[1]">
-            <div className="wordmark text-5xl text-paper">Cleared</div>
+            <div className="wordmark text-5xl text-paper">Cleard</div>
             <div
               className="wordmark-subline mt-2"
               style={{ color: "color-mix(in oklab, var(--paper) 60%, transparent)" }}
@@ -150,7 +150,7 @@ function LoginPage() {
         <div className="w-full max-w-sm mx-auto">
           {/* Mobile wordmark */}
           <Link to="/" className="lg:hidden block leading-[1] mb-10">
-            <div className="wordmark text-3xl text-foreground">Cleared</div>
+            <div className="wordmark text-3xl text-foreground">Cleard</div>
             <div className="wordmark-subline mt-1">by Flōridian</div>
           </Link>
 

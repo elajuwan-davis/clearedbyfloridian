@@ -15,7 +15,7 @@ export const Route = createFileRoute("/portal/subcontractors/new")({
   }),
   head: () => ({
     meta: [
-      { title: "Add Subcontractor — Cleared by Flōridian" },
+      { title: "Add Subcontractor — Cleard by Flōridian" },
       { name: "robots", content: "noindex" },
     ],
   }),

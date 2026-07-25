@@ -5,13 +5,13 @@ import { SiteFooter } from "@/components/site-footer";
 export const Route = createFileRoute("/municipalities")({
   head: () => ({
     meta: [
-      { title: "Statewide Coverage — Cléared" },
+      { title: "Statewide Coverage — Cleard" },
       {
         name: "description",
         content:
-          "Cléared operates across 160+ municipalities and 9 counties statewide — a registered private provider from South Florida to Central Florida.",
+          "Cleard operates across 160+ municipalities and 9 counties statewide — a registered private provider from South Florida to Central Florida.",
       },
-      { property: "og:title", content: "Statewide Coverage — Cléared" },
+      { property: "og:title", content: "Statewide Coverage — Cleard" },
       {
         property: "og:description",
         content: "160+ Municipalities · 9 Counties · Statewide Coverage.",
@@ -23,33 +23,6 @@ export const Route = createFileRoute("/municipalities")({
   component: MunicipalitiesPublicPage,
 });
 
-const REGIONS = [
-  {
-    label: "South Florida",
-    counties: [
-      "Miami-Dade",
-      "Broward",
-      "Palm Beach",
-      "Martin",
-      "St. Lucie",
-      "Indian River",
-    ],
-  },
-  {
-    label: "Central Florida",
-    counties: [
-      "Orange",
-      "Seminole",
-      "Osceola",
-      "Brevard",
-      "Hillsborough",
-      "Pinellas",
-      "Polk",
-      "Manatee",
-      "Sarasota",
-    ],
-  },
-];
 
 function FloridaOutline() {
   return (
@@ -93,9 +66,9 @@ function MunicipalitiesPublicPage() {
               160+ Municipalities <em>Across Florida</em>
             </h1>
             <p className="mt-6 max-w-2xl text-base md:text-lg text-muted-foreground">
-              Cléared is a registered private provider under Florida Statute
+              Cleard is a registered private provider under Florida Statute
               553.791 — delivering 2-day plan review and same-day inspections
-              across nine counties statewide.
+              statewide across Florida.
             </p>
           </div>
         </section>
@@ -130,35 +103,23 @@ function MunicipalitiesPublicPage() {
           </div>
         </section>
 
-        {/* Outline + counties */}
+        {/* Outline */}
         <section className="max-w-6xl mx-auto px-6 pb-20">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div>
               <FloridaOutline />
             </div>
-            <div className="space-y-10">
-              {REGIONS.map((r) => (
-                <div key={r.label}>
-                  <div className="font-mono text-[11px] tracking-[0.22em] uppercase text-muted-foreground mb-3">
-                    {r.label}
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    {r.counties.map((c) => (
-                      <span
-                        key={c}
-                        className="text-sm px-3 py-1.5 border rounded-sm"
-                        style={{
-                          borderColor: "rgba(21,49,87,0.2)",
-                          color: "#153157",
-                          background: "#fff",
-                        }}
-                      >
-                        {c}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              ))}
+            <div>
+              <div className="font-mono text-[11px] tracking-[0.22em] uppercase text-muted-foreground mb-3">
+                Operating Area
+              </div>
+              <p className="display-serif leading-tight" style={{ fontSize: "clamp(28px, 3.5vw, 44px)", letterSpacing: "-0.01em", color: "#153157" }}>
+                <em>Statewide coverage across Florida.</em>
+              </p>
+              <p className="mt-6 text-base text-muted-foreground max-w-md">
+                A single private provider of record for every jurisdiction, from
+                the coast to the interior.
+              </p>
             </div>
           </div>
         </section>

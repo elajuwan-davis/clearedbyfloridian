@@ -13,7 +13,7 @@ export const Route = createFileRoute("/blog/$slug")({
     if (!loaderData) {
       return {
         meta: [
-          { title: "Post not found — Cleared by Flōridian" },
+          { title: "Post not found — Cleard by Flōridian" },
           { name: "robots", content: "noindex" },
         ],
       };
@@ -21,7 +21,7 @@ export const Route = createFileRoute("/blog/$slug")({
     const p = loaderData.post;
     const desc = p.excerpt ?? "";
     const meta: Array<{ title?: string; name?: string; property?: string; content?: string }> = [
-      { title: `${p.title} — Cleared by Flōridian` },
+      { title: `${p.title} — Cleard by Flōridian` },
       { name: "description", content: desc },
       { property: "og:title", content: p.title },
       { property: "og:description", content: desc },

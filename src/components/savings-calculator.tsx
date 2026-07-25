@@ -19,7 +19,7 @@ export function SavingsCalculator() {
     { id: uid(), trade: "Pool", amount_cents: 0 },
   ]);
   const [gcFee, setGcFee] = useState("");
-  const [clearedFee, setClearedFee] = useState("8856"); // Cléared flat admin fee default
+  const [clearedFee, setClearedFee] = useState("8856"); // Cleard flat admin fee default
   const [clearedMode, setClearedMode] = useState<"flat" | "pct">("flat");
   const [clearedPct, setClearedPct] = useState("1.5");
   const [constructionValue, setConstructionValue] = useState("");
@@ -62,7 +62,7 @@ export function SavingsCalculator() {
         </div>
         <h2 className="display-serif mt-3 text-3xl sm:text-4xl text-obsidian">Bundle vs. Per-Trade</h2>
         <p className="mt-2 text-sm text-obsidian/60">
-          Compare a traditional per-trade permit approach with a bundled GC permit filed through Cléared.
+          Compare a traditional per-trade permit approach with a bundled GC permit filed through Cleard.
         </p>
       </div>
 
@@ -158,7 +158,7 @@ export function SavingsCalculator() {
               {fmtUsd(Math.abs(savings))}
             </div>
             <div className="mt-1 text-[11px] text-obsidian/55">
-              by bundling through Cléared
+              by bundling through Cleard
             </div>
           </div>
           <ArrowRight className="hidden lg:block h-6 w-6 text-obsidian/25 rotate-180" />
@@ -170,7 +170,7 @@ export function SavingsCalculator() {
           style={{ background: OBSIDIAN, color: "#fff" }}
         >
           <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-white/60">
-            Bundled via Cléared
+            Bundled via Cleard
           </div>
           <div className="display-serif text-2xl mt-1">One Master GC Permit</div>
           <p className="mt-1 text-[11px] text-white/50">
@@ -215,7 +215,7 @@ export function SavingsCalculator() {
 
             <div>
               <label className="font-mono text-[10px] uppercase tracking-[0.14em] text-white/55 block mb-1">
-                Cléared Service Fee
+                Cleard Service Fee
               </label>
               <div className="flex gap-2">
                 <div className="inline-flex border border-white/15 rounded-[3px] overflow-hidden">
@@ -271,7 +271,7 @@ export function SavingsCalculator() {
                 <span className="font-mono tabular-nums text-white">{fmtUsd(gcFeeCents)}</span>
               </div>
               <div className="flex justify-between">
-                <span>Cléared</span>
+                <span>Cleard</span>
                 <span className="font-mono tabular-nums text-white">{fmtUsd(clearedFeeCents)}</span>
               </div>
             </div>

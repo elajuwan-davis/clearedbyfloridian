@@ -8,7 +8,7 @@ import { PORTAL_GUIDES, PORTAL_GUIDE_CATEGORIES } from "@/lib/portal-guides-data
 export const Route = createFileRoute("/portal/guides/")({
   head: () => ({
     meta: [
-      { title: "Project Guides — Cleared by Flōridian" },
+      { title: "Project Guides — Cleard by Flōridian" },
       { name: "robots", content: "noindex" },
     ],
   }),

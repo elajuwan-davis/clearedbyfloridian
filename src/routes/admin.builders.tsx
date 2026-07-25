@@ -27,7 +27,7 @@ import {
 export const Route = createFileRoute("/admin/builders")({
   head: () => ({
     meta: [
-      { title: "Admin · Builders — Cleared by Flōridian" },
+      { title: "Admin · Builders — Cleard by Flōridian" },
       { name: "robots", content: "noindex" },
     ],
   }),
@@ -201,7 +201,7 @@ function BuildersPage() {
             Builders <em className="italic text-oxblood">on file</em>
           </h1>
           <p className="max-w-2xl text-obsidian/65">
-            Every general contractor admitted to Cleared. Verify state license, current COI, and executed
+            Every general contractor admitted to Cleard. Verify state license, current COI, and executed
             LPOA before a firm submits a project for private-provider review.
           </p>
         </header>

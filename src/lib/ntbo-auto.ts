@@ -10,7 +10,7 @@ import type { PermitRow } from "@/lib/permits-api";
 // Hardcoded Flōridian private-provider identity.
 const FLORIDIAN = {
   firmName: "Flōridian LLC",
-  privateProvider: "Cleared by Flōridian",
+  privateProvider: "Cleard by Flōridian",
   addressLine1: "215 Clematis Street",
   addressLine2: "West Palm Beach, FL 33401",
   telephone: "(561) 555-0100",

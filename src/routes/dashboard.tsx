@@ -15,7 +15,7 @@ import {
 export const Route = createFileRoute("/dashboard")({
   head: () => ({
     meta: [
-      { title: "Dashboard — Cleared by Flōridian" },
+      { title: "Dashboard — Cleard by Flōridian" },
       { name: "robots", content: "noindex" },
     ],
   }),
@@ -104,7 +104,7 @@ function DashboardPage() {
               tone="sky"
               icon={FileSignature}
               title="LPOA signature required"
-              body="Limited Power of Attorney must be signed before Cleared can act as private provider on your behalf."
+              body="Limited Power of Attorney must be signed before Cleard can act as private provider on your behalf."
               cta="Review & sign"
               href="/portal"
             />

@@ -30,7 +30,7 @@ export function SiteHeader() {
         <Link to="/" className="flex items-center gap-3 group min-w-0">
           <LogoMark />
           <div className="flex flex-col leading-[1] min-w-0">
-            <span className="wordmark text-2xl">Cleared</span>
+            <span className="wordmark text-2xl">Cleard</span>
           </div>
         </Link>
 
@@ -61,7 +61,7 @@ export function SiteHeader() {
             <SheetTitle className="sr-only">Site navigation</SheetTitle>
             <div className="flex h-full flex-col">
               <div className="px-6 py-6 border-b hairline">
-                <div className="wordmark text-2xl">Cleared</div>
+                <div className="wordmark text-2xl">Cleard</div>
               </div>
               <nav className="flex-1 px-3 py-4">
                 {navLinks.map((l) => (

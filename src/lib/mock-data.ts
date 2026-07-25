@@ -161,7 +161,7 @@ export const services = [
     bullets: [
       "Permit intake and document preparation",
       "Jurisdiction submittal and corrections",
-      "Status tracking through the Cléared portal",
+      "Status tracking through the Cleard portal",
       "Records archival and close-out",
     ],
   },
@@ -169,7 +169,7 @@ export const services = [
     code: "02",
     title: "Subcontractor Coordination",
     summary:
-      "Cléared verifies every sub's license, insurance, and compliance documentation before they touch the job — automatically.",
+      "Cleard verifies every sub's license, insurance, and compliance documentation before they touch the job — automatically.",
     bullets: [
       "DBPR license verification",
       "COI, Workers' Comp, and Umbrella review",

@@ -7,7 +7,7 @@ export const Route = createFileRoute("/products")({
   component: ProductsPage,
   head: () => ({
     meta: [
-      { title: "Products — Cléared" },
+      { title: "Products — Cleard" },
       { name: "description", content: "Six purpose-built products for Florida permit operations: administration, private provider, COI, sub coordination, jurisdictions, and Victoria AI." },
       { property: "og:title", content: "Every tool your permit operation needs." },
       { property: "og:description", content: "Six purpose-built products. One platform." },
@@ -99,7 +99,7 @@ function ProductsPage() {
             className="font-mono text-[10px] uppercase mb-8"
             style={{ color: OBSIDIAN, letterSpacing: "0.32em" }}
           >
-            What's Inside Cléared
+            What's Inside Cleard
           </div>
           <h1
             className="display-serif font-bold leading-[1.02] mb-8 max-w-3xl"
@@ -215,7 +215,7 @@ function ProductsPage() {
             One platform. Every permit.
           </h2>
           <p className="text-lg mb-10" style={{ color: "rgba(255,255,255,0.7)" }}>
-            See how Cléared runs the permit side of your operation.
+            See how Cleard runs the permit side of your operation.
           </p>
           <Link
             to="/join"

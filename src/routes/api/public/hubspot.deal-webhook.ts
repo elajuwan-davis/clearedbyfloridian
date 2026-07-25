@@ -1,4 +1,4 @@
-// HubSpot deal → Cléared project webhook.
+// HubSpot deal → Cleard project webhook.
 //
 // Configure in HubSpot Developer Portal (floridianinc.com account):
 //   1. Create a webhook subscription for `deal.propertyChange` on `dealstage`.

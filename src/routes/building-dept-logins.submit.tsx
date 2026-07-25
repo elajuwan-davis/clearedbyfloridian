@@ -10,7 +10,7 @@ import { toast } from "sonner";
 export const Route = createFileRoute("/building-dept-logins/submit")({
   head: () => ({
     meta: [
-      { title: "Submit Login — Cleared by Flōridian" },
+      { title: "Submit Login — Cleard by Flōridian" },
       { name: "robots", content: "noindex" },
     ],
   }),
@@ -103,7 +103,7 @@ function SubmitLoginPage() {
           <div className="eyebrow text-obsidian/50">Credentials Vault</div>
           <h1 className="display-serif mt-3 text-4xl text-obsidian">Submit New Login</h1>
           <p className="mt-2 text-sm text-obsidian/60">
-            Cleared encrypts credentials at rest. Required documents are scanned for expiration dates.
+            Cleard encrypts credentials at rest. Required documents are scanned for expiration dates.
           </p>
         </div>
 

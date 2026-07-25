@@ -12,7 +12,7 @@ import { toast } from "sonner";
 import { savePaymentAuth, detectCardBrand, type PaymentAuthRecord } from "@/lib/payment-auth";
 
 export const Route = createFileRoute("/forms/payment-authorization")({
-  head: () => ({ meta: [{ title: "Payment Authorization — Cleared" }, { name: "robots", content: "noindex" }] }),
+  head: () => ({ meta: [{ title: "Payment Authorization — Cleard" }, { name: "robots", content: "noindex" }] }),
   component: PaymentAuthPage,
 });
 
@@ -188,16 +188,16 @@ function PaymentAuthPage() {
           <h2 className="display-serif text-2xl text-obsidian">Terms and Conditions</h2>
           <div className="border border-obsidian/15 bg-paper-warm rounded-[3px] p-5 text-sm text-obsidian/75 leading-relaxed max-h-72 overflow-y-auto space-y-3">
             <p>
-              By submitting this payment authorization form, I give full authorization to Cleared by Flōridian and its associates for payment of services, permit fees, and any other charges associated with any project under the contractor.
+              By submitting this payment authorization form, I give full authorization to Cleard by Flōridian and its associates for payment of services, permit fees, and any other charges associated with any project under the contractor.
             </p>
             <p>
               <strong>ACH Payment Notice:</strong> If submitting an ACH payment for Payment of Services, a Debit or Credit card must be on file for payment of municipality permit fees.
             </p>
             <p>
-              <strong>Scope of Services:</strong> Cleared acts solely as a liaison between the Client and government permitting agencies.
+              <strong>Scope of Services:</strong> Cleard acts solely as a liaison between the Client and government permitting agencies.
             </p>
             <p>
-              <strong>Limitation of Liability:</strong> The Client agrees to indemnify, defend, and hold harmless Cleared, its owners, and employees from any claims arising out of or related to the project, including agency decisions, project delays, and work product accuracy.
+              <strong>Limitation of Liability:</strong> The Client agrees to indemnify, defend, and hold harmless Cleard, its owners, and employees from any claims arising out of or related to the project, including agency decisions, project delays, and work product accuracy.
             </p>
             <p>
               <strong>No Guarantee of Timelines:</strong> Turnaround estimates are based on past experience and do not constitute a guarantee.
