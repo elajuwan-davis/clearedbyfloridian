@@ -232,6 +232,36 @@ function NewPermitPage() {
     if (files.length) update("extraDocs", [...form.extraDocs, ...files.map((f) => f.name)]);
   }
 
+  async function generateNocDraft() {
+    try {
+      const fields: NOCFields = {
+        propertyAddress: form.address,
+        parcelTaxId: "",
+        legalDescription: "",
+        ownerName: [form.ownerName, form.ownerEntity].filter(Boolean).join(" — "),
+        ownerAddress: "",
+        contractorName: form.contractorCompany,
+        contractorAddress: form.companyAddress,
+        contractorLicense: form.licenseNumber,
+        contractorPhone: form.pocPhone,
+        lenderName: "",
+        lenderAddress: "",
+        suretyName: "",
+        suretyAddress: "",
+        suretyBondAmount: "",
+        designProfessional: form.architectFirm || form.engineerFirm,
+        designProfessionalAddress: "",
+        improvementDescription: form.scopes.join(", ") || form.description,
+      };
+      const bytes = await generateNOC(fields);
+      const slug = (form.projectName || "permit").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+      downloadPdf(bytes, `NOC_${slug}.pdf`);
+      toast.success("NOC draft downloaded. Sign, notarize, record with the County Clerk, then upload here.");
+    } catch (e) {
+      toast.error("Could not generate NOC: " + (e instanceof Error ? e.message : String(e)));
+    }
+  }
+
   async function maybeSaveDesignPro(
     role: DesignProRole,
     save: boolean,
