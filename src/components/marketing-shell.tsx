@@ -111,7 +111,7 @@ function MarketingFooter() {
           <a href="https://floridianinc.com/privacy" className="hover:md-gold" style={{ color: "var(--md-text)" }}>Privacy</a>
         </div>
         <div className="md:text-right text-sm md-muted space-y-1">
-          <div>team@floridianinc.com</div>
+          <div>info@cleard.com</div>
           <div>(772) 675-3274</div>
         </div>
       </div>

@@ -7,7 +7,7 @@ import { findPortalForAddress } from "./municipalities";
 
 const PREFS_KEY = "cleared.client-notifications.prefs";
 const OUTBOX_KEY = "cleared.client-notifications.outbox";
-const RELAY_EMAIL = "team@floridianinc.com";
+const RELAY_EMAIL = "info@cleard.com";
 
 type Prefs = Record<string, boolean>; // projectId -> enabled
 

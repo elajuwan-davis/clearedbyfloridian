@@ -51,7 +51,7 @@ export function createNotaryRequest(input: Omit<NotaryRequest, "id" | "createdAt
     status: "requested",
   };
   write([req, ...read()]);
-  notify(`Notary request → team@floridianinc.com`, [
+  notify(`Notary request → info@cleard.com`, [
     `Project: ${input.projectName}`,
     `Client: ${input.clientName ?? input.createdBy}`,
     `Document: ${input.documentName}`,

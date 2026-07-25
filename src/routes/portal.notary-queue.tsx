@@ -33,7 +33,7 @@ function NotaryQueuePage() {
         <div className="font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/55">Internal · Ops Queue</div>
         <h1 className="display-serif mt-1 text-4xl text-obsidian">Notary Requests</h1>
         <p className="mt-2 text-sm text-obsidian/60">
-          In-house remote online notarization pursuant to Florida Statute §117.265. Notifications route to team@floridianinc.com.
+          In-house remote online notarization pursuant to Florida Statute §117.265. Notifications route to info@cleard.com.
         </p>
 
         <div className="mt-8 space-y-3">

@@ -18,7 +18,7 @@ export function SiteFooter() {
           <p className="text-sm leading-relaxed">
             Statewide coverage across Florida.
           </p>
-          <p className="mt-4 text-sm font-mono">team@floridianinc.com</p>
+          <p className="mt-4 text-sm font-mono">info@cleard.com</p>
         </div>
 
         <div>

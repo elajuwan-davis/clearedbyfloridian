@@ -126,7 +126,7 @@ function NewPermitPage() {
     companyAddress: "",
     poc: "José Maceda Gutiérrez",
     pocPhone: "(551) 830-6606",
-    pocEmail: "team@floridianinc.com",
+    pocEmail: "info@cleard.com",
     licenseNumber: "",
     ownerName: "",
     ownerEntity: "",
