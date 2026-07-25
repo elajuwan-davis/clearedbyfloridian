@@ -495,3 +495,72 @@ function InternalOnlyVictoria() {
   if (!show) return null;
   return <VictoriaWidget />;
 }
+
+function AdminTenantSwitcher() {
+  const session = useSession();
+  const list = useServerFn(listAllTenantsFn);
+  const [tenants, setTenants] = useState<Array<{ id: string; name: string }>>([]);
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    list()
+      .then((rows: any) => {
+        if (cancelled) return;
+        setTenants((rows ?? []).map((r: any) => ({ id: r.id, name: r.name })));
+        setLoaded(true);
+      })
+      .catch(() => setLoaded(true));
+    return () => { cancelled = true; };
+  }, [list]);
+
+  const current = session.impersonatingTenantId;
+  const currentName = session.impersonatingTenantName ?? "All Tenants";
+
+  return (
+    <div className="hidden md:block ml-4">
+      <DropdownMenu>
+        <DropdownMenuTrigger
+          className="flex items-center gap-2 h-9 px-3 border rounded-[3px] hover:bg-secondary outline-none"
+          style={{ borderColor: "color-mix(in oklab, var(--obsidian) 15%, transparent)" }}
+        >
+          <Building2 className="h-3.5 w-3.5" strokeWidth={1.5} style={{ color: "var(--obsidian)" }} />
+          <span className="font-mono text-[10px] tracking-[0.16em] uppercase" style={{ color: "var(--obsidian)" }}>
+            {currentName}
+          </span>
+          <ChevronDown className="h-3 w-3 opacity-60" strokeWidth={1.5} />
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="start" className="min-w-[260px] max-h-[380px] overflow-y-auto rounded-[3px] p-1">
+          <DropdownMenuLabel className="px-3 py-2 font-mono text-[9px] tracking-[0.2em] uppercase" style={{ color: "color-mix(in oklab, var(--obsidian) 55%, transparent)" }}>
+            Impersonate tenant
+          </DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem
+            onSelect={() => setImpersonatedTenant(null)}
+            className="px-3 py-2 text-[13px] rounded-[2px] cursor-pointer flex items-center justify-between"
+            style={{ color: "var(--obsidian)" }}
+          >
+            <span>All Tenants (admin view)</span>
+            {!current && <Check className="h-3.5 w-3.5" strokeWidth={1.5} />}
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          {!loaded && <div className="px-3 py-2 text-[12px] text-obsidian/50">Loading…</div>}
+          {loaded && tenants.length === 0 && (
+            <div className="px-3 py-2 text-[12px] text-obsidian/50">No tenants yet.</div>
+          )}
+          {tenants.map((t) => (
+            <DropdownMenuItem
+              key={t.id}
+              onSelect={() => setImpersonatedTenant({ id: t.id, name: t.name })}
+              className="px-3 py-2 text-[13px] rounded-[2px] cursor-pointer flex items-center justify-between gap-3"
+              style={{ color: "var(--obsidian)" }}
+            >
+              <span className="truncate">{t.name}</span>
+              {current === t.id && <Check className="h-3.5 w-3.5 shrink-0" strokeWidth={1.5} />}
+            </DropdownMenuItem>
+          ))}
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
+  );
+}
