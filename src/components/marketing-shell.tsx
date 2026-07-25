@@ -17,9 +17,6 @@ function MarketingNav() {
       <div className="mx-auto max-w-7xl px-6 lg:px-10 h-16 flex items-center justify-between">
         <Link to="/" className="flex items-baseline gap-2 min-w-0">
           <span className="md-serif text-2xl leading-none" style={{ color: "var(--md-text)" }}>Cléared</span>
-          <span className="hidden sm:inline text-[10px] uppercase tracking-[0.24em] md-muted">
-            by Flōridian
-          </span>
         </Link>
 
         <nav className="hidden md:flex items-center gap-9">
