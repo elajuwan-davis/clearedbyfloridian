@@ -35,6 +35,7 @@ import { Route as PortalIndexRouteImport } from './routes/portal.index'
 import { Route as SubIntakeTokenRouteImport } from './routes/sub-intake.$token'
 import { Route as ProjectsNewRouteImport } from './routes/projects.new'
 import { Route as ProjectsIdRouteImport } from './routes/projects.$id'
+import { Route as PortalSubmissionsRouteImport } from './routes/portal.submissions'
 import { Route as PortalRequestSubInsuranceRouteImport } from './routes/portal.request-sub-insurance'
 import { Route as PortalRequestCoiRouteImport } from './routes/portal.request-coi'
 import { Route as PortalProjectsRouteImport } from './routes/portal.projects'
@@ -56,9 +57,11 @@ import { Route as AdminContractorsRouteImport } from './routes/admin_.contractor
 import { Route as AdminHubspotSimulateRouteImport } from './routes/admin.hubspot-simulate'
 import { Route as AdminGcClientsRouteImport } from './routes/admin.gc-clients'
 import { Route as AdminBuildersRouteImport } from './routes/admin.builders'
+import { Route as PortalSubmissionsIndexRouteImport } from './routes/portal.submissions.index'
 import { Route as PortalSubcontractorsIndexRouteImport } from './routes/portal.subcontractors.index'
 import { Route as PortalPermitsIndexRouteImport } from './routes/portal.permits.index'
 import { Route as PortalGuidesIndexRouteImport } from './routes/portal.guides.index'
+import { Route as PortalSubmissionsIdRouteImport } from './routes/portal.submissions.$id'
 import { Route as PortalSubcontractorsNewRouteImport } from './routes/portal.subcontractors.new'
 import { Route as PortalProjectsIdRouteImport } from './routes/portal.projects.$id'
 import { Route as PortalPermitsNewRouteImport } from './routes/portal.permits.new'
@@ -66,6 +69,7 @@ import { Route as PortalPermitsIdRouteImport } from './routes/portal.permits.$id
 import { Route as PortalGuidesSlugRouteImport } from './routes/portal.guides.$slug'
 import { Route as ApiPublicSubIntakeUploadRouteImport } from './routes/api/public/sub-intake-upload'
 import { Route as ApiPublicSeedTeamRouteImport } from './routes/api/public/seed-team'
+import { Route as PortalPermitsIdBundleRouteImport } from './routes/portal.permits.$id.bundle'
 import { Route as ApiPublicHubspotDealWebhookRouteImport } from './routes/api/public/hubspot.deal-webhook'
 
 const ServicesRoute = ServicesRouteImport.update({
@@ -198,6 +202,11 @@ const ProjectsIdRoute = ProjectsIdRouteImport.update({
   path: '/$id',
   getParentRoute: () => ProjectsRoute,
 } as any)
+const PortalSubmissionsRoute = PortalSubmissionsRouteImport.update({
+  id: '/submissions',
+  path: '/submissions',
+  getParentRoute: () => PortalRoute,
+} as any)
 const PortalRequestSubInsuranceRoute =
   PortalRequestSubInsuranceRouteImport.update({
     id: '/request-sub-insurance',
@@ -307,6 +316,11 @@ const AdminBuildersRoute = AdminBuildersRouteImport.update({
   path: '/builders',
   getParentRoute: () => AdminRoute,
 } as any)
+const PortalSubmissionsIndexRoute = PortalSubmissionsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => PortalSubmissionsRoute,
+} as any)
 const PortalSubcontractorsIndexRoute =
   PortalSubcontractorsIndexRouteImport.update({
     id: '/subcontractors/',
@@ -322,6 +336,11 @@ const PortalGuidesIndexRoute = PortalGuidesIndexRouteImport.update({
   id: '/guides/',
   path: '/guides/',
   getParentRoute: () => PortalRoute,
+} as any)
+const PortalSubmissionsIdRoute = PortalSubmissionsIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => PortalSubmissionsRoute,
 } as any)
 const PortalSubcontractorsNewRoute = PortalSubcontractorsNewRouteImport.update({
   id: '/subcontractors/new',
@@ -358,6 +377,11 @@ const ApiPublicSeedTeamRoute = ApiPublicSeedTeamRouteImport.update({
   id: '/api/public/seed-team',
   path: '/api/public/seed-team',
   getParentRoute: () => rootRouteImport,
+} as any)
+const PortalPermitsIdBundleRoute = PortalPermitsIdBundleRouteImport.update({
+  id: '/bundle',
+  path: '/bundle',
+  getParentRoute: () => PortalPermitsIdRoute,
 } as any)
 const ApiPublicHubspotDealWebhookRoute =
   ApiPublicHubspotDealWebhookRouteImport.update({
@@ -410,6 +434,7 @@ export interface FileRoutesByFullPath {
   '/portal/projects': typeof PortalProjectsRouteWithChildren
   '/portal/request-coi': typeof PortalRequestCoiRoute
   '/portal/request-sub-insurance': typeof PortalRequestSubInsuranceRoute
+  '/portal/submissions': typeof PortalSubmissionsRouteWithChildren
   '/projects/$id': typeof ProjectsIdRoute
   '/projects/new': typeof ProjectsNewRoute
   '/sub-intake/$token': typeof SubIntakeTokenRoute
@@ -417,14 +442,17 @@ export interface FileRoutesByFullPath {
   '/api/public/seed-team': typeof ApiPublicSeedTeamRoute
   '/api/public/sub-intake-upload': typeof ApiPublicSubIntakeUploadRoute
   '/portal/guides/$slug': typeof PortalGuidesSlugRoute
-  '/portal/permits/$id': typeof PortalPermitsIdRoute
+  '/portal/permits/$id': typeof PortalPermitsIdRouteWithChildren
   '/portal/permits/new': typeof PortalPermitsNewRoute
   '/portal/projects/$id': typeof PortalProjectsIdRoute
   '/portal/subcontractors/new': typeof PortalSubcontractorsNewRoute
+  '/portal/submissions/$id': typeof PortalSubmissionsIdRoute
   '/portal/guides/': typeof PortalGuidesIndexRoute
   '/portal/permits/': typeof PortalPermitsIndexRoute
   '/portal/subcontractors/': typeof PortalSubcontractorsIndexRoute
+  '/portal/submissions/': typeof PortalSubmissionsIndexRoute
   '/api/public/hubspot/deal-webhook': typeof ApiPublicHubspotDealWebhookRoute
+  '/portal/permits/$id/bundle': typeof PortalPermitsIdBundleRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -475,14 +503,17 @@ export interface FileRoutesByTo {
   '/api/public/seed-team': typeof ApiPublicSeedTeamRoute
   '/api/public/sub-intake-upload': typeof ApiPublicSubIntakeUploadRoute
   '/portal/guides/$slug': typeof PortalGuidesSlugRoute
-  '/portal/permits/$id': typeof PortalPermitsIdRoute
+  '/portal/permits/$id': typeof PortalPermitsIdRouteWithChildren
   '/portal/permits/new': typeof PortalPermitsNewRoute
   '/portal/projects/$id': typeof PortalProjectsIdRoute
   '/portal/subcontractors/new': typeof PortalSubcontractorsNewRoute
+  '/portal/submissions/$id': typeof PortalSubmissionsIdRoute
   '/portal/guides': typeof PortalGuidesIndexRoute
   '/portal/permits': typeof PortalPermitsIndexRoute
   '/portal/subcontractors': typeof PortalSubcontractorsIndexRoute
+  '/portal/submissions': typeof PortalSubmissionsIndexRoute
   '/api/public/hubspot/deal-webhook': typeof ApiPublicHubspotDealWebhookRoute
+  '/portal/permits/$id/bundle': typeof PortalPermitsIdBundleRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -529,6 +560,7 @@ export interface FileRoutesById {
   '/portal/projects': typeof PortalProjectsRouteWithChildren
   '/portal/request-coi': typeof PortalRequestCoiRoute
   '/portal/request-sub-insurance': typeof PortalRequestSubInsuranceRoute
+  '/portal/submissions': typeof PortalSubmissionsRouteWithChildren
   '/projects/$id': typeof ProjectsIdRoute
   '/projects/new': typeof ProjectsNewRoute
   '/sub-intake/$token': typeof SubIntakeTokenRoute
@@ -536,14 +568,17 @@ export interface FileRoutesById {
   '/api/public/seed-team': typeof ApiPublicSeedTeamRoute
   '/api/public/sub-intake-upload': typeof ApiPublicSubIntakeUploadRoute
   '/portal/guides/$slug': typeof PortalGuidesSlugRoute
-  '/portal/permits/$id': typeof PortalPermitsIdRoute
+  '/portal/permits/$id': typeof PortalPermitsIdRouteWithChildren
   '/portal/permits/new': typeof PortalPermitsNewRoute
   '/portal/projects/$id': typeof PortalProjectsIdRoute
   '/portal/subcontractors/new': typeof PortalSubcontractorsNewRoute
+  '/portal/submissions/$id': typeof PortalSubmissionsIdRoute
   '/portal/guides/': typeof PortalGuidesIndexRoute
   '/portal/permits/': typeof PortalPermitsIndexRoute
   '/portal/subcontractors/': typeof PortalSubcontractorsIndexRoute
+  '/portal/submissions/': typeof PortalSubmissionsIndexRoute
   '/api/public/hubspot/deal-webhook': typeof ApiPublicHubspotDealWebhookRoute
+  '/portal/permits/$id/bundle': typeof PortalPermitsIdBundleRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -591,6 +626,7 @@ export interface FileRouteTypes {
     | '/portal/projects'
     | '/portal/request-coi'
     | '/portal/request-sub-insurance'
+    | '/portal/submissions'
     | '/projects/$id'
     | '/projects/new'
     | '/sub-intake/$token'
@@ -602,10 +638,13 @@ export interface FileRouteTypes {
     | '/portal/permits/new'
     | '/portal/projects/$id'
     | '/portal/subcontractors/new'
+    | '/portal/submissions/$id'
     | '/portal/guides/'
     | '/portal/permits/'
     | '/portal/subcontractors/'
+    | '/portal/submissions/'
     | '/api/public/hubspot/deal-webhook'
+    | '/portal/permits/$id/bundle'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -660,10 +699,13 @@ export interface FileRouteTypes {
     | '/portal/permits/new'
     | '/portal/projects/$id'
     | '/portal/subcontractors/new'
+    | '/portal/submissions/$id'
     | '/portal/guides'
     | '/portal/permits'
     | '/portal/subcontractors'
+    | '/portal/submissions'
     | '/api/public/hubspot/deal-webhook'
+    | '/portal/permits/$id/bundle'
   id:
     | '__root__'
     | '/'
@@ -709,6 +751,7 @@ export interface FileRouteTypes {
     | '/portal/projects'
     | '/portal/request-coi'
     | '/portal/request-sub-insurance'
+    | '/portal/submissions'
     | '/projects/$id'
     | '/projects/new'
     | '/sub-intake/$token'
@@ -720,10 +763,13 @@ export interface FileRouteTypes {
     | '/portal/permits/new'
     | '/portal/projects/$id'
     | '/portal/subcontractors/new'
+    | '/portal/submissions/$id'
     | '/portal/guides/'
     | '/portal/permits/'
     | '/portal/subcontractors/'
+    | '/portal/submissions/'
     | '/api/public/hubspot/deal-webhook'
+    | '/portal/permits/$id/bundle'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -941,6 +987,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProjectsIdRouteImport
       parentRoute: typeof ProjectsRoute
     }
+    '/portal/submissions': {
+      id: '/portal/submissions'
+      path: '/submissions'
+      fullPath: '/portal/submissions'
+      preLoaderRoute: typeof PortalSubmissionsRouteImport
+      parentRoute: typeof PortalRoute
+    }
     '/portal/request-sub-insurance': {
       id: '/portal/request-sub-insurance'
       path: '/request-sub-insurance'
@@ -1088,6 +1141,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminBuildersRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/portal/submissions/': {
+      id: '/portal/submissions/'
+      path: '/'
+      fullPath: '/portal/submissions/'
+      preLoaderRoute: typeof PortalSubmissionsIndexRouteImport
+      parentRoute: typeof PortalSubmissionsRoute
+    }
     '/portal/subcontractors/': {
       id: '/portal/subcontractors/'
       path: '/subcontractors'
@@ -1108,6 +1168,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/portal/guides/'
       preLoaderRoute: typeof PortalGuidesIndexRouteImport
       parentRoute: typeof PortalRoute
+    }
+    '/portal/submissions/$id': {
+      id: '/portal/submissions/$id'
+      path: '/$id'
+      fullPath: '/portal/submissions/$id'
+      preLoaderRoute: typeof PortalSubmissionsIdRouteImport
+      parentRoute: typeof PortalSubmissionsRoute
     }
     '/portal/subcontractors/new': {
       id: '/portal/subcontractors/new'
@@ -1158,6 +1225,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicSeedTeamRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/portal/permits/$id/bundle': {
+      id: '/portal/permits/$id/bundle'
+      path: '/bundle'
+      fullPath: '/portal/permits/$id/bundle'
+      preLoaderRoute: typeof PortalPermitsIdBundleRouteImport
+      parentRoute: typeof PortalPermitsIdRoute
+    }
     '/api/public/hubspot/deal-webhook': {
       id: '/api/public/hubspot/deal-webhook'
       path: '/api/public/hubspot/deal-webhook'
@@ -1207,14 +1281,26 @@ const FormsRouteChildren: FormsRouteChildren = {
 
 const FormsRouteWithChildren = FormsRoute._addFileChildren(FormsRouteChildren)
 
+interface PortalPermitsIdRouteChildren {
+  PortalPermitsIdBundleRoute: typeof PortalPermitsIdBundleRoute
+}
+
+const PortalPermitsIdRouteChildren: PortalPermitsIdRouteChildren = {
+  PortalPermitsIdBundleRoute: PortalPermitsIdBundleRoute,
+}
+
+const PortalPermitsIdRouteWithChildren = PortalPermitsIdRoute._addFileChildren(
+  PortalPermitsIdRouteChildren,
+)
+
 interface PortalPermitsRouteChildren {
-  PortalPermitsIdRoute: typeof PortalPermitsIdRoute
+  PortalPermitsIdRoute: typeof PortalPermitsIdRouteWithChildren
   PortalPermitsNewRoute: typeof PortalPermitsNewRoute
   PortalPermitsIndexRoute: typeof PortalPermitsIndexRoute
 }
 
 const PortalPermitsRouteChildren: PortalPermitsRouteChildren = {
-  PortalPermitsIdRoute: PortalPermitsIdRoute,
+  PortalPermitsIdRoute: PortalPermitsIdRouteWithChildren,
   PortalPermitsNewRoute: PortalPermitsNewRoute,
   PortalPermitsIndexRoute: PortalPermitsIndexRoute,
 }
@@ -1235,6 +1321,19 @@ const PortalProjectsRouteWithChildren = PortalProjectsRoute._addFileChildren(
   PortalProjectsRouteChildren,
 )
 
+interface PortalSubmissionsRouteChildren {
+  PortalSubmissionsIdRoute: typeof PortalSubmissionsIdRoute
+  PortalSubmissionsIndexRoute: typeof PortalSubmissionsIndexRoute
+}
+
+const PortalSubmissionsRouteChildren: PortalSubmissionsRouteChildren = {
+  PortalSubmissionsIdRoute: PortalSubmissionsIdRoute,
+  PortalSubmissionsIndexRoute: PortalSubmissionsIndexRoute,
+}
+
+const PortalSubmissionsRouteWithChildren =
+  PortalSubmissionsRoute._addFileChildren(PortalSubmissionsRouteChildren)
+
 interface PortalRouteChildren {
   PortalBuildingDeptRoute: typeof PortalBuildingDeptRoute
   PortalEquipmentSpecsRoute: typeof PortalEquipmentSpecsRoute
@@ -1248,6 +1347,7 @@ interface PortalRouteChildren {
   PortalProjectsRoute: typeof PortalProjectsRouteWithChildren
   PortalRequestCoiRoute: typeof PortalRequestCoiRoute
   PortalRequestSubInsuranceRoute: typeof PortalRequestSubInsuranceRoute
+  PortalSubmissionsRoute: typeof PortalSubmissionsRouteWithChildren
   PortalIndexRoute: typeof PortalIndexRoute
   PortalGuidesSlugRoute: typeof PortalGuidesSlugRoute
   PortalSubcontractorsNewRoute: typeof PortalSubcontractorsNewRoute
@@ -1268,6 +1368,7 @@ const PortalRouteChildren: PortalRouteChildren = {
   PortalProjectsRoute: PortalProjectsRouteWithChildren,
   PortalRequestCoiRoute: PortalRequestCoiRoute,
   PortalRequestSubInsuranceRoute: PortalRequestSubInsuranceRoute,
+  PortalSubmissionsRoute: PortalSubmissionsRouteWithChildren,
   PortalIndexRoute: PortalIndexRoute,
   PortalGuidesSlugRoute: PortalGuidesSlugRoute,
   PortalSubcontractorsNewRoute: PortalSubcontractorsNewRoute,
