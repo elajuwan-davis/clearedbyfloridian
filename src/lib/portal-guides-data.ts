@@ -790,6 +790,7 @@ export const PORTAL_GUIDES: PortalGuide[] = [
   // Commercial
   ...COMMERCIAL_GUIDES,
   ...COMMERCIAL_GUIDES_2,
+  ...COMMERCIAL_GUIDES_3,
   // Single Family
   ...SINGLE_FAMILY_GUIDES,
   ...SINGLE_FAMILY_GUIDES_2,
