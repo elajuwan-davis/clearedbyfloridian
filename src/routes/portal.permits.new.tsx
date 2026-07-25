@@ -220,22 +220,46 @@ function NewPermitPage() {
   }
 
 
+  /** Toggling a scope also spawns / retires its inline sub row (1:1). */
   function toggleScope(scope: string) {
+    setForm((f) => {
+      const has = f.scopes.includes(scope);
+      if (has) {
+        return {
+          ...f,
+          scopes: f.scopes.filter((s) => s !== scope),
+          subs: f.subs.filter((s) => s.scope !== scope),
+        };
+      }
+      const trade = SCOPE_TO_TRADE[scope] ?? scope;
+      // If a filled sub already exists for the same trade (e.g. Pool
+      // and Pool/Spa both mapping to Pool trade), reuse its data.
+      const existing = f.subs.find((s) => s.trade === trade && s.companyName.trim() && !s.skipped);
+      const seed: SubIntake = existing
+        ? { ...existing, scope, skipped: false }
+        : emptySub(scope);
+      return { ...f, scopes: [...f.scopes, scope], subs: [...f.subs, seed] };
+    });
+  }
+
+  function updateSubByScope(scope: string, patch: Partial<SubIntake>) {
     setForm((f) => ({
       ...f,
-      scopes: f.scopes.includes(scope) ? f.scopes.filter((s) => s !== scope) : [...f.scopes, scope],
+      subs: f.subs.map((s) => (s.scope === scope ? { ...s, ...patch } : s)),
     }));
   }
 
-  function addSub(trade: string) {
-    setSubsSkipped(false);
-    setForm((f) => ({ ...f, subs: [...f.subs, emptySub(trade)] }));
-  }
-  function updateSub(idx: number, patch: Partial<SubIntake>) {
-    setForm((f) => ({ ...f, subs: f.subs.map((s, i) => (i === idx ? { ...s, ...patch } : s)) }));
-  }
-  function removeSub(idx: number) {
-    setForm((f) => ({ ...f, subs: f.subs.filter((_, i) => i !== idx) }));
+  function toggleSubSkip(scope: string) {
+    setForm((f) => ({
+      ...f,
+      subs: f.subs.map((s) =>
+        s.scope === scope
+          ? (s.skipped
+              ? { ...s, skipped: false }
+              : { ...s, skipped: true, companyName: "", licenseNumber: "", contactName: "", contactEmail: "" })
+          : s,
+      ),
+    }));
   }
 
   const primaryType = form.scopes[0] || "Other";
