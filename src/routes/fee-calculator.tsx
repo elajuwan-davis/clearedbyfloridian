@@ -64,7 +64,7 @@ function FeeCalculatorPage() {
 
 
   const value = Number(valueStr) || 0;
-  const expected = useMemo(() => value * 0.015 * (ppOnFile ? 0.5 : 1), [value, ppOnFile]);
+  const expected = useMemo(() => value * 0.015 * (ppOnFile ? 0.85 : 1), [value, ppOnFile]);
   const totalCharged = useMemo(
     () => rows.reduce((s, r) => s + (Number(r.amount) || 0), 0),
     [rows],
