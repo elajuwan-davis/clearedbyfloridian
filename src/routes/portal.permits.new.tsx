@@ -44,34 +44,51 @@ const SCOPE_OPTIONS = [
   "Other",
 ] as const;
 
-const SUB_TRADES = [
-  "Electrical",
-  "Plumbing",
-  "Gas / LP",
-  "Pool / Spa",
-  "Fence",
-  "Mechanical / HVAC",
+// Every scope option maps to a subcontractor trade label. Trades in
+// OPTIONAL_SCOPES don't strictly require a sub license (structural/hardscape/
+// demo/other) — the row still renders but is labelled "optional".
+const SCOPE_TO_TRADE: Record<string, string> = {
+  "Pool / Spa": "Pool / Spa",
+  "Hardscape / Pavers": "Hardscape / Pavers",
+  "Electrical": "Electrical",
+  "Plumbing": "Plumbing",
+  "Gas": "Gas / LP",
+  "Mechanical / HVAC": "Mechanical / HVAC",
+  "Structural": "Structural",
+  "Roofing": "Roofing",
+  "Fence": "Fence",
+  "Demolition": "Demolition",
+  "Other": "Other",
+};
+const OPTIONAL_SCOPES = new Set([
+  "Hardscape / Pavers",
   "Structural",
-  "Roofing",
+  "Demolition",
   "Other",
-] as const;
+]);
 
 type DocState = { uploaded: string | null; na: boolean; deferred: boolean };
 
 type SubIntake = {
+  /** The scope name that spawned this row (stable key). */
+  scope: string;
   trade: string;
   companyName: string;
   licenseNumber: string;
   contactName: string;
   contactEmail: string;
+  /** GC clicked "Skip for now" on this specific trade row. */
+  skipped: boolean;
 };
 
-const emptySub = (trade: string): SubIntake => ({
-  trade,
+const emptySub = (scope: string): SubIntake => ({
+  scope,
+  trade: SCOPE_TO_TRADE[scope] ?? scope,
   companyName: "",
   licenseNumber: "",
   contactName: "",
   contactEmail: "",
+  skipped: false,
 });
 
 function NewPermitPage() {
