@@ -605,6 +605,85 @@ function HoaSubmittalEditor() {
             placeholder="Internal notes on ARC review, meeting date, comments…"
           />
         </Section>
+
+        <Section title="HOA Reply Thread" columns={1}>
+          {replies.length === 0 ? (
+            <div className="text-sm text-muted-foreground">
+              No correspondence logged yet. Paste an HOA reply below to keep the thread in one place.
+            </div>
+          ) : (
+            <ul className="space-y-3">
+              {replies.map((r) => (
+                <li key={r.id} className="border border-obsidian/10 rounded-[3px] p-3 bg-paper-warm">
+                  <div className="flex flex-wrap items-baseline justify-between gap-2 text-xs text-obsidian/60">
+                    <span className="inline-flex items-center gap-1">
+                      <MessageSquare className="h-3 w-3" />
+                      {r.direction === "inbound" ? "From HOA" : "From Cleard"}
+                      {r.from_email ? ` · ${r.from_email}` : ""}
+                    </span>
+                    <span>{new Date(r.received_at).toLocaleString()}</span>
+                  </div>
+                  <div className="mt-1 font-medium text-obsidian text-sm">{r.subject ?? "(no subject)"}</div>
+                  {r.body_text && (
+                    <pre className="mt-2 whitespace-pre-wrap text-sm text-obsidian/80 font-body">{r.body_text}</pre>
+                  )}
+                </li>
+              ))}
+            </ul>
+          )}
+          <div className="pt-4 border-t border-obsidian/10 space-y-2">
+            <div className="text-xs uppercase tracking-wide text-obsidian/60">Log an HOA reply</div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <input
+                type="text"
+                placeholder="Subject"
+                value={replyDraft.subject}
+                onChange={(e) => setReplyDraft({ ...replyDraft, subject: e.target.value })}
+                className="border border-obsidian/20 bg-white px-3 py-2 text-sm rounded-[3px]"
+              />
+              <input
+                type="email"
+                placeholder={`From email${template?.hoa_contact_email ? ` (default ${template.hoa_contact_email})` : ""}`}
+                value={replyDraft.fromEmail}
+                onChange={(e) => setReplyDraft({ ...replyDraft, fromEmail: e.target.value })}
+                className="border border-obsidian/20 bg-white px-3 py-2 text-sm rounded-[3px]"
+              />
+            </div>
+            <textarea
+              rows={4}
+              placeholder="Paste the HOA reply here…"
+              value={replyDraft.body}
+              onChange={(e) => setReplyDraft({ ...replyDraft, body: e.target.value })}
+              className="w-full border border-obsidian/20 bg-white px-3 py-2 text-sm rounded-[3px]"
+            />
+            <div>
+              <Button variant="dark" className="rounded-[3px] gap-2" onClick={submitReply} disabled={loggingReply}>
+                {loggingReply ? <><Loader2 className="h-4 w-4 animate-spin" /> Logging…</> : <><MessageSquare className="h-4 w-4" /> Log reply</>}
+              </Button>
+            </div>
+          </div>
+        </Section>
+
+        <Section title="Audit Timeline" columns={1}>
+          {events.length === 0 ? (
+            <div className="text-sm text-muted-foreground">No events yet. Actions on this submittal will appear here.</div>
+          ) : (
+            <ol className="space-y-2">
+              {events.map((ev) => (
+                <li key={ev.id} className="flex gap-3 text-sm">
+                  <Clock className="h-4 w-4 mt-0.5 text-obsidian/40 flex-none" />
+                  <div className="flex-1">
+                    <div className="text-obsidian">{ev.summary}</div>
+                    <div className="text-xs text-obsidian/50">
+                      {new Date(ev.created_at).toLocaleString()}
+                      {ev.actor_label ? ` · ${ev.actor_label}` : ""}
+                    </div>
+                  </div>
+                </li>
+              ))}
+            </ol>
+          )}
+        </Section>
       </div>
     </>
   );
