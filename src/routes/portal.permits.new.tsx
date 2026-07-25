@@ -606,33 +606,63 @@ function NewPermitPage() {
               </div>
             )}
 
-            {form.subs.map((s, i) => (
-              <div key={i} className="border border-obsidian/12 rounded-[3px] p-4 space-y-3">
-                <div className="flex items-center justify-between gap-3">
-                  <select
-                    value={s.trade}
-                    onChange={(e) => updateSub(i, { trade: e.target.value })}
-                    className="border border-obsidian/20 rounded-[3px] px-2 py-1.5 text-[12px] font-mono uppercase tracking-[0.12em] bg-white"
-                  >
-                    {SUB_TRADES.map((t) => <option key={t} value={t}>{t}</option>)}
-                  </select>
-                  <button
-                    type="button"
-                    onClick={() => removeSub(i)}
-                    className="text-obsidian/40 hover:text-oxblood"
-                    aria-label="Remove sub"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </button>
-                </div>
-                <div className="grid gap-3 sm:grid-cols-2">
-                  <div><label className={labelCls}>Company Name</label><input className={inputCls} value={s.companyName} onChange={(e) => updateSub(i, { companyName: e.target.value })} /></div>
-                  <div><label className={labelCls}>License #</label><input className={inputCls} value={s.licenseNumber} onChange={(e) => updateSub(i, { licenseNumber: e.target.value })} /></div>
-                  <div><label className={labelCls}>Contact Name</label><input className={inputCls} value={s.contactName} onChange={(e) => updateSub(i, { contactName: e.target.value })} /></div>
-                  <div><label className={labelCls}>Contact Email</label><input type="email" className={inputCls} value={s.contactEmail} onChange={(e) => updateSub(i, { contactEmail: e.target.value })} /></div>
+            {form.subs.map((s, i) => {
+              const reuse = reuseCandidateFor(i);
+              return (
+              <div key={i} className="space-y-2">
+                {reuse && (
+                  <div className="flex items-start gap-3 border border-[#153157]/30 bg-[#B6DAEA]/15 rounded-[3px] px-4 py-3">
+                    <Sparkles className="mt-0.5 h-4 w-4 shrink-0 text-[#153157]" />
+                    <div className="flex-1 text-[13px] text-obsidian/85">
+                      <div className="text-obsidian font-medium">Save on this job — {s.trade} is already on file with {reuse.companyName}.</div>
+                      <div className="mt-0.5 text-obsidian/60 text-[12px]">Reuse an existing trade instead of pulling a redundant permit.</div>
+                    </div>
+                    <div className="flex flex-col gap-1.5 shrink-0">
+                      <button
+                        type="button"
+                        onClick={() => applyReuse(i, reuse)}
+                        className="inline-flex items-center justify-center bg-obsidian px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-paper hover:bg-obsidian/90 rounded-[3px]"
+                      >
+                        Use {reuse.companyName.length > 22 ? reuse.companyName.slice(0, 20) + "…" : reuse.companyName}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => dismissReuse(i)}
+                        className="font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/50 hover:text-obsidian"
+                      >
+                        Dismiss
+                      </button>
+                    </div>
+                  </div>
+                )}
+                <div className="border border-obsidian/12 rounded-[3px] p-4 space-y-3">
+                  <div className="flex items-center justify-between gap-3">
+                    <select
+                      value={s.trade}
+                      onChange={(e) => updateSub(i, { trade: e.target.value })}
+                      className="border border-obsidian/20 rounded-[3px] px-2 py-1.5 text-[12px] font-mono uppercase tracking-[0.12em] bg-white"
+                    >
+                      {SUB_TRADES.map((t) => <option key={t} value={t}>{t}</option>)}
+                    </select>
+                    <button
+                      type="button"
+                      onClick={() => removeSub(i)}
+                      className="text-obsidian/40 hover:text-oxblood"
+                      aria-label="Remove sub"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  </div>
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <div><label className={labelCls}>Company Name</label><input className={inputCls} value={s.companyName} onChange={(e) => updateSub(i, { companyName: e.target.value })} /></div>
+                    <div><label className={labelCls}>License #</label><input className={inputCls} value={s.licenseNumber} onChange={(e) => updateSub(i, { licenseNumber: e.target.value })} /></div>
+                    <div><label className={labelCls}>Contact Name</label><input className={inputCls} value={s.contactName} onChange={(e) => updateSub(i, { contactName: e.target.value })} /></div>
+                    <div><label className={labelCls}>Contact Email</label><input type="email" className={inputCls} value={s.contactEmail} onChange={(e) => updateSub(i, { contactEmail: e.target.value })} /></div>
+                  </div>
                 </div>
               </div>
-            ))}
+              );
+            })}
 
             {!subsSkipped && (
               <div className="flex flex-wrap gap-2 pt-1">
