@@ -63,10 +63,17 @@ const CHECKLISTS: Record<string, Record<string, ChecklistDoc[]>> = {
 };
 
 export function getChecklist(municipality: string | null | undefined, permitType: string | null | undefined): ChecklistDoc[] {
-  if (!municipality || !permitType) return DEFAULT_CHECKLIST;
-  const m = municipality.trim().toLowerCase();
-  const p = permitType.trim().toLowerCase();
-  const byMuni = CHECKLISTS[m];
-  if (byMuni && byMuni[p]) return byMuni[p];
-  return DEFAULT_CHECKLIST;
+  const base = (() => {
+    if (!municipality || !permitType) return DEFAULT_CHECKLIST;
+    const m = municipality.trim().toLowerCase();
+    const p = permitType.trim().toLowerCase();
+    const byMuni = CHECKLISTS[m];
+    if (byMuni && byMuni[p]) return byMuni[p];
+    return DEFAULT_CHECKLIST;
+  })();
+
+  // NOC is mandatory statewide. Ensure it exists exactly once at the top,
+  // upgraded to required + non-deferrable regardless of any legacy entry.
+  const withoutNoc = base.filter((d) => d.key !== NOC_DOC_KEY);
+  return [NOC_DOC, ...withoutNoc];
 }
