@@ -1,9 +1,11 @@
 import { createFileRoute, Link, useNavigate, useSearch } from "@tanstack/react-router";
 import { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
 import { toast } from "sonner";
-import { ArrowLeft, Upload, X, Link2, Copy, Trash2, Eye, Loader2 } from "lucide-react";
+import { ArrowLeft, Upload, X, Link2, Copy, Trash2, Eye, Loader2, Mail } from "lucide-react";
 import { getSub, createSub, updateSubApi, deleteSub, type SubRow, type SubInsert } from "@/lib/subs-api";
 import { supabase } from "@/integrations/supabase/client";
+import { useServerFn } from "@tanstack/react-start";
+import { inviteSubcontractorFn } from "@/lib/tenants.functions";
 
 
 
@@ -262,9 +264,12 @@ function NewSubcontractorPage() {
           <div className="text-[12px] text-obsidian/70">
             Intake link: <span className="font-mono">{`https://cleared.floridianinc.com/sub-intake/${saved.completion_token}`}</span>
           </div>
-          <button onClick={copySavedLink} className="inline-flex items-center gap-1.5 border border-obsidian/20 px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian rounded-[3px]">
-            <Copy className="h-3.5 w-3.5" /> Copy link
-          </button>
+          <div className="flex items-center gap-2">
+            <button onClick={copySavedLink} className="inline-flex items-center gap-1.5 border border-obsidian/20 px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian rounded-[3px]">
+              <Copy className="h-3.5 w-3.5" /> Copy link
+            </button>
+            <InvitePortalButton subId={saved.id} email={saved.email ?? null} />
+          </div>
         </div>
       )}
 
@@ -313,5 +318,32 @@ function NewSubcontractorPage() {
 
       </form>
     </div>
+  );
+}
+
+function InvitePortalButton({ subId, email }: { subId: string; email: string | null }) {
+  const invite = useServerFn(inviteSubcontractorFn);
+  const [busy, setBusy] = useState(false);
+  async function send() {
+    if (!email) { toast.error("Add a contact email before inviting"); return; }
+    setBusy(true);
+    try {
+      await invite({ data: { sub_id: subId, redirect_to: `${window.location.origin}/onboarding` } });
+      toast.success(`Invitation sent to ${email}`);
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Invite failed");
+    } finally {
+      setBusy(false);
+    }
+  }
+  return (
+    <button
+      onClick={send}
+      disabled={busy}
+      className="inline-flex items-center gap-1.5 bg-obsidian text-paper px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] rounded-[3px] hover:bg-obsidian/90 disabled:opacity-60"
+    >
+      {busy ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Mail className="h-3.5 w-3.5" />}
+      {busy ? "Sending…" : "Invite to Cleard"}
+    </button>
   );
 }

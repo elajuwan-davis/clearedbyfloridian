@@ -161,3 +161,159 @@ export const updateMyTenantFn = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     return { ok: true };
   });
+
+// -------- Team invites (GC owner adds gc_member) --------
+
+const InviteTeamInput = z.object({
+  email: z.string().email(),
+  redirect_to: z.string().url().optional().nullable(),
+});
+
+export const inviteTeamMemberFn = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) => InviteTeamInput.parse(d))
+  .handler(async ({ data, context }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: member, error: mErr } = await (supabaseAdmin.from("tenant_members" as any) as any)
+      .select("tenant_id, role")
+      .eq("user_id", context.userId)
+      .maybeSingle();
+    if (mErr) throw new Error(mErr.message);
+    if (!member) throw new Error("No tenant membership");
+    if (member.role !== "gc_owner") throw new Error("Only the owner can invite team members");
+
+    const { data: invited, error: iErr } = await (supabaseAdmin.auth.admin as any).inviteUserByEmail(
+      data.email,
+      {
+        data: { tenant_id: member.tenant_id, role: "gc_member" },
+        redirectTo: data.redirect_to ?? undefined,
+      },
+    );
+    if (iErr) throw new Error(iErr.message);
+
+    const invitedId = invited?.user?.id;
+    if (invitedId) {
+      await (supabaseAdmin.from("tenant_members" as any) as any).upsert(
+        { user_id: invitedId, tenant_id: member.tenant_id, role: "gc_member" },
+        { onConflict: "user_id" },
+      );
+      await (supabaseAdmin.from("user_roles" as any) as any).upsert(
+        { user_id: invitedId, role: "gc_member" },
+        { onConflict: "user_id,role" },
+      );
+    }
+    return { ok: true };
+  });
+
+export const listMyTeamFn = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: me, error: mErr } = await (supabaseAdmin.from("tenant_members" as any) as any)
+      .select("tenant_id")
+      .eq("user_id", context.userId)
+      .maybeSingle();
+    if (mErr) throw new Error(mErr.message);
+    if (!me) return [] as Array<{ user_id: string; email: string; role: string }>;
+    const { data: members, error } = await (supabaseAdmin.from("tenant_members" as any) as any)
+      .select("user_id, role")
+      .eq("tenant_id", me.tenant_id);
+    if (error) throw new Error(error.message);
+    const rows: Array<{ user_id: string; email: string; role: string }> = [];
+    for (const m of (members ?? []) as any[]) {
+      const { data: u } = await (supabaseAdmin.auth.admin as any).getUserById(m.user_id);
+      rows.push({
+        user_id: m.user_id,
+        email: u?.user?.email ?? "",
+        role: m.role,
+      });
+    }
+    return rows;
+  });
+
+const RemoveTeamInput = z.object({ user_id: z.string().uuid() });
+export const removeTeamMemberFn = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) => RemoveTeamInput.parse(d))
+  .handler(async ({ data, context }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: me } = await (supabaseAdmin.from("tenant_members" as any) as any)
+      .select("tenant_id, role")
+      .eq("user_id", context.userId)
+      .maybeSingle();
+    if (!me || me.role !== "gc_owner") throw new Error("Only the owner can remove team members");
+    if (data.user_id === context.userId) throw new Error("Owner cannot remove themselves");
+    const { error } = await (supabaseAdmin.from("tenant_members" as any) as any)
+      .delete()
+      .eq("user_id", data.user_id)
+      .eq("tenant_id", me.tenant_id);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+// -------- Subcontractor invites --------
+
+const InviteSubInput = z.object({
+  sub_id: z.string().uuid(),
+  redirect_to: z.string().url().optional().nullable(),
+});
+
+export const inviteSubcontractorFn = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) => InviteSubInput.parse(d))
+  .handler(async ({ data, context }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: sub, error: sErr } = await (supabaseAdmin.from("subcontractors" as any) as any)
+      .select("id, email, company_name, tenant_id")
+      .eq("id", data.sub_id)
+      .maybeSingle();
+    if (sErr) throw new Error(sErr.message);
+    if (!sub) throw new Error("Subcontractor not found");
+    if (!sub.email) throw new Error("Subcontractor is missing an email address");
+
+    // Caller must be admin or member of same tenant
+    const { data: caller } = await (supabaseAdmin.from("tenant_members" as any) as any)
+      .select("tenant_id")
+      .eq("user_id", context.userId)
+      .maybeSingle();
+    const { data: isAdminRow } = await (supabaseAdmin.from("user_roles" as any) as any)
+      .select("role").eq("user_id", context.userId).eq("role", "admin").maybeSingle();
+    const authorized = !!isAdminRow || (caller && caller.tenant_id === sub.tenant_id);
+    if (!authorized) throw new Error("Forbidden");
+
+    const { data: invited, error: iErr } = await (supabaseAdmin.auth.admin as any).inviteUserByEmail(
+      sub.email,
+      {
+        data: { role: "subcontractor", sub_id: sub.id },
+        redirectTo: data.redirect_to ?? undefined,
+      },
+    );
+    if (iErr) throw new Error(iErr.message);
+
+    const invitedId = invited?.user?.id;
+    if (invitedId) {
+      await (supabaseAdmin.from("user_roles" as any) as any).upsert(
+        { user_id: invitedId, role: "subcontractor" },
+        { onConflict: "user_id,role" },
+      );
+      await (supabaseAdmin.from("sub_accounts" as any) as any).upsert(
+        { user_id: invitedId, email: sub.email },
+        { onConflict: "user_id" },
+      );
+    }
+    return { ok: true };
+  });
+
+// -------- Admin: list all tenants for impersonation switcher --------
+
+export const listAllTenantsFn = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    await assertAdmin(context.userId);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data, error } = await (supabaseAdmin.from("tenants" as any) as any)
+      .select("id, name, status")
+      .order("name", { ascending: true });
+    if (error) throw new Error(error.message);
+    return (data ?? []) as Array<{ id: string; name: string; status: string }>;
+  });

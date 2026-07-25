@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
-import { ChevronDown, LogOut, Menu, X } from "lucide-react";
+import { ChevronDown, LogOut, Menu, X, Building2, Check } from "lucide-react";
+import { useServerFn } from "@tanstack/react-start";
 
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import {
@@ -15,7 +16,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useExpirationAlerts } from "@/hooks/use-expiration-alerts";
 import { NotificationBell } from "@/components/notification-bell";
 import { VictoriaWidget } from "@/components/victoria-widget";
-import { useSession } from "@/lib/use-session";
+import { useSession, setImpersonatedTenant, type AppRole } from "@/lib/use-session";
+import { listAllTenantsFn } from "@/lib/tenants.functions";
 import type { Alert } from "@/lib/expiration-alerts";
 
 type AlertKey = "my-permits" | "request-coi" | "sub-insurance";
@@ -58,6 +60,23 @@ const navGroups: NavGroup[] = [
   },
 ];
 
+// Subs only see a slim nav — their attached projects + their own compliance uploads.
+const subNavGroups: NavGroup[] = [
+  {
+    label: "Projects",
+    items: [{ to: "/sub-portal", label: "My Projects" }],
+  },
+  {
+    label: "Compliance",
+    items: [{ to: "/profile", label: "Documents" }],
+  },
+];
+
+function navGroupsForRole(role: AppRole | null): NavGroup[] {
+  if (role === "subcontractor") return subNavGroups;
+  return navGroups;
+}
+
 const settingsGroup: NavGroup = {
   label: "Settings",
   items: [
@@ -65,6 +84,11 @@ const settingsGroup: NavGroup = {
     { to: "/profile", label: "Notifications" },
     { to: "/portal/subcontractors", label: "Team" },
   ],
+};
+
+const subSettingsGroup: NavGroup = {
+  label: "Settings",
+  items: [{ to: "/profile", label: "Profile" }],
 };
 
 const protectedPortalPrefixes = [
@@ -173,13 +197,17 @@ function MobileDrawer({
   alertKeys,
   onNavigate,
   onSignOut,
+  role,
 }: {
   pathname: string;
   alertKeys: Set<AlertKey>;
   onNavigate: () => void;
   onSignOut: () => void;
+  role: AppRole | null;
 }) {
-  const all = [...navGroups, settingsGroup];
+  const groups = navGroupsForRole(role);
+  const settings = role === "subcontractor" ? subSettingsGroup : settingsGroup;
+  const all = [...groups, settings];
   return (
     <div className="flex h-full flex-col bg-white">
       <div className="h-14 flex items-center justify-between px-5 border-b">
@@ -351,10 +379,13 @@ export function PortalShell({ children }: { children: ReactNode }) {
 
         {/* Desktop nav */}
         <nav className="hidden lg:flex items-center ml-8 h-14">
-          {navGroups.map((g) => (
+          {navGroupsForRole(session.role).map((g) => (
             <NavDropdown key={g.label} group={g} pathname={pathname} alertKeys={alertKeys} />
           ))}
         </nav>
+
+        {/* Admin tenant switcher */}
+        {session.isAdmin && <AdminTenantSwitcher />}
 
         <div className="ml-auto flex items-center gap-2">
           <NotificationBell />
@@ -378,7 +409,7 @@ export function PortalShell({ children }: { children: ReactNode }) {
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                {settingsGroup.items.map((item, i) => (
+                {(session.role === "subcontractor" ? subSettingsGroup : settingsGroup).items.map((item, i) => (
                   <DropdownMenuItem key={`${item.to}-${i}`} asChild>
                     <Link to={item.to as never} className="px-3 py-2 text-[13px] rounded-[2px] cursor-pointer" style={{ color: "var(--obsidian)" }}>
                       {item.label}
