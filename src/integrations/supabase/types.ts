@@ -128,6 +128,48 @@ export type Database = {
         }
         Relationships: []
       }
+      design_professionals: {
+        Row: {
+          contact_name: string | null
+          created_at: string
+          created_by: string | null
+          email: string | null
+          firm_name: string
+          id: string
+          license_number: string | null
+          notes: string | null
+          phone: string | null
+          role: string
+          updated_at: string
+        }
+        Insert: {
+          contact_name?: string | null
+          created_at?: string
+          created_by?: string | null
+          email?: string | null
+          firm_name: string
+          id?: string
+          license_number?: string | null
+          notes?: string | null
+          phone?: string | null
+          role?: string
+          updated_at?: string
+        }
+        Update: {
+          contact_name?: string | null
+          created_at?: string
+          created_by?: string | null
+          email?: string | null
+          firm_name?: string
+          id?: string
+          license_number?: string | null
+          notes?: string | null
+          phone?: string | null
+          role?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       gc_coi_minimums: {
         Row: {
           created_at: string
