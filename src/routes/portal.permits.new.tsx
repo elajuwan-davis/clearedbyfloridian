@@ -231,6 +231,30 @@ function NewPermitPage() {
     if (files.length) update("extraDocs", [...form.extraDocs, ...files.map((f) => f.name)]);
   }
 
+  async function maybeSaveDesignPro(
+    role: DesignProRole,
+    save: boolean,
+    firm: string,
+    contact: string,
+    license: string,
+    email: string,
+  ) {
+    if (!save || !firm.trim()) return;
+    const exists = savedPros.find(
+      (p) => p.role === role && p.firm_name.trim().toLowerCase() === firm.trim().toLowerCase(),
+    );
+    if (exists) return;
+    try {
+      await createDesignPro({
+        role,
+        firm_name: firm.trim(),
+        contact_name: contact || null,
+        license_number: license || null,
+        email: email || null,
+      });
+    } catch { /* best-effort */ }
+  }
+
   async function submit() {
     if (!form.projectName.trim() || !form.address.trim()) {
       toast.error("Project name and address are required");
@@ -251,6 +275,9 @@ function NewPermitPage() {
         }
       }
 
+      await maybeSaveDesignPro("architect", saveArchitectToContacts, form.architectFirm, form.architectContact, form.architectLicense, form.architectEmail);
+      await maybeSaveDesignPro("engineer", saveEngineerToContacts, form.engineerFirm, form.engineerContact, form.engineerLicense, form.engineerEmail);
+
       const documents: PermitDoc[] = checklist.map((d) => {
         const s = form.docs[d.key] ?? { uploaded: null, na: false, deferred: false };
         const status: PermitDoc["status"] = s.uploaded ? "uploaded" : s.deferred ? "pending" : s.na ? "not_applicable" : "missing";
@@ -265,9 +292,26 @@ function NewPermitPage() {
         contactEmail: s.contactEmail,
       }));
 
-      const intake_payload = wantBundle ? { bundle: bundleFromSubs(subs) } : null;
+      const priorPayload = (originalRow?.intake_payload ?? {}) as Record<string, unknown>;
+      const intake_payload: Record<string, unknown> = {
+        ...priorPayload,
+        architect: {
+          firm: form.architectFirm || "",
+          contact: form.architectContact || "",
+          license: form.architectLicense || "",
+          email: form.architectEmail || "",
+        },
+        engineer: {
+          firm: form.engineerFirm || "",
+          contact: form.engineerContact || "",
+          license: form.engineerLicense || "",
+          email: form.engineerEmail || "",
+        },
+      };
+      if (wantBundle) intake_payload.bundle = bundleFromSubs(subs);
+      if (isEditing) intake_payload.last_edited_at = new Date().toISOString();
 
-      const row = await createPermit({
+      const permitPatch = {
         project_name: form.projectName,
         job_address: form.address,
         municipality: form.municipality || null,
@@ -286,25 +330,40 @@ function NewPermitPage() {
         signer_phone: form.signerPhone || null,
         signer_email: form.signerEmail || null,
         submitted_date: form.submittedDate || null,
-        status: "submitted",
         subs,
         documents,
         extra_docs: form.extraDocs,
         intake_payload,
-      });
+      };
 
-      toast.success(wantBundle ? "Bundle permit created" : "Permit created");
-      if (wantBundle) {
-        navigate({ to: "/portal/permits/$id/bundle", params: { id: row.id } });
+      let rowId: string;
+      if (isEditing && editId) {
+        const updated = await updatePermit(editId, permitPatch);
+        rowId = updated.id;
+        try {
+          await triggerNotification({
+            kind: "submission_received",
+            title: `Permit submission updated — ${updated.project_name}`,
+            body: `${form.contractorCompany || "GC"} updated permit submission on ${new Date().toLocaleDateString()}. Review changes.`,
+            permit_id: updated.id,
+          });
+        } catch { /* best-effort */ }
+        toast.success("Submission updated");
+        navigate({ to: "/portal/permits/$id", params: { id: rowId } });
       } else {
-        navigate({ to: "/portal/permits/$id", params: { id: row.id } });
+        const row = await createPermit({ ...permitPatch, status: "submitted" });
+        rowId = row.id;
+        toast.success(wantBundle ? "Bundle permit created" : "Permit created");
+        if (wantBundle) navigate({ to: "/portal/permits/$id/bundle", params: { id: rowId } });
+        else navigate({ to: "/portal/permits/$id", params: { id: rowId } });
       }
     } catch (e) {
-      toast.error("Failed to create permit: " + (e instanceof Error ? e.message : String(e)));
+      toast.error((isEditing ? "Failed to update permit: " : "Failed to create permit: ") + (e instanceof Error ? e.message : String(e)));
     } finally {
       setSaving(false);
     }
   }
+
 
   const inputCls =
     "block w-full border border-obsidian/15 bg-white px-3 py-2 text-sm text-obsidian placeholder:text-obsidian/40 focus:border-obsidian/40 focus:outline-none rounded-[3px]";
