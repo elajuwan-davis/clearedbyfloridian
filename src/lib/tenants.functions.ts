@@ -317,3 +317,90 @@ export const listAllTenantsFn = createServerFn({ method: "GET" })
     if (error) throw new Error(error.message);
     return (data ?? []) as Array<{ id: string; name: string; status: string }>;
   });
+
+// -------- Path A: allowed_domain --------
+
+const SetDomainInput = z.object({
+  allowed_domain: z.string().max(120).nullable(),
+});
+export const setTenantAllowedDomainFn = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) => SetDomainInput.parse(d))
+  .handler(async ({ data, context }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: me } = await (supabaseAdmin.from("tenant_members" as any) as any)
+      .select("tenant_id, role").eq("user_id", context.userId).maybeSingle();
+    if (!me || me.role !== "gc_owner") throw new Error("Only the owner can set the domain");
+    const domain = (data.allowed_domain ?? "").trim().toLowerCase().replace(/^@/, "") || null;
+    const { error } = await (supabaseAdmin.from("tenants" as any) as any)
+      .update({ allowed_domain: domain }).eq("id", me.tenant_id);
+    if (error) throw new Error(error.message);
+    return { allowed_domain: domain };
+  });
+
+export const getMyTenantOnboardingFn = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: me } = await (supabaseAdmin.from("tenant_members" as any) as any)
+      .select("tenant_id, role").eq("user_id", context.userId).maybeSingle();
+    if (!me) return null;
+    const { data: t } = await (supabaseAdmin.from("tenants" as any) as any)
+      .select("id, name, allowed_domain").eq("id", me.tenant_id).maybeSingle();
+    const { data: invites } = await (supabaseAdmin.from("tenant_invites" as any) as any)
+      .select("id, token, created_at, revoked_at, uses")
+      .eq("tenant_id", me.tenant_id)
+      .order("created_at", { ascending: false });
+    return {
+      tenant: t as { id: string; name: string; allowed_domain: string | null },
+      role: me.role as string,
+      invites: (invites ?? []) as Array<{ id: string; token: string; created_at: string; revoked_at: string | null; uses: number }>,
+    };
+  });
+
+// -------- Path B: invite tokens --------
+
+export const createInviteTokenFn = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: me } = await (supabaseAdmin.from("tenant_members" as any) as any)
+      .select("tenant_id, role").eq("user_id", context.userId).maybeSingle();
+    if (!me || me.role !== "gc_owner") throw new Error("Only the owner can create invite links");
+    const { data, error } = await (supabaseAdmin.from("tenant_invites" as any) as any)
+      .insert({ tenant_id: me.tenant_id, created_by: context.userId })
+      .select("id, token").single();
+    if (error) throw new Error(error.message);
+    return data as { id: string; token: string };
+  });
+
+const RevokeInviteInput = z.object({ id: z.string().uuid() });
+export const revokeInviteTokenFn = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) => RevokeInviteInput.parse(d))
+  .handler(async ({ data, context }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: me } = await (supabaseAdmin.from("tenant_members" as any) as any)
+      .select("tenant_id, role").eq("user_id", context.userId).maybeSingle();
+    if (!me || me.role !== "gc_owner") throw new Error("Only the owner can revoke invite links");
+    const { error } = await (supabaseAdmin.from("tenant_invites" as any) as any)
+      .update({ revoked_at: new Date().toISOString() })
+      .eq("id", data.id).eq("tenant_id", me.tenant_id);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+// Public: look up invite by token (unauthenticated, for the /join/:token landing page)
+const LookupInviteInput = z.object({ token: z.string().uuid() });
+export const lookupInviteFn = createServerFn({ method: "POST" })
+  .inputValidator((d: unknown) => LookupInviteInput.parse(d))
+  .handler(async ({ data }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: row } = await (supabaseAdmin.from("tenant_invites" as any) as any)
+      .select("tenant_id, revoked_at").eq("token", data.token).maybeSingle();
+    if (!row || row.revoked_at) return { valid: false as const };
+    const { data: t } = await (supabaseAdmin.from("tenants" as any) as any)
+      .select("name").eq("id", row.tenant_id).maybeSingle();
+    return { valid: true as const, tenant_name: (t?.name ?? "Team") as string };
+  });
+
