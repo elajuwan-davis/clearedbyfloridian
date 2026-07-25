@@ -172,31 +172,42 @@ function CityCard({ slug, city }: { slug: string; city: CityEntry }) {
   return (
     <div className="border border-border rounded-[3px] p-4 bg-card">
       <div className="flex items-start justify-between gap-2 mb-3">
-        <div className="flex items-center gap-2 min-w-0">
-          <MapPin className="h-3.5 w-3.5 shrink-0" strokeWidth={1.5} style={{ color: OBSIDIAN }} />
-          <div className="font-medium truncate">{city.name}</div>
+        <div className="flex items-start gap-2 min-w-0">
+          <MapPin className="h-3.5 w-3.5 shrink-0 mt-0.5" strokeWidth={1.5} style={{ color: OBSIDIAN }} />
+          <div className="min-w-0">
+            <div className="font-medium truncate">{city.name}</div>
+            {city.deptName && (
+              <div className="text-[11px] text-muted-foreground truncate mt-0.5">
+                {city.deptName}
+              </div>
+            )}
+          </div>
         </div>
-        <a
-          href={portalUrl || "#"}
-          target={portalUrl ? "_blank" : undefined}
-          rel="noreferrer"
-          onClick={(e) => {
-            if (!portalUrl) {
-              e.preventDefault();
-              toast.info("Portal link not yet configured for this city.");
-            }
-          }}
-          className="inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-medium tracking-wide rounded-[3px] transition-opacity"
-          style={{
-            backgroundColor: OBSIDIAN,
-            color: "#fff",
-            opacity: portalUrl ? 1 : 0.55,
-          }}
-        >
-          <ExternalLink className="h-3 w-3" strokeWidth={1.5} />
-          Building Dept
-        </a>
+        {portalUrl ? (
+          <a
+            href={portalUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-medium tracking-wide rounded-[3px] transition-opacity shrink-0"
+            style={{ backgroundColor: OBSIDIAN, color: "#fff" }}
+          >
+            <ExternalLink className="h-3 w-3" strokeWidth={1.5} />
+            Building Dept
+          </a>
+        ) : (
+          <span
+            className="inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-medium tracking-wide rounded-[3px] shrink-0"
+            style={{
+              backgroundColor: "transparent",
+              color: OBSIDIAN,
+              border: `1px solid color-mix(in oklab, ${OBSIDIAN} 20%, transparent)`,
+            }}
+          >
+            Contact Dept.
+          </span>
+        )}
       </div>
+
 
       <div className="pt-3 border-t border-border/60">
         <div className="font-mono text-[9px] tracking-[0.22em] uppercase text-muted-foreground mb-2">
