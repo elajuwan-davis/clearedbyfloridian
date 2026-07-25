@@ -134,7 +134,9 @@ function HoaSubmittalEditor() {
         plans_attached: row.plans_attached,
         checklist: row.checklist,
         notes: row.notes,
-      });
+        homeowner_name: row.homeowner_name,
+        homeowner_email: row.homeowner_email,
+      } as any);
       setRow(updated);
       toast.success("Saved");
     } catch (e: any) {
