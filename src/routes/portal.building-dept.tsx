@@ -19,6 +19,7 @@ import {
   subscribeMunicipalities, FL_COUNTIES, PORTAL_PLATFORMS,
   type CustomMunicipality, type PortalPlatform,
 } from "@/lib/municipalities-store";
+import { MUNICIPALITY_TREE } from "@/lib/municipalities-data";
 
 export const Route = createFileRoute("/portal/building-dept")({
   head: () => ({
@@ -105,6 +106,29 @@ function BuildingDeptPage() {
       r.municipality_name.toLowerCase().includes(q) || r.county.toLowerCase().includes(q),
     );
   }, [custom, query]);
+
+  const statewideRows = useMemo(() => {
+    const rows: { city: string; county: string; region: string; portalUrl?: string; deptName?: string }[] = [];
+    for (const region of MUNICIPALITY_TREE) {
+      for (const county of region.counties) {
+        for (const city of county.cities) {
+          rows.push({
+            city: city.name,
+            county: county.name,
+            region: region.name,
+            portalUrl: city.portalUrl,
+            deptName: city.deptName,
+          });
+        }
+      }
+    }
+    rows.sort((a, b) => a.city.localeCompare(b.city));
+    const q = query.trim().toLowerCase();
+    if (!q) return rows;
+    return rows.filter((r) =>
+      r.city.toLowerCase().includes(q) || r.county.toLowerCase().includes(q),
+    );
+  }, [query]);
 
   function openAdd() {
     setEditingId(null);
@@ -219,6 +243,38 @@ function BuildingDeptPage() {
                 </div>
               ))}
             </div>
+          </div>
+        </section>
+
+        {/* Statewide municipalities */}
+        <section>
+          <div className="flex items-baseline justify-between gap-3 flex-wrap mb-3">
+            <div className="label-eyebrow text-obsidian/60">Statewide municipalities</div>
+            <div className="text-xs text-muted-foreground">{statewideRows.length} cities</div>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            {statewideRows.map((r) => (
+              <div key={`${r.region}-${r.county}-${r.city}`} className="border hairline bg-white rounded-[3px] p-4 space-y-2">
+                <div className="flex items-start gap-2">
+                  <Building2 className="h-4 w-4 text-obsidian/60 mt-0.5 shrink-0" strokeWidth={1.5} />
+                  <div className="min-w-0 flex-1">
+                    <div className="text-sm font-semibold text-obsidian truncate">{r.city}</div>
+                    <div className="text-[11px] text-muted-foreground">{r.county} County · {r.region}</div>
+                    {r.deptName && <div className="text-[11px] text-obsidian/60 mt-0.5 truncate">{r.deptName}</div>}
+                  </div>
+                </div>
+                {r.portalUrl ? (
+                  <a href={r.portalUrl} target="_blank" rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 border border-sky/60 bg-sky/10 hover:bg-sky/20 text-obsidian px-2.5 py-1 rounded-[3px] font-mono text-[10px] uppercase tracking-[0.12em]">
+                    Open Portal <ExternalLink className="h-3 w-3" />
+                  </a>
+                ) : (
+                  <span className="inline-flex items-center border border-border bg-secondary/60 text-muted-foreground px-2.5 py-1 rounded-[3px] font-mono text-[10px] uppercase tracking-[0.12em]">
+                    Contact Dept.
+                  </span>
+                )}
+              </div>
+            ))}
           </div>
         </section>
       </div>

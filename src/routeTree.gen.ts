@@ -49,8 +49,6 @@ import { Route as PortalProfileRouteImport } from './routes/portal.profile'
 import { Route as PortalPermitsRouteImport } from './routes/portal.permits'
 import { Route as PortalPermitFeesRouteImport } from './routes/portal.permit-fees'
 import { Route as PortalNotaryQueueRouteImport } from './routes/portal.notary-queue'
-import { Route as PortalNewPermitRouteImport } from './routes/portal.new-permit'
-import { Route as PortalMunicipalitiesRouteImport } from './routes/portal.municipalities'
 import { Route as PortalInspectionsRouteImport } from './routes/portal.inspections'
 import { Route as PortalFinancialsRouteImport } from './routes/portal.financials'
 import { Route as PortalEquipmentSpecsRouteImport } from './routes/portal.equipment-specs'
@@ -287,16 +285,6 @@ const PortalNotaryQueueRoute = PortalNotaryQueueRouteImport.update({
   path: '/notary-queue',
   getParentRoute: () => PortalRoute,
 } as any)
-const PortalNewPermitRoute = PortalNewPermitRouteImport.update({
-  id: '/new-permit',
-  path: '/new-permit',
-  getParentRoute: () => PortalRoute,
-} as any)
-const PortalMunicipalitiesRoute = PortalMunicipalitiesRouteImport.update({
-  id: '/municipalities',
-  path: '/municipalities',
-  getParentRoute: () => PortalRoute,
-} as any)
 const PortalInspectionsRoute = PortalInspectionsRouteImport.update({
   id: '/inspections',
   path: '/inspections',
@@ -516,8 +504,6 @@ export interface FileRoutesByFullPath {
   '/portal/equipment-specs': typeof PortalEquipmentSpecsRoute
   '/portal/financials': typeof PortalFinancialsRoute
   '/portal/inspections': typeof PortalInspectionsRoute
-  '/portal/municipalities': typeof PortalMunicipalitiesRoute
-  '/portal/new-permit': typeof PortalNewPermitRoute
   '/portal/notary-queue': typeof PortalNotaryQueueRoute
   '/portal/permit-fees': typeof PortalPermitFeesRoute
   '/portal/permits': typeof PortalPermitsRouteWithChildren
@@ -593,8 +579,6 @@ export interface FileRoutesByTo {
   '/portal/equipment-specs': typeof PortalEquipmentSpecsRoute
   '/portal/financials': typeof PortalFinancialsRoute
   '/portal/inspections': typeof PortalInspectionsRoute
-  '/portal/municipalities': typeof PortalMunicipalitiesRoute
-  '/portal/new-permit': typeof PortalNewPermitRoute
   '/portal/notary-queue': typeof PortalNotaryQueueRoute
   '/portal/permit-fees': typeof PortalPermitFeesRoute
   '/portal/profile': typeof PortalProfileRoute
@@ -670,8 +654,6 @@ export interface FileRoutesById {
   '/portal/equipment-specs': typeof PortalEquipmentSpecsRoute
   '/portal/financials': typeof PortalFinancialsRoute
   '/portal/inspections': typeof PortalInspectionsRoute
-  '/portal/municipalities': typeof PortalMunicipalitiesRoute
-  '/portal/new-permit': typeof PortalNewPermitRoute
   '/portal/notary-queue': typeof PortalNotaryQueueRoute
   '/portal/permit-fees': typeof PortalPermitFeesRoute
   '/portal/permits': typeof PortalPermitsRouteWithChildren
@@ -750,8 +732,6 @@ export interface FileRouteTypes {
     | '/portal/equipment-specs'
     | '/portal/financials'
     | '/portal/inspections'
-    | '/portal/municipalities'
-    | '/portal/new-permit'
     | '/portal/notary-queue'
     | '/portal/permit-fees'
     | '/portal/permits'
@@ -827,8 +807,6 @@ export interface FileRouteTypes {
     | '/portal/equipment-specs'
     | '/portal/financials'
     | '/portal/inspections'
-    | '/portal/municipalities'
-    | '/portal/new-permit'
     | '/portal/notary-queue'
     | '/portal/permit-fees'
     | '/portal/profile'
@@ -903,8 +881,6 @@ export interface FileRouteTypes {
     | '/portal/equipment-specs'
     | '/portal/financials'
     | '/portal/inspections'
-    | '/portal/municipalities'
-    | '/portal/new-permit'
     | '/portal/notary-queue'
     | '/portal/permit-fees'
     | '/portal/permits'
@@ -1262,20 +1238,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PortalNotaryQueueRouteImport
       parentRoute: typeof PortalRoute
     }
-    '/portal/new-permit': {
-      id: '/portal/new-permit'
-      path: '/new-permit'
-      fullPath: '/portal/new-permit'
-      preLoaderRoute: typeof PortalNewPermitRouteImport
-      parentRoute: typeof PortalRoute
-    }
-    '/portal/municipalities': {
-      id: '/portal/municipalities'
-      path: '/municipalities'
-      fullPath: '/portal/municipalities'
-      preLoaderRoute: typeof PortalMunicipalitiesRouteImport
-      parentRoute: typeof PortalRoute
-    }
     '/portal/inspections': {
       id: '/portal/inspections'
       path: '/inspections'
@@ -1615,8 +1577,6 @@ interface PortalRouteChildren {
   PortalEquipmentSpecsRoute: typeof PortalEquipmentSpecsRoute
   PortalFinancialsRoute: typeof PortalFinancialsRoute
   PortalInspectionsRoute: typeof PortalInspectionsRoute
-  PortalMunicipalitiesRoute: typeof PortalMunicipalitiesRoute
-  PortalNewPermitRoute: typeof PortalNewPermitRoute
   PortalNotaryQueueRoute: typeof PortalNotaryQueueRoute
   PortalPermitFeesRoute: typeof PortalPermitFeesRoute
   PortalPermitsRoute: typeof PortalPermitsRouteWithChildren
@@ -1641,8 +1601,6 @@ const PortalRouteChildren: PortalRouteChildren = {
   PortalEquipmentSpecsRoute: PortalEquipmentSpecsRoute,
   PortalFinancialsRoute: PortalFinancialsRoute,
   PortalInspectionsRoute: PortalInspectionsRoute,
-  PortalMunicipalitiesRoute: PortalMunicipalitiesRoute,
-  PortalNewPermitRoute: PortalNewPermitRoute,
   PortalNotaryQueueRoute: PortalNotaryQueueRoute,
   PortalPermitFeesRoute: PortalPermitFeesRoute,
   PortalPermitsRoute: PortalPermitsRouteWithChildren,
