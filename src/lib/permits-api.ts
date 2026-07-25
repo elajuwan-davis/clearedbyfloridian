@@ -105,6 +105,7 @@ export type PermitRow = {
   documents: PermitDoc[];
   extra_docs: string[];
   intake_payload: Record<string, unknown> | null;
+  tenant_id: string | null;
 };
 
 export type PermitInsert = Omit<PermitRow, "id" | "created_at" | "updated_at">;

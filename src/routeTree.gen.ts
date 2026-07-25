@@ -58,6 +58,7 @@ import { Route as PortalFinancialsRouteImport } from './routes/portal.financials
 import { Route as PortalFeatureRequestsRouteImport } from './routes/portal.feature-requests'
 import { Route as PortalComplianceRouteImport } from './routes/portal.compliance'
 import { Route as PortalBuildingDeptRouteImport } from './routes/portal.building-dept'
+import { Route as PortalAlertsRouteImport } from './routes/portal.alerts'
 import { Route as PermitCardIdRouteImport } from './routes/permit-card.$id'
 import { Route as JoinTokenRouteImport } from './routes/join.$token'
 import { Route as FormsSubcontractorIntakeRouteImport } from './routes/forms.subcontractor-intake'
@@ -89,6 +90,7 @@ import { Route as PortalHoaSubmittalsIdRouteImport } from './routes/portal.hoa-s
 import { Route as PortalGuidesSlugRouteImport } from './routes/portal.guides.$slug'
 import { Route as PortalBlogNewRouteImport } from './routes/portal.blog.new'
 import { Route as PortalBlogIdRouteImport } from './routes/portal.blog.$id'
+import { Route as ApiPublicVictoriaScanRouteImport } from './routes/api/public/victoria-scan'
 import { Route as ApiPublicSubIntakeUploadRouteImport } from './routes/api/public/sub-intake-upload'
 import { Route as ApiPublicSeedTeamRouteImport } from './routes/api/public/seed-team'
 import { Route as ApiPublicHoaReplyRouteImport } from './routes/api/public/hoa-reply'
@@ -346,6 +348,11 @@ const PortalBuildingDeptRoute = PortalBuildingDeptRouteImport.update({
   path: '/building-dept',
   getParentRoute: () => PortalRoute,
 } as any)
+const PortalAlertsRoute = PortalAlertsRouteImport.update({
+  id: '/alerts',
+  path: '/alerts',
+  getParentRoute: () => PortalRoute,
+} as any)
 const PermitCardIdRoute = PermitCardIdRouteImport.update({
   id: '/permit-card/$id',
   path: '/permit-card/$id',
@@ -506,6 +513,11 @@ const PortalBlogIdRoute = PortalBlogIdRouteImport.update({
   path: '/blog/$id',
   getParentRoute: () => PortalRoute,
 } as any)
+const ApiPublicVictoriaScanRoute = ApiPublicVictoriaScanRouteImport.update({
+  id: '/api/public/victoria-scan',
+  path: '/api/public/victoria-scan',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicSubIntakeUploadRoute =
   ApiPublicSubIntakeUploadRouteImport.update({
     id: '/api/public/sub-intake-upload',
@@ -604,6 +616,7 @@ export interface FileRoutesByFullPath {
   '/forms/subcontractor-intake': typeof FormsSubcontractorIntakeRoute
   '/join/$token': typeof JoinTokenRoute
   '/permit-card/$id': typeof PermitCardIdRoute
+  '/portal/alerts': typeof PortalAlertsRoute
   '/portal/building-dept': typeof PortalBuildingDeptRoute
   '/portal/compliance': typeof PortalComplianceRoute
   '/portal/feature-requests': typeof PortalFeatureRequestsRoute
@@ -632,6 +645,7 @@ export interface FileRoutesByFullPath {
   '/api/public/hoa-reply': typeof ApiPublicHoaReplyRoute
   '/api/public/seed-team': typeof ApiPublicSeedTeamRoute
   '/api/public/sub-intake-upload': typeof ApiPublicSubIntakeUploadRoute
+  '/api/public/victoria-scan': typeof ApiPublicVictoriaScanRoute
   '/portal/blog/$id': typeof PortalBlogIdRoute
   '/portal/blog/new': typeof PortalBlogNewRoute
   '/portal/guides/$slug': typeof PortalGuidesSlugRoute
@@ -695,6 +709,7 @@ export interface FileRoutesByTo {
   '/forms/subcontractor-intake': typeof FormsSubcontractorIntakeRoute
   '/join/$token': typeof JoinTokenRoute
   '/permit-card/$id': typeof PermitCardIdRoute
+  '/portal/alerts': typeof PortalAlertsRoute
   '/portal/building-dept': typeof PortalBuildingDeptRoute
   '/portal/compliance': typeof PortalComplianceRoute
   '/portal/feature-requests': typeof PortalFeatureRequestsRoute
@@ -721,6 +736,7 @@ export interface FileRoutesByTo {
   '/api/public/hoa-reply': typeof ApiPublicHoaReplyRoute
   '/api/public/seed-team': typeof ApiPublicSeedTeamRoute
   '/api/public/sub-intake-upload': typeof ApiPublicSubIntakeUploadRoute
+  '/api/public/victoria-scan': typeof ApiPublicVictoriaScanRoute
   '/portal/blog/$id': typeof PortalBlogIdRoute
   '/portal/blog/new': typeof PortalBlogNewRoute
   '/portal/guides/$slug': typeof PortalGuidesSlugRoute
@@ -786,6 +802,7 @@ export interface FileRoutesById {
   '/forms/subcontractor-intake': typeof FormsSubcontractorIntakeRoute
   '/join/$token': typeof JoinTokenRoute
   '/permit-card/$id': typeof PermitCardIdRoute
+  '/portal/alerts': typeof PortalAlertsRoute
   '/portal/building-dept': typeof PortalBuildingDeptRoute
   '/portal/compliance': typeof PortalComplianceRoute
   '/portal/feature-requests': typeof PortalFeatureRequestsRoute
@@ -814,6 +831,7 @@ export interface FileRoutesById {
   '/api/public/hoa-reply': typeof ApiPublicHoaReplyRoute
   '/api/public/seed-team': typeof ApiPublicSeedTeamRoute
   '/api/public/sub-intake-upload': typeof ApiPublicSubIntakeUploadRoute
+  '/api/public/victoria-scan': typeof ApiPublicVictoriaScanRoute
   '/portal/blog/$id': typeof PortalBlogIdRoute
   '/portal/blog/new': typeof PortalBlogNewRoute
   '/portal/guides/$slug': typeof PortalGuidesSlugRoute
@@ -880,6 +898,7 @@ export interface FileRouteTypes {
     | '/forms/subcontractor-intake'
     | '/join/$token'
     | '/permit-card/$id'
+    | '/portal/alerts'
     | '/portal/building-dept'
     | '/portal/compliance'
     | '/portal/feature-requests'
@@ -908,6 +927,7 @@ export interface FileRouteTypes {
     | '/api/public/hoa-reply'
     | '/api/public/seed-team'
     | '/api/public/sub-intake-upload'
+    | '/api/public/victoria-scan'
     | '/portal/blog/$id'
     | '/portal/blog/new'
     | '/portal/guides/$slug'
@@ -971,6 +991,7 @@ export interface FileRouteTypes {
     | '/forms/subcontractor-intake'
     | '/join/$token'
     | '/permit-card/$id'
+    | '/portal/alerts'
     | '/portal/building-dept'
     | '/portal/compliance'
     | '/portal/feature-requests'
@@ -997,6 +1018,7 @@ export interface FileRouteTypes {
     | '/api/public/hoa-reply'
     | '/api/public/seed-team'
     | '/api/public/sub-intake-upload'
+    | '/api/public/victoria-scan'
     | '/portal/blog/$id'
     | '/portal/blog/new'
     | '/portal/guides/$slug'
@@ -1061,6 +1083,7 @@ export interface FileRouteTypes {
     | '/forms/subcontractor-intake'
     | '/join/$token'
     | '/permit-card/$id'
+    | '/portal/alerts'
     | '/portal/building-dept'
     | '/portal/compliance'
     | '/portal/feature-requests'
@@ -1089,6 +1112,7 @@ export interface FileRouteTypes {
     | '/api/public/hoa-reply'
     | '/api/public/seed-team'
     | '/api/public/sub-intake-upload'
+    | '/api/public/victoria-scan'
     | '/portal/blog/$id'
     | '/portal/blog/new'
     | '/portal/guides/$slug'
@@ -1151,6 +1175,7 @@ export interface RootRouteChildren {
   ApiPublicHoaReplyRoute: typeof ApiPublicHoaReplyRoute
   ApiPublicSeedTeamRoute: typeof ApiPublicSeedTeamRoute
   ApiPublicSubIntakeUploadRoute: typeof ApiPublicSubIntakeUploadRoute
+  ApiPublicVictoriaScanRoute: typeof ApiPublicVictoriaScanRoute
   ApiPublicEmailOutboxProcessRoute: typeof ApiPublicEmailOutboxProcessRoute
   ApiPublicHubspotDealWebhookRoute: typeof ApiPublicHubspotDealWebhookRoute
 }
@@ -1500,6 +1525,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PortalBuildingDeptRouteImport
       parentRoute: typeof PortalRoute
     }
+    '/portal/alerts': {
+      id: '/portal/alerts'
+      path: '/alerts'
+      fullPath: '/portal/alerts'
+      preLoaderRoute: typeof PortalAlertsRouteImport
+      parentRoute: typeof PortalRoute
+    }
     '/permit-card/$id': {
       id: '/permit-card/$id'
       path: '/permit-card/$id'
@@ -1717,6 +1749,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PortalBlogIdRouteImport
       parentRoute: typeof PortalRoute
     }
+    '/api/public/victoria-scan': {
+      id: '/api/public/victoria-scan'
+      path: '/api/public/victoria-scan'
+      fullPath: '/api/public/victoria-scan'
+      preLoaderRoute: typeof ApiPublicVictoriaScanRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/sub-intake-upload': {
       id: '/api/public/sub-intake-upload'
       path: '/api/public/sub-intake-upload'
@@ -1913,6 +1952,7 @@ const PortalSubmissionsRouteWithChildren =
   PortalSubmissionsRoute._addFileChildren(PortalSubmissionsRouteChildren)
 
 interface PortalRouteChildren {
+  PortalAlertsRoute: typeof PortalAlertsRoute
   PortalBuildingDeptRoute: typeof PortalBuildingDeptRoute
   PortalComplianceRoute: typeof PortalComplianceRoute
   PortalFeatureRequestsRoute: typeof PortalFeatureRequestsRoute
@@ -1942,6 +1982,7 @@ interface PortalRouteChildren {
 }
 
 const PortalRouteChildren: PortalRouteChildren = {
+  PortalAlertsRoute: PortalAlertsRoute,
   PortalBuildingDeptRoute: PortalBuildingDeptRoute,
   PortalComplianceRoute: PortalComplianceRoute,
   PortalFeatureRequestsRoute: PortalFeatureRequestsRoute,
@@ -2039,6 +2080,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicHoaReplyRoute: ApiPublicHoaReplyRoute,
   ApiPublicSeedTeamRoute: ApiPublicSeedTeamRoute,
   ApiPublicSubIntakeUploadRoute: ApiPublicSubIntakeUploadRoute,
+  ApiPublicVictoriaScanRoute: ApiPublicVictoriaScanRoute,
   ApiPublicEmailOutboxProcessRoute: ApiPublicEmailOutboxProcessRoute,
   ApiPublicHubspotDealWebhookRoute: ApiPublicHubspotDealWebhookRoute,
 }

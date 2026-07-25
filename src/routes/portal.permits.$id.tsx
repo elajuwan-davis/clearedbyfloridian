@@ -4,6 +4,9 @@ import { toast } from "sonner";
 import { ArrowLeft, Trash2, Save, AlertTriangle, FileText, Pencil, X, Lock, Plus, Search, Loader2, Eye, EyeOff, Download, Share2, RotateCcw, Cloud, Package } from "lucide-react";
 import { NtoSection } from "@/components/nto-section";
 import { getBundle } from "@/lib/bundle";
+import { CoChecklistPanel } from "@/components/co-checklist-panel";
+import { LienReleasesPanel } from "@/components/lien-releases-panel";
+import { PermitAlertsInline } from "@/components/permit-alerts-inline";
 
 import { getPermit, updatePermit, deletePermit, permitCompleteness, getEffectiveDocs, getHiddenFieldKeys, withHiddenFieldKeys, ensureSubTokens, type PermitRow, type PermitStatus, type PermitDoc, type PermitSub } from "@/lib/permits-api";
 import { PermitDocUploader } from "@/components/permit-doc-uploader";
@@ -762,6 +765,24 @@ function PermitDetailPage() {
           </div>
         </div>
       )}
+
+      {/* CO Checklist */}
+      <section id="co-checklist" className="mt-10">
+        <div className="eyebrow text-obsidian/50 mb-3">Certificate of Occupancy</div>
+        <CoChecklistPanel permitId={row.id} projectName={row.project_name} tenantId={row.tenant_id ?? null} />
+      </section>
+
+      {/* Lien Releases */}
+      <section id="lien-releases" className="mt-10">
+        <div className="eyebrow text-obsidian/50 mb-3">Lien Releases</div>
+        <LienReleasesPanel permit={row} />
+      </section>
+
+      {/* Victoria Alerts (this permit) */}
+      <section id="victoria-alerts" className="mt-10 mb-4">
+        <div className="eyebrow text-obsidian/50 mb-3">Victoria Alerts</div>
+        <PermitAlertsInline permitId={row.id} />
+      </section>
     </div>
   );
 }

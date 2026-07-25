@@ -55,6 +55,7 @@ const navGroups: NavGroup[] = [
     label: "Operations",
     items: [
       { to: "/messages", label: "Messages" },
+      { to: "/portal/alerts", label: "Victoria Alerts" },
       { to: "/portal/reports", label: "Reports" },
       { to: "/portal/guides", label: "Project Guides" },
       { to: "/portal/blog", label: "Blog" },
