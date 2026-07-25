@@ -50,6 +50,7 @@ function NewPermitPage() {
     municipality: "",
     permitType: PERMIT_TYPES[0],
     description: "",
+    subFencing: { ...emptySub },
     subPlumbing: { ...emptySub },
     subElectrical: { ...emptySub },
     subGas: { ...emptySub },
@@ -66,7 +67,7 @@ function NewPermitPage() {
     signerPhone: "",
     signerEmail: "",
     additionalNotes: "",
-    docs: emptyDocs,
+    docs: {} as Record<string, DocState>,
     extraDocs: [] as string[],
   });
 
