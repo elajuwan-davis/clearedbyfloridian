@@ -4,6 +4,9 @@ import { toast } from "sonner";
 import { ArrowLeft, Trash2, Save, AlertTriangle, FileText, Pencil, X, Lock, Plus, Search, Loader2, Eye, EyeOff, Download, Share2, RotateCcw, Cloud, Package } from "lucide-react";
 import { NtoSection } from "@/components/nto-section";
 import { getBundle } from "@/lib/bundle";
+import { CoChecklistPanel } from "@/components/co-checklist-panel";
+import { LienReleasesPanel } from "@/components/lien-releases-panel";
+import { PermitAlertsInline } from "@/components/permit-alerts-inline";
 
 import { getPermit, updatePermit, deletePermit, permitCompleteness, getEffectiveDocs, getHiddenFieldKeys, withHiddenFieldKeys, ensureSubTokens, type PermitRow, type PermitStatus, type PermitDoc, type PermitSub } from "@/lib/permits-api";
 import { PermitDocUploader } from "@/components/permit-doc-uploader";
