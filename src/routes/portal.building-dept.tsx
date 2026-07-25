@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { Button } from "@/components/ui/button";
@@ -190,6 +190,15 @@ function BuildingDeptPage() {
             </Button>
           )}
         </div>
+
+        <Link
+          to="/portal/guides"
+          className="inline-flex items-center gap-2 rounded-[3px] border border-obsidian/15 bg-paper/60 px-4 py-3 text-sm text-obsidian hover:border-obsidian/35 hover:bg-paper transition-colors"
+        >
+          <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-obsidian/55">Reference</span>
+          <span>Need submittal spec sheets? View Project Guides →</span>
+        </Link>
+
 
         {/* Search */}
         <div className="relative max-w-md">
