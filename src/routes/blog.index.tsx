@@ -6,17 +6,17 @@ import { listPublishedPosts, formatDate } from "@/lib/blog-api";
 export const Route = createFileRoute("/blog/")({
   head: () => ({
     meta: [
-      { title: "Blog — Cleard by Flōridian" },
+      { title: "Blog — Cleard" },
       {
         name: "description",
         content:
-          "Permitting insights, municipality updates, and industry news from Cleard by Flōridian.",
+          "Permitting insights, municipality updates, and industry news from Cleard.",
       },
-      { property: "og:title", content: "Blog — Cleard by Flōridian" },
+      { property: "og:title", content: "Blog — Cleard" },
       {
         property: "og:description",
         content:
-          "Permitting insights, municipality updates, and industry news from Cleard by Flōridian.",
+          "Permitting insights, municipality updates, and industry news from Cleard.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },

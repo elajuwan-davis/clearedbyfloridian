@@ -1,7 +1,7 @@
 // Single Family project guides — batch 3.
 import type { PortalGuide, GuideDownload, GuideDoc, InspectionPhase } from "./portal-guides-data";
 
-const REVIEWED = "Reviewed by Flōridian permitting staff — July 2026";
+const REVIEWED = "Reviewed by Cleard permitting staff — July 2026";
 
 const STANDARD_DOWNLOADS: GuideDownload[] = [
   { title: "Notice to Building Official — Use of Private Provider", meta: "Form 61G20-2.005 · FL Statute §553.791" },

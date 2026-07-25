@@ -20,7 +20,7 @@ import {
 export const Route = createFileRoute("/projects/$id")({
   head: ({ params }) => ({
     meta: [
-      { title: `Project ${params.id} — Cleard by Flōridian` },
+      { title: `Project ${params.id} — Cleard` },
       { name: "robots", content: "noindex" },
     ],
   }),

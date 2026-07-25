@@ -1,4 +1,4 @@
-// GC Client tier — external general contractor accounts (not Flōridian staff).
+// GC Client tier — external general contractor accounts (not Cleard staff).
 // Managed by admin; persisted in localStorage for the scaffold.
 
 export type GCClient = {

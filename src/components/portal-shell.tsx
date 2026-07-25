@@ -354,7 +354,7 @@ export function PortalShell({ children }: { children: ReactNode }) {
             className="hidden sm:inline font-mono text-[9px] tracking-[0.22em] uppercase"
             style={{ color: "color-mix(in oklab, var(--obsidian) 50%, transparent)" }}
           >
-            by Flōridian
+           
           </span>
         </Link>
         {session.tenantName && (

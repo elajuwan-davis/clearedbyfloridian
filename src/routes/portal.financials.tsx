@@ -9,7 +9,7 @@ import { toast } from "sonner";
 export const Route = createFileRoute("/portal/financials")({
   head: () => ({
     meta: [
-      { title: "Permit Financials — Cleard by Flōridian" },
+      { title: "Permit Financials — Cleard" },
       { name: "description", content: "Running financial summary across all permits — municipal permit fees plus Cleard service fees." },
       { name: "robots", content: "noindex" },
     ],

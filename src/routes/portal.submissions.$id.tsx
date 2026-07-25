@@ -17,7 +17,7 @@ import { getPermit, type PermitRow } from "@/lib/permits-api";
 export const Route = createFileRoute("/portal/submissions/$id")({
   head: () => ({
     meta: [
-      { title: "Submission — Cleard by Flōridian" },
+      { title: "Submission — Cleard" },
       { name: "robots", content: "noindex" },
     ],
   }),

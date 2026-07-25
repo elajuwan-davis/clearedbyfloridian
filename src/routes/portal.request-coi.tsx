@@ -7,7 +7,7 @@ import { CloudUploadButtons } from "@/components/cloud-upload-buttons";
 export const Route = createFileRoute("/portal/request-coi")({
   head: () => ({
     meta: [
-      { title: "Request COI — Cleard by Flōridian" },
+      { title: "Request COI — Cleard" },
       { name: "robots", content: "noindex" },
     ],
   }),

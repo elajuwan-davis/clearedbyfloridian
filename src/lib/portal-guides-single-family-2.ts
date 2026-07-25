@@ -1,7 +1,7 @@
 // Single Family project guides — batch 2. Registered into /portal/guides.
 import type { PortalGuide, GuideDownload, GuideDoc } from "./portal-guides-data";
 
-const REVIEWED = "Reviewed by Flōridian permitting staff — July 2026";
+const REVIEWED = "Reviewed by Cleard permitting staff — July 2026";
 
 const STANDARD_DOWNLOADS: GuideDownload[] = [
   {

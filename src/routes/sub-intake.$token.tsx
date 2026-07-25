@@ -140,7 +140,7 @@ function SubIntakeTokenPage() {
       <div className="mx-auto max-w-2xl">
         <div className="text-center">
           <div className="wordmark text-4xl text-obsidian">Cleard</div>
-          <div className="wordmark-subline mt-1 text-obsidian/55">by Flōridian</div>
+          <div className="wordmark-subline mt-1 text-obsidian/55"></div>
         </div>
 
         {done ? (

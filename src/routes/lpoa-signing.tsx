@@ -17,7 +17,7 @@ import {
 export const Route = createFileRoute("/lpoa-signing")({
   head: () => ({
     meta: [
-      { title: "LPOA Signing — Cleard by Flōridian" },
+      { title: "LPOA Signing — Cleard" },
       { name: "robots", content: "noindex" },
     ],
   }),
@@ -68,7 +68,7 @@ function LpoaSigningPage() {
             Limited Power <em>of Attorney</em>
           </h1>
           <p className="mt-2 max-w-2xl text-sm text-obsidian/60">
-            Authorizes Cleard by Flōridian to act as your firm's private provider of record on
+            Authorizes Cleard to act as your firm's private provider of record on
             permits filed through this account.
           </p>
         </div>
@@ -102,7 +102,7 @@ function LpoaSigningPage() {
             <p className="mt-6">
               The undersigned, being the duly authorized qualifying agent for the licensed General
               Contractor of record, does hereby designate and appoint{" "}
-              <strong className="text-obsidian">Cleard by Flōridian</strong> as the{" "}
+              <strong className="text-obsidian">Cleard</strong> as the{" "}
               <em>private provider of record</em> for permit applications submitted through this
               portal.
             </p>
@@ -242,7 +242,7 @@ function LpoaSigningPage() {
                 className="mt-0.5 rounded-[2px]"
               />
               <span className="text-sm text-obsidian">
-                I authorize Cleard by Flōridian to act as private provider under FL Statute
+                I authorize Cleard to act as private provider under FL Statute
                 553.791, including filing affidavits of compliance and certificates of compliance
                 with the AHJ on this firm's behalf.
               </span>

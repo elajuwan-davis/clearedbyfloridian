@@ -13,7 +13,7 @@ import {
 export const Route = createFileRoute("/portal/hoa-submittals/")({
   head: () => ({
     meta: [
-      { title: "HOA Submittals — Cleard by Flōridian" },
+      { title: "HOA Submittals — Cleard" },
       { name: "description", content: "Manage HOA/ARC submittals for your projects." },
       { name: "robots", content: "noindex" },
     ],

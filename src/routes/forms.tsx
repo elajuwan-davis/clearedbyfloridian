@@ -26,7 +26,7 @@ const forms = [
     to: "/forms/payment-authorization",
     code: "03",
     title: "Payment Authorization",
-    body: "Authorize Cleard by Flōridian to charge a card or ACH on file for services and permit fees.",
+    body: "Authorize Cleard to charge a card or ACH on file for services and permit fees.",
     icon: CreditCard,
   },
 ] as const;

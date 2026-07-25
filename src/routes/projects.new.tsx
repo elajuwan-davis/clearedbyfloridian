@@ -24,7 +24,7 @@ import {
 export const Route = createFileRoute("/projects/new")({
   head: () => ({
     meta: [
-      { title: "New Project — Cleard by Flōridian" },
+      { title: "New Project — Cleard" },
       { name: "robots", content: "noindex" },
     ],
   }),
@@ -285,7 +285,7 @@ function NewProjectPage() {
             <div className="px-6 py-5 text-sm leading-relaxed text-obsidian/75">
               <p>
                 I, as the qualifying agent for the licensed General Contractor of record,
-                authorize <strong className="text-obsidian">Cleard by Flōridian</strong> to act
+                authorize <strong className="text-obsidian">Cleard</strong> to act
                 as the private provider for this permit application under FL Statute 553.791.
                 Cleard is empowered to submit the affidavit of compliance, perform plan review
                 and inspections, and issue the certificate of compliance to the authority having

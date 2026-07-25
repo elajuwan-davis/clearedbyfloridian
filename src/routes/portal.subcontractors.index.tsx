@@ -7,7 +7,7 @@ import { listSubs, createSub, deleteSub, subIsComplete, subMissingFields, coiLif
 export const Route = createFileRoute("/portal/subcontractors/")({
   head: () => ({
     meta: [
-      { title: "Subcontractors — Cleard by Flōridian" },
+      { title: "Subcontractors — Cleard" },
       { name: "robots", content: "noindex" },
     ],
   }),

@@ -43,7 +43,7 @@ export type PortalGuide = {
   inspections: InspectionPhase[];
 };
 
-const REVIEWED = "Reviewed by Flōridian permitting staff — July 2026";
+const REVIEWED = "Reviewed by Cleard permitting staff — July 2026";
 
 // Common downloadable forms — every private-provider guide gets these.
 const STANDARD_DOWNLOADS: GuideDownload[] = [

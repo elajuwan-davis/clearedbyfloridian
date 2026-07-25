@@ -10,7 +10,7 @@ import { FileSignature, Stamp, FolderOpen, Plus, LogOut } from "lucide-react";
 export const Route = createFileRoute("/gc-portal")({
   head: () => ({
     meta: [
-      { title: "Builder Portal — Cleard by Flōridian" },
+      { title: "Builder Portal — Cleard" },
       { name: "robots", content: "noindex" },
     ],
   }),

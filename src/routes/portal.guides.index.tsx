@@ -44,7 +44,7 @@ for (const s of EQUIPMENT_SPECS) SPECS_BY_TRADE[tradeFor(s.title)].push(s);
 export const Route = createFileRoute("/portal/guides/")({
   head: () => ({
     meta: [
-      { title: "Project Guides & Building Specs — Cleard by Flōridian" },
+      { title: "Project Guides & Building Specs — Cleard" },
       { name: "robots", content: "noindex" },
     ],
   }),

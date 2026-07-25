@@ -25,7 +25,7 @@ export const Route = createFileRoute("/fee-calculator")({
   }),
   head: () => ({
     meta: [
-      { title: "Fee Calculator — Cleard by Flōridian" },
+      { title: "Fee Calculator — Cleard" },
       { name: "robots", content: "noindex" },
     ],
   }),

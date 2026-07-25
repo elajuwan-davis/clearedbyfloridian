@@ -6,7 +6,7 @@ import { loadSubLibrary, type SubRecord } from "@/lib/subcontractor-library";
 export const Route = createFileRoute("/portal/request-sub-insurance")({
   head: () => ({
     meta: [
-      { title: "Sub Insurance Request — Cleard by Flōridian" },
+      { title: "Sub Insurance Request — Cleard" },
       { name: "robots", content: "noindex" },
     ],
   }),

@@ -87,7 +87,7 @@ function OnboardingPage() {
           <div className="wordmark text-4xl" style={{ color: "var(--obsidian)" }}>
             Cleard
           </div>
-          <div className="wordmark-subline mt-2">by Flōridian</div>
+          <div className="wordmark-subline mt-2"></div>
         </div>
 
         {step === "checking" && (

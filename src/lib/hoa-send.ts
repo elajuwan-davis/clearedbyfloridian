@@ -90,7 +90,7 @@ export async function sendHoaSubmittal(
     "Please reply to this thread with confirmation of receipt and any correspondence. Cleard will forward next steps to the applicant.",
     "",
     "Regards,",
-    "Cleard by Flōridian",
+    "Cleard",
     FLORIDIAN_FROM,
   ]
     .filter((line) => line !== "" || true)
@@ -132,7 +132,7 @@ export async function sendHoaSubmittal(
           "",
           "Your application will not be reviewed until the deposit is received.",
           "",
-          "— Cleard by Flōridian",
+          "— Cleard",
           FLORIDIAN_FROM,
         ].join("\n")
       : [
@@ -142,7 +142,7 @@ export async function sendHoaSubmittal(
           "",
           contactBlock ? `The HOA (${contactBlock}) will follow up if any additional information is required.` : "The HOA will follow up if any additional information is required.",
           "",
-          "— Cleard by Flōridian",
+          "— Cleard",
           FLORIDIAN_FROM,
         ].join("\n");
 

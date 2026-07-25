@@ -43,7 +43,7 @@ const EMPTY_FORM = {
 export const Route = createFileRoute("/portal/building-dept")({
   head: () => ({
     meta: [
-      { title: "Building Department Logins — Cleard by Flōridian" },
+      { title: "Building Department Logins — Cleard" },
       { name: "robots", content: "noindex" },
     ],
   }),
@@ -367,7 +367,7 @@ function BuildingDeptPage() {
           </DialogHeader>
           <div className="space-y-4 py-2">
             <p className="text-xs text-obsidian/60 leading-relaxed">
-              Your credentials are encrypted at rest and used solely by Flōridian staff to
+              Your credentials are encrypted at rest and used solely staff to
               submit permit documents to this building department on your behalf.
             </p>
             <div>

@@ -2,7 +2,7 @@
 // Stored encrypted (AES-256-GCM) so plaintext is never readable in the DB.
 //
 // - Save/List (has_login flag only) callable by authenticated GC users.
-// - Reveal (decrypt) is admin-only (Flōridian staff), used at portal-submission time.
+// - Reveal (decrypt) is admin-only (Cleard staff), used at portal-submission time.
 
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
@@ -83,7 +83,7 @@ export const listPortalLoginFlags = createServerFn({ method: "GET" })
     }>;
   });
 
-// Admin-only reveal for Flōridian staff to log into portals on behalf of GCs.
+// Admin-only reveal for Cleard staff to log into portals on behalf of GCs.
 export const revealPortalLogin = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data: unknown) =>

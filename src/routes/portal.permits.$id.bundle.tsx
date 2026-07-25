@@ -44,7 +44,7 @@ import { FLORIDIAN_FIRM } from "@/lib/floridian-firm";
 export const Route = createFileRoute("/portal/permits/$id/bundle")({
   head: () => ({
     meta: [
-      { title: "Bundle Submission — Cleard by Flōridian" },
+      { title: "Bundle Submission — Cleard" },
       { name: "robots", content: "noindex" },
     ],
   }),

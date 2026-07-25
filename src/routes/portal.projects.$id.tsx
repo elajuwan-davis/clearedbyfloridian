@@ -6,7 +6,7 @@ import { ProjectDetail, ProjectDetailNotFound } from "@/components/project-detai
 export const Route = createFileRoute("/portal/projects/$id")({
   head: () => ({
     meta: [
-      { title: "Project — Cleard by Flōridian" },
+      { title: "Project — Cleard" },
       { name: "robots", content: "noindex" },
     ],
   }),

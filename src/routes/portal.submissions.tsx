@@ -3,7 +3,7 @@ import { createFileRoute, Link, Outlet, useRouterState } from "@tanstack/react-r
 export const Route = createFileRoute("/portal/submissions")({
   head: () => ({
     meta: [
-      { title: "Submissions — Cleard by Flōridian" },
+      { title: "Submissions — Cleard" },
       { name: "robots", content: "noindex" },
     ],
   }),

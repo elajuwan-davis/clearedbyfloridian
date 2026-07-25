@@ -23,7 +23,7 @@ import { useSession } from "@/lib/use-session";
 export const Route = createFileRoute("/profile")({
   head: () => ({
     meta: [
-      { title: "Profile — Cleard by Flōridian" },
+      { title: "Profile — Cleard" },
       { name: "robots", content: "noindex" },
     ],
   }),
@@ -273,7 +273,7 @@ function ProfilePage() {
 
 
         {/* Payment Authorization */}
-        <Section title="Payment Authorization" subtitle="Authorize Cleard by Flōridian to charge for services and permit fees.">
+        <Section title="Payment Authorization" subtitle="Authorize Cleard to charge for services and permit fees.">
           {paymentAuth ? (
             <div
               className="border bg-white p-5 rounded-[3px]"

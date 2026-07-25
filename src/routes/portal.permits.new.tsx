@@ -24,7 +24,7 @@ export const Route = createFileRoute("/portal/permits/new")({
     typeof search.edit === "string" ? { edit: search.edit } : {},
   head: () => ({
     meta: [
-      { title: "New Permit Intake — Cleard by Flōridian" },
+      { title: "New Permit Intake — Cleard" },
       { name: "robots", content: "noindex" },
     ],
   }),
