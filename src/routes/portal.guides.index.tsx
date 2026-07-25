@@ -87,8 +87,9 @@ function PortalGuidesIndex() {
               Reference / Florida Permit Library
             </div>
             <h1 className="display-serif mt-4 text-4xl md:text-5xl leading-tight">
-              Project Guides
+              Project Guides &amp; Building Specs
             </h1>
+
             <p
               className="mt-3 text-lg md:text-xl"
               style={{ color: "color-mix(in oklab, var(--paper) 75%, transparent)" }}
