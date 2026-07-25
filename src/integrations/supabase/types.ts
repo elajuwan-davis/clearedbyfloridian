@@ -275,6 +275,92 @@ export type Database = {
           },
         ]
       }
+      feature_request_votes: {
+        Row: {
+          created_at: string
+          id: string
+          request_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          request_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          request_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "feature_request_votes_request_id_fkey"
+            columns: ["request_id"]
+            isOneToOne: false
+            referencedRelation: "feature_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      feature_requests: {
+        Row: {
+          areas: Json
+          created_at: string
+          created_by: string
+          description: string
+          id: string
+          internal_note: string | null
+          pinned: boolean
+          priority: string
+          public_response: string | null
+          request_type: string
+          shipped_notified_at: string | null
+          status: string
+          tenant_id: string | null
+          title: string
+          updated_at: string
+          workflow_impact: string
+        }
+        Insert: {
+          areas?: Json
+          created_at?: string
+          created_by: string
+          description: string
+          id?: string
+          internal_note?: string | null
+          pinned?: boolean
+          priority: string
+          public_response?: string | null
+          request_type: string
+          shipped_notified_at?: string | null
+          status?: string
+          tenant_id?: string | null
+          title: string
+          updated_at?: string
+          workflow_impact: string
+        }
+        Update: {
+          areas?: Json
+          created_at?: string
+          created_by?: string
+          description?: string
+          id?: string
+          internal_note?: string | null
+          pinned?: boolean
+          priority?: string
+          public_response?: string | null
+          request_type?: string
+          shipped_notified_at?: string | null
+          status?: string
+          tenant_id?: string | null
+          title?: string
+          updated_at?: string
+          workflow_impact?: string
+        }
+        Relationships: []
+      }
       gc_coi_minimums: {
         Row: {
           created_at: string
