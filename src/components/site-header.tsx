@@ -62,7 +62,6 @@ export function SiteHeader() {
             <div className="flex h-full flex-col">
               <div className="px-6 py-6 border-b hairline">
                 <div className="wordmark text-2xl">Cleared</div>
-                <div className="wordmark-subline mt-1">by Flōridian</div>
               </div>
               <nav className="flex-1 px-3 py-4">
                 {navLinks.map((l) => (

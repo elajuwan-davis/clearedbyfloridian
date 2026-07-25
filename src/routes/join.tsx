@@ -397,7 +397,7 @@ function JoinPage() {
           className="text-[12px]"
           style={{ color: "color-mix(in oklab, " + OBSIDIAN + " 40%, transparent)" }}
         >
-          Cléared by Flōridian · © 2026 ·{" "}
+          Cléared · © 2026 ·{" "}
           <a href="https://floridianinc.com" className="hover:underline">
             floridianinc.com
           </a>

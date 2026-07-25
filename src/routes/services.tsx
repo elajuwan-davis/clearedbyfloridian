@@ -6,7 +6,7 @@ import { services } from "@/lib/mock-data";
 export const Route = createFileRoute("/services")({
   head: () => ({
     meta: [
-      { title: "Services — Cleared by Flōridian" },
+      { title: "Services — Cléared" },
       {
         name: "description",
         content:

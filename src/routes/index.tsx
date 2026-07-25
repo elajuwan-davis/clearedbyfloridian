@@ -6,13 +6,13 @@ import { MarketingShell } from "@/components/marketing-shell";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Cléared by Flōridian — Permitting, handled." },
+      { title: "Cléared — Permitting, handled." },
       {
         name: "description",
         content:
           "Cléared gives general contractors one intelligent platform to submit, track, and close permits across Florida — powered by Vicky, your AI assistant.",
       },
-      { property: "og:title", content: "Cléared by Flōridian — Permitting, handled." },
+      { property: "og:title", content: "Cléared — Permitting, handled." },
       {
         property: "og:description",
         content:
