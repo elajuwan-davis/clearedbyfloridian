@@ -68,7 +68,7 @@ function MunicipalitiesPublicPage() {
             <p className="mt-6 max-w-2xl text-base md:text-lg text-muted-foreground">
               Cleard is a registered private provider under Florida Statute
               553.791 — delivering 2-day plan review and same-day inspections
-              across nine counties statewide.
+              statewide across Florida.
             </p>
           </div>
         </section>
