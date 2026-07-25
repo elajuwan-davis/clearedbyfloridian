@@ -168,6 +168,61 @@ function BundleManagementPage() {
     setBundle({ ...bundle, trades: nextTrades });
   }
 
+  function addTrade() {
+    if (!bundle) return;
+    const label = window.prompt("Trade name (e.g. Pool, Gas, Electric)")?.trim();
+    if (!label) return;
+    const next: Bundle = {
+      ...bundle,
+      trades: [...bundle.trades, newEmptyTrade(label, bundle.trades.map((t) => t.key))],
+    };
+    persist(next, { silent: true });
+  }
+
+  function removeTrade(trade: BundleTrade) {
+    if (!bundle) return;
+    if (!window.confirm(`Remove ${trade.label} from this bundle?`)) return;
+    const next: Bundle = { ...bundle, trades: bundle.trades.filter((t) => t.key !== trade.key) };
+    persist(next, { silent: true });
+  }
+
+  function assignSubToTrade(trade: BundleTrade, sub: PermitSub) {
+    if (!bundle) return;
+    const nextTrades = bundle.trades.map((t) =>
+      t.key === trade.key
+        ? { ...t, sub_snapshot: subToSnapshot(sub), signature_status: "pending" as const, signature_sent_at: null, signature_signed_at: null }
+        : t,
+    );
+    persist({ ...bundle, trades: nextTrades }, { silent: true });
+  }
+
+  function unassignSub(trade: BundleTrade) {
+    if (!bundle) return;
+    const nextTrades = bundle.trades.map((t) =>
+      t.key === trade.key
+        ? { ...t, sub_snapshot: null, signature_status: "pending" as const, signature_sent_at: null, signature_signed_at: null }
+        : t,
+    );
+    persist({ ...bundle, trades: nextTrades }, { silent: true });
+  }
+
+  function updateTradeFee(trade: BundleTrade, dollars: string) {
+    if (!bundle) return;
+    const cents = Math.max(0, Math.round(parseFloat(dollars || "0") * 100)) || 0;
+    if (cents === (trade.budgeted_fee_cents ?? 0)) return;
+    updateTrade(trade.key, { budgeted_fee_cents: cents });
+  }
+
+  function toggleTradeFeeConfirmed(trade: BundleTrade) {
+    if (!bundle) return;
+    const next = !trade.fee_confirmed;
+    const nextBundle: Bundle = {
+      ...bundle,
+      trades: bundle.trades.map((t) => (t.key === trade.key ? { ...t, fee_confirmed: next } : t)),
+    };
+    persist(nextBundle, { silent: true });
+  }
+
   function buildManifest(includeKeys: string[]): { manifest: ManifestEntry[]; includedLabels: string[] } {
     if (!bundle) return { manifest: [], includedLabels: [] };
     const includedTrades = bundle.trades.filter((t) => includeKeys.includes(t.key));
