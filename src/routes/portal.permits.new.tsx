@@ -132,6 +132,16 @@ function NewPermitPage() {
         return { key: d.key, label: d.label, required: d.required, status, filename: s.uploaded };
       });
 
+      const subs = [
+        { trade: "Fencing", companyName: form.subFencing.companyName, qualifierName: form.subFencing.qualifierName, licenseNumber: form.subFencing.licenseNumber, contactEmail: form.subFencing.contactEmail, insuranceCarrierEmail: form.subFencing.insuranceCarrierEmail },
+        { trade: "Plumbing", companyName: form.subPlumbing.companyName, qualifierName: form.subPlumbing.qualifierName, licenseNumber: form.subPlumbing.licenseNumber, contactEmail: form.subPlumbing.contactEmail, insuranceCarrierEmail: form.subPlumbing.insuranceCarrierEmail },
+        { trade: "Electrical", companyName: form.subElectrical.companyName, qualifierName: form.subElectrical.qualifierName, licenseNumber: form.subElectrical.licenseNumber, contactEmail: form.subElectrical.contactEmail, insuranceCarrierEmail: form.subElectrical.insuranceCarrierEmail },
+        { trade: "Gas", companyName: form.subGas.companyName, qualifierName: form.subGas.qualifierName, licenseNumber: form.subGas.licenseNumber, contactEmail: form.subGas.contactEmail, insuranceCarrierEmail: form.subGas.insuranceCarrierEmail },
+      ].filter((s) => s.companyName.trim());
+
+      const wantBundle = form.bundleEnabled && subs.length >= 2;
+      const intake_payload = wantBundle ? { bundle: bundleFromSubs(subs) } : null;
+
       const row = await createPermit({
         project_name: form.projectName,
         job_address: form.address,
@@ -152,18 +162,18 @@ function NewPermitPage() {
         signer_email: form.signerEmail || null,
         submitted_date: form.submittedDate || null,
         status: "submitted",
-        subs: [
-          { trade: "Fencing", companyName: form.subFencing.companyName, qualifierName: form.subFencing.qualifierName, licenseNumber: form.subFencing.licenseNumber, contactEmail: form.subFencing.contactEmail, insuranceCarrierEmail: form.subFencing.insuranceCarrierEmail },
-          { trade: "Plumbing", companyName: form.subPlumbing.companyName, qualifierName: form.subPlumbing.qualifierName, licenseNumber: form.subPlumbing.licenseNumber, contactEmail: form.subPlumbing.contactEmail, insuranceCarrierEmail: form.subPlumbing.insuranceCarrierEmail },
-          { trade: "Electrical", companyName: form.subElectrical.companyName, qualifierName: form.subElectrical.qualifierName, licenseNumber: form.subElectrical.licenseNumber, contactEmail: form.subElectrical.contactEmail, insuranceCarrierEmail: form.subElectrical.insuranceCarrierEmail },
-          { trade: "Gas", companyName: form.subGas.companyName, qualifierName: form.subGas.qualifierName, licenseNumber: form.subGas.licenseNumber, contactEmail: form.subGas.contactEmail, insuranceCarrierEmail: form.subGas.insuranceCarrierEmail },
-        ].filter((s) => s.companyName.trim()),
+        subs,
         documents,
         extra_docs: form.extraDocs,
+        intake_payload,
       });
 
-      toast.success("Permit created");
-      navigate({ to: "/portal/permits/$id", params: { id: row.id } });
+      toast.success(wantBundle ? "Bundle permit created" : "Permit created");
+      if (wantBundle) {
+        navigate({ to: "/portal/permits/$id/bundle", params: { id: row.id } });
+      } else {
+        navigate({ to: "/portal/permits/$id", params: { id: row.id } });
+      }
     } catch (e) {
       toast.error("Failed to create permit: " + (e instanceof Error ? e.message : String(e)));
     } finally {
