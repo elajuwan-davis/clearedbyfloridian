@@ -164,5 +164,17 @@ export const submitSubIntakeFn = createServerFn({ method: "POST" })
       .maybeSingle();
     if (error) throw new Error(error.message);
     if (!row) throw new Error("Invalid or expired intake link");
+    await triggerComplianceScans(row.id, data.patch);
     return { ok: true, id: row.id };
   });
+
+async function triggerComplianceScans(subId: string, patch: Record<string, unknown>) {
+  // Fire-and-forget; errors are logged into the row via each scan handler
+  const { scanCoiFn, scanW9Fn, verifyLicenseFn } = await import("./compliance.functions");
+  const tasks: Promise<unknown>[] = [];
+  if (patch.coi_file_path) tasks.push(scanCoiFn({ data: { subId } }).catch(() => null));
+  if (patch.w9_file_path) tasks.push(scanW9Fn({ data: { subId } }).catch(() => null));
+  if (patch.license_number) tasks.push(verifyLicenseFn({ data: { subId } }).catch(() => null));
+  await Promise.allSettled(tasks);
+}
+
