@@ -349,6 +349,64 @@ function BuildingDeptPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      {/* GC Portal Login credential dialog */}
+      <Dialog open={!!loginDialog} onOpenChange={(o) => !o && setLoginDialog(null)}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Portal Login — {loginDialog?.city}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-2">
+            <p className="text-xs text-obsidian/60 leading-relaxed">
+              Your credentials are encrypted at rest and used solely by Flōridian staff to
+              submit permit documents to this building department on your behalf.
+            </p>
+            <div>
+              <Label>Username / Email</Label>
+              <Input
+                value={loginForm.username}
+                onChange={(e) => setLoginForm((f) => ({ ...f, username: e.target.value }))}
+                autoComplete="off"
+              />
+            </div>
+            <div>
+              <Label>Password</Label>
+              <div className="relative">
+                <Input
+                  type={loginShowPw ? "text" : "password"}
+                  value={loginForm.password}
+                  onChange={(e) => setLoginForm((f) => ({ ...f, password: e.target.value }))}
+                  autoComplete="new-password"
+                />
+                <button
+                  type="button"
+                  onClick={() => setLoginShowPw((s) => !s)}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-obsidian/50 hover:text-obsidian"
+                  aria-label={loginShowPw ? "Hide password" : "Show password"}
+                >
+                  {loginShowPw ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
+            </div>
+            <div>
+              <Label>Notes (optional)</Label>
+              <Textarea
+                rows={2}
+                placeholder="e.g. use secondary email, MFA on file, etc."
+                value={loginForm.notes}
+                onChange={(e) => setLoginForm((f) => ({ ...f, notes: e.target.value }))}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setLoginDialog(null)} disabled={loginSaving}>
+              Cancel
+            </Button>
+            <Button variant="dark" onClick={submitLogin} disabled={loginSaving}>
+              {loginSaving ? "Saving…" : "Save Login"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </PortalShell>
   );
 }
