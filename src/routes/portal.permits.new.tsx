@@ -937,7 +937,17 @@ function NewPermitPage() {
         </div>
       )}
     </div>
+      <VictoriaIntelligencePanel
+        mode="permit"
+        municipality={form.municipality}
+        trades={form.scopes}
+        docsProvided={docsComplete}
+        docsRequired={checklist.length}
+        className="lg:sticky lg:top-6 self-start"
+      />
+    </div>
   );
+
 }
 
 function ProContactBlock(props: {
