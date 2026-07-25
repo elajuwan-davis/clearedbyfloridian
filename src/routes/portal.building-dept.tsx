@@ -107,6 +107,29 @@ function BuildingDeptPage() {
     );
   }, [custom, query]);
 
+  const statewideRows = useMemo(() => {
+    const rows: { city: string; county: string; region: string; portalUrl?: string; deptName?: string }[] = [];
+    for (const region of MUNICIPALITY_TREE) {
+      for (const county of region.counties) {
+        for (const city of county.cities) {
+          rows.push({
+            city: city.name,
+            county: county.name,
+            region: region.name,
+            portalUrl: city.portalUrl,
+            deptName: city.deptName,
+          });
+        }
+      }
+    }
+    rows.sort((a, b) => a.city.localeCompare(b.city));
+    const q = query.trim().toLowerCase();
+    if (!q) return rows;
+    return rows.filter((r) =>
+      r.city.toLowerCase().includes(q) || r.county.toLowerCase().includes(q),
+    );
+  }, [query]);
+
   function openAdd() {
     setEditingId(null);
     setForm(EMPTY_FORM);
