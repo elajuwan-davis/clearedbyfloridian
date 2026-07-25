@@ -32,6 +32,8 @@ export type HoaTemplateRow = {
   created_by_tenant_id: string | null;
   created_at: string;
   updated_at: string;
+  current_version: number;
+  current_version_at: string;
 };
 
 export type HoaTemplateInsert = Partial<
@@ -78,8 +80,34 @@ export async function createHoaTemplate(row: HoaTemplateInsert): Promise<HoaTemp
   return data as HoaTemplateRow;
 }
 
-export async function updateHoaTemplate(id: string, patch: Partial<HoaTemplateRow>): Promise<HoaTemplateRow> {
-  const { data, error } = await T().update(patch).eq("id", id).select("*").single();
+export async function updateHoaTemplate(
+  id: string,
+  patch: Partial<HoaTemplateRow>,
+  opts?: { changedBy?: string | null; summary?: string },
+): Promise<HoaTemplateRow> {
+  // Snapshot the current row into hoa_template_versions before applying the
+  // patch — so every template edit produces an auditable history entry.
+  const current = await getHoaTemplate(id);
+  if (current) {
+    const { insertTemplateVersion } = await import("./hoa-template-versions");
+    await insertTemplateVersion(
+      id,
+      current.current_version ?? 1,
+      current,
+      opts?.changedBy ?? null,
+      opts?.summary ?? "Template updated",
+    );
+  }
+  const nextVersion = (current?.current_version ?? 1) + 1;
+  const { data, error } = await T()
+    .update({
+      ...patch,
+      current_version: nextVersion,
+      current_version_at: new Date().toISOString(),
+    })
+    .eq("id", id)
+    .select("*")
+    .single();
   if (error) throw error;
   return data as HoaTemplateRow;
 }

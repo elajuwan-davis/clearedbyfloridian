@@ -3,6 +3,7 @@
 import { getHoaSubmittal, updateHoaSubmittal, type HoaSubmittalRow } from "@/lib/hoa-submittals";
 import { getHoaTemplate, markTemplateUsed, displayNameFor, type HoaTemplateRow } from "@/lib/hoa-templates";
 import { enqueueEmail, type OutboxAttachment } from "@/lib/email-outbox";
+import { logHoaEvent } from "@/lib/hoa-events";
 
 const FLORIDIAN_FROM = "info@cleard.com";
 
@@ -172,6 +173,25 @@ export async function sendHoaSubmittal(
 
   if (submittal.template_id) {
     markTemplateUsed(submittal.template_id).catch(() => undefined);
+  }
+
+  await logHoaEvent({
+    submittalId: submittal.id,
+    tenantId: ctx.tenantId,
+    actorId: ctx.userId,
+    kind: "sent_to_hoa",
+    summary: `ARC package queued to ${hoaEmail}`,
+    details: { hoa_email: hoaEmail, attachments: attachments.length, warnings },
+  });
+  if (homeownerEmailId) {
+    await logHoaEvent({
+      submittalId: submittal.id,
+      tenantId: ctx.tenantId,
+      actorId: ctx.userId,
+      kind: "homeowner_notified",
+      summary: `Deposit notice queued to ${homeownerEmail}`,
+      details: { homeowner_email: homeownerEmail },
+    });
   }
 
   return {

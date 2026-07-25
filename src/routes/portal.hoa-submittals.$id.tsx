@@ -14,6 +14,8 @@ import {
   Loader2,
   Send,
   Mail,
+  Clock,
+  MessageSquare,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useSession } from "@/lib/use-session";
@@ -35,6 +37,8 @@ import {
 import { getHoaTemplate, displayNameFor, type HoaTemplateRow } from "@/lib/hoa-templates";
 import { sendHoaSubmittal } from "@/lib/hoa-send";
 import { buildAndStoreBoilerplate, buildAndStoreRemovalAgreement } from "@/lib/hoa-pdf";
+import { logHoaEvent, listHoaEvents, type HoaSubmittalEvent } from "@/lib/hoa-events";
+import { logHoaReply, listHoaReplies, type HoaReplyRow } from "@/lib/hoa-replies";
 
 export const Route = createFileRoute("/portal/hoa-submittals/$id")({
   head: () => ({
@@ -77,6 +81,18 @@ function HoaSubmittalEditor() {
   const [sending, setSending] = useState(false);
   const [generating, setGenerating] = useState<"pdf" | "removal" | null>(null);
   const [err, setErr] = useState<string | null>(null);
+  const [events, setEvents] = useState<HoaSubmittalEvent[]>([]);
+  const [replies, setReplies] = useState<HoaReplyRow[]>([]);
+  const [replyDraft, setReplyDraft] = useState({ subject: "", fromEmail: "", body: "" });
+  const [loggingReply, setLoggingReply] = useState(false);
+
+  async function refreshTimeline() {
+    try {
+      const [ev, rp] = await Promise.all([listHoaEvents(id), listHoaReplies(id)]);
+      setEvents(ev);
+      setReplies(rp);
+    } catch { /* ignore */ }
+  }
 
   useEffect(() => {
     getHoaSubmittal(id).then(async (r) => {
@@ -85,6 +101,8 @@ function HoaSubmittalEditor() {
         try { setTemplate(await getHoaTemplate(r.template_id)); } catch { /* ignore */ }
       }
     }).catch((e) => setErr(String(e?.message ?? e)));
+    refreshTimeline();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   function patch<K extends keyof HoaSubmittalRow>(key: K, value: HoaSubmittalRow[K]) {
@@ -147,12 +165,22 @@ function HoaSubmittalEditor() {
 
   async function changeStatus(next: HoaStatus) {
     if (!row) return;
+    const prev = row.status;
     try {
       const updated = await updateHoaSubmittal(row.id, {
         status: next,
         submitted_at: next !== "draft" && !row.submitted_at ? new Date().toISOString() : row.submitted_at,
       });
       setRow(updated);
+      await logHoaEvent({
+        submittalId: row.id,
+        tenantId: session.effectiveTenantId,
+        actorId: session.userId,
+        kind: "status_changed",
+        summary: `Status: ${HOA_STATUS_LABELS[prev]} → ${HOA_STATUS_LABELS[next]}`,
+        details: { from: prev, to: next },
+      });
+      refreshTimeline();
       toast.success(`Status updated: ${HOA_STATUS_LABELS[next]}`);
     } catch (e: any) {
       toast.error(e?.message ?? "Failed to update status");
@@ -179,6 +207,15 @@ function HoaSubmittalEditor() {
       );
       setRow({ ...row, checklist: next });
       await updateHoaSubmittal(row.id, { checklist: next });
+      await logHoaEvent({
+        submittalId: row.id,
+        tenantId: session.effectiveTenantId,
+        actorId: session.userId,
+        kind: "document_added",
+        summary: `Uploaded ${up.filename} for ${row.checklist[idx].label}`,
+        details: { key: row.checklist[idx].key, path: up.path },
+      });
+      refreshTimeline();
       toast.success("Uploaded");
     } catch (e: any) {
       toast.error(e?.message ?? "Upload failed");
@@ -199,6 +236,15 @@ function HoaSubmittalEditor() {
       const path = await buildAndStoreBoilerplate({ ...latest, ...row });
       const updated = await getHoaSubmittal(row.id);
       if (updated) setRow(updated);
+      await logHoaEvent({
+        submittalId: row.id,
+        tenantId: session.effectiveTenantId,
+        actorId: session.userId,
+        kind: "pdf_generated",
+        summary: "Submittal PDF generated",
+        details: { path },
+      });
+      refreshTimeline();
       toast.success("Submittal PDF generated");
       const url = await getHoaFileSignedUrl(path);
       if (url) window.open(url, "_blank", "noopener");
@@ -216,6 +262,15 @@ function HoaSubmittalEditor() {
       const path = await buildAndStoreRemovalAgreement(row);
       const updated = await getHoaSubmittal(row.id);
       if (updated) setRow(updated);
+      await logHoaEvent({
+        submittalId: row.id,
+        tenantId: session.effectiveTenantId,
+        actorId: session.userId,
+        kind: "removal_agreement_generated",
+        summary: "Removal Agreement generated",
+        details: { path },
+      });
+      refreshTimeline();
       toast.success("Removal Agreement generated");
       const url = await getHoaFileSignedUrl(path);
       if (url) window.open(url, "_blank", "noopener");
@@ -225,6 +280,44 @@ function HoaSubmittalEditor() {
       setGenerating(null);
     }
   }
+
+  async function submitReply() {
+    if (!row || loggingReply) return;
+    const subject = replyDraft.subject.trim();
+    const body = replyDraft.body.trim();
+    if (!subject || !body) {
+      toast.error("Subject and body are required to log a reply.");
+      return;
+    }
+    setLoggingReply(true);
+    try {
+      await logHoaReply({
+        submittalId: row.id,
+        tenantId: session.effectiveTenantId,
+        loggedBy: session.userId,
+        direction: "inbound",
+        fromEmail: replyDraft.fromEmail || template?.hoa_contact_email || null,
+        fromName: template?.hoa_contact_name ?? null,
+        subject,
+        bodyText: body,
+      });
+      await logHoaEvent({
+        submittalId: row.id,
+        tenantId: session.effectiveTenantId,
+        actorId: session.userId,
+        kind: "hoa_reply_logged",
+        summary: `Reply logged: ${subject}`,
+      });
+      setReplyDraft({ subject: "", fromEmail: "", body: "" });
+      refreshTimeline();
+      toast.success("Reply logged");
+    } catch (e: any) {
+      toast.error(e?.message ?? "Failed to log reply");
+    } finally {
+      setLoggingReply(false);
+    }
+  }
+
 
   async function onDelete() {
     if (!row) return;
@@ -268,6 +361,7 @@ function HoaSubmittalEditor() {
       });
       const updated = await getHoaSubmittal(row.id);
       if (updated) setRow(updated);
+      refreshTimeline();
       for (const w of res.warnings) toast.warning(w);
       toast.success(
         res.homeownerEmailId
@@ -510,6 +604,85 @@ function HoaSubmittalEditor() {
             className="w-full border border-obsidian/20 bg-white px-3 py-2 text-sm rounded-[3px]"
             placeholder="Internal notes on ARC review, meeting date, comments…"
           />
+        </Section>
+
+        <Section title="HOA Reply Thread" columns={1}>
+          {replies.length === 0 ? (
+            <div className="text-sm text-muted-foreground">
+              No correspondence logged yet. Paste an HOA reply below to keep the thread in one place.
+            </div>
+          ) : (
+            <ul className="space-y-3">
+              {replies.map((r) => (
+                <li key={r.id} className="border border-obsidian/10 rounded-[3px] p-3 bg-paper-warm">
+                  <div className="flex flex-wrap items-baseline justify-between gap-2 text-xs text-obsidian/60">
+                    <span className="inline-flex items-center gap-1">
+                      <MessageSquare className="h-3 w-3" />
+                      {r.direction === "inbound" ? "From HOA" : "From Cleard"}
+                      {r.from_email ? ` · ${r.from_email}` : ""}
+                    </span>
+                    <span>{new Date(r.received_at).toLocaleString()}</span>
+                  </div>
+                  <div className="mt-1 font-medium text-obsidian text-sm">{r.subject ?? "(no subject)"}</div>
+                  {r.body_text && (
+                    <pre className="mt-2 whitespace-pre-wrap text-sm text-obsidian/80 font-body">{r.body_text}</pre>
+                  )}
+                </li>
+              ))}
+            </ul>
+          )}
+          <div className="pt-4 border-t border-obsidian/10 space-y-2">
+            <div className="text-xs uppercase tracking-wide text-obsidian/60">Log an HOA reply</div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <input
+                type="text"
+                placeholder="Subject"
+                value={replyDraft.subject}
+                onChange={(e) => setReplyDraft({ ...replyDraft, subject: e.target.value })}
+                className="border border-obsidian/20 bg-white px-3 py-2 text-sm rounded-[3px]"
+              />
+              <input
+                type="email"
+                placeholder={`From email${template?.hoa_contact_email ? ` (default ${template.hoa_contact_email})` : ""}`}
+                value={replyDraft.fromEmail}
+                onChange={(e) => setReplyDraft({ ...replyDraft, fromEmail: e.target.value })}
+                className="border border-obsidian/20 bg-white px-3 py-2 text-sm rounded-[3px]"
+              />
+            </div>
+            <textarea
+              rows={4}
+              placeholder="Paste the HOA reply here…"
+              value={replyDraft.body}
+              onChange={(e) => setReplyDraft({ ...replyDraft, body: e.target.value })}
+              className="w-full border border-obsidian/20 bg-white px-3 py-2 text-sm rounded-[3px]"
+            />
+            <div>
+              <Button variant="dark" className="rounded-[3px] gap-2" onClick={submitReply} disabled={loggingReply}>
+                {loggingReply ? <><Loader2 className="h-4 w-4 animate-spin" /> Logging…</> : <><MessageSquare className="h-4 w-4" /> Log reply</>}
+              </Button>
+            </div>
+          </div>
+        </Section>
+
+        <Section title="Audit Timeline" columns={1}>
+          {events.length === 0 ? (
+            <div className="text-sm text-muted-foreground">No events yet. Actions on this submittal will appear here.</div>
+          ) : (
+            <ol className="space-y-2">
+              {events.map((ev) => (
+                <li key={ev.id} className="flex gap-3 text-sm">
+                  <Clock className="h-4 w-4 mt-0.5 text-obsidian/40 flex-none" />
+                  <div className="flex-1">
+                    <div className="text-obsidian">{ev.summary}</div>
+                    <div className="text-xs text-obsidian/50">
+                      {new Date(ev.created_at).toLocaleString()}
+                      {ev.actor_label ? ` · ${ev.actor_label}` : ""}
+                    </div>
+                  </div>
+                </li>
+              ))}
+            </ol>
+          )}
         </Section>
       </div>
     </>

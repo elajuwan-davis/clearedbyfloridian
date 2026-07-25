@@ -1,0 +1,172 @@
+// Email outbox worker — invoked on a schedule (pg_cron) or on demand.
+// Pulls up to N queued emails whose next_attempt_at has arrived, tries to
+// send each via Resend (through the Lovable connector gateway), and applies
+// exponential backoff on failure. Uses the Supabase service role because
+// email_outbox is tenant-scoped and this route runs unauthenticated.
+//
+// Security: apikey header must match SUPABASE_PUBLISHABLE_KEY (public
+// project key). The route only touches the internal outbox table and does
+// not return PII beyond message IDs and error strings.
+import { createFileRoute } from "@tanstack/react-router";
+
+const FROM_ADDRESS = "Cleard <info@cleard.com>";
+const MAX_ATTEMPTS = 5;
+const BATCH_SIZE = 20;
+
+function unauthorized() {
+  return new Response("Unauthorized", { status: 401 });
+}
+
+function backoffSeconds(attempts: number): number {
+  // 1m, 5m, 15m, 60m, 240m
+  const ladder = [60, 300, 900, 3600, 14400];
+  return ladder[Math.min(attempts, ladder.length - 1)];
+}
+
+type OutboxRow = {
+  id: string;
+  kind: string;
+  to_email: string;
+  to_name: string | null;
+  cc_emails: string[] | null;
+  subject: string;
+  body_text: string;
+  body_html: string | null;
+  attempts: number;
+  status: string;
+  related_submittal_id: string | null;
+  tenant_id: string | null;
+};
+
+async function sendViaResend(row: OutboxRow): Promise<{ ok: true; providerId: string | null } | { ok: false; error: string; retriable: boolean }> {
+  const LOVABLE_API_KEY = process.env.LOVABLE_API_KEY;
+  const RESEND_API_KEY = process.env.RESEND_API_KEY;
+  if (!LOVABLE_API_KEY || !RESEND_API_KEY) {
+    return {
+      ok: false,
+      retriable: false,
+      error:
+        "Email provider is not configured. Add the Resend connector to send from info@cleard.com.",
+    };
+  }
+  const res = await fetch("https://connector-gateway.lovable.dev/resend/emails", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${LOVABLE_API_KEY}`,
+      "X-Connection-Api-Key": RESEND_API_KEY,
+    },
+    body: JSON.stringify({
+      from: FROM_ADDRESS,
+      to: [row.to_email],
+      cc: row.cc_emails && row.cc_emails.length ? row.cc_emails : undefined,
+      subject: row.subject,
+      text: row.body_text,
+      html: row.body_html ?? undefined,
+      headers: row.related_submittal_id
+        ? { "X-Cleard-Submittal": row.related_submittal_id }
+        : undefined,
+    }),
+  });
+  const text = await res.text();
+  if (!res.ok) {
+    // 4xx = permanent (bad address, blocked domain); 5xx / 429 = retriable
+    const retriable = res.status >= 500 || res.status === 429;
+    return { ok: false, retriable, error: `Resend ${res.status}: ${text.slice(0, 400)}` };
+  }
+  let providerId: string | null = null;
+  try {
+    const j = JSON.parse(text) as { id?: string };
+    providerId = j.id ?? null;
+  } catch {
+    /* ignore */
+  }
+  return { ok: true, providerId };
+}
+
+export const Route = createFileRoute("/api/public/email-outbox/process")({
+  server: {
+    handlers: {
+      POST: async ({ request }) => {
+        const publishable = process.env.SUPABASE_PUBLISHABLE_KEY;
+        const apiKeyHeader = request.headers.get("apikey");
+        if (!publishable || apiKeyHeader !== publishable) return unauthorized();
+
+        const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+        const nowIso = new Date().toISOString();
+        const { data: due, error } = await supabaseAdmin
+          .from("email_outbox" as any)
+          .select("*")
+          .in("status", ["queued", "retry"])
+          .lte("next_attempt_at", nowIso)
+          .order("created_at", { ascending: true })
+          .limit(BATCH_SIZE);
+        if (error) {
+          return new Response(JSON.stringify({ error: error.message }), {
+            status: 500,
+            headers: { "Content-Type": "application/json" },
+          });
+        }
+
+        const rows = (due ?? []) as unknown as OutboxRow[];
+        let sent = 0;
+        let failed = 0;
+        let deferred = 0;
+
+        for (const row of rows) {
+          const attempts = (row.attempts ?? 0) + 1;
+          const attemptAt = new Date().toISOString();
+          // Claim the row so parallel invocations don't double-send.
+          const claim = await (supabaseAdmin.from("email_outbox" as any) as any)
+            .update({
+              status: "sending",
+              last_attempt_at: attemptAt,
+              attempts,
+            })
+            .eq("id", row.id)
+            .eq("status", row.status)
+            .select("id")
+            .maybeSingle();
+          if (!claim.data) continue; // someone else grabbed it
+
+          const result = await sendViaResend(row);
+          if (result.ok) {
+            await (supabaseAdmin.from("email_outbox" as any) as any)
+              .update({
+                status: "sent",
+                sent_at: new Date().toISOString(),
+                error: null,
+                provider_message_id: result.providerId,
+              })
+              .eq("id", row.id);
+            sent++;
+          } else if (result.retriable && attempts < MAX_ATTEMPTS) {
+            const nextAt = new Date(Date.now() + backoffSeconds(attempts) * 1000).toISOString();
+            await (supabaseAdmin.from("email_outbox" as any) as any)
+              .update({
+                status: "retry",
+                next_attempt_at: nextAt,
+                error: result.error,
+              })
+              .eq("id", row.id);
+            deferred++;
+          } else {
+            await (supabaseAdmin.from("email_outbox" as any) as any)
+              .update({
+                status: "failed",
+                error: result.error,
+              })
+              .eq("id", row.id);
+            failed++;
+          }
+        }
+
+        return new Response(
+          JSON.stringify({ processed: rows.length, sent, failed, deferred }),
+          { status: 200, headers: { "Content-Type": "application/json" } },
+        );
+      },
+    },
+  },
+});

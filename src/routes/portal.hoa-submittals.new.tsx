@@ -208,6 +208,11 @@ function NewHoaSubmittal() {
                   <dd className="text-obsidian/80 text-right">{money(tpl.deposit_amount_cents)}</dd>
                   <dt className="text-obsidian/50">Last used</dt>
                   <dd className="text-obsidian/80 text-right">{relDate(tpl.last_used_at)}</dd>
+                  <dt className="text-obsidian/50">Version</dt>
+                  <dd className="text-obsidian/80 text-right">
+                    v{tpl.current_version ?? 1}
+                    {tpl.current_version_at ? ` · ${new Date(tpl.current_version_at).toLocaleDateString("en-US", { month: "short", year: "numeric" })}` : ""}
+                  </dd>
                 </dl>
                 <div className="mt-auto pt-2">
                   <Button

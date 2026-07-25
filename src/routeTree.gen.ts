@@ -86,10 +86,12 @@ import { Route as PortalBlogNewRouteImport } from './routes/portal.blog.new'
 import { Route as PortalBlogIdRouteImport } from './routes/portal.blog.$id'
 import { Route as ApiPublicSubIntakeUploadRouteImport } from './routes/api/public/sub-intake-upload'
 import { Route as ApiPublicSeedTeamRouteImport } from './routes/api/public/seed-team'
+import { Route as ApiPublicHoaReplyRouteImport } from './routes/api/public/hoa-reply'
 import { Route as ApiPublicAccessRequestRouteImport } from './routes/api/public/access-request'
 import { Route as PortalPermitsIdBundleRouteImport } from './routes/portal.permits.$id.bundle'
 import { Route as PortalHoaSubmittalsTemplatesNewRouteImport } from './routes/portal.hoa-submittals.templates.new'
 import { Route as ApiPublicHubspotDealWebhookRouteImport } from './routes/api/public/hubspot.deal-webhook'
+import { Route as ApiPublicEmailOutboxProcessRouteImport } from './routes/api/public/email-outbox.process'
 
 const SubPortalRoute = SubPortalRouteImport.update({
   id: '/sub-portal',
@@ -483,6 +485,11 @@ const ApiPublicSeedTeamRoute = ApiPublicSeedTeamRouteImport.update({
   path: '/api/public/seed-team',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicHoaReplyRoute = ApiPublicHoaReplyRouteImport.update({
+  id: '/api/public/hoa-reply',
+  path: '/api/public/hoa-reply',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicAccessRequestRoute = ApiPublicAccessRequestRouteImport.update({
   id: '/api/public/access-request',
   path: '/api/public/access-request',
@@ -503,6 +510,12 @@ const ApiPublicHubspotDealWebhookRoute =
   ApiPublicHubspotDealWebhookRouteImport.update({
     id: '/api/public/hubspot/deal-webhook',
     path: '/api/public/hubspot/deal-webhook',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiPublicEmailOutboxProcessRoute =
+  ApiPublicEmailOutboxProcessRouteImport.update({
+    id: '/api/public/email-outbox/process',
+    path: '/api/public/email-outbox/process',
     getParentRoute: () => rootRouteImport,
   } as any)
 
@@ -567,6 +580,7 @@ export interface FileRoutesByFullPath {
   '/portal/': typeof PortalIndexRoute
   '/versus/': typeof VersusIndexRoute
   '/api/public/access-request': typeof ApiPublicAccessRequestRoute
+  '/api/public/hoa-reply': typeof ApiPublicHoaReplyRoute
   '/api/public/seed-team': typeof ApiPublicSeedTeamRoute
   '/api/public/sub-intake-upload': typeof ApiPublicSubIntakeUploadRoute
   '/portal/blog/$id': typeof PortalBlogIdRoute
@@ -585,6 +599,7 @@ export interface FileRoutesByFullPath {
   '/portal/permits/': typeof PortalPermitsIndexRoute
   '/portal/subcontractors/': typeof PortalSubcontractorsIndexRoute
   '/portal/submissions/': typeof PortalSubmissionsIndexRoute
+  '/api/public/email-outbox/process': typeof ApiPublicEmailOutboxProcessRoute
   '/api/public/hubspot/deal-webhook': typeof ApiPublicHubspotDealWebhookRoute
   '/portal/hoa-submittals/templates/new': typeof PortalHoaSubmittalsTemplatesNewRoute
   '/portal/permits/$id/bundle': typeof PortalPermitsIdBundleRoute
@@ -647,6 +662,7 @@ export interface FileRoutesByTo {
   '/portal': typeof PortalIndexRoute
   '/versus': typeof VersusIndexRoute
   '/api/public/access-request': typeof ApiPublicAccessRequestRoute
+  '/api/public/hoa-reply': typeof ApiPublicHoaReplyRoute
   '/api/public/seed-team': typeof ApiPublicSeedTeamRoute
   '/api/public/sub-intake-upload': typeof ApiPublicSubIntakeUploadRoute
   '/portal/blog/$id': typeof PortalBlogIdRoute
@@ -665,6 +681,7 @@ export interface FileRoutesByTo {
   '/portal/permits': typeof PortalPermitsIndexRoute
   '/portal/subcontractors': typeof PortalSubcontractorsIndexRoute
   '/portal/submissions': typeof PortalSubmissionsIndexRoute
+  '/api/public/email-outbox/process': typeof ApiPublicEmailOutboxProcessRoute
   '/api/public/hubspot/deal-webhook': typeof ApiPublicHubspotDealWebhookRoute
   '/portal/hoa-submittals/templates/new': typeof PortalHoaSubmittalsTemplatesNewRoute
   '/portal/permits/$id/bundle': typeof PortalPermitsIdBundleRoute
@@ -731,6 +748,7 @@ export interface FileRoutesById {
   '/portal/': typeof PortalIndexRoute
   '/versus/': typeof VersusIndexRoute
   '/api/public/access-request': typeof ApiPublicAccessRequestRoute
+  '/api/public/hoa-reply': typeof ApiPublicHoaReplyRoute
   '/api/public/seed-team': typeof ApiPublicSeedTeamRoute
   '/api/public/sub-intake-upload': typeof ApiPublicSubIntakeUploadRoute
   '/portal/blog/$id': typeof PortalBlogIdRoute
@@ -749,6 +767,7 @@ export interface FileRoutesById {
   '/portal/permits/': typeof PortalPermitsIndexRoute
   '/portal/subcontractors/': typeof PortalSubcontractorsIndexRoute
   '/portal/submissions/': typeof PortalSubmissionsIndexRoute
+  '/api/public/email-outbox/process': typeof ApiPublicEmailOutboxProcessRoute
   '/api/public/hubspot/deal-webhook': typeof ApiPublicHubspotDealWebhookRoute
   '/portal/hoa-submittals/templates/new': typeof PortalHoaSubmittalsTemplatesNewRoute
   '/portal/permits/$id/bundle': typeof PortalPermitsIdBundleRoute
@@ -816,6 +835,7 @@ export interface FileRouteTypes {
     | '/portal/'
     | '/versus/'
     | '/api/public/access-request'
+    | '/api/public/hoa-reply'
     | '/api/public/seed-team'
     | '/api/public/sub-intake-upload'
     | '/portal/blog/$id'
@@ -834,6 +854,7 @@ export interface FileRouteTypes {
     | '/portal/permits/'
     | '/portal/subcontractors/'
     | '/portal/submissions/'
+    | '/api/public/email-outbox/process'
     | '/api/public/hubspot/deal-webhook'
     | '/portal/hoa-submittals/templates/new'
     | '/portal/permits/$id/bundle'
@@ -896,6 +917,7 @@ export interface FileRouteTypes {
     | '/portal'
     | '/versus'
     | '/api/public/access-request'
+    | '/api/public/hoa-reply'
     | '/api/public/seed-team'
     | '/api/public/sub-intake-upload'
     | '/portal/blog/$id'
@@ -914,6 +936,7 @@ export interface FileRouteTypes {
     | '/portal/permits'
     | '/portal/subcontractors'
     | '/portal/submissions'
+    | '/api/public/email-outbox/process'
     | '/api/public/hubspot/deal-webhook'
     | '/portal/hoa-submittals/templates/new'
     | '/portal/permits/$id/bundle'
@@ -979,6 +1002,7 @@ export interface FileRouteTypes {
     | '/portal/'
     | '/versus/'
     | '/api/public/access-request'
+    | '/api/public/hoa-reply'
     | '/api/public/seed-team'
     | '/api/public/sub-intake-upload'
     | '/portal/blog/$id'
@@ -997,6 +1021,7 @@ export interface FileRouteTypes {
     | '/portal/permits/'
     | '/portal/subcontractors/'
     | '/portal/submissions/'
+    | '/api/public/email-outbox/process'
     | '/api/public/hubspot/deal-webhook'
     | '/portal/hoa-submittals/templates/new'
     | '/portal/permits/$id/bundle'
@@ -1039,8 +1064,10 @@ export interface RootRouteChildren {
   BlogIndexRoute: typeof BlogIndexRoute
   VersusIndexRoute: typeof VersusIndexRoute
   ApiPublicAccessRequestRoute: typeof ApiPublicAccessRequestRoute
+  ApiPublicHoaReplyRoute: typeof ApiPublicHoaReplyRoute
   ApiPublicSeedTeamRoute: typeof ApiPublicSeedTeamRoute
   ApiPublicSubIntakeUploadRoute: typeof ApiPublicSubIntakeUploadRoute
+  ApiPublicEmailOutboxProcessRoute: typeof ApiPublicEmailOutboxProcessRoute
   ApiPublicHubspotDealWebhookRoute: typeof ApiPublicHubspotDealWebhookRoute
 }
 
@@ -1585,6 +1612,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicSeedTeamRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/hoa-reply': {
+      id: '/api/public/hoa-reply'
+      path: '/api/public/hoa-reply'
+      fullPath: '/api/public/hoa-reply'
+      preLoaderRoute: typeof ApiPublicHoaReplyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/access-request': {
       id: '/api/public/access-request'
       path: '/api/public/access-request'
@@ -1611,6 +1645,13 @@ declare module '@tanstack/react-router' {
       path: '/api/public/hubspot/deal-webhook'
       fullPath: '/api/public/hubspot/deal-webhook'
       preLoaderRoute: typeof ApiPublicHubspotDealWebhookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/email-outbox/process': {
+      id: '/api/public/email-outbox/process'
+      path: '/api/public/email-outbox/process'
+      fullPath: '/api/public/email-outbox/process'
+      preLoaderRoute: typeof ApiPublicEmailOutboxProcessRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -1830,8 +1871,10 @@ const rootRouteChildren: RootRouteChildren = {
   BlogIndexRoute: BlogIndexRoute,
   VersusIndexRoute: VersusIndexRoute,
   ApiPublicAccessRequestRoute: ApiPublicAccessRequestRoute,
+  ApiPublicHoaReplyRoute: ApiPublicHoaReplyRoute,
   ApiPublicSeedTeamRoute: ApiPublicSeedTeamRoute,
   ApiPublicSubIntakeUploadRoute: ApiPublicSubIntakeUploadRoute,
+  ApiPublicEmailOutboxProcessRoute: ApiPublicEmailOutboxProcessRoute,
   ApiPublicHubspotDealWebhookRoute: ApiPublicHubspotDealWebhookRoute,
 }
 export const routeTree = rootRouteImport

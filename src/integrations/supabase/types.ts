@@ -198,6 +198,7 @@ export type Database = {
       email_outbox: {
         Row: {
           attachments: Json
+          attempts: number
           body_html: string | null
           body_text: string
           cc_emails: string[]
@@ -206,6 +207,9 @@ export type Database = {
           error: string | null
           id: string
           kind: string
+          last_attempt_at: string | null
+          next_attempt_at: string
+          provider_message_id: string | null
           related_submittal_id: string | null
           sent_at: string | null
           status: string
@@ -217,6 +221,7 @@ export type Database = {
         }
         Insert: {
           attachments?: Json
+          attempts?: number
           body_html?: string | null
           body_text: string
           cc_emails?: string[]
@@ -225,6 +230,9 @@ export type Database = {
           error?: string | null
           id?: string
           kind: string
+          last_attempt_at?: string | null
+          next_attempt_at?: string
+          provider_message_id?: string | null
           related_submittal_id?: string | null
           sent_at?: string | null
           status?: string
@@ -236,6 +244,7 @@ export type Database = {
         }
         Update: {
           attachments?: Json
+          attempts?: number
           body_html?: string | null
           body_text?: string
           cc_emails?: string[]
@@ -244,6 +253,9 @@ export type Database = {
           error?: string | null
           id?: string
           kind?: string
+          last_attempt_at?: string | null
+          next_attempt_at?: string
+          provider_message_id?: string | null
           related_submittal_id?: string | null
           sent_at?: string | null
           status?: string
@@ -353,6 +365,109 @@ export type Database = {
             columns: ["tenant_id"]
             isOneToOne: false
             referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      hoa_submittal_events: {
+        Row: {
+          actor_id: string | null
+          actor_label: string | null
+          created_at: string
+          details: Json
+          id: string
+          kind: string
+          submittal_id: string
+          summary: string
+          tenant_id: string | null
+        }
+        Insert: {
+          actor_id?: string | null
+          actor_label?: string | null
+          created_at?: string
+          details?: Json
+          id?: string
+          kind: string
+          submittal_id: string
+          summary: string
+          tenant_id?: string | null
+        }
+        Update: {
+          actor_id?: string | null
+          actor_label?: string | null
+          created_at?: string
+          details?: Json
+          id?: string
+          kind?: string
+          submittal_id?: string
+          summary?: string
+          tenant_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hoa_submittal_events_submittal_id_fkey"
+            columns: ["submittal_id"]
+            isOneToOne: false
+            referencedRelation: "hoa_submittals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      hoa_submittal_replies: {
+        Row: {
+          body_html: string | null
+          body_text: string | null
+          created_at: string
+          direction: string
+          from_email: string | null
+          from_name: string | null
+          id: string
+          logged_by: string | null
+          provider_message_id: string | null
+          received_at: string
+          subject: string | null
+          submittal_id: string
+          tenant_id: string | null
+          to_email: string | null
+        }
+        Insert: {
+          body_html?: string | null
+          body_text?: string | null
+          created_at?: string
+          direction?: string
+          from_email?: string | null
+          from_name?: string | null
+          id?: string
+          logged_by?: string | null
+          provider_message_id?: string | null
+          received_at?: string
+          subject?: string | null
+          submittal_id: string
+          tenant_id?: string | null
+          to_email?: string | null
+        }
+        Update: {
+          body_html?: string | null
+          body_text?: string | null
+          created_at?: string
+          direction?: string
+          from_email?: string | null
+          from_name?: string | null
+          id?: string
+          logged_by?: string | null
+          provider_message_id?: string | null
+          received_at?: string
+          subject?: string | null
+          submittal_id?: string
+          tenant_id?: string | null
+          to_email?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hoa_submittal_replies_submittal_id_fkey"
+            columns: ["submittal_id"]
+            isOneToOne: false
+            referencedRelation: "hoa_submittals"
             referencedColumns: ["id"]
           },
         ]
@@ -510,6 +625,44 @@ export type Database = {
           },
         ]
       }
+      hoa_template_versions: {
+        Row: {
+          change_summary: string | null
+          changed_by: string | null
+          created_at: string
+          id: string
+          snapshot: Json
+          template_id: string
+          version: number
+        }
+        Insert: {
+          change_summary?: string | null
+          changed_by?: string | null
+          created_at?: string
+          id?: string
+          snapshot: Json
+          template_id: string
+          version: number
+        }
+        Update: {
+          change_summary?: string | null
+          changed_by?: string | null
+          created_at?: string
+          id?: string
+          snapshot?: Json
+          template_id?: string
+          version?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hoa_template_versions_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "hoa_templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       hoa_templates: {
         Row: {
           arc_meeting_notes: string | null
@@ -518,6 +671,8 @@ export type Database = {
           created_at: string
           created_by: string | null
           created_by_tenant_id: string | null
+          current_version: number
+          current_version_at: string
           deposit_amount_cents: number
           deposit_type: string | null
           form_template: Json
@@ -540,6 +695,8 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           created_by_tenant_id?: string | null
+          current_version?: number
+          current_version_at?: string
           deposit_amount_cents?: number
           deposit_type?: string | null
           form_template?: Json
@@ -562,6 +719,8 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           created_by_tenant_id?: string | null
+          current_version?: number
+          current_version_at?: string
           deposit_amount_cents?: number
           deposit_type?: string | null
           form_template?: Json
