@@ -93,9 +93,23 @@ export async function createPermit(row: Partial<PermitInsert>): Promise<PermitRo
 }
 
 export async function updatePermit(id: string, patch: Partial<PermitInsert>): Promise<PermitRow> {
+  // Snapshot prior status to detect transitions for notifications
+  let priorStatus: PermitStatus | null = null;
+  if (patch.status) {
+    const { data: before } = await T().select("status, project_name").eq("id", id).maybeSingle();
+    priorStatus = (before?.status as PermitStatus) ?? null;
+  }
   const { data, error } = await T().update(patch).eq("id", id).select("*").single();
   if (error) throw error;
-  return data as PermitRow;
+  const row = data as PermitRow;
+  if (patch.status && priorStatus !== row.status) {
+    try {
+      const { notifTitleForStatus, triggerNotification } = await import("@/lib/notifications-api");
+      const evt = notifTitleForStatus(row.status, row.project_name);
+      if (evt) await triggerNotification({ kind: evt.kind, title: evt.title, permit_id: row.id });
+    } catch { /* best-effort */ }
+  }
+  return row;
 }
 
 export async function deletePermit(id: string): Promise<void> {

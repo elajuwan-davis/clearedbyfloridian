@@ -15,6 +15,7 @@ import { Upload, Plus, Trash2, FileText, CheckCircle2, AlertTriangle, CreditCard
 import { toast } from "sonner";
 import { loadPaymentAuth, clearPaymentAuth, type PaymentAuthRecord } from "@/lib/payment-auth";
 import { supabase } from "@/integrations/supabase/client";
+import { NotificationPrefsSection } from "@/components/notification-prefs-section";
 
 export const Route = createFileRoute("/profile")({
   head: () => ({
@@ -392,6 +393,8 @@ function ProfilePage() {
             <Button onClick={changePassword} variant="dark" className="rounded-[3px]">Update password</Button>
           </div>
         </Section>
+
+        <NotificationPrefsSection />
       </div>
     </PortalShell>
   );
