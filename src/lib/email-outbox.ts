@@ -7,6 +7,9 @@ import { supabase } from "@/integrations/supabase/client";
 export type OutboxKind =
   | "hoa_submittal_to_hoa"
   | "hoa_deposit_to_homeowner"
+  | "lien_release_request"
+  | "lien_release_reminder"
+  | "victoria_alert"
   | "generic";
 
 export type OutboxAttachment = {
