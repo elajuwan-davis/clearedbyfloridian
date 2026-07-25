@@ -23,33 +23,6 @@ export const Route = createFileRoute("/municipalities")({
   component: MunicipalitiesPublicPage,
 });
 
-const REGIONS = [
-  {
-    label: "South Florida",
-    counties: [
-      "Miami-Dade",
-      "Broward",
-      "Palm Beach",
-      "Martin",
-      "St. Lucie",
-      "Indian River",
-    ],
-  },
-  {
-    label: "Central Florida",
-    counties: [
-      "Orange",
-      "Seminole",
-      "Osceola",
-      "Brevard",
-      "Hillsborough",
-      "Pinellas",
-      "Polk",
-      "Manatee",
-      "Sarasota",
-    ],
-  },
-];
 
 function FloridaOutline() {
   return (
