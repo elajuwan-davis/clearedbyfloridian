@@ -5,7 +5,7 @@ import { LogPermitFeeDialog } from "@/components/log-permit-fee-dialog";
 import { listAllFees, deleteFee, fmtUsd, type ManualFee } from "@/lib/manual-fees";
 import { PROJECTS } from "@/lib/projects-data";
 import { listPermits, type PermitRow } from "@/lib/permits-api";
-import { getBundle } from "@/lib/bundle";
+import { getBundle, bundleBudgetedTotal, bundleAllFeesConfirmed } from "@/lib/bundle";
 
 export const Route = createFileRoute("/portal/permit-fees")({
   head: () => ({
