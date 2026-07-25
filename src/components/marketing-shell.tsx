@@ -82,6 +82,10 @@ function MarketingNav() {
             <Link to="/join" hash="request" onClick={() => setOpen(false)} className="md-btn-gold-outline w-full">
               Request Access
             </Link>
+            <Link to="/portal" onClick={() => setOpen(false)} className="md-btn-gold w-full">
+              Client Portal
+            </Link>
+
           </div>
         </div>
       )}
