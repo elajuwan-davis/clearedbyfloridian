@@ -521,7 +521,9 @@ function NewPermitPage() {
   const sectionCls = "text-[11px] font-mono uppercase tracking-[0.18em] text-obsidian/75";
 
   return (
-    <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
+    <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-8 lg:py-12 grid gap-8 lg:grid-cols-[minmax(0,1fr)_320px]">
+    <div className="min-w-0">
+
       <div className="border-b border-obsidian/10 pb-6">
         <div className="eyebrow text-obsidian/50">Permit Intake</div>
         <div className="mt-2 flex flex-wrap items-end justify-between gap-3">
