@@ -442,6 +442,7 @@ export function PortalShell({ children }: { children: ReactNode }) {
               <MobileDrawer
                 pathname={pathname}
                 alertKeys={alertKeys}
+                role={session.role}
                 onNavigate={() => setOpen(false)}
                 onSignOut={() => {
                   setOpen(false);
