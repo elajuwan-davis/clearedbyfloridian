@@ -33,7 +33,44 @@ export type PermitSub = {
   licenseNumber?: string;
   contactEmail?: string;
   insuranceCarrierEmail?: string;
+  /** UUID; shareable link at `/sub-portal/<accessToken>` grants read-only project-doc access once `confirmed`. */
+  accessToken?: string;
+  /** GC/ops-confirmed as on-the-job. Only then does the sub portal open. */
+  confirmed?: boolean;
+  confirmedAt?: string;
 };
+
+/** Ensure every sub in the array has an accessToken. Returns a new array + a
+ *  boolean flag indicating whether any token was minted (caller may persist). */
+export function ensureSubTokens(subs: PermitSub[] | undefined | null): { subs: PermitSub[]; mutated: boolean } {
+  const list = subs ?? [];
+  let mutated = false;
+  const next = list.map((s) => {
+    if (s.accessToken) return s;
+    mutated = true;
+    return { ...s, accessToken: crypto.randomUUID() };
+  });
+  return { subs: next, mutated };
+}
+
+/** Set of document keys visible to a confirmed subcontractor via the sub portal. */
+export const SUB_VISIBLE_DOC_KEYS = new Set<string>([
+  "notice_of_commencement_review",
+  "stamped_plans",
+  "site_survey",
+  "tdh_calculations",
+  "equipment_specification",
+  "permit_card",
+  "issued_permit",
+]);
+
+export function filterSubVisibleDocs(docs: PermitDoc[] | undefined | null): PermitDoc[] {
+  return (docs ?? []).filter((d) => {
+    if (d.status !== "uploaded" || !d.path) return false;
+    if (d.source === "library" && d.key === "notice_of_commencement_review") return true;
+    return SUB_VISIBLE_DOC_KEYS.has(d.key);
+  });
+}
 
 export type PermitRow = {
   id: string;
