@@ -543,6 +543,17 @@ function PermitDetailPage() {
         </div>
       )}
 
+      <div className="mt-6">
+        <NtoSection
+          permitId={row.id}
+          propertyAddress={row.job_address}
+          ownerName={row.owner_name}
+          contractorCompany={row.contractor_company}
+        />
+      </div>
+
+
+
       <div className="mt-6 text-[11px] font-mono text-obsidian/45">
         Created {new Date(row.created_at).toLocaleString()} · Updated {new Date(row.updated_at).toLocaleString()}
       </div>
