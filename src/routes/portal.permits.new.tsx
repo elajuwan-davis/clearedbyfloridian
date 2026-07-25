@@ -704,20 +704,7 @@ function NewPermitPage() {
                               </label>
                             </p>
                             <CloudUploadButtons />
-                            {d.key === NOC_DOC_KEY && (
-                              <div className="mt-3 pt-3 border-t border-obsidian/10">
-                                <p className="text-[11px] text-obsidian/60 mb-2">
-                                  Need the form? Generate a pre-filled Florida NOC (§713.13) from this permit's data — review, sign &amp; notarize, record with the County Clerk, then upload here.
-                                </p>
-                                <button
-                                  type="button"
-                                  onClick={generateNocDraft}
-                                  className="inline-flex items-center gap-2 border border-obsidian/25 bg-white px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian rounded-[3px] hover:bg-obsidian/5"
-                                >
-                                  <FileText className="h-3.5 w-3.5" /> Generate NOC (draft)
-                                </button>
-                              </div>
-                            )}
+
                           </div>
                         )}
 
