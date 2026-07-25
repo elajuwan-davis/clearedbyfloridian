@@ -566,6 +566,18 @@ function NewPermitPage() {
           </div>
 
 
+          {hasNoc && (
+            <NocAwarenessRibbon scopeKey={`permits:${editId ?? "new"}`} />
+          )}
+
+          {jobTrades.length > 0 && (
+            <TradesOnJobPanel
+              trades={jobTrades}
+              title="Trades on this Job"
+              emptyLabel="No trades added yet."
+            />
+          )}
+
           {/* Subcontractors */}
           <div className="pt-2 space-y-4">
             <div className="flex items-center justify-between gap-3 flex-wrap">
