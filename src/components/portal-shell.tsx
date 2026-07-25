@@ -454,6 +454,25 @@ export function PortalShell({ children }: { children: ReactNode }) {
         </div>
       </header>
 
+      {session.isAdmin && session.impersonatingTenantName && (
+        <div
+          className="sticky top-14 z-30 flex items-center justify-between gap-3 px-4 sm:px-6 lg:px-8 py-2 text-[12px]"
+          style={{ backgroundColor: "var(--obsidian)", color: "white" }}
+        >
+          <div className="flex items-center gap-2 min-w-0">
+            <Building2 className="h-3.5 w-3.5 shrink-0" strokeWidth={1.5} />
+            <span className="font-mono text-[10px] tracking-[0.18em] uppercase opacity-70">Viewing as</span>
+            <span className="truncate">{session.impersonatingTenantName}</span>
+          </div>
+          <button
+            onClick={() => setImpersonatedTenant(null)}
+            className="font-mono text-[10px] tracking-[0.16em] uppercase underline underline-offset-2 hover:opacity-80"
+          >
+            Exit impersonation
+          </button>
+        </div>
+      )}
+
       <main className="min-h-[calc(100vh-3.5rem)] px-4 sm:px-6 lg:px-8 py-6 md:py-10">
         {children}
       </main>
