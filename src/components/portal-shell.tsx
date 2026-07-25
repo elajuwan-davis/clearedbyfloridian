@@ -1,30 +1,16 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
-import {
-  LayoutDashboard,
-  FolderOpen,
-  Building2,
-  MessageSquare,
-  FileText,
-  Receipt,
-  Sparkle,
-  BookOpen,
-  Wrench,
-  Calculator,
-  ShieldCheck,
-  FileCheck2,
-  ShieldAlert,
-  Wallet,
-  Package,
-  LogOut,
-  Menu,
-  User,
-  Map,
-  TrendingUp,
-} from "lucide-react";
-
+import { ChevronDown, LogOut, Menu, X } from "lucide-react";
 
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu";
 import { supabase } from "@/integrations/supabase/client";
 import { useExpirationAlerts } from "@/hooks/use-expiration-alerts";
 import { NotificationBell } from "@/components/notification-bell";
@@ -32,60 +18,55 @@ import { VickyWidget } from "@/components/vicky-widget";
 import type { Alert } from "@/lib/expiration-alerts";
 
 type AlertKey = "my-permits" | "request-coi" | "sub-insurance";
-type NavItem = { to: string; label: string; icon: typeof LayoutDashboard; exact?: boolean; alertKey?: AlertKey };
-type NavSection = { label?: string; items: NavItem[] };
+type NavLink = { to: string; label: string; alertKey?: AlertKey };
+type NavGroup = { label: string; items: NavLink[] };
 
-const portalNav: NavSection[] = [
+const navGroups: NavGroup[] = [
   {
+    label: "Permits",
     items: [
-      { to: "/portal", label: "Dashboard", icon: LayoutDashboard, exact: true },
+      { to: "/portal/permits", label: "My Permits", alertKey: "my-permits" },
+      { to: "/portal/permits/new", label: "New Permit" },
+      { to: "/portal/submissions", label: "Submissions" },
+      { to: "/portal/new-permit", label: "Bundle Submission" },
     ],
   },
   {
-    label: "Resources",
+    label: "Financials",
     items: [
-      { to: "/portal/guides", label: "Project Guides", icon: BookOpen },
-      { to: "/portal/equipment-specs", label: "Equipment Specs", icon: Wrench },
-      { to: "/portal/blog", label: "Blog", icon: FileText },
+      { to: "/portal/financials", label: "Overview" },
+      { to: "/portal/permit-fees", label: "Permit Fees" },
+      { to: "/fee-calculator", label: "Savings Calculator" },
+      { to: "/portal/financials", label: "Before Cléared" },
     ],
   },
   {
-    label: "Projects",
+    label: "Documents",
     items: [
-      { to: "/portal/permits", label: "My Permits", icon: FileText, alertKey: "my-permits" },
-      { to: "/portal/subcontractors", label: "Subcontractors", icon: User },
-      { to: "/messages", label: "Messages", icon: MessageSquare },
-      { to: "/portal/building-dept", label: "Building Dept", icon: Building2 },
-      { to: "/portal/municipalities", label: "Municipalities", icon: Map },
-      { to: "/portal/submissions", label: "Submissions", icon: Package },
+      { to: "/portal/equipment-specs", label: "Equipment Specs" },
+      { to: "/portal/building-dept", label: "Building Departments" },
+      { to: "/portal/municipalities", label: "Municipalities" },
+      { to: "/forms", label: "Forms" },
     ],
   },
   {
-    label: "Finance",
+    label: "Operations",
     items: [
-      { to: "/invoices", label: "Invoices", icon: Receipt },
-      { to: "/portal/financials", label: "Financials", icon: TrendingUp },
-      { to: "/portal/permit-fees", label: "Permit Fees", icon: Wallet },
-      { to: "/fee-calculator", label: "Fee Calculator", icon: Calculator },
-    ],
-  },
-  {
-    label: "Insurance",
-    items: [
-      { to: "/portal/compliance", label: "Compliance", icon: ShieldCheck },
-      { to: "/portal/request-coi", label: "Request COI", icon: FileCheck2, alertKey: "request-coi" },
-      { to: "/portal/request-sub-insurance", label: "Sub Insurance Request", icon: ShieldAlert, alertKey: "sub-insurance" },
-      { to: "/insurance", label: "Get Insurance", icon: ShieldCheck },
-    ],
-  },
-  {
-    items: [
-      { to: "/ask-victoria", label: "Ask Victoria", icon: Sparkle },
-      { to: "/profile", label: "Profile", icon: User },
+      { to: "/messages", label: "Messages" },
+      { to: "/portal/guides", label: "Project Guides" },
+      { to: "/portal/blog", label: "Blog" },
     ],
   },
 ];
 
+const settingsGroup: NavGroup = {
+  label: "Settings",
+  items: [
+    { to: "/profile", label: "Profile" },
+    { to: "/profile", label: "Notifications" },
+    { to: "/portal/subcontractors", label: "Team" },
+  ],
+};
 
 const protectedPortalPrefixes = [
   "/dashboard",
@@ -99,7 +80,6 @@ const protectedPortalPrefixes = [
   "/project-guides",
   "/fee-calculator",
   "/insurance",
-
   "/admin",
   "/projects",
   "/portal",
@@ -107,15 +87,13 @@ const protectedPortalPrefixes = [
 ];
 
 function isProtectedPortalPath(pathname: string) {
-  return protectedPortalPrefixes.some((path) => pathname === path || pathname.startsWith(`${path}/`));
+  return protectedPortalPrefixes.some((p) => pathname === p || pathname.startsWith(`${p}/`));
 }
 
-// Mock until auth wired — shape matches profiles row
 const mockUser = {
   full_name: "Elajuwan Davis",
   initials: "ED",
   role: "admin" as "builder" | "staff" | "admin",
-  company_name: "Flōridian",
 };
 
 const roleLabel: Record<typeof mockUser.role, string> = {
@@ -134,150 +112,136 @@ function computeAlertKeys(alerts: Alert[]): Set<AlertKey> {
   return set;
 }
 
-function SidebarBody({
+function isGroupActive(group: NavGroup, pathname: string) {
+  return group.items.some(
+    (it) => pathname === it.to || pathname.startsWith(it.to + "/"),
+  );
+}
+
+function NavDropdown({
+  group,
   pathname,
-  onNavigate,
-  onSignOut,
-  collapsible = false,
   alertKeys,
 }: {
+  group: NavGroup;
   pathname: string;
-  onNavigate?: () => void;
-  onSignOut: () => void;
-  /** When true, the sidebar shows icons only until a `.sidebar-expanded` ancestor toggles labels in. */
-  collapsible?: boolean;
   alertKeys: Set<AlertKey>;
 }) {
-  // When collapsible, labels/section headers are hidden by default and shown when
-  // the .sidebar-expanded class is present on an ancestor (hover on desktop).
-  const labelCls = collapsible
-    ? "opacity-0 -translate-x-1 transition-all duration-200 whitespace-nowrap group-hover/sb:opacity-100 group-hover/sb:translate-x-0"
-    : "whitespace-nowrap";
-  const sectionLabelCls = collapsible
-    ? "px-5 mb-1.5 font-mono text-[9px] uppercase tracking-[0.22em] h-3 overflow-hidden opacity-0 transition-opacity duration-200 group-hover/sb:opacity-100"
-    : "px-5 mb-1.5 font-mono text-[9px] uppercase tracking-[0.22em]";
-
+  const active = isGroupActive(group, pathname);
+  const hasAlert = group.items.some((it) => it.alertKey && alertKeys.has(it.alertKey));
   return (
-    <div className="flex h-full flex-col text-paper overflow-hidden" style={{ backgroundColor: "var(--obsidian)" }}>
-      {/* Wordmark */}
-      <div
-        className="h-[73px] flex items-center px-5 border-b shrink-0"
-        style={{ borderColor: "color-mix(in oklab, var(--paper) 10%, transparent)" }}
+    <DropdownMenu>
+      <DropdownMenuTrigger
+        className="group relative flex items-center gap-1 px-3 h-14 font-mono text-[11px] tracking-[0.18em] uppercase transition-colors outline-none"
+        style={{ color: active ? "var(--obsidian)" : "color-mix(in oklab, var(--obsidian) 65%, transparent)" }}
       >
-        <Link to="/" onClick={onNavigate} className="block leading-[1] relative w-full h-8">
-          {collapsible && (
-            <div className="wordmark text-3xl text-paper absolute inset-0 flex items-center transition-opacity duration-200 group-hover/sb:opacity-0">
-              C
-            </div>
-          )}
-          <div
-            className={
-              collapsible
-                ? "absolute inset-0 opacity-0 transition-opacity duration-200 group-hover/sb:opacity-100"
-                : ""
-            }
-          >
-            <div className="wordmark text-3xl text-paper leading-none">Cleared</div>
-            <div
-              className="wordmark-subline mt-1"
-              style={{ color: "color-mix(in oklab, var(--paper) 55%, transparent)" }}
-            >
-              by Flōridian
-            </div>
-          </div>
+        <span>{group.label}</span>
+        {hasAlert && <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-red-500" />}
+        <ChevronDown className="h-3 w-3 opacity-60 transition-transform group-data-[state=open]:rotate-180" strokeWidth={1.5} />
+        <span
+          aria-hidden
+          className="absolute left-3 right-3 bottom-0 h-[2px] transition-opacity"
+          style={{ backgroundColor: "var(--obsidian)", opacity: active ? 1 : 0 }}
+        />
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="start" className="min-w-[220px] rounded-[3px] p-1">
+        {group.items.map((item, i) => {
+          const itemActive = pathname === item.to || pathname.startsWith(item.to + "/");
+          const alerted = item.alertKey ? alertKeys.has(item.alertKey) : false;
+          return (
+            <DropdownMenuItem key={`${item.to}-${i}`} asChild>
+              <Link
+                to={item.to as never}
+                className="flex items-center justify-between gap-3 px-3 py-2 text-[13px] rounded-[2px] cursor-pointer"
+                style={{
+                  color: itemActive ? "var(--obsidian)" : "color-mix(in oklab, var(--obsidian) 80%, transparent)",
+                  fontWeight: itemActive ? 600 : 400,
+                }}
+              >
+                <span>{item.label}</span>
+                {alerted && <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-red-500" />}
+              </Link>
+            </DropdownMenuItem>
+          );
+        })}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
+
+function MobileDrawer({
+  pathname,
+  alertKeys,
+  onNavigate,
+  onSignOut,
+}: {
+  pathname: string;
+  alertKeys: Set<AlertKey>;
+  onNavigate: () => void;
+  onSignOut: () => void;
+}) {
+  const all = [...navGroups, settingsGroup];
+  return (
+    <div className="flex h-full flex-col bg-white">
+      <div className="h-14 flex items-center justify-between px-5 border-b">
+        <Link to="/" onClick={onNavigate} className="wordmark text-2xl" style={{ color: "var(--obsidian)" }}>
+          Cleared
         </Link>
       </div>
-
-      <nav className="flex-1 px-2 py-5 overflow-y-auto overflow-x-hidden">
-        {portalNav.map((section, si) => (
-          <div key={si} className={si === 0 ? "" : "mt-5"}>
-            {section.label && <div className={sectionLabelCls} style={{ color: "color-mix(in oklab, var(--paper) 40%, transparent)" }}>{section.label}</div>}
-            <div className="space-y-0.5">
-              {section.items.map((item) => {
-                const Icon = item.icon;
-                const isActive = item.exact
-                  ? pathname === item.to
-                  : pathname === item.to || pathname.startsWith(item.to + "/");
-                const hasAlert = item.alertKey ? alertKeys.has(item.alertKey) : false;
-                return (
-                  <Link
-                    key={item.to}
-                    to={item.to as never}
-                    onClick={onNavigate}
-                    title={collapsible ? item.label : undefined}
-                    className="group relative flex items-center gap-3 pl-4 pr-3 py-2.5 text-[13px] font-subline tracking-wide transition-colors"
-                    style={{
-                      color: isActive ? "var(--paper)" : "color-mix(in oklab, var(--paper) 60%, transparent)",
-                      backgroundColor: isActive
-                        ? "color-mix(in oklab, var(--sky) 8%, transparent)"
-                        : "transparent",
-                    }}
-                  >
-                    <span
-                      aria-hidden
-                      className="absolute left-0 top-0 bottom-0 w-[3px] transition-opacity"
-                      style={{ backgroundColor: "var(--sky)", opacity: isActive ? 1 : 0 }}
-                    />
-                    <span className="relative shrink-0">
-                      <Icon className="h-4 w-4" strokeWidth={1.5} />
-                      {hasAlert && (
-                        <span
-                          aria-hidden
-                          className="absolute -top-0.5 -right-0.5 h-2 w-2 rounded-full bg-red-500 ring-2"
-                          style={{ ["--tw-ring-color" as never]: "var(--obsidian)" }}
-                        />
-                      )}
-                    </span>
-                    <span className={labelCls}>{item.label}</span>
-                  </Link>
-                );
-              })}
+      <div className="flex-1 overflow-y-auto py-4">
+        {all.map((group) => (
+          <div key={group.label} className="mb-5">
+            <div
+              className="px-5 mb-1.5 font-mono text-[10px] uppercase tracking-[0.22em]"
+              style={{ color: "color-mix(in oklab, var(--obsidian) 45%, transparent)" }}
+            >
+              {group.label}
             </div>
+            {group.items.map((item, i) => {
+              const active = pathname === item.to || pathname.startsWith(item.to + "/");
+              const alerted = item.alertKey ? alertKeys.has(item.alertKey) : false;
+              return (
+                <Link
+                  key={`${item.to}-${i}`}
+                  to={item.to as never}
+                  onClick={onNavigate}
+                  className="flex items-center justify-between gap-3 px-5 py-2.5 text-[14px]"
+                  style={{
+                    color: active ? "var(--obsidian)" : "color-mix(in oklab, var(--obsidian) 75%, transparent)",
+                    fontWeight: active ? 600 : 400,
+                    backgroundColor: active ? "color-mix(in oklab, var(--obsidian) 5%, transparent)" : "transparent",
+                  }}
+                >
+                  <span>{item.label}</span>
+                  {alerted && <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-red-500" />}
+                </Link>
+              );
+            })}
           </div>
         ))}
-      </nav>
-
-      <div
-        className="px-3 py-4 border-t space-y-3 shrink-0"
-        style={{ borderColor: "color-mix(in oklab, var(--paper) 10%, transparent)" }}
-      >
-        <div className="flex items-center gap-3">
+      </div>
+      <div className="border-t p-4 flex items-center justify-between">
+        <div className="flex items-center gap-2">
           <div
-            className="h-9 w-9 grid place-items-center font-mono text-[11px] shrink-0"
-            style={{
-              backgroundColor: "color-mix(in oklab, var(--paper) 12%, transparent)",
-              color: "var(--paper)",
-              borderRadius: "3px",
-            }}
+            className="h-9 w-9 grid place-items-center font-mono text-[11px]"
+            style={{ backgroundColor: "var(--obsidian)", color: "white", borderRadius: "3px" }}
           >
             {mockUser.initials}
           </div>
-          <div className={`leading-tight min-w-0 flex-1 ${labelCls}`}>
-            <div className="text-[13px] text-paper truncate">{mockUser.full_name}</div>
-            <div
-              className="inline-block mt-0.5 px-1.5 py-0.5 font-mono text-[9px] tracking-[0.18em] uppercase"
-              style={{
-                color: "var(--sky)",
-                backgroundColor: "color-mix(in oklab, var(--sky) 10%, transparent)",
-                border: "1px solid color-mix(in oklab, var(--sky) 25%, transparent)",
-                borderRadius: "2px",
-              }}
-            >
+          <div className="leading-tight">
+            <div className="text-[13px]" style={{ color: "var(--obsidian)" }}>{mockUser.full_name}</div>
+            <div className="font-mono text-[9px] tracking-[0.18em] uppercase" style={{ color: "color-mix(in oklab, var(--obsidian) 55%, transparent)" }}>
               {roleLabel[mockUser.role]}
             </div>
           </div>
         </div>
         <button
           onClick={onSignOut}
-          title={collapsible ? "Sign out" : undefined}
-          className="w-full flex items-center gap-2 px-3 py-2 text-[12px] font-subline tracking-wide transition-colors"
-          style={{
-            color: "color-mix(in oklab, var(--paper) 65%, transparent)",
-            borderRadius: "3px",
-          }}
+          className="flex items-center gap-1.5 px-3 py-2 text-[12px] font-mono uppercase tracking-[0.15em]"
+          style={{ color: "var(--obsidian)" }}
         >
-          <LogOut className="h-3.5 w-3.5 shrink-0" strokeWidth={1.5} />
-          <span className={labelCls}>Sign out</span>
+          <LogOut className="h-3.5 w-3.5" strokeWidth={1.5} />
+          Sign out
         </button>
       </div>
     </div>
@@ -298,11 +262,7 @@ export function PortalShell({ children }: { children: ReactNode }) {
     supabase.auth.getSession().then(({ data }) => {
       if (cancelled) return;
       if (!data.session) {
-        try {
-          localStorage.removeItem("cleared_demo_session");
-        } catch {
-          /* ignore */
-        }
+        try { localStorage.removeItem("cleared_demo_session"); } catch { /* ignore */ }
         setAuthState("anon");
         if (shouldProtect && !signingOutRef.current) {
           navigate({ to: "/login", search: { next: pathname } as never, replace: true });
@@ -313,11 +273,7 @@ export function PortalShell({ children }: { children: ReactNode }) {
     });
     const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
       if (!session) {
-        try {
-          localStorage.removeItem("cleared_demo_session");
-        } catch {
-          /* ignore */
-        }
+        try { localStorage.removeItem("cleared_demo_session"); } catch { /* ignore */ }
         setAuthState("anon");
         if (shouldProtect && !signingOutRef.current) {
           navigate({ to: "/login", search: { next: pathname } as never, replace: true });
@@ -338,13 +294,10 @@ export function PortalShell({ children }: { children: ReactNode }) {
       localStorage.removeItem("cleared_demo_session");
       localStorage.removeItem("cleared_demo_user");
       localStorage.removeItem("cleared_demo_user_email");
-    } catch {
-      /* ignore */
-    }
+    } catch { /* ignore */ }
     await supabase.auth.signOut();
     navigate({ to: "/", replace: true });
   }
-
 
   const alerts = useExpirationAlerts();
   const alertKeys = computeAlertKeys(alerts);
@@ -359,55 +312,100 @@ export function PortalShell({ children }: { children: ReactNode }) {
     );
   }
 
-
   return (
     <div className="min-h-screen bg-background">
-      {/* Desktop sidebar — collapsed 64px, expands to 240px on hover */}
-      <aside
-        className="group/sb fixed inset-y-0 left-0 z-40 hidden md:flex flex-col transition-[width] duration-200 ease-out w-[64px] hover:w-[240px] hover:shadow-2xl"
+      <header
+        className="sticky top-0 z-40 h-14 bg-white border-b flex items-center px-4 sm:px-6 lg:px-8"
+        style={{ borderColor: "color-mix(in oklab, var(--obsidian) 10%, transparent)" }}
       >
-        <SidebarBody pathname={pathname} onSignOut={handleSignOut} collapsible alertKeys={alertKeys} />
-      </aside>
+        {/* Logo */}
+        <Link to="/" className="flex items-baseline gap-2 leading-none shrink-0">
+          <span className="wordmark text-2xl" style={{ color: "var(--obsidian)" }}>Cleared</span>
+          <span
+            className="hidden sm:inline font-mono text-[9px] tracking-[0.22em] uppercase"
+            style={{ color: "color-mix(in oklab, var(--obsidian) 50%, transparent)" }}
+          >
+            by Flōridian
+          </span>
+        </Link>
 
-      {/* Main column */}
-      <div className="md:pl-[64px] min-h-screen flex flex-col">
-        <header className="h-14 border-b hairline flex items-center justify-between gap-3 px-4 sm:px-6 md:px-8 sticky top-0 bg-background/85 backdrop-blur z-30">
-          <div className="flex items-center gap-2 min-w-0">
-            {/* Mobile menu trigger */}
-            <Sheet open={open} onOpenChange={setOpen}>
-              <SheetTrigger
-                className="md:hidden -ml-2 p-2 rounded-[3px] hover:bg-secondary"
-                aria-label="Open navigation"
-              >
-                <Menu className="h-5 w-5" strokeWidth={1.5} />
-              </SheetTrigger>
-              <SheetContent side="left" className="p-0 w-[280px] border-0">
-                <SheetTitle className="sr-only">Portal navigation</SheetTitle>
-                <SidebarBody
-                  pathname={pathname}
-                  onNavigate={() => setOpen(false)}
-                  onSignOut={() => {
-                    setOpen(false);
-                    handleSignOut();
-                  }}
-                  alertKeys={alertKeys}
-                />
-              </SheetContent>
-            </Sheet>
-            <div className="font-mono text-[11px] tracking-[0.15em] uppercase text-muted-foreground truncate">
-              {pathname}
-            </div>
+        {/* Desktop nav */}
+        <nav className="hidden lg:flex items-center ml-8 h-14">
+          {navGroups.map((g) => (
+            <NavDropdown key={g.label} group={g} pathname={pathname} alertKeys={alertKeys} />
+          ))}
+        </nav>
+
+        <div className="ml-auto flex items-center gap-2">
+          <NotificationBell />
+          {/* Avatar / account menu (desktop) */}
+          <div className="hidden lg:block">
+            <DropdownMenu>
+              <DropdownMenuTrigger className="flex items-center gap-2 h-9 pl-1 pr-2 rounded-[3px] hover:bg-secondary outline-none">
+                <div
+                  className="h-8 w-8 grid place-items-center font-mono text-[11px]"
+                  style={{ backgroundColor: "var(--obsidian)", color: "white", borderRadius: "3px" }}
+                >
+                  {mockUser.initials}
+                </div>
+                <ChevronDown className="h-3 w-3 opacity-60" strokeWidth={1.5} />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="min-w-[220px] rounded-[3px] p-1">
+                <DropdownMenuLabel className="px-3 py-2">
+                  <div className="text-[13px]" style={{ color: "var(--obsidian)" }}>{mockUser.full_name}</div>
+                  <div className="font-mono text-[9px] tracking-[0.18em] uppercase mt-0.5" style={{ color: "color-mix(in oklab, var(--obsidian) 55%, transparent)" }}>
+                    {roleLabel[mockUser.role]}
+                  </div>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                {settingsGroup.items.map((item, i) => (
+                  <DropdownMenuItem key={`${item.to}-${i}`} asChild>
+                    <Link to={item.to as never} className="px-3 py-2 text-[13px] rounded-[2px] cursor-pointer" style={{ color: "var(--obsidian)" }}>
+                      {item.label}
+                    </Link>
+                  </DropdownMenuItem>
+                ))}
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  onSelect={() => handleSignOut()}
+                  className="px-3 py-2 text-[13px] rounded-[2px] cursor-pointer flex items-center gap-2"
+                  style={{ color: "var(--obsidian)" }}
+                >
+                  <LogOut className="h-3.5 w-3.5" strokeWidth={1.5} />
+                  Sign out
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
-          <div className="flex items-center gap-2">
-            <NotificationBell />
-            {/* Mobile wordmark on right */}
-            <Link to="/" className="md:hidden leading-[1] text-right">
-              <div className="wordmark text-lg">Cleared</div>
-            </Link>
-          </div>
-        </header>
-        <div className="flex-1 px-4 sm:px-6 md:px-8 py-6 md:py-10">{children}</div>
-      </div>
+
+          {/* Mobile hamburger */}
+          <Sheet open={open} onOpenChange={setOpen}>
+            <SheetTrigger
+              className="lg:hidden p-2 rounded-[3px] hover:bg-secondary"
+              aria-label="Open navigation"
+            >
+              {open ? <X className="h-5 w-5" strokeWidth={1.5} /> : <Menu className="h-5 w-5" strokeWidth={1.5} />}
+            </SheetTrigger>
+            <SheetContent side="right" className="p-0 w-full sm:w-[360px] border-0">
+              <SheetTitle className="sr-only">Portal navigation</SheetTitle>
+              <MobileDrawer
+                pathname={pathname}
+                alertKeys={alertKeys}
+                onNavigate={() => setOpen(false)}
+                onSignOut={() => {
+                  setOpen(false);
+                  handleSignOut();
+                }}
+              />
+            </SheetContent>
+          </Sheet>
+        </div>
+      </header>
+
+      <main className="min-h-[calc(100vh-3.5rem)] px-4 sm:px-6 lg:px-8 py-6 md:py-10">
+        {children}
+      </main>
+
       <InternalOnlyVicky />
     </div>
   );
