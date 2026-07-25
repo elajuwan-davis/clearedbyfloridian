@@ -1,18 +1,56 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { Input } from "@/components/ui/input";
-import { Search, FileText, ClipboardCheck, ArrowRight } from "lucide-react";
+import { Search, FileText, ClipboardCheck, ArrowRight, ExternalLink } from "lucide-react";
 import { PORTAL_GUIDES, PORTAL_GUIDE_CATEGORIES } from "@/lib/portal-guides-data";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { EQUIPMENT_SPECS } from "@/components/equipment-library-dialog";
+
+type TradeKey =
+  | "Pool / Spa Construction"
+  | "Electrical"
+  | "Plumbing"
+  | "Structural / Hardscape";
+
+const TRADE_ORDER: TradeKey[] = [
+  "Pool / Spa Construction",
+  "Electrical",
+  "Plumbing",
+  "Structural / Hardscape",
+];
+
+function tradeFor(title: string): TradeKey {
+  const t = title.toLowerCase();
+  if (/(heater|pump|filter|blower|automation|truclear|heat pump|pool alarm|nicheless|light)/.test(t))
+    return "Pool / Spa Construction";
+  if (/(light|automation|alarm|epump|e-pump)/.test(t)) return "Electrical";
+  if (/(pump|filter|plumb)/.test(t)) return "Plumbing";
+  return "Pool / Spa Construction";
+}
+
+const SPECS_BY_TRADE: Record<TradeKey, { title: string; url: string }[]> = {
+  "Pool / Spa Construction": [],
+  Electrical: [],
+  Plumbing: [],
+  "Structural / Hardscape": [],
+};
+for (const s of EQUIPMENT_SPECS) SPECS_BY_TRADE[tradeFor(s.title)].push(s);
 
 export const Route = createFileRoute("/portal/guides/")({
   head: () => ({
     meta: [
-      { title: "Project Guides — Cleard by Flōridian" },
+      { title: "Project Guides & Building Specs — Cleard by Flōridian" },
       { name: "robots", content: "noindex" },
     ],
   }),
   component: PortalGuidesIndex,
 });
+
 
 function PortalGuidesIndex() {
   const [q, setQ] = useState("");
