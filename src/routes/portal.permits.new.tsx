@@ -601,7 +601,14 @@ function NewPermitPage() {
               })}
 
             </div>
+            {form.scopes.includes("Structural") && (
+              <p className="text-[11px] text-obsidian/60 leading-relaxed">
+                <span className="font-mono uppercase tracking-[0.14em] text-obsidian/50">Structural includes:</span>{" "}
+                pergolas, outdoor kitchens, summer kitchens, shade structures, retaining walls, and hardscape extensions.
+              </p>
+            )}
             {form.scopes.length > 0 && (
+
               <div className="flex flex-wrap gap-1.5 pt-1">
                 {form.scopes.map((s) => (
                   <span key={s} className="inline-flex items-center gap-1.5 bg-[#153157] text-white px-2.5 py-1 rounded-[3px] text-[11px] font-medium">
