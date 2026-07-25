@@ -58,8 +58,10 @@ const navGroups: NavGroup[] = [
       { to: "/portal/reports", label: "Reports" },
       { to: "/portal/guides", label: "Project Guides" },
       { to: "/portal/blog", label: "Blog" },
+      { to: "/portal/feature-requests", label: "Feature Requests" },
     ],
   },
+
 
 ];
 
