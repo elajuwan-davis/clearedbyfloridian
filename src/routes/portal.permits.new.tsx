@@ -113,6 +113,8 @@ function NewPermitPage() {
   const [saveEngineerToContacts, setSaveEngineerToContacts] = useState(false);
   const [dispatch, setDispatch] = useState<DispatchResult | null>(null);
   const [dispatchConfirmed, setDispatchConfirmed] = useState(false);
+  const [submittalPackage, setSubmittalPackage] = useState<SubmittalDocSnapshot[]>([]);
+  const [initialSubmittalKeys, setInitialSubmittalKeys] = useState<GcDocKey[] | undefined>(undefined);
   const [form, setForm] = useState({
     step: 1 as 1 | 2,
     projectName: "",
