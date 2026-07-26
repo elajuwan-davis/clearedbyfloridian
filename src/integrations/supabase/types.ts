@@ -1253,6 +1253,7 @@ export type Database = {
           submitted_date: string | null
           subs: Json
           tenant_id: string | null
+          total_project_value_cents: number | null
           updated_at: string
         }
         Insert: {
@@ -1298,6 +1299,7 @@ export type Database = {
           submitted_date?: string | null
           subs?: Json
           tenant_id?: string | null
+          total_project_value_cents?: number | null
           updated_at?: string
         }
         Update: {
@@ -1343,6 +1345,7 @@ export type Database = {
           submitted_date?: string | null
           subs?: Json
           tenant_id?: string | null
+          total_project_value_cents?: number | null
           updated_at?: string
         }
         Relationships: [
@@ -1398,6 +1401,69 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "prior_permits_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      service_fee_invoices: {
+        Row: {
+          created_at: string | null
+          environment: string
+          fee_cents: number
+          id: string
+          paid_at: string | null
+          permit_id: string
+          processing_fee_cents: number
+          project_value_cents: number
+          status: string
+          stripe_checkout_session_id: string | null
+          stripe_payment_intent_id: string | null
+          tenant_id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          environment?: string
+          fee_cents: number
+          id?: string
+          paid_at?: string | null
+          permit_id: string
+          processing_fee_cents?: number
+          project_value_cents: number
+          status?: string
+          stripe_checkout_session_id?: string | null
+          stripe_payment_intent_id?: string | null
+          tenant_id?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          environment?: string
+          fee_cents?: number
+          id?: string
+          paid_at?: string | null
+          permit_id?: string
+          processing_fee_cents?: number
+          project_value_cents?: number
+          status?: string
+          stripe_checkout_session_id?: string | null
+          stripe_payment_intent_id?: string | null
+          tenant_id?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "service_fee_invoices_permit_id_fkey"
+            columns: ["permit_id"]
+            isOneToOne: false
+            referencedRelation: "permits"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "service_fee_invoices_tenant_id_fkey"
             columns: ["tenant_id"]
             isOneToOne: false
             referencedRelation: "tenants"
@@ -1800,6 +1866,65 @@ export type Database = {
           },
           {
             foreignKeyName: "submittal_intelligence_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      subscriptions: {
+        Row: {
+          cancel_at_period_end: boolean | null
+          created_at: string | null
+          current_period_end: string | null
+          current_period_start: string | null
+          environment: string
+          id: string
+          price_id: string
+          product_id: string
+          status: string
+          stripe_customer_id: string
+          stripe_subscription_id: string
+          tenant_id: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          cancel_at_period_end?: boolean | null
+          created_at?: string | null
+          current_period_end?: string | null
+          current_period_start?: string | null
+          environment?: string
+          id?: string
+          price_id: string
+          product_id: string
+          status?: string
+          stripe_customer_id: string
+          stripe_subscription_id: string
+          tenant_id?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          cancel_at_period_end?: boolean | null
+          created_at?: string | null
+          current_period_end?: string | null
+          current_period_start?: string | null
+          environment?: string
+          id?: string
+          price_id?: string
+          product_id?: string
+          status?: string
+          stripe_customer_id?: string
+          stripe_subscription_id?: string
+          tenant_id?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "subscriptions_tenant_id_fkey"
             columns: ["tenant_id"]
             isOneToOne: false
             referencedRelation: "tenants"
