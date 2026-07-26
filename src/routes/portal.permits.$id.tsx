@@ -873,21 +873,13 @@ function PermitDetailPage() {
                   {awarded.awarded_at ? ` · ${new Date(awarded.awarded_at).toLocaleDateString()}` : ""}
                 </div>
               </div>
-              <button onClick={() => setBidOpen(true)} className="border border-emerald-700/30 rounded-[3px] px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em]">
-                View / Re-compare
-              </button>
+              <Link to="/portal/bid-review" className="border border-emerald-700/30 rounded-[3px] px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em]">
+                Open Bid Review
+              </Link>
             </div>
           </section>
         );
       })()}
-
-      {bidOpen && (
-        <BidComparisonDialog
-          permit={row}
-          onClose={() => setBidOpen(false)}
-          onSaved={(r) => setRow(r)}
-        />
-      )}
     </div>
   );
 }
