@@ -56,11 +56,11 @@ export type NotificationPayload = {
 };
 
 const KIND_LABEL: Record<NotificationKind, string> = {
-  submitted: "Application Submitted",
-  permit_issued: "Permit Issued",
+  submitted: "Cleared for Takeoff",
+  permit_issued: "En Route",
   inspection_passed: "Inspection Passed",
-  inspection_corrections: "Corrections Required",
-  project_complete: "Project Complete",
+  inspection_corrections: "Delayed",
+  project_complete: "Arrival",
 };
 
 /** Owner display; we don't yet persist owner_email/owner_name on Project. */
