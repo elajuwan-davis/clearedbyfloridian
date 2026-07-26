@@ -614,7 +614,11 @@ function NewPermitPage() {
           )}
 
           {form.municipality && (
-            <MunicipalityReadinessPanel municipality={form.municipality} />
+            <MunicipalityReadinessPanel
+              municipality={form.municipality}
+              initialSelectedKeys={initialSubmittalKeys}
+              onSubmittalChange={setSubmittalPackage}
+            />
           )}
 
 
