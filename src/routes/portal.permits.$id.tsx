@@ -13,6 +13,7 @@ import { ResubmittalPanel } from "@/components/resubmittal-panel";
 import { ExpirationBanner } from "@/components/expiration-banner";
 import { HomeownerShareDialog } from "@/components/homeowner-share-dialog";
 import { DispatchCard } from "@/components/dispatch-card";
+import { SubmittalPackageSection } from "@/components/submittal-package-section";
 import type { DispatchResult } from "@/lib/dispatch";
 
 
