@@ -196,6 +196,9 @@ function NewPermitPage() {
           description: r.description ?? "",
           subs: loadedSubs,
           submittedDate: r.submitted_date ?? f.submittedDate,
+          totalProjectValue: (r as any).total_project_value_cents
+            ? String(Math.round((r as any).total_project_value_cents / 100))
+            : "",
           architectFirm: architect.firm ?? "",
           architectContact: architect.contact ?? "",
           architectLicense: architect.license ?? "",
