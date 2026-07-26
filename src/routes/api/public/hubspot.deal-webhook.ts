@@ -106,11 +106,42 @@ export const Route = createFileRoute("/api/public/hubspot/deal-webhook")({
             skipped.push({ reason: "missing hubspot_deal_id" });
             continue;
           }
-          // TODO(Eman): insert into Supabase `projects` table here.
-          //   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-          //   await supabaseAdmin.from("projects").upsert({ ...project, source: "hubspot", status: "intake" });
-          console.log("[hubspot-webhook] closed-won deal", project);
-          created.push(project);
+          // Auto-create a draft Cleard permit in Pre-Check for admin intake.
+          try {
+            const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+            const addressParts = [project.address, project.city, project.state, project.zip].filter(Boolean);
+            const { data: inserted, error: insErr } = await (supabaseAdmin.from("permits" as any) as any)
+              .insert({
+                project_name: project.deal_name || `HubSpot Deal ${project.hubspot_deal_id}`,
+                job_address: addressParts.join(", ") || "TBD",
+                city: project.city ?? null,
+                contractor_company: project.contact_name ?? null,
+                poc: project.contact_name ?? null,
+                poc_email: project.contact_email ?? null,
+                poc_phone: project.contact_phone ?? null,
+                construction_value_cents: project.deal_amount ? Math.round(project.deal_amount * 100) : null,
+                estimated_fee_cents: project.deal_amount ? Math.round(project.deal_amount * 1.5) : null,
+                permit_type: project.project_type ?? null,
+                status: "on_hold", // Pre-Check equivalent — flagged for admin intake.
+                intake_payload: {
+                  source: "hubspot",
+                  hubspot_deal_id: project.hubspot_deal_id,
+                  needs_admin_intake: true,
+                  imported_at: new Date().toISOString(),
+                },
+              })
+              .select("id")
+              .single();
+            if (insErr) {
+              console.error("[hubspot-webhook] insert failed", insErr);
+              skipped.push({ hubspot_deal_id: project.hubspot_deal_id, reason: insErr.message });
+              continue;
+            }
+            created.push({ ...project, cleard_permit_id: (inserted as any)?.id });
+          } catch (e) {
+            console.error("[hubspot-webhook] exception", e);
+            skipped.push({ hubspot_deal_id: project.hubspot_deal_id, reason: "insert exception" });
+          }
         }
 
         return Response.json({
