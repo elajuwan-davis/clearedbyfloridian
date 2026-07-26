@@ -512,6 +512,9 @@ function NewPermitPage() {
         documents,
         extra_docs: form.extraDocs,
         intake_payload,
+        total_project_value_cents: form.totalProjectValue
+          ? Math.round(Number(form.totalProjectValue) * 100)
+          : null,
       };
 
       let rowId: string;
