@@ -29,10 +29,10 @@ export type VictoriaAlert = {
 export const ALERT_KIND_LABEL: Record<string, string> = {
   stale_permit: "Stale Permit",
   new_municipality_requirement: "New Requirement",
-  correction_deadline: "Correction Deadline",
+  correction_deadline: "Delayed — Correction Deadline",
   lien_release_reminder: "Lien Release",
   inspection_upcoming: "Upcoming Inspection",
-  co_issued: "CO Issued",
+  co_issued: "Arrival",
   other: "Notice",
 };
 
