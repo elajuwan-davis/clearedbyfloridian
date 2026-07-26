@@ -188,7 +188,7 @@ export function BidComparisonDialog({
         {/* Header */}
         <div className="flex items-center justify-between gap-4 px-6 py-4 border-b border-obsidian/10 print:hidden">
           <div>
-            <div className="eyebrow text-obsidian/50">Compare Bids</div>
+            <div className="eyebrow text-obsidian/50">Bid Review</div>
             <h2 className="display-serif text-2xl text-obsidian mt-1">{permit.project_name}</h2>
             <div className="text-xs text-obsidian/60 mt-1">{permit.job_address}</div>
           </div>
