@@ -6,13 +6,14 @@
 // Rendered on Pre-Check intake directly under the Dispatch card so the GC
 // resolves red items before proceeding to document upload.
 
-import { useEffect, useMemo, useState } from "react";
-import { KeyRound, ShieldCheck, ShieldAlert, Upload, CheckCircle2, AlertTriangle, XCircle, Loader2, Eye, EyeOff, X } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { KeyRound, ShieldCheck, ShieldAlert, Upload, CheckCircle2, AlertTriangle, XCircle, Loader2, Eye, EyeOff, X, Paperclip } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { savePortalLogin, listPortalLoginFlags } from "@/lib/portal-logins.functions";
 import { slugifyMunicipality } from "@/lib/intelligence";
-import { btrRequiredForSlug, docStatus, loadGcCompliance, type GcDocRecord } from "@/lib/gc-compliance";
+import { btrRequiredForSlug, docStatus, loadGcCompliance, type GcDocKey, type GcDocRecord } from "@/lib/gc-compliance";
+import { autoSelectKeys, buildSnapshots, type SubmittalDocSnapshot } from "@/lib/submittal-package";
 
 type LoginFlag = {
   municipality_slug: string;
