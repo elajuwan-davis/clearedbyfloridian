@@ -1,7 +1,7 @@
 import { createFileRoute, notFound } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { statusBadge } from "@/lib/status-badges";
+import { projectStatusMeta, toneClass, type ProjectStatus } from "@/lib/status-badges";
 
 export const Route = createFileRoute("/homeowner/$token")({
   head: () => ({
@@ -65,7 +65,8 @@ function HomeownerStatusPage() {
   const bucket = bucketFor(permit.status);
   const bucketIdx = TIMELINE.findIndex((t) => t.key === bucket);
   const isDelayed = permit.status === "corrections_required" || permit.status === "on_hold";
-  const badge = statusBadge(permit.status as any);
+  const meta = projectStatusMeta[permit.status as ProjectStatus] ?? { label: permit.status, tone: "neutral" as const };
+  const badgeClass = toneClass[meta.tone];
 
   const victoriaSummary = summarize(permit);
 
