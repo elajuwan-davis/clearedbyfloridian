@@ -22,12 +22,27 @@ type LoginFlag = {
   updated_at: string;
 };
 
-export function MunicipalityReadinessPanel({ municipality }: { municipality: string }) {
+export function MunicipalityReadinessPanel({
+  municipality,
+  initialSelectedKeys,
+  onSubmittalChange,
+}: {
+  municipality: string;
+  /** When provided (editing an existing permit), seeds the checkboxes from the last saved package. */
+  initialSelectedKeys?: GcDocKey[];
+  /** Emitted every time the "Save to Submittal" selection or on-file docs change. */
+  onSubmittalChange?: (items: SubmittalDocSnapshot[]) => void;
+}) {
   const slug = useMemo(() => slugifyMunicipality(municipality), [municipality]);
   const [flags, setFlags] = useState<LoginFlag[] | null>(null);
   const [loadingFlags, setLoadingFlags] = useState(true);
   const [addOpen, setAddOpen] = useState(false);
   const [docs, setDocs] = useState<GcDocRecord[]>(loadGcCompliance());
+  const [selected, setSelected] = useState<Set<GcDocKey>>(
+    () => new Set(initialSelectedKeys ?? autoSelectKeys(loadGcCompliance())),
+  );
+  const seededRef = useRef(!!initialSelectedKeys);
+  const priorSnapshotsRef = useRef<SubmittalDocSnapshot[]>([]);
 
   const refreshFlags = () => {
     setLoadingFlags(true);
@@ -39,20 +54,64 @@ export function MunicipalityReadinessPanel({ municipality }: { municipality: str
 
   useEffect(() => {
     refreshFlags();
-    const onDocs = () => setDocs(loadGcCompliance());
+    const onDocs = () => {
+      const next = loadGcCompliance();
+      setDocs(next);
+      // When a fresh doc becomes valid post-upload, auto-add it to the submittal.
+      setSelected((prev) => {
+        const merged = new Set(prev);
+        for (const d of next) {
+          const s = docStatus(d);
+          if ((s === "valid" || s === "warning") && !prev.has(d.key)) {
+            // Only auto-add if it wasn't previously present at all (fresh upload)
+            const wasKnown = docs.some((old) => old.key === d.key && old.onFile);
+            if (!wasKnown) merged.add(d.key);
+          }
+        }
+        return merged;
+      });
+    };
     window.addEventListener("cleard:gc-compliance-updated", onDocs);
     window.addEventListener("storage", onDocs);
     return () => {
       window.removeEventListener("cleard:gc-compliance-updated", onDocs);
       window.removeEventListener("storage", onDocs);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const btrRequired = btrRequiredForSlug(slug);
+  const shown = docs.filter((d) => (d.key === "btr" ? btrRequired : true));
+
+  // If we didn't have an initial seed (fresh submission), auto-select once
+  // docs are loaded — running here (post-mount) avoids the SSR/localStorage race.
+  useEffect(() => {
+    if (seededRef.current) return;
+    seededRef.current = true;
+    setSelected(new Set(autoSelectKeys(docs)));
+  }, [docs]);
+
+  // Emit snapshots upward whenever selection or docs change.
+  useEffect(() => {
+    if (!onSubmittalChange) return;
+    const keys = Array.from(selected).filter((k) => shown.some((d) => d.key === k));
+    const snapshots = buildSnapshots(keys, docs, priorSnapshotsRef.current);
+    priorSnapshotsRef.current = snapshots;
+    onSubmittalChange(snapshots);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selected, docs, btrRequired]);
 
   if (!municipality || !slug) return null;
 
   const hasLogin = !!flags?.some((f) => f.municipality_slug === slug);
-  const btrRequired = btrRequiredForSlug(slug);
-  const shown = docs.filter((d) => (d.key === "btr" ? btrRequired : true));
+
+  function toggle(key: GcDocKey, next: boolean) {
+    setSelected((prev) => {
+      const s = new Set(prev);
+      if (next) s.add(key); else s.delete(key);
+      return s;
+    });
+  }
 
   return (
     <div className="bg-white border border-obsidian/15 rounded-[3px] overflow-hidden">
@@ -104,14 +163,29 @@ export function MunicipalityReadinessPanel({ municipality }: { municipality: str
 
       {/* Required documents */}
       <div className="px-5 py-4">
-        <div className="eyebrow text-obsidian/50 mb-3">Required Documents</div>
+        <div className="flex items-center justify-between mb-3 gap-2 flex-wrap">
+          <div className="eyebrow text-obsidian/50">Required Documents</div>
+          {onSubmittalChange && (
+            <div className="inline-flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-[0.14em] text-obsidian/45">
+              <Paperclip className="h-3 w-3" /> Save to Submittal
+            </div>
+          )}
+        </div>
         <div className="divide-y divide-obsidian/5">
           {shown.map((d) => (
-            <DocRow key={d.key} rec={d} />
+            <DocRow
+              key={d.key}
+              rec={d}
+              showAttach={!!onSubmittalChange}
+              attached={selected.has(d.key)}
+              onAttachChange={(v) => toggle(d.key, v)}
+            />
           ))}
         </div>
         <p className="mt-3 text-[10px] font-mono uppercase tracking-[0.14em] text-obsidian/45">
-          Any red item must be resolved before submittal.
+          {onSubmittalChange
+            ? "Checked docs travel with this permit submittal package. Any red item must be resolved before submittal."
+            : "Any red item must be resolved before submittal."}
         </p>
       </div>
 
