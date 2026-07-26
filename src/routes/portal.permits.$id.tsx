@@ -13,6 +13,7 @@ import { ResubmittalPanel } from "@/components/resubmittal-panel";
 import { ExpirationBanner } from "@/components/expiration-banner";
 import { HomeownerShareDialog } from "@/components/homeowner-share-dialog";
 import { DispatchCard } from "@/components/dispatch-card";
+import { SubmittalPackageSection } from "@/components/submittal-package-section";
 import type { DispatchResult } from "@/lib/dispatch";
 
 
@@ -602,6 +603,10 @@ function PermitDetailPage() {
           </div>
         )}
       </div>
+
+      <SubmittalPackageSection row={row} onChange={(r) => { setRow(r); setEdit(r); }} />
+
+
 
       {row.subs && row.subs.length > 0 && (
         <div className="mt-6 bg-white border border-obsidian/10 rounded-[3px] p-6">

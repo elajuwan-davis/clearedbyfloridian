@@ -19,6 +19,8 @@ import { logPermitIntelligence } from "@/lib/intelligence";
 import { DispatchCard } from "@/components/dispatch-card";
 import { runDispatch, type DispatchResult } from "@/lib/dispatch";
 import { MunicipalityReadinessPanel } from "@/components/municipality-readiness-panel";
+import type { SubmittalDocSnapshot } from "@/lib/submittal-package";
+import type { GcDocKey } from "@/lib/gc-compliance";
 
 
 
@@ -111,6 +113,8 @@ function NewPermitPage() {
   const [saveEngineerToContacts, setSaveEngineerToContacts] = useState(false);
   const [dispatch, setDispatch] = useState<DispatchResult | null>(null);
   const [dispatchConfirmed, setDispatchConfirmed] = useState(false);
+  const [submittalPackage, setSubmittalPackage] = useState<SubmittalDocSnapshot[]>([]);
+  const [initialSubmittalKeys, setInitialSubmittalKeys] = useState<GcDocKey[] | undefined>(undefined);
   const [form, setForm] = useState({
     step: 1 as 1 | 2,
     projectName: "",
@@ -218,6 +222,11 @@ function NewPermitPage() {
         if (savedDispatch) {
           setDispatch(savedDispatch);
           setDispatchConfirmed(Boolean(ip.dispatch_confirmed_at));
+        }
+        const savedPkg = (ip.compliance_submittal ?? []) as SubmittalDocSnapshot[];
+        if (Array.isArray(savedPkg) && savedPkg.length) {
+          setSubmittalPackage(savedPkg);
+          setInitialSubmittalKeys(savedPkg.map((s) => s.key));
         }
       })
       .catch(() => toast.error("Could not load permit for editing"))
@@ -465,6 +474,9 @@ function NewPermitPage() {
         intake_payload.dispatch = dispatch;
         if (dispatchConfirmed) intake_payload.dispatch_confirmed_at = new Date().toISOString();
       }
+      // Snapshot the compliance docs the GC chose to attach to this submittal.
+      // Persist even an empty array so a later "cleared all" reflects on the permit.
+      intake_payload.compliance_submittal = submittalPackage;
 
       const permitPatch = {
         project_name: form.projectName,
@@ -602,7 +614,11 @@ function NewPermitPage() {
           )}
 
           {form.municipality && (
-            <MunicipalityReadinessPanel municipality={form.municipality} />
+            <MunicipalityReadinessPanel
+              municipality={form.municipality}
+              initialSelectedKeys={initialSubmittalKeys}
+              onSubmittalChange={setSubmittalPackage}
+            />
           )}
 
 
