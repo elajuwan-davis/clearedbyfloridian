@@ -296,7 +296,7 @@ function NewPermitPage() {
     // Kick off Dispatch — pre-flight property intelligence.
     const resolvedAddress = r.streetLine || r.formatted;
     if (resolvedAddress) {
-      const result = runDispatch({ address: resolvedAddress, city: r.city ?? null, county: r.county ?? null });
+      const result = runDispatch({ address: resolvedAddress, city: r.city ?? null });
       setDispatch(result);
       setDispatchConfirmed(false);
     }
