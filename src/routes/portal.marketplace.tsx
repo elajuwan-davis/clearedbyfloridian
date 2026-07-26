@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { ShieldCheck, ExternalLink, type LucideIcon, Calculator, CreditCard, Scale, Users } from "lucide-react";
+import { ShieldCheck, ExternalLink, type LucideIcon, Calculator, CreditCard, Scale, Users, Ruler, Briefcase } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/portal/marketplace")({
@@ -113,6 +113,30 @@ const SECTIONS: Section[] = [
         description: "Spend management with corporate cards, bill pay, and reimbursements.",
         url: "https://www.rippling.com/spend",
         cta: "Learn More",
+      },
+    ],
+  },
+  {
+    label: "Takeoff",
+    icon: Ruler,
+    partners: [
+      {
+        name: "Handoff AI",
+        description: "AI-powered construction takeoff.",
+        url: "https://www.handoff.ai/",
+        cta: "Visit",
+      },
+    ],
+  },
+  {
+    label: "Project Management | CRM",
+    icon: Briefcase,
+    partners: [
+      {
+        name: "JobTread",
+        description: "Job management and CRM built for contractors.",
+        url: "https://www.jobtread.com/",
+        cta: "Visit",
       },
     ],
   },
