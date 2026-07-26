@@ -213,6 +213,11 @@ function NewPermitPage() {
           docs: docsMap,
           extraDocs: r.extra_docs ?? [],
         }));
+        const savedDispatch = (ip.dispatch ?? null) as DispatchResult | null;
+        if (savedDispatch) {
+          setDispatch(savedDispatch);
+          setDispatchConfirmed(Boolean(ip.dispatch_confirmed_at));
+        }
       })
       .catch(() => toast.error("Could not load permit for editing"))
       .finally(() => setLoadingEdit(false));
