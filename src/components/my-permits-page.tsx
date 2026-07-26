@@ -8,33 +8,33 @@ import { syncAllPermits, getLastRun, formatRelative } from "@/lib/permit-sync";
 type GroupKey = "intake" | "preparing" | "submitted" | "on_hold" | "outsourced" | "issued" | "cancelled";
 
 const GROUPS: Array<{ key: GroupKey; label: string; statuses: PermitStatus[]; borderColor: string }> = [
-  { key: "intake", label: "Intake", statuses: ["submitted"], borderColor: "oklch(0.78 0.13 75)" },
-  { key: "preparing", label: "Preparing Forms", statuses: ["in_review", "corrections_required"], borderColor: "oklch(0.78 0.13 75)" },
-  { key: "submitted", label: "Submitted / Approved", statuses: ["approved"], borderColor: "oklch(0.78 0.13 75)" },
-  { key: "on_hold", label: "On Hold", statuses: ["on_hold"], borderColor: "oklch(0.72 0.17 65)" },
+  { key: "intake", label: "Pre-Check", statuses: ["submitted"], borderColor: "oklch(0.78 0.13 75)" },
+  { key: "preparing", label: "Pre-Check — In Review", statuses: ["in_review", "corrections_required"], borderColor: "oklch(0.78 0.13 75)" },
+  { key: "submitted", label: "Cleared for Takeoff", statuses: ["approved"], borderColor: "oklch(0.78 0.13 75)" },
+  { key: "on_hold", label: "Delayed", statuses: ["on_hold"], borderColor: "oklch(0.72 0.17 65)" },
   { key: "outsourced", label: "Outsourced Permitting", statuses: ["outsourced_permitting"], borderColor: "oklch(0.5 0.2 285)" },
-  { key: "issued", label: "Issued", statuses: ["permit_issued"], borderColor: "oklch(0.58 0.16 150)" },
+  { key: "issued", label: "En Route", statuses: ["permit_issued"], borderColor: "oklch(0.58 0.16 150)" },
   { key: "cancelled", label: "Cancelled", statuses: ["cancelled"], borderColor: "oklch(0.5 0.18 25)" },
 ];
 
 const STATUS_LABEL: Record<PermitStatus, string> = {
-  submitted: "Submitted",
-  in_review: "In Review",
-  corrections_required: "Corrections",
-  approved: "Approved",
-  permit_issued: "Issued",
-  on_hold: "On Hold",
+  submitted: "Pre-Check",
+  in_review: "Pre-Check",
+  corrections_required: "Delayed",
+  approved: "Cleared for Takeoff",
+  permit_issued: "En Route",
+  on_hold: "Delayed",
   outsourced_permitting: "Outsourced",
   cancelled: "Cancelled",
 };
 
 const STATUS_OPTIONS: Array<{ value: PermitStatus; label: string }> = [
-  { value: "submitted", label: "Intake" },
-  { value: "in_review", label: "In Review" },
-  { value: "approved", label: "Submitted / Approved" },
-  { value: "on_hold", label: "On Hold" },
+  { value: "submitted", label: "Pre-Check" },
+  { value: "in_review", label: "Pre-Check — In Review" },
+  { value: "approved", label: "Cleared for Takeoff" },
+  { value: "on_hold", label: "Delayed" },
   { value: "outsourced_permitting", label: "Outsourced Permitting" },
-  { value: "permit_issued", label: "Issued" },
+  { value: "permit_issued", label: "En Route" },
   { value: "cancelled", label: "Cancelled" },
 ];
 

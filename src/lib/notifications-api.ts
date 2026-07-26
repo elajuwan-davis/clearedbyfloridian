@@ -106,13 +106,13 @@ export async function upsertPrefs(patch: Partial<NotifPrefs>): Promise<void> {
 export function notifTitleForStatus(status: string, projectName: string): { kind: NotifKind; title: string } | null {
   switch (status) {
     case "permit_issued":
-      return { kind: "permit_issued", title: `Permit issued — ${projectName}` };
+      return { kind: "permit_issued", title: `En Route — ${projectName}` };
     case "corrections_required":
-      return { kind: "action_required", title: `Corrections required — ${projectName}` };
+      return { kind: "action_required", title: `Delayed — ${projectName}` };
     case "on_hold":
-      return { kind: "action_required", title: `Placed on hold — ${projectName}` };
+      return { kind: "action_required", title: `Delayed (on hold) — ${projectName}` };
     case "submitted":
-      return { kind: "submission_received", title: `Submission received — ${projectName}` };
+      return { kind: "submission_received", title: `Cleared for Takeoff — ${projectName}` };
     default:
       return null;
   }

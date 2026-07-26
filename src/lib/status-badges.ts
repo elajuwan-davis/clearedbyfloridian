@@ -28,19 +28,19 @@ export type ProjectStatus =
   | "pending";
 
 export const projectStatusMeta: Record<ProjectStatus, { label: string; tone: BadgeTone }> = {
-  submitted: { label: "Submitted", tone: "sky" },
-  in_review: { label: "In review", tone: "amber" },
-  corrections_required: { label: "Corrections required", tone: "oxblood" },
-  correction_response_under_review: { label: "Response under review", tone: "amber" },
-  resubmitted: { label: "Resubmitted", tone: "amber" },
-  resubmitted_to_county: { label: "Resubmitted", tone: "amber" },
-  approved: { label: "Approved", tone: "emerald" },
-  inspection_scheduled: { label: "Inspection scheduled", tone: "amber" },
-  inspection_complete: { label: "Inspection complete", tone: "emerald" },
-  permit_issued: { label: "Permit issued", tone: "dark" },
-  on_hold: { label: "On hold", tone: "oxblood" },
+  submitted: { label: "Pre-Check", tone: "sky" },
+  in_review: { label: "Pre-Check", tone: "amber" },
+  corrections_required: { label: "Delayed", tone: "oxblood" },
+  correction_response_under_review: { label: "Cleared for Takeoff", tone: "amber" },
+  resubmitted: { label: "Cleared for Takeoff", tone: "amber" },
+  resubmitted_to_county: { label: "Cleared for Takeoff", tone: "amber" },
+  approved: { label: "Cleared for Takeoff", tone: "emerald" },
+  inspection_scheduled: { label: "En Route", tone: "amber" },
+  inspection_complete: { label: "Arrival", tone: "emerald" },
+  permit_issued: { label: "En Route", tone: "dark" },
+  on_hold: { label: "Delayed", tone: "oxblood" },
   outsourced_permitting: { label: "Outsourced permitting", tone: "neutral" },
-  pending: { label: "Pending", tone: "neutral" },
+  pending: { label: "Pre-Check", tone: "neutral" },
 };
 
 export type FeeStatus = "pending" | "invoiced" | "paid" | "overdue" | "refunded";
