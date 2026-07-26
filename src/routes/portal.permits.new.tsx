@@ -474,6 +474,9 @@ function NewPermitPage() {
         intake_payload.dispatch = dispatch;
         if (dispatchConfirmed) intake_payload.dispatch_confirmed_at = new Date().toISOString();
       }
+      // Snapshot the compliance docs the GC chose to attach to this submittal.
+      // Persist even an empty array so a later "cleared all" reflects on the permit.
+      intake_payload.compliance_submittal = submittalPackage;
 
       const permitPatch = {
         project_name: form.projectName,
