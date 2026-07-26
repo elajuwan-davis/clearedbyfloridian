@@ -204,8 +204,19 @@ export function MunicipalityReadinessPanel({
   );
 }
 
-function DocRow({ rec }: { rec: GcDocRecord }) {
+function DocRow({
+  rec,
+  showAttach,
+  attached,
+  onAttachChange,
+}: {
+  rec: GcDocRecord;
+  showAttach: boolean;
+  attached: boolean;
+  onAttachChange: (v: boolean) => void;
+}) {
   const state = docStatus(rec);
+  const canAttach = state === "valid" || state === "warning";
   const badge = {
     valid: {
       icon: <CheckCircle2 className="h-3.5 w-3.5 text-emerald-700" />,
@@ -230,6 +241,20 @@ function DocRow({ rec }: { rec: GcDocRecord }) {
   }[state];
   return (
     <div className="flex items-center gap-3 py-2.5">
+      {showAttach && (
+        <label
+          className={`inline-flex items-center gap-1.5 shrink-0 select-none ${canAttach ? "cursor-pointer text-obsidian" : "cursor-not-allowed text-obsidian/30"}`}
+          title={canAttach ? "Attach this document to the permit submittal package" : "Resolve this document before it can be attached"}
+        >
+          <input
+            type="checkbox"
+            className="h-3.5 w-3.5 accent-obsidian"
+            checked={canAttach && attached}
+            disabled={!canAttach}
+            onChange={(e) => onAttachChange(e.target.checked)}
+          />
+        </label>
+      )}
       <div className="flex-1 min-w-0">
         <div className="text-sm text-obsidian truncate">{rec.label}</div>
         <div className="text-[11px] font-mono text-obsidian/50">
