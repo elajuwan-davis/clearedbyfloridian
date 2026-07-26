@@ -81,13 +81,13 @@ function buildEmail(
   switch (kind) {
     case "submitted":
       return {
-        subject: `Permit application submitted — ${addr}`,
-        body: `Your permit application for ${addr} has been submitted to ${muni}. We'll notify you when it's approved.`,
+        subject: `Cleared for Takeoff — ${addr}`,
+        body: `Your permit application for ${addr} has been submitted to ${muni} (Cleared for Takeoff). We'll notify you when it's En Route.`,
       };
     case "permit_issued":
       return {
-        subject: `Permit issued — ${addr}`,
-        body: `Great news — your permit has been issued for ${addr}. Permit #${project.permit_no}. Construction can begin per your approved plans.`,
+        subject: `En Route — ${addr}`,
+        body: `Great news — your permit is now En Route for ${addr}. Permit #${project.permit_no}. Construction can begin per your approved plans.`,
       };
     case "inspection_passed": {
       const name = payload.inspectionName ?? "Inspection";
@@ -103,14 +103,14 @@ function buildEmail(
       const name = payload.inspectionName ?? "Inspection";
       const notes = payload.correctionNotes ?? "See attached correction notes.";
       return {
-        subject: `Action required — ${name} — ${addr}`,
-        body: `Action required: ${name} at ${addr} requires corrections. Notes: ${notes}. Contact us to reschedule.`,
+        subject: `Delayed — ${name} — ${addr}`,
+        body: `Delayed: ${name} at ${addr} requires corrections. Notes: ${notes}. Contact us to reschedule.`,
       };
     }
     case "project_complete":
       return {
-        subject: `Project complete — ${addr}`,
-        body: `Your project at ${addr} is complete. Certificate of Completion is attached. Thank you for choosing Cleard.`,
+        subject: `Arrival — ${addr}`,
+        body: `Arrival: your project at ${addr} is complete. Certificate of Occupancy is attached. Thank you for choosing Cleard.`,
       };
   }
 }
