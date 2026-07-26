@@ -27,13 +27,14 @@ async function handleSubscriptionUpsert(sub: any, env: StripeEnv) {
   const periodEnd = item?.current_period_end ?? sub.current_period_end;
 
   // Look up tenant_id for this user
-  const { data: member } = await getSupabase() as any
+  const sb = getSupabase() as any;
+  const { data: member } = await sb
     .from("tenant_members")
     .select("tenant_id")
     .eq("user_id", userId)
     .maybeSingle();
 
-  await (getSupabase().from("subscriptions" as any) as any).upsert(
+  await sb.from("subscriptions").upsert(
     {
       user_id: userId,
       tenant_id: (member as any)?.tenant_id ?? null,
@@ -57,7 +58,7 @@ async function handleSubscriptionUpsert(sub: any, env: StripeEnv) {
 }
 
 async function handleSubscriptionDeleted(sub: any, env: StripeEnv) {
-  await getSupabase() as any
+  await (getSupabase() as any)
     .from("subscriptions")
     .update({ status: "canceled", updated_at: new Date().toISOString() })
     .eq("stripe_subscription_id", sub.id)
@@ -68,7 +69,7 @@ async function handleCheckoutCompleted(session: any, env: StripeEnv) {
   if (session.mode !== "payment") return;
   if (session.metadata?.kind !== "service_fee") return;
 
-  await getSupabase() as any
+  await (getSupabase() as any)
     .from("service_fee_invoices")
     .update({
       status: "paid",
