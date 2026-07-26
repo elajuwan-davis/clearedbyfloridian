@@ -293,6 +293,13 @@ function NewPermitPage() {
       const matched = MUNICIPALITIES.some((m) => norm(m.name) === target);
       toast.success(matched ? `Matched municipality: ${r.city}` : `City set to ${r.city} (not in list — please verify)`);
     }
+    // Kick off Dispatch — pre-flight property intelligence.
+    const resolvedAddress = r.streetLine || r.formatted;
+    if (resolvedAddress) {
+      const result = runDispatch({ address: resolvedAddress, city: r.city ?? null, county: r.county ?? null });
+      setDispatch(result);
+      setDispatchConfirmed(false);
+    }
   }
 
   const primaryType = form.scopes[0] || "Other";
