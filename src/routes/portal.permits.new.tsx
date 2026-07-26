@@ -123,6 +123,7 @@ function NewPermitPage() {
     scopes: [] as string[],
     description: "",
     subs: [] as SubIntake[],
+    totalProjectValue: "" as string, // dollars, whole number
     submittedDate: new Date().toISOString().slice(0, 10),
     architectFirm: "",
     architectContact: "",
