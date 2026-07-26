@@ -53,6 +53,7 @@ import { Route as PortalProfileRouteImport } from './routes/portal.profile'
 import { Route as PortalPermitsRouteImport } from './routes/portal.permits'
 import { Route as PortalPermitFeesRouteImport } from './routes/portal.permit-fees'
 import { Route as PortalNotaryQueueRouteImport } from './routes/portal.notary-queue'
+import { Route as PortalMarketplaceRouteImport } from './routes/portal.marketplace'
 import { Route as PortalInspectionsRouteImport } from './routes/portal.inspections'
 import { Route as PortalFinancialsRouteImport } from './routes/portal.financials'
 import { Route as PortalFeatureRequestsRouteImport } from './routes/portal.feature-requests'
@@ -321,6 +322,11 @@ const PortalPermitFeesRoute = PortalPermitFeesRouteImport.update({
 const PortalNotaryQueueRoute = PortalNotaryQueueRouteImport.update({
   id: '/notary-queue',
   path: '/notary-queue',
+  getParentRoute: () => PortalRoute,
+} as any)
+const PortalMarketplaceRoute = PortalMarketplaceRouteImport.update({
+  id: '/marketplace',
+  path: '/marketplace',
   getParentRoute: () => PortalRoute,
 } as any)
 const PortalInspectionsRoute = PortalInspectionsRouteImport.update({
@@ -622,6 +628,7 @@ export interface FileRoutesByFullPath {
   '/portal/feature-requests': typeof PortalFeatureRequestsRoute
   '/portal/financials': typeof PortalFinancialsRoute
   '/portal/inspections': typeof PortalInspectionsRoute
+  '/portal/marketplace': typeof PortalMarketplaceRoute
   '/portal/notary-queue': typeof PortalNotaryQueueRoute
   '/portal/permit-fees': typeof PortalPermitFeesRoute
   '/portal/permits': typeof PortalPermitsRouteWithChildren
@@ -715,6 +722,7 @@ export interface FileRoutesByTo {
   '/portal/feature-requests': typeof PortalFeatureRequestsRoute
   '/portal/financials': typeof PortalFinancialsRoute
   '/portal/inspections': typeof PortalInspectionsRoute
+  '/portal/marketplace': typeof PortalMarketplaceRoute
   '/portal/notary-queue': typeof PortalNotaryQueueRoute
   '/portal/permit-fees': typeof PortalPermitFeesRoute
   '/portal/profile': typeof PortalProfileRoute
@@ -808,6 +816,7 @@ export interface FileRoutesById {
   '/portal/feature-requests': typeof PortalFeatureRequestsRoute
   '/portal/financials': typeof PortalFinancialsRoute
   '/portal/inspections': typeof PortalInspectionsRoute
+  '/portal/marketplace': typeof PortalMarketplaceRoute
   '/portal/notary-queue': typeof PortalNotaryQueueRoute
   '/portal/permit-fees': typeof PortalPermitFeesRoute
   '/portal/permits': typeof PortalPermitsRouteWithChildren
@@ -904,6 +913,7 @@ export interface FileRouteTypes {
     | '/portal/feature-requests'
     | '/portal/financials'
     | '/portal/inspections'
+    | '/portal/marketplace'
     | '/portal/notary-queue'
     | '/portal/permit-fees'
     | '/portal/permits'
@@ -997,6 +1007,7 @@ export interface FileRouteTypes {
     | '/portal/feature-requests'
     | '/portal/financials'
     | '/portal/inspections'
+    | '/portal/marketplace'
     | '/portal/notary-queue'
     | '/portal/permit-fees'
     | '/portal/profile'
@@ -1089,6 +1100,7 @@ export interface FileRouteTypes {
     | '/portal/feature-requests'
     | '/portal/financials'
     | '/portal/inspections'
+    | '/portal/marketplace'
     | '/portal/notary-queue'
     | '/portal/permit-fees'
     | '/portal/permits'
@@ -1488,6 +1500,13 @@ declare module '@tanstack/react-router' {
       path: '/notary-queue'
       fullPath: '/portal/notary-queue'
       preLoaderRoute: typeof PortalNotaryQueueRouteImport
+      parentRoute: typeof PortalRoute
+    }
+    '/portal/marketplace': {
+      id: '/portal/marketplace'
+      path: '/marketplace'
+      fullPath: '/portal/marketplace'
+      preLoaderRoute: typeof PortalMarketplaceRouteImport
       parentRoute: typeof PortalRoute
     }
     '/portal/inspections': {
@@ -1958,6 +1977,7 @@ interface PortalRouteChildren {
   PortalFeatureRequestsRoute: typeof PortalFeatureRequestsRoute
   PortalFinancialsRoute: typeof PortalFinancialsRoute
   PortalInspectionsRoute: typeof PortalInspectionsRoute
+  PortalMarketplaceRoute: typeof PortalMarketplaceRoute
   PortalNotaryQueueRoute: typeof PortalNotaryQueueRoute
   PortalPermitFeesRoute: typeof PortalPermitFeesRoute
   PortalPermitsRoute: typeof PortalPermitsRouteWithChildren
@@ -1988,6 +2008,7 @@ const PortalRouteChildren: PortalRouteChildren = {
   PortalFeatureRequestsRoute: PortalFeatureRequestsRoute,
   PortalFinancialsRoute: PortalFinancialsRoute,
   PortalInspectionsRoute: PortalInspectionsRoute,
+  PortalMarketplaceRoute: PortalMarketplaceRoute,
   PortalNotaryQueueRoute: PortalNotaryQueueRoute,
   PortalPermitFeesRoute: PortalPermitFeesRoute,
   PortalPermitsRoute: PortalPermitsRouteWithChildren,
@@ -2087,13 +2108,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
