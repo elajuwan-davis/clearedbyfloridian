@@ -108,6 +108,8 @@ function NewPermitPage() {
   const [docsSkipped, setDocsSkipped] = useState(false);
   const [saveArchitectToContacts, setSaveArchitectToContacts] = useState(false);
   const [saveEngineerToContacts, setSaveEngineerToContacts] = useState(false);
+  const [dispatch, setDispatch] = useState<DispatchResult | null>(null);
+  const [dispatchConfirmed, setDispatchConfirmed] = useState(false);
   const [form, setForm] = useState({
     step: 1 as 1 | 2,
     projectName: "",
