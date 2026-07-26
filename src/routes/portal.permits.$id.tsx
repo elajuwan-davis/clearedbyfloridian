@@ -7,6 +7,11 @@ import { getBundle } from "@/lib/bundle";
 import { CoChecklistPanel } from "@/components/co-checklist-panel";
 import { LienReleasesPanel } from "@/components/lien-releases-panel";
 import { PermitAlertsInline } from "@/components/permit-alerts-inline";
+import { InspectionsPanel } from "@/components/inspections-panel";
+import { PermitFeesPanel } from "@/components/permit-fees-panel";
+import { ResubmittalPanel } from "@/components/resubmittal-panel";
+import { ExpirationBanner } from "@/components/expiration-banner";
+import { HomeownerShareDialog } from "@/components/homeowner-share-dialog";
 
 import { getPermit, updatePermit, deletePermit, permitCompleteness, getEffectiveDocs, getHiddenFieldKeys, withHiddenFieldKeys, ensureSubTokens, type PermitRow, type PermitStatus, type PermitDoc, type PermitSub } from "@/lib/permits-api";
 import { PermitDocUploader } from "@/components/permit-doc-uploader";
@@ -782,6 +787,56 @@ function PermitDetailPage() {
       <section id="victoria-alerts" className="mt-10 mb-4">
         <div className="eyebrow text-obsidian/50 mb-3">Victoria Alerts</div>
         <PermitAlertsInline permitId={row.id} />
+      </section>
+
+      {/* Expiration Banner */}
+      <section className="mt-6">
+        <ExpirationBanner
+          permitId={row.id}
+          expirationDate={(row as any).expiration_date ?? null}
+          extensionRequestedAt={(row as any).extension_requested_at ?? null}
+          onChange={() => getPermit(row.id).then((r) => r && setRow(r))}
+        />
+      </section>
+
+      {/* Inspections */}
+      <section id="inspections" className="mt-10">
+        <div className="eyebrow text-obsidian/50 mb-3">Inspections</div>
+        <InspectionsPanel permitId={row.id} tenantId={row.tenant_id ?? null} permitStatus={row.status} />
+      </section>
+
+      {/* Resubmittal Workflow */}
+      <section id="resubmittal" className="mt-10">
+        <div className="eyebrow text-obsidian/50 mb-3">Resubmittal Workflow</div>
+        <ResubmittalPanel
+          permitId={row.id}
+          tenantId={row.tenant_id ?? null}
+          permitStatus={row.status}
+          onResubmitted={() => getPermit(row.id).then((r) => r && setRow(r))}
+        />
+      </section>
+
+      {/* Permit Fees */}
+      <section id="fees" className="mt-10">
+        <div className="eyebrow text-obsidian/50 mb-3">Permit Fees</div>
+        <PermitFeesPanel
+          permitId={row.id}
+          estimatedCents={(row as any).estimated_fee_cents ?? null}
+          actualCents={(row as any).actual_fee_cents ?? null}
+          paidDate={(row as any).fee_paid_date ?? null}
+          paymentMethod={(row as any).fee_payment_method ?? null}
+          onChanged={() => getPermit(row.id).then((r) => r && setRow(r))}
+        />
+      </section>
+
+      {/* Homeowner Share */}
+      <section id="homeowner-share" className="mt-10 mb-10">
+        <div className="eyebrow text-obsidian/50 mb-3">Homeowner Status</div>
+        <HomeownerShareDialog
+          permitId={row.id}
+          existingToken={(row as any).homeowner_share_token ?? null}
+          onToken={() => getPermit(row.id).then((r) => r && setRow(r))}
+        />
       </section>
     </div>
   );
