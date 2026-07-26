@@ -607,6 +607,15 @@ function PermitDetailPage() {
 
       <SubmittalPackageSection row={row} onChange={(r) => { setRow(r); setEdit(r); }} />
 
+      <div className="mt-6">
+        <ServiceFeeInvoicePanel
+          permitId={row.id}
+          projectAddress={row.job_address ?? row.project_name ?? ""}
+          totalProjectValueCents={(row as any).total_project_value_cents ?? null}
+          permitStatus={row.status}
+        />
+      </div>
+
 
 
       {row.subs && row.subs.length > 0 && (
