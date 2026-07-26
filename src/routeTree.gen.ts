@@ -16,6 +16,7 @@ import { Route as ProjectGuidesRouteImport } from './routes/project-guides'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as ProductsRouteImport } from './routes/products'
 import { Route as ProcessRouteImport } from './routes/process'
+import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as PortalRouteImport } from './routes/portal'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as MyPermitsRouteImport } from './routes/my-permits'
@@ -102,6 +103,7 @@ import { Route as AdminBlogNewRouteImport } from './routes/admin.blog.new'
 import { Route as AdminBlogIdRouteImport } from './routes/admin.blog.$id'
 import { Route as PortalPermitsIdBundleRouteImport } from './routes/portal.permits.$id.bundle'
 import { Route as PortalHoaSubmittalsTemplatesNewRouteImport } from './routes/portal.hoa-submittals.templates.new'
+import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments/webhook'
 import { Route as ApiPublicHubspotDealWebhookRouteImport } from './routes/api/public/hubspot.deal-webhook'
 import { Route as ApiPublicEmailOutboxProcessRouteImport } from './routes/api/public/email-outbox.process'
 
@@ -138,6 +140,11 @@ const ProductsRoute = ProductsRouteImport.update({
 const ProcessRoute = ProcessRouteImport.update({
   id: '/process',
   path: '/process',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PricingRoute = PricingRouteImport.update({
+  id: '/pricing',
+  path: '/pricing',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PortalRoute = PortalRouteImport.update({
@@ -578,6 +585,12 @@ const PortalHoaSubmittalsTemplatesNewRoute =
     path: '/hoa-submittals/templates/new',
     getParentRoute: () => PortalRoute,
   } as any)
+const ApiPublicPaymentsWebhookRoute =
+  ApiPublicPaymentsWebhookRouteImport.update({
+    id: '/api/public/payments/webhook',
+    path: '/api/public/payments/webhook',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicHubspotDealWebhookRoute =
   ApiPublicHubspotDealWebhookRouteImport.update({
     id: '/api/public/hubspot/deal-webhook',
@@ -612,6 +625,7 @@ export interface FileRoutesByFullPath {
   '/my-permits': typeof MyPermitsRoute
   '/onboarding': typeof OnboardingRoute
   '/portal': typeof PortalRouteWithChildren
+  '/pricing': typeof PricingRoute
   '/process': typeof ProcessRoute
   '/products': typeof ProductsRoute
   '/profile': typeof ProfileRoute
@@ -685,6 +699,7 @@ export interface FileRoutesByFullPath {
   '/portal/submissions/': typeof PortalSubmissionsIndexRoute
   '/api/public/email-outbox/process': typeof ApiPublicEmailOutboxProcessRoute
   '/api/public/hubspot/deal-webhook': typeof ApiPublicHubspotDealWebhookRoute
+  '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
   '/portal/hoa-submittals/templates/new': typeof PortalHoaSubmittalsTemplatesNewRoute
   '/portal/permits/$id/bundle': typeof PortalPermitsIdBundleRoute
 }
@@ -708,6 +723,7 @@ export interface FileRoutesByTo {
   '/municipalities': typeof MunicipalitiesRoute
   '/my-permits': typeof MyPermitsRoute
   '/onboarding': typeof OnboardingRoute
+  '/pricing': typeof PricingRoute
   '/process': typeof ProcessRoute
   '/products': typeof ProductsRoute
   '/profile': typeof ProfileRoute
@@ -779,6 +795,7 @@ export interface FileRoutesByTo {
   '/portal/submissions': typeof PortalSubmissionsIndexRoute
   '/api/public/email-outbox/process': typeof ApiPublicEmailOutboxProcessRoute
   '/api/public/hubspot/deal-webhook': typeof ApiPublicHubspotDealWebhookRoute
+  '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
   '/portal/hoa-submittals/templates/new': typeof PortalHoaSubmittalsTemplatesNewRoute
   '/portal/permits/$id/bundle': typeof PortalPermitsIdBundleRoute
 }
@@ -804,6 +821,7 @@ export interface FileRoutesById {
   '/my-permits': typeof MyPermitsRoute
   '/onboarding': typeof OnboardingRoute
   '/portal': typeof PortalRouteWithChildren
+  '/pricing': typeof PricingRoute
   '/process': typeof ProcessRoute
   '/products': typeof ProductsRoute
   '/profile': typeof ProfileRoute
@@ -877,6 +895,7 @@ export interface FileRoutesById {
   '/portal/submissions/': typeof PortalSubmissionsIndexRoute
   '/api/public/email-outbox/process': typeof ApiPublicEmailOutboxProcessRoute
   '/api/public/hubspot/deal-webhook': typeof ApiPublicHubspotDealWebhookRoute
+  '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
   '/portal/hoa-submittals/templates/new': typeof PortalHoaSubmittalsTemplatesNewRoute
   '/portal/permits/$id/bundle': typeof PortalPermitsIdBundleRoute
 }
@@ -903,6 +922,7 @@ export interface FileRouteTypes {
     | '/my-permits'
     | '/onboarding'
     | '/portal'
+    | '/pricing'
     | '/process'
     | '/products'
     | '/profile'
@@ -976,6 +996,7 @@ export interface FileRouteTypes {
     | '/portal/submissions/'
     | '/api/public/email-outbox/process'
     | '/api/public/hubspot/deal-webhook'
+    | '/api/public/payments/webhook'
     | '/portal/hoa-submittals/templates/new'
     | '/portal/permits/$id/bundle'
   fileRoutesByTo: FileRoutesByTo
@@ -999,6 +1020,7 @@ export interface FileRouteTypes {
     | '/municipalities'
     | '/my-permits'
     | '/onboarding'
+    | '/pricing'
     | '/process'
     | '/products'
     | '/profile'
@@ -1070,6 +1092,7 @@ export interface FileRouteTypes {
     | '/portal/submissions'
     | '/api/public/email-outbox/process'
     | '/api/public/hubspot/deal-webhook'
+    | '/api/public/payments/webhook'
     | '/portal/hoa-submittals/templates/new'
     | '/portal/permits/$id/bundle'
   id:
@@ -1094,6 +1117,7 @@ export interface FileRouteTypes {
     | '/my-permits'
     | '/onboarding'
     | '/portal'
+    | '/pricing'
     | '/process'
     | '/products'
     | '/profile'
@@ -1167,6 +1191,7 @@ export interface FileRouteTypes {
     | '/portal/submissions/'
     | '/api/public/email-outbox/process'
     | '/api/public/hubspot/deal-webhook'
+    | '/api/public/payments/webhook'
     | '/portal/hoa-submittals/templates/new'
     | '/portal/permits/$id/bundle'
   fileRoutesById: FileRoutesById
@@ -1192,6 +1217,7 @@ export interface RootRouteChildren {
   MyPermitsRoute: typeof MyPermitsRoute
   OnboardingRoute: typeof OnboardingRoute
   PortalRoute: typeof PortalRouteWithChildren
+  PricingRoute: typeof PricingRoute
   ProcessRoute: typeof ProcessRoute
   ProductsRoute: typeof ProductsRoute
   ProfileRoute: typeof ProfileRoute
@@ -1215,6 +1241,7 @@ export interface RootRouteChildren {
   ApiPublicVictoriaScanRoute: typeof ApiPublicVictoriaScanRoute
   ApiPublicEmailOutboxProcessRoute: typeof ApiPublicEmailOutboxProcessRoute
   ApiPublicHubspotDealWebhookRoute: typeof ApiPublicHubspotDealWebhookRoute
+  ApiPublicPaymentsWebhookRoute: typeof ApiPublicPaymentsWebhookRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -1266,6 +1293,13 @@ declare module '@tanstack/react-router' {
       path: '/process'
       fullPath: '/process'
       preLoaderRoute: typeof ProcessRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pricing': {
+      id: '/pricing'
+      path: '/pricing'
+      fullPath: '/pricing'
+      preLoaderRoute: typeof PricingRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/portal': {
@@ -1870,6 +1904,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PortalHoaSubmittalsTemplatesNewRouteImport
       parentRoute: typeof PortalRoute
     }
+    '/api/public/payments/webhook': {
+      id: '/api/public/payments/webhook'
+      path: '/api/public/payments/webhook'
+      fullPath: '/api/public/payments/webhook'
+      preLoaderRoute: typeof ApiPublicPaymentsWebhookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/hubspot/deal-webhook': {
       id: '/api/public/hubspot/deal-webhook'
       path: '/api/public/hubspot/deal-webhook'
@@ -2123,6 +2164,7 @@ const rootRouteChildren: RootRouteChildren = {
   MyPermitsRoute: MyPermitsRoute,
   OnboardingRoute: OnboardingRoute,
   PortalRoute: PortalRouteWithChildren,
+  PricingRoute: PricingRoute,
   ProcessRoute: ProcessRoute,
   ProductsRoute: ProductsRoute,
   ProfileRoute: ProfileRoute,
@@ -2146,6 +2188,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicVictoriaScanRoute: ApiPublicVictoriaScanRoute,
   ApiPublicEmailOutboxProcessRoute: ApiPublicEmailOutboxProcessRoute,
   ApiPublicHubspotDealWebhookRoute: ApiPublicHubspotDealWebhookRoute,
+  ApiPublicPaymentsWebhookRoute: ApiPublicPaymentsWebhookRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

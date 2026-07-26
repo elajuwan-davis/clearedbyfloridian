@@ -14,6 +14,7 @@ import { ExpirationBanner } from "@/components/expiration-banner";
 import { HomeownerShareDialog } from "@/components/homeowner-share-dialog";
 import { DispatchCard } from "@/components/dispatch-card";
 import { SubmittalPackageSection } from "@/components/submittal-package-section";
+import { ServiceFeeInvoicePanel } from "@/components/service-fee-invoice-panel";
 import type { DispatchResult } from "@/lib/dispatch";
 
 
@@ -605,6 +606,15 @@ function PermitDetailPage() {
       </div>
 
       <SubmittalPackageSection row={row} onChange={(r) => { setRow(r); setEdit(r); }} />
+
+      <div className="mt-6">
+        <ServiceFeeInvoicePanel
+          permitId={row.id}
+          projectAddress={row.job_address ?? row.project_name ?? ""}
+          totalProjectValueCents={(row as any).total_project_value_cents ?? null}
+          permitStatus={row.status}
+        />
+      </div>
 
 
 
