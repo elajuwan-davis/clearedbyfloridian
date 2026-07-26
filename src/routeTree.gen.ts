@@ -59,6 +59,7 @@ import { Route as PortalFinancialsRouteImport } from './routes/portal.financials
 import { Route as PortalFeatureRequestsRouteImport } from './routes/portal.feature-requests'
 import { Route as PortalComplianceRouteImport } from './routes/portal.compliance'
 import { Route as PortalBuildingDeptRouteImport } from './routes/portal.building-dept'
+import { Route as PortalBidReviewRouteImport } from './routes/portal.bid-review'
 import { Route as PortalAlertsRouteImport } from './routes/portal.alerts'
 import { Route as PermitCardIdRouteImport } from './routes/permit-card.$id'
 import { Route as JoinTokenRouteImport } from './routes/join.$token'
@@ -355,6 +356,11 @@ const PortalBuildingDeptRoute = PortalBuildingDeptRouteImport.update({
   path: '/building-dept',
   getParentRoute: () => PortalRoute,
 } as any)
+const PortalBidReviewRoute = PortalBidReviewRouteImport.update({
+  id: '/bid-review',
+  path: '/bid-review',
+  getParentRoute: () => PortalRoute,
+} as any)
 const PortalAlertsRoute = PortalAlertsRouteImport.update({
   id: '/alerts',
   path: '/alerts',
@@ -630,6 +636,7 @@ export interface FileRoutesByFullPath {
   '/join/$token': typeof JoinTokenRoute
   '/permit-card/$id': typeof PermitCardIdRoute
   '/portal/alerts': typeof PortalAlertsRoute
+  '/portal/bid-review': typeof PortalBidReviewRoute
   '/portal/building-dept': typeof PortalBuildingDeptRoute
   '/portal/compliance': typeof PortalComplianceRoute
   '/portal/feature-requests': typeof PortalFeatureRequestsRoute
@@ -725,6 +732,7 @@ export interface FileRoutesByTo {
   '/join/$token': typeof JoinTokenRoute
   '/permit-card/$id': typeof PermitCardIdRoute
   '/portal/alerts': typeof PortalAlertsRoute
+  '/portal/bid-review': typeof PortalBidReviewRoute
   '/portal/building-dept': typeof PortalBuildingDeptRoute
   '/portal/compliance': typeof PortalComplianceRoute
   '/portal/feature-requests': typeof PortalFeatureRequestsRoute
@@ -820,6 +828,7 @@ export interface FileRoutesById {
   '/join/$token': typeof JoinTokenRoute
   '/permit-card/$id': typeof PermitCardIdRoute
   '/portal/alerts': typeof PortalAlertsRoute
+  '/portal/bid-review': typeof PortalBidReviewRoute
   '/portal/building-dept': typeof PortalBuildingDeptRoute
   '/portal/compliance': typeof PortalComplianceRoute
   '/portal/feature-requests': typeof PortalFeatureRequestsRoute
@@ -918,6 +927,7 @@ export interface FileRouteTypes {
     | '/join/$token'
     | '/permit-card/$id'
     | '/portal/alerts'
+    | '/portal/bid-review'
     | '/portal/building-dept'
     | '/portal/compliance'
     | '/portal/feature-requests'
@@ -1013,6 +1023,7 @@ export interface FileRouteTypes {
     | '/join/$token'
     | '/permit-card/$id'
     | '/portal/alerts'
+    | '/portal/bid-review'
     | '/portal/building-dept'
     | '/portal/compliance'
     | '/portal/feature-requests'
@@ -1107,6 +1118,7 @@ export interface FileRouteTypes {
     | '/join/$token'
     | '/permit-card/$id'
     | '/portal/alerts'
+    | '/portal/bid-review'
     | '/portal/building-dept'
     | '/portal/compliance'
     | '/portal/feature-requests'
@@ -1557,6 +1569,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PortalBuildingDeptRouteImport
       parentRoute: typeof PortalRoute
     }
+    '/portal/bid-review': {
+      id: '/portal/bid-review'
+      path: '/bid-review'
+      fullPath: '/portal/bid-review'
+      preLoaderRoute: typeof PortalBidReviewRouteImport
+      parentRoute: typeof PortalRoute
+    }
     '/portal/alerts': {
       id: '/portal/alerts'
       path: '/alerts'
@@ -1992,6 +2011,7 @@ const PortalSubmissionsRouteWithChildren =
 
 interface PortalRouteChildren {
   PortalAlertsRoute: typeof PortalAlertsRoute
+  PortalBidReviewRoute: typeof PortalBidReviewRoute
   PortalBuildingDeptRoute: typeof PortalBuildingDeptRoute
   PortalComplianceRoute: typeof PortalComplianceRoute
   PortalFeatureRequestsRoute: typeof PortalFeatureRequestsRoute
@@ -2023,6 +2043,7 @@ interface PortalRouteChildren {
 
 const PortalRouteChildren: PortalRouteChildren = {
   PortalAlertsRoute: PortalAlertsRoute,
+  PortalBidReviewRoute: PortalBidReviewRoute,
   PortalBuildingDeptRoute: PortalBuildingDeptRoute,
   PortalComplianceRoute: PortalComplianceRoute,
   PortalFeatureRequestsRoute: PortalFeatureRequestsRoute,

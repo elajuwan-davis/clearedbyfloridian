@@ -14,7 +14,7 @@ import { ExpirationBanner } from "@/components/expiration-banner";
 import { HomeownerShareDialog } from "@/components/homeowner-share-dialog";
 import { DispatchCard } from "@/components/dispatch-card";
 import type { DispatchResult } from "@/lib/dispatch";
-import { BidComparisonDialog } from "@/components/bid-comparison-dialog";
+
 
 import { getPermit, updatePermit, deletePermit, permitCompleteness, getEffectiveDocs, getHiddenFieldKeys, withHiddenFieldKeys, ensureSubTokens, type PermitRow, type PermitStatus, type PermitDoc, type PermitSub } from "@/lib/permits-api";
 import { PermitDocUploader } from "@/components/permit-doc-uploader";
@@ -55,7 +55,7 @@ function PermitDetailPage() {
   const [exportBlob, setExportBlob] = useState<Blob | null>(null);
   const [exportUrl, setExportUrl] = useState<string | null>(null);
   const [driveUploading, setDriveUploading] = useState(false);
-  const [bidOpen, setBidOpen] = useState(false);
+  
 
 
 
@@ -347,9 +347,9 @@ function PermitDetailPage() {
               <button onClick={openExport} className="inline-flex items-center gap-2 border border-obsidian/20 bg-white px-3 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian rounded-[3px] hover:bg-obsidian/5">
                 <Download className="h-3.5 w-3.5" /> Export
               </button>
-              <button onClick={() => setBidOpen(true)} className="inline-flex items-center gap-2 border border-obsidian/20 bg-white px-3 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian rounded-[3px] hover:bg-obsidian/5">
-                <Scale className="h-3.5 w-3.5" /> Compare Bids
-              </button>
+              <Link to="/portal/bid-review" className="inline-flex items-center gap-2 border border-obsidian/20 bg-white px-3 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian rounded-[3px] hover:bg-obsidian/5">
+                <Scale className="h-3.5 w-3.5" /> Bid Review
+              </Link>
               <Link
                 to="/portal/permits/new"
                 search={{ edit: row.id }}
@@ -873,21 +873,13 @@ function PermitDetailPage() {
                   {awarded.awarded_at ? ` · ${new Date(awarded.awarded_at).toLocaleDateString()}` : ""}
                 </div>
               </div>
-              <button onClick={() => setBidOpen(true)} className="border border-emerald-700/30 rounded-[3px] px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em]">
-                View / Re-compare
-              </button>
+              <Link to="/portal/bid-review" className="border border-emerald-700/30 rounded-[3px] px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em]">
+                Open Bid Review
+              </Link>
             </div>
           </section>
         );
       })()}
-
-      {bidOpen && (
-        <BidComparisonDialog
-          permit={row}
-          onClose={() => setBidOpen(false)}
-          onSaved={(r) => setRow(r)}
-        />
-      )}
     </div>
   );
 }
