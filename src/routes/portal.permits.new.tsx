@@ -635,6 +635,52 @@ function NewPermitPage() {
             />
           )}
 
+          {/* Total Project Value + live service fee estimate */}
+          <div className="pt-2 space-y-2">
+            <label className={labelCls}>Total Project Value (USD) *</label>
+            <input
+              type="number"
+              min={0}
+              step={1000}
+              inputMode="numeric"
+              value={form.totalProjectValue}
+              onChange={(e) => update("totalProjectValue", e.target.value)}
+              placeholder="e.g. 1250000"
+              className="w-full h-11 px-3 rounded-[3px] border border-obsidian/20 bg-white text-sm focus:outline-none focus:border-obsidian"
+            />
+            {(() => {
+              const v = Number(form.totalProjectValue || 0);
+              if (!v || v <= 0) {
+                return (
+                  <p className="text-[11px] text-obsidian/50">
+                    Cleard service fee = 1% under $1M · 0.5% at $1M and above. All permit administration, plan review, inspections, and C.O. coordination bundled — no à la carte.
+                  </p>
+                );
+              }
+              const rate = v >= 1_000_000 ? 0.005 : 0.01;
+              const fee = Math.round(v * rate);
+              const fmt = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
+              return (
+                <div className="rounded-[3px] border border-obsidian/15 bg-[#153157]/[0.03] px-4 py-3">
+                  <div className="text-[10px] font-mono uppercase tracking-[0.15em] text-obsidian/60">
+                    Estimated Cleard service fee
+                  </div>
+                  <div className="display-serif text-2xl text-obsidian mt-1">
+                    {fmt.format(fee)}
+                    <span className="ml-2 text-[11px] font-mono uppercase tracking-[0.15em] text-obsidian/50">
+                      · {(rate * 100).toFixed(1)}% of project value
+                    </span>
+                  </div>
+                  <div className="text-[11px] text-obsidian/60 mt-1.5 leading-relaxed">
+                    Invoiced when this permit reaches <em>Cleared for Takeoff</em>. All services bundled — permit administration, plan review, inspections, C.O. coordination, and Victoria AI.
+                  </div>
+                </div>
+              );
+            })()}
+          </div>
+
+
+
 
 
           {/* Scope multi-select */}
