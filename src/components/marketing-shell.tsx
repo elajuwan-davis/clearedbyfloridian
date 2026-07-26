@@ -6,7 +6,7 @@ const NAV_LINKS: Array<{ to: string; label: string; soon?: boolean }> = [
   { to: "/products", label: "Products" },
   { to: "/process", label: "How It Works" },
   { to: "/join", label: "For Builders" },
-  { to: "/pricing", label: "Pricing" },
+  
 ];
 
 function MarketingNav() {
