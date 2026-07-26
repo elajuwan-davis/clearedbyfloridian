@@ -19,6 +19,8 @@ import { logPermitIntelligence } from "@/lib/intelligence";
 import { DispatchCard } from "@/components/dispatch-card";
 import { runDispatch, type DispatchResult } from "@/lib/dispatch";
 import { MunicipalityReadinessPanel } from "@/components/municipality-readiness-panel";
+import type { SubmittalDocSnapshot } from "@/lib/submittal-package";
+import type { GcDocKey } from "@/lib/gc-compliance";
 
 
 
