@@ -149,8 +149,14 @@ const SECTIONS: Section[] = [
   {
     label: "Payroll",
     icon: Users,
-    partners: [],
-    placeholder: true,
+    partners: [
+      {
+        name: "Gusto",
+        description: "Full-service payroll built for small business.",
+        url: "https://gusto.com/",
+        cta: "Visit",
+      },
+    ],
   },
 ];
 
