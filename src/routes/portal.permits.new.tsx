@@ -601,6 +601,10 @@ function NewPermitPage() {
             />
           )}
 
+          {form.municipality && (
+            <MunicipalityReadinessPanel municipality={form.municipality} />
+          )}
+
 
 
           {/* Scope multi-select */}
