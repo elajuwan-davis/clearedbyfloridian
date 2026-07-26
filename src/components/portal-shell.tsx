@@ -62,6 +62,13 @@ const navGroups: NavGroup[] = [
       { to: "/portal/feature-requests", label: "Feature Requests" },
     ],
   },
+  {
+    label: "Marketplace",
+    items: [
+      { to: "/portal/marketplace", label: "Marketplace" },
+    ],
+  },
+
 
 
 ];
