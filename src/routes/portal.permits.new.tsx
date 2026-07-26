@@ -16,6 +16,8 @@ import { NocAwarenessRibbon } from "@/components/noc-awareness-ribbon";
 import { TradesOnJobPanel } from "@/components/trades-on-job-panel";
 import { VictoriaIntelligencePanel } from "@/components/victoria-intelligence-panel";
 import { logPermitIntelligence } from "@/lib/intelligence";
+import { DispatchCard } from "@/components/dispatch-card";
+import { runDispatch, type DispatchResult } from "@/lib/dispatch";
 
 
 
@@ -106,6 +108,8 @@ function NewPermitPage() {
   const [docsSkipped, setDocsSkipped] = useState(false);
   const [saveArchitectToContacts, setSaveArchitectToContacts] = useState(false);
   const [saveEngineerToContacts, setSaveEngineerToContacts] = useState(false);
+  const [dispatch, setDispatch] = useState<DispatchResult | null>(null);
+  const [dispatchConfirmed, setDispatchConfirmed] = useState(false);
   const [form, setForm] = useState({
     step: 1 as 1 | 2,
     projectName: "",
@@ -209,6 +213,11 @@ function NewPermitPage() {
           docs: docsMap,
           extraDocs: r.extra_docs ?? [],
         }));
+        const savedDispatch = (ip.dispatch ?? null) as DispatchResult | null;
+        if (savedDispatch) {
+          setDispatch(savedDispatch);
+          setDispatchConfirmed(Boolean(ip.dispatch_confirmed_at));
+        }
       })
       .catch(() => toast.error("Could not load permit for editing"))
       .finally(() => setLoadingEdit(false));
@@ -283,6 +292,13 @@ function NewPermitPage() {
       const target = norm(r.city);
       const matched = MUNICIPALITIES.some((m) => norm(m.name) === target);
       toast.success(matched ? `Matched municipality: ${r.city}` : `City set to ${r.city} (not in list — please verify)`);
+    }
+    // Kick off Dispatch — pre-flight property intelligence.
+    const resolvedAddress = r.streetLine || r.formatted;
+    if (resolvedAddress) {
+      const result = runDispatch({ address: resolvedAddress, city: r.city ?? null });
+      setDispatch(result);
+      setDispatchConfirmed(false);
     }
   }
 
@@ -444,6 +460,10 @@ function NewPermitPage() {
       };
       if (wantBundle) intake_payload.bundle = bundleFromSubs(subs);
       if (isEditing) intake_payload.last_edited_at = new Date().toISOString();
+      if (dispatch) {
+        intake_payload.dispatch = dispatch;
+        if (dispatchConfirmed) intake_payload.dispatch_confirmed_at = new Date().toISOString();
+      }
 
       const permitPatch = {
         project_name: form.projectName,
@@ -571,6 +591,16 @@ function NewPermitPage() {
               />
             </div>
           </div>
+
+          {dispatch && (
+            <DispatchCard
+              data={dispatch}
+              confirmed={dispatchConfirmed}
+              onConfirm={() => setDispatchConfirmed(true)}
+            />
+          )}
+
+
 
           {/* Scope multi-select */}
           <div className="pt-2 space-y-3">
