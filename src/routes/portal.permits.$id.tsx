@@ -55,7 +55,7 @@ function PermitDetailPage() {
   const [exportBlob, setExportBlob] = useState<Blob | null>(null);
   const [exportUrl, setExportUrl] = useState<string | null>(null);
   const [driveUploading, setDriveUploading] = useState(false);
-  const [bidOpen, setBidOpen] = useState(false);
+  
 
 
 
