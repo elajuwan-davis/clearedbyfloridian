@@ -18,6 +18,7 @@ import { VictoriaIntelligencePanel } from "@/components/victoria-intelligence-pa
 import { logPermitIntelligence } from "@/lib/intelligence";
 import { DispatchCard } from "@/components/dispatch-card";
 import { runDispatch, type DispatchResult } from "@/lib/dispatch";
+import { MunicipalityReadinessPanel } from "@/components/municipality-readiness-panel";
 
 
 
@@ -598,6 +599,10 @@ function NewPermitPage() {
               confirmed={dispatchConfirmed}
               onConfirm={() => setDispatchConfirmed(true)}
             />
+          )}
+
+          {form.municipality && (
+            <MunicipalityReadinessPanel municipality={form.municipality} />
           )}
 
 
