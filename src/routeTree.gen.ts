@@ -16,6 +16,7 @@ import { Route as ProjectGuidesRouteImport } from './routes/project-guides'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as ProductsRouteImport } from './routes/products'
 import { Route as ProcessRouteImport } from './routes/process'
+import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as PortalRouteImport } from './routes/portal'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as MyPermitsRouteImport } from './routes/my-permits'
@@ -139,6 +140,11 @@ const ProductsRoute = ProductsRouteImport.update({
 const ProcessRoute = ProcessRouteImport.update({
   id: '/process',
   path: '/process',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PricingRoute = PricingRouteImport.update({
+  id: '/pricing',
+  path: '/pricing',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PortalRoute = PortalRouteImport.update({
@@ -619,6 +625,7 @@ export interface FileRoutesByFullPath {
   '/my-permits': typeof MyPermitsRoute
   '/onboarding': typeof OnboardingRoute
   '/portal': typeof PortalRouteWithChildren
+  '/pricing': typeof PricingRoute
   '/process': typeof ProcessRoute
   '/products': typeof ProductsRoute
   '/profile': typeof ProfileRoute
@@ -716,6 +723,7 @@ export interface FileRoutesByTo {
   '/municipalities': typeof MunicipalitiesRoute
   '/my-permits': typeof MyPermitsRoute
   '/onboarding': typeof OnboardingRoute
+  '/pricing': typeof PricingRoute
   '/process': typeof ProcessRoute
   '/products': typeof ProductsRoute
   '/profile': typeof ProfileRoute
@@ -813,6 +821,7 @@ export interface FileRoutesById {
   '/my-permits': typeof MyPermitsRoute
   '/onboarding': typeof OnboardingRoute
   '/portal': typeof PortalRouteWithChildren
+  '/pricing': typeof PricingRoute
   '/process': typeof ProcessRoute
   '/products': typeof ProductsRoute
   '/profile': typeof ProfileRoute
@@ -913,6 +922,7 @@ export interface FileRouteTypes {
     | '/my-permits'
     | '/onboarding'
     | '/portal'
+    | '/pricing'
     | '/process'
     | '/products'
     | '/profile'
@@ -1010,6 +1020,7 @@ export interface FileRouteTypes {
     | '/municipalities'
     | '/my-permits'
     | '/onboarding'
+    | '/pricing'
     | '/process'
     | '/products'
     | '/profile'
@@ -1106,6 +1117,7 @@ export interface FileRouteTypes {
     | '/my-permits'
     | '/onboarding'
     | '/portal'
+    | '/pricing'
     | '/process'
     | '/products'
     | '/profile'
@@ -1205,6 +1217,7 @@ export interface RootRouteChildren {
   MyPermitsRoute: typeof MyPermitsRoute
   OnboardingRoute: typeof OnboardingRoute
   PortalRoute: typeof PortalRouteWithChildren
+  PricingRoute: typeof PricingRoute
   ProcessRoute: typeof ProcessRoute
   ProductsRoute: typeof ProductsRoute
   ProfileRoute: typeof ProfileRoute
@@ -1280,6 +1293,13 @@ declare module '@tanstack/react-router' {
       path: '/process'
       fullPath: '/process'
       preLoaderRoute: typeof ProcessRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pricing': {
+      id: '/pricing'
+      path: '/pricing'
+      fullPath: '/pricing'
+      preLoaderRoute: typeof PricingRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/portal': {
@@ -2144,6 +2164,7 @@ const rootRouteChildren: RootRouteChildren = {
   MyPermitsRoute: MyPermitsRoute,
   OnboardingRoute: OnboardingRoute,
   PortalRoute: PortalRouteWithChildren,
+  PricingRoute: PricingRoute,
   ProcessRoute: ProcessRoute,
   ProductsRoute: ProductsRoute,
   ProfileRoute: ProfileRoute,
