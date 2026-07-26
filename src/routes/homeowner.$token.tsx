@@ -91,8 +91,8 @@ function HomeownerStatusPage() {
 
         <section>
           <div className="text-[10px] font-mono uppercase tracking-[0.14em] text-obsidian/50 mb-4">Current Status</div>
-          <div className={`inline-flex items-center gap-2 px-3 py-1.5 border rounded-[3px] text-xs font-medium ${badge.className}`}>
-            {isDelayed ? "Delayed" : badge.label}
+          <div className={`inline-flex items-center gap-2 px-3 py-1.5 border rounded-[3px] text-xs font-medium ${badgeClass}`}>
+            {isDelayed ? "Delayed" : meta.label}
           </div>
         </section>
 
