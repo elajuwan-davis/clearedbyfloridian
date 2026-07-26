@@ -604,6 +604,10 @@ function PermitDetailPage() {
         )}
       </div>
 
+      <SubmittalPackageSection row={row} onChange={(r) => { setRow(r); setEdit(r); }} />
+
+
+
       {row.subs && row.subs.length > 0 && (
         <div className="mt-6 bg-white border border-obsidian/10 rounded-[3px] p-6">
           <div className="flex items-baseline justify-between mb-4 gap-3 flex-wrap">
