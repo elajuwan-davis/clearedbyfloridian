@@ -14,6 +14,8 @@ export type ResolvedAddress = {
   streetLine: string;
   /** City / municipality parsed from address components. May be empty. */
   city: string;
+  /** County (administrative_area_level_2), long form e.g. "Palm Beach County". */
+  county: string;
   /** Two-letter US state (should be "FL" for restricted results). */
   state: string;
   /** 5-digit ZIP. May be empty. */
@@ -21,6 +23,7 @@ export type ResolvedAddress = {
   /** Full formatted address string from Places. */
   formatted: string;
 };
+
 
 type Props = {
   value: string;
