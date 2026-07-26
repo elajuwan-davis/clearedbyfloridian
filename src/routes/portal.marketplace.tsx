@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { ShieldCheck, ExternalLink, type LucideIcon, Calculator, CreditCard, Scale, Users } from "lucide-react";
+import { ShieldCheck, ExternalLink, type LucideIcon, Calculator, CreditCard, Scale, Users, Ruler, Briefcase } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/portal/marketplace")({
