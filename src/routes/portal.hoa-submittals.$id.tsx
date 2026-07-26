@@ -534,6 +534,22 @@ function HoaSubmittalEditor() {
               onChange={(v) => patch("deposit_amount_cents", Math.round(Number(v || 0) * 100))}
             />
           </Field>
+          <Field label="Deposit Status">
+            <select
+              value={(row as any).deposit_status ?? "pending"}
+              onChange={(e) => patch("deposit_status" as any, e.target.value)}
+              className="w-full border border-obsidian/20 bg-white px-3 py-2 text-sm rounded-[3px]"
+            >
+              <option value="pending">Pending</option>
+              <option value="paid">Paid</option>
+            </select>
+          </Field>
+          <Field label="Deposit Paid Date">
+            <Input type="date" value={(row as any).deposit_paid_date ?? ""} onChange={(v) => patch("deposit_paid_date" as any, v || null)} />
+          </Field>
+          <Field label="Deposit Confirmation #">
+            <Input value={(row as any).deposit_confirmation ?? ""} onChange={(v) => patch("deposit_confirmation" as any, v)} />
+          </Field>
           <Field label="Scope / Description" full>
             <textarea
               value={row.scope_of_work ?? ""}

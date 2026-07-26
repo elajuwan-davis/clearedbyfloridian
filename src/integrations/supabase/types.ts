@@ -625,6 +625,9 @@ export type Database = {
           created_at: string
           created_by: string | null
           deposit_amount_cents: number
+          deposit_confirmation: string | null
+          deposit_paid_date: string | null
+          deposit_status: string
           documents: Json
           estimated_start_date: string | null
           extracted_fields: Json
@@ -670,6 +673,9 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           deposit_amount_cents?: number
+          deposit_confirmation?: string | null
+          deposit_paid_date?: string | null
+          deposit_status?: string
           documents?: Json
           estimated_start_date?: string | null
           extracted_fields?: Json
@@ -715,6 +721,9 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           deposit_amount_cents?: number
+          deposit_confirmation?: string | null
+          deposit_paid_date?: string | null
+          deposit_status?: string
           documents?: Json
           estimated_start_date?: string | null
           extracted_fields?: Json
@@ -1103,8 +1112,106 @@ export type Database = {
           },
         ]
       }
+      permit_inspections: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          id: string
+          inspection_type: string
+          inspector_name: string | null
+          notes: string | null
+          permit_id: string
+          requested_date: string | null
+          result: string | null
+          scheduled_date: string | null
+          tenant_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          inspection_type: string
+          inspector_name?: string | null
+          notes?: string | null
+          permit_id: string
+          requested_date?: string | null
+          result?: string | null
+          scheduled_date?: string | null
+          tenant_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          inspection_type?: string
+          inspector_name?: string | null
+          notes?: string | null
+          permit_id?: string
+          requested_date?: string | null
+          result?: string | null
+          scheduled_date?: string | null
+          tenant_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "permit_inspections_permit_id_fkey"
+            columns: ["permit_id"]
+            isOneToOne: false
+            referencedRelation: "permits"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      permit_resubmittals: {
+        Row: {
+          correction_notes: string | null
+          created_at: string
+          created_by: string | null
+          document_paths: Json
+          id: string
+          permit_id: string
+          resubmitted_at: string
+          tenant_id: string | null
+          version: number
+        }
+        Insert: {
+          correction_notes?: string | null
+          created_at?: string
+          created_by?: string | null
+          document_paths?: Json
+          id?: string
+          permit_id: string
+          resubmitted_at?: string
+          tenant_id?: string | null
+          version?: number
+        }
+        Update: {
+          correction_notes?: string | null
+          created_at?: string
+          created_by?: string | null
+          document_paths?: Json
+          id?: string
+          permit_id?: string
+          resubmitted_at?: string
+          tenant_id?: string | null
+          version?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "permit_resubmittals_permit_id_fkey"
+            columns: ["permit_id"]
+            isOneToOne: false
+            referencedRelation: "permits"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       permits: {
         Row: {
+          actual_fee_cents: number | null
           additional_notes: string | null
           city: string | null
           cleared_fee_cents: number
@@ -1117,10 +1224,18 @@ export type Database = {
           created_by: string | null
           description: string | null
           documents: Json
+          estimated_fee_cents: number | null
+          expiration_date: string | null
+          extension_requested_at: string | null
           extra_docs: Json
+          fee_paid_date: string | null
+          fee_payment_method: string | null
+          homeowner_share_token: string | null
           id: string
           intake_payload: Json | null
+          issued_date: string | null
           job_address: string
+          last_followup_at: string | null
           license_number: string | null
           municipality: string | null
           owner_entity: string | null
@@ -1141,6 +1256,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          actual_fee_cents?: number | null
           additional_notes?: string | null
           city?: string | null
           cleared_fee_cents?: number
@@ -1153,10 +1269,18 @@ export type Database = {
           created_by?: string | null
           description?: string | null
           documents?: Json
+          estimated_fee_cents?: number | null
+          expiration_date?: string | null
+          extension_requested_at?: string | null
           extra_docs?: Json
+          fee_paid_date?: string | null
+          fee_payment_method?: string | null
+          homeowner_share_token?: string | null
           id?: string
           intake_payload?: Json | null
+          issued_date?: string | null
           job_address: string
+          last_followup_at?: string | null
           license_number?: string | null
           municipality?: string | null
           owner_entity?: string | null
@@ -1177,6 +1301,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          actual_fee_cents?: number | null
           additional_notes?: string | null
           city?: string | null
           cleared_fee_cents?: number
@@ -1189,10 +1314,18 @@ export type Database = {
           created_by?: string | null
           description?: string | null
           documents?: Json
+          estimated_fee_cents?: number | null
+          expiration_date?: string | null
+          extension_requested_at?: string | null
           extra_docs?: Json
+          fee_paid_date?: string | null
+          fee_payment_method?: string | null
+          homeowner_share_token?: string | null
           id?: string
           intake_payload?: Json | null
+          issued_date?: string | null
           job_address?: string
+          last_followup_at?: string | null
           license_number?: string | null
           municipality?: string | null
           owner_entity?: string | null

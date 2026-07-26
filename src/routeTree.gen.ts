@@ -62,6 +62,7 @@ import { Route as PortalBuildingDeptRouteImport } from './routes/portal.building
 import { Route as PortalAlertsRouteImport } from './routes/portal.alerts'
 import { Route as PermitCardIdRouteImport } from './routes/permit-card.$id'
 import { Route as JoinTokenRouteImport } from './routes/join.$token'
+import { Route as HomeownerTokenRouteImport } from './routes/homeowner.$token'
 import { Route as FormsSubcontractorIntakeRouteImport } from './routes/forms.subcontractor-intake'
 import { Route as FormsPermitIntakeRouteImport } from './routes/forms.permit-intake'
 import { Route as FormsPaymentAuthorizationRouteImport } from './routes/forms.payment-authorization'
@@ -369,6 +370,11 @@ const JoinTokenRoute = JoinTokenRouteImport.update({
   path: '/$token',
   getParentRoute: () => JoinRoute,
 } as any)
+const HomeownerTokenRoute = HomeownerTokenRouteImport.update({
+  id: '/homeowner/$token',
+  path: '/homeowner/$token',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const FormsSubcontractorIntakeRoute =
   FormsSubcontractorIntakeRouteImport.update({
     id: '/subcontractor-intake',
@@ -620,6 +626,7 @@ export interface FileRoutesByFullPath {
   '/forms/payment-authorization': typeof FormsPaymentAuthorizationRoute
   '/forms/permit-intake': typeof FormsPermitIntakeRoute
   '/forms/subcontractor-intake': typeof FormsSubcontractorIntakeRoute
+  '/homeowner/$token': typeof HomeownerTokenRoute
   '/join/$token': typeof JoinTokenRoute
   '/permit-card/$id': typeof PermitCardIdRoute
   '/portal/alerts': typeof PortalAlertsRoute
@@ -714,6 +721,7 @@ export interface FileRoutesByTo {
   '/forms/payment-authorization': typeof FormsPaymentAuthorizationRoute
   '/forms/permit-intake': typeof FormsPermitIntakeRoute
   '/forms/subcontractor-intake': typeof FormsSubcontractorIntakeRoute
+  '/homeowner/$token': typeof HomeownerTokenRoute
   '/join/$token': typeof JoinTokenRoute
   '/permit-card/$id': typeof PermitCardIdRoute
   '/portal/alerts': typeof PortalAlertsRoute
@@ -808,6 +816,7 @@ export interface FileRoutesById {
   '/forms/payment-authorization': typeof FormsPaymentAuthorizationRoute
   '/forms/permit-intake': typeof FormsPermitIntakeRoute
   '/forms/subcontractor-intake': typeof FormsSubcontractorIntakeRoute
+  '/homeowner/$token': typeof HomeownerTokenRoute
   '/join/$token': typeof JoinTokenRoute
   '/permit-card/$id': typeof PermitCardIdRoute
   '/portal/alerts': typeof PortalAlertsRoute
@@ -905,6 +914,7 @@ export interface FileRouteTypes {
     | '/forms/payment-authorization'
     | '/forms/permit-intake'
     | '/forms/subcontractor-intake'
+    | '/homeowner/$token'
     | '/join/$token'
     | '/permit-card/$id'
     | '/portal/alerts'
@@ -999,6 +1009,7 @@ export interface FileRouteTypes {
     | '/forms/payment-authorization'
     | '/forms/permit-intake'
     | '/forms/subcontractor-intake'
+    | '/homeowner/$token'
     | '/join/$token'
     | '/permit-card/$id'
     | '/portal/alerts'
@@ -1092,6 +1103,7 @@ export interface FileRouteTypes {
     | '/forms/payment-authorization'
     | '/forms/permit-intake'
     | '/forms/subcontractor-intake'
+    | '/homeowner/$token'
     | '/join/$token'
     | '/permit-card/$id'
     | '/portal/alerts'
@@ -1178,6 +1190,7 @@ export interface RootRouteChildren {
   AdminContractorsRoute: typeof AdminContractorsRoute
   ApiVerifyLicenseRoute: typeof ApiVerifyLicenseRoute
   BlogSlugRoute: typeof BlogSlugRoute
+  HomeownerTokenRoute: typeof HomeownerTokenRoute
   PermitCardIdRoute: typeof PermitCardIdRoute
   SubIntakeTokenRoute: typeof SubIntakeTokenRoute
   VersusSlugRoute: typeof VersusSlugRoute
@@ -1564,6 +1577,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/join/$token'
       preLoaderRoute: typeof JoinTokenRouteImport
       parentRoute: typeof JoinRoute
+    }
+    '/homeowner/$token': {
+      id: '/homeowner/$token'
+      path: '/homeowner/$token'
+      fullPath: '/homeowner/$token'
+      preLoaderRoute: typeof HomeownerTokenRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/forms/subcontractor-intake': {
       id: '/forms/subcontractor-intake'
@@ -2092,6 +2112,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminContractorsRoute: AdminContractorsRoute,
   ApiVerifyLicenseRoute: ApiVerifyLicenseRoute,
   BlogSlugRoute: BlogSlugRoute,
+  HomeownerTokenRoute: HomeownerTokenRoute,
   PermitCardIdRoute: PermitCardIdRoute,
   SubIntakeTokenRoute: SubIntakeTokenRoute,
   VersusSlugRoute: VersusSlugRoute,

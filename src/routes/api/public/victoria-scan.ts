@@ -122,10 +122,77 @@ export const Route = createFileRoute("/api/public/victoria-scan")({
               }
             }
           }
+
+          // 6. Permit expiration warning — within 30 days of expiration_date.
+          if (p.status === "permit_issued") {
+            const exp = (p as any).expiration_date as string | null;
+            if (exp) {
+              const daysToExp = Math.floor((new Date(exp).getTime() - now) / DAY);
+              if (daysToExp <= 30 && daysToExp >= 0) {
+                await insertAlert({
+                  tenant_id: p.tenant_id, permit_id: p.id, kind: "correction_deadline",
+                  severity: daysToExp <= 7 ? "critical" : "warning",
+                  title: `${p.project_name}: permit expires in ${daysToExp} day${daysToExp === 1 ? "" : "s"}`,
+                  body: `Your ${city} permit expires on ${exp}. Request an extension or schedule an inspection to keep it active.`,
+                  dedupe_key: `expire::${p.id}::${Math.floor(daysToExp / 7)}`,
+                });
+              } else if (daysToExp < 0) {
+                await insertAlert({
+                  tenant_id: p.tenant_id, permit_id: p.id, kind: "correction_deadline", severity: "critical",
+                  title: `${p.project_name}: permit EXPIRED`,
+                  body: `Your ${city} permit expired on ${exp}. Contact Cleard immediately.`,
+                  dedupe_key: `expired::${p.id}`,
+                });
+              }
+            }
+          }
+
+          // 10. Municipality follow-up — Cleared for Takeoff >10 business days (~14 cal).
+          if (["submitted", "in_review"].includes(p.status)) {
+            const lastFollow = (p as any).last_followup_at as string | null;
+            const referenceTime = lastFollow ? new Date(lastFollow).getTime() : new Date(p.updated_at).getTime();
+            const idleDays = Math.floor((now - referenceTime) / DAY);
+            if (idleDays >= 14) {
+              await insertAlert({
+                tenant_id: p.tenant_id, permit_id: p.id, kind: "stale_permit", severity: "warning",
+                title: `${p.project_name}: no update from ${city} in ${idleDays} days`,
+                body: `No update received from ${city} in ${idleDays} days. Draft a follow-up inquiry from the permit detail.`,
+                dedupe_key: `followup::${p.id}::${Math.floor(idleDays / 7)}`,
+              });
+            }
+          }
         }
 
-        // 4. Upcoming inspections — placeholder. Inspection scheduling table
-        //    is not yet in this project; wire up once inspections are stored.
+
+        // 3+8. Subcontractor COI/License expiration — 30 day warnings emit to GC tenant.
+        const { data: subs } = await (supabaseAdmin.from("subcontractors" as any) as any)
+          .select("id, company_name, tenant_id, coi_expiration, license_expiration");
+        for (const s of (subs ?? []) as any[]) {
+          for (const doc of [
+            { key: "coi", label: "COI", exp: s.coi_expiration },
+            { key: "license", label: "License", exp: s.license_expiration },
+          ]) {
+            if (!doc.exp) continue;
+            const days = Math.floor((new Date(doc.exp).getTime() - now) / DAY);
+            if (days <= 30 && days >= 0) {
+              await insertAlert({
+                tenant_id: s.tenant_id, permit_id: "" as any, kind: "other",
+                severity: days <= 7 ? "critical" : "warning",
+                title: `${s.company_name}: ${doc.label} expires in ${days} day${days === 1 ? "" : "s"}`,
+                body: `Action required: ${s.company_name}'s ${doc.label} expires on ${doc.exp}. Upload updated document in Cleard to avoid permit delays.`,
+                dedupe_key: `sub-${doc.key}::${s.id}::${Math.floor(days / 7)}`,
+              });
+            } else if (days < 0) {
+              await insertAlert({
+                tenant_id: s.tenant_id, permit_id: "" as any, kind: "other", severity: "critical",
+                title: `${s.company_name}: ${doc.label} EXPIRED`,
+                body: `${s.company_name}'s ${doc.label} expired on ${doc.exp}. This sub cannot be attached to new permits.`,
+                dedupe_key: `sub-${doc.key}-expired::${s.id}`,
+              });
+            }
+          }
+        }
+
 
 
         // 5. Lien release overdue — sub hasn't responded in 5+ business days.
