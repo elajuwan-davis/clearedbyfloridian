@@ -845,6 +845,50 @@ function PermitDetailPage() {
           onToken={() => getPermit(row.id).then((r) => r && setRow(r))}
         />
       </section>
+
+      {(() => {
+        const ip = (row.intake_payload ?? {}) as Record<string, unknown>;
+        const d = ip.dispatch as DispatchResult | undefined;
+        if (!d) return null;
+        return (
+          <section id="dispatch" className="mt-10 mb-10">
+            <div className="eyebrow text-obsidian/50 mb-3">Dispatch — Property Intelligence</div>
+            <DispatchCard data={d} />
+          </section>
+        );
+      })()}
+
+      {(() => {
+        const ip = (row.intake_payload ?? {}) as Record<string, unknown>;
+        const awarded = ip.awarded_bid as { company_name?: string; trade?: string; bid_cents?: number | null; awarded_at?: string } | undefined;
+        if (!awarded) return null;
+        return (
+          <section className="mt-6 mb-10">
+            <div className="rounded-[3px] border border-emerald-600/30 bg-emerald-50 px-4 py-3 text-sm text-emerald-900 flex items-center gap-3">
+              <Scale className="h-4 w-4" />
+              <div className="flex-1">
+                <div className="font-medium">Awarded to {awarded.company_name}</div>
+                <div className="text-xs text-emerald-800/80">
+                  {awarded.trade ?? ""}{awarded.bid_cents != null ? ` · $${(awarded.bid_cents / 100).toLocaleString()}` : ""}
+                  {awarded.awarded_at ? ` · ${new Date(awarded.awarded_at).toLocaleDateString()}` : ""}
+                </div>
+              </div>
+              <button onClick={() => setBidOpen(true)} className="border border-emerald-700/30 rounded-[3px] px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em]">
+                View / Re-compare
+              </button>
+            </div>
+          </section>
+        );
+      })()}
+
+      {bidOpen && (
+        <BidComparisonDialog
+          permit={row}
+          onClose={() => setBidOpen(false)}
+          onSaved={(r) => setRow(r)}
+        />
+      )}
     </div>
   );
 }
+
