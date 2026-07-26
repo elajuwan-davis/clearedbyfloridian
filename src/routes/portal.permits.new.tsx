@@ -592,6 +592,16 @@ function NewPermitPage() {
             </div>
           </div>
 
+          {dispatch && (
+            <DispatchCard
+              data={dispatch}
+              confirmed={dispatchConfirmed}
+              onConfirm={() => setDispatchConfirmed(true)}
+            />
+          )}
+
+
+
           {/* Scope multi-select */}
           <div className="pt-2 space-y-3">
             <label className={labelCls}>Scope of Work (select all that apply)</label>
