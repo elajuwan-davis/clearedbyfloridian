@@ -460,6 +460,10 @@ function NewPermitPage() {
       };
       if (wantBundle) intake_payload.bundle = bundleFromSubs(subs);
       if (isEditing) intake_payload.last_edited_at = new Date().toISOString();
+      if (dispatch) {
+        intake_payload.dispatch = dispatch;
+        if (dispatchConfirmed) intake_payload.dispatch_confirmed_at = new Date().toISOString();
+      }
 
       const permitPatch = {
         project_name: form.projectName,
