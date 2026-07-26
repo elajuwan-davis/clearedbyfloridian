@@ -12,6 +12,9 @@ import { PermitFeesPanel } from "@/components/permit-fees-panel";
 import { ResubmittalPanel } from "@/components/resubmittal-panel";
 import { ExpirationBanner } from "@/components/expiration-banner";
 import { HomeownerShareDialog } from "@/components/homeowner-share-dialog";
+import { DispatchCard } from "@/components/dispatch-card";
+import type { DispatchResult } from "@/lib/dispatch";
+import { BidComparisonDialog } from "@/components/bid-comparison-dialog";
 
 import { getPermit, updatePermit, deletePermit, permitCompleteness, getEffectiveDocs, getHiddenFieldKeys, withHiddenFieldKeys, ensureSubTokens, type PermitRow, type PermitStatus, type PermitDoc, type PermitSub } from "@/lib/permits-api";
 import { PermitDocUploader } from "@/components/permit-doc-uploader";
