@@ -122,7 +122,6 @@ export const Route = createFileRoute("/api/public/victoria-scan")({
               }
             }
           }
-        }
 
           // 6. Permit expiration warning — within 30 days of expiration_date.
           if (p.status === "permit_issued") {
@@ -163,6 +162,7 @@ export const Route = createFileRoute("/api/public/victoria-scan")({
             }
           }
         }
+
 
         // 3+8. Subcontractor COI/License expiration — 30 day warnings emit to GC tenant.
         const { data: subs } = await (supabaseAdmin.from("subcontractors" as any) as any)
