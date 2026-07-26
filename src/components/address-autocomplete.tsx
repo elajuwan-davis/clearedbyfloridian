@@ -201,18 +201,30 @@ export function AddressAutocomplete({
         get("locality") ||
         get("postal_town") ||
         get("sublocality_level_1") ||
+        get("sublocality") ||
+        get("neighborhood") ||
         get("administrative_area_level_3") ||
         "";
+      // Google returns county as e.g. "Palm Beach County" in longText.
+      const countyRaw = (() => {
+        const c = comps.find((c) => (c.types ?? []).includes("administrative_area_level_2"));
+        return c?.longText ?? c?.shortText ?? "";
+      })();
+      const county = countyRaw
+        ? (/county$/i.test(countyRaw) ? countyRaw : `${countyRaw} County`)
+        : "";
       const state = get("administrative_area_level_1");
       const postalCode = get("postal_code");
       const formatted: string = place.formattedAddress ?? sug.primary;
       const resolved: ResolvedAddress = {
         streetLine: streetLine || sug.primary,
         city,
+        county,
         state,
         postalCode,
         formatted,
       };
+
       onChange(resolved.streetLine);
       onResolved(resolved);
       // Rotate session token after a successful selection (Places API billing).
