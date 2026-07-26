@@ -40,8 +40,6 @@ function newEntry(): BidEntry {
 }
 
 function licenseStatusFromSub(s: SubRow): "active" | "expired" | "unknown" {
-  if (s.dbpr_status === "active") return "active";
-  if (s.dbpr_status === "expired") return "expired";
   if (!s.license_expiration) return "unknown";
   const exp = new Date(s.license_expiration);
   if (isNaN(exp.getTime())) return "unknown";
