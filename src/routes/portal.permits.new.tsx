@@ -223,6 +223,11 @@ function NewPermitPage() {
           setDispatch(savedDispatch);
           setDispatchConfirmed(Boolean(ip.dispatch_confirmed_at));
         }
+        const savedPkg = (ip.compliance_submittal ?? []) as SubmittalDocSnapshot[];
+        if (Array.isArray(savedPkg) && savedPkg.length) {
+          setSubmittalPackage(savedPkg);
+          setInitialSubmittalKeys(savedPkg.map((s) => s.key));
+        }
       })
       .catch(() => toast.error("Could not load permit for editing"))
       .finally(() => setLoadingEdit(false));
