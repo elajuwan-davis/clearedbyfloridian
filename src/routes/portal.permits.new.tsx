@@ -284,33 +284,43 @@ function NewPermitPage() {
   }
 
   /** Called when the address autocomplete resolves a Places selection.
-   *  Auto-fills municipality when the parsed city matches a known FL city. */
+   *  Auto-fills municipality from Places address_components: locality first,
+   *  then county fallback (Loxahatchee → Palm Beach County, etc.). */
   function handleAddressResolved(r: ResolvedAddress) {
-    setForm((f) => {
-      let municipality = f.municipality;
-      if (r.city) {
-        const norm = (s: string) => s.toLowerCase().replace(/[^a-z]/g, "");
-        const target = norm(r.city);
-        const match = MUNICIPALITIES.find((m) => norm(m.name) === target);
-        if (match) municipality = match.name;
-        else if (!f.municipality.trim()) municipality = r.city; // freeform fallback
-      }
-      return { ...f, address: r.streetLine || r.formatted, municipality };
-    });
+    const norm = (s: string) => s.toLowerCase().replace(/[^a-z]/g, "");
+    let resolvedMuni = "";
+    let matchedList = false;
     if (r.city) {
-      const norm = (s: string) => s.toLowerCase().replace(/[^a-z]/g, "");
       const target = norm(r.city);
-      const matched = MUNICIPALITIES.some((m) => norm(m.name) === target);
-      toast.success(matched ? `Matched municipality: ${r.city}` : `City set to ${r.city} (not in list — please verify)`);
+      const match = MUNICIPALITIES.find((m) => norm(m.name) === target);
+      if (match) { resolvedMuni = match.name; matchedList = true; }
+    }
+    // County fallback — Places locality often names an unincorporated area
+    // (e.g. "Loxahatchee") that isn't a jurisdiction; the county is.
+    if (!resolvedMuni && r.county) {
+      const target = norm(r.county);
+      const countyMatch = MUNICIPALITIES.find((m) => norm(m.name) === target);
+      if (countyMatch) { resolvedMuni = countyMatch.name; matchedList = true; }
+    }
+    if (!resolvedMuni) resolvedMuni = r.city || r.county || "";
+
+    setForm((f) => ({
+      ...f,
+      address: r.streetLine || r.formatted,
+      municipality: resolvedMuni || f.municipality,
+    }));
+    if (resolvedMuni) {
+      toast.success(matchedList ? `Matched municipality: ${resolvedMuni}` : `City set to ${resolvedMuni} (not in list — please verify)`);
     }
     // Kick off Dispatch — pre-flight property intelligence.
     const resolvedAddress = r.streetLine || r.formatted;
     if (resolvedAddress) {
-      const result = runDispatch({ address: resolvedAddress, city: r.city ?? null });
+      const result = runDispatch({ address: resolvedAddress, city: resolvedMuni || r.city || null });
       setDispatch(result);
       setDispatchConfirmed(false);
     }
   }
+
 
   const primaryType = form.scopes[0] || "Other";
   const checklist = useMemo(() => getChecklist(form.municipality, primaryType), [form.municipality, primaryType]);
