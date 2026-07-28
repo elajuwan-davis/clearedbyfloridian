@@ -9,233 +9,108 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as SubPortalRouteImport } from './routes/sub-portal'
-import { Route as ServicesRouteImport } from './routes/services'
-import { Route as ProjectsRouteImport } from './routes/projects'
-import { Route as ProjectGuidesRouteImport } from './routes/project-guides'
-import { Route as ProfileRouteImport } from './routes/profile'
-import { Route as ProductsRouteImport } from './routes/products'
-import { Route as ProcessRouteImport } from './routes/process'
-import { Route as PricingRouteImport } from './routes/pricing'
-import { Route as PortalRouteImport } from './routes/portal'
-import { Route as OnboardingRouteImport } from './routes/onboarding'
-import { Route as MyPermitsRouteImport } from './routes/my-permits'
-import { Route as MunicipalitiesRouteImport } from './routes/municipalities'
-import { Route as MessagesRouteImport } from './routes/messages'
-import { Route as LpoaSigningRouteImport } from './routes/lpoa-signing'
-import { Route as LoginRouteImport } from './routes/login'
-import { Route as JoinRouteImport } from './routes/join'
-import { Route as InvoicesRouteImport } from './routes/invoices'
-import { Route as InsuranceRouteImport } from './routes/insurance'
-import { Route as GcPortalRouteImport } from './routes/gc-portal'
-import { Route as FormsRouteImport } from './routes/forms'
-import { Route as FeeCalculatorRouteImport } from './routes/fee-calculator'
-import { Route as DashboardRouteImport } from './routes/dashboard'
-import { Route as ContactRouteImport } from './routes/contact'
-import { Route as BuildingDeptLoginsRouteImport } from './routes/building-dept-logins'
-import { Route as AskVictoriaRouteImport } from './routes/ask-victoria'
-import { Route as AdminRouteImport } from './routes/admin'
-import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as VersusIndexRouteImport } from './routes/versus.index'
-import { Route as PortalIndexRouteImport } from './routes/portal.index'
-import { Route as FormsIndexRouteImport } from './routes/forms.index'
-import { Route as BlogIndexRouteImport } from './routes/blog.index'
-import { Route as VersusSlugRouteImport } from './routes/versus.$slug'
-import { Route as SubPortalTokenRouteImport } from './routes/sub-portal.$token'
-import { Route as SubIntakeTokenRouteImport } from './routes/sub-intake.$token'
-import { Route as ProjectsNewRouteImport } from './routes/projects.new'
-import { Route as ProjectsIdRouteImport } from './routes/projects.$id'
-import { Route as PortalSubmissionsRouteImport } from './routes/portal.submissions'
-import { Route as PortalRequestSubInsuranceRouteImport } from './routes/portal.request-sub-insurance'
-import { Route as PortalRequestCoiRouteImport } from './routes/portal.request-coi'
-import { Route as PortalReportsRouteImport } from './routes/portal.reports'
-import { Route as PortalProjectsRouteImport } from './routes/portal.projects'
-import { Route as PortalProfileRouteImport } from './routes/portal.profile'
-import { Route as PortalPermitsRouteImport } from './routes/portal.permits'
-import { Route as PortalPermitFeesRouteImport } from './routes/portal.permit-fees'
-import { Route as PortalNotaryQueueRouteImport } from './routes/portal.notary-queue'
-import { Route as PortalMarketplaceRouteImport } from './routes/portal.marketplace'
-import { Route as PortalInspectionsRouteImport } from './routes/portal.inspections'
-import { Route as PortalFinancialsRouteImport } from './routes/portal.financials'
-import { Route as PortalFeatureRequestsRouteImport } from './routes/portal.feature-requests'
-import { Route as PortalComplianceRouteImport } from './routes/portal.compliance'
-import { Route as PortalBuildingDeptRouteImport } from './routes/portal.building-dept'
-import { Route as PortalBidReviewRouteImport } from './routes/portal.bid-review'
-import { Route as PortalAlertsRouteImport } from './routes/portal.alerts'
-import { Route as PermitCardIdRouteImport } from './routes/permit-card.$id'
-import { Route as JoinTokenRouteImport } from './routes/join.$token'
-import { Route as HomeownerTokenRouteImport } from './routes/homeowner.$token'
-import { Route as FormsSubcontractorsRouteImport } from './routes/forms.subcontractors'
-import { Route as FormsSubcontractorIntakeRouteImport } from './routes/forms.subcontractor-intake'
-import { Route as FormsPermitIntakeRouteImport } from './routes/forms.permit-intake'
-import { Route as FormsPaymentAuthorizationRouteImport } from './routes/forms.payment-authorization'
-import { Route as BuildingDeptLoginsSubmitRouteImport } from './routes/building-dept-logins.submit'
-import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
-import { Route as ApiVerifyLicenseRouteImport } from './routes/api/verify-license'
-import { Route as AdminContractorsRouteImport } from './routes/admin_.contractors'
-import { Route as AdminHubspotSimulateRouteImport } from './routes/admin.hubspot-simulate'
-import { Route as AdminGcClientsRouteImport } from './routes/admin.gc-clients'
-import { Route as AdminFeatureRequestsRouteImport } from './routes/admin.feature-requests'
-import { Route as AdminBuildersRouteImport } from './routes/admin.builders'
-import { Route as AdminBlogRouteImport } from './routes/admin.blog'
+import { Route as AboutRouteImport } from './routes/about'
+import { Route as AdminRouteImport } from './routes/admin'
+import { Route as AskVictoriaRouteImport } from './routes/ask-victoria'
+import { Route as BuildingDeptLoginsRouteImport } from './routes/building-dept-logins'
+import { Route as ContactRouteImport } from './routes/contact'
+import { Route as DashboardRouteImport } from './routes/dashboard'
+import { Route as FeeCalculatorRouteImport } from './routes/fee-calculator'
+import { Route as FormsRouteImport } from './routes/forms'
+import { Route as GcPortalRouteImport } from './routes/gc-portal'
+import { Route as InsuranceRouteImport } from './routes/insurance'
+import { Route as InvoicesRouteImport } from './routes/invoices'
+import { Route as JoinRouteImport } from './routes/join'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as LpoaSigningRouteImport } from './routes/lpoa-signing'
+import { Route as MessagesRouteImport } from './routes/messages'
+import { Route as MunicipalitiesRouteImport } from './routes/municipalities'
+import { Route as MyPermitsRouteImport } from './routes/my-permits'
+import { Route as OnboardingRouteImport } from './routes/onboarding'
+import { Route as PortalRouteImport } from './routes/portal'
+import { Route as PricingRouteImport } from './routes/pricing'
+import { Route as ProcessRouteImport } from './routes/process'
+import { Route as ProductsRouteImport } from './routes/products'
+import { Route as ProfileRouteImport } from './routes/profile'
+import { Route as ProjectGuidesRouteImport } from './routes/project-guides'
+import { Route as ProjectsRouteImport } from './routes/projects'
+import { Route as ServicesRouteImport } from './routes/services'
+import { Route as SubPortalRouteImport } from './routes/sub-portal'
 import { Route as AdminAccessRequestsRouteImport } from './routes/admin.access-requests'
-import { Route as PortalSubmissionsIndexRouteImport } from './routes/portal.submissions.index'
-import { Route as PortalSubcontractorsIndexRouteImport } from './routes/portal.subcontractors.index'
-import { Route as PortalPermitsIndexRouteImport } from './routes/portal.permits.index'
-import { Route as PortalHoaSubmittalsIndexRouteImport } from './routes/portal.hoa-submittals.index'
-import { Route as PortalGuidesIndexRouteImport } from './routes/portal.guides.index'
-import { Route as PortalBlogIndexRouteImport } from './routes/portal.blog.index'
-import { Route as PortalSubmissionsIdRouteImport } from './routes/portal.submissions.$id'
-import { Route as PortalSubcontractorsNewRouteImport } from './routes/portal.subcontractors.new'
-import { Route as PortalProjectsIdRouteImport } from './routes/portal.projects.$id'
-import { Route as PortalPermitsNewRouteImport } from './routes/portal.permits.new'
-import { Route as PortalPermitsIdRouteImport } from './routes/portal.permits.$id'
-import { Route as PortalHoaSubmittalsNewRouteImport } from './routes/portal.hoa-submittals.new'
-import { Route as PortalHoaSubmittalsIdRouteImport } from './routes/portal.hoa-submittals.$id'
-import { Route as PortalGuidesSlugRouteImport } from './routes/portal.guides.$slug'
-import { Route as PortalBlogNewRouteImport } from './routes/portal.blog.new'
-import { Route as PortalBlogIdRouteImport } from './routes/portal.blog.$id'
-import { Route as ApiPublicVictoriaScanRouteImport } from './routes/api/public/victoria-scan'
-import { Route as ApiPublicSubIntakeUploadRouteImport } from './routes/api/public/sub-intake-upload'
-import { Route as ApiPublicHoaReplyRouteImport } from './routes/api/public/hoa-reply'
-import { Route as ApiPublicAccessRequestRouteImport } from './routes/api/public/access-request'
-import { Route as AdminBlogNewRouteImport } from './routes/admin.blog.new'
+import { Route as AdminBlogRouteImport } from './routes/admin.blog'
+import { Route as AdminBuildersRouteImport } from './routes/admin.builders'
+import { Route as AdminFeatureRequestsRouteImport } from './routes/admin.feature-requests'
+import { Route as AdminGcClientsRouteImport } from './routes/admin.gc-clients'
+import { Route as AdminHubspotSimulateRouteImport } from './routes/admin.hubspot-simulate'
+import { Route as AdminContractorsRouteImport } from './routes/admin_.contractors'
+import { Route as ApiVerifyLicenseRouteImport } from './routes/api/verify-license'
+import { Route as BlogIndexRouteImport } from './routes/blog.index'
+import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
+import { Route as BuildingDeptLoginsSubmitRouteImport } from './routes/building-dept-logins.submit'
+import { Route as FormsIndexRouteImport } from './routes/forms.index'
+import { Route as FormsPaymentAuthorizationRouteImport } from './routes/forms.payment-authorization'
+import { Route as FormsPermitIntakeRouteImport } from './routes/forms.permit-intake'
+import { Route as FormsSubcontractorIntakeRouteImport } from './routes/forms.subcontractor-intake'
+import { Route as FormsSubcontractorsRouteImport } from './routes/forms.subcontractors'
+import { Route as HomeownerTokenRouteImport } from './routes/homeowner.$token'
+import { Route as JoinTokenRouteImport } from './routes/join.$token'
+import { Route as PermitCardIdRouteImport } from './routes/permit-card.$id'
+import { Route as PortalIndexRouteImport } from './routes/portal.index'
+import { Route as PortalAlertsRouteImport } from './routes/portal.alerts'
+import { Route as PortalBidReviewRouteImport } from './routes/portal.bid-review'
+import { Route as PortalBuildingDeptRouteImport } from './routes/portal.building-dept'
+import { Route as PortalComplianceRouteImport } from './routes/portal.compliance'
+import { Route as PortalFeatureRequestsRouteImport } from './routes/portal.feature-requests'
+import { Route as PortalFinancialsRouteImport } from './routes/portal.financials'
+import { Route as PortalInspectionsRouteImport } from './routes/portal.inspections'
+import { Route as PortalMarketplaceRouteImport } from './routes/portal.marketplace'
+import { Route as PortalNotaryQueueRouteImport } from './routes/portal.notary-queue'
+import { Route as PortalPermitFeesRouteImport } from './routes/portal.permit-fees'
+import { Route as PortalPermitsRouteImport } from './routes/portal.permits'
+import { Route as PortalProfileRouteImport } from './routes/portal.profile'
+import { Route as PortalProjectsRouteImport } from './routes/portal.projects'
+import { Route as PortalReportsRouteImport } from './routes/portal.reports'
+import { Route as PortalRequestCoiRouteImport } from './routes/portal.request-coi'
+import { Route as PortalRequestSubInsuranceRouteImport } from './routes/portal.request-sub-insurance'
+import { Route as PortalSubmissionsRouteImport } from './routes/portal.submissions'
+import { Route as ProjectsIdRouteImport } from './routes/projects.$id'
+import { Route as ProjectsNewRouteImport } from './routes/projects.new'
+import { Route as SubIntakeTokenRouteImport } from './routes/sub-intake.$token'
+import { Route as SubPortalTokenRouteImport } from './routes/sub-portal.$token'
+import { Route as VersusIndexRouteImport } from './routes/versus.index'
+import { Route as VersusSlugRouteImport } from './routes/versus.$slug'
 import { Route as AdminBlogIdRouteImport } from './routes/admin.blog.$id'
-import { Route as PortalPermitsIdBundleRouteImport } from './routes/portal.permits.$id.bundle'
-import { Route as PortalHoaSubmittalsTemplatesNewRouteImport } from './routes/portal.hoa-submittals.templates.new'
-import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments/webhook'
-import { Route as ApiPublicHubspotDealWebhookRouteImport } from './routes/api/public/hubspot.deal-webhook'
+import { Route as AdminBlogNewRouteImport } from './routes/admin.blog.new'
+import { Route as ApiPublicAccessRequestRouteImport } from './routes/api/public/access-request'
+import { Route as ApiPublicHoaReplyRouteImport } from './routes/api/public/hoa-reply'
+import { Route as ApiPublicSubIntakeUploadRouteImport } from './routes/api/public/sub-intake-upload'
+import { Route as ApiPublicVictoriaScanRouteImport } from './routes/api/public/victoria-scan'
+import { Route as PortalBlogIndexRouteImport } from './routes/portal.blog.index'
+import { Route as PortalBlogIdRouteImport } from './routes/portal.blog.$id'
+import { Route as PortalBlogNewRouteImport } from './routes/portal.blog.new'
+import { Route as PortalGuidesIndexRouteImport } from './routes/portal.guides.index'
+import { Route as PortalGuidesSlugRouteImport } from './routes/portal.guides.$slug'
+import { Route as PortalHoaSubmittalsIndexRouteImport } from './routes/portal.hoa-submittals.index'
+import { Route as PortalHoaSubmittalsIdRouteImport } from './routes/portal.hoa-submittals.$id'
+import { Route as PortalHoaSubmittalsNewRouteImport } from './routes/portal.hoa-submittals.new'
+import { Route as PortalPermitsIndexRouteImport } from './routes/portal.permits.index'
+import { Route as PortalPermitsIdRouteImport } from './routes/portal.permits.$id'
+import { Route as PortalPermitsNewRouteImport } from './routes/portal.permits.new'
+import { Route as PortalProjectsIdRouteImport } from './routes/portal.projects.$id'
+import { Route as PortalSubcontractorsIndexRouteImport } from './routes/portal.subcontractors.index'
+import { Route as PortalSubcontractorsNewRouteImport } from './routes/portal.subcontractors.new'
+import { Route as PortalSubmissionsIndexRouteImport } from './routes/portal.submissions.index'
+import { Route as PortalSubmissionsIdRouteImport } from './routes/portal.submissions.$id'
 import { Route as ApiPublicEmailOutboxProcessRouteImport } from './routes/api/public/email-outbox.process'
+import { Route as ApiPublicHubspotDealWebhookRouteImport } from './routes/api/public/hubspot.deal-webhook'
+import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments/webhook'
+import { Route as PortalHoaSubmittalsTemplatesNewRouteImport } from './routes/portal.hoa-submittals.templates.new'
+import { Route as PortalPermitsIdBundleRouteImport } from './routes/portal.permits.$id.bundle'
 
-const SubPortalRoute = SubPortalRouteImport.update({
-  id: '/sub-portal',
-  path: '/sub-portal',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ServicesRoute = ServicesRouteImport.update({
-  id: '/services',
-  path: '/services',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ProjectsRoute = ProjectsRouteImport.update({
-  id: '/projects',
-  path: '/projects',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ProjectGuidesRoute = ProjectGuidesRouteImport.update({
-  id: '/project-guides',
-  path: '/project-guides',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ProfileRoute = ProfileRouteImport.update({
-  id: '/profile',
-  path: '/profile',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ProductsRoute = ProductsRouteImport.update({
-  id: '/products',
-  path: '/products',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ProcessRoute = ProcessRouteImport.update({
-  id: '/process',
-  path: '/process',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PricingRoute = PricingRouteImport.update({
-  id: '/pricing',
-  path: '/pricing',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PortalRoute = PortalRouteImport.update({
-  id: '/portal',
-  path: '/portal',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const OnboardingRoute = OnboardingRouteImport.update({
-  id: '/onboarding',
-  path: '/onboarding',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const MyPermitsRoute = MyPermitsRouteImport.update({
-  id: '/my-permits',
-  path: '/my-permits',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const MunicipalitiesRoute = MunicipalitiesRouteImport.update({
-  id: '/municipalities',
-  path: '/municipalities',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const MessagesRoute = MessagesRouteImport.update({
-  id: '/messages',
-  path: '/messages',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LpoaSigningRoute = LpoaSigningRouteImport.update({
-  id: '/lpoa-signing',
-  path: '/lpoa-signing',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LoginRoute = LoginRouteImport.update({
-  id: '/login',
-  path: '/login',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const JoinRoute = JoinRouteImport.update({
-  id: '/join',
-  path: '/join',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const InvoicesRoute = InvoicesRouteImport.update({
-  id: '/invoices',
-  path: '/invoices',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const InsuranceRoute = InsuranceRouteImport.update({
-  id: '/insurance',
-  path: '/insurance',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const GcPortalRoute = GcPortalRouteImport.update({
-  id: '/gc-portal',
-  path: '/gc-portal',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const FormsRoute = FormsRouteImport.update({
-  id: '/forms',
-  path: '/forms',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const FeeCalculatorRoute = FeeCalculatorRouteImport.update({
-  id: '/fee-calculator',
-  path: '/fee-calculator',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DashboardRoute = DashboardRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ContactRoute = ContactRouteImport.update({
-  id: '/contact',
-  path: '/contact',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const BuildingDeptLoginsRoute = BuildingDeptLoginsRouteImport.update({
-  id: '/building-dept-logins',
-  path: '/building-dept-logins',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AskVictoriaRoute = AskVictoriaRouteImport.update({
-  id: '/ask-victoria',
-  path: '/ask-victoria',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminRoute = AdminRouteImport.update({
-  id: '/admin',
-  path: '/admin',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AboutRoute = AboutRouteImport.update({
@@ -243,171 +118,195 @@ const AboutRoute = AboutRouteImport.update({
   path: '/about',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
-const VersusIndexRoute = VersusIndexRouteImport.update({
-  id: '/versus/',
-  path: '/versus/',
+const AskVictoriaRoute = AskVictoriaRouteImport.update({
+  id: '/ask-victoria',
+  path: '/ask-victoria',
   getParentRoute: () => rootRouteImport,
 } as any)
-const PortalIndexRoute = PortalIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => PortalRoute,
+const BuildingDeptLoginsRoute = BuildingDeptLoginsRouteImport.update({
+  id: '/building-dept-logins',
+  path: '/building-dept-logins',
+  getParentRoute: () => rootRouteImport,
 } as any)
-const FormsIndexRoute = FormsIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => FormsRoute,
+const ContactRoute = ContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardRoute = DashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FeeCalculatorRoute = FeeCalculatorRouteImport.update({
+  id: '/fee-calculator',
+  path: '/fee-calculator',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FormsRoute = FormsRouteImport.update({
+  id: '/forms',
+  path: '/forms',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GcPortalRoute = GcPortalRouteImport.update({
+  id: '/gc-portal',
+  path: '/gc-portal',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InsuranceRoute = InsuranceRouteImport.update({
+  id: '/insurance',
+  path: '/insurance',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InvoicesRoute = InvoicesRouteImport.update({
+  id: '/invoices',
+  path: '/invoices',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const JoinRoute = JoinRouteImport.update({
+  id: '/join',
+  path: '/join',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LpoaSigningRoute = LpoaSigningRouteImport.update({
+  id: '/lpoa-signing',
+  path: '/lpoa-signing',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MessagesRoute = MessagesRouteImport.update({
+  id: '/messages',
+  path: '/messages',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MunicipalitiesRoute = MunicipalitiesRouteImport.update({
+  id: '/municipalities',
+  path: '/municipalities',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MyPermitsRoute = MyPermitsRouteImport.update({
+  id: '/my-permits',
+  path: '/my-permits',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OnboardingRoute = OnboardingRouteImport.update({
+  id: '/onboarding',
+  path: '/onboarding',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PortalRoute = PortalRouteImport.update({
+  id: '/portal',
+  path: '/portal',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PricingRoute = PricingRouteImport.update({
+  id: '/pricing',
+  path: '/pricing',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProcessRoute = ProcessRouteImport.update({
+  id: '/process',
+  path: '/process',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProductsRoute = ProductsRouteImport.update({
+  id: '/products',
+  path: '/products',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProfileRoute = ProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProjectGuidesRoute = ProjectGuidesRouteImport.update({
+  id: '/project-guides',
+  path: '/project-guides',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProjectsRoute = ProjectsRouteImport.update({
+  id: '/projects',
+  path: '/projects',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ServicesRoute = ServicesRouteImport.update({
+  id: '/services',
+  path: '/services',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SubPortalRoute = SubPortalRouteImport.update({
+  id: '/sub-portal',
+  path: '/sub-portal',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminAccessRequestsRoute = AdminAccessRequestsRouteImport.update({
+  id: '/access-requests',
+  path: '/access-requests',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminBlogRoute = AdminBlogRouteImport.update({
+  id: '/blog',
+  path: '/blog',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminBuildersRoute = AdminBuildersRouteImport.update({
+  id: '/builders',
+  path: '/builders',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminFeatureRequestsRoute = AdminFeatureRequestsRouteImport.update({
+  id: '/feature-requests',
+  path: '/feature-requests',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminGcClientsRoute = AdminGcClientsRouteImport.update({
+  id: '/gc-clients',
+  path: '/gc-clients',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminHubspotSimulateRoute = AdminHubspotSimulateRouteImport.update({
+  id: '/hubspot-simulate',
+  path: '/hubspot-simulate',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminContractorsRoute = AdminContractorsRouteImport.update({
+  id: '/admin_/contractors',
+  path: '/admin/contractors',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiVerifyLicenseRoute = ApiVerifyLicenseRouteImport.update({
+  id: '/api/verify-license',
+  path: '/api/verify-license',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const BlogIndexRoute = BlogIndexRouteImport.update({
   id: '/blog/',
   path: '/blog/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const VersusSlugRoute = VersusSlugRouteImport.update({
-  id: '/versus/$slug',
-  path: '/versus/$slug',
+const BlogSlugRoute = BlogSlugRouteImport.update({
+  id: '/blog/$slug',
+  path: '/blog/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
-const SubPortalTokenRoute = SubPortalTokenRouteImport.update({
-  id: '/$token',
-  path: '/$token',
-  getParentRoute: () => SubPortalRoute,
-} as any)
-const SubIntakeTokenRoute = SubIntakeTokenRouteImport.update({
-  id: '/sub-intake/$token',
-  path: '/sub-intake/$token',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ProjectsNewRoute = ProjectsNewRouteImport.update({
-  id: '/new',
-  path: '/new',
-  getParentRoute: () => ProjectsRoute,
-} as any)
-const ProjectsIdRoute = ProjectsIdRouteImport.update({
-  id: '/$id',
-  path: '/$id',
-  getParentRoute: () => ProjectsRoute,
-} as any)
-const PortalSubmissionsRoute = PortalSubmissionsRouteImport.update({
-  id: '/submissions',
-  path: '/submissions',
-  getParentRoute: () => PortalRoute,
-} as any)
-const PortalRequestSubInsuranceRoute =
-  PortalRequestSubInsuranceRouteImport.update({
-    id: '/request-sub-insurance',
-    path: '/request-sub-insurance',
-    getParentRoute: () => PortalRoute,
+const BuildingDeptLoginsSubmitRoute =
+  BuildingDeptLoginsSubmitRouteImport.update({
+    id: '/submit',
+    path: '/submit',
+    getParentRoute: () => BuildingDeptLoginsRoute,
   } as any)
-const PortalRequestCoiRoute = PortalRequestCoiRouteImport.update({
-  id: '/request-coi',
-  path: '/request-coi',
-  getParentRoute: () => PortalRoute,
-} as any)
-const PortalReportsRoute = PortalReportsRouteImport.update({
-  id: '/reports',
-  path: '/reports',
-  getParentRoute: () => PortalRoute,
-} as any)
-const PortalProjectsRoute = PortalProjectsRouteImport.update({
-  id: '/projects',
-  path: '/projects',
-  getParentRoute: () => PortalRoute,
-} as any)
-const PortalProfileRoute = PortalProfileRouteImport.update({
-  id: '/profile',
-  path: '/profile',
-  getParentRoute: () => PortalRoute,
-} as any)
-const PortalPermitsRoute = PortalPermitsRouteImport.update({
-  id: '/permits',
-  path: '/permits',
-  getParentRoute: () => PortalRoute,
-} as any)
-const PortalPermitFeesRoute = PortalPermitFeesRouteImport.update({
-  id: '/permit-fees',
-  path: '/permit-fees',
-  getParentRoute: () => PortalRoute,
-} as any)
-const PortalNotaryQueueRoute = PortalNotaryQueueRouteImport.update({
-  id: '/notary-queue',
-  path: '/notary-queue',
-  getParentRoute: () => PortalRoute,
-} as any)
-const PortalMarketplaceRoute = PortalMarketplaceRouteImport.update({
-  id: '/marketplace',
-  path: '/marketplace',
-  getParentRoute: () => PortalRoute,
-} as any)
-const PortalInspectionsRoute = PortalInspectionsRouteImport.update({
-  id: '/inspections',
-  path: '/inspections',
-  getParentRoute: () => PortalRoute,
-} as any)
-const PortalFinancialsRoute = PortalFinancialsRouteImport.update({
-  id: '/financials',
-  path: '/financials',
-  getParentRoute: () => PortalRoute,
-} as any)
-const PortalFeatureRequestsRoute = PortalFeatureRequestsRouteImport.update({
-  id: '/feature-requests',
-  path: '/feature-requests',
-  getParentRoute: () => PortalRoute,
-} as any)
-const PortalComplianceRoute = PortalComplianceRouteImport.update({
-  id: '/compliance',
-  path: '/compliance',
-  getParentRoute: () => PortalRoute,
-} as any)
-const PortalBuildingDeptRoute = PortalBuildingDeptRouteImport.update({
-  id: '/building-dept',
-  path: '/building-dept',
-  getParentRoute: () => PortalRoute,
-} as any)
-const PortalBidReviewRoute = PortalBidReviewRouteImport.update({
-  id: '/bid-review',
-  path: '/bid-review',
-  getParentRoute: () => PortalRoute,
-} as any)
-const PortalAlertsRoute = PortalAlertsRouteImport.update({
-  id: '/alerts',
-  path: '/alerts',
-  getParentRoute: () => PortalRoute,
-} as any)
-const PermitCardIdRoute = PermitCardIdRouteImport.update({
-  id: '/permit-card/$id',
-  path: '/permit-card/$id',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const JoinTokenRoute = JoinTokenRouteImport.update({
-  id: '/$token',
-  path: '/$token',
-  getParentRoute: () => JoinRoute,
-} as any)
-const HomeownerTokenRoute = HomeownerTokenRouteImport.update({
-  id: '/homeowner/$token',
-  path: '/homeowner/$token',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const FormsSubcontractorsRoute = FormsSubcontractorsRouteImport.update({
-  id: '/subcontractors',
-  path: '/subcontractors',
-  getParentRoute: () => FormsRoute,
-} as any)
-const FormsSubcontractorIntakeRoute =
-  FormsSubcontractorIntakeRouteImport.update({
-    id: '/subcontractor-intake',
-    path: '/subcontractor-intake',
-    getParentRoute: () => FormsRoute,
-  } as any)
-const FormsPermitIntakeRoute = FormsPermitIntakeRouteImport.update({
-  id: '/permit-intake',
-  path: '/permit-intake',
+const FormsIndexRoute = FormsIndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => FormsRoute,
 } as any)
 const FormsPaymentAuthorizationRoute =
@@ -416,142 +315,176 @@ const FormsPaymentAuthorizationRoute =
     path: '/payment-authorization',
     getParentRoute: () => FormsRoute,
   } as any)
-const BuildingDeptLoginsSubmitRoute =
-  BuildingDeptLoginsSubmitRouteImport.update({
-    id: '/submit',
-    path: '/submit',
-    getParentRoute: () => BuildingDeptLoginsRoute,
+const FormsPermitIntakeRoute = FormsPermitIntakeRouteImport.update({
+  id: '/permit-intake',
+  path: '/permit-intake',
+  getParentRoute: () => FormsRoute,
+} as any)
+const FormsSubcontractorIntakeRoute =
+  FormsSubcontractorIntakeRouteImport.update({
+    id: '/subcontractor-intake',
+    path: '/subcontractor-intake',
+    getParentRoute: () => FormsRoute,
   } as any)
-const BlogSlugRoute = BlogSlugRouteImport.update({
-  id: '/blog/$slug',
-  path: '/blog/$slug',
+const FormsSubcontractorsRoute = FormsSubcontractorsRouteImport.update({
+  id: '/subcontractors',
+  path: '/subcontractors',
+  getParentRoute: () => FormsRoute,
+} as any)
+const HomeownerTokenRoute = HomeownerTokenRouteImport.update({
+  id: '/homeowner/$token',
+  path: '/homeowner/$token',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiVerifyLicenseRoute = ApiVerifyLicenseRouteImport.update({
-  id: '/api/verify-license',
-  path: '/api/verify-license',
+const JoinTokenRoute = JoinTokenRouteImport.update({
+  id: '/$token',
+  path: '/$token',
+  getParentRoute: () => JoinRoute,
+} as any)
+const PermitCardIdRoute = PermitCardIdRouteImport.update({
+  id: '/permit-card/$id',
+  path: '/permit-card/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminContractorsRoute = AdminContractorsRouteImport.update({
-  id: '/admin_/contractors',
-  path: '/admin/contractors',
-  getParentRoute: () => rootRouteImport,
+const PortalIndexRoute = PortalIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => PortalRoute,
 } as any)
-const AdminHubspotSimulateRoute = AdminHubspotSimulateRouteImport.update({
-  id: '/hubspot-simulate',
-  path: '/hubspot-simulate',
-  getParentRoute: () => AdminRoute,
+const PortalAlertsRoute = PortalAlertsRouteImport.update({
+  id: '/alerts',
+  path: '/alerts',
+  getParentRoute: () => PortalRoute,
 } as any)
-const AdminGcClientsRoute = AdminGcClientsRouteImport.update({
-  id: '/gc-clients',
-  path: '/gc-clients',
-  getParentRoute: () => AdminRoute,
+const PortalBidReviewRoute = PortalBidReviewRouteImport.update({
+  id: '/bid-review',
+  path: '/bid-review',
+  getParentRoute: () => PortalRoute,
 } as any)
-const AdminFeatureRequestsRoute = AdminFeatureRequestsRouteImport.update({
+const PortalBuildingDeptRoute = PortalBuildingDeptRouteImport.update({
+  id: '/building-dept',
+  path: '/building-dept',
+  getParentRoute: () => PortalRoute,
+} as any)
+const PortalComplianceRoute = PortalComplianceRouteImport.update({
+  id: '/compliance',
+  path: '/compliance',
+  getParentRoute: () => PortalRoute,
+} as any)
+const PortalFeatureRequestsRoute = PortalFeatureRequestsRouteImport.update({
   id: '/feature-requests',
   path: '/feature-requests',
-  getParentRoute: () => AdminRoute,
+  getParentRoute: () => PortalRoute,
 } as any)
-const AdminBuildersRoute = AdminBuildersRouteImport.update({
-  id: '/builders',
-  path: '/builders',
-  getParentRoute: () => AdminRoute,
+const PortalFinancialsRoute = PortalFinancialsRouteImport.update({
+  id: '/financials',
+  path: '/financials',
+  getParentRoute: () => PortalRoute,
 } as any)
-const AdminBlogRoute = AdminBlogRouteImport.update({
-  id: '/blog',
-  path: '/blog',
-  getParentRoute: () => AdminRoute,
+const PortalInspectionsRoute = PortalInspectionsRouteImport.update({
+  id: '/inspections',
+  path: '/inspections',
+  getParentRoute: () => PortalRoute,
 } as any)
-const AdminAccessRequestsRoute = AdminAccessRequestsRouteImport.update({
-  id: '/access-requests',
-  path: '/access-requests',
-  getParentRoute: () => AdminRoute,
+const PortalMarketplaceRoute = PortalMarketplaceRouteImport.update({
+  id: '/marketplace',
+  path: '/marketplace',
+  getParentRoute: () => PortalRoute,
 } as any)
-const PortalSubmissionsIndexRoute = PortalSubmissionsIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => PortalSubmissionsRoute,
+const PortalNotaryQueueRoute = PortalNotaryQueueRouteImport.update({
+  id: '/notary-queue',
+  path: '/notary-queue',
+  getParentRoute: () => PortalRoute,
 } as any)
-const PortalSubcontractorsIndexRoute =
-  PortalSubcontractorsIndexRouteImport.update({
-    id: '/subcontractors/',
-    path: '/subcontractors/',
+const PortalPermitFeesRoute = PortalPermitFeesRouteImport.update({
+  id: '/permit-fees',
+  path: '/permit-fees',
+  getParentRoute: () => PortalRoute,
+} as any)
+const PortalPermitsRoute = PortalPermitsRouteImport.update({
+  id: '/permits',
+  path: '/permits',
+  getParentRoute: () => PortalRoute,
+} as any)
+const PortalProfileRoute = PortalProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => PortalRoute,
+} as any)
+const PortalProjectsRoute = PortalProjectsRouteImport.update({
+  id: '/projects',
+  path: '/projects',
+  getParentRoute: () => PortalRoute,
+} as any)
+const PortalReportsRoute = PortalReportsRouteImport.update({
+  id: '/reports',
+  path: '/reports',
+  getParentRoute: () => PortalRoute,
+} as any)
+const PortalRequestCoiRoute = PortalRequestCoiRouteImport.update({
+  id: '/request-coi',
+  path: '/request-coi',
+  getParentRoute: () => PortalRoute,
+} as any)
+const PortalRequestSubInsuranceRoute =
+  PortalRequestSubInsuranceRouteImport.update({
+    id: '/request-sub-insurance',
+    path: '/request-sub-insurance',
     getParentRoute: () => PortalRoute,
   } as any)
-const PortalPermitsIndexRoute = PortalPermitsIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => PortalPermitsRoute,
-} as any)
-const PortalHoaSubmittalsIndexRoute =
-  PortalHoaSubmittalsIndexRouteImport.update({
-    id: '/hoa-submittals/',
-    path: '/hoa-submittals/',
-    getParentRoute: () => PortalRoute,
-  } as any)
-const PortalGuidesIndexRoute = PortalGuidesIndexRouteImport.update({
-  id: '/guides/',
-  path: '/guides/',
+const PortalSubmissionsRoute = PortalSubmissionsRouteImport.update({
+  id: '/submissions',
+  path: '/submissions',
   getParentRoute: () => PortalRoute,
 } as any)
-const PortalBlogIndexRoute = PortalBlogIndexRouteImport.update({
-  id: '/blog/',
-  path: '/blog/',
-  getParentRoute: () => PortalRoute,
-} as any)
-const PortalSubmissionsIdRoute = PortalSubmissionsIdRouteImport.update({
+const ProjectsIdRoute = ProjectsIdRouteImport.update({
   id: '/$id',
   path: '/$id',
-  getParentRoute: () => PortalSubmissionsRoute,
+  getParentRoute: () => ProjectsRoute,
 } as any)
-const PortalSubcontractorsNewRoute = PortalSubcontractorsNewRouteImport.update({
-  id: '/subcontractors/new',
-  path: '/subcontractors/new',
-  getParentRoute: () => PortalRoute,
-} as any)
-const PortalProjectsIdRoute = PortalProjectsIdRouteImport.update({
-  id: '/$id',
-  path: '/$id',
-  getParentRoute: () => PortalProjectsRoute,
-} as any)
-const PortalPermitsNewRoute = PortalPermitsNewRouteImport.update({
+const ProjectsNewRoute = ProjectsNewRouteImport.update({
   id: '/new',
   path: '/new',
-  getParentRoute: () => PortalPermitsRoute,
+  getParentRoute: () => ProjectsRoute,
 } as any)
-const PortalPermitsIdRoute = PortalPermitsIdRouteImport.update({
+const SubIntakeTokenRoute = SubIntakeTokenRouteImport.update({
+  id: '/sub-intake/$token',
+  path: '/sub-intake/$token',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SubPortalTokenRoute = SubPortalTokenRouteImport.update({
+  id: '/$token',
+  path: '/$token',
+  getParentRoute: () => SubPortalRoute,
+} as any)
+const VersusIndexRoute = VersusIndexRouteImport.update({
+  id: '/versus/',
+  path: '/versus/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VersusSlugRoute = VersusSlugRouteImport.update({
+  id: '/versus/$slug',
+  path: '/versus/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminBlogIdRoute = AdminBlogIdRouteImport.update({
   id: '/$id',
   path: '/$id',
-  getParentRoute: () => PortalPermitsRoute,
+  getParentRoute: () => AdminBlogRoute,
 } as any)
-const PortalHoaSubmittalsNewRoute = PortalHoaSubmittalsNewRouteImport.update({
-  id: '/hoa-submittals/new',
-  path: '/hoa-submittals/new',
-  getParentRoute: () => PortalRoute,
+const AdminBlogNewRoute = AdminBlogNewRouteImport.update({
+  id: '/new',
+  path: '/new',
+  getParentRoute: () => AdminBlogRoute,
 } as any)
-const PortalHoaSubmittalsIdRoute = PortalHoaSubmittalsIdRouteImport.update({
-  id: '/hoa-submittals/$id',
-  path: '/hoa-submittals/$id',
-  getParentRoute: () => PortalRoute,
+const ApiPublicAccessRequestRoute = ApiPublicAccessRequestRouteImport.update({
+  id: '/api/public/access-request',
+  path: '/api/public/access-request',
+  getParentRoute: () => rootRouteImport,
 } as any)
-const PortalGuidesSlugRoute = PortalGuidesSlugRouteImport.update({
-  id: '/guides/$slug',
-  path: '/guides/$slug',
-  getParentRoute: () => PortalRoute,
-} as any)
-const PortalBlogNewRoute = PortalBlogNewRouteImport.update({
-  id: '/blog/new',
-  path: '/blog/new',
-  getParentRoute: () => PortalRoute,
-} as any)
-const PortalBlogIdRoute = PortalBlogIdRouteImport.update({
-  id: '/blog/$id',
-  path: '/blog/$id',
-  getParentRoute: () => PortalRoute,
-} as any)
-const ApiPublicVictoriaScanRoute = ApiPublicVictoriaScanRouteImport.update({
-  id: '/api/public/victoria-scan',
-  path: '/api/public/victoria-scan',
+const ApiPublicHoaReplyRoute = ApiPublicHoaReplyRouteImport.update({
+  id: '/api/public/hoa-reply',
+  path: '/api/public/hoa-reply',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiPublicSubIntakeUploadRoute =
@@ -560,41 +493,97 @@ const ApiPublicSubIntakeUploadRoute =
     path: '/api/public/sub-intake-upload',
     getParentRoute: () => rootRouteImport,
   } as any)
-const ApiPublicHoaReplyRoute = ApiPublicHoaReplyRouteImport.update({
-  id: '/api/public/hoa-reply',
-  path: '/api/public/hoa-reply',
+const ApiPublicVictoriaScanRoute = ApiPublicVictoriaScanRouteImport.update({
+  id: '/api/public/victoria-scan',
+  path: '/api/public/victoria-scan',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiPublicAccessRequestRoute = ApiPublicAccessRequestRouteImport.update({
-  id: '/api/public/access-request',
-  path: '/api/public/access-request',
-  getParentRoute: () => rootRouteImport,
+const PortalBlogIndexRoute = PortalBlogIndexRouteImport.update({
+  id: '/blog/',
+  path: '/blog/',
+  getParentRoute: () => PortalRoute,
 } as any)
-const AdminBlogNewRoute = AdminBlogNewRouteImport.update({
-  id: '/new',
-  path: '/new',
-  getParentRoute: () => AdminBlogRoute,
+const PortalBlogIdRoute = PortalBlogIdRouteImport.update({
+  id: '/blog/$id',
+  path: '/blog/$id',
+  getParentRoute: () => PortalRoute,
 } as any)
-const AdminBlogIdRoute = AdminBlogIdRouteImport.update({
-  id: '/$id',
-  path: '/$id',
-  getParentRoute: () => AdminBlogRoute,
+const PortalBlogNewRoute = PortalBlogNewRouteImport.update({
+  id: '/blog/new',
+  path: '/blog/new',
+  getParentRoute: () => PortalRoute,
 } as any)
-const PortalPermitsIdBundleRoute = PortalPermitsIdBundleRouteImport.update({
-  id: '/bundle',
-  path: '/bundle',
-  getParentRoute: () => PortalPermitsIdRoute,
+const PortalGuidesIndexRoute = PortalGuidesIndexRouteImport.update({
+  id: '/guides/',
+  path: '/guides/',
+  getParentRoute: () => PortalRoute,
 } as any)
-const PortalHoaSubmittalsTemplatesNewRoute =
-  PortalHoaSubmittalsTemplatesNewRouteImport.update({
-    id: '/hoa-submittals/templates/new',
-    path: '/hoa-submittals/templates/new',
+const PortalGuidesSlugRoute = PortalGuidesSlugRouteImport.update({
+  id: '/guides/$slug',
+  path: '/guides/$slug',
+  getParentRoute: () => PortalRoute,
+} as any)
+const PortalHoaSubmittalsIndexRoute =
+  PortalHoaSubmittalsIndexRouteImport.update({
+    id: '/hoa-submittals/',
+    path: '/hoa-submittals/',
     getParentRoute: () => PortalRoute,
   } as any)
-const ApiPublicPaymentsWebhookRoute =
-  ApiPublicPaymentsWebhookRouteImport.update({
-    id: '/api/public/payments/webhook',
-    path: '/api/public/payments/webhook',
+const PortalHoaSubmittalsIdRoute = PortalHoaSubmittalsIdRouteImport.update({
+  id: '/hoa-submittals/$id',
+  path: '/hoa-submittals/$id',
+  getParentRoute: () => PortalRoute,
+} as any)
+const PortalHoaSubmittalsNewRoute = PortalHoaSubmittalsNewRouteImport.update({
+  id: '/hoa-submittals/new',
+  path: '/hoa-submittals/new',
+  getParentRoute: () => PortalRoute,
+} as any)
+const PortalPermitsIndexRoute = PortalPermitsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => PortalPermitsRoute,
+} as any)
+const PortalPermitsIdRoute = PortalPermitsIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => PortalPermitsRoute,
+} as any)
+const PortalPermitsNewRoute = PortalPermitsNewRouteImport.update({
+  id: '/new',
+  path: '/new',
+  getParentRoute: () => PortalPermitsRoute,
+} as any)
+const PortalProjectsIdRoute = PortalProjectsIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => PortalProjectsRoute,
+} as any)
+const PortalSubcontractorsIndexRoute =
+  PortalSubcontractorsIndexRouteImport.update({
+    id: '/subcontractors/',
+    path: '/subcontractors/',
+    getParentRoute: () => PortalRoute,
+  } as any)
+const PortalSubcontractorsNewRoute = PortalSubcontractorsNewRouteImport.update({
+  id: '/subcontractors/new',
+  path: '/subcontractors/new',
+  getParentRoute: () => PortalRoute,
+} as any)
+const PortalSubmissionsIndexRoute = PortalSubmissionsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => PortalSubmissionsRoute,
+} as any)
+const PortalSubmissionsIdRoute = PortalSubmissionsIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => PortalSubmissionsRoute,
+} as any)
+const ApiPublicEmailOutboxProcessRoute =
+  ApiPublicEmailOutboxProcessRouteImport.update({
+    id: '/api/public/email-outbox/process',
+    path: '/api/public/email-outbox/process',
     getParentRoute: () => rootRouteImport,
   } as any)
 const ApiPublicHubspotDealWebhookRoute =
@@ -603,12 +592,23 @@ const ApiPublicHubspotDealWebhookRoute =
     path: '/api/public/hubspot/deal-webhook',
     getParentRoute: () => rootRouteImport,
   } as any)
-const ApiPublicEmailOutboxProcessRoute =
-  ApiPublicEmailOutboxProcessRouteImport.update({
-    id: '/api/public/email-outbox/process',
-    path: '/api/public/email-outbox/process',
+const ApiPublicPaymentsWebhookRoute =
+  ApiPublicPaymentsWebhookRouteImport.update({
+    id: '/api/public/payments/webhook',
+    path: '/api/public/payments/webhook',
     getParentRoute: () => rootRouteImport,
   } as any)
+const PortalHoaSubmittalsTemplatesNewRoute =
+  PortalHoaSubmittalsTemplatesNewRouteImport.update({
+    id: '/hoa-submittals/templates/new',
+    path: '/hoa-submittals/templates/new',
+    getParentRoute: () => PortalRoute,
+  } as any)
+const PortalPermitsIdBundleRoute = PortalPermitsIdBundleRouteImport.update({
+  id: '/bundle',
+  path: '/bundle',
+  getParentRoute: () => PortalPermitsIdRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -1255,186 +1255,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/sub-portal': {
-      id: '/sub-portal'
-      path: '/sub-portal'
-      fullPath: '/sub-portal'
-      preLoaderRoute: typeof SubPortalRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/services': {
-      id: '/services'
-      path: '/services'
-      fullPath: '/services'
-      preLoaderRoute: typeof ServicesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/projects': {
-      id: '/projects'
-      path: '/projects'
-      fullPath: '/projects'
-      preLoaderRoute: typeof ProjectsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/project-guides': {
-      id: '/project-guides'
-      path: '/project-guides'
-      fullPath: '/project-guides'
-      preLoaderRoute: typeof ProjectGuidesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/profile': {
-      id: '/profile'
-      path: '/profile'
-      fullPath: '/profile'
-      preLoaderRoute: typeof ProfileRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/products': {
-      id: '/products'
-      path: '/products'
-      fullPath: '/products'
-      preLoaderRoute: typeof ProductsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/process': {
-      id: '/process'
-      path: '/process'
-      fullPath: '/process'
-      preLoaderRoute: typeof ProcessRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/pricing': {
-      id: '/pricing'
-      path: '/pricing'
-      fullPath: '/pricing'
-      preLoaderRoute: typeof PricingRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/portal': {
-      id: '/portal'
-      path: '/portal'
-      fullPath: '/portal'
-      preLoaderRoute: typeof PortalRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/onboarding': {
-      id: '/onboarding'
-      path: '/onboarding'
-      fullPath: '/onboarding'
-      preLoaderRoute: typeof OnboardingRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/my-permits': {
-      id: '/my-permits'
-      path: '/my-permits'
-      fullPath: '/my-permits'
-      preLoaderRoute: typeof MyPermitsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/municipalities': {
-      id: '/municipalities'
-      path: '/municipalities'
-      fullPath: '/municipalities'
-      preLoaderRoute: typeof MunicipalitiesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/messages': {
-      id: '/messages'
-      path: '/messages'
-      fullPath: '/messages'
-      preLoaderRoute: typeof MessagesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/lpoa-signing': {
-      id: '/lpoa-signing'
-      path: '/lpoa-signing'
-      fullPath: '/lpoa-signing'
-      preLoaderRoute: typeof LpoaSigningRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/login': {
-      id: '/login'
-      path: '/login'
-      fullPath: '/login'
-      preLoaderRoute: typeof LoginRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/join': {
-      id: '/join'
-      path: '/join'
-      fullPath: '/join'
-      preLoaderRoute: typeof JoinRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/invoices': {
-      id: '/invoices'
-      path: '/invoices'
-      fullPath: '/invoices'
-      preLoaderRoute: typeof InvoicesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/insurance': {
-      id: '/insurance'
-      path: '/insurance'
-      fullPath: '/insurance'
-      preLoaderRoute: typeof InsuranceRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/gc-portal': {
-      id: '/gc-portal'
-      path: '/gc-portal'
-      fullPath: '/gc-portal'
-      preLoaderRoute: typeof GcPortalRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/forms': {
-      id: '/forms'
-      path: '/forms'
-      fullPath: '/forms'
-      preLoaderRoute: typeof FormsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/fee-calculator': {
-      id: '/fee-calculator'
-      path: '/fee-calculator'
-      fullPath: '/fee-calculator'
-      preLoaderRoute: typeof FeeCalculatorRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/dashboard': {
-      id: '/dashboard'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof DashboardRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/contact': {
-      id: '/contact'
-      path: '/contact'
-      fullPath: '/contact'
-      preLoaderRoute: typeof ContactRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/building-dept-logins': {
-      id: '/building-dept-logins'
-      path: '/building-dept-logins'
-      fullPath: '/building-dept-logins'
-      preLoaderRoute: typeof BuildingDeptLoginsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/ask-victoria': {
-      id: '/ask-victoria'
-      path: '/ask-victoria'
-      fullPath: '/ask-victoria'
-      preLoaderRoute: typeof AskVictoriaRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin': {
-      id: '/admin'
-      path: '/admin'
-      fullPath: '/admin'
-      preLoaderRoute: typeof AdminRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/about': {
@@ -1444,298 +1269,193 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AboutRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/versus/': {
-      id: '/versus/'
-      path: '/versus'
-      fullPath: '/versus/'
-      preLoaderRoute: typeof VersusIndexRouteImport
+    '/ask-victoria': {
+      id: '/ask-victoria'
+      path: '/ask-victoria'
+      fullPath: '/ask-victoria'
+      preLoaderRoute: typeof AskVictoriaRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/portal/': {
-      id: '/portal/'
-      path: '/'
-      fullPath: '/portal/'
-      preLoaderRoute: typeof PortalIndexRouteImport
-      parentRoute: typeof PortalRoute
-    }
-    '/forms/': {
-      id: '/forms/'
-      path: '/'
-      fullPath: '/forms/'
-      preLoaderRoute: typeof FormsIndexRouteImport
-      parentRoute: typeof FormsRoute
-    }
-    '/blog/': {
-      id: '/blog/'
-      path: '/blog'
-      fullPath: '/blog/'
-      preLoaderRoute: typeof BlogIndexRouteImport
+    '/building-dept-logins': {
+      id: '/building-dept-logins'
+      path: '/building-dept-logins'
+      fullPath: '/building-dept-logins'
+      preLoaderRoute: typeof BuildingDeptLoginsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/versus/$slug': {
-      id: '/versus/$slug'
-      path: '/versus/$slug'
-      fullPath: '/versus/$slug'
-      preLoaderRoute: typeof VersusSlugRouteImport
+    '/contact': {
+      id: '/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof ContactRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/sub-portal/$token': {
-      id: '/sub-portal/$token'
-      path: '/$token'
-      fullPath: '/sub-portal/$token'
-      preLoaderRoute: typeof SubPortalTokenRouteImport
-      parentRoute: typeof SubPortalRoute
-    }
-    '/sub-intake/$token': {
-      id: '/sub-intake/$token'
-      path: '/sub-intake/$token'
-      fullPath: '/sub-intake/$token'
-      preLoaderRoute: typeof SubIntakeTokenRouteImport
+    '/dashboard': {
+      id: '/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof DashboardRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/projects/new': {
-      id: '/projects/new'
-      path: '/new'
-      fullPath: '/projects/new'
-      preLoaderRoute: typeof ProjectsNewRouteImport
-      parentRoute: typeof ProjectsRoute
+    '/fee-calculator': {
+      id: '/fee-calculator'
+      path: '/fee-calculator'
+      fullPath: '/fee-calculator'
+      preLoaderRoute: typeof FeeCalculatorRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/projects/$id': {
-      id: '/projects/$id'
-      path: '/$id'
-      fullPath: '/projects/$id'
-      preLoaderRoute: typeof ProjectsIdRouteImport
-      parentRoute: typeof ProjectsRoute
+    '/forms': {
+      id: '/forms'
+      path: '/forms'
+      fullPath: '/forms'
+      preLoaderRoute: typeof FormsRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/portal/submissions': {
-      id: '/portal/submissions'
-      path: '/submissions'
-      fullPath: '/portal/submissions'
-      preLoaderRoute: typeof PortalSubmissionsRouteImport
-      parentRoute: typeof PortalRoute
+    '/gc-portal': {
+      id: '/gc-portal'
+      path: '/gc-portal'
+      fullPath: '/gc-portal'
+      preLoaderRoute: typeof GcPortalRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/portal/request-sub-insurance': {
-      id: '/portal/request-sub-insurance'
-      path: '/request-sub-insurance'
-      fullPath: '/portal/request-sub-insurance'
-      preLoaderRoute: typeof PortalRequestSubInsuranceRouteImport
-      parentRoute: typeof PortalRoute
+    '/insurance': {
+      id: '/insurance'
+      path: '/insurance'
+      fullPath: '/insurance'
+      preLoaderRoute: typeof InsuranceRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/portal/request-coi': {
-      id: '/portal/request-coi'
-      path: '/request-coi'
-      fullPath: '/portal/request-coi'
-      preLoaderRoute: typeof PortalRequestCoiRouteImport
-      parentRoute: typeof PortalRoute
+    '/invoices': {
+      id: '/invoices'
+      path: '/invoices'
+      fullPath: '/invoices'
+      preLoaderRoute: typeof InvoicesRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/portal/reports': {
-      id: '/portal/reports'
-      path: '/reports'
-      fullPath: '/portal/reports'
-      preLoaderRoute: typeof PortalReportsRouteImport
-      parentRoute: typeof PortalRoute
+    '/join': {
+      id: '/join'
+      path: '/join'
+      fullPath: '/join'
+      preLoaderRoute: typeof JoinRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/portal/projects': {
-      id: '/portal/projects'
-      path: '/projects'
-      fullPath: '/portal/projects'
-      preLoaderRoute: typeof PortalProjectsRouteImport
-      parentRoute: typeof PortalRoute
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/portal/profile': {
-      id: '/portal/profile'
+    '/lpoa-signing': {
+      id: '/lpoa-signing'
+      path: '/lpoa-signing'
+      fullPath: '/lpoa-signing'
+      preLoaderRoute: typeof LpoaSigningRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/messages': {
+      id: '/messages'
+      path: '/messages'
+      fullPath: '/messages'
+      preLoaderRoute: typeof MessagesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/municipalities': {
+      id: '/municipalities'
+      path: '/municipalities'
+      fullPath: '/municipalities'
+      preLoaderRoute: typeof MunicipalitiesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/my-permits': {
+      id: '/my-permits'
+      path: '/my-permits'
+      fullPath: '/my-permits'
+      preLoaderRoute: typeof MyPermitsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/onboarding': {
+      id: '/onboarding'
+      path: '/onboarding'
+      fullPath: '/onboarding'
+      preLoaderRoute: typeof OnboardingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/portal': {
+      id: '/portal'
+      path: '/portal'
+      fullPath: '/portal'
+      preLoaderRoute: typeof PortalRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pricing': {
+      id: '/pricing'
+      path: '/pricing'
+      fullPath: '/pricing'
+      preLoaderRoute: typeof PricingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/process': {
+      id: '/process'
+      path: '/process'
+      fullPath: '/process'
+      preLoaderRoute: typeof ProcessRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/products': {
+      id: '/products'
+      path: '/products'
+      fullPath: '/products'
+      preLoaderRoute: typeof ProductsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/profile': {
+      id: '/profile'
       path: '/profile'
-      fullPath: '/portal/profile'
-      preLoaderRoute: typeof PortalProfileRouteImport
-      parentRoute: typeof PortalRoute
-    }
-    '/portal/permits': {
-      id: '/portal/permits'
-      path: '/permits'
-      fullPath: '/portal/permits'
-      preLoaderRoute: typeof PortalPermitsRouteImport
-      parentRoute: typeof PortalRoute
-    }
-    '/portal/permit-fees': {
-      id: '/portal/permit-fees'
-      path: '/permit-fees'
-      fullPath: '/portal/permit-fees'
-      preLoaderRoute: typeof PortalPermitFeesRouteImport
-      parentRoute: typeof PortalRoute
-    }
-    '/portal/notary-queue': {
-      id: '/portal/notary-queue'
-      path: '/notary-queue'
-      fullPath: '/portal/notary-queue'
-      preLoaderRoute: typeof PortalNotaryQueueRouteImport
-      parentRoute: typeof PortalRoute
-    }
-    '/portal/marketplace': {
-      id: '/portal/marketplace'
-      path: '/marketplace'
-      fullPath: '/portal/marketplace'
-      preLoaderRoute: typeof PortalMarketplaceRouteImport
-      parentRoute: typeof PortalRoute
-    }
-    '/portal/inspections': {
-      id: '/portal/inspections'
-      path: '/inspections'
-      fullPath: '/portal/inspections'
-      preLoaderRoute: typeof PortalInspectionsRouteImport
-      parentRoute: typeof PortalRoute
-    }
-    '/portal/financials': {
-      id: '/portal/financials'
-      path: '/financials'
-      fullPath: '/portal/financials'
-      preLoaderRoute: typeof PortalFinancialsRouteImport
-      parentRoute: typeof PortalRoute
-    }
-    '/portal/feature-requests': {
-      id: '/portal/feature-requests'
-      path: '/feature-requests'
-      fullPath: '/portal/feature-requests'
-      preLoaderRoute: typeof PortalFeatureRequestsRouteImport
-      parentRoute: typeof PortalRoute
-    }
-    '/portal/compliance': {
-      id: '/portal/compliance'
-      path: '/compliance'
-      fullPath: '/portal/compliance'
-      preLoaderRoute: typeof PortalComplianceRouteImport
-      parentRoute: typeof PortalRoute
-    }
-    '/portal/building-dept': {
-      id: '/portal/building-dept'
-      path: '/building-dept'
-      fullPath: '/portal/building-dept'
-      preLoaderRoute: typeof PortalBuildingDeptRouteImport
-      parentRoute: typeof PortalRoute
-    }
-    '/portal/bid-review': {
-      id: '/portal/bid-review'
-      path: '/bid-review'
-      fullPath: '/portal/bid-review'
-      preLoaderRoute: typeof PortalBidReviewRouteImport
-      parentRoute: typeof PortalRoute
-    }
-    '/portal/alerts': {
-      id: '/portal/alerts'
-      path: '/alerts'
-      fullPath: '/portal/alerts'
-      preLoaderRoute: typeof PortalAlertsRouteImport
-      parentRoute: typeof PortalRoute
-    }
-    '/permit-card/$id': {
-      id: '/permit-card/$id'
-      path: '/permit-card/$id'
-      fullPath: '/permit-card/$id'
-      preLoaderRoute: typeof PermitCardIdRouteImport
+      fullPath: '/profile'
+      preLoaderRoute: typeof ProfileRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/join/$token': {
-      id: '/join/$token'
-      path: '/$token'
-      fullPath: '/join/$token'
-      preLoaderRoute: typeof JoinTokenRouteImport
-      parentRoute: typeof JoinRoute
-    }
-    '/homeowner/$token': {
-      id: '/homeowner/$token'
-      path: '/homeowner/$token'
-      fullPath: '/homeowner/$token'
-      preLoaderRoute: typeof HomeownerTokenRouteImport
+    '/project-guides': {
+      id: '/project-guides'
+      path: '/project-guides'
+      fullPath: '/project-guides'
+      preLoaderRoute: typeof ProjectGuidesRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/forms/subcontractors': {
-      id: '/forms/subcontractors'
-      path: '/subcontractors'
-      fullPath: '/forms/subcontractors'
-      preLoaderRoute: typeof FormsSubcontractorsRouteImport
-      parentRoute: typeof FormsRoute
-    }
-    '/forms/subcontractor-intake': {
-      id: '/forms/subcontractor-intake'
-      path: '/subcontractor-intake'
-      fullPath: '/forms/subcontractor-intake'
-      preLoaderRoute: typeof FormsSubcontractorIntakeRouteImport
-      parentRoute: typeof FormsRoute
-    }
-    '/forms/permit-intake': {
-      id: '/forms/permit-intake'
-      path: '/permit-intake'
-      fullPath: '/forms/permit-intake'
-      preLoaderRoute: typeof FormsPermitIntakeRouteImport
-      parentRoute: typeof FormsRoute
-    }
-    '/forms/payment-authorization': {
-      id: '/forms/payment-authorization'
-      path: '/payment-authorization'
-      fullPath: '/forms/payment-authorization'
-      preLoaderRoute: typeof FormsPaymentAuthorizationRouteImport
-      parentRoute: typeof FormsRoute
-    }
-    '/building-dept-logins/submit': {
-      id: '/building-dept-logins/submit'
-      path: '/submit'
-      fullPath: '/building-dept-logins/submit'
-      preLoaderRoute: typeof BuildingDeptLoginsSubmitRouteImport
-      parentRoute: typeof BuildingDeptLoginsRoute
-    }
-    '/blog/$slug': {
-      id: '/blog/$slug'
-      path: '/blog/$slug'
-      fullPath: '/blog/$slug'
-      preLoaderRoute: typeof BlogSlugRouteImport
+    '/projects': {
+      id: '/projects'
+      path: '/projects'
+      fullPath: '/projects'
+      preLoaderRoute: typeof ProjectsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/verify-license': {
-      id: '/api/verify-license'
-      path: '/api/verify-license'
-      fullPath: '/api/verify-license'
-      preLoaderRoute: typeof ApiVerifyLicenseRouteImport
+    '/services': {
+      id: '/services'
+      path: '/services'
+      fullPath: '/services'
+      preLoaderRoute: typeof ServicesRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin_/contractors': {
-      id: '/admin_/contractors'
-      path: '/admin/contractors'
-      fullPath: '/admin/contractors'
-      preLoaderRoute: typeof AdminContractorsRouteImport
+    '/sub-portal': {
+      id: '/sub-portal'
+      path: '/sub-portal'
+      fullPath: '/sub-portal'
+      preLoaderRoute: typeof SubPortalRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin/hubspot-simulate': {
-      id: '/admin/hubspot-simulate'
-      path: '/hubspot-simulate'
-      fullPath: '/admin/hubspot-simulate'
-      preLoaderRoute: typeof AdminHubspotSimulateRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/gc-clients': {
-      id: '/admin/gc-clients'
-      path: '/gc-clients'
-      fullPath: '/admin/gc-clients'
-      preLoaderRoute: typeof AdminGcClientsRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/feature-requests': {
-      id: '/admin/feature-requests'
-      path: '/feature-requests'
-      fullPath: '/admin/feature-requests'
-      preLoaderRoute: typeof AdminFeatureRequestsRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/builders': {
-      id: '/admin/builders'
-      path: '/builders'
-      fullPath: '/admin/builders'
-      preLoaderRoute: typeof AdminBuildersRouteImport
+    '/admin/access-requests': {
+      id: '/admin/access-requests'
+      path: '/access-requests'
+      fullPath: '/admin/access-requests'
+      preLoaderRoute: typeof AdminAccessRequestsRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/blog': {
@@ -1745,137 +1465,312 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminBlogRouteImport
       parentRoute: typeof AdminRoute
     }
-    '/admin/access-requests': {
-      id: '/admin/access-requests'
-      path: '/access-requests'
-      fullPath: '/admin/access-requests'
-      preLoaderRoute: typeof AdminAccessRequestsRouteImport
+    '/admin/builders': {
+      id: '/admin/builders'
+      path: '/builders'
+      fullPath: '/admin/builders'
+      preLoaderRoute: typeof AdminBuildersRouteImport
       parentRoute: typeof AdminRoute
     }
-    '/portal/submissions/': {
-      id: '/portal/submissions/'
-      path: '/'
-      fullPath: '/portal/submissions/'
-      preLoaderRoute: typeof PortalSubmissionsIndexRouteImport
-      parentRoute: typeof PortalSubmissionsRoute
+    '/admin/feature-requests': {
+      id: '/admin/feature-requests'
+      path: '/feature-requests'
+      fullPath: '/admin/feature-requests'
+      preLoaderRoute: typeof AdminFeatureRequestsRouteImport
+      parentRoute: typeof AdminRoute
     }
-    '/portal/subcontractors/': {
-      id: '/portal/subcontractors/'
-      path: '/subcontractors'
-      fullPath: '/portal/subcontractors/'
-      preLoaderRoute: typeof PortalSubcontractorsIndexRouteImport
-      parentRoute: typeof PortalRoute
+    '/admin/gc-clients': {
+      id: '/admin/gc-clients'
+      path: '/gc-clients'
+      fullPath: '/admin/gc-clients'
+      preLoaderRoute: typeof AdminGcClientsRouteImport
+      parentRoute: typeof AdminRoute
     }
-    '/portal/permits/': {
-      id: '/portal/permits/'
-      path: '/'
-      fullPath: '/portal/permits/'
-      preLoaderRoute: typeof PortalPermitsIndexRouteImport
-      parentRoute: typeof PortalPermitsRoute
+    '/admin/hubspot-simulate': {
+      id: '/admin/hubspot-simulate'
+      path: '/hubspot-simulate'
+      fullPath: '/admin/hubspot-simulate'
+      preLoaderRoute: typeof AdminHubspotSimulateRouteImport
+      parentRoute: typeof AdminRoute
     }
-    '/portal/hoa-submittals/': {
-      id: '/portal/hoa-submittals/'
-      path: '/hoa-submittals'
-      fullPath: '/portal/hoa-submittals/'
-      preLoaderRoute: typeof PortalHoaSubmittalsIndexRouteImport
-      parentRoute: typeof PortalRoute
-    }
-    '/portal/guides/': {
-      id: '/portal/guides/'
-      path: '/guides'
-      fullPath: '/portal/guides/'
-      preLoaderRoute: typeof PortalGuidesIndexRouteImport
-      parentRoute: typeof PortalRoute
-    }
-    '/portal/blog/': {
-      id: '/portal/blog/'
-      path: '/blog'
-      fullPath: '/portal/blog/'
-      preLoaderRoute: typeof PortalBlogIndexRouteImport
-      parentRoute: typeof PortalRoute
-    }
-    '/portal/submissions/$id': {
-      id: '/portal/submissions/$id'
-      path: '/$id'
-      fullPath: '/portal/submissions/$id'
-      preLoaderRoute: typeof PortalSubmissionsIdRouteImport
-      parentRoute: typeof PortalSubmissionsRoute
-    }
-    '/portal/subcontractors/new': {
-      id: '/portal/subcontractors/new'
-      path: '/subcontractors/new'
-      fullPath: '/portal/subcontractors/new'
-      preLoaderRoute: typeof PortalSubcontractorsNewRouteImport
-      parentRoute: typeof PortalRoute
-    }
-    '/portal/projects/$id': {
-      id: '/portal/projects/$id'
-      path: '/$id'
-      fullPath: '/portal/projects/$id'
-      preLoaderRoute: typeof PortalProjectsIdRouteImport
-      parentRoute: typeof PortalProjectsRoute
-    }
-    '/portal/permits/new': {
-      id: '/portal/permits/new'
-      path: '/new'
-      fullPath: '/portal/permits/new'
-      preLoaderRoute: typeof PortalPermitsNewRouteImport
-      parentRoute: typeof PortalPermitsRoute
-    }
-    '/portal/permits/$id': {
-      id: '/portal/permits/$id'
-      path: '/$id'
-      fullPath: '/portal/permits/$id'
-      preLoaderRoute: typeof PortalPermitsIdRouteImport
-      parentRoute: typeof PortalPermitsRoute
-    }
-    '/portal/hoa-submittals/new': {
-      id: '/portal/hoa-submittals/new'
-      path: '/hoa-submittals/new'
-      fullPath: '/portal/hoa-submittals/new'
-      preLoaderRoute: typeof PortalHoaSubmittalsNewRouteImport
-      parentRoute: typeof PortalRoute
-    }
-    '/portal/hoa-submittals/$id': {
-      id: '/portal/hoa-submittals/$id'
-      path: '/hoa-submittals/$id'
-      fullPath: '/portal/hoa-submittals/$id'
-      preLoaderRoute: typeof PortalHoaSubmittalsIdRouteImport
-      parentRoute: typeof PortalRoute
-    }
-    '/portal/guides/$slug': {
-      id: '/portal/guides/$slug'
-      path: '/guides/$slug'
-      fullPath: '/portal/guides/$slug'
-      preLoaderRoute: typeof PortalGuidesSlugRouteImport
-      parentRoute: typeof PortalRoute
-    }
-    '/portal/blog/new': {
-      id: '/portal/blog/new'
-      path: '/blog/new'
-      fullPath: '/portal/blog/new'
-      preLoaderRoute: typeof PortalBlogNewRouteImport
-      parentRoute: typeof PortalRoute
-    }
-    '/portal/blog/$id': {
-      id: '/portal/blog/$id'
-      path: '/blog/$id'
-      fullPath: '/portal/blog/$id'
-      preLoaderRoute: typeof PortalBlogIdRouteImport
-      parentRoute: typeof PortalRoute
-    }
-    '/api/public/victoria-scan': {
-      id: '/api/public/victoria-scan'
-      path: '/api/public/victoria-scan'
-      fullPath: '/api/public/victoria-scan'
-      preLoaderRoute: typeof ApiPublicVictoriaScanRouteImport
+    '/admin_/contractors': {
+      id: '/admin_/contractors'
+      path: '/admin/contractors'
+      fullPath: '/admin/contractors'
+      preLoaderRoute: typeof AdminContractorsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/public/sub-intake-upload': {
-      id: '/api/public/sub-intake-upload'
-      path: '/api/public/sub-intake-upload'
-      fullPath: '/api/public/sub-intake-upload'
-      preLoaderRoute: typeof ApiPublicSubIntakeUploadRouteImport
+    '/api/verify-license': {
+      id: '/api/verify-license'
+      path: '/api/verify-license'
+      fullPath: '/api/verify-license'
+      preLoaderRoute: typeof ApiVerifyLicenseRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/blog/': {
+      id: '/blog/'
+      path: '/blog'
+      fullPath: '/blog/'
+      preLoaderRoute: typeof BlogIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/blog/$slug': {
+      id: '/blog/$slug'
+      path: '/blog/$slug'
+      fullPath: '/blog/$slug'
+      preLoaderRoute: typeof BlogSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/building-dept-logins/submit': {
+      id: '/building-dept-logins/submit'
+      path: '/submit'
+      fullPath: '/building-dept-logins/submit'
+      preLoaderRoute: typeof BuildingDeptLoginsSubmitRouteImport
+      parentRoute: typeof BuildingDeptLoginsRoute
+    }
+    '/forms/': {
+      id: '/forms/'
+      path: '/'
+      fullPath: '/forms/'
+      preLoaderRoute: typeof FormsIndexRouteImport
+      parentRoute: typeof FormsRoute
+    }
+    '/forms/payment-authorization': {
+      id: '/forms/payment-authorization'
+      path: '/payment-authorization'
+      fullPath: '/forms/payment-authorization'
+      preLoaderRoute: typeof FormsPaymentAuthorizationRouteImport
+      parentRoute: typeof FormsRoute
+    }
+    '/forms/permit-intake': {
+      id: '/forms/permit-intake'
+      path: '/permit-intake'
+      fullPath: '/forms/permit-intake'
+      preLoaderRoute: typeof FormsPermitIntakeRouteImport
+      parentRoute: typeof FormsRoute
+    }
+    '/forms/subcontractor-intake': {
+      id: '/forms/subcontractor-intake'
+      path: '/subcontractor-intake'
+      fullPath: '/forms/subcontractor-intake'
+      preLoaderRoute: typeof FormsSubcontractorIntakeRouteImport
+      parentRoute: typeof FormsRoute
+    }
+    '/forms/subcontractors': {
+      id: '/forms/subcontractors'
+      path: '/subcontractors'
+      fullPath: '/forms/subcontractors'
+      preLoaderRoute: typeof FormsSubcontractorsRouteImport
+      parentRoute: typeof FormsRoute
+    }
+    '/homeowner/$token': {
+      id: '/homeowner/$token'
+      path: '/homeowner/$token'
+      fullPath: '/homeowner/$token'
+      preLoaderRoute: typeof HomeownerTokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/join/$token': {
+      id: '/join/$token'
+      path: '/$token'
+      fullPath: '/join/$token'
+      preLoaderRoute: typeof JoinTokenRouteImport
+      parentRoute: typeof JoinRoute
+    }
+    '/permit-card/$id': {
+      id: '/permit-card/$id'
+      path: '/permit-card/$id'
+      fullPath: '/permit-card/$id'
+      preLoaderRoute: typeof PermitCardIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/portal/': {
+      id: '/portal/'
+      path: '/'
+      fullPath: '/portal/'
+      preLoaderRoute: typeof PortalIndexRouteImport
+      parentRoute: typeof PortalRoute
+    }
+    '/portal/alerts': {
+      id: '/portal/alerts'
+      path: '/alerts'
+      fullPath: '/portal/alerts'
+      preLoaderRoute: typeof PortalAlertsRouteImport
+      parentRoute: typeof PortalRoute
+    }
+    '/portal/bid-review': {
+      id: '/portal/bid-review'
+      path: '/bid-review'
+      fullPath: '/portal/bid-review'
+      preLoaderRoute: typeof PortalBidReviewRouteImport
+      parentRoute: typeof PortalRoute
+    }
+    '/portal/building-dept': {
+      id: '/portal/building-dept'
+      path: '/building-dept'
+      fullPath: '/portal/building-dept'
+      preLoaderRoute: typeof PortalBuildingDeptRouteImport
+      parentRoute: typeof PortalRoute
+    }
+    '/portal/compliance': {
+      id: '/portal/compliance'
+      path: '/compliance'
+      fullPath: '/portal/compliance'
+      preLoaderRoute: typeof PortalComplianceRouteImport
+      parentRoute: typeof PortalRoute
+    }
+    '/portal/feature-requests': {
+      id: '/portal/feature-requests'
+      path: '/feature-requests'
+      fullPath: '/portal/feature-requests'
+      preLoaderRoute: typeof PortalFeatureRequestsRouteImport
+      parentRoute: typeof PortalRoute
+    }
+    '/portal/financials': {
+      id: '/portal/financials'
+      path: '/financials'
+      fullPath: '/portal/financials'
+      preLoaderRoute: typeof PortalFinancialsRouteImport
+      parentRoute: typeof PortalRoute
+    }
+    '/portal/inspections': {
+      id: '/portal/inspections'
+      path: '/inspections'
+      fullPath: '/portal/inspections'
+      preLoaderRoute: typeof PortalInspectionsRouteImport
+      parentRoute: typeof PortalRoute
+    }
+    '/portal/marketplace': {
+      id: '/portal/marketplace'
+      path: '/marketplace'
+      fullPath: '/portal/marketplace'
+      preLoaderRoute: typeof PortalMarketplaceRouteImport
+      parentRoute: typeof PortalRoute
+    }
+    '/portal/notary-queue': {
+      id: '/portal/notary-queue'
+      path: '/notary-queue'
+      fullPath: '/portal/notary-queue'
+      preLoaderRoute: typeof PortalNotaryQueueRouteImport
+      parentRoute: typeof PortalRoute
+    }
+    '/portal/permit-fees': {
+      id: '/portal/permit-fees'
+      path: '/permit-fees'
+      fullPath: '/portal/permit-fees'
+      preLoaderRoute: typeof PortalPermitFeesRouteImport
+      parentRoute: typeof PortalRoute
+    }
+    '/portal/permits': {
+      id: '/portal/permits'
+      path: '/permits'
+      fullPath: '/portal/permits'
+      preLoaderRoute: typeof PortalPermitsRouteImport
+      parentRoute: typeof PortalRoute
+    }
+    '/portal/profile': {
+      id: '/portal/profile'
+      path: '/profile'
+      fullPath: '/portal/profile'
+      preLoaderRoute: typeof PortalProfileRouteImport
+      parentRoute: typeof PortalRoute
+    }
+    '/portal/projects': {
+      id: '/portal/projects'
+      path: '/projects'
+      fullPath: '/portal/projects'
+      preLoaderRoute: typeof PortalProjectsRouteImport
+      parentRoute: typeof PortalRoute
+    }
+    '/portal/reports': {
+      id: '/portal/reports'
+      path: '/reports'
+      fullPath: '/portal/reports'
+      preLoaderRoute: typeof PortalReportsRouteImport
+      parentRoute: typeof PortalRoute
+    }
+    '/portal/request-coi': {
+      id: '/portal/request-coi'
+      path: '/request-coi'
+      fullPath: '/portal/request-coi'
+      preLoaderRoute: typeof PortalRequestCoiRouteImport
+      parentRoute: typeof PortalRoute
+    }
+    '/portal/request-sub-insurance': {
+      id: '/portal/request-sub-insurance'
+      path: '/request-sub-insurance'
+      fullPath: '/portal/request-sub-insurance'
+      preLoaderRoute: typeof PortalRequestSubInsuranceRouteImport
+      parentRoute: typeof PortalRoute
+    }
+    '/portal/submissions': {
+      id: '/portal/submissions'
+      path: '/submissions'
+      fullPath: '/portal/submissions'
+      preLoaderRoute: typeof PortalSubmissionsRouteImport
+      parentRoute: typeof PortalRoute
+    }
+    '/projects/$id': {
+      id: '/projects/$id'
+      path: '/$id'
+      fullPath: '/projects/$id'
+      preLoaderRoute: typeof ProjectsIdRouteImport
+      parentRoute: typeof ProjectsRoute
+    }
+    '/projects/new': {
+      id: '/projects/new'
+      path: '/new'
+      fullPath: '/projects/new'
+      preLoaderRoute: typeof ProjectsNewRouteImport
+      parentRoute: typeof ProjectsRoute
+    }
+    '/sub-intake/$token': {
+      id: '/sub-intake/$token'
+      path: '/sub-intake/$token'
+      fullPath: '/sub-intake/$token'
+      preLoaderRoute: typeof SubIntakeTokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sub-portal/$token': {
+      id: '/sub-portal/$token'
+      path: '/$token'
+      fullPath: '/sub-portal/$token'
+      preLoaderRoute: typeof SubPortalTokenRouteImport
+      parentRoute: typeof SubPortalRoute
+    }
+    '/versus/': {
+      id: '/versus/'
+      path: '/versus'
+      fullPath: '/versus/'
+      preLoaderRoute: typeof VersusIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/versus/$slug': {
+      id: '/versus/$slug'
+      path: '/versus/$slug'
+      fullPath: '/versus/$slug'
+      preLoaderRoute: typeof VersusSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/blog/$id': {
+      id: '/admin/blog/$id'
+      path: '/$id'
+      fullPath: '/admin/blog/$id'
+      preLoaderRoute: typeof AdminBlogIdRouteImport
+      parentRoute: typeof AdminBlogRoute
+    }
+    '/admin/blog/new': {
+      id: '/admin/blog/new'
+      path: '/new'
+      fullPath: '/admin/blog/new'
+      preLoaderRoute: typeof AdminBlogNewRouteImport
+      parentRoute: typeof AdminBlogRoute
+    }
+    '/api/public/access-request': {
+      id: '/api/public/access-request'
+      path: '/api/public/access-request'
+      fullPath: '/api/public/access-request'
+      preLoaderRoute: typeof ApiPublicAccessRequestRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/public/hoa-reply': {
@@ -1885,46 +1780,137 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicHoaReplyRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/public/access-request': {
-      id: '/api/public/access-request'
-      path: '/api/public/access-request'
-      fullPath: '/api/public/access-request'
-      preLoaderRoute: typeof ApiPublicAccessRequestRouteImport
+    '/api/public/sub-intake-upload': {
+      id: '/api/public/sub-intake-upload'
+      path: '/api/public/sub-intake-upload'
+      fullPath: '/api/public/sub-intake-upload'
+      preLoaderRoute: typeof ApiPublicSubIntakeUploadRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin/blog/new': {
-      id: '/admin/blog/new'
-      path: '/new'
-      fullPath: '/admin/blog/new'
-      preLoaderRoute: typeof AdminBlogNewRouteImport
-      parentRoute: typeof AdminBlogRoute
+    '/api/public/victoria-scan': {
+      id: '/api/public/victoria-scan'
+      path: '/api/public/victoria-scan'
+      fullPath: '/api/public/victoria-scan'
+      preLoaderRoute: typeof ApiPublicVictoriaScanRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/admin/blog/$id': {
-      id: '/admin/blog/$id'
-      path: '/$id'
-      fullPath: '/admin/blog/$id'
-      preLoaderRoute: typeof AdminBlogIdRouteImport
-      parentRoute: typeof AdminBlogRoute
-    }
-    '/portal/permits/$id/bundle': {
-      id: '/portal/permits/$id/bundle'
-      path: '/bundle'
-      fullPath: '/portal/permits/$id/bundle'
-      preLoaderRoute: typeof PortalPermitsIdBundleRouteImport
-      parentRoute: typeof PortalPermitsIdRoute
-    }
-    '/portal/hoa-submittals/templates/new': {
-      id: '/portal/hoa-submittals/templates/new'
-      path: '/hoa-submittals/templates/new'
-      fullPath: '/portal/hoa-submittals/templates/new'
-      preLoaderRoute: typeof PortalHoaSubmittalsTemplatesNewRouteImport
+    '/portal/blog/': {
+      id: '/portal/blog/'
+      path: '/blog'
+      fullPath: '/portal/blog/'
+      preLoaderRoute: typeof PortalBlogIndexRouteImport
       parentRoute: typeof PortalRoute
     }
-    '/api/public/payments/webhook': {
-      id: '/api/public/payments/webhook'
-      path: '/api/public/payments/webhook'
-      fullPath: '/api/public/payments/webhook'
-      preLoaderRoute: typeof ApiPublicPaymentsWebhookRouteImport
+    '/portal/blog/$id': {
+      id: '/portal/blog/$id'
+      path: '/blog/$id'
+      fullPath: '/portal/blog/$id'
+      preLoaderRoute: typeof PortalBlogIdRouteImport
+      parentRoute: typeof PortalRoute
+    }
+    '/portal/blog/new': {
+      id: '/portal/blog/new'
+      path: '/blog/new'
+      fullPath: '/portal/blog/new'
+      preLoaderRoute: typeof PortalBlogNewRouteImport
+      parentRoute: typeof PortalRoute
+    }
+    '/portal/guides/': {
+      id: '/portal/guides/'
+      path: '/guides'
+      fullPath: '/portal/guides/'
+      preLoaderRoute: typeof PortalGuidesIndexRouteImport
+      parentRoute: typeof PortalRoute
+    }
+    '/portal/guides/$slug': {
+      id: '/portal/guides/$slug'
+      path: '/guides/$slug'
+      fullPath: '/portal/guides/$slug'
+      preLoaderRoute: typeof PortalGuidesSlugRouteImport
+      parentRoute: typeof PortalRoute
+    }
+    '/portal/hoa-submittals/': {
+      id: '/portal/hoa-submittals/'
+      path: '/hoa-submittals'
+      fullPath: '/portal/hoa-submittals/'
+      preLoaderRoute: typeof PortalHoaSubmittalsIndexRouteImport
+      parentRoute: typeof PortalRoute
+    }
+    '/portal/hoa-submittals/$id': {
+      id: '/portal/hoa-submittals/$id'
+      path: '/hoa-submittals/$id'
+      fullPath: '/portal/hoa-submittals/$id'
+      preLoaderRoute: typeof PortalHoaSubmittalsIdRouteImport
+      parentRoute: typeof PortalRoute
+    }
+    '/portal/hoa-submittals/new': {
+      id: '/portal/hoa-submittals/new'
+      path: '/hoa-submittals/new'
+      fullPath: '/portal/hoa-submittals/new'
+      preLoaderRoute: typeof PortalHoaSubmittalsNewRouteImport
+      parentRoute: typeof PortalRoute
+    }
+    '/portal/permits/': {
+      id: '/portal/permits/'
+      path: '/'
+      fullPath: '/portal/permits/'
+      preLoaderRoute: typeof PortalPermitsIndexRouteImport
+      parentRoute: typeof PortalPermitsRoute
+    }
+    '/portal/permits/$id': {
+      id: '/portal/permits/$id'
+      path: '/$id'
+      fullPath: '/portal/permits/$id'
+      preLoaderRoute: typeof PortalPermitsIdRouteImport
+      parentRoute: typeof PortalPermitsRoute
+    }
+    '/portal/permits/new': {
+      id: '/portal/permits/new'
+      path: '/new'
+      fullPath: '/portal/permits/new'
+      preLoaderRoute: typeof PortalPermitsNewRouteImport
+      parentRoute: typeof PortalPermitsRoute
+    }
+    '/portal/projects/$id': {
+      id: '/portal/projects/$id'
+      path: '/$id'
+      fullPath: '/portal/projects/$id'
+      preLoaderRoute: typeof PortalProjectsIdRouteImport
+      parentRoute: typeof PortalProjectsRoute
+    }
+    '/portal/subcontractors/': {
+      id: '/portal/subcontractors/'
+      path: '/subcontractors'
+      fullPath: '/portal/subcontractors/'
+      preLoaderRoute: typeof PortalSubcontractorsIndexRouteImport
+      parentRoute: typeof PortalRoute
+    }
+    '/portal/subcontractors/new': {
+      id: '/portal/subcontractors/new'
+      path: '/subcontractors/new'
+      fullPath: '/portal/subcontractors/new'
+      preLoaderRoute: typeof PortalSubcontractorsNewRouteImport
+      parentRoute: typeof PortalRoute
+    }
+    '/portal/submissions/': {
+      id: '/portal/submissions/'
+      path: '/'
+      fullPath: '/portal/submissions/'
+      preLoaderRoute: typeof PortalSubmissionsIndexRouteImport
+      parentRoute: typeof PortalSubmissionsRoute
+    }
+    '/portal/submissions/$id': {
+      id: '/portal/submissions/$id'
+      path: '/$id'
+      fullPath: '/portal/submissions/$id'
+      preLoaderRoute: typeof PortalSubmissionsIdRouteImport
+      parentRoute: typeof PortalSubmissionsRoute
+    }
+    '/api/public/email-outbox/process': {
+      id: '/api/public/email-outbox/process'
+      path: '/api/public/email-outbox/process'
+      fullPath: '/api/public/email-outbox/process'
+      preLoaderRoute: typeof ApiPublicEmailOutboxProcessRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/public/hubspot/deal-webhook': {
@@ -1934,12 +1920,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicHubspotDealWebhookRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/public/email-outbox/process': {
-      id: '/api/public/email-outbox/process'
-      path: '/api/public/email-outbox/process'
-      fullPath: '/api/public/email-outbox/process'
-      preLoaderRoute: typeof ApiPublicEmailOutboxProcessRouteImport
+    '/api/public/payments/webhook': {
+      id: '/api/public/payments/webhook'
+      path: '/api/public/payments/webhook'
+      fullPath: '/api/public/payments/webhook'
+      preLoaderRoute: typeof ApiPublicPaymentsWebhookRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/portal/hoa-submittals/templates/new': {
+      id: '/portal/hoa-submittals/templates/new'
+      path: '/hoa-submittals/templates/new'
+      fullPath: '/portal/hoa-submittals/templates/new'
+      preLoaderRoute: typeof PortalHoaSubmittalsTemplatesNewRouteImport
+      parentRoute: typeof PortalRoute
+    }
+    '/portal/permits/$id/bundle': {
+      id: '/portal/permits/$id/bundle'
+      path: '/bundle'
+      fullPath: '/portal/permits/$id/bundle'
+      preLoaderRoute: typeof PortalPermitsIdBundleRouteImport
+      parentRoute: typeof PortalPermitsIdRoute
     }
   }
 }
