@@ -39,6 +39,15 @@ async function requireSignedInTeamSession() {
   if (error || !data.session) {
     throw new Error("Please sign in again with a team account before saving subcontractors.");
   }
+  return data.session;
+}
+
+async function currentTenantId(userId: string): Promise<string | null> {
+  const { data } = await (supabase.from("tenant_members" as any) as any)
+    .select("tenant_id")
+    .eq("user_id", userId)
+    .maybeSingle();
+  return (data?.tenant_id as string) ?? null;
 }
 
 export async function listSubs(): Promise<SubRow[]> {
@@ -54,11 +63,16 @@ export async function getSub(id: string): Promise<SubRow | null> {
 }
 
 export async function createSub(row: SubInsert): Promise<SubRow> {
-  await requireSignedInTeamSession();
-  const { data, error } = await T().insert(row).select("*").single();
+  const session = await requireSignedInTeamSession();
+  const userId = session.user.id;
+  const tenantId = await currentTenantId(userId);
+  const payload: Record<string, unknown> = { ...row, created_by: userId };
+  if (tenantId && !(row as any).tenant_id) payload.tenant_id = tenantId;
+  const { data, error } = await T().insert(payload).select("*").single();
   if (error) throw error;
   return data as SubRow;
 }
+
 
 export async function updateSubApi(id: string, patch: Partial<SubInsert>): Promise<SubRow> {
   await requireSignedInTeamSession();
