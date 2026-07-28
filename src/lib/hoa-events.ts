@@ -39,9 +39,16 @@ export async function logHoaEvent(input: {
   details?: Record<string, unknown>;
 }): Promise<void> {
   try {
+    // Events must be tenant-scoped (RLS rejects null-tenant rows), so fall
+    // back to the caller's current tenant when none was supplied.
+    let tenantId = input.tenantId;
+    if (!tenantId) {
+      const { data } = await supabase.rpc("current_tenant_id" as any);
+      tenantId = (data as string | null) ?? null;
+    }
     await T().insert({
       submittal_id: input.submittalId,
-      tenant_id: input.tenantId,
+      tenant_id: tenantId,
       actor_id: input.actorId,
       actor_label: input.actorLabel ?? null,
       kind: input.kind,

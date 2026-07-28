@@ -158,11 +158,13 @@ export const submitSubIntakeFn = createServerFn({ method: "POST" })
 
 async function triggerComplianceScans(subId: string, patch: Record<string, unknown>) {
   // Fire-and-forget; errors are logged into the row via each scan handler
-  const { scanCoiFn, scanW9Fn, verifyLicenseFn } = await import("./compliance.functions");
+  // Called only after the intake token has been validated, so the scan core is
+  // invoked directly (the exported server fns require an authenticated caller).
+  const { runScanCoi, runScanW9, runVerifyLicense } = await import("./compliance-core.server");
   const tasks: Promise<unknown>[] = [];
-  if (patch.coi_file_path) tasks.push(scanCoiFn({ data: { subId } }).catch(() => null));
-  if (patch.w9_file_path) tasks.push(scanW9Fn({ data: { subId } }).catch(() => null));
-  if (patch.license_number) tasks.push(verifyLicenseFn({ data: { subId } }).catch(() => null));
+  if (patch.coi_file_path) tasks.push(runScanCoi({ subId }).catch(() => null));
+  if (patch.w9_file_path) tasks.push(runScanW9({ subId }).catch(() => null));
+  if (patch.license_number) tasks.push(runVerifyLicense({ subId }).catch(() => null));
   await Promise.allSettled(tasks);
 }
 
