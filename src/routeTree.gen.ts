@@ -98,7 +98,6 @@ import { Route as PortalBlogNewRouteImport } from './routes/portal.blog.new'
 import { Route as PortalBlogIdRouteImport } from './routes/portal.blog.$id'
 import { Route as ApiPublicVictoriaScanRouteImport } from './routes/api/public/victoria-scan'
 import { Route as ApiPublicSubIntakeUploadRouteImport } from './routes/api/public/sub-intake-upload'
-import { Route as ApiPublicSeedTeamRouteImport } from './routes/api/public/seed-team'
 import { Route as ApiPublicHoaReplyRouteImport } from './routes/api/public/hoa-reply'
 import { Route as ApiPublicAccessRequestRouteImport } from './routes/api/public/access-request'
 import { Route as AdminBlogNewRouteImport } from './routes/admin.blog.new'
@@ -561,11 +560,6 @@ const ApiPublicSubIntakeUploadRoute =
     path: '/api/public/sub-intake-upload',
     getParentRoute: () => rootRouteImport,
   } as any)
-const ApiPublicSeedTeamRoute = ApiPublicSeedTeamRouteImport.update({
-  id: '/api/public/seed-team',
-  path: '/api/public/seed-team',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ApiPublicHoaReplyRoute = ApiPublicHoaReplyRouteImport.update({
   id: '/api/public/hoa-reply',
   path: '/api/public/hoa-reply',
@@ -692,7 +686,6 @@ export interface FileRoutesByFullPath {
   '/admin/blog/new': typeof AdminBlogNewRoute
   '/api/public/access-request': typeof ApiPublicAccessRequestRoute
   '/api/public/hoa-reply': typeof ApiPublicHoaReplyRoute
-  '/api/public/seed-team': typeof ApiPublicSeedTeamRoute
   '/api/public/sub-intake-upload': typeof ApiPublicSubIntakeUploadRoute
   '/api/public/victoria-scan': typeof ApiPublicVictoriaScanRoute
   '/portal/blog/$id': typeof PortalBlogIdRoute
@@ -789,7 +782,6 @@ export interface FileRoutesByTo {
   '/admin/blog/new': typeof AdminBlogNewRoute
   '/api/public/access-request': typeof ApiPublicAccessRequestRoute
   '/api/public/hoa-reply': typeof ApiPublicHoaReplyRoute
-  '/api/public/seed-team': typeof ApiPublicSeedTeamRoute
   '/api/public/sub-intake-upload': typeof ApiPublicSubIntakeUploadRoute
   '/api/public/victoria-scan': typeof ApiPublicVictoriaScanRoute
   '/portal/blog/$id': typeof PortalBlogIdRoute
@@ -891,7 +883,6 @@ export interface FileRoutesById {
   '/admin/blog/new': typeof AdminBlogNewRoute
   '/api/public/access-request': typeof ApiPublicAccessRequestRoute
   '/api/public/hoa-reply': typeof ApiPublicHoaReplyRoute
-  '/api/public/seed-team': typeof ApiPublicSeedTeamRoute
   '/api/public/sub-intake-upload': typeof ApiPublicSubIntakeUploadRoute
   '/api/public/victoria-scan': typeof ApiPublicVictoriaScanRoute
   '/portal/blog/$id': typeof PortalBlogIdRoute
@@ -994,7 +985,6 @@ export interface FileRouteTypes {
     | '/admin/blog/new'
     | '/api/public/access-request'
     | '/api/public/hoa-reply'
-    | '/api/public/seed-team'
     | '/api/public/sub-intake-upload'
     | '/api/public/victoria-scan'
     | '/portal/blog/$id'
@@ -1091,7 +1081,6 @@ export interface FileRouteTypes {
     | '/admin/blog/new'
     | '/api/public/access-request'
     | '/api/public/hoa-reply'
-    | '/api/public/seed-team'
     | '/api/public/sub-intake-upload'
     | '/api/public/victoria-scan'
     | '/portal/blog/$id'
@@ -1192,7 +1181,6 @@ export interface FileRouteTypes {
     | '/admin/blog/new'
     | '/api/public/access-request'
     | '/api/public/hoa-reply'
-    | '/api/public/seed-team'
     | '/api/public/sub-intake-upload'
     | '/api/public/victoria-scan'
     | '/portal/blog/$id'
@@ -1258,7 +1246,6 @@ export interface RootRouteChildren {
   VersusIndexRoute: typeof VersusIndexRoute
   ApiPublicAccessRequestRoute: typeof ApiPublicAccessRequestRoute
   ApiPublicHoaReplyRoute: typeof ApiPublicHoaReplyRoute
-  ApiPublicSeedTeamRoute: typeof ApiPublicSeedTeamRoute
   ApiPublicSubIntakeUploadRoute: typeof ApiPublicSubIntakeUploadRoute
   ApiPublicVictoriaScanRoute: typeof ApiPublicVictoriaScanRoute
   ApiPublicEmailOutboxProcessRoute: typeof ApiPublicEmailOutboxProcessRoute
@@ -1891,13 +1878,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicSubIntakeUploadRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/public/seed-team': {
-      id: '/api/public/seed-team'
-      path: '/api/public/seed-team'
-      fullPath: '/api/public/seed-team'
-      preLoaderRoute: typeof ApiPublicSeedTeamRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/api/public/hoa-reply': {
       id: '/api/public/hoa-reply'
       path: '/api/public/hoa-reply'
@@ -2223,7 +2203,6 @@ const rootRouteChildren: RootRouteChildren = {
   VersusIndexRoute: VersusIndexRoute,
   ApiPublicAccessRequestRoute: ApiPublicAccessRequestRoute,
   ApiPublicHoaReplyRoute: ApiPublicHoaReplyRoute,
-  ApiPublicSeedTeamRoute: ApiPublicSeedTeamRoute,
   ApiPublicSubIntakeUploadRoute: ApiPublicSubIntakeUploadRoute,
   ApiPublicVictoriaScanRoute: ApiPublicVictoriaScanRoute,
   ApiPublicEmailOutboxProcessRoute: ApiPublicEmailOutboxProcessRoute,
@@ -2233,13 +2212,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

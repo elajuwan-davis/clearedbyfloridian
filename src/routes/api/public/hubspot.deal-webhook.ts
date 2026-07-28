@@ -35,9 +35,10 @@ type IncomingDeal = {
 function verifySignature(rawBody: string, signature: string | null): boolean {
   const secret = process.env.HUBSPOT_WEBHOOK_SECRET;
   if (!secret) {
-    // Signing not configured yet — allow in scaffold mode. Log for Eman.
-    console.warn("[hubspot-webhook] HUBSPOT_WEBHOOK_SECRET not set — skipping signature check");
-    return true;
+    // Fail closed: without a configured signing secret this endpoint would
+    // let anyone insert permit rows. Never allow unsigned requests.
+    console.error("[hubspot-webhook] HUBSPOT_WEBHOOK_SECRET not set — rejecting request");
+    return false;
   }
   if (!signature) return false;
   const expected = createHmac("sha256", secret).update(rawBody).digest("hex");
