@@ -39,6 +39,7 @@ import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as VersusIndexRouteImport } from './routes/versus.index'
 import { Route as PortalIndexRouteImport } from './routes/portal.index'
+import { Route as FormsIndexRouteImport } from './routes/forms.index'
 import { Route as BlogIndexRouteImport } from './routes/blog.index'
 import { Route as VersusSlugRouteImport } from './routes/versus.$slug'
 import { Route as SubPortalTokenRouteImport } from './routes/sub-portal.$token'
@@ -257,6 +258,11 @@ const PortalIndexRoute = PortalIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => PortalRoute,
+} as any)
+const FormsIndexRoute = FormsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => FormsRoute,
 } as any)
 const BlogIndexRoute = BlogIndexRouteImport.update({
   id: '/blog/',
@@ -679,6 +685,7 @@ export interface FileRoutesByFullPath {
   '/sub-portal/$token': typeof SubPortalTokenRoute
   '/versus/$slug': typeof VersusSlugRoute
   '/blog/': typeof BlogIndexRoute
+  '/forms/': typeof FormsIndexRoute
   '/portal/': typeof PortalIndexRoute
   '/versus/': typeof VersusIndexRoute
   '/admin/blog/$id': typeof AdminBlogIdRoute
@@ -719,7 +726,6 @@ export interface FileRoutesByTo {
   '/contact': typeof ContactRoute
   '/dashboard': typeof DashboardRoute
   '/fee-calculator': typeof FeeCalculatorRoute
-  '/forms': typeof FormsRouteWithChildren
   '/gc-portal': typeof GcPortalRoute
   '/insurance': typeof InsuranceRoute
   '/invoices': typeof InvoicesRoute
@@ -776,6 +782,7 @@ export interface FileRoutesByTo {
   '/sub-portal/$token': typeof SubPortalTokenRoute
   '/versus/$slug': typeof VersusSlugRoute
   '/blog': typeof BlogIndexRoute
+  '/forms': typeof FormsIndexRoute
   '/portal': typeof PortalIndexRoute
   '/versus': typeof VersusIndexRoute
   '/admin/blog/$id': typeof AdminBlogIdRoute
@@ -877,6 +884,7 @@ export interface FileRoutesById {
   '/sub-portal/$token': typeof SubPortalTokenRoute
   '/versus/$slug': typeof VersusSlugRoute
   '/blog/': typeof BlogIndexRoute
+  '/forms/': typeof FormsIndexRoute
   '/portal/': typeof PortalIndexRoute
   '/versus/': typeof VersusIndexRoute
   '/admin/blog/$id': typeof AdminBlogIdRoute
@@ -979,6 +987,7 @@ export interface FileRouteTypes {
     | '/sub-portal/$token'
     | '/versus/$slug'
     | '/blog/'
+    | '/forms/'
     | '/portal/'
     | '/versus/'
     | '/admin/blog/$id'
@@ -1019,7 +1028,6 @@ export interface FileRouteTypes {
     | '/contact'
     | '/dashboard'
     | '/fee-calculator'
-    | '/forms'
     | '/gc-portal'
     | '/insurance'
     | '/invoices'
@@ -1076,6 +1084,7 @@ export interface FileRouteTypes {
     | '/sub-portal/$token'
     | '/versus/$slug'
     | '/blog'
+    | '/forms'
     | '/portal'
     | '/versus'
     | '/admin/blog/$id'
@@ -1176,6 +1185,7 @@ export interface FileRouteTypes {
     | '/sub-portal/$token'
     | '/versus/$slug'
     | '/blog/'
+    | '/forms/'
     | '/portal/'
     | '/versus/'
     | '/admin/blog/$id'
@@ -1467,6 +1477,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/portal/'
       preLoaderRoute: typeof PortalIndexRouteImport
       parentRoute: typeof PortalRoute
+    }
+    '/forms/': {
+      id: '/forms/'
+      path: '/'
+      fullPath: '/forms/'
+      preLoaderRoute: typeof FormsIndexRouteImport
+      parentRoute: typeof FormsRoute
     }
     '/blog/': {
       id: '/blog/'
@@ -1997,6 +2014,7 @@ interface FormsRouteChildren {
   FormsPermitIntakeRoute: typeof FormsPermitIntakeRoute
   FormsSubcontractorIntakeRoute: typeof FormsSubcontractorIntakeRoute
   FormsSubcontractorsRoute: typeof FormsSubcontractorsRoute
+  FormsIndexRoute: typeof FormsIndexRoute
 }
 
 const FormsRouteChildren: FormsRouteChildren = {
@@ -2004,6 +2022,7 @@ const FormsRouteChildren: FormsRouteChildren = {
   FormsPermitIntakeRoute: FormsPermitIntakeRoute,
   FormsSubcontractorIntakeRoute: FormsSubcontractorIntakeRoute,
   FormsSubcontractorsRoute: FormsSubcontractorsRoute,
+  FormsIndexRoute: FormsIndexRoute,
 }
 
 const FormsRouteWithChildren = FormsRoute._addFileChildren(FormsRouteChildren)
@@ -2214,13 +2233,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
