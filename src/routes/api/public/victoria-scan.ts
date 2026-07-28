@@ -6,8 +6,7 @@
 //      is not yet filed)
 //   4. Upcoming inspection (24h before inspection scheduled_at)
 //
-// Security: apikey header must match SUPABASE_PUBLISHABLE_KEY, matching the
-// pattern used by other /api/public/* cron endpoints.
+// Security: x-cron-secret header must match the server-only CRON_SECRET.
 import { createFileRoute } from "@tanstack/react-router";
 
 function unauthorized() { return new Response("Unauthorized", { status: 401 }); }
@@ -35,11 +34,12 @@ export const Route = createFileRoute("/api/public/victoria-scan")({
   server: {
     handlers: {
       POST: async ({ request }) => {
-        const publishable = process.env.SUPABASE_PUBLISHABLE_KEY;
-        const url = process.env.SUPABASE_URL;
-        if (!publishable || !url) return new Response("Missing env", { status: 500 });
-        const apikey = request.headers.get("apikey");
-        if (apikey !== publishable) return unauthorized();
+        // Private cron secret (never shipped to the client) gates this worker.
+        const cronSecret = process.env.CRON_SECRET;
+        const provided = request.headers.get("x-cron-secret");
+        if (!cronSecret || !provided || provided.length !== cronSecret.length || provided !== cronSecret) {
+          return unauthorized();
+        }
 
         const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 

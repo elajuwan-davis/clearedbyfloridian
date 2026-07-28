@@ -4,7 +4,7 @@
 // exponential backoff on failure. Uses the Supabase service role because
 // email_outbox is tenant-scoped and this route runs unauthenticated.
 //
-// Security: apikey header must match SUPABASE_PUBLISHABLE_KEY (public
+// Security: x-cron-secret header must match the private CRON_SECRET (server-only
 // project key). The route only touches the internal outbox table and does
 // not return PII beyond message IDs and error strings.
 import { createFileRoute } from "@tanstack/react-router";
@@ -88,9 +88,12 @@ export const Route = createFileRoute("/api/public/email-outbox/process")({
   server: {
     handlers: {
       POST: async ({ request }) => {
-        const publishable = process.env.SUPABASE_PUBLISHABLE_KEY;
-        const apiKeyHeader = request.headers.get("apikey");
-        if (!publishable || apiKeyHeader !== publishable) return unauthorized();
+        // Private cron secret (never shipped to the client) gates this worker.
+        const cronSecret = process.env.CRON_SECRET;
+        const provided = request.headers.get("x-cron-secret");
+        if (!cronSecret || !provided || provided.length !== cronSecret.length || provided !== cronSecret) {
+          return unauthorized();
+        }
 
         const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
