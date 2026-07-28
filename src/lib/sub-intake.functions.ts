@@ -138,29 +138,16 @@ export const submitSubIntakeFn = createServerFn({ method: "POST" })
     }
 
     const { data: inviteRow, error: lookupErr } = await table
-      .select("id, company_name")
+      .select("id")
       .eq("completion_token", data.token)
       .maybeSingle();
     if (lookupErr) throw new Error(lookupErr.message);
     if (!inviteRow) throw new Error("Invalid or expired intake link");
 
-    const isReusableInvite = /^Pending Invite/i.test(inviteRow.company_name ?? "");
-
-    if (isReusableInvite) {
-      const insertPayload: Record<string, unknown> = { ...data.patch, status: "complete" };
-      const { data: newRow, error: insertErr } = await table
-        .insert(insertPayload)
-        .select("id")
-        .single();
-      if (insertErr) throw new Error(insertErr.message);
-      await triggerComplianceScans(newRow.id, data.patch);
-      return { ok: true, id: newRow.id };
-    }
-
     const patch: Record<string, unknown> = { ...data.patch, status: "complete" };
     const { data: row, error } = await table
       .update(patch)
-      .eq("completion_token", data.token)
+      .eq("id", inviteRow.id)
       .select("id")
       .maybeSingle();
     if (error) throw new Error(error.message);
