@@ -96,7 +96,7 @@ const settingsGroup: NavGroup = {
   items: [
     { to: "/profile", label: "Profile" },
     { to: "/profile", label: "Notifications" },
-    { to: "/portal/subcontractors", label: "Team" },
+    { to: "/forms/subcontractors", label: "Team" },
   ],
 };
 

@@ -65,6 +65,7 @@ import { Route as PortalAlertsRouteImport } from './routes/portal.alerts'
 import { Route as PermitCardIdRouteImport } from './routes/permit-card.$id'
 import { Route as JoinTokenRouteImport } from './routes/join.$token'
 import { Route as HomeownerTokenRouteImport } from './routes/homeowner.$token'
+import { Route as FormsSubcontractorsRouteImport } from './routes/forms.subcontractors'
 import { Route as FormsSubcontractorIntakeRouteImport } from './routes/forms.subcontractor-intake'
 import { Route as FormsPermitIntakeRouteImport } from './routes/forms.permit-intake'
 import { Route as FormsPaymentAuthorizationRouteImport } from './routes/forms.payment-authorization'
@@ -388,6 +389,11 @@ const HomeownerTokenRoute = HomeownerTokenRouteImport.update({
   path: '/homeowner/$token',
   getParentRoute: () => rootRouteImport,
 } as any)
+const FormsSubcontractorsRoute = FormsSubcontractorsRouteImport.update({
+  id: '/subcontractors',
+  path: '/subcontractors',
+  getParentRoute: () => FormsRoute,
+} as any)
 const FormsSubcontractorIntakeRoute =
   FormsSubcontractorIntakeRouteImport.update({
     id: '/subcontractor-intake',
@@ -646,6 +652,7 @@ export interface FileRoutesByFullPath {
   '/forms/payment-authorization': typeof FormsPaymentAuthorizationRoute
   '/forms/permit-intake': typeof FormsPermitIntakeRoute
   '/forms/subcontractor-intake': typeof FormsSubcontractorIntakeRoute
+  '/forms/subcontractors': typeof FormsSubcontractorsRoute
   '/homeowner/$token': typeof HomeownerTokenRoute
   '/join/$token': typeof JoinTokenRoute
   '/permit-card/$id': typeof PermitCardIdRoute
@@ -744,6 +751,7 @@ export interface FileRoutesByTo {
   '/forms/payment-authorization': typeof FormsPaymentAuthorizationRoute
   '/forms/permit-intake': typeof FormsPermitIntakeRoute
   '/forms/subcontractor-intake': typeof FormsSubcontractorIntakeRoute
+  '/forms/subcontractors': typeof FormsSubcontractorsRoute
   '/homeowner/$token': typeof HomeownerTokenRoute
   '/join/$token': typeof JoinTokenRoute
   '/permit-card/$id': typeof PermitCardIdRoute
@@ -842,6 +850,7 @@ export interface FileRoutesById {
   '/forms/payment-authorization': typeof FormsPaymentAuthorizationRoute
   '/forms/permit-intake': typeof FormsPermitIntakeRoute
   '/forms/subcontractor-intake': typeof FormsSubcontractorIntakeRoute
+  '/forms/subcontractors': typeof FormsSubcontractorsRoute
   '/homeowner/$token': typeof HomeownerTokenRoute
   '/join/$token': typeof JoinTokenRoute
   '/permit-card/$id': typeof PermitCardIdRoute
@@ -943,6 +952,7 @@ export interface FileRouteTypes {
     | '/forms/payment-authorization'
     | '/forms/permit-intake'
     | '/forms/subcontractor-intake'
+    | '/forms/subcontractors'
     | '/homeowner/$token'
     | '/join/$token'
     | '/permit-card/$id'
@@ -1041,6 +1051,7 @@ export interface FileRouteTypes {
     | '/forms/payment-authorization'
     | '/forms/permit-intake'
     | '/forms/subcontractor-intake'
+    | '/forms/subcontractors'
     | '/homeowner/$token'
     | '/join/$token'
     | '/permit-card/$id'
@@ -1138,6 +1149,7 @@ export interface FileRouteTypes {
     | '/forms/payment-authorization'
     | '/forms/permit-intake'
     | '/forms/subcontractor-intake'
+    | '/forms/subcontractors'
     | '/homeowner/$token'
     | '/join/$token'
     | '/permit-card/$id'
@@ -1638,6 +1650,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof HomeownerTokenRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/forms/subcontractors': {
+      id: '/forms/subcontractors'
+      path: '/subcontractors'
+      fullPath: '/forms/subcontractors'
+      preLoaderRoute: typeof FormsSubcontractorsRouteImport
+      parentRoute: typeof FormsRoute
+    }
     '/forms/subcontractor-intake': {
       id: '/forms/subcontractor-intake'
       path: '/subcontractor-intake'
@@ -1977,12 +1996,14 @@ interface FormsRouteChildren {
   FormsPaymentAuthorizationRoute: typeof FormsPaymentAuthorizationRoute
   FormsPermitIntakeRoute: typeof FormsPermitIntakeRoute
   FormsSubcontractorIntakeRoute: typeof FormsSubcontractorIntakeRoute
+  FormsSubcontractorsRoute: typeof FormsSubcontractorsRoute
 }
 
 const FormsRouteChildren: FormsRouteChildren = {
   FormsPaymentAuthorizationRoute: FormsPaymentAuthorizationRoute,
   FormsPermitIntakeRoute: FormsPermitIntakeRoute,
   FormsSubcontractorIntakeRoute: FormsSubcontractorIntakeRoute,
+  FormsSubcontractorsRoute: FormsSubcontractorsRoute,
 }
 
 const FormsRouteWithChildren = FormsRoute._addFileChildren(FormsRouteChildren)
@@ -2193,13 +2214,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
