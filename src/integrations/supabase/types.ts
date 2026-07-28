@@ -2123,6 +2123,21 @@ export type Database = {
       consume_invite_token: { Args: { _token: string }; Returns: string }
       current_tenant_id: { Args: never; Returns: string }
       current_user_email: { Args: never; Returns: string }
+      get_homeowner_permit: {
+        Args: { _token: string }
+        Returns: {
+          city: string
+          expiration_date: string
+          id: string
+          issued_date: string
+          job_address: string
+          municipality: string
+          permit_type: string
+          project_name: string
+          status: string
+          submitted_date: string
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
