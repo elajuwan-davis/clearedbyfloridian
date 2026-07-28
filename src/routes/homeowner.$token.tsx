@@ -48,13 +48,12 @@ function HomeownerStatusPage() {
 
   useEffect(() => {
     (async () => {
-      const { data, error } = await supabase
-        .from("permits")
-        .select("id, project_name, job_address, city, permit_type, status, submitted_date, issued_date, expiration_date, municipality")
-        .eq("homeowner_share_token", token)
-        .maybeSingle();
-      if (error || !data) { setLoading(false); return; }
-      setPermit(data as PublicPermit);
+      // Token-scoped accessor: returns only safe columns, and only for an
+      // exact share-token match. Direct table reads are closed to anon.
+      const { data, error } = await (supabase as any).rpc("get_homeowner_permit", { _token: token });
+      const row = Array.isArray(data) ? data[0] : data;
+      if (error || !row) { setLoading(false); return; }
+      setPermit(row as PublicPermit);
       setLoading(false);
     })();
   }, [token]);
