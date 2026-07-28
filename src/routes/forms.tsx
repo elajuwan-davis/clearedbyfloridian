@@ -16,10 +16,10 @@ const forms = [
     icon: FileText,
   },
   {
-    to: "/forms/subcontractor-intake",
+    to: "/forms/subcontractors",
     code: "02",
-    title: "Subcontractor Intake",
-    body: "Add a subcontractor to an active project. Trade, license, contact, and trade valuation.",
+    title: "Subcontractors",
+    body: "Subcontractor library backed by the database. Generate public intake links, track COI, license and W-9 status.",
     icon: Users,
   },
   {
