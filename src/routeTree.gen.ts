@@ -480,14 +480,14 @@ const AdminBlogIndexRoute = AdminBlogIndexRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminBlogIdRoute = AdminBlogIdRouteImport.update({
-  id: '/$id',
-  path: '/$id',
-  getParentRoute: () => AdminBlogRoute,
+  id: '/admin/blog/$id',
+  path: '/admin/blog/$id',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AdminBlogNewRoute = AdminBlogNewRouteImport.update({
-  id: '/new',
-  path: '/new',
-  getParentRoute: () => AdminBlogRoute,
+  id: '/admin/blog/new',
+  path: '/admin/blog/new',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const ApiPublicAccessRequestRoute = ApiPublicAccessRequestRouteImport.update({
   id: '/api/public/access-request',
@@ -1275,6 +1275,8 @@ export interface RootRouteChildren {
   AdminIndexRoute: typeof AdminIndexRoute
   BlogIndexRoute: typeof BlogIndexRoute
   VersusIndexRoute: typeof VersusIndexRoute
+  AdminBlogIdRoute: typeof AdminBlogIdRoute
+  AdminBlogNewRoute: typeof AdminBlogNewRoute
   ApiPublicAccessRequestRoute: typeof ApiPublicAccessRequestRoute
   ApiPublicHoaReplyRoute: typeof ApiPublicHoaReplyRoute
   ApiPublicSubIntakeUploadRoute: typeof ApiPublicSubIntakeUploadRoute
@@ -1800,17 +1802,17 @@ declare module '@tanstack/react-router' {
     }
     '/admin/blog/$id': {
       id: '/admin/blog/$id'
-      path: '/$id'
+      path: '/admin/blog/$id'
       fullPath: '/admin/blog/$id'
       preLoaderRoute: typeof AdminBlogIdRouteImport
-      parentRoute: typeof AdminBlogRoute
+      parentRoute: typeof rootRouteImport
     }
     '/admin/blog/new': {
       id: '/admin/blog/new'
-      path: '/new'
+      path: '/admin/blog/new'
       fullPath: '/admin/blog/new'
       preLoaderRoute: typeof AdminBlogNewRouteImport
-      parentRoute: typeof AdminBlogRoute
+      parentRoute: typeof rootRouteImport
     }
     '/api/public/access-request': {
       id: '/api/public/access-request'
@@ -2220,6 +2222,8 @@ const rootRouteChildren: RootRouteChildren = {
   AdminIndexRoute: AdminIndexRoute,
   BlogIndexRoute: BlogIndexRoute,
   VersusIndexRoute: VersusIndexRoute,
+  AdminBlogIdRoute: AdminBlogIdRoute,
+  AdminBlogNewRoute: AdminBlogNewRoute,
   ApiPublicAccessRequestRoute: ApiPublicAccessRequestRoute,
   ApiPublicHoaReplyRoute: ApiPublicHoaReplyRoute,
   ApiPublicSubIntakeUploadRoute: ApiPublicSubIntakeUploadRoute,
@@ -2232,13 +2236,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
