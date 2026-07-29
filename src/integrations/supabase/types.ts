@@ -1255,6 +1255,7 @@ export type Database = {
       }
       permit_updates: {
         Row: {
+          acknowledged_at: string | null
           created_at: string
           created_by: string | null
           created_by_label: string | null
@@ -1265,6 +1266,7 @@ export type Database = {
           visible_to_client: boolean
         }
         Insert: {
+          acknowledged_at?: string | null
           created_at?: string
           created_by?: string | null
           created_by_label?: string | null
@@ -1275,6 +1277,7 @@ export type Database = {
           visible_to_client?: boolean
         }
         Update: {
+          acknowledged_at?: string | null
           created_at?: string
           created_by?: string | null
           created_by_label?: string | null
