@@ -1250,6 +1250,7 @@ export type Database = {
           signer_email: string | null
           signer_phone: string | null
           status: string
+          submission_source: string | null
           submitted_date: string | null
           subs: Json
           tenant_id: string | null
@@ -1296,6 +1297,7 @@ export type Database = {
           signer_email?: string | null
           signer_phone?: string | null
           status?: string
+          submission_source?: string | null
           submitted_date?: string | null
           subs?: Json
           tenant_id?: string | null
@@ -1342,6 +1344,7 @@ export type Database = {
           signer_email?: string | null
           signer_phone?: string | null
           status?: string
+          submission_source?: string | null
           submitted_date?: string | null
           subs?: Json
           tenant_id?: string | null

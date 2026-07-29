@@ -1,0 +1,1 @@
+ALTER TABLE public.permits ADD COLUMN IF NOT EXISTS submission_source text DEFAULT 'self_service';
