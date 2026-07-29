@@ -58,15 +58,17 @@ function GCClientsAdmin() {
   }
 
   return (
-    <div className="max-w-5xl mx-auto p-8 space-y-10">
+    <PortalShell>
+    <div className="mx-auto w-full max-w-5xl px-4 py-8 space-y-10">
       <header>
-        <div className="label-eyebrow">Admin</div>
-        <h1 className="display-serif text-4xl">GC Clients</h1>
+        <div className="label-eyebrow text-obsidian/50">Admin</div>
+        <h1 className="display-serif mt-2 text-4xl leading-tight text-obsidian">GC Clients</h1>
         <p className="text-sm text-muted-foreground mt-2">
           External general contractor accounts. GC clients see only their assigned projects — never internal notes,
           costs, or other clients' work.
         </p>
       </header>
+
 
       <section className="border hairline p-6 rounded-[3px]">
         <div className="flex items-center gap-2 mb-4">
