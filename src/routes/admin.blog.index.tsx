@@ -13,7 +13,7 @@ import {
   type BlogPost,
 } from "@/lib/blog-api";
 
-export const Route = createFileRoute("/admin/blog")({
+export const Route = createFileRoute("/admin/blog/")({
   head: () => ({
     meta: [
       { title: "Blog — Admin" },
