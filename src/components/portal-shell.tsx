@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
-import { ChevronDown, LogOut, Menu, X, Building2, Check } from "lucide-react";
+import { ChevronDown, LogOut, Menu, X, Building2, Check, ShieldCheck } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
 
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
