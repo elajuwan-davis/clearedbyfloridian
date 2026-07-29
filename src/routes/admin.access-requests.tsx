@@ -83,7 +83,7 @@ function AccessRequestsPage() {
     try {
       const redirect =
         typeof window !== "undefined" ? `${window.location.origin}/onboarding` : undefined;
-      await approve({
+      const res = (await approve({
         data: {
           access_request_id: approving.id,
           tenant_name: tenantName.trim(),
@@ -91,9 +91,14 @@ function AccessRequestsPage() {
           invite_email: approving.email,
           redirect_to: redirect,
         },
-      });
-      toast.success(`Invited ${approving.email}`);
-      setApproving(null);
+      })) as { invite_token: string; email_sent: boolean; email_error: string | null };
+      const link =
+        typeof window !== "undefined"
+          ? `${window.location.origin}/join/${res.invite_token}`
+          : `/join/${res.invite_token}`;
+      setInviteLink(link);
+      if (res.email_sent) toast.success(`Invited ${approving.email}`);
+      else toast.warning("Tenant created — email invite failed, share the link below instead.");
       refresh();
     } catch (err) {
       toast.error((err as Error).message);
@@ -101,6 +106,18 @@ function AccessRequestsPage() {
       setBusy(false);
     }
   }
+
+  async function copyLink() {
+    if (!inviteLink) return;
+    try {
+      await navigator.clipboard.writeText(inviteLink);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      toast.error("Could not copy — select and copy manually.");
+    }
+  }
+
 
   async function confirmReject(r: AccessRequest) {
     if (!confirm(`Reject request from ${r.email}?`)) return;
