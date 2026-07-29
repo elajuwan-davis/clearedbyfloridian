@@ -11,7 +11,6 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AboutRouteImport } from './routes/about'
-import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AskVictoriaRouteImport } from './routes/ask-victoria'
 import { Route as BuildingDeptLoginsRouteImport } from './routes/building-dept-logins'
 import { Route as ContactRouteImport } from './routes/contact'
@@ -37,6 +36,7 @@ import { Route as ProjectGuidesRouteImport } from './routes/project-guides'
 import { Route as ProjectsRouteImport } from './routes/projects'
 import { Route as ServicesRouteImport } from './routes/services'
 import { Route as SubPortalRouteImport } from './routes/sub-portal'
+import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminAccessRequestsRouteImport } from './routes/admin.access-requests'
 import { Route as AdminBlogRouteImport } from './routes/admin.blog'
 import { Route as AdminBuildersRouteImport } from './routes/admin.builders'
@@ -118,11 +118,6 @@ const IndexRoute = IndexRouteImport.update({
 const AboutRoute = AboutRouteImport.update({
   id: '/about',
   path: '/about',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminRoute = AdminRouteImport.update({
-  id: '/admin',
-  path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AskVictoriaRoute = AskVictoriaRouteImport.update({
@@ -250,45 +245,50 @@ const SubPortalRoute = SubPortalRouteImport.update({
   path: '/sub-portal',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/admin/',
+  path: '/admin/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminAccessRequestsRoute = AdminAccessRequestsRouteImport.update({
-  id: '/access-requests',
-  path: '/access-requests',
-  getParentRoute: () => AdminRoute,
+  id: '/admin/access-requests',
+  path: '/admin/access-requests',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AdminBlogRoute = AdminBlogRouteImport.update({
-  id: '/blog',
-  path: '/blog',
-  getParentRoute: () => AdminRoute,
+  id: '/admin/blog',
+  path: '/admin/blog',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AdminBuildersRoute = AdminBuildersRouteImport.update({
-  id: '/builders',
-  path: '/builders',
-  getParentRoute: () => AdminRoute,
+  id: '/admin/builders',
+  path: '/admin/builders',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AdminFeatureRequestsRoute = AdminFeatureRequestsRouteImport.update({
-  id: '/feature-requests',
-  path: '/feature-requests',
-  getParentRoute: () => AdminRoute,
+  id: '/admin/feature-requests',
+  path: '/admin/feature-requests',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AdminGcClientsRoute = AdminGcClientsRouteImport.update({
-  id: '/gc-clients',
-  path: '/gc-clients',
-  getParentRoute: () => AdminRoute,
+  id: '/admin/gc-clients',
+  path: '/admin/gc-clients',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AdminHubspotSimulateRoute = AdminHubspotSimulateRouteImport.update({
-  id: '/hubspot-simulate',
-  path: '/hubspot-simulate',
-  getParentRoute: () => AdminRoute,
+  id: '/admin/hubspot-simulate',
+  path: '/admin/hubspot-simulate',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AdminInvitesRoute = AdminInvitesRouteImport.update({
-  id: '/invites',
-  path: '/invites',
-  getParentRoute: () => AdminRoute,
+  id: '/admin/invites',
+  path: '/admin/invites',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AdminReviewQueueRoute = AdminReviewQueueRouteImport.update({
-  id: '/review-queue',
-  path: '/review-queue',
-  getParentRoute: () => AdminRoute,
+  id: '/admin/review-queue',
+  path: '/admin/review-queue',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AdminContractorsRoute = AdminContractorsRouteImport.update({
   id: '/admin_/contractors',
@@ -625,7 +625,6 @@ const PortalPermitsIdBundleRoute = PortalPermitsIdBundleRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
-  '/admin': typeof AdminRouteWithChildren
   '/ask-victoria': typeof AskVictoriaRoute
   '/building-dept-logins': typeof BuildingDeptLoginsRouteWithChildren
   '/contact': typeof ContactRoute
@@ -692,6 +691,7 @@ export interface FileRoutesByFullPath {
   '/sub-intake/$token': typeof SubIntakeTokenRoute
   '/sub-portal/$token': typeof SubPortalTokenRoute
   '/versus/$slug': typeof VersusSlugRoute
+  '/admin/': typeof AdminIndexRoute
   '/blog/': typeof BlogIndexRoute
   '/forms/': typeof FormsIndexRoute
   '/portal/': typeof PortalIndexRoute
@@ -727,7 +727,6 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
-  '/admin': typeof AdminRouteWithChildren
   '/ask-victoria': typeof AskVictoriaRoute
   '/building-dept-logins': typeof BuildingDeptLoginsRouteWithChildren
   '/contact': typeof ContactRoute
@@ -790,6 +789,7 @@ export interface FileRoutesByTo {
   '/sub-intake/$token': typeof SubIntakeTokenRoute
   '/sub-portal/$token': typeof SubPortalTokenRoute
   '/versus/$slug': typeof VersusSlugRoute
+  '/admin': typeof AdminIndexRoute
   '/blog': typeof BlogIndexRoute
   '/forms': typeof FormsIndexRoute
   '/portal': typeof PortalIndexRoute
@@ -826,7 +826,6 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
-  '/admin': typeof AdminRouteWithChildren
   '/ask-victoria': typeof AskVictoriaRoute
   '/building-dept-logins': typeof BuildingDeptLoginsRouteWithChildren
   '/contact': typeof ContactRoute
@@ -893,6 +892,7 @@ export interface FileRoutesById {
   '/sub-intake/$token': typeof SubIntakeTokenRoute
   '/sub-portal/$token': typeof SubPortalTokenRoute
   '/versus/$slug': typeof VersusSlugRoute
+  '/admin/': typeof AdminIndexRoute
   '/blog/': typeof BlogIndexRoute
   '/forms/': typeof FormsIndexRoute
   '/portal/': typeof PortalIndexRoute
@@ -930,7 +930,6 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/about'
-    | '/admin'
     | '/ask-victoria'
     | '/building-dept-logins'
     | '/contact'
@@ -997,6 +996,7 @@ export interface FileRouteTypes {
     | '/sub-intake/$token'
     | '/sub-portal/$token'
     | '/versus/$slug'
+    | '/admin/'
     | '/blog/'
     | '/forms/'
     | '/portal/'
@@ -1032,7 +1032,6 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/about'
-    | '/admin'
     | '/ask-victoria'
     | '/building-dept-logins'
     | '/contact'
@@ -1095,6 +1094,7 @@ export interface FileRouteTypes {
     | '/sub-intake/$token'
     | '/sub-portal/$token'
     | '/versus/$slug'
+    | '/admin'
     | '/blog'
     | '/forms'
     | '/portal'
@@ -1130,7 +1130,6 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/about'
-    | '/admin'
     | '/ask-victoria'
     | '/building-dept-logins'
     | '/contact'
@@ -1197,6 +1196,7 @@ export interface FileRouteTypes {
     | '/sub-intake/$token'
     | '/sub-portal/$token'
     | '/versus/$slug'
+    | '/admin/'
     | '/blog/'
     | '/forms/'
     | '/portal/'
@@ -1233,7 +1233,6 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
-  AdminRoute: typeof AdminRouteWithChildren
   AskVictoriaRoute: typeof AskVictoriaRoute
   BuildingDeptLoginsRoute: typeof BuildingDeptLoginsRouteWithChildren
   ContactRoute: typeof ContactRoute
@@ -1259,6 +1258,14 @@ export interface RootRouteChildren {
   ProjectsRoute: typeof ProjectsRouteWithChildren
   ServicesRoute: typeof ServicesRoute
   SubPortalRoute: typeof SubPortalRouteWithChildren
+  AdminAccessRequestsRoute: typeof AdminAccessRequestsRoute
+  AdminBlogRoute: typeof AdminBlogRouteWithChildren
+  AdminBuildersRoute: typeof AdminBuildersRoute
+  AdminFeatureRequestsRoute: typeof AdminFeatureRequestsRoute
+  AdminGcClientsRoute: typeof AdminGcClientsRoute
+  AdminHubspotSimulateRoute: typeof AdminHubspotSimulateRoute
+  AdminInvitesRoute: typeof AdminInvitesRoute
+  AdminReviewQueueRoute: typeof AdminReviewQueueRoute
   AdminContractorsRoute: typeof AdminContractorsRoute
   ApiVerifyLicenseRoute: typeof ApiVerifyLicenseRoute
   BlogSlugRoute: typeof BlogSlugRoute
@@ -1266,6 +1273,7 @@ export interface RootRouteChildren {
   PermitCardIdRoute: typeof PermitCardIdRoute
   SubIntakeTokenRoute: typeof SubIntakeTokenRoute
   VersusSlugRoute: typeof VersusSlugRoute
+  AdminIndexRoute: typeof AdminIndexRoute
   BlogIndexRoute: typeof BlogIndexRoute
   VersusIndexRoute: typeof VersusIndexRoute
   ApiPublicAccessRequestRoute: typeof ApiPublicAccessRequestRoute
@@ -1291,13 +1299,6 @@ declare module '@tanstack/react-router' {
       path: '/about'
       fullPath: '/about'
       preLoaderRoute: typeof AboutRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin': {
-      id: '/admin'
-      path: '/admin'
-      fullPath: '/admin'
-      preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/ask-victoria': {
@@ -1475,61 +1476,68 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SubPortalRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/': {
+      id: '/admin/'
+      path: '/admin'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/access-requests': {
       id: '/admin/access-requests'
-      path: '/access-requests'
+      path: '/admin/access-requests'
       fullPath: '/admin/access-requests'
       preLoaderRoute: typeof AdminAccessRequestsRouteImport
-      parentRoute: typeof AdminRoute
+      parentRoute: typeof rootRouteImport
     }
     '/admin/blog': {
       id: '/admin/blog'
-      path: '/blog'
+      path: '/admin/blog'
       fullPath: '/admin/blog'
       preLoaderRoute: typeof AdminBlogRouteImport
-      parentRoute: typeof AdminRoute
+      parentRoute: typeof rootRouteImport
     }
     '/admin/builders': {
       id: '/admin/builders'
-      path: '/builders'
+      path: '/admin/builders'
       fullPath: '/admin/builders'
       preLoaderRoute: typeof AdminBuildersRouteImport
-      parentRoute: typeof AdminRoute
+      parentRoute: typeof rootRouteImport
     }
     '/admin/feature-requests': {
       id: '/admin/feature-requests'
-      path: '/feature-requests'
+      path: '/admin/feature-requests'
       fullPath: '/admin/feature-requests'
       preLoaderRoute: typeof AdminFeatureRequestsRouteImport
-      parentRoute: typeof AdminRoute
+      parentRoute: typeof rootRouteImport
     }
     '/admin/gc-clients': {
       id: '/admin/gc-clients'
-      path: '/gc-clients'
+      path: '/admin/gc-clients'
       fullPath: '/admin/gc-clients'
       preLoaderRoute: typeof AdminGcClientsRouteImport
-      parentRoute: typeof AdminRoute
+      parentRoute: typeof rootRouteImport
     }
     '/admin/hubspot-simulate': {
       id: '/admin/hubspot-simulate'
-      path: '/hubspot-simulate'
+      path: '/admin/hubspot-simulate'
       fullPath: '/admin/hubspot-simulate'
       preLoaderRoute: typeof AdminHubspotSimulateRouteImport
-      parentRoute: typeof AdminRoute
+      parentRoute: typeof rootRouteImport
     }
     '/admin/invites': {
       id: '/admin/invites'
-      path: '/invites'
+      path: '/admin/invites'
       fullPath: '/admin/invites'
       preLoaderRoute: typeof AdminInvitesRouteImport
-      parentRoute: typeof AdminRoute
+      parentRoute: typeof rootRouteImport
     }
     '/admin/review-queue': {
       id: '/admin/review-queue'
-      path: '/review-queue'
+      path: '/admin/review-queue'
       fullPath: '/admin/review-queue'
       preLoaderRoute: typeof AdminReviewQueueRouteImport
-      parentRoute: typeof AdminRoute
+      parentRoute: typeof rootRouteImport
     }
     '/admin_/contractors': {
       id: '/admin_/contractors'
@@ -1982,44 +1990,6 @@ declare module '@tanstack/react-router' {
   }
 }
 
-interface AdminBlogRouteChildren {
-  AdminBlogIdRoute: typeof AdminBlogIdRoute
-  AdminBlogNewRoute: typeof AdminBlogNewRoute
-}
-
-const AdminBlogRouteChildren: AdminBlogRouteChildren = {
-  AdminBlogIdRoute: AdminBlogIdRoute,
-  AdminBlogNewRoute: AdminBlogNewRoute,
-}
-
-const AdminBlogRouteWithChildren = AdminBlogRoute._addFileChildren(
-  AdminBlogRouteChildren,
-)
-
-interface AdminRouteChildren {
-  AdminAccessRequestsRoute: typeof AdminAccessRequestsRoute
-  AdminBlogRoute: typeof AdminBlogRouteWithChildren
-  AdminBuildersRoute: typeof AdminBuildersRoute
-  AdminFeatureRequestsRoute: typeof AdminFeatureRequestsRoute
-  AdminGcClientsRoute: typeof AdminGcClientsRoute
-  AdminHubspotSimulateRoute: typeof AdminHubspotSimulateRoute
-  AdminInvitesRoute: typeof AdminInvitesRoute
-  AdminReviewQueueRoute: typeof AdminReviewQueueRoute
-}
-
-const AdminRouteChildren: AdminRouteChildren = {
-  AdminAccessRequestsRoute: AdminAccessRequestsRoute,
-  AdminBlogRoute: AdminBlogRouteWithChildren,
-  AdminBuildersRoute: AdminBuildersRoute,
-  AdminFeatureRequestsRoute: AdminFeatureRequestsRoute,
-  AdminGcClientsRoute: AdminGcClientsRoute,
-  AdminHubspotSimulateRoute: AdminHubspotSimulateRoute,
-  AdminInvitesRoute: AdminInvitesRoute,
-  AdminReviewQueueRoute: AdminReviewQueueRoute,
-}
-
-const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
-
 interface BuildingDeptLoginsRouteChildren {
   BuildingDeptLoginsSubmitRoute: typeof BuildingDeptLoginsSubmitRoute
 }
@@ -2205,10 +2175,23 @@ const SubPortalRouteWithChildren = SubPortalRoute._addFileChildren(
   SubPortalRouteChildren,
 )
 
+interface AdminBlogRouteChildren {
+  AdminBlogIdRoute: typeof AdminBlogIdRoute
+  AdminBlogNewRoute: typeof AdminBlogNewRoute
+}
+
+const AdminBlogRouteChildren: AdminBlogRouteChildren = {
+  AdminBlogIdRoute: AdminBlogIdRoute,
+  AdminBlogNewRoute: AdminBlogNewRoute,
+}
+
+const AdminBlogRouteWithChildren = AdminBlogRoute._addFileChildren(
+  AdminBlogRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
-  AdminRoute: AdminRouteWithChildren,
   AskVictoriaRoute: AskVictoriaRoute,
   BuildingDeptLoginsRoute: BuildingDeptLoginsRouteWithChildren,
   ContactRoute: ContactRoute,
@@ -2234,6 +2217,14 @@ const rootRouteChildren: RootRouteChildren = {
   ProjectsRoute: ProjectsRouteWithChildren,
   ServicesRoute: ServicesRoute,
   SubPortalRoute: SubPortalRouteWithChildren,
+  AdminAccessRequestsRoute: AdminAccessRequestsRoute,
+  AdminBlogRoute: AdminBlogRouteWithChildren,
+  AdminBuildersRoute: AdminBuildersRoute,
+  AdminFeatureRequestsRoute: AdminFeatureRequestsRoute,
+  AdminGcClientsRoute: AdminGcClientsRoute,
+  AdminHubspotSimulateRoute: AdminHubspotSimulateRoute,
+  AdminInvitesRoute: AdminInvitesRoute,
+  AdminReviewQueueRoute: AdminReviewQueueRoute,
   AdminContractorsRoute: AdminContractorsRoute,
   ApiVerifyLicenseRoute: ApiVerifyLicenseRoute,
   BlogSlugRoute: BlogSlugRoute,
@@ -2241,6 +2232,7 @@ const rootRouteChildren: RootRouteChildren = {
   PermitCardIdRoute: PermitCardIdRoute,
   SubIntakeTokenRoute: SubIntakeTokenRoute,
   VersusSlugRoute: VersusSlugRoute,
+  AdminIndexRoute: AdminIndexRoute,
   BlogIndexRoute: BlogIndexRoute,
   VersusIndexRoute: VersusIndexRoute,
   ApiPublicAccessRequestRoute: ApiPublicAccessRequestRoute,
@@ -2254,3 +2246,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
