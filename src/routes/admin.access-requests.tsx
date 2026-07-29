@@ -54,6 +54,8 @@ function AccessRequestsPage() {
   const [tenantName, setTenantName] = useState("");
   const [licenseNumber, setLicenseNumber] = useState("");
   const [busy, setBusy] = useState(false);
+  const [inviteLink, setInviteLink] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
 
   async function refresh() {
     setLoading(true);
