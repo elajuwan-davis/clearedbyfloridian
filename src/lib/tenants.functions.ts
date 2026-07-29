@@ -85,13 +85,19 @@ export const approveAccessRequestFn = createServerFn({ method: "POST" })
         );
     }
 
-    // 3. Mark access_request approved
+    // 4. Mark access_request approved
     const { error: uErr } = await (supabaseAdmin.from("access_requests" as any) as any)
       .update({ status: "approved", approved_tenant_id: tenant.id })
       .eq("id", data.access_request_id);
     if (uErr) throw new Error(uErr.message);
 
-    return { tenant_id: tenant.id as string, tenant_name: tenant.name as string };
+    return {
+      tenant_id: tenant.id as string,
+      tenant_name: tenant.name as string,
+      invite_token: inviteRow.token as string,
+      email_sent: !emailError,
+      email_error: emailError,
+    };
   });
 
 const RejectInput = z.object({
