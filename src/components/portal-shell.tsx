@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
-import { ChevronDown, LogOut, Menu, X, Building2, Check } from "lucide-react";
+import { ChevronDown, LogOut, Menu, X, Building2, Check, ShieldCheck } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
 
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
@@ -103,6 +103,17 @@ const settingsGroup: NavGroup = {
 const subSettingsGroup: NavGroup = {
   label: "Settings",
   items: [{ to: "/profile", label: "Profile" }],
+};
+
+// Admin-only entries surfaced inside the account menu.
+const adminGroup: NavGroup = {
+  label: "Admin",
+  items: [
+    { to: "/admin", label: "Admin Dashboard" },
+    { to: "/admin/invites", label: "Invite Pipeline" },
+    { to: "/admin/access-requests", label: "Access Requests" },
+    { to: "/admin/gc-clients", label: "GC Clients" },
+  ],
 };
 
 const protectedPortalPrefixes = [
@@ -212,16 +223,18 @@ function MobileDrawer({
   onNavigate,
   onSignOut,
   role,
+  isAdmin,
 }: {
   pathname: string;
   alertKeys: Set<AlertKey>;
   onNavigate: () => void;
   onSignOut: () => void;
   role: AppRole | null;
+  isAdmin?: boolean;
 }) {
   const groups = navGroupsForRole(role);
   const settings = role === "subcontractor" ? subSettingsGroup : settingsGroup;
-  const all = [...groups, settings];
+  const all = [...groups, ...(isAdmin ? [adminGroup] : []), settings];
   return (
     <div className="flex h-full flex-col bg-white">
       <div className="h-14 flex items-center justify-between px-5 border-b">
@@ -430,6 +443,24 @@ export function PortalShell({ children }: { children: ReactNode }) {
                     </Link>
                   </DropdownMenuItem>
                 ))}
+                {session.isAdmin && (
+                  <>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuLabel
+                      className="px-3 py-1.5 font-mono text-[9px] tracking-[0.2em] uppercase"
+                      style={{ color: "color-mix(in oklab, var(--obsidian) 55%, transparent)" }}
+                    >
+                      {adminGroup.label}
+                    </DropdownMenuLabel>
+                    {adminGroup.items.map((item, i) => (
+                      <DropdownMenuItem key={`admin-${item.to}-${i}`} asChild>
+                        <Link to={item.to as never} className="px-3 py-2 text-[13px] rounded-[2px] cursor-pointer" style={{ color: "var(--obsidian)" }}>
+                          {item.label}
+                        </Link>
+                      </DropdownMenuItem>
+                    ))}
+                  </>
+                )}
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
                   onSelect={() => handleSignOut()}
@@ -457,6 +488,7 @@ export function PortalShell({ children }: { children: ReactNode }) {
                 pathname={pathname}
                 alertKeys={alertKeys}
                 role={session.role}
+                isAdmin={session.isAdmin}
                 onNavigate={() => setOpen(false)}
                 onSignOut={() => {
                   setOpen(false);
@@ -467,6 +499,27 @@ export function PortalShell({ children }: { children: ReactNode }) {
           </Sheet>
         </div>
       </header>
+
+      {session.isAdmin && !session.impersonatingTenantName && (
+        <div
+          className="sticky top-14 z-30 flex flex-wrap items-center justify-between gap-3 px-4 sm:px-6 lg:px-8 py-2 text-[12px]"
+          style={{ backgroundColor: "var(--obsidian)", color: "white" }}
+        >
+          <div className="flex items-center gap-2 min-w-0">
+            <ShieldCheck className="h-3.5 w-3.5 shrink-0" strokeWidth={1.5} />
+            <span className="font-mono text-[10px] tracking-[0.18em] uppercase opacity-70">Admin view</span>
+            <span className="truncate opacity-90">
+              {session.email ?? ""} — full access across all tenants
+            </span>
+          </div>
+          <Link
+            to="/admin"
+            className="font-mono text-[10px] tracking-[0.16em] uppercase underline underline-offset-2 hover:opacity-80"
+          >
+            Admin dashboard
+          </Link>
+        </div>
+      )}
 
       {session.isAdmin && session.impersonatingTenantName && (
         <div
