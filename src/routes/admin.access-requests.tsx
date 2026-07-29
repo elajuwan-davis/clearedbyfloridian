@@ -222,46 +222,97 @@ function AccessRequestsPage() {
         )}
       </div>
 
-      <Dialog open={!!approving} onOpenChange={(o) => !o && setApproving(null)}>
+      <Dialog
+        open={!!approving}
+        onOpenChange={(o) => {
+          if (!o) {
+            setApproving(null);
+            setInviteLink(null);
+            setCopied(false);
+          }
+        }}
+      >
         <DialogContent className="rounded-[3px]">
           <DialogHeader>
-            <DialogTitle>Approve access request</DialogTitle>
+            <DialogTitle className="display-serif text-2xl text-obsidian">
+              Approve access request
+            </DialogTitle>
           </DialogHeader>
-          <div className="space-y-4 py-2">
-            <div className="text-sm text-muted-foreground">
-              Creates a tenant and emails an invite to <strong>{approving?.email}</strong>.
+          {inviteLink ? (
+            <div className="space-y-4 py-2">
+              <div className="text-sm text-muted-foreground">
+                Tenant created for <strong>{approving?.email}</strong>. Share this join link — it works
+                whether or not the invite email is delivered.
+              </div>
+              <div className="space-y-1.5">
+                <Label className="label-eyebrow text-obsidian/50">Join link</Label>
+                <div className="flex gap-2">
+                  <Input readOnly value={inviteLink} className="rounded-[3px] font-mono text-xs" />
+                  <Button onClick={copyLink} className="rounded-[3px] gap-2 shrink-0" variant="outline">
+                    {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+                    {copied ? "Copied" : "Copy link"}
+                  </Button>
+                </div>
+              </div>
             </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="tname">Tenant / Company name</Label>
-              <Input
-                id="tname"
-                value={tenantName}
-                onChange={(e) => setTenantName(e.target.value)}
-                className="rounded-[3px]"
-              />
+          ) : (
+            <div className="space-y-4 py-2">
+              <div className="text-sm text-muted-foreground">
+                Creates a tenant, generates a join link, and emails an invite to{" "}
+                <strong>{approving?.email}</strong>.
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="tname">Tenant / Company name</Label>
+                <Input
+                  id="tname"
+                  value={tenantName}
+                  onChange={(e) => setTenantName(e.target.value)}
+                  className="rounded-[3px]"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="tlic">License number</Label>
+                <Input
+                  id="tlic"
+                  value={licenseNumber}
+                  onChange={(e) => setLicenseNumber(e.target.value)}
+                  className="rounded-[3px]"
+                />
+              </div>
             </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="tlic">License number</Label>
-              <Input
-                id="tlic"
-                value={licenseNumber}
-                onChange={(e) => setLicenseNumber(e.target.value)}
-                className="rounded-[3px]"
-              />
-            </div>
-          </div>
+          )}
           <DialogFooter>
-            <Button variant="outline" onClick={() => setApproving(null)} className="rounded-[3px]">
-              Cancel
-            </Button>
-            <Button
-              onClick={confirmApprove}
-              disabled={busy || !tenantName.trim()}
-              className="rounded-[3px] gap-2"
-              style={{ backgroundColor: "var(--obsidian)", color: "var(--paper)" }}
-            >
-              {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : "Approve & invite"}
-            </Button>
+            {inviteLink ? (
+              <Button
+                onClick={() => {
+                  setApproving(null);
+                  setInviteLink(null);
+                  setCopied(false);
+                }}
+                className="rounded-[3px]"
+                style={{ backgroundColor: "var(--obsidian)", color: "var(--paper)" }}
+              >
+                Done
+              </Button>
+            ) : (
+              <>
+                <Button
+                  variant="outline"
+                  onClick={() => setApproving(null)}
+                  className="rounded-[3px]"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={confirmApprove}
+                  disabled={busy || !tenantName.trim()}
+                  className="rounded-[3px] gap-2"
+                  style={{ backgroundColor: "var(--obsidian)", color: "var(--paper)" }}
+                >
+                  {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : "Approve & invite"}
+                </Button>
+              </>
+            )}
           </DialogFooter>
         </DialogContent>
       </Dialog>
