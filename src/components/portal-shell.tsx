@@ -223,16 +223,18 @@ function MobileDrawer({
   onNavigate,
   onSignOut,
   role,
+  isAdmin,
 }: {
   pathname: string;
   alertKeys: Set<AlertKey>;
   onNavigate: () => void;
   onSignOut: () => void;
   role: AppRole | null;
+  isAdmin?: boolean;
 }) {
   const groups = navGroupsForRole(role);
   const settings = role === "subcontractor" ? subSettingsGroup : settingsGroup;
-  const all = [...groups, settings];
+  const all = [...groups, ...(isAdmin ? [adminGroup] : []), settings];
   return (
     <div className="flex h-full flex-col bg-white">
       <div className="h-14 flex items-center justify-between px-5 border-b">
