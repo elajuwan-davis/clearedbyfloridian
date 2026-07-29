@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { PortalShell } from "@/components/portal-shell";
 import { listInvitePipelineFn, type InvitePipelineRow } from "@/lib/invite-pipeline.functions";
@@ -101,8 +101,8 @@ function InvitePipelinePage() {
               </thead>
               <tbody>
                 {rows.map((r) => (
-                  <>
-                    <tr key={r.request_id} className="border-b border-border/60 align-top">
+                  <Fragment key={r.request_id}>
+                    <tr className="border-b border-border/60 align-top">
                       <td className="px-4 py-3">
                         <div className="font-medium">{r.name}</div>
                         <div className="text-xs text-muted-foreground">{r.email}</div>
@@ -150,7 +150,7 @@ function InvitePipelinePage() {
                       </td>
                     </tr>
                     {open === r.request_id && r.permits.length > 0 ? (
-                      <tr key={`${r.request_id}-permits`} className="border-b border-border/60 bg-muted/20">
+                      <tr className="border-b border-border/60 bg-muted/20">
                         <td colSpan={7} className="px-4 py-3">
                           <ul className="space-y-1">
                             {r.permits.map((p) => (
@@ -169,7 +169,7 @@ function InvitePipelinePage() {
                         </td>
                       </tr>
                     ) : null}
-                  </>
+                  </Fragment>
                 ))}
               </tbody>
             </table>
