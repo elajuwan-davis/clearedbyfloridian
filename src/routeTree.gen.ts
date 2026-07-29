@@ -38,7 +38,6 @@ import { Route as ServicesRouteImport } from './routes/services'
 import { Route as SubPortalRouteImport } from './routes/sub-portal'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminAccessRequestsRouteImport } from './routes/admin.access-requests'
-import { Route as AdminBlogRouteImport } from './routes/admin.blog'
 import { Route as AdminBuildersRouteImport } from './routes/admin.builders'
 import { Route as AdminFeatureRequestsRouteImport } from './routes/admin.feature-requests'
 import { Route as AdminGcClientsRouteImport } from './routes/admin.gc-clients'
@@ -82,6 +81,7 @@ import { Route as SubIntakeTokenRouteImport } from './routes/sub-intake.$token'
 import { Route as SubPortalTokenRouteImport } from './routes/sub-portal.$token'
 import { Route as VersusIndexRouteImport } from './routes/versus.index'
 import { Route as VersusSlugRouteImport } from './routes/versus.$slug'
+import { Route as AdminBlogIndexRouteImport } from './routes/admin.blog.index'
 import { Route as AdminBlogIdRouteImport } from './routes/admin.blog.$id'
 import { Route as AdminBlogNewRouteImport } from './routes/admin.blog.new'
 import { Route as ApiPublicAccessRequestRouteImport } from './routes/api/public/access-request'
@@ -253,11 +253,6 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
 const AdminAccessRequestsRoute = AdminAccessRequestsRouteImport.update({
   id: '/admin/access-requests',
   path: '/admin/access-requests',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminBlogRoute = AdminBlogRouteImport.update({
-  id: '/admin/blog',
-  path: '/admin/blog',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminBuildersRoute = AdminBuildersRouteImport.update({
@@ -479,6 +474,11 @@ const VersusSlugRoute = VersusSlugRouteImport.update({
   path: '/versus/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminBlogIndexRoute = AdminBlogIndexRouteImport.update({
+  id: '/admin/blog/',
+  path: '/admin/blog/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminBlogIdRoute = AdminBlogIdRouteImport.update({
   id: '/$id',
   path: '/$id',
@@ -651,7 +651,6 @@ export interface FileRoutesByFullPath {
   '/services': typeof ServicesRoute
   '/sub-portal': typeof SubPortalRouteWithChildren
   '/admin/access-requests': typeof AdminAccessRequestsRoute
-  '/admin/blog': typeof AdminBlogRouteWithChildren
   '/admin/builders': typeof AdminBuildersRoute
   '/admin/feature-requests': typeof AdminFeatureRequestsRoute
   '/admin/gc-clients': typeof AdminGcClientsRoute
@@ -712,6 +711,7 @@ export interface FileRoutesByFullPath {
   '/portal/projects/$id': typeof PortalProjectsIdRoute
   '/portal/subcontractors/new': typeof PortalSubcontractorsNewRoute
   '/portal/submissions/$id': typeof PortalSubmissionsIdRoute
+  '/admin/blog/': typeof AdminBlogIndexRoute
   '/portal/blog/': typeof PortalBlogIndexRoute
   '/portal/guides/': typeof PortalGuidesIndexRoute
   '/portal/hoa-submittals/': typeof PortalHoaSubmittalsIndexRoute
@@ -751,7 +751,6 @@ export interface FileRoutesByTo {
   '/services': typeof ServicesRoute
   '/sub-portal': typeof SubPortalRouteWithChildren
   '/admin/access-requests': typeof AdminAccessRequestsRoute
-  '/admin/blog': typeof AdminBlogRouteWithChildren
   '/admin/builders': typeof AdminBuildersRoute
   '/admin/feature-requests': typeof AdminFeatureRequestsRoute
   '/admin/gc-clients': typeof AdminGcClientsRoute
@@ -810,6 +809,7 @@ export interface FileRoutesByTo {
   '/portal/projects/$id': typeof PortalProjectsIdRoute
   '/portal/subcontractors/new': typeof PortalSubcontractorsNewRoute
   '/portal/submissions/$id': typeof PortalSubmissionsIdRoute
+  '/admin/blog': typeof AdminBlogIndexRoute
   '/portal/blog': typeof PortalBlogIndexRoute
   '/portal/guides': typeof PortalGuidesIndexRoute
   '/portal/hoa-submittals': typeof PortalHoaSubmittalsIndexRoute
@@ -852,7 +852,6 @@ export interface FileRoutesById {
   '/services': typeof ServicesRoute
   '/sub-portal': typeof SubPortalRouteWithChildren
   '/admin/access-requests': typeof AdminAccessRequestsRoute
-  '/admin/blog': typeof AdminBlogRouteWithChildren
   '/admin/builders': typeof AdminBuildersRoute
   '/admin/feature-requests': typeof AdminFeatureRequestsRoute
   '/admin/gc-clients': typeof AdminGcClientsRoute
@@ -913,6 +912,7 @@ export interface FileRoutesById {
   '/portal/projects/$id': typeof PortalProjectsIdRoute
   '/portal/subcontractors/new': typeof PortalSubcontractorsNewRoute
   '/portal/submissions/$id': typeof PortalSubmissionsIdRoute
+  '/admin/blog/': typeof AdminBlogIndexRoute
   '/portal/blog/': typeof PortalBlogIndexRoute
   '/portal/guides/': typeof PortalGuidesIndexRoute
   '/portal/hoa-submittals/': typeof PortalHoaSubmittalsIndexRoute
@@ -956,7 +956,6 @@ export interface FileRouteTypes {
     | '/services'
     | '/sub-portal'
     | '/admin/access-requests'
-    | '/admin/blog'
     | '/admin/builders'
     | '/admin/feature-requests'
     | '/admin/gc-clients'
@@ -1017,6 +1016,7 @@ export interface FileRouteTypes {
     | '/portal/projects/$id'
     | '/portal/subcontractors/new'
     | '/portal/submissions/$id'
+    | '/admin/blog/'
     | '/portal/blog/'
     | '/portal/guides/'
     | '/portal/hoa-submittals/'
@@ -1056,7 +1056,6 @@ export interface FileRouteTypes {
     | '/services'
     | '/sub-portal'
     | '/admin/access-requests'
-    | '/admin/blog'
     | '/admin/builders'
     | '/admin/feature-requests'
     | '/admin/gc-clients'
@@ -1115,6 +1114,7 @@ export interface FileRouteTypes {
     | '/portal/projects/$id'
     | '/portal/subcontractors/new'
     | '/portal/submissions/$id'
+    | '/admin/blog'
     | '/portal/blog'
     | '/portal/guides'
     | '/portal/hoa-submittals'
@@ -1156,7 +1156,6 @@ export interface FileRouteTypes {
     | '/services'
     | '/sub-portal'
     | '/admin/access-requests'
-    | '/admin/blog'
     | '/admin/builders'
     | '/admin/feature-requests'
     | '/admin/gc-clients'
@@ -1217,6 +1216,7 @@ export interface FileRouteTypes {
     | '/portal/projects/$id'
     | '/portal/subcontractors/new'
     | '/portal/submissions/$id'
+    | '/admin/blog/'
     | '/portal/blog/'
     | '/portal/guides/'
     | '/portal/hoa-submittals/'
@@ -1259,7 +1259,6 @@ export interface RootRouteChildren {
   ServicesRoute: typeof ServicesRoute
   SubPortalRoute: typeof SubPortalRouteWithChildren
   AdminAccessRequestsRoute: typeof AdminAccessRequestsRoute
-  AdminBlogRoute: typeof AdminBlogRouteWithChildren
   AdminBuildersRoute: typeof AdminBuildersRoute
   AdminFeatureRequestsRoute: typeof AdminFeatureRequestsRoute
   AdminGcClientsRoute: typeof AdminGcClientsRoute
@@ -1280,6 +1279,7 @@ export interface RootRouteChildren {
   ApiPublicHoaReplyRoute: typeof ApiPublicHoaReplyRoute
   ApiPublicSubIntakeUploadRoute: typeof ApiPublicSubIntakeUploadRoute
   ApiPublicVictoriaScanRoute: typeof ApiPublicVictoriaScanRoute
+  AdminBlogIndexRoute: typeof AdminBlogIndexRoute
   ApiPublicEmailOutboxProcessRoute: typeof ApiPublicEmailOutboxProcessRoute
   ApiPublicHubspotDealWebhookRoute: typeof ApiPublicHubspotDealWebhookRoute
   ApiPublicPaymentsWebhookRoute: typeof ApiPublicPaymentsWebhookRoute
@@ -1488,13 +1488,6 @@ declare module '@tanstack/react-router' {
       path: '/admin/access-requests'
       fullPath: '/admin/access-requests'
       preLoaderRoute: typeof AdminAccessRequestsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/blog': {
-      id: '/admin/blog'
-      path: '/admin/blog'
-      fullPath: '/admin/blog'
-      preLoaderRoute: typeof AdminBlogRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/builders': {
@@ -1796,6 +1789,13 @@ declare module '@tanstack/react-router' {
       path: '/versus/$slug'
       fullPath: '/versus/$slug'
       preLoaderRoute: typeof VersusSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/blog/': {
+      id: '/admin/blog/'
+      path: '/admin/blog'
+      fullPath: '/admin/blog/'
+      preLoaderRoute: typeof AdminBlogIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/blog/$id': {
@@ -2175,20 +2175,6 @@ const SubPortalRouteWithChildren = SubPortalRoute._addFileChildren(
   SubPortalRouteChildren,
 )
 
-interface AdminBlogRouteChildren {
-  AdminBlogIdRoute: typeof AdminBlogIdRoute
-  AdminBlogNewRoute: typeof AdminBlogNewRoute
-}
-
-const AdminBlogRouteChildren: AdminBlogRouteChildren = {
-  AdminBlogIdRoute: AdminBlogIdRoute,
-  AdminBlogNewRoute: AdminBlogNewRoute,
-}
-
-const AdminBlogRouteWithChildren = AdminBlogRoute._addFileChildren(
-  AdminBlogRouteChildren,
-)
-
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
@@ -2218,7 +2204,6 @@ const rootRouteChildren: RootRouteChildren = {
   ServicesRoute: ServicesRoute,
   SubPortalRoute: SubPortalRouteWithChildren,
   AdminAccessRequestsRoute: AdminAccessRequestsRoute,
-  AdminBlogRoute: AdminBlogRouteWithChildren,
   AdminBuildersRoute: AdminBuildersRoute,
   AdminFeatureRequestsRoute: AdminFeatureRequestsRoute,
   AdminGcClientsRoute: AdminGcClientsRoute,
@@ -2239,6 +2224,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicHoaReplyRoute: ApiPublicHoaReplyRoute,
   ApiPublicSubIntakeUploadRoute: ApiPublicSubIntakeUploadRoute,
   ApiPublicVictoriaScanRoute: ApiPublicVictoriaScanRoute,
+  AdminBlogIndexRoute: AdminBlogIndexRoute,
   ApiPublicEmailOutboxProcessRoute: ApiPublicEmailOutboxProcessRoute,
   ApiPublicHubspotDealWebhookRoute: ApiPublicHubspotDealWebhookRoute,
   ApiPublicPaymentsWebhookRoute: ApiPublicPaymentsWebhookRoute,
@@ -2246,3 +2232,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
