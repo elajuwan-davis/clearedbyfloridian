@@ -105,6 +105,17 @@ const subSettingsGroup: NavGroup = {
   items: [{ to: "/profile", label: "Profile" }],
 };
 
+// Admin-only entries surfaced inside the account menu.
+const adminGroup: NavGroup = {
+  label: "Admin",
+  items: [
+    { to: "/admin", label: "Admin Dashboard" },
+    { to: "/admin/invites", label: "Invite Pipeline" },
+    { to: "/admin/access-requests", label: "Access Requests" },
+    { to: "/admin/gc-clients", label: "GC Clients" },
+  ],
+};
+
 const protectedPortalPrefixes = [
   "/dashboard",
   "/my-permits",
