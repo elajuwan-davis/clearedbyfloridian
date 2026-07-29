@@ -488,6 +488,7 @@ export function PortalShell({ children }: { children: ReactNode }) {
                 pathname={pathname}
                 alertKeys={alertKeys}
                 role={session.role}
+                isAdmin={session.isAdmin}
                 onNavigate={() => setOpen(false)}
                 onSignOut={() => {
                   setOpen(false);
