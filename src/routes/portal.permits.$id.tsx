@@ -14,6 +14,7 @@ import { ExpirationBanner } from "@/components/expiration-banner";
 import { HomeownerShareDialog } from "@/components/homeowner-share-dialog";
 import { DispatchCard } from "@/components/dispatch-card";
 import { SubmittalPackageSection } from "@/components/submittal-package-section";
+import { AdminPermitReviewActions } from "@/components/admin-permit-review-actions";
 import { ServiceFeeInvoicePanel } from "@/components/service-fee-invoice-panel";
 import type { DispatchResult } from "@/lib/dispatch";
 
@@ -385,6 +386,8 @@ function PermitDetailPage() {
         </div>
 
       </div>
+
+      <AdminPermitReviewActions permit={row} onUpdated={(r) => { setRow(r); setEdit(r); }} />
 
       {/* Completeness panel */}
       <div className="mt-6 bg-white border border-obsidian/10 rounded-[3px] p-6">

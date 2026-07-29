@@ -64,6 +64,50 @@ export type Database = {
           },
         ]
       }
+      activity_events: {
+        Row: {
+          actor_id: string | null
+          actor_label: string | null
+          created_at: string
+          details: Json
+          event_type: string
+          id: string
+          permit_id: string | null
+          summary: string | null
+          tenant_id: string | null
+        }
+        Insert: {
+          actor_id?: string | null
+          actor_label?: string | null
+          created_at?: string
+          details?: Json
+          event_type: string
+          id?: string
+          permit_id?: string | null
+          summary?: string | null
+          tenant_id?: string | null
+        }
+        Update: {
+          actor_id?: string | null
+          actor_label?: string | null
+          created_at?: string
+          details?: Json
+          event_type?: string
+          id?: string
+          permit_id?: string | null
+          summary?: string | null
+          tenant_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "activity_events_permit_id_fkey"
+            columns: ["permit_id"]
+            isOneToOne: false
+            referencedRelation: "permits"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       app_user_connections: {
         Row: {
           connection_key_ciphertext: string
@@ -1202,6 +1246,47 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "permit_resubmittals_permit_id_fkey"
+            columns: ["permit_id"]
+            isOneToOne: false
+            referencedRelation: "permits"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      permit_updates: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          created_by_label: string | null
+          id: string
+          message: string
+          permit_id: string
+          tenant_id: string | null
+          visible_to_client: boolean
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          created_by_label?: string | null
+          id?: string
+          message: string
+          permit_id: string
+          tenant_id?: string | null
+          visible_to_client?: boolean
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          created_by_label?: string | null
+          id?: string
+          message?: string
+          permit_id?: string
+          tenant_id?: string | null
+          visible_to_client?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "permit_updates_permit_id_fkey"
             columns: ["permit_id"]
             isOneToOne: false
             referencedRelation: "permits"
