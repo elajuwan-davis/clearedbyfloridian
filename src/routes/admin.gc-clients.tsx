@@ -133,6 +133,7 @@ function GCClientsAdmin() {
         )}
       </section>
     </div>
+    </PortalShell>
   );
 }
 
