@@ -44,6 +44,7 @@ import { Route as AdminFeatureRequestsRouteImport } from './routes/admin.feature
 import { Route as AdminGcClientsRouteImport } from './routes/admin.gc-clients'
 import { Route as AdminHubspotSimulateRouteImport } from './routes/admin.hubspot-simulate'
 import { Route as AdminInvitesRouteImport } from './routes/admin.invites'
+import { Route as AdminReviewQueueRouteImport } from './routes/admin.review-queue'
 import { Route as AdminContractorsRouteImport } from './routes/admin_.contractors'
 import { Route as ApiVerifyLicenseRouteImport } from './routes/api/verify-license'
 import { Route as BlogIndexRouteImport } from './routes/blog.index'
@@ -282,6 +283,11 @@ const AdminHubspotSimulateRoute = AdminHubspotSimulateRouteImport.update({
 const AdminInvitesRoute = AdminInvitesRouteImport.update({
   id: '/invites',
   path: '/invites',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminReviewQueueRoute = AdminReviewQueueRouteImport.update({
+  id: '/review-queue',
+  path: '/review-queue',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminContractorsRoute = AdminContractorsRouteImport.update({
@@ -652,6 +658,7 @@ export interface FileRoutesByFullPath {
   '/admin/gc-clients': typeof AdminGcClientsRoute
   '/admin/hubspot-simulate': typeof AdminHubspotSimulateRoute
   '/admin/invites': typeof AdminInvitesRoute
+  '/admin/review-queue': typeof AdminReviewQueueRoute
   '/admin/contractors': typeof AdminContractorsRoute
   '/api/verify-license': typeof ApiVerifyLicenseRoute
   '/blog/$slug': typeof BlogSlugRoute
@@ -751,6 +758,7 @@ export interface FileRoutesByTo {
   '/admin/gc-clients': typeof AdminGcClientsRoute
   '/admin/hubspot-simulate': typeof AdminHubspotSimulateRoute
   '/admin/invites': typeof AdminInvitesRoute
+  '/admin/review-queue': typeof AdminReviewQueueRoute
   '/admin/contractors': typeof AdminContractorsRoute
   '/api/verify-license': typeof ApiVerifyLicenseRoute
   '/blog/$slug': typeof BlogSlugRoute
@@ -851,6 +859,7 @@ export interface FileRoutesById {
   '/admin/gc-clients': typeof AdminGcClientsRoute
   '/admin/hubspot-simulate': typeof AdminHubspotSimulateRoute
   '/admin/invites': typeof AdminInvitesRoute
+  '/admin/review-queue': typeof AdminReviewQueueRoute
   '/admin_/contractors': typeof AdminContractorsRoute
   '/api/verify-license': typeof ApiVerifyLicenseRoute
   '/blog/$slug': typeof BlogSlugRoute
@@ -954,6 +963,7 @@ export interface FileRouteTypes {
     | '/admin/gc-clients'
     | '/admin/hubspot-simulate'
     | '/admin/invites'
+    | '/admin/review-queue'
     | '/admin/contractors'
     | '/api/verify-license'
     | '/blog/$slug'
@@ -1053,6 +1063,7 @@ export interface FileRouteTypes {
     | '/admin/gc-clients'
     | '/admin/hubspot-simulate'
     | '/admin/invites'
+    | '/admin/review-queue'
     | '/admin/contractors'
     | '/api/verify-license'
     | '/blog/$slug'
@@ -1152,6 +1163,7 @@ export interface FileRouteTypes {
     | '/admin/gc-clients'
     | '/admin/hubspot-simulate'
     | '/admin/invites'
+    | '/admin/review-queue'
     | '/admin_/contractors'
     | '/api/verify-license'
     | '/blog/$slug'
@@ -1510,6 +1522,13 @@ declare module '@tanstack/react-router' {
       path: '/invites'
       fullPath: '/admin/invites'
       preLoaderRoute: typeof AdminInvitesRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/review-queue': {
+      id: '/admin/review-queue'
+      path: '/review-queue'
+      fullPath: '/admin/review-queue'
+      preLoaderRoute: typeof AdminReviewQueueRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin_/contractors': {
@@ -1985,6 +2004,7 @@ interface AdminRouteChildren {
   AdminGcClientsRoute: typeof AdminGcClientsRoute
   AdminHubspotSimulateRoute: typeof AdminHubspotSimulateRoute
   AdminInvitesRoute: typeof AdminInvitesRoute
+  AdminReviewQueueRoute: typeof AdminReviewQueueRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
@@ -1995,6 +2015,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminGcClientsRoute: AdminGcClientsRoute,
   AdminHubspotSimulateRoute: AdminHubspotSimulateRoute,
   AdminInvitesRoute: AdminInvitesRoute,
+  AdminReviewQueueRoute: AdminReviewQueueRoute,
 }
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
