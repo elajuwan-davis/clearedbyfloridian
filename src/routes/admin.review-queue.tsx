@@ -60,8 +60,8 @@ function ReviewQueuePage() {
   return (
     <PortalShell>
       <div className="mx-auto w-full max-w-7xl px-4 py-8">
-        <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground">Admin</p>
-        <h1 className="mt-1 text-2xl font-semibold uppercase tracking-tight">Review Queue</h1>
+        <div className="label-eyebrow text-obsidian/50">Admin</div>
+        <h1 className="display-serif mt-2 text-4xl leading-tight text-obsidian">Review Queue</h1>
         <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
           Client self-submitted permits still in draft. Staff review each submission here before accepting it.
         </p>
