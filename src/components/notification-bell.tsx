@@ -4,11 +4,16 @@ import { Link } from "@tanstack/react-router";
 import { useExpirationAlerts } from "@/hooks/use-expiration-alerts";
 import { AlertsList } from "./alerts-list";
 import { listNotifications, markAllRead, type NotifRow } from "@/lib/notifications-api";
+import { listClientPermitUpdates, acknowledgePermitUpdates, type PermitUpdateRow } from "@/lib/permit-updates-api";
+import { useSession } from "@/lib/use-session";
 
 export function NotificationBell() {
   const alerts = useExpirationAlerts();
   const [open, setOpen] = useState(false);
   const [notifs, setNotifs] = useState<NotifRow[]>([]);
+  const session = useSession();
+  const isClientRole = !session.isAdmin && (session.role === "gc_owner" || session.role === "gc_member" || session.role === "subcontractor");
+  const [updates, setUpdates] = useState<PermitUpdateRow[]>([]);
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -20,6 +25,15 @@ export function NotificationBell() {
   }, [open]);
 
   useEffect(() => {
+    if (!isClientRole) { setUpdates([]); return; }
+    let cancelled = false;
+    listClientPermitUpdates(20)
+      .then((rows) => { if (!cancelled) setUpdates(rows); })
+      .catch(() => {});
+    return () => { cancelled = true; };
+  }, [open, isClientRole]);
+
+  useEffect(() => {
     if (!open) return;
     function onDown(e: MouseEvent) {
       if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
@@ -29,12 +43,21 @@ export function NotificationBell() {
   }, [open]);
 
   const unreadDb = notifs.filter((n) => !n.read_at).length;
-  const count = alerts.length + unreadDb;
+  const unackUpdates = updates.filter((u) => !u.acknowledged_at);
+  const count = alerts.length + unreadDb + unackUpdates.length;
 
   async function onOpen() {
     setOpen((v) => !v);
     if (!open && unreadDb > 0) {
       try { await markAllRead(); } catch { /* ignore */ }
+    }
+    if (!open && unackUpdates.length > 0) {
+      const ids = unackUpdates.map((u) => u.id);
+      try {
+        await acknowledgePermitUpdates(ids);
+        const now = new Date().toISOString();
+        setUpdates((prev) => prev.map((u) => (ids.includes(u.id) ? { ...u, acknowledged_at: now } : u)));
+      } catch { /* ignore */ }
     }
   }
 
@@ -103,6 +126,27 @@ export function NotificationBell() {
                 </ul>
               </div>
             )}
+            {updates.length > 0 && (
+              <div>
+                <div className="px-4 py-2 font-mono text-[9px] uppercase tracking-[0.18em] text-muted-foreground bg-muted/30 border-t border-obsidian/10">
+                  Updates From Cleard
+                </div>
+                <ul className="divide-y divide-obsidian/10">
+                  {updates.slice(0, 8).map((u) => (
+                    <li key={u.id} className="hover:bg-muted/40">
+                      <Link to="/portal/permits/$id" params={{ id: u.permit_id }} onClick={() => setOpen(false)}>
+                        <div className="px-4 py-3">
+                          <div className="text-sm text-obsidian">{u.message}</div>
+                          <div className="text-[10px] font-mono text-obsidian/40 mt-1 uppercase tracking-[0.14em]">
+                            {u.created_by_label ? `${u.created_by_label} · ` : ""}{new Date(u.created_at).toLocaleString()}
+                          </div>
+                        </div>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
             {alerts.length > 0 && (
               <div>
                 <div className="px-4 py-2 font-mono text-[9px] uppercase tracking-[0.18em] text-muted-foreground bg-muted/30 border-t border-obsidian/10">
@@ -111,7 +155,7 @@ export function NotificationBell() {
                 <AlertsList alerts={alerts} onNavigate={() => setOpen(false)} />
               </div>
             )}
-            {notifs.length === 0 && alerts.length === 0 && (
+            {notifs.length === 0 && alerts.length === 0 && updates.length === 0 && (
               <div className="px-4 py-8 text-center text-obsidian/45 text-sm">All caught up.</div>
             )}
           </div>

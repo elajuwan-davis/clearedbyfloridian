@@ -38,6 +38,7 @@ import { Route as ServicesRouteImport } from './routes/services'
 import { Route as SubPortalRouteImport } from './routes/sub-portal'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminAccessRequestsRouteImport } from './routes/admin.access-requests'
+import { Route as AdminActivityRouteImport } from './routes/admin.activity'
 import { Route as AdminBuildersRouteImport } from './routes/admin.builders'
 import { Route as AdminFeatureRequestsRouteImport } from './routes/admin.feature-requests'
 import { Route as AdminGcClientsRouteImport } from './routes/admin.gc-clients'
@@ -253,6 +254,11 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
 const AdminAccessRequestsRoute = AdminAccessRequestsRouteImport.update({
   id: '/admin/access-requests',
   path: '/admin/access-requests',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminActivityRoute = AdminActivityRouteImport.update({
+  id: '/admin/activity',
+  path: '/admin/activity',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminBuildersRoute = AdminBuildersRouteImport.update({
@@ -651,6 +657,7 @@ export interface FileRoutesByFullPath {
   '/services': typeof ServicesRoute
   '/sub-portal': typeof SubPortalRouteWithChildren
   '/admin/access-requests': typeof AdminAccessRequestsRoute
+  '/admin/activity': typeof AdminActivityRoute
   '/admin/builders': typeof AdminBuildersRoute
   '/admin/feature-requests': typeof AdminFeatureRequestsRoute
   '/admin/gc-clients': typeof AdminGcClientsRoute
@@ -751,6 +758,7 @@ export interface FileRoutesByTo {
   '/services': typeof ServicesRoute
   '/sub-portal': typeof SubPortalRouteWithChildren
   '/admin/access-requests': typeof AdminAccessRequestsRoute
+  '/admin/activity': typeof AdminActivityRoute
   '/admin/builders': typeof AdminBuildersRoute
   '/admin/feature-requests': typeof AdminFeatureRequestsRoute
   '/admin/gc-clients': typeof AdminGcClientsRoute
@@ -852,6 +860,7 @@ export interface FileRoutesById {
   '/services': typeof ServicesRoute
   '/sub-portal': typeof SubPortalRouteWithChildren
   '/admin/access-requests': typeof AdminAccessRequestsRoute
+  '/admin/activity': typeof AdminActivityRoute
   '/admin/builders': typeof AdminBuildersRoute
   '/admin/feature-requests': typeof AdminFeatureRequestsRoute
   '/admin/gc-clients': typeof AdminGcClientsRoute
@@ -956,6 +965,7 @@ export interface FileRouteTypes {
     | '/services'
     | '/sub-portal'
     | '/admin/access-requests'
+    | '/admin/activity'
     | '/admin/builders'
     | '/admin/feature-requests'
     | '/admin/gc-clients'
@@ -1056,6 +1066,7 @@ export interface FileRouteTypes {
     | '/services'
     | '/sub-portal'
     | '/admin/access-requests'
+    | '/admin/activity'
     | '/admin/builders'
     | '/admin/feature-requests'
     | '/admin/gc-clients'
@@ -1156,6 +1167,7 @@ export interface FileRouteTypes {
     | '/services'
     | '/sub-portal'
     | '/admin/access-requests'
+    | '/admin/activity'
     | '/admin/builders'
     | '/admin/feature-requests'
     | '/admin/gc-clients'
@@ -1259,6 +1271,7 @@ export interface RootRouteChildren {
   ServicesRoute: typeof ServicesRoute
   SubPortalRoute: typeof SubPortalRouteWithChildren
   AdminAccessRequestsRoute: typeof AdminAccessRequestsRoute
+  AdminActivityRoute: typeof AdminActivityRoute
   AdminBuildersRoute: typeof AdminBuildersRoute
   AdminFeatureRequestsRoute: typeof AdminFeatureRequestsRoute
   AdminGcClientsRoute: typeof AdminGcClientsRoute
@@ -1490,6 +1503,13 @@ declare module '@tanstack/react-router' {
       path: '/admin/access-requests'
       fullPath: '/admin/access-requests'
       preLoaderRoute: typeof AdminAccessRequestsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/activity': {
+      id: '/admin/activity'
+      path: '/admin/activity'
+      fullPath: '/admin/activity'
+      preLoaderRoute: typeof AdminActivityRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/builders': {
@@ -2206,6 +2226,7 @@ const rootRouteChildren: RootRouteChildren = {
   ServicesRoute: ServicesRoute,
   SubPortalRoute: SubPortalRouteWithChildren,
   AdminAccessRequestsRoute: AdminAccessRequestsRoute,
+  AdminActivityRoute: AdminActivityRoute,
   AdminBuildersRoute: AdminBuildersRoute,
   AdminFeatureRequestsRoute: AdminFeatureRequestsRoute,
   AdminGcClientsRoute: AdminGcClientsRoute,
