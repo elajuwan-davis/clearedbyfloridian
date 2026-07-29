@@ -56,7 +56,7 @@ import { Route as FormsPermitIntakeRouteImport } from './routes/forms.permit-int
 import { Route as FormsSubcontractorIntakeRouteImport } from './routes/forms.subcontractor-intake'
 import { Route as FormsSubcontractorsRouteImport } from './routes/forms.subcontractors'
 import { Route as HomeownerTokenRouteImport } from './routes/homeowner.$token'
-import { Route as JoinTokenRouteImport } from './routes/join.$token'
+import { Route as JoinTokenRouteImport } from './routes/join_.$token'
 import { Route as PermitCardIdRouteImport } from './routes/permit-card.$id'
 import { Route as PortalIndexRouteImport } from './routes/portal.index'
 import { Route as PortalAlertsRouteImport } from './routes/portal.alerts'
@@ -350,9 +350,9 @@ const HomeownerTokenRoute = HomeownerTokenRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const JoinTokenRoute = JoinTokenRouteImport.update({
-  id: '/$token',
-  path: '/$token',
-  getParentRoute: () => JoinRoute,
+  id: '/join_/$token',
+  path: '/join/$token',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const PermitCardIdRoute = PermitCardIdRouteImport.update({
   id: '/permit-card/$id',
@@ -640,7 +640,7 @@ export interface FileRoutesByFullPath {
   '/gc-portal': typeof GcPortalRoute
   '/insurance': typeof InsuranceRoute
   '/invoices': typeof InvoicesRoute
-  '/join': typeof JoinRouteWithChildren
+  '/join': typeof JoinRoute
   '/login': typeof LoginRoute
   '/lpoa-signing': typeof LpoaSigningRoute
   '/messages': typeof MessagesRoute
@@ -742,7 +742,7 @@ export interface FileRoutesByTo {
   '/gc-portal': typeof GcPortalRoute
   '/insurance': typeof InsuranceRoute
   '/invoices': typeof InvoicesRoute
-  '/join': typeof JoinRouteWithChildren
+  '/join': typeof JoinRoute
   '/login': typeof LoginRoute
   '/lpoa-signing': typeof LpoaSigningRoute
   '/messages': typeof MessagesRoute
@@ -843,7 +843,7 @@ export interface FileRoutesById {
   '/gc-portal': typeof GcPortalRoute
   '/insurance': typeof InsuranceRoute
   '/invoices': typeof InvoicesRoute
-  '/join': typeof JoinRouteWithChildren
+  '/join': typeof JoinRoute
   '/login': typeof LoginRoute
   '/lpoa-signing': typeof LpoaSigningRoute
   '/messages': typeof MessagesRoute
@@ -876,7 +876,7 @@ export interface FileRoutesById {
   '/forms/subcontractor-intake': typeof FormsSubcontractorIntakeRoute
   '/forms/subcontractors': typeof FormsSubcontractorsRoute
   '/homeowner/$token': typeof HomeownerTokenRoute
-  '/join/$token': typeof JoinTokenRoute
+  '/join_/$token': typeof JoinTokenRoute
   '/permit-card/$id': typeof PermitCardIdRoute
   '/portal/alerts': typeof PortalAlertsRoute
   '/portal/bid-review': typeof PortalBidReviewRoute
@@ -1183,7 +1183,7 @@ export interface FileRouteTypes {
     | '/forms/subcontractor-intake'
     | '/forms/subcontractors'
     | '/homeowner/$token'
-    | '/join/$token'
+    | '/join_/$token'
     | '/permit-card/$id'
     | '/portal/alerts'
     | '/portal/bid-review'
@@ -1254,7 +1254,7 @@ export interface RootRouteChildren {
   GcPortalRoute: typeof GcPortalRoute
   InsuranceRoute: typeof InsuranceRoute
   InvoicesRoute: typeof InvoicesRoute
-  JoinRoute: typeof JoinRouteWithChildren
+  JoinRoute: typeof JoinRoute
   LoginRoute: typeof LoginRoute
   LpoaSigningRoute: typeof LpoaSigningRoute
   MessagesRoute: typeof MessagesRoute
@@ -1282,6 +1282,7 @@ export interface RootRouteChildren {
   ApiVerifyLicenseRoute: typeof ApiVerifyLicenseRoute
   BlogSlugRoute: typeof BlogSlugRoute
   HomeownerTokenRoute: typeof HomeownerTokenRoute
+  JoinTokenRoute: typeof JoinTokenRoute
   PermitCardIdRoute: typeof PermitCardIdRoute
   SubIntakeTokenRoute: typeof SubIntakeTokenRoute
   VersusSlugRoute: typeof VersusSlugRoute
@@ -1631,12 +1632,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof HomeownerTokenRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/join/$token': {
-      id: '/join/$token'
-      path: '/$token'
+    '/join_/$token': {
+      id: '/join_/$token'
+      path: '/join/$token'
       fullPath: '/join/$token'
       preLoaderRoute: typeof JoinTokenRouteImport
-      parentRoute: typeof JoinRoute
+      parentRoute: typeof rootRouteImport
     }
     '/permit-card/$id': {
       id: '/permit-card/$id'
@@ -2041,16 +2042,6 @@ const FormsRouteChildren: FormsRouteChildren = {
 
 const FormsRouteWithChildren = FormsRoute._addFileChildren(FormsRouteChildren)
 
-interface JoinRouteChildren {
-  JoinTokenRoute: typeof JoinTokenRoute
-}
-
-const JoinRouteChildren: JoinRouteChildren = {
-  JoinTokenRoute: JoinTokenRoute,
-}
-
-const JoinRouteWithChildren = JoinRoute._addFileChildren(JoinRouteChildren)
-
 interface PortalPermitsIdRouteChildren {
   PortalPermitsIdBundleRoute: typeof PortalPermitsIdBundleRoute
 }
@@ -2209,7 +2200,7 @@ const rootRouteChildren: RootRouteChildren = {
   GcPortalRoute: GcPortalRoute,
   InsuranceRoute: InsuranceRoute,
   InvoicesRoute: InvoicesRoute,
-  JoinRoute: JoinRouteWithChildren,
+  JoinRoute: JoinRoute,
   LoginRoute: LoginRoute,
   LpoaSigningRoute: LpoaSigningRoute,
   MessagesRoute: MessagesRoute,
@@ -2237,6 +2228,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiVerifyLicenseRoute: ApiVerifyLicenseRoute,
   BlogSlugRoute: BlogSlugRoute,
   HomeownerTokenRoute: HomeownerTokenRoute,
+  JoinTokenRoute: JoinTokenRoute,
   PermitCardIdRoute: PermitCardIdRoute,
   SubIntakeTokenRoute: SubIntakeTokenRoute,
   VersusSlugRoute: VersusSlugRoute,

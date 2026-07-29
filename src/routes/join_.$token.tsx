@@ -6,7 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { PublicShell } from "@/components/public-shell";
 import { toast } from "sonner";
 
-export const Route = createFileRoute("/join/$token")({
+export const Route = createFileRoute("/join_/$token")({
   head: () => ({
     meta: [
       { title: "Join your team — Cleard" },
