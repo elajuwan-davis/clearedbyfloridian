@@ -443,6 +443,24 @@ export function PortalShell({ children }: { children: ReactNode }) {
                     </Link>
                   </DropdownMenuItem>
                 ))}
+                {session.isAdmin && (
+                  <>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuLabel
+                      className="px-3 py-1.5 font-mono text-[9px] tracking-[0.2em] uppercase"
+                      style={{ color: "color-mix(in oklab, var(--obsidian) 55%, transparent)" }}
+                    >
+                      {adminGroup.label}
+                    </DropdownMenuLabel>
+                    {adminGroup.items.map((item, i) => (
+                      <DropdownMenuItem key={`admin-${item.to}-${i}`} asChild>
+                        <Link to={item.to as never} className="px-3 py-2 text-[13px] rounded-[2px] cursor-pointer" style={{ color: "var(--obsidian)" }}>
+                          {item.label}
+                        </Link>
+                      </DropdownMenuItem>
+                    ))}
+                  </>
+                )}
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
                   onSelect={() => handleSignOut()}
