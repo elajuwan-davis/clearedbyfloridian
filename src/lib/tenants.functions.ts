@@ -44,16 +44,30 @@ export const approveAccessRequestFn = createServerFn({ method: "POST" })
       .single();
     if (tErr) throw new Error(tErr.message);
 
-    // 2. Send invite (Supabase Auth admin API) with tenant metadata
+    // 2. Always create a shareable invite token for this tenant
+    const { data: inviteRow, error: invErr } = await (
+      supabaseAdmin.from("tenant_invites" as any) as any
+    )
+      .insert({ tenant_id: tenant.id, created_by: context.userId })
+      .select("id, token")
+      .single();
+    if (invErr) throw new Error(invErr.message);
+
+    // 3. Best-effort email invite (must not block the link)
     const redirectTo = data.redirect_to ?? undefined;
-    const { data: invited, error: iErr } = await (supabaseAdmin.auth.admin as any).inviteUserByEmail(
-      data.invite_email,
-      {
+    let invited: any = null;
+    let emailError: string | null = null;
+    try {
+      const res = await (supabaseAdmin.auth.admin as any).inviteUserByEmail(data.invite_email, {
         data: { tenant_id: tenant.id, role: "gc_owner" },
         redirectTo,
-      },
-    );
-    if (iErr) throw new Error(iErr.message);
+      });
+      invited = res?.data ?? null;
+      if (res?.error) emailError = res.error.message ?? "Invite email failed";
+    } catch (e) {
+      emailError = e instanceof Error ? e.message : "Invite email failed";
+    }
+
 
     // handle_new_user trigger will insert tenant_members + user_roles automatically
     // for the invited user (using their metadata). If they already exist, ensure membership.
