@@ -111,6 +111,7 @@ const adminGroup: NavGroup = {
   items: [
     { to: "/admin", label: "Admin Dashboard" },
     { to: "/admin/invites", label: "Invite Pipeline" },
+    { to: "/admin/review-queue", label: "Review Queue" },
     { to: "/admin/access-requests", label: "Access Requests" },
     { to: "/admin/gc-clients", label: "GC Clients" },
   ],
