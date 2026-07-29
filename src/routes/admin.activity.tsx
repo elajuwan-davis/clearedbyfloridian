@@ -57,8 +57,8 @@ function ActivityPage() {
   return (
     <PortalShell>
       <div className="mx-auto w-full max-w-5xl px-4 py-8">
-        <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground">Admin</p>
-        <h1 className="mt-1 text-2xl font-semibold uppercase tracking-tight">Activity Log</h1>
+        <div className="label-eyebrow text-obsidian/50">Admin</div>
+        <h1 className="display-serif mt-2 text-4xl leading-tight text-obsidian">Activity Log</h1>
         <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
           Staff actions on permit submissions — acceptances, corrections and related events.
         </p>
