@@ -34,6 +34,7 @@ export function AdminPermitReviewActions({ permit, onUpdated }: Props) {
         actor_id: session.userId,
         actor_label: actorLabel,
         summary: "Submission accepted — Cleared for Takeoff",
+        details: { actor_user_id: session.userId, new_status: "submitted" },
       } as any);
       if (error) throw error;
       onUpdated(updated);
@@ -62,10 +63,11 @@ export function AdminPermitReviewActions({ permit, onUpdated }: Props) {
       await supabase.from("activity_events" as any).insert({
         permit_id: permit.id,
         tenant_id: permit.tenant_id ?? null,
-        event_type: "permit_flagged_for_correction",
+        event_type: "permit_flagged",
         actor_id: session.userId,
         actor_label: actorLabel,
         summary: "Flagged for correction",
+        details: { actor_user_id: session.userId, new_status: "corrections_required", message: message.trim() },
       } as any);
       onUpdated(updated);
       setFlagOpen(false);
