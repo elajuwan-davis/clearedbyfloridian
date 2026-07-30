@@ -128,8 +128,10 @@ async function insertPost(
     thread_id: threadId,
     tenant_id: tenantId,
     author_id: userId,
-    author_email: email,
-    author_label: label,
+    // Staff replies always present as the shared support mailbox; clients send
+    // from the email their account was created with.
+    author_email: isAdmin ? CLEARD_SUPPORT_EMAIL : email,
+    author_label: isAdmin ? CLEARD_SUPPORT_LABEL : label,
     from_admin: isAdmin,
     body,
   });
