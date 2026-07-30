@@ -1654,6 +1654,7 @@ export type Database = {
           company_name: string | null
           created_at: string
           display_name: string | null
+          email: string | null
           full_name: string | null
           id: string
           language: string
@@ -1668,6 +1669,7 @@ export type Database = {
           company_name?: string | null
           created_at?: string
           display_name?: string | null
+          email?: string | null
           full_name?: string | null
           id: string
           language?: string
@@ -1682,6 +1684,7 @@ export type Database = {
           company_name?: string | null
           created_at?: string
           display_name?: string | null
+          email?: string | null
           full_name?: string | null
           id?: string
           language?: string
