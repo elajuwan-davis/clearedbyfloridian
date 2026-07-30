@@ -29,8 +29,7 @@ const navGroups: NavGroup[] = [
   {
     label: "Dashboard",
     items: [
-      { to: "/portal", label: "Overview" },
-      { to: "/dashboard", label: "Builder Dashboard" },
+      { to: "/dashboard", label: "Dashboard" },
       { to: "/portal/alerts", label: "Victoria Alerts" },
       { to: "/messages", label: "Messages" },
     ],
