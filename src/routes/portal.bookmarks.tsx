@@ -1,6 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { BookmarkX, Bookmark as BookmarkIcon, ArrowRight } from "lucide-react";
-import { PortalShell } from "@/components/portal-shell";
 import { useBookmarks, removeBookmark, notifyBookmarksChanged } from "@/lib/bookmarks-api";
 
 export const Route = createFileRoute("/portal/bookmarks")({
@@ -27,8 +26,7 @@ function BookmarksPage() {
   }
 
   return (
-    <PortalShell>
-      <div className="mx-auto max-w-5xl">
+    <div className="mx-auto max-w-5xl">
         <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
           Quick access
         </div>
@@ -100,7 +98,6 @@ function BookmarksPage() {
             ))}
           </div>
         )}
-      </div>
-    </PortalShell>
+    </div>
   );
 }
