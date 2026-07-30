@@ -1,6 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import { PortalShell } from "@/components/portal-shell";
 import { Button } from "@/components/ui/button";
+import { useMyIdentity, greetingForNow } from "@/lib/profile-api";
+import { listPermits, type PermitRow } from "@/lib/permits-api";
+import { listThreads } from "@/lib/messages-api";
 import {
   AlertTriangle,
   FileSignature,
@@ -11,6 +15,7 @@ import {
   AlertCircle,
   MessageSquare,
 } from "lucide-react";
+
 
 export const Route = createFileRoute("/dashboard")({
   head: () => ({
