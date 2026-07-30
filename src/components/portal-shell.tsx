@@ -345,8 +345,8 @@ function RailButton({
   active: boolean;
   alerted: boolean;
   open: boolean;
-  onEnter: () => void;
-  onClick: () => void;
+  onEnter: (el: HTMLElement) => void;
+  onClick: (el: HTMLElement) => void;
 }) {
   const Icon = section.icon;
   const inner = (
