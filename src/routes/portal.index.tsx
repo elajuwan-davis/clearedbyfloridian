@@ -6,6 +6,8 @@ import { AlertsList } from "@/components/alerts-list";
 import { CoiAlertsWidget } from "@/components/coi-alerts-widget";
 import { listPermits, missingRequiredDocs, type PermitRow } from "@/lib/permits-api";
 import { listSubs, subIsComplete, type SubRow } from "@/lib/subs-api";
+import { useMyIdentity, greetingForNow } from "@/lib/profile-api";
+
 
 export const Route = createFileRoute("/portal/")({
   component: PortalOverview,
@@ -18,11 +20,20 @@ function PortalOverview() {
   const [subs, setSubs] = useState<SubRow[]>([]);
   const alerts = useExpirationAlerts();
   const [dismissed, setDismissed] = useState(false);
+  const me = useMyIdentity();
+  const [greeting, setGreeting] = useState(() => greetingForNow());
 
   useEffect(() => {
     listPermits().then(setPermits).catch(() => {});
     listSubs().then(setSubs).catch(() => {});
   }, []);
+
+  // Keep the greeting honest as the day rolls over.
+  useEffect(() => {
+    const id = setInterval(() => setGreeting(greetingForNow()), 60_000);
+    return () => clearInterval(id);
+  }, []);
+
 
   const active = permits.filter((p) => !CLOSED.has(p.status));
   const inReview = permits.filter((p) => p.status === "in_review" || p.status === "corrections_required").length;
@@ -43,9 +54,12 @@ function PortalOverview() {
     <div className="space-y-12 max-w-6xl">
       <div>
         <div className="label-eyebrow">Overview</div>
-        <h1 className="mt-4 font-display text-4xl tracking-tight">Good morning.</h1>
+        <h1 className="mt-4 font-display text-4xl tracking-tight">
+          {greeting}{me.firstName ? <>, <em>{me.firstName}</em></> : null}.
+        </h1>
         <p className="mt-2 text-muted-foreground">Live status of your Cleard permits and subcontractors.</p>
       </div>
+
 
       {!dismissed && alerts.length > 0 && (
         <section className="border hairline rounded-[3px] bg-background">
