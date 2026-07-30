@@ -105,7 +105,9 @@ function IconRail({
   const settings = settingsForRole(role);
   const { bookmarks } = useBookmarks();
   const [openKey, setOpenKey] = useState<string | null>(null);
+  const [openTop, setOpenTop] = useState(0);
   const [pinned, setPinned] = useState(false);
+  const railRef = useRef<HTMLDivElement | null>(null);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Any navigation or route change dismisses the flyout.
