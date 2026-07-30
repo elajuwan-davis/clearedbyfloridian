@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 
 export type ProfileRow = {
   id: string;
+  email: string | null;
   display_name: string | null;
   full_name: string | null;
   avatar_url: string | null;
