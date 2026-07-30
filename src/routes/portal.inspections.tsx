@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { inspections } from "@/lib/mock-data";
-import { StatusBadge } from "./portal.index";
+import { StatusBadge } from "@/components/permit-status-badge";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Plus } from "lucide-react";
 
