@@ -105,7 +105,9 @@ function IconRail({
   const settings = settingsForRole(role);
   const { bookmarks } = useBookmarks();
   const [openKey, setOpenKey] = useState<string | null>(null);
+  const [openTop, setOpenTop] = useState(0);
   const [pinned, setPinned] = useState(false);
+  const railRef = useRef<HTMLDivElement | null>(null);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Any navigation or route change dismisses the flyout.
@@ -151,8 +153,14 @@ function IconRail({
   );
   const active = [...allSections, settings].find((s) => s.key === openKey) ?? null;
 
+  /** Align the flyout with the rail button that opened it. */
+  function alignTo(el: HTMLElement) {
+    const railTop = railRef.current?.getBoundingClientRect().top ?? 0;
+    setOpenTop(Math.max(0, el.getBoundingClientRect().top - railTop - 8));
+  }
+
   return (
-    <div className="relative h-full" onMouseLeave={scheduleClose}>
+    <div className="relative h-full" onMouseLeave={scheduleClose} ref={railRef}>
       <div
         className="flex h-full w-16 flex-col items-center"
         style={{ backgroundColor: "var(--obsidian)" }}
@@ -174,16 +182,18 @@ function IconRail({
               active={sectionActive(pathname, s)}
               alerted={sectionAlerted(s, alertKeys)}
               open={openKey === s.key}
-              onEnter={() => {
+              onEnter={(el) => {
                 cancelClose();
+                if (s.items) alignTo(el);
                 setOpenKey(s.items ? s.key : null);
               }}
-              onClick={() => {
+              onClick={(el) => {
                 if (!s.items) return;
                 if (openKey === s.key && pinned) {
                   setOpenKey(null);
                   setPinned(false);
                 } else {
+                  alignTo(el);
                   setOpenKey(s.key);
                   setPinned(true);
                 }
@@ -201,15 +211,17 @@ function IconRail({
             active={sectionActive(pathname, settings)}
             alerted={false}
             open={openKey === settings.key}
-            onEnter={() => {
+            onEnter={(el) => {
               cancelClose();
+              alignTo(el);
               setOpenKey(settings.key);
             }}
-            onClick={() => {
+            onClick={(el) => {
               if (openKey === settings.key && pinned) {
                 setOpenKey(null);
                 setPinned(false);
               } else {
+                alignTo(el);
                 setOpenKey(settings.key);
                 setPinned(true);
               }
@@ -235,14 +247,18 @@ function IconRail({
 
       {active?.items && (
         <div
-          className="absolute left-16 top-0 z-50 w-64 border-r shadow-xl"
+          className="absolute left-16 z-50 w-64 border-r shadow-xl"
           onMouseEnter={cancelClose}
           onMouseLeave={scheduleClose}
           style={{
+            top: openTop,
+            maxHeight: `calc(100vh - ${openTop}px - 12px)`,
+            overflowY: "auto",
             backgroundColor: "var(--obsidian)",
             borderColor: railHairline,
           }}
         >
+
           <div
             className="px-5 py-4"
             style={{ borderBottom: `1px solid ${railHairline}` }}
@@ -329,8 +345,8 @@ function RailButton({
   active: boolean;
   alerted: boolean;
   open: boolean;
-  onEnter: () => void;
-  onClick: () => void;
+  onEnter: (el: HTMLElement) => void;
+  onClick: (el: HTMLElement) => void;
 }) {
   const Icon = section.icon;
   const inner = (
@@ -347,7 +363,7 @@ function RailButton({
       {section.to ? (
         <Link
           to={section.to as never}
-          onMouseEnter={onEnter}
+          onMouseEnter={(e) => onEnter(e.currentTarget)}
           aria-label={section.label}
           className="rail-btn"
           data-active={active ? "true" : "false"}
@@ -358,8 +374,8 @@ function RailButton({
       ) : (
         <button
           type="button"
-          onMouseEnter={onEnter}
-          onClick={onClick}
+          onMouseEnter={(e) => onEnter(e.currentTarget)}
+          onClick={(e) => onClick(e.currentTarget)}
           aria-label={section.label}
           aria-expanded={open}
           className="rail-btn"
