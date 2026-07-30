@@ -554,9 +554,9 @@ export function PortalShell({ children }: { children: ReactNode }) {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Fixed left sidebar (desktop) */}
-      <aside className="hidden lg:block fixed inset-y-0 left-0 z-40 w-[280px]">
-        <SidebarBody
+      {/* Fixed icon rail (desktop) */}
+      <aside className="hidden lg:block fixed inset-y-0 left-0 z-40 w-16">
+        <IconRail
           pathname={pathname}
           alertKeys={alertKeys}
           role={session.role}
@@ -568,7 +568,7 @@ export function PortalShell({ children }: { children: ReactNode }) {
         />
       </aside>
 
-      <div className="lg:pl-[280px]">
+      <div className="lg:pl-16">
         <header
           className="sticky top-0 z-30 h-16 bg-white border-b flex items-center gap-3 px-4 sm:px-6 lg:px-8"
           style={{ borderColor: "color-mix(in oklab, var(--obsidian) 10%, transparent)" }}
