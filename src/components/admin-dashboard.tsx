@@ -97,7 +97,7 @@ export function AdminDashboard() {
           .order("created_at", { ascending: false }),
         (supabase.from("tenants" as any) as any).select("id, name, status, created_at"),
         (supabase.from("tenant_members" as any) as any).select("user_id, tenant_id, role, created_at"),
-        (supabase.from("profiles" as any) as any).select("id, display_name, full_name"),
+        (supabase.from("profiles" as any) as any).select("id, email, display_name, full_name"),
         (supabase.from("service_fee_invoices" as any) as any).select("fee_cents, processing_fee_cents, status"),
         (supabase.from("message_threads" as any) as any).select("status, admin_unread"),
         (supabase.from("tenant_invites" as any) as any).select("uses, revoked_at"),
