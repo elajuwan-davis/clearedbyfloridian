@@ -19,6 +19,8 @@ import { NotificationPrefsSection } from "@/components/notification-prefs-sectio
 import { useServerFn } from "@tanstack/react-start";
 import { inviteTeamMemberFn, listMyTeamFn, removeTeamMemberFn, getMyTenantOnboardingFn, setTenantAllowedDomainFn, createInviteTokenFn, revokeInviteTokenFn } from "@/lib/tenants.functions";
 import { useSession } from "@/lib/use-session";
+import { nameFromEmail } from "@/lib/profile-api";
+
 
 export const Route = createFileRoute("/profile")({
   head: () => ({
@@ -66,8 +68,13 @@ function ProfilePage() {
     (async () => {
       const { data: auth } = await supabase.auth.getUser();
       const uid = auth?.user?.id ?? null;
+      const mail = auth?.user?.email ?? null;
       if (cancelled) return;
       setUserId(uid);
+      setEmail(mail);
+      // Sensible per-user defaults before anything is saved.
+      setDisplayName(nameFromEmail(mail));
+      if (mail) setEmails([mail]);
       if (!uid) return;
       const { data, error } = await supabase
         .from("profiles" as any)
@@ -85,10 +92,13 @@ function ProfilePage() {
         address: String(d.address ?? c.address),
       }));
       if (d.language) setLanguage(String(d.language));
-      if (Array.isArray(d.notification_emails)) setEmails(d.notification_emails as string[]);
+      if (Array.isArray(d.notification_emails) && (d.notification_emails as string[]).length > 0) {
+        setEmails(d.notification_emails as string[]);
+      }
     })();
     return () => { cancelled = true; };
   }, []);
+
 
   function onAvatar(e: React.ChangeEvent<HTMLInputElement>) {
     const f = e.target.files?.[0];
