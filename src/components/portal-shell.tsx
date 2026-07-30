@@ -121,7 +121,6 @@ const subSettingsGroup: NavGroup = {
 const adminGroup: NavGroup = {
   label: "Admin",
   items: [
-    { to: "/admin", label: "Admin Dashboard" },
     { to: "/admin/invites", label: "Invite Pipeline" },
     { to: "/admin/review-queue", label: "Review Queue" },
     { to: "/admin/activity", label: "Activity Log" },
@@ -530,7 +529,7 @@ export function PortalShell({ children }: { children: ReactNode }) {
               </span>
             </div>
             <Link
-              to="/admin"
+              to="/dashboard"
               className="font-mono text-[10px] tracking-[0.16em] uppercase underline underline-offset-2 hover:opacity-80"
             >
               Admin dashboard
