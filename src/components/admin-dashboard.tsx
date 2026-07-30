@@ -230,11 +230,15 @@ export function AdminDashboard() {
           <StatCard label="Outstanding Fees" value={fmtMoneyWhole(outstandingFeesCents)} sublabel="Invoiced + overdue" icon={<DollarSign className="h-4 w-4" />} mono />
         </div>
 
-        <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-3">
+        <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <StatCard label="Client Companies" value={String(tenants.length)} sublabel={`${tenants.filter((t) => t.status === "active").length} active`} icon={<Building2 className="h-4 w-4" />} />
           <StatCard label="User Accounts" value={String(members.length)} sublabel="Across all clients" icon={<Users className="h-4 w-4" />} />
           <StatCard label="Open Conversations" value={String(openThreads)} sublabel={`${adminUnread} unread for staff`} icon={<MessageSquare className="h-4 w-4" />} />
+          <StatCard label="Open Invites" value={String(invites.open)} sublabel={`${invites.accepted} accepted`} icon={<Mail className="h-4 w-4" />} />
+          <StatCard label="Access Requests" value={String(accessRequests.pending)} sublabel={`${accessRequests.total} all time`} icon={<UserPlus className="h-4 w-4" />} accent="warn" />
+          <StatCard label="Approved Permits" value={String(permits.filter((r) => r.status === "approved" || r.status === "permit_issued").length)} sublabel="Approved or issued" icon={<Stamp className="h-4 w-4" />} accent="sky" />
         </div>
+
 
         {/* Filters */}
         <div className="mt-10 flex flex-wrap items-end gap-4 border-b border-obsidian/10 pb-5">
