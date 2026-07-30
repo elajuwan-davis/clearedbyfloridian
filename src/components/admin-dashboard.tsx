@@ -23,6 +23,8 @@ import {
   MessageSquare,
   Search,
   Loader2,
+  Mail,
+  UserPlus,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { projectStatusMeta, toneClass, type ProjectStatus as Status } from "@/lib/status-badges";
