@@ -93,7 +93,7 @@ function DashboardPage() {
         <div className="min-w-0">
           <div className="label-eyebrow mb-3">Builder dashboard</div>
           <h1 className="display-serif text-3xl sm:text-4xl md:text-5xl leading-[1.05]">
-            {greeting}, <em>{mockBuilder.first_name}</em>.
+            {greeting}{me.firstName ? <>, <em>{me.firstName}</em></> : null}.
           </h1>
         </div>
         <Button
