@@ -625,6 +625,7 @@ export function PortalShell({ children }: { children: ReactNode }) {
           {session.isAdmin && <AdminTenantSwitcher />}
 
           <div className="ml-auto flex items-center gap-2">
+            <BookmarkToggle />
             <NotificationBell />
             <div className="hidden sm:block">
               <DropdownMenu>
@@ -655,7 +656,7 @@ export function PortalShell({ children }: { children: ReactNode }) {
                     )}
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
-                  {(session.role === "subcontractor" ? subSettingsGroup : settingsGroup).items.map((item, i) => (
+                  {(settingsForRole(session.role).items ?? []).map((item, i) => (
                     <DropdownMenuItem key={`${item.to}-${i}`} asChild>
                       <Link to={item.to as never} className="px-3 py-2 text-[13px] rounded-[2px] cursor-pointer" style={{ color: "var(--obsidian)" }}>
                         {item.label}
