@@ -78,6 +78,8 @@ export function AdminDashboard() {
   const [invoices, setInvoices] = useState<InvoiceLite[]>([]);
   const [openThreads, setOpenThreads] = useState(0);
   const [adminUnread, setAdminUnread] = useState(0);
+  const [invites, setInvites] = useState<{ open: number; accepted: number }>({ open: 0, accepted: 0 });
+  const [accessRequests, setAccessRequests] = useState<{ pending: number; total: number }>({ pending: 0, total: 0 });
 
   const [statusFilter, setStatusFilter] = useState<"all" | Status>("all");
   const [countyFilter, setCountyFilter] = useState<"all" | (typeof COUNTIES)[number]>("all");
