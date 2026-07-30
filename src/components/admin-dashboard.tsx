@@ -89,7 +89,7 @@ export function AdminDashboard() {
   useEffect(() => {
     let cancelled = false;
     (async () => {
-      const [p, t, m, pr, inv, th] = await Promise.all([
+      const [p, t, m, pr, inv, th, invt, ar] = await Promise.all([
         (supabase.from("permits" as any) as any)
           .select("id, permit_number, project_name, job_address, county, municipality, status, construction_value_cents, submitted_date, created_at, created_by, tenant_id")
           .order("created_at", { ascending: false }),
@@ -98,6 +98,8 @@ export function AdminDashboard() {
         (supabase.from("profiles" as any) as any).select("id, display_name, full_name"),
         (supabase.from("service_fee_invoices" as any) as any).select("fee_cents, processing_fee_cents, status"),
         (supabase.from("message_threads" as any) as any).select("status, admin_unread"),
+        (supabase.from("tenant_invites" as any) as any).select("uses, revoked_at"),
+        (supabase.from("access_requests" as any) as any).select("status"),
       ]);
       if (cancelled) return;
       setPermits(((p.data ?? []) as PermitLite[]));
@@ -108,10 +110,21 @@ export function AdminDashboard() {
       const threads = (th.data ?? []) as Array<{ status: string; admin_unread: number }>;
       setOpenThreads(threads.filter((x) => x.status === "open").length);
       setAdminUnread(threads.reduce((n, x) => n + (x.admin_unread ?? 0), 0));
+      const inviteRows = (invt.data ?? []) as Array<{ uses: number | null; revoked_at: string | null }>;
+      setInvites({
+        open: inviteRows.filter((i) => !i.revoked_at && Number(i.uses ?? 0) === 0).length,
+        accepted: inviteRows.reduce((n, i) => n + Number(i.uses ?? 0), 0),
+      });
+      const arRows = (ar.data ?? []) as Array<{ status: string }>;
+      setAccessRequests({
+        pending: arRows.filter((r) => r.status === "pending").length,
+        total: arRows.length,
+      });
       setLoading(false);
     })().catch(() => setLoading(false));
     return () => { cancelled = true; };
   }, []);
+
 
   const tenantName = useMemo(() => {
     const map = new Map<string, string>();
