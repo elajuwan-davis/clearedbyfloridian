@@ -18,6 +18,8 @@ import { Search, Send, Inbox, Plus, Loader2, MessageSquare } from "lucide-react"
 import { useSession } from "@/lib/use-session";
 import { useMyIdentity } from "@/lib/profile-api";
 import {
+  CLEARD_SUPPORT_EMAIL,
+  CLEARD_SUPPORT_LABEL,
   listThreads,
   listPosts,
   createThread,
