@@ -446,6 +446,11 @@ export function AdminDashboard() {
                     <tr key={a.user_id} className="border-b border-obsidian/5">
                       <td className="px-5 py-3">
                         <div className="text-obsidian">{a.name}</div>
+                        {a.email && (
+                          <div className="font-mono text-[10px] lowercase tracking-[0.04em] text-obsidian/55">
+                            {a.email}
+                          </div>
+                        )}
                         <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-obsidian/40">
                           joined {fmtDate(a.joined)}
                         </div>
