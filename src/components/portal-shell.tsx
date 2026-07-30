@@ -363,7 +363,7 @@ function RailButton({
       {section.to ? (
         <Link
           to={section.to as never}
-          onMouseEnter={onEnter}
+          onMouseEnter={(e) => onEnter(e.currentTarget)}
           aria-label={section.label}
           className="rail-btn"
           data-active={active ? "true" : "false"}
@@ -374,8 +374,8 @@ function RailButton({
       ) : (
         <button
           type="button"
-          onMouseEnter={onEnter}
-          onClick={onClick}
+          onMouseEnter={(e) => onEnter(e.currentTarget)}
+          onClick={(e) => onClick(e.currentTarget)}
           aria-label={section.label}
           aria-expanded={open}
           className="rail-btn"
