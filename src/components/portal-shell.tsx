@@ -341,7 +341,6 @@ function RailButton({
   onClick: () => void;
 }) {
   const Icon = section.icon;
-  const highlighted = active || open;
   const inner = (
     <>
       <Icon className="h-[19px] w-[19px]" strokeWidth={1.5} />
@@ -350,11 +349,6 @@ function RailButton({
       )}
     </>
   );
-  const style = {
-    color: highlighted ? "var(--obsidian)" : "color-mix(in oklab, var(--paper) 78%, transparent)",
-    backgroundColor: highlighted ? "var(--sky)" : "transparent",
-    borderRadius: "8px",
-  } as const;
 
   return (
     <div className="group relative">
@@ -363,8 +357,9 @@ function RailButton({
           to={section.to as never}
           onMouseEnter={onEnter}
           aria-label={section.label}
-          className="relative grid h-11 w-11 place-items-center transition-colors"
-          style={style}
+          className="rail-btn"
+          data-active={active ? "true" : "false"}
+          data-open="false"
         >
           {inner}
         </Link>
@@ -375,14 +370,16 @@ function RailButton({
           onClick={onClick}
           aria-label={section.label}
           aria-expanded={open}
-          className="relative grid h-11 w-11 place-items-center transition-colors"
-          style={style}
+          className="rail-btn"
+          data-active={active ? "true" : "false"}
+          data-open={open ? "true" : "false"}
         >
           {inner}
         </button>
       )}
       <RailTooltip>{section.label}</RailTooltip>
     </div>
+
   );
 }
 
