@@ -43,11 +43,13 @@ function relTime(iso: string | null | undefined) {
   return `${Math.round(d / 7)}w ago`;
 }
 
-function DashboardPage() {
+export function BuilderDashboard() {
   const me = useMyIdentity();
   const [greeting, setGreeting] = useState(() => greetingForNow());
   const [permits, setPermits] = useState<PermitRow[]>([]);
   const [unread, setUnread] = useState(0);
+  const alerts = useExpirationAlerts();
+
 
   useEffect(() => {
     listPermits().then(setPermits).catch(() => {});
@@ -129,6 +131,25 @@ function DashboardPage() {
           )}
         </div>
       )}
+
+      {alerts.length > 0 && (
+        <section className="border hairline rounded-[3px] bg-background mb-8">
+          <div className="flex items-center gap-2 px-4 py-3 border-b hairline">
+            <AlertTriangle className="h-4 w-4 text-red-600" strokeWidth={1.75} />
+            <div className="font-mono text-[10px] uppercase tracking-[0.18em]">
+              Expiring licenses &amp; insurance
+            </div>
+            <span className="font-mono text-[10px] text-muted-foreground">
+              {alerts.length} item{alerts.length === 1 ? "" : "s"}
+            </span>
+          </div>
+          <AlertsList alerts={alerts} />
+        </section>
+      )}
+
+      <div className="mb-8">
+        <CoiAlertsWidget />
+      </div>
 
       {/* Stat cards — obsidian, one with sky accent */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-12">
