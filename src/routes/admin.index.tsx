@@ -1,15 +1,7 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect, useMemo, useState } from "react";
 import { PortalShell } from "@/components/portal-shell";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-} from "@/components/ui/dialog";
 import {
   Select,
   SelectContent,
@@ -18,101 +10,186 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 import {
   FolderOpen,
   AlertTriangle,
   Stamp,
   DollarSign,
-  UserPlus,
   Filter,
   ArrowUpRight,
+  Users,
+  Building2,
+  MessageSquare,
+  Search,
+  Loader2,
 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { projectStatusMeta, toneClass, type ProjectStatus as Status } from "@/lib/status-badges";
 
 export const Route = createFileRoute("/admin/")({
   head: () => ({
     meta: [
       { title: "Admin · Operations — Cleard" },
+      { name: "description", content: "Cleard staff operations desk: live permit queue, client accounts and fee status." },
       { name: "robots", content: "noindex" },
     ],
   }),
   component: AdminPage,
 });
 
-/* ─────────── types ─────────── */
-import { projectStatusMeta, toneClass, type BadgeTone, type ProjectStatus as Status } from "@/lib/status-badges";
-type Tone = BadgeTone;
 const statusMeta = projectStatusMeta;
 
+const COUNTIES = ["Palm Beach", "Martin", "St. Lucie", "Indian River", "Broward", "Miami-Dade"] as const;
 
-type Fee = { kind: "permitting" | "admin"; amount_cents: number; status: "invoiced" | "paid" | "overdue" };
-
-type Row = {
+type PermitLite = {
   id: string;
-  permit_no: string;
-  name: string;
-  gc: string;
-  county: "Broward" | "Palm Beach" | "Martin" | "St. Lucie" | "Indian River";
-  value_cents: number;
-  status: Status;
-  assignee: string | null;
-  submitted_at: string;
-  age_days: number;
-  fees: Fee[];
+  permit_number: string | null;
+  project_name: string;
+  job_address: string | null;
+  county: string | null;
+  municipality: string | null;
+  status: string;
+  construction_value_cents: number | null;
+  submitted_date: string | null;
+  created_at: string;
+  created_by: string | null;
+  tenant_id: string | null;
 };
 
-const STAFF = [
-  "M. Calderón (Plan Review)",
-  "R. Tan (Plan Review)",
-  "D. Whitcomb (Inspections)",
-  "P. Vázquez (Inspections)",
-  "Unassigned",
-];
-
-const ROWS: Row[] = [
-  { id: "1", permit_no: "CLR-2026-0142", name: "Ocean Ridge Estate", gc: "Coastline Builders Group", county: "Palm Beach", value_cents: 412_500_000, status: "in_review", assignee: "M. Calderón (Plan Review)", submitted_at: "May 28", age_days: 10, fees: [{ kind: "permitting", amount_cents: 6_187_500, status: "invoiced" }, { kind: "admin", amount_cents: 885_600, status: "invoiced" }] },
-  { id: "2", permit_no: "CLR-2026-0138", name: "Jupiter Island Residence", gc: "Coastline Builders Group", county: "Martin", value_cents: 687_200_000, status: "corrections_required", assignee: "R. Tan (Plan Review)", submitted_at: "May 21", age_days: 17, fees: [{ kind: "permitting", amount_cents: 10_308_000, status: "overdue" }, { kind: "admin", amount_cents: 885_600, status: "paid" }] },
-  { id: "3", permit_no: "CLR-2026-0131", name: "Manalapan Bayfront", gc: "Coastline Builders Group", county: "Palm Beach", value_cents: 1_240_000_000, status: "permit_issued", assignee: "M. Calderón (Plan Review)", submitted_at: "May 12", age_days: 26, fees: [{ kind: "permitting", amount_cents: 18_600_000, status: "paid" }, { kind: "admin", amount_cents: 885_600, status: "paid" }] },
-  { id: "4", permit_no: "CLR-2026-0127", name: "Hobe Sound Compound", gc: "Coastline Builders Group", county: "Martin", value_cents: 298_400_000, status: "approved", assignee: "R. Tan (Plan Review)", submitted_at: "May 06", age_days: 32, fees: [{ kind: "permitting", amount_cents: 4_476_000, status: "invoiced" }, { kind: "admin", amount_cents: 885_600, status: "invoiced" }] },
-  { id: "5", permit_no: "CLR-2026-0119", name: "Vero Beach Oceanfront", gc: "Coastline Builders Group", county: "Indian River", value_cents: 524_900_000, status: "submitted", assignee: null, submitted_at: "Apr 29", age_days: 39, fees: [{ kind: "permitting", amount_cents: 7_873_500, status: "invoiced" }, { kind: "admin", amount_cents: 885_600, status: "invoiced" }] },
-  { id: "6", permit_no: "CLR-2026-0112", name: "Stuart Riverhouse", gc: "Coastline Builders Group", county: "Martin", value_cents: 186_300_000, status: "inspection_scheduled", assignee: "D. Whitcomb (Inspections)", submitted_at: "Apr 22", age_days: 46, fees: [{ kind: "permitting", amount_cents: 2_794_500, status: "paid" }, { kind: "admin", amount_cents: 885_600, status: "paid" }] },
-  { id: "7", permit_no: "CLR-2026-0104", name: "Palm Beach Landmark", gc: "Coastline Builders Group", county: "Palm Beach", value_cents: 2_180_000_000, status: "resubmitted", assignee: "M. Calderón (Plan Review)", submitted_at: "Apr 14", age_days: 54, fees: [{ kind: "permitting", amount_cents: 32_700_000, status: "overdue" }, { kind: "admin", amount_cents: 885_600, status: "invoiced" }] },
-  { id: "8", permit_no: "CLR-2026-0098", name: "Tequesta Beach Modern", gc: "Coastline Builders Group", county: "Martin", value_cents: 348_000_000, status: "corrections_required", assignee: "R. Tan (Plan Review)", submitted_at: "Apr 08", age_days: 60, fees: [{ kind: "permitting", amount_cents: 5_220_000, status: "invoiced" }, { kind: "admin", amount_cents: 885_600, status: "invoiced" }] },
-];
+type TenantLite = { id: string; name: string; status: string; created_at: string };
+type MemberLite = { user_id: string; tenant_id: string; role: string; created_at: string };
+type ProfileLite = { id: string; display_name: string | null; full_name: string | null };
+type InvoiceLite = { fee_cents: number; processing_fee_cents: number; status: string };
 
 const fmtMoneyWhole = (cents: number) =>
-  `$${(cents / 100).toLocaleString("en-US", { maximumFractionDigits: 0 })}`;
+  `$${Math.round(cents / 100).toLocaleString("en-US")}`;
 
-/* ─────────── page ─────────── */
+function daysSince(iso: string | null) {
+  if (!iso) return 0;
+  const t = new Date(iso).getTime();
+  if (Number.isNaN(t)) return 0;
+  return Math.max(0, Math.round((Date.now() - t) / 86_400_000));
+}
+
+function fmtDate(iso: string | null) {
+  if (!iso) return "—";
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return "—";
+  return d.toLocaleDateString("en-US", { month: "short", day: "2-digit" });
+}
+
 function AdminPage() {
+  const [loading, setLoading] = useState(true);
+  const [permits, setPermits] = useState<PermitLite[]>([]);
+  const [tenants, setTenants] = useState<TenantLite[]>([]);
+  const [members, setMembers] = useState<MemberLite[]>([]);
+  const [profiles, setProfiles] = useState<ProfileLite[]>([]);
+  const [invoices, setInvoices] = useState<InvoiceLite[]>([]);
+  const [openThreads, setOpenThreads] = useState(0);
+  const [adminUnread, setAdminUnread] = useState(0);
+
   const [statusFilter, setStatusFilter] = useState<"all" | Status>("all");
-  const [countyFilter, setCountyFilter] = useState<"all" | Row["county"]>("all");
-  const [assignTarget, setAssignTarget] = useState<Row | null>(null);
-  const [pendingAssignee, setPendingAssignee] = useState<string>("");
+  const [countyFilter, setCountyFilter] = useState<"all" | (typeof COUNTIES)[number]>("all");
+  const [clientFilter, setClientFilter] = useState<"all" | string>("all");
+  const [query, setQuery] = useState("");
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const [p, t, m, pr, inv, th] = await Promise.all([
+        (supabase.from("permits" as any) as any)
+          .select("id, permit_number, project_name, job_address, county, municipality, status, construction_value_cents, submitted_date, created_at, created_by, tenant_id")
+          .order("created_at", { ascending: false }),
+        (supabase.from("tenants" as any) as any).select("id, name, status, created_at"),
+        (supabase.from("tenant_members" as any) as any).select("user_id, tenant_id, role, created_at"),
+        (supabase.from("profiles" as any) as any).select("id, display_name, full_name"),
+        (supabase.from("service_fee_invoices" as any) as any).select("fee_cents, processing_fee_cents, status"),
+        (supabase.from("message_threads" as any) as any).select("status, admin_unread"),
+      ]);
+      if (cancelled) return;
+      setPermits(((p.data ?? []) as PermitLite[]));
+      setTenants(((t.data ?? []) as TenantLite[]));
+      setMembers(((m.data ?? []) as MemberLite[]));
+      setProfiles(((pr.data ?? []) as ProfileLite[]));
+      setInvoices(((inv.data ?? []) as InvoiceLite[]));
+      const threads = (th.data ?? []) as Array<{ status: string; admin_unread: number }>;
+      setOpenThreads(threads.filter((x) => x.status === "open").length);
+      setAdminUnread(threads.reduce((n, x) => n + (x.admin_unread ?? 0), 0));
+      setLoading(false);
+    })().catch(() => setLoading(false));
+    return () => { cancelled = true; };
+  }, []);
+
+  const tenantName = useMemo(() => {
+    const map = new Map<string, string>();
+    tenants.forEach((t) => map.set(t.id, t.name));
+    return map;
+  }, [tenants]);
+
+  const userName = useMemo(() => {
+    const map = new Map<string, string>();
+    profiles.forEach((p) => map.set(p.id, p.display_name || p.full_name || ""));
+    return map;
+  }, [profiles]);
 
   const filtered = useMemo(() => {
-    return ROWS.filter(
-      (r) =>
-        (statusFilter === "all" || r.status === statusFilter) &&
-        (countyFilter === "all" || r.county === countyFilter),
-    );
-  }, [statusFilter, countyFilter]);
+    const q = query.trim().toLowerCase();
+    return permits.filter((r) => {
+      if (statusFilter !== "all" && r.status !== statusFilter) return false;
+      if (countyFilter !== "all" && (r.county ?? "") !== countyFilter) return false;
+      if (clientFilter !== "all" && (r.tenant_id ?? "") !== clientFilter) return false;
+      if (!q) return true;
+      return `${r.project_name} ${r.permit_number ?? ""} ${r.job_address ?? ""} ${tenantName.get(r.tenant_id ?? "") ?? ""}`
+        .toLowerCase()
+        .includes(q);
+    });
+  }, [permits, statusFilter, countyFilter, clientFilter, query, tenantName]);
 
-  // Stats — computed off the full ROWS dataset (not filtered)
-  const activeCount = ROWS.filter((r) => r.status !== "permit_issued").length;
-  const correctionsCount = ROWS.filter((r) => r.status === "corrections_required").length;
-  const permitsThisMonth = ROWS.filter((r) => r.status === "permit_issued").length;
-  const outstandingFeesCents = ROWS.flatMap((r) => r.fees)
-    .filter((f) => f.status === "invoiced" || f.status === "overdue")
-    .reduce((s, f) => s + f.amount_cents, 0);
+  const activeCount = permits.filter((r) => r.status !== "permit_issued" && r.status !== "cancelled").length;
+  const correctionsCount = permits.filter((r) => r.status === "corrections_required").length;
+  const issuedCount = permits.filter((r) => r.status === "permit_issued").length;
+  const outstandingFeesCents = invoices
+    .filter((f) => f.status !== "paid" && f.status !== "refunded")
+    .reduce((s, f) => s + Number(f.fee_cents ?? 0) + Number(f.processing_fee_cents ?? 0), 0);
 
-  const openAssign = (row: Row) => {
-    setAssignTarget(row);
-    setPendingAssignee(row.assignee ?? "Unassigned");
-  };
+  // Per-client rollup
+  const clientRows = useMemo(() => {
+    return tenants
+      .map((t) => {
+        const tp = permits.filter((p) => p.tenant_id === t.id);
+        return {
+          id: t.id,
+          name: t.name,
+          status: t.status,
+          created_at: t.created_at,
+          accounts: members.filter((m) => m.tenant_id === t.id).length,
+          permits: tp.length,
+          active: tp.filter((p) => p.status !== "permit_issued" && p.status !== "cancelled").length,
+          issued: tp.filter((p) => p.status === "permit_issued").length,
+          value: tp.reduce((s, p) => s + Number(p.construction_value_cents ?? 0), 0),
+        };
+      })
+      .sort((a, b) => b.permits - a.permits || a.name.localeCompare(b.name));
+  }, [tenants, permits, members]);
+
+  // Per-account rollup (permits added by user)
+  const accountRows = useMemo(() => {
+    return members
+      .map((m) => ({
+        user_id: m.user_id,
+        name: userName.get(m.user_id) || `User ${m.user_id.slice(0, 8)}`,
+        client: tenantName.get(m.tenant_id) ?? "—",
+        role: m.role,
+        joined: m.created_at,
+        permits: permits.filter((p) => p.created_by === m.user_id).length,
+      }))
+      .sort((a, b) => b.permits - a.permits || a.name.localeCompare(b.name));
+  }, [members, permits, userName, tenantName]);
 
   return (
     <PortalShell>
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
+      <div className="mx-auto max-w-7xl">
         {/* Header */}
         <div className="border-b border-obsidian/10 pb-8">
           <div className="flex flex-wrap items-center gap-2">
@@ -121,42 +198,37 @@ function AdminPage() {
               Admin · Staff Only
             </span>
           </div>
-          <div className="mt-3 flex flex-wrap items-end justify-between gap-4">
-            <h1 className="display-serif text-5xl text-obsidian">
+          <div className="mt-3 grid grid-cols-[minmax(0,1fr)_auto] items-end gap-4 sm:flex sm:flex-wrap sm:justify-between">
+            <h1 className="display-serif text-4xl sm:text-5xl text-obsidian">
               Operations <em>Desk</em>
             </h1>
-            <Button asChild variant="outline" className="rounded-[3px]">
-              <a href="/admin/contractors">Contractor Registry →</a>
-            </Button>
+            <div className="flex shrink-0 flex-wrap gap-2">
+              <Button asChild variant="outline" className="rounded-[3px]">
+                <Link to="/admin/review-queue">Review queue</Link>
+              </Button>
+              <Button asChild variant="outline" className="rounded-[3px]">
+                <Link to="/admin/contractors">Contractor registry</Link>
+              </Button>
+            </div>
           </div>
           <p className="mt-2 max-w-2xl text-sm text-obsidian/60">
-            Portfolio-wide queue across Broward, Palm Beach, and the Treasure Coast. Triage
-            corrections, assign reviewers, monitor float on invoiced fees.
+            Live portfolio across Palm Beach and the Treasure Coast — every client account, permit
+            and invoiced fee, straight from the database.
           </p>
         </div>
 
-        {/* Stat cards — obsidian */}
+        {/* Stat cards */}
         <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <StatCard label="Active Projects" value={String(activeCount)} icon={<FolderOpen className="h-4 w-4" />} />
-          <StatCard
-            label="Corrections Pending"
-            value={String(correctionsCount)}
-            icon={<AlertTriangle className="h-4 w-4" />}
-            accent="warn"
-          />
-          <StatCard
-            label="Permits Issued · Jun"
-            value={String(permitsThisMonth)}
-            icon={<Stamp className="h-4 w-4" />}
-            accent="sky"
-          />
-          <StatCard
-            label="Outstanding Fees"
-            value={fmtMoneyWhole(outstandingFeesCents)}
-            sublabel="Invoiced + overdue"
-            icon={<DollarSign className="h-4 w-4" />}
-            mono
-          />
+          <StatCard label="Active Permits" value={String(activeCount)} sublabel={`${permits.length} total on file`} icon={<FolderOpen className="h-4 w-4" />} />
+          <StatCard label="Corrections Pending" value={String(correctionsCount)} icon={<AlertTriangle className="h-4 w-4" />} accent="warn" />
+          <StatCard label="Permits Issued" value={String(issuedCount)} icon={<Stamp className="h-4 w-4" />} accent="sky" />
+          <StatCard label="Outstanding Fees" value={fmtMoneyWhole(outstandingFeesCents)} sublabel="Invoiced + overdue" icon={<DollarSign className="h-4 w-4" />} mono />
+        </div>
+
+        <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-3">
+          <StatCard label="Client Companies" value={String(tenants.length)} sublabel={`${tenants.filter((t) => t.status === "active").length} active`} icon={<Building2 className="h-4 w-4" />} />
+          <StatCard label="User Accounts" value={String(members.length)} sublabel="Across all clients" icon={<Users className="h-4 w-4" />} />
+          <StatCard label="Open Conversations" value={String(openThreads)} sublabel={`${adminUnread} unread for staff`} icon={<MessageSquare className="h-4 w-4" />} />
         </div>
 
         {/* Filters */}
@@ -165,14 +237,19 @@ function AdminPage() {
             <Filter className="h-3.5 w-3.5" />
             Filter Queue
           </div>
-          <div className="min-w-[200px]">
-            <Label className="mb-1.5 block font-mono text-[10px] font-medium uppercase tracking-[0.14em] text-obsidian/65">
-              Status
-            </Label>
+          <div className="relative min-w-[220px] flex-1">
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-obsidian/40" />
+            <Input
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Search project, permit no. or client…"
+              className="h-10 rounded-[3px] border-obsidian/15 bg-white pl-9"
+            />
+          </div>
+          <div className="min-w-[180px]">
+            <Label className="mb-1.5 block font-mono text-[10px] font-medium uppercase tracking-[0.14em] text-obsidian/65">Status</Label>
             <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v as typeof statusFilter)}>
-              <SelectTrigger className="rounded-[3px] border-obsidian/15 bg-white">
-                <SelectValue />
-              </SelectTrigger>
+              <SelectTrigger className="rounded-[3px] border-obsidian/15 bg-white"><SelectValue /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All statuses</SelectItem>
                 {(Object.keys(statusMeta) as Status[]).map((s) => (
@@ -181,28 +258,36 @@ function AdminPage() {
               </SelectContent>
             </Select>
           </div>
-          <div className="min-w-[200px]">
-            <Label className="mb-1.5 block font-mono text-[10px] font-medium uppercase tracking-[0.14em] text-obsidian/65">
-              County
-            </Label>
+          <div className="min-w-[170px]">
+            <Label className="mb-1.5 block font-mono text-[10px] font-medium uppercase tracking-[0.14em] text-obsidian/65">County</Label>
             <Select value={countyFilter} onValueChange={(v) => setCountyFilter(v as typeof countyFilter)}>
-              <SelectTrigger className="rounded-[3px] border-obsidian/15 bg-white">
-                <SelectValue />
-              </SelectTrigger>
+              <SelectTrigger className="rounded-[3px] border-obsidian/15 bg-white"><SelectValue /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All counties</SelectItem>
-                {(["Broward", "Palm Beach", "Martin", "St. Lucie", "Indian River"] as const).map((c) => (
+                {COUNTIES.map((c) => (
                   <SelectItem key={c} value={c}>{c}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
           </div>
+          <div className="min-w-[190px]">
+            <Label className="mb-1.5 block font-mono text-[10px] font-medium uppercase tracking-[0.14em] text-obsidian/65">Client</Label>
+            <Select value={clientFilter} onValueChange={setClientFilter}>
+              <SelectTrigger className="rounded-[3px] border-obsidian/15 bg-white"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All clients</SelectItem>
+                {tenants.map((t) => (
+                  <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
           <div className="ml-auto font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/45">
-            {filtered.length} of {ROWS.length} projects
+            {filtered.length} of {permits.length} permits
           </div>
         </div>
 
-        {/* Table */}
+        {/* Permit queue */}
         <div className="mt-6 overflow-hidden border border-obsidian/15 bg-white">
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
@@ -212,71 +297,62 @@ function AdminPage() {
                   <Th>County</Th>
                   <Th align="right">Value</Th>
                   <Th>Status</Th>
-                  <Th>Assignee</Th>
+                  <Th>Client</Th>
                   <Th>Age</Th>
                   <Th align="right"> </Th>
                 </tr>
               </thead>
               <tbody>
-                {filtered.length === 0 ? (
+                {loading ? (
                   <tr>
                     <td colSpan={7} className="px-6 py-16 text-center text-sm text-obsidian/55">
-                      No projects match these filters.
+                      <Loader2 className="mx-auto h-4 w-4 animate-spin" />
+                    </td>
+                  </tr>
+                ) : filtered.length === 0 ? (
+                  <tr>
+                    <td colSpan={7} className="px-6 py-16 text-center text-sm text-obsidian/55">
+                      No permits match these filters.
                     </td>
                   </tr>
                 ) : (
                   filtered.map((r) => {
-                    const meta = statusMeta[r.status];
+                    const meta = statusMeta[r.status as Status] ?? { label: r.status.replace(/_/g, " "), tone: "neutral" as const };
                     return (
                       <tr key={r.id} className="border-b border-obsidian/5 transition-colors hover:bg-paper-warm/50">
                         <td className="px-6 py-4">
-                          <div className="font-medium text-obsidian">{r.name}</div>
-                          <div className="mt-0.5 text-xs text-obsidian/55">{r.gc}</div>
+                          <div className="font-medium text-obsidian">{r.project_name}</div>
+                          <div className="mt-0.5 text-xs text-obsidian/55">{r.job_address}</div>
                           <div className="mt-1 font-mono text-[10px] uppercase tracking-[0.12em] text-obsidian/40">
-                            {r.permit_no} · filed {r.submitted_at}
+                            {r.permit_number ?? "—"} · filed {fmtDate(r.submitted_date ?? r.created_at)}
                           </div>
                         </td>
-                        <td className="px-6 py-4 text-obsidian/75">{r.county}</td>
+                        <td className="px-6 py-4 text-obsidian/75">{r.county ?? r.municipality ?? "—"}</td>
                         <td className="px-6 py-4 text-right font-mono tabular-nums text-obsidian">
-                          {fmtMoneyWhole(r.value_cents)}
+                          {fmtMoneyWhole(Number(r.construction_value_cents ?? 0))}
                         </td>
                         <td className="px-6 py-4">
                           <span className={`inline-flex items-center border px-2 py-0.5 font-mono text-[10px] font-medium uppercase tracking-[0.1em] ${toneClass[meta.tone]}`}>
                             {meta.label}
                           </span>
                         </td>
-                        <td className="px-6 py-4">
-                          {r.assignee ? (
-                            <span className="text-sm text-obsidian/85">{r.assignee}</span>
-                          ) : (
-                            <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-oxblood">
-                              Unassigned
-                            </span>
-                          )}
+                        <td className="px-6 py-4 text-obsidian/80">
+                          {tenantName.get(r.tenant_id ?? "") ?? "—"}
+                          <div className="mt-0.5 font-mono text-[10px] uppercase tracking-[0.12em] text-obsidian/40">
+                            {userName.get(r.created_by ?? "") || "—"}
+                          </div>
                         </td>
                         <td className="px-6 py-4 font-mono text-xs tabular-nums text-obsidian/65">
-                          {r.age_days}d
+                          {daysSince(r.submitted_date ?? r.created_at)}d
                         </td>
                         <td className="px-6 py-4 text-right">
-                          <div className="inline-flex items-center gap-2">
-                            <Button
-                              type="button"
-                              variant="outline"
-                              size="sm"
-                              onClick={() => openAssign(r)}
-                              className="rounded-[3px]"
-                            >
-                              <UserPlus className="mr-1.5 h-3.5 w-3.5" />
-                              Assign
-                            </Button>
-                            <a
-                              href={`/projects/${r.id}`}
-                              className="inline-flex items-center gap-1 font-mono text-[10px] font-medium uppercase tracking-[0.14em] text-sky transition-opacity hover:opacity-70"
-                            >
-                              View
-                              <ArrowUpRight className="h-3 w-3" />
-                            </a>
-                          </div>
+                          <Link
+                            to="/portal/permits/$id"
+                            params={{ id: r.id }}
+                            className="inline-flex items-center gap-1 font-mono text-[10px] font-medium uppercase tracking-[0.14em] text-sky transition-opacity hover:opacity-70"
+                          >
+                            Open <ArrowUpRight className="h-3 w-3" />
+                          </Link>
                         </td>
                       </tr>
                     );
@@ -286,50 +362,86 @@ function AdminPage() {
             </table>
           </div>
         </div>
+
+        {/* Clients + accounts */}
+        <div className="mt-12 grid grid-cols-1 gap-6 xl:grid-cols-2">
+          <section className="border border-obsidian/15 bg-white">
+            <header className="border-b border-obsidian/10 px-5 py-4">
+              <div className="eyebrow text-obsidian/50">Client Companies</div>
+              <h2 className="display-serif mt-1 text-2xl text-obsidian">By permit volume</h2>
+            </header>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead className="bg-paper-warm/60">
+                  <tr>
+                    <Th light>Client</Th>
+                    <Th light align="right">Accounts</Th>
+                    <Th light align="right">Permits</Th>
+                    <Th light align="right">Active</Th>
+                    <Th light align="right">Value</Th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {clientRows.length === 0 ? (
+                    <tr><td colSpan={5} className="px-5 py-10 text-center text-sm text-obsidian/50">No client companies yet.</td></tr>
+                  ) : clientRows.map((c) => (
+                    <tr key={c.id} className="border-b border-obsidian/5">
+                      <td className="px-5 py-3">
+                        <div className="text-obsidian">{c.name}</div>
+                        <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-obsidian/40">
+                          {c.status} · joined {fmtDate(c.created_at)}
+                        </div>
+                      </td>
+                      <td className="px-5 py-3 text-right font-mono tabular-nums text-obsidian/80">{c.accounts}</td>
+                      <td className="px-5 py-3 text-right font-mono tabular-nums text-obsidian/80">{c.permits}</td>
+                      <td className="px-5 py-3 text-right font-mono tabular-nums text-obsidian/80">{c.active}</td>
+                      <td className="px-5 py-3 text-right font-mono tabular-nums text-obsidian/80">{fmtMoneyWhole(c.value)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section className="border border-obsidian/15 bg-white">
+            <header className="border-b border-obsidian/10 px-5 py-4">
+              <div className="eyebrow text-obsidian/50">User Accounts</div>
+              <h2 className="display-serif mt-1 text-2xl text-obsidian">Permits added by user</h2>
+            </header>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead className="bg-paper-warm/60">
+                  <tr>
+                    <Th light>Account</Th>
+                    <Th light>Client</Th>
+                    <Th light>Role</Th>
+                    <Th light align="right">Permits</Th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {accountRows.length === 0 ? (
+                    <tr><td colSpan={4} className="px-5 py-10 text-center text-sm text-obsidian/50">No accounts yet.</td></tr>
+                  ) : accountRows.map((a) => (
+                    <tr key={a.user_id} className="border-b border-obsidian/5">
+                      <td className="px-5 py-3">
+                        <div className="text-obsidian">{a.name}</div>
+                        <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-obsidian/40">
+                          joined {fmtDate(a.joined)}
+                        </div>
+                      </td>
+                      <td className="px-5 py-3 text-obsidian/75">{a.client}</td>
+                      <td className="px-5 py-3 font-mono text-[10px] uppercase tracking-[0.12em] text-obsidian/60">
+                        {a.role.replace(/_/g, " ")}
+                      </td>
+                      <td className="px-5 py-3 text-right font-mono tabular-nums text-obsidian/80">{a.permits}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </div>
       </div>
-
-      {/* Assign modal */}
-      <Dialog open={assignTarget !== null} onOpenChange={(o) => !o && setAssignTarget(null)}>
-        <DialogContent className="rounded-[3px] border-obsidian/15 bg-white sm:max-w-md">
-          <DialogHeader>
-            <div className="eyebrow text-obsidian/50">Assign Reviewer</div>
-            <DialogTitle className="display-serif text-2xl text-obsidian">
-              {assignTarget?.name ?? ""}
-            </DialogTitle>
-            <DialogDescription className="font-mono text-[10px] uppercase tracking-[0.12em] text-obsidian/50">
-              {assignTarget?.permit_no} · {assignTarget?.county} County
-            </DialogDescription>
-          </DialogHeader>
-
-          <div className="mt-2">
-            <Label className="mb-2 block font-mono text-[10px] font-medium uppercase tracking-[0.14em] text-obsidian/65">
-              Staff Member
-            </Label>
-            <Select value={pendingAssignee} onValueChange={setPendingAssignee}>
-              <SelectTrigger className="rounded-[3px] border-obsidian/15 bg-white">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {STAFF.map((s) => (
-                  <SelectItem key={s} value={s}>{s}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <p className="mt-3 font-mono text-[10px] uppercase tracking-[0.12em] text-obsidian/45">
-              Assignment is logged in status history.
-            </p>
-          </div>
-
-          <DialogFooter className="mt-4 gap-2">
-            <Button type="button" variant="ghost" className="rounded-[3px]" onClick={() => setAssignTarget(null)}>
-              Cancel
-            </Button>
-            <Button type="button" variant="dark" onClick={() => setAssignTarget(null)}>
-              Confirm assignment
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </PortalShell>
   );
 }
@@ -346,11 +458,7 @@ function StatCard({
   mono?: boolean;
 }) {
   return (
-    <div
-      className="relative overflow-hidden p-5 text-paper"
-      style={{ backgroundColor: "var(--obsidian)" }}
-    >
-      {/* corner accent */}
+    <div className="relative overflow-hidden p-5 text-paper" style={{ backgroundColor: "var(--obsidian)" }}>
       {accent && (
         <span
           aria-hidden
@@ -364,9 +472,7 @@ function StatCard({
       )}
       <div className="flex items-center gap-2 text-paper/55">
         <span className="text-paper/60">{icon}</span>
-        <span className="font-mono text-[10px] font-medium uppercase tracking-[0.14em]">
-          {label}
-        </span>
+        <span className="font-mono text-[10px] font-medium uppercase tracking-[0.14em]">{label}</span>
       </div>
       <div
         className={`mt-4 text-paper ${mono ? "font-mono text-3xl tabular-nums" : "display-serif text-4xl"}`}
@@ -375,21 +481,27 @@ function StatCard({
         {value}
       </div>
       {sublabel && (
-        <div className="mt-1 font-mono text-[10px] uppercase tracking-[0.12em] text-paper/45">
-          {sublabel}
-        </div>
+        <div className="mt-1 font-mono text-[10px] uppercase tracking-[0.12em] text-paper/45">{sublabel}</div>
       )}
     </div>
   );
 }
 
-function Th({ children, align = "left" }: { children: React.ReactNode; align?: "left" | "right" }) {
+function Th({
+  children,
+  align = "left",
+  light,
+}: {
+  children: React.ReactNode;
+  align?: "left" | "right";
+  light?: boolean;
+}) {
   return (
     <th
-      className={`px-6 py-4 font-mono text-[10px] font-medium uppercase tracking-[0.14em] ${
-        align === "right" ? "text-right" : "text-left"
+      className={`px-5 py-3 font-mono text-[10px] font-medium uppercase tracking-[0.14em] ${
+        light ? "text-obsidian/55" : "text-paper/60"
       }`}
-      style={{ color: "var(--sky)" }}
+      style={{ textAlign: align }}
     >
       {children}
     </th>
