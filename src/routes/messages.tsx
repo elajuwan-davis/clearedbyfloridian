@@ -325,6 +325,9 @@ function MessagesPage() {
                 </div>
 
                 <div className="border-t border-obsidian/10 bg-white p-3">
+                  <div className="mb-2 font-mono text-[10px] uppercase tracking-[0.12em] text-obsidian/45">
+                    From <span className="lowercase tracking-[0.04em] text-obsidian/65">{fromEmail}</span>
+                  </div>
                   <div className="flex items-end gap-2">
                     <Textarea
                       value={draft}
