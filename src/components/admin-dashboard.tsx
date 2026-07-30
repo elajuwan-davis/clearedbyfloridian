@@ -51,7 +51,7 @@ type PermitLite = {
 
 type TenantLite = { id: string; name: string; status: string; created_at: string };
 type MemberLite = { user_id: string; tenant_id: string; role: string; created_at: string };
-type ProfileLite = { id: string; display_name: string | null; full_name: string | null };
+type ProfileLite = { id: string; email: string | null; display_name: string | null; full_name: string | null };
 type InvoiceLite = { fee_cents: number; processing_fee_cents: number; status: string };
 
 const fmtMoneyWhole = (cents: number) =>
