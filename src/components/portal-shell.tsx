@@ -21,113 +21,13 @@ import { useMyIdentity } from "@/lib/profile-api";
 import { listAllTenantsFn } from "@/lib/tenants.functions";
 import type { Alert } from "@/lib/expiration-alerts";
 
-type AlertKey = "my-permits" | "request-coi" | "sub-insurance";
-type NavLink = { to: string; label: string; alertKey?: AlertKey };
-type NavGroup = { label: string; items: NavLink[] };
-
-const navGroups: NavGroup[] = [
-  {
-    label: "Dashboard",
-    items: [
-      { to: "/dashboard", label: "Dashboard" },
-      { to: "/portal/alerts", label: "Victoria Alerts" },
-      { to: "/messages", label: "Messages" },
-    ],
-  },
-  {
-    label: "Permits",
-    items: [
-      { to: "/portal/permits", label: "My Permits", alertKey: "my-permits" },
-      { to: "/portal/permits/new", label: "New Permit" },
-      { to: "/portal/submissions", label: "Submissions" },
-      { to: "/portal/inspections", label: "Inspections" },
-      { to: "/portal/hoa-submittals", label: "HOA Submittals" },
-      { to: "/portal/bid-review", label: "Bid Review" },
-    ],
-  },
-  {
-    label: "People",
-    items: [
-      { to: "/portal/contacts", label: "Contacts" },
-      { to: "/forms/subcontractors", label: "Subcontractors" },
-      { to: "/portal/compliance", label: "Compliance" },
-      { to: "/portal/request-coi", label: "Request COI", alertKey: "request-coi" },
-      { to: "/portal/request-sub-insurance", label: "Sub Insurance", alertKey: "sub-insurance" },
-    ],
-  },
-  {
-    label: "Financials",
-    items: [
-      { to: "/portal/financials", label: "Financial Overview" },
-      { to: "/portal/permit-fees", label: "Permit Fees" },
-      { to: "/invoices", label: "Invoices" },
-      { to: "/fee-calculator", label: "Savings Calculator" },
-    ],
-  },
-  {
-    label: "Documents",
-    items: [
-      { to: "/forms", label: "Forms" },
-      { to: "/portal/building-dept", label: "Building Departments" },
-      { to: "/building-dept-logins", label: "Portal Logins" },
-      { to: "/portal/notary-queue", label: "Notary Queue" },
-    ],
-  },
-  {
-    label: "Resources",
-    items: [
-      { to: "/portal/guides", label: "Project Guides" },
-      { to: "/municipalities", label: "Municipalities" },
-      { to: "/ask-victoria", label: "Ask Victoria" },
-      { to: "/portal/reports", label: "Reports" },
-      { to: "/portal/blog", label: "Blog" },
-      { to: "/portal/feature-requests", label: "Feature Requests" },
-      { to: "/portal/marketplace", label: "Marketplace" },
-    ],
-  },
-];
-
-// Subs only see a slim nav — their attached projects + their own compliance uploads.
-const subNavGroups: NavGroup[] = [
-  {
-    label: "Projects",
-    items: [{ to: "/sub-portal", label: "My Projects" }],
-  },
-  {
-    label: "Compliance",
-    items: [{ to: "/profile", label: "Documents" }],
-  },
-];
-
-function navGroupsForRole(role: AppRole | null): NavGroup[] {
-  if (role === "subcontractor") return subNavGroups;
-  return navGroups;
-}
-
-const settingsGroup: NavGroup = {
-  label: "Account",
-  items: [
-    { to: "/profile", label: "Profile & Notifications" },
-    { to: "/portal/contacts", label: "Contacts" },
-  ],
-};
-
-const subSettingsGroup: NavGroup = {
-  label: "Account",
-  items: [{ to: "/profile", label: "Profile" }],
-};
-
-// Admin-only entries.
-const adminGroup: NavGroup = {
-  label: "Admin",
-  items: [
-    { to: "/admin/invites", label: "Invite Pipeline" },
-    { to: "/admin/review-queue", label: "Review Queue" },
-    { to: "/admin/activity", label: "Activity Log" },
-    { to: "/admin/access-requests", label: "Access Requests" },
-    { to: "/admin/gc-clients", label: "GC Clients" },
-  ],
-};
+import {
+  sectionsForRole,
+  settingsForRole,
+  isItemActive,
+  type AlertKey,
+  type NavSection,
+} from "@/lib/portal-nav";
 
 const protectedPortalPrefixes = [
   "/dashboard",
@@ -168,58 +68,198 @@ function computeAlertKeys(alerts: Alert[]): Set<AlertKey> {
   return set;
 }
 
-function isItemActive(pathname: string, to: string) {
-  if (to === "/portal") return pathname === "/portal" || pathname === "/portal/";
-  return pathname === to || pathname.startsWith(to + "/");
+function sectionActive(pathname: string, section: NavSection) {
+  if (section.to) return isItemActive(pathname, section.to);
+  return (section.items ?? []).some((i) => isItemActive(pathname, i.to));
 }
 
-/** Always-expanded vertical nav — every page visible, large tap targets. */
-function SidebarNav({
+function sectionAlerted(section: NavSection, alertKeys: Set<AlertKey>) {
+  return (section.items ?? []).some((i) => i.alertKey && alertKeys.has(i.alertKey));
+}
+
+const railHairline = "color-mix(in oklab, var(--paper) 12%, transparent)";
+
+/** Slim 64px icon rail with hover/click flyout panels (HubSpot-style). */
+function IconRail({
   pathname,
   alertKeys,
   role,
   isAdmin,
-  onNavigate,
+  displayName,
+  email,
+  initials,
+  onSignOut,
 }: {
   pathname: string;
   alertKeys: Set<AlertKey>;
   role: AppRole | null;
   isAdmin: boolean;
-  onNavigate?: () => void;
+  displayName: string;
+  email: string | null;
+  initials: string;
+  onSignOut: () => void;
 }) {
-  const groups = navGroupsForRole(role);
-  const settings = role === "subcontractor" ? subSettingsGroup : settingsGroup;
-  const all = [...groups, ...(isAdmin ? [adminGroup] : []), settings];
+  const sections = sectionsForRole(role, isAdmin);
+  const settings = settingsForRole(role);
+  const [openKey, setOpenKey] = useState<string | null>(null);
+  const [pinned, setPinned] = useState(false);
+  const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Any navigation or route change dismisses the flyout.
+  useEffect(() => {
+    setOpenKey(null);
+    setPinned(false);
+  }, [pathname]);
+
+  useEffect(() => {
+    if (!openKey) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setOpenKey(null);
+        setPinned(false);
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [openKey]);
+
+  function scheduleClose() {
+    if (pinned) return;
+    if (closeTimer.current) clearTimeout(closeTimer.current);
+    closeTimer.current = setTimeout(() => setOpenKey(null), 180);
+  }
+  function cancelClose() {
+    if (closeTimer.current) clearTimeout(closeTimer.current);
+  }
+
+  const allSections: NavSection[] = [...sections];
+  const active = [...allSections, settings].find((s) => s.key === openKey) ?? null;
+
   return (
-    <nav className="py-4">
-      {all.map((group) => (
-        <div key={group.label} className="mb-6">
-          <div
-            className="px-5 mb-2 font-mono text-[10px] uppercase tracking-[0.22em]"
-            style={{ color: "color-mix(in oklab, var(--paper) 45%, transparent)" }}
-          >
-            {group.label}
+    <div className="relative h-full" onMouseLeave={scheduleClose}>
+      <div
+        className="flex h-full w-16 flex-col items-center"
+        style={{ backgroundColor: "var(--obsidian)" }}
+      >
+        <Link
+          to="/"
+          className="wordmark grid h-16 w-16 shrink-0 place-items-center text-2xl"
+          style={{ color: "var(--paper)", borderBottom: `1px solid ${railHairline}` }}
+          title="Cleard home"
+        >
+          C
+        </Link>
+
+        <div className="flex flex-1 flex-col items-center gap-1 overflow-y-auto py-3">
+          {allSections.map((s) => (
+            <RailButton
+              key={s.key}
+              section={s}
+              active={sectionActive(pathname, s)}
+              alerted={sectionAlerted(s, alertKeys)}
+              open={openKey === s.key}
+              onEnter={() => {
+                cancelClose();
+                setOpenKey(s.items ? s.key : null);
+              }}
+              onClick={() => {
+                if (!s.items) return;
+                if (openKey === s.key && pinned) {
+                  setOpenKey(null);
+                  setPinned(false);
+                } else {
+                  setOpenKey(s.key);
+                  setPinned(true);
+                }
+              }}
+            />
+          ))}
+        </div>
+
+        <div
+          className="flex w-full shrink-0 flex-col items-center gap-1 py-3"
+          style={{ borderTop: `1px solid ${railHairline}` }}
+        >
+          <RailButton
+            section={settings}
+            active={sectionActive(pathname, settings)}
+            alerted={false}
+            open={openKey === settings.key}
+            onEnter={() => {
+              cancelClose();
+              setOpenKey(settings.key);
+            }}
+            onClick={() => {
+              if (openKey === settings.key && pinned) {
+                setOpenKey(null);
+                setPinned(false);
+              } else {
+                setOpenKey(settings.key);
+                setPinned(true);
+              }
+            }}
+          />
+          <div className="group relative">
+            <Link
+              to="/profile"
+              onMouseEnter={() => {
+                cancelClose();
+                setOpenKey(null);
+              }}
+              className="grid h-10 w-10 place-items-center font-mono text-[11px]"
+              style={{ backgroundColor: "var(--sky)", color: "var(--obsidian)", borderRadius: "8px" }}
+              title={displayName}
+            >
+              {initials}
+            </Link>
+            <RailTooltip>{displayName}</RailTooltip>
           </div>
-          <ul>
-            {group.items.map((item, i) => {
-              const active = isItemActive(pathname, item.to);
+        </div>
+      </div>
+
+      {active?.items && (
+        <div
+          className="absolute left-16 top-0 z-50 w-64 border-r shadow-xl"
+          onMouseEnter={cancelClose}
+          onMouseLeave={scheduleClose}
+          style={{
+            backgroundColor: "var(--obsidian)",
+            borderColor: railHairline,
+          }}
+        >
+          <div
+            className="px-5 py-4"
+            style={{ borderBottom: `1px solid ${railHairline}` }}
+          >
+            <div
+              className="text-[15px] font-semibold"
+              style={{ color: "var(--paper)", fontFamily: "var(--font-subline)" }}
+            >
+              {active.label}
+            </div>
+          </div>
+          <ul className="py-2">
+            {active.items.map((item, i) => {
+              const itemActive = isItemActive(pathname, item.to);
               const alerted = item.alertKey ? alertKeys.has(item.alertKey) : false;
               return (
                 <li key={`${item.to}-${i}`}>
                   <Link
                     to={item.to as never}
-                    onClick={onNavigate}
-                    className="flex items-center justify-between gap-3 px-5 py-2.5 text-[15px] transition-colors"
+                    onClick={() => {
+                      setOpenKey(null);
+                      setPinned(false);
+                    }}
+                    className="flex items-center justify-between gap-3 px-5 py-2.5 text-[14px] transition-colors"
                     style={{
-                      color: active
+                      color: itemActive
                         ? "var(--paper)"
                         : "color-mix(in oklab, var(--paper) 72%, transparent)",
                       fontFamily: "var(--font-subline)",
-                      fontWeight: active ? 600 : 400,
-                      backgroundColor: active
+                      fontWeight: itemActive ? 600 : 400,
+                      backgroundColor: itemActive
                         ? "color-mix(in oklab, var(--paper) 12%, transparent)"
                         : "transparent",
-                      borderLeft: active ? "3px solid var(--sky)" : "3px solid transparent",
                     }}
                   >
                     <span className="truncate">{item.label}</span>
@@ -229,12 +269,108 @@ function SidebarNav({
               );
             })}
           </ul>
+          {active.key === "settings" && (
+            <div className="px-5 pb-4 pt-2" style={{ borderTop: `1px solid ${railHairline}` }}>
+              {email && (
+                <div
+                  className="mt-2 truncate text-[12px]"
+                  style={{ color: "color-mix(in oklab, var(--paper) 55%, transparent)" }}
+                >
+                  {email}
+                </div>
+              )}
+              <button
+                onClick={onSignOut}
+                className="mt-3 flex w-full items-center justify-center gap-2 rounded-[3px] px-3 py-2 font-mono text-[11px] uppercase tracking-[0.15em]"
+                style={{
+                  color: "var(--paper)",
+                  border: `1px solid color-mix(in oklab, var(--paper) 25%, transparent)`,
+                }}
+              >
+                <LogOut className="h-3.5 w-3.5" strokeWidth={1.5} />
+                Sign out
+              </button>
+            </div>
+          )}
         </div>
-      ))}
-    </nav>
+      )}
+    </div>
   );
 }
 
+function RailTooltip({ children }: { children: ReactNode }) {
+  return (
+    <span
+      className="pointer-events-none absolute left-[52px] top-1/2 z-[60] hidden -translate-y-1/2 whitespace-nowrap rounded-[3px] px-2 py-1 font-mono text-[10px] uppercase tracking-[0.14em] group-hover:block"
+      style={{ backgroundColor: "var(--paper)", color: "var(--obsidian)" }}
+    >
+      {children}
+    </span>
+  );
+}
+
+function RailButton({
+  section,
+  active,
+  alerted,
+  open,
+  onEnter,
+  onClick,
+}: {
+  section: NavSection;
+  active: boolean;
+  alerted: boolean;
+  open: boolean;
+  onEnter: () => void;
+  onClick: () => void;
+}) {
+  const Icon = section.icon;
+  const highlighted = active || open;
+  const inner = (
+    <>
+      <Icon className="h-[19px] w-[19px]" strokeWidth={1.5} />
+      {alerted && (
+        <span aria-hidden className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-red-500" />
+      )}
+    </>
+  );
+  const style = {
+    color: highlighted ? "var(--obsidian)" : "color-mix(in oklab, var(--paper) 78%, transparent)",
+    backgroundColor: highlighted ? "var(--sky)" : "transparent",
+    borderRadius: "8px",
+  } as const;
+
+  return (
+    <div className="group relative">
+      {section.to ? (
+        <Link
+          to={section.to as never}
+          onMouseEnter={onEnter}
+          aria-label={section.label}
+          className="relative grid h-11 w-11 place-items-center transition-colors"
+          style={style}
+        >
+          {inner}
+        </Link>
+      ) : (
+        <button
+          type="button"
+          onMouseEnter={onEnter}
+          onClick={onClick}
+          aria-label={section.label}
+          aria-expanded={open}
+          className="relative grid h-11 w-11 place-items-center transition-colors"
+          style={style}
+        >
+          {inner}
+        </button>
+      )}
+      <RailTooltip>{section.label}</RailTooltip>
+    </div>
+  );
+}
+
+/** Expanded nav used inside the mobile drawer. */
 function SidebarBody({
   pathname,
   alertKeys,
@@ -256,34 +392,62 @@ function SidebarBody({
   onNavigate?: () => void;
   onSignOut: () => void;
 }) {
+  const sections = [...sectionsForRole(role, isAdmin), settingsForRole(role)];
   return (
     <div className="flex h-full flex-col" style={{ backgroundColor: "var(--obsidian)" }}>
-      <div
-        className="h-16 flex items-center px-5 border-b shrink-0"
-        style={{ borderColor: "color-mix(in oklab, var(--paper) 12%, transparent)" }}
-      >
+      <div className="h-16 shrink-0 border-b px-5 flex items-center" style={{ borderColor: railHairline }}>
         <Link to="/" onClick={onNavigate} className="wordmark text-3xl" style={{ color: "var(--paper)" }}>
           Cleard
         </Link>
       </div>
 
-      <div className="flex-1 overflow-y-auto">
-        <SidebarNav
-          pathname={pathname}
-          alertKeys={alertKeys}
-          role={role}
-          isAdmin={isAdmin}
-          onNavigate={onNavigate}
-        />
+      <div className="flex-1 overflow-y-auto py-4">
+        {sections.map((group) => (
+          <div key={group.key} className="mb-6">
+            <div
+              className="mb-2 flex items-center gap-2 px-5 font-mono text-[10px] uppercase tracking-[0.22em]"
+              style={{ color: "color-mix(in oklab, var(--paper) 45%, transparent)" }}
+            >
+              <group.icon className="h-3.5 w-3.5" strokeWidth={1.5} />
+              {group.label}
+            </div>
+            <ul>
+              {(group.items ?? [{ to: group.to as string, label: group.label }]).map((item, i) => {
+                const itemActive = isItemActive(pathname, item.to);
+                const alerted = "alertKey" in item && item.alertKey ? alertKeys.has(item.alertKey) : false;
+                return (
+                  <li key={`${item.to}-${i}`}>
+                    <Link
+                      to={item.to as never}
+                      onClick={onNavigate}
+                      className="flex items-center justify-between gap-3 px-5 py-2.5 text-[15px] transition-colors"
+                      style={{
+                        color: itemActive
+                          ? "var(--paper)"
+                          : "color-mix(in oklab, var(--paper) 72%, transparent)",
+                        fontFamily: "var(--font-subline)",
+                        fontWeight: itemActive ? 600 : 400,
+                        backgroundColor: itemActive
+                          ? "color-mix(in oklab, var(--paper) 12%, transparent)"
+                          : "transparent",
+                        borderLeft: itemActive ? "3px solid var(--sky)" : "3px solid transparent",
+                      }}
+                    >
+                      <span className="truncate">{item.label}</span>
+                      {alerted && <span aria-hidden className="h-2 w-2 shrink-0 rounded-full bg-red-500" />}
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        ))}
       </div>
 
-      <div
-        className="border-t p-4 shrink-0"
-        style={{ borderColor: "color-mix(in oklab, var(--paper) 12%, transparent)" }}
-      >
-        <div className="flex items-center gap-3 min-w-0">
+      <div className="shrink-0 border-t p-4" style={{ borderColor: railHairline }}>
+        <div className="flex min-w-0 items-center gap-3">
           <div
-            className="h-10 w-10 shrink-0 grid place-items-center font-mono text-[12px]"
+            className="grid h-10 w-10 shrink-0 place-items-center font-mono text-[12px]"
             style={{ backgroundColor: "var(--sky)", color: "var(--obsidian)", borderRadius: "3px" }}
           >
             {initials}
@@ -293,7 +457,7 @@ function SidebarBody({
               {displayName}
             </div>
             <div
-              className="truncate font-mono text-[9px] tracking-[0.18em] uppercase"
+              className="truncate font-mono text-[9px] uppercase tracking-[0.18em]"
               style={{ color: "color-mix(in oklab, var(--paper) 55%, transparent)" }}
             >
               {roleLabel[role ?? ""] ?? "Client"}
@@ -301,16 +465,13 @@ function SidebarBody({
           </div>
         </div>
         {email && (
-          <div
-            className="mt-2 truncate text-[12px]"
-            style={{ color: "color-mix(in oklab, var(--paper) 55%, transparent)" }}
-          >
+          <div className="mt-2 truncate text-[12px]" style={{ color: "color-mix(in oklab, var(--paper) 55%, transparent)" }}>
             {email}
           </div>
         )}
         <button
           onClick={onSignOut}
-          className="mt-3 w-full flex items-center justify-center gap-2 px-3 py-2.5 text-[13px] font-mono uppercase tracking-[0.15em] rounded-[3px]"
+          className="mt-3 flex w-full items-center justify-center gap-2 rounded-[3px] px-3 py-2.5 font-mono text-[13px] uppercase tracking-[0.15em]"
           style={{
             color: "var(--paper)",
             border: "1px solid color-mix(in oklab, var(--paper) 25%, transparent)",
