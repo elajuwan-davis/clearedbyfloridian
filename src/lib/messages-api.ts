@@ -2,6 +2,10 @@
 import { supabase } from "@/integrations/supabase/client";
 import { getImpersonatedTenantId } from "@/lib/use-session";
 
+/** All outbound staff replies are presented as coming from this address. */
+export const CLEARD_SUPPORT_EMAIL = "help@cleardinc.com";
+export const CLEARD_SUPPORT_LABEL = "Cleard Support";
+
 export type ThreadRow = {
   id: string;
   tenant_id: string | null;
