@@ -187,8 +187,12 @@ function ProfilePage() {
               <Field label="Display Name">
                 <Input value={displayName} onChange={(e) => setDisplayName(e.target.value)} className="rounded-[3px]" />
               </Field>
+              <Field label="Sign-in Email">
+                <Input value={email ?? ""} readOnly disabled className="rounded-[3px]" />
+              </Field>
               <Button onClick={saveProfile} variant="dark" className="rounded-[3px]">Save</Button>
             </div>
+
           </div>
         </Section>
 
