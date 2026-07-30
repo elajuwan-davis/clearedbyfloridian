@@ -191,14 +191,18 @@ export function AdminDashboard() {
     return members
       .map((m) => ({
         user_id: m.user_id,
-        name: userName.get(m.user_id) || `User ${m.user_id.slice(0, 8)}`,
+        name:
+          userName.get(m.user_id) ||
+          userEmail.get(m.user_id) ||
+          `User ${m.user_id.slice(0, 8)}`,
+        email: userEmail.get(m.user_id) ?? "",
         client: tenantName.get(m.tenant_id) ?? "—",
         role: m.role,
         joined: m.created_at,
         permits: permits.filter((p) => p.created_by === m.user_id).length,
       }))
       .sort((a, b) => b.permits - a.permits || a.name.localeCompare(b.name));
-  }, [members, permits, userName, tenantName]);
+  }, [members, permits, userName, userEmail, tenantName]);
 
   return (
     <PortalShell>
