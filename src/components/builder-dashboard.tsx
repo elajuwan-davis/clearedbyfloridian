@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { PortalShell } from "@/components/portal-shell";
 import { Button } from "@/components/ui/button";
@@ -17,15 +17,10 @@ import {
 } from "lucide-react";
 
 
-export const Route = createFileRoute("/dashboard")({
-  head: () => ({
-    meta: [
-      { title: "Dashboard — Cleard" },
-      { name: "robots", content: "noindex" },
-    ],
-  }),
-  component: DashboardPage,
-});
+import { CoiAlertsWidget } from "@/components/coi-alerts-widget";
+import { AlertsList } from "@/components/alerts-list";
+import { useExpirationAlerts } from "@/hooks/use-expiration-alerts";
+
 
 import { projectStatusMeta as statusMeta, type BadgeTone } from "@/lib/status-badges";
 type ProjectStatus = keyof typeof statusMeta;

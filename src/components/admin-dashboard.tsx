@@ -69,7 +69,7 @@ function fmtDate(iso: string | null) {
   return d.toLocaleDateString("en-US", { month: "short", day: "2-digit" });
 }
 
-function AdminPage() {
+export function AdminDashboard() {
   const [loading, setLoading] = useState(true);
   const [permits, setPermits] = useState<PermitLite[]>([]);
   const [tenants, setTenants] = useState<TenantLite[]>([]);
