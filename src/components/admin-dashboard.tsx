@@ -140,6 +140,12 @@ export function AdminDashboard() {
     return map;
   }, [profiles]);
 
+  const userEmail = useMemo(() => {
+    const map = new Map<string, string>();
+    profiles.forEach((p) => { if (p.email) map.set(p.id, p.email); });
+    return map;
+  }, [profiles]);
+
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     return permits.filter((r) => {
