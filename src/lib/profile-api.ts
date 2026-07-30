@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 
 export type ProfileRow = {
   id: string;
+  email: string | null;
   display_name: string | null;
   full_name: string | null;
   avatar_url: string | null;
@@ -41,10 +42,11 @@ export async function fetchMyProfile(): Promise<{ userId: string | null; email: 
   const email = auth?.user?.email ?? null;
   if (!userId) return { userId: null, email: null, profile: null };
   const { data } = await (supabase.from("profiles" as any) as any)
-    .select("id, display_name, full_name, avatar_url, company_name, website, phone, address, language, notification_emails")
+    .select("id, email, display_name, full_name, avatar_url, company_name, website, phone, address, language, notification_emails")
     .eq("id", userId)
     .maybeSingle();
-  return { userId, email, profile: (data as ProfileRow | null) ?? null };
+  const profile = (data as ProfileRow | null) ?? null;
+  return { userId, email: profile?.email ?? email, profile };
 }
 
 export async function saveMyProfile(patch: Partial<Omit<ProfileRow, "id">>): Promise<{ error: string | null }> {

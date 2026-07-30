@@ -51,7 +51,7 @@ type PermitLite = {
 
 type TenantLite = { id: string; name: string; status: string; created_at: string };
 type MemberLite = { user_id: string; tenant_id: string; role: string; created_at: string };
-type ProfileLite = { id: string; display_name: string | null; full_name: string | null };
+type ProfileLite = { id: string; email: string | null; display_name: string | null; full_name: string | null };
 type InvoiceLite = { fee_cents: number; processing_fee_cents: number; status: string };
 
 const fmtMoneyWhole = (cents: number) =>
@@ -97,7 +97,7 @@ export function AdminDashboard() {
           .order("created_at", { ascending: false }),
         (supabase.from("tenants" as any) as any).select("id, name, status, created_at"),
         (supabase.from("tenant_members" as any) as any).select("user_id, tenant_id, role, created_at"),
-        (supabase.from("profiles" as any) as any).select("id, display_name, full_name"),
+        (supabase.from("profiles" as any) as any).select("id, email, display_name, full_name"),
         (supabase.from("service_fee_invoices" as any) as any).select("fee_cents, processing_fee_cents, status"),
         (supabase.from("message_threads" as any) as any).select("status, admin_unread"),
         (supabase.from("tenant_invites" as any) as any).select("uses, revoked_at"),
@@ -137,6 +137,12 @@ export function AdminDashboard() {
   const userName = useMemo(() => {
     const map = new Map<string, string>();
     profiles.forEach((p) => map.set(p.id, p.display_name || p.full_name || ""));
+    return map;
+  }, [profiles]);
+
+  const userEmail = useMemo(() => {
+    const map = new Map<string, string>();
+    profiles.forEach((p) => { if (p.email) map.set(p.id, p.email); });
     return map;
   }, [profiles]);
 
@@ -185,14 +191,18 @@ export function AdminDashboard() {
     return members
       .map((m) => ({
         user_id: m.user_id,
-        name: userName.get(m.user_id) || `User ${m.user_id.slice(0, 8)}`,
+        name:
+          userName.get(m.user_id) ||
+          userEmail.get(m.user_id) ||
+          `User ${m.user_id.slice(0, 8)}`,
+        email: userEmail.get(m.user_id) ?? "",
         client: tenantName.get(m.tenant_id) ?? "—",
         role: m.role,
         joined: m.created_at,
         permits: permits.filter((p) => p.created_by === m.user_id).length,
       }))
       .sort((a, b) => b.permits - a.permits || a.name.localeCompare(b.name));
-  }, [members, permits, userName, tenantName]);
+  }, [members, permits, userName, userEmail, tenantName]);
 
   return (
     <PortalShell>
@@ -436,6 +446,11 @@ export function AdminDashboard() {
                     <tr key={a.user_id} className="border-b border-obsidian/5">
                       <td className="px-5 py-3">
                         <div className="text-obsidian">{a.name}</div>
+                        {a.email && (
+                          <div className="font-mono text-[10px] lowercase tracking-[0.04em] text-obsidian/55">
+                            {a.email}
+                          </div>
+                        )}
                         <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-obsidian/40">
                           joined {fmtDate(a.joined)}
                         </div>

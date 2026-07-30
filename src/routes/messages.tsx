@@ -18,6 +18,8 @@ import { Search, Send, Inbox, Plus, Loader2, MessageSquare } from "lucide-react"
 import { useSession } from "@/lib/use-session";
 import { useMyIdentity } from "@/lib/profile-api";
 import {
+  CLEARD_SUPPORT_EMAIL,
+  CLEARD_SUPPORT_LABEL,
   listThreads,
   listPosts,
   createThread,
@@ -72,6 +74,8 @@ function MessagesPage() {
   const [creating, setCreating] = useState(false);
 
   const authorLabel = me.displayName || session.email || "You";
+  /** Address this account's messages go out under. */
+  const fromEmail = isAdmin ? CLEARD_SUPPORT_EMAIL : (me.email || session.email || "your account email");
 
   async function refreshThreads(selectFirst = false) {
     try {
@@ -287,16 +291,20 @@ function MessagesPage() {
                       <Loader2 className="h-4 w-4 animate-spin" /> Loading messages…
                     </div>
                   ) : (
-                    posts.map((m) => (
+                    posts.map((m) => {
+                      const senderEmail = m.from_admin
+                        ? CLEARD_SUPPORT_EMAIL
+                        : m.author_email ?? active.created_by_email ?? "";
+                      return (
                       <div key={m.id} className={`flex ${m.from_admin ? "justify-start" : "justify-end"}`}>
                         <div className="max-w-[80%]">
-                          <div className="mb-1 flex items-baseline gap-2">
+                          <div className="mb-1 flex flex-wrap items-baseline gap-2">
                             <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-obsidian/60">
-                              {m.author_label ?? m.author_email ?? (m.from_admin ? "Cleard" : "Client")}
+                              {m.author_label ?? (m.from_admin ? CLEARD_SUPPORT_LABEL : "Client")}
                             </span>
-                            {m.from_admin && (
-                              <span className="rounded-[2px] border border-obsidian/30 bg-obsidian px-1.5 py-0.5 font-mono text-[8px] uppercase tracking-[0.12em] text-paper">
-                                Cleard
+                            {senderEmail && (
+                              <span className="font-mono text-[10px] lowercase tracking-[0.04em] text-obsidian/45">
+                                &lt;{senderEmail}&gt;
                               </span>
                             )}
                             <span className="font-mono text-[10px] text-obsidian/40">{fmt(m.created_at)}</span>
@@ -313,11 +321,15 @@ function MessagesPage() {
                           </div>
                         </div>
                       </div>
-                    ))
+                      );
+                    })
                   )}
                 </div>
 
                 <div className="border-t border-obsidian/10 bg-white p-3">
+                  <div className="mb-2 font-mono text-[10px] uppercase tracking-[0.12em] text-obsidian/45">
+                    From <span className="lowercase tracking-[0.04em] text-obsidian/65">{fromEmail}</span>
+                  </div>
                   <div className="flex items-end gap-2">
                     <Textarea
                       value={draft}
@@ -355,6 +367,7 @@ function MessagesPage() {
               {isAdmin
                 ? "Sent to the client team you are currently viewing."
                 : "Our permitting staff is notified right away and will reply here."}
+              {" "}Sending from <span className="font-mono text-[11px] text-obsidian/75">{fromEmail}</span>.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
