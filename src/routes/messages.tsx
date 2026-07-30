@@ -367,6 +367,7 @@ function MessagesPage() {
               {isAdmin
                 ? "Sent to the client team you are currently viewing."
                 : "Our permitting staff is notified right away and will reply here."}
+              {" "}Sending from <span className="font-mono text-[11px] text-obsidian/75">{fromEmail}</span>.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
