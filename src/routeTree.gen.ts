@@ -14,7 +14,6 @@ import { Route as AboutRouteImport } from './routes/about'
 import { Route as AskVictoriaRouteImport } from './routes/ask-victoria'
 import { Route as BuildingDeptLoginsRouteImport } from './routes/building-dept-logins'
 import { Route as ContactRouteImport } from './routes/contact'
-import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as FeeCalculatorRouteImport } from './routes/fee-calculator'
 import { Route as FormsRouteImport } from './routes/forms'
 import { Route as GcPortalRouteImport } from './routes/gc-portal'
@@ -36,7 +35,6 @@ import { Route as ProjectGuidesRouteImport } from './routes/project-guides'
 import { Route as ProjectsRouteImport } from './routes/projects'
 import { Route as ServicesRouteImport } from './routes/services'
 import { Route as SubPortalRouteImport } from './routes/sub-portal'
-import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminAccessRequestsRouteImport } from './routes/admin.access-requests'
 import { Route as AdminActivityRouteImport } from './routes/admin.activity'
 import { Route as AdminBuildersRouteImport } from './routes/admin.builders'
@@ -135,11 +133,6 @@ const BuildingDeptLoginsRoute = BuildingDeptLoginsRouteImport.update({
 const ContactRoute = ContactRouteImport.update({
   id: '/contact',
   path: '/contact',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DashboardRoute = DashboardRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FeeCalculatorRoute = FeeCalculatorRouteImport.update({
@@ -245,11 +238,6 @@ const ServicesRoute = ServicesRouteImport.update({
 const SubPortalRoute = SubPortalRouteImport.update({
   id: '/sub-portal',
   path: '/sub-portal',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminIndexRoute = AdminIndexRouteImport.update({
-  id: '/admin/',
-  path: '/admin/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminAccessRequestsRoute = AdminAccessRequestsRouteImport.update({
@@ -640,7 +628,6 @@ export interface FileRoutesByFullPath {
   '/ask-victoria': typeof AskVictoriaRoute
   '/building-dept-logins': typeof BuildingDeptLoginsRouteWithChildren
   '/contact': typeof ContactRoute
-  '/dashboard': typeof DashboardRoute
   '/fee-calculator': typeof FeeCalculatorRoute
   '/forms': typeof FormsRouteWithChildren
   '/gc-portal': typeof GcPortalRoute
@@ -704,7 +691,6 @@ export interface FileRoutesByFullPath {
   '/sub-intake/$token': typeof SubIntakeTokenRoute
   '/sub-portal/$token': typeof SubPortalTokenRoute
   '/versus/$slug': typeof VersusSlugRoute
-  '/admin/': typeof AdminIndexRoute
   '/blog/': typeof BlogIndexRoute
   '/forms/': typeof FormsIndexRoute
   '/portal/': typeof PortalIndexRoute
@@ -744,7 +730,6 @@ export interface FileRoutesByTo {
   '/ask-victoria': typeof AskVictoriaRoute
   '/building-dept-logins': typeof BuildingDeptLoginsRouteWithChildren
   '/contact': typeof ContactRoute
-  '/dashboard': typeof DashboardRoute
   '/fee-calculator': typeof FeeCalculatorRoute
   '/gc-portal': typeof GcPortalRoute
   '/insurance': typeof InsuranceRoute
@@ -804,7 +789,6 @@ export interface FileRoutesByTo {
   '/sub-intake/$token': typeof SubIntakeTokenRoute
   '/sub-portal/$token': typeof SubPortalTokenRoute
   '/versus/$slug': typeof VersusSlugRoute
-  '/admin': typeof AdminIndexRoute
   '/blog': typeof BlogIndexRoute
   '/forms': typeof FormsIndexRoute
   '/portal': typeof PortalIndexRoute
@@ -845,7 +829,6 @@ export interface FileRoutesById {
   '/ask-victoria': typeof AskVictoriaRoute
   '/building-dept-logins': typeof BuildingDeptLoginsRouteWithChildren
   '/contact': typeof ContactRoute
-  '/dashboard': typeof DashboardRoute
   '/fee-calculator': typeof FeeCalculatorRoute
   '/forms': typeof FormsRouteWithChildren
   '/gc-portal': typeof GcPortalRoute
@@ -909,7 +892,6 @@ export interface FileRoutesById {
   '/sub-intake/$token': typeof SubIntakeTokenRoute
   '/sub-portal/$token': typeof SubPortalTokenRoute
   '/versus/$slug': typeof VersusSlugRoute
-  '/admin/': typeof AdminIndexRoute
   '/blog/': typeof BlogIndexRoute
   '/forms/': typeof FormsIndexRoute
   '/portal/': typeof PortalIndexRoute
@@ -951,7 +933,6 @@ export interface FileRouteTypes {
     | '/ask-victoria'
     | '/building-dept-logins'
     | '/contact'
-    | '/dashboard'
     | '/fee-calculator'
     | '/forms'
     | '/gc-portal'
@@ -1015,7 +996,6 @@ export interface FileRouteTypes {
     | '/sub-intake/$token'
     | '/sub-portal/$token'
     | '/versus/$slug'
-    | '/admin/'
     | '/blog/'
     | '/forms/'
     | '/portal/'
@@ -1055,7 +1035,6 @@ export interface FileRouteTypes {
     | '/ask-victoria'
     | '/building-dept-logins'
     | '/contact'
-    | '/dashboard'
     | '/fee-calculator'
     | '/gc-portal'
     | '/insurance'
@@ -1115,7 +1094,6 @@ export interface FileRouteTypes {
     | '/sub-intake/$token'
     | '/sub-portal/$token'
     | '/versus/$slug'
-    | '/admin'
     | '/blog'
     | '/forms'
     | '/portal'
@@ -1155,7 +1133,6 @@ export interface FileRouteTypes {
     | '/ask-victoria'
     | '/building-dept-logins'
     | '/contact'
-    | '/dashboard'
     | '/fee-calculator'
     | '/forms'
     | '/gc-portal'
@@ -1219,7 +1196,6 @@ export interface FileRouteTypes {
     | '/sub-intake/$token'
     | '/sub-portal/$token'
     | '/versus/$slug'
-    | '/admin/'
     | '/blog/'
     | '/forms/'
     | '/portal/'
@@ -1260,7 +1236,6 @@ export interface RootRouteChildren {
   AskVictoriaRoute: typeof AskVictoriaRoute
   BuildingDeptLoginsRoute: typeof BuildingDeptLoginsRouteWithChildren
   ContactRoute: typeof ContactRoute
-  DashboardRoute: typeof DashboardRoute
   FeeCalculatorRoute: typeof FeeCalculatorRoute
   FormsRoute: typeof FormsRouteWithChildren
   GcPortalRoute: typeof GcPortalRoute
@@ -1298,7 +1273,6 @@ export interface RootRouteChildren {
   PermitCardIdRoute: typeof PermitCardIdRoute
   SubIntakeTokenRoute: typeof SubIntakeTokenRoute
   VersusSlugRoute: typeof VersusSlugRoute
-  AdminIndexRoute: typeof AdminIndexRoute
   BlogIndexRoute: typeof BlogIndexRoute
   VersusIndexRoute: typeof VersusIndexRoute
   AdminBlogIdRoute: typeof AdminBlogIdRoute
@@ -1348,13 +1322,6 @@ declare module '@tanstack/react-router' {
       path: '/contact'
       fullPath: '/contact'
       preLoaderRoute: typeof ContactRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/dashboard': {
-      id: '/dashboard'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof DashboardRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/fee-calculator': {
@@ -1502,13 +1469,6 @@ declare module '@tanstack/react-router' {
       path: '/sub-portal'
       fullPath: '/sub-portal'
       preLoaderRoute: typeof SubPortalRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/': {
-      id: '/admin/'
-      path: '/admin'
-      fullPath: '/admin/'
-      preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/access-requests': {
@@ -2215,7 +2175,6 @@ const rootRouteChildren: RootRouteChildren = {
   AskVictoriaRoute: AskVictoriaRoute,
   BuildingDeptLoginsRoute: BuildingDeptLoginsRouteWithChildren,
   ContactRoute: ContactRoute,
-  DashboardRoute: DashboardRoute,
   FeeCalculatorRoute: FeeCalculatorRoute,
   FormsRoute: FormsRouteWithChildren,
   GcPortalRoute: GcPortalRoute,
@@ -2253,7 +2212,6 @@ const rootRouteChildren: RootRouteChildren = {
   PermitCardIdRoute: PermitCardIdRoute,
   SubIntakeTokenRoute: SubIntakeTokenRoute,
   VersusSlugRoute: VersusSlugRoute,
-  AdminIndexRoute: AdminIndexRoute,
   BlogIndexRoute: BlogIndexRoute,
   VersusIndexRoute: VersusIndexRoute,
   AdminBlogIdRoute: AdminBlogIdRoute,
@@ -2270,3 +2228,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}

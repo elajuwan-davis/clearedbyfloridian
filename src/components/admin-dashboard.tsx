@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { PortalShell } from "@/components/portal-shell";
 import { Button } from "@/components/ui/button";
@@ -27,16 +27,6 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { projectStatusMeta, toneClass, type ProjectStatus as Status } from "@/lib/status-badges";
 
-export const Route = createFileRoute("/admin/")({
-  head: () => ({
-    meta: [
-      { title: "Admin · Operations — Cleard" },
-      { name: "description", content: "Cleard staff operations desk: live permit queue, client accounts and fee status." },
-      { name: "robots", content: "noindex" },
-    ],
-  }),
-  component: AdminPage,
-});
 
 const statusMeta = projectStatusMeta;
 
