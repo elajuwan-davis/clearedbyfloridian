@@ -33,15 +33,17 @@ export const Route = createFileRoute("/profile")({
 type TeamMember = { user_id: string; email: string; role: string };
 
 function ProfilePage() {
-  const [displayName, setDisplayName] = useState("Elajuwan Davis");
+  const [displayName, setDisplayName] = useState("");
+  const [email, setEmail] = useState<string | null>(null);
   const [company, setCompany] = useState({
-    name: "Cleard",
-    website: "https://floridianinc.com",
-    phone: "(561) 555-0144",
+    name: "",
+    website: "",
+    phone: "",
     address: "",
   });
   const [language, setLanguage] = useState("en");
-  const [emails, setEmails] = useState<string[]>(["info@cleard.com"]);
+  const [emails, setEmails] = useState<string[]>([]);
+
   const [newEmail, setNewEmail] = useState("");
   const [license] = useState({ number: "CPC1459161", type: "CPC (Certified Pool/Spa Contractor)", expires: "2027-08-31" });
   const [pwd, setPwd] = useState({ current: "", next: "", confirm: "" });
@@ -116,7 +118,8 @@ function ProfilePage() {
 
   async function saveProfile() {
     if (!userId) { toast.success("Profile saved (sign in to persist)"); return; }
-    const { error } = await (supabase.from("profiles" as any) as any).update({
+    const { error } = await (supabase.from("profiles" as any) as any).upsert({
+      id: userId,
       display_name: displayName,
       avatar_url: avatar,
       company_name: company.name,
@@ -125,7 +128,8 @@ function ProfilePage() {
       address: company.address,
       language,
       notification_emails: emails,
-    }).eq("id", userId);
+    }, { onConflict: "id" });
+
     if (error) { toast.error("Save failed: " + error.message); return; }
     toast.success("Profile saved");
   }
