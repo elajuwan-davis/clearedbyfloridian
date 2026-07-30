@@ -136,8 +136,8 @@ export function useSession(): SessionInfo {
 
 // Route target by role.
 export function homePathForRole(role: AppRole | null): string {
-  if (role === "admin") return "/admin";
+  if (role === "admin") return "/dashboard";
   if (role === "subcontractor") return "/sub-portal";
-  if (role === "gc_owner" || role === "gc_member") return "/portal";
-  return "/portal";
+  if (role === "gc_owner" || role === "gc_member") return "/dashboard";
+  return "/dashboard";
 }
