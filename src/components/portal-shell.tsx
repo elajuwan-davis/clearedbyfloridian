@@ -266,18 +266,10 @@ function IconRail({
                       setOpenKey(null);
                       setPinned(false);
                     }}
-                    className="flex items-center justify-between gap-3 px-5 py-2.5 text-[14px] transition-colors"
-                    style={{
-                      color: itemActive
-                        ? "var(--paper)"
-                        : "color-mix(in oklab, var(--paper) 72%, transparent)",
-                      fontFamily: "var(--font-subline)",
-                      fontWeight: itemActive ? 600 : 400,
-                      backgroundColor: itemActive
-                        ? "color-mix(in oklab, var(--paper) 12%, transparent)"
-                        : "transparent",
-                    }}
+                    className="flyout-link"
+                    data-active={itemActive ? "true" : "false"}
                   >
+
                     <span className="truncate">{item.label}</span>
                     {alerted && <span aria-hidden className="h-2 w-2 shrink-0 rounded-full bg-red-500" />}
                   </Link>
