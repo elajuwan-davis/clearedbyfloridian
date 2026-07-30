@@ -247,7 +247,9 @@ function ProjectCard({
   const meta = statusMeta[project.status];
   return (
     <Link
-      to="/portal/projects"
+      to="/portal/permits/$id"
+      params={{ id: project.id }}
+
       className="group block p-5 bg-card border hairline transition-colors hover:bg-secondary"
       style={{ borderRadius: "3px" }}
     >
