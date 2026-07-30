@@ -74,6 +74,8 @@ function MessagesPage() {
   const [creating, setCreating] = useState(false);
 
   const authorLabel = me.displayName || session.email || "You";
+  /** Address this account's messages go out under. */
+  const fromEmail = isAdmin ? CLEARD_SUPPORT_EMAIL : (me.email || session.email || "your account email");
 
   async function refreshThreads(selectFirst = false) {
     try {
