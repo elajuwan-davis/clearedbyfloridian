@@ -16,6 +16,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useExpirationAlerts } from "@/hooks/use-expiration-alerts";
 import { NotificationBell } from "@/components/notification-bell";
 import { BookmarkToggle } from "@/components/bookmark-toggle";
+import { useBookmarks } from "@/lib/bookmarks-api";
 import { VictoriaWidget } from "@/components/victoria-widget";
 import { useSession, setImpersonatedTenant, type AppRole } from "@/lib/use-session";
 import { useMyIdentity } from "@/lib/profile-api";
@@ -102,6 +103,7 @@ function IconRail({
 }) {
   const sections = sectionsForRole(role, isAdmin);
   const settings = settingsForRole(role);
+  const { bookmarks } = useBookmarks();
   const [openKey, setOpenKey] = useState<string | null>(null);
   const [pinned, setPinned] = useState(false);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -127,13 +129,26 @@ function IconRail({
   function scheduleClose() {
     if (pinned) return;
     if (closeTimer.current) clearTimeout(closeTimer.current);
-    closeTimer.current = setTimeout(() => setOpenKey(null), 180);
+    closeTimer.current = setTimeout(() => setOpenKey(null), 140);
   }
   function cancelClose() {
     if (closeTimer.current) clearTimeout(closeTimer.current);
   }
 
-  const allSections: NavSection[] = [...sections];
+  // Bookmarks behaves like every other section: it opens a flyout listing the
+  // user's pinned pages (falls back to a direct link when nothing is pinned).
+  const allSections: NavSection[] = sections.map((s) =>
+    s.key === "bookmarks" && bookmarks.length > 0
+      ? {
+          ...s,
+          to: undefined,
+          items: [
+            ...bookmarks.map((b) => ({ to: b.path, label: b.label })),
+            { to: "/portal/bookmarks", label: "Manage bookmarks" },
+          ],
+        }
+      : s,
+  );
   const active = [...allSections, settings].find((s) => s.key === openKey) ?? null;
 
   return (
@@ -251,18 +266,10 @@ function IconRail({
                       setOpenKey(null);
                       setPinned(false);
                     }}
-                    className="flex items-center justify-between gap-3 px-5 py-2.5 text-[14px] transition-colors"
-                    style={{
-                      color: itemActive
-                        ? "var(--paper)"
-                        : "color-mix(in oklab, var(--paper) 72%, transparent)",
-                      fontFamily: "var(--font-subline)",
-                      fontWeight: itemActive ? 600 : 400,
-                      backgroundColor: itemActive
-                        ? "color-mix(in oklab, var(--paper) 12%, transparent)"
-                        : "transparent",
-                    }}
+                    className="flyout-link"
+                    data-active={itemActive ? "true" : "false"}
                   >
+
                     <span className="truncate">{item.label}</span>
                     {alerted && <span aria-hidden className="h-2 w-2 shrink-0 rounded-full bg-red-500" />}
                   </Link>
@@ -326,7 +333,6 @@ function RailButton({
   onClick: () => void;
 }) {
   const Icon = section.icon;
-  const highlighted = active || open;
   const inner = (
     <>
       <Icon className="h-[19px] w-[19px]" strokeWidth={1.5} />
@@ -335,11 +341,6 @@ function RailButton({
       )}
     </>
   );
-  const style = {
-    color: highlighted ? "var(--obsidian)" : "color-mix(in oklab, var(--paper) 78%, transparent)",
-    backgroundColor: highlighted ? "var(--sky)" : "transparent",
-    borderRadius: "8px",
-  } as const;
 
   return (
     <div className="group relative">
@@ -348,8 +349,9 @@ function RailButton({
           to={section.to as never}
           onMouseEnter={onEnter}
           aria-label={section.label}
-          className="relative grid h-11 w-11 place-items-center transition-colors"
-          style={style}
+          className="rail-btn"
+          data-active={active ? "true" : "false"}
+          data-open="false"
         >
           {inner}
         </Link>
@@ -360,14 +362,16 @@ function RailButton({
           onClick={onClick}
           aria-label={section.label}
           aria-expanded={open}
-          className="relative grid h-11 w-11 place-items-center transition-colors"
-          style={style}
+          className="rail-btn"
+          data-active={active ? "true" : "false"}
+          data-open={open ? "true" : "false"}
         >
           {inner}
         </button>
       )}
       <RailTooltip>{section.label}</RailTooltip>
     </div>
+
   );
 }
 
