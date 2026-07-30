@@ -1,247 +1,251 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useMemo, useRef, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { useEffect, useMemo, useState } from "react";
+import { toast } from "sonner";
 import { PortalShell } from "@/components/portal-shell";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Search, Send, Inbox, Plus, Loader2, MessageSquare } from "lucide-react";
+import { useSession } from "@/lib/use-session";
+import { useMyIdentity } from "@/lib/profile-api";
 import {
-  Search,
-  Paperclip,
-  Send,
-  ArrowUpRight,
-  Inbox,
-  FileText,
-  X,
-} from "lucide-react";
+  listThreads,
+  listPosts,
+  createThread,
+  postReply,
+  markThreadRead,
+  setThreadStatus,
+  type ThreadRow,
+  type PostRow,
+} from "@/lib/messages-api";
 
 export const Route = createFileRoute("/messages")({
   head: () => ({
     meta: [
       { title: "Messages — Cleard" },
+      { name: "description", content: "Message the Cleard permitting team about any project." },
       { name: "robots", content: "noindex" },
     ],
   }),
   component: MessagesPage,
 });
 
-const PROJECT_STATUSES = [
-  "submitted",
-  "in_review",
-  "corrections_required",
-  "correction_response_under_review",
-  "resubmitted_to_county",
-  "approved",
-  "inspection_scheduled",
-  "inspection_complete",
-  "permit_issued",
-  "cancelled",
-] as const;
-type ProjectStatus = (typeof PROJECT_STATUSES)[number];
-
-const STATUS_LABEL: Record<ProjectStatus, string> = {
-  submitted: "Submitted",
-  in_review: "In Review",
-  corrections_required: "Corrections Required",
-  correction_response_under_review: "Correction Response Under Review",
-  resubmitted_to_county: "Resubmitted to County",
-  approved: "Approved",
-  inspection_scheduled: "Inspection Scheduled",
-  inspection_complete: "Inspection Complete",
-  permit_issued: "Permit Issued",
-  cancelled: "Cancelled",
-};
-
-type Attachment = { name: string; size: string };
-type Msg = {
-  id: string;
-  author: string;
-  fromAdmin: boolean;
-  body: string;
-  at: string;
-  attachments?: Attachment[];
-};
-
-type Thread = {
-  id: string;
-  permit_no: string;
-  name: string;
-  address: string;
-  county: string;
-  status: ProjectStatus;
-  unread: number;
-  lastAt: string;
-  messages: Msg[];
-};
-
-const SEED: Thread[] = [];
+function fmt(ts: string) {
+  try {
+    return new Date(ts).toLocaleString(undefined, {
+      month: "short",
+      day: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
+    });
+  } catch {
+    return ts;
+  }
+}
 
 function MessagesPage() {
-  const [threads, setThreads] = useState<Thread[]>(SEED);
-  const [activeId, setActiveId] = useState<string>("");
+  const session = useSession();
+  const me = useMyIdentity();
+  const isAdmin = session.isAdmin;
 
+  const [threads, setThreads] = useState<ThreadRow[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [activeId, setActiveId] = useState<string>("");
+  const [posts, setPosts] = useState<PostRow[]>([]);
+  const [postsLoading, setPostsLoading] = useState(false);
   const [query, setQuery] = useState("");
   const [draft, setDraft] = useState("");
-  const [pending, setPending] = useState<Attachment[]>([]);
-  const fileRef = useRef<HTMLInputElement>(null);
+  const [sending, setSending] = useState(false);
+
+  const [newOpen, setNewOpen] = useState(false);
+  const [newSubject, setNewSubject] = useState("");
+  const [newBody, setNewBody] = useState("");
+  const [creating, setCreating] = useState(false);
+
+  const authorLabel = me.displayName || session.email || "You";
+
+  async function refreshThreads(selectFirst = false) {
+    try {
+      const rows = await listThreads();
+      setThreads(rows);
+      if (selectFirst && rows.length > 0) setActiveId((cur) => cur || rows[0].id);
+    } catch (e) {
+      toast.error(`Could not load messages: ${(e as Error).message}`);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => { refreshThreads(true); }, []);
+
+  const active = threads.find((t) => t.id === activeId) ?? null;
 
   useEffect(() => {
+    if (!active) { setPosts([]); return; }
     let cancelled = false;
-    (async () => {
-      const { data, error } = await supabase
-        .from("messages" as any)
-        .select("id, project_id, sender_role, body, created_at, projects(project_name, address, county, status)")
-        .order("created_at", { ascending: true });
-      if (cancelled || error || !data || data.length === 0) return;
-      const byProject = new Map<string, Thread>();
-      for (const m of (data as any[]) as Array<Record<string, unknown>>) {
-        const pid = String(m.project_id ?? "");
-        if (!pid) continue;
-        const proj = (m.projects as Record<string, unknown> | null) ?? {};
-        if (!byProject.has(pid)) {
-          byProject.set(pid, {
-            id: pid,
-            permit_no: `CLR-${pid.slice(0, 8)}`,
-            name: String(proj.project_name ?? "Project"),
-            address: String(proj.address ?? ""),
-            county: String(proj.county ?? ""),
-            status: (String(proj.status ?? "submitted") as ProjectStatus),
-            unread: 0,
-            lastAt: "",
-            messages: [],
-          });
-        }
-        const t = byProject.get(pid)!;
-        const isAdmin = String(m.sender_role ?? "") !== "builder";
-        t.messages.push({
-          id: String(m.id),
-          author: isAdmin ? "Cleard" : "You",
-          fromAdmin: isAdmin,
-          body: String(m.body ?? ""),
-          at: m.created_at ? new Date(String(m.created_at)).toLocaleString() : "",
-        });
-        t.lastAt = t.messages[t.messages.length - 1].at;
-      }
-      const next = Array.from(byProject.values());
-      if (next.length === 0) return;
-      setThreads(next);
-      setActiveId(next[0].id);
-    })();
+    setPostsLoading(true);
+    listPosts(active.id)
+      .then((p) => { if (!cancelled) setPosts(p); })
+      .catch((e) => toast.error((e as Error).message))
+      .finally(() => { if (!cancelled) setPostsLoading(false); });
+    const unread = isAdmin ? active.admin_unread : active.client_unread;
+    if (unread > 0) {
+      markThreadRead(active, isAdmin)
+        .then(() => setThreads((prev) => prev.map((t) => (t.id === active.id ? { ...t, ...(isAdmin ? { admin_unread: 0 } : { client_unread: 0 }) } : t))))
+        .catch(() => {});
+    }
     return () => { cancelled = true; };
-  }, []);
-
+  }, [activeId, isAdmin]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const filtered = useMemo(() => {
-    const q = query.toLowerCase().trim();
+    const q = query.trim().toLowerCase();
     if (!q) return threads;
     return threads.filter((t) =>
-      `${t.name} ${t.permit_no} ${t.address}`.toLowerCase().includes(q),
+      `${t.subject} ${t.created_by_email ?? ""}`.toLowerCase().includes(q),
     );
   }, [threads, query]);
 
-  const active = threads.find((t) => t.id === activeId) ?? threads[0] ?? null;
-
-  function openThread(id: string) {
-    setActiveId(id);
-    setThreads((prev) => prev.map((t) => (t.id === id ? { ...t, unread: 0 } : t)));
+  async function send() {
+    if (!active || !draft.trim()) return;
+    setSending(true);
+    try {
+      await postReply({ thread: active, body: draft.trim(), authorLabel, isAdmin });
+      setDraft("");
+      const [p] = await Promise.all([listPosts(active.id)]);
+      setPosts(p);
+      await refreshThreads();
+    } catch (e) {
+      toast.error((e as Error).message);
+    } finally {
+      setSending(false);
+    }
   }
 
-  function sendMessage() {
+  async function startThread() {
+    if (!newSubject.trim() || !newBody.trim()) {
+      toast.error("Add a subject and a message");
+      return;
+    }
+    setCreating(true);
+    try {
+      const t = await createThread({
+        subject: newSubject.trim(),
+        body: newBody.trim(),
+        authorLabel,
+        isAdmin,
+      });
+      setNewOpen(false);
+      setNewSubject("");
+      setNewBody("");
+      await refreshThreads();
+      setActiveId(t.id);
+      toast.success(isAdmin ? "Thread started" : "Message sent to the Cleard team");
+    } catch (e) {
+      toast.error((e as Error).message);
+    } finally {
+      setCreating(false);
+    }
+  }
+
+  async function toggleStatus() {
     if (!active) return;
-    if (!draft.trim() && pending.length === 0) return;
-    const m: Msg = {
-      id: `m${Date.now()}`,
-      author: "You",
-      fromAdmin: false,
-      body: draft.trim(),
-      at: "Just now",
-      attachments: pending.length ? pending : undefined,
-    };
-    setThreads((prev) =>
-      prev.map((t) => (t.id === active.id ? { ...t, messages: [...t.messages, m], lastAt: "Just now" } : t)),
-    );
-    setDraft("");
-    setPending([]);
+    const next = active.status === "open" ? "closed" : "open";
+    try {
+      await setThreadStatus(active.id, next);
+      setThreads((prev) => prev.map((t) => (t.id === active.id ? { ...t, status: next } : t)));
+    } catch (e) {
+      toast.error((e as Error).message);
+    }
   }
-
-  function onFiles(files: FileList | null) {
-    if (!files) return;
-    const next: Attachment[] = Array.from(files).map((f) => ({
-      name: f.name,
-      size: `${Math.max(1, Math.round(f.size / 1024))} KB`,
-    }));
-    setPending((p) => [...p, ...next]);
-    if (fileRef.current) fileRef.current.value = "";
-  }
-
-  function changeStatus(s: ProjectStatus) {
-    if (!active) return;
-    setThreads((prev) => prev.map((t) => (t.id === active.id ? { ...t, status: s } : t)));
-  }
-
 
   return (
     <PortalShell>
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6 lg:py-10">
+      <div className="mx-auto max-w-7xl">
         <div className="border-b border-obsidian/10 pb-6 mb-6">
-          <div className="eyebrow text-obsidian/50">Portfolio Messaging</div>
-          <h1 className="display-serif mt-3 text-4xl sm:text-5xl text-obsidian">Messages</h1>
+          <div className="eyebrow text-obsidian/50">{isAdmin ? "Client Messaging · Admin" : "Message Cleard"}</div>
+          <div className="mt-3 grid grid-cols-[minmax(0,1fr)_auto] items-end gap-4 sm:flex sm:justify-between">
+            <div className="min-w-0">
+              <h1 className="display-serif text-4xl sm:text-5xl text-obsidian">Messages</h1>
+              <p className="mt-2 max-w-xl text-sm text-obsidian/60">
+                {isAdmin
+                  ? "Every client conversation lands here. Replies notify the client team instantly."
+                  : "Ask our permitting team anything — we reply here and notify you in the portal."}
+              </p>
+            </div>
+            <Button type="button" variant="dark" onClick={() => setNewOpen(true)} className="shrink-0 h-11 rounded-[3px] gap-2">
+              <Plus className="h-4 w-4" strokeWidth={1.75} />
+              New message
+            </Button>
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-[300px_1fr] gap-0 border border-obsidian/15 bg-white min-h-[600px]">
-          {/* LEFT — project list */}
+        <div className="grid grid-cols-1 lg:grid-cols-[320px_1fr] border border-obsidian/15 bg-white min-h-[620px]">
+          {/* Thread list */}
           <aside className="border-b lg:border-b-0 lg:border-r border-obsidian/10 flex flex-col">
             <div className="p-3 border-b border-obsidian/10">
               <div className="relative">
-                <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-obsidian/40" />
-                <input
+                <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-obsidian/40" />
+                <Input
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
-                  placeholder="Search by address or permit number…"
-                  className="block w-full border border-obsidian/15 bg-paper-warm pl-9 pr-3 py-2 text-sm text-obsidian placeholder:text-obsidian/40 focus:border-obsidian/40 focus:outline-none rounded-[3px]"
+                  placeholder="Search conversations…"
+                  className="h-10 rounded-[3px] border-obsidian/15 bg-paper-warm pl-9"
                 />
               </div>
             </div>
-            <ul className="flex-1 overflow-y-auto max-h-[600px]">
-              {filtered.length === 0 ? (
-                <li className="p-8 text-center text-obsidian/45 text-sm">
-                  <Inbox className="h-5 w-5 mx-auto mb-2 opacity-50" />
-                  No projects.
+            <ul className="flex-1 overflow-y-auto max-h-[620px]">
+              {loading ? (
+                <li className="flex items-center justify-center gap-2 p-10 text-sm text-obsidian/50">
+                  <Loader2 className="h-4 w-4 animate-spin" /> Loading…
+                </li>
+              ) : filtered.length === 0 ? (
+                <li className="p-10 text-center text-sm text-obsidian/50">
+                  <Inbox className="mx-auto mb-2 h-6 w-6 opacity-40" strokeWidth={1.5} />
+                  No conversations yet.
                 </li>
               ) : (
                 filtered.map((t) => {
-                  const last = t.messages[t.messages.length - 1];
-                  const isActive = active ? t.id === active.id : false;
+                  const unread = isAdmin ? t.admin_unread : t.client_unread;
+                  const isActive = t.id === activeId;
                   return (
                     <li key={t.id}>
                       <button
                         type="button"
-                        onClick={() => openThread(t.id)}
-                        className={`block w-full text-left px-4 py-3 border-b border-obsidian/5 transition-colors ${
+                        onClick={() => setActiveId(t.id)}
+                        className={`block w-full text-left px-4 py-3.5 border-b border-obsidian/5 transition-colors ${
                           isActive ? "bg-paper-warm" : "hover:bg-paper-warm/60"
                         }`}
                       >
                         <div className="flex items-center justify-between gap-2">
-                          <span className={`text-sm truncate ${t.unread ? "font-medium text-obsidian" : "text-obsidian/85"}`}>
-                            {t.name}
+                          <span
+                            className="truncate text-[15px] text-obsidian"
+                            style={{ fontFamily: "var(--font-subline)", fontWeight: unread ? 600 : 400 }}
+                          >
+                            {t.subject}
                           </span>
-                          {t.unread > 0 && (
-                            <span className="ml-auto inline-flex h-4 min-w-[16px] items-center justify-center bg-sky text-paper font-mono text-[10px] font-medium px-1 rounded-full">
-                              {t.unread}
+                          {unread > 0 && (
+                            <span className="inline-flex h-5 min-w-[20px] items-center justify-center rounded-full bg-oxblood px-1 font-mono text-[10px] text-white">
+                              {unread}
                             </span>
                           )}
                         </div>
-                        <div className="mt-0.5 font-mono text-[10px] uppercase tracking-[0.12em] text-obsidian/45 truncate">
-                          {t.permit_no} · {t.county}
-                        </div>
-                        <p className="mt-1.5 text-xs text-obsidian/60 line-clamp-2">{last?.body}</p>
-                        <div className="mt-1 font-mono text-[10px] uppercase tracking-[0.12em] text-obsidian/40">
-                          {t.lastAt}
+                        {isAdmin && t.created_by_email && (
+                          <div className="mt-0.5 truncate font-mono text-[10px] uppercase tracking-[0.12em] text-obsidian/45">
+                            {t.created_by_email}
+                          </div>
+                        )}
+                        <div className="mt-1.5 flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.12em] text-obsidian/40">
+                          <span>{fmt(t.last_message_at)}</span>
+                          {t.status === "closed" && <span className="text-obsidian/35">· Closed</span>}
                         </div>
                       </button>
                     </li>
@@ -251,159 +255,85 @@ function MessagesPage() {
             </ul>
           </aside>
 
-          {/* RIGHT — thread */}
-          <section className="flex flex-col min-h-[600px]">
+          {/* Conversation */}
+          <section className="flex flex-col min-h-[620px]">
             {!active ? (
               <div className="flex-1 grid place-items-center p-8 text-center">
                 <div>
-                  <Inbox className="h-8 w-8 mx-auto text-obsidian/30" strokeWidth={1.5} />
-                  <p className="mt-3 text-sm text-obsidian/60">No messages yet.</p>
-                  <p className="mt-1 text-xs text-obsidian/45 max-w-xs">
-                    Messages will appear here as permits are processed.
-                  </p>
+                  <MessageSquare className="mx-auto h-8 w-8 text-obsidian/25" strokeWidth={1.5} />
+                  <p className="mt-3 text-sm text-obsidian/60">Select a conversation, or start a new one.</p>
                 </div>
               </div>
             ) : (
               <>
-                {/* Thread header */}
-                <div className="flex flex-wrap items-start justify-between gap-4 p-4 border-b border-obsidian/10 bg-paper-warm/40">
+                <div className="flex flex-wrap items-start justify-between gap-4 border-b border-obsidian/10 bg-paper-warm/40 p-4">
                   <div className="min-w-0">
-                    <div className="display-serif text-2xl text-obsidian">{active.name}</div>
-                    <div className="mt-1 text-xs text-obsidian/55">{active.address}</div>
+                    <div className="display-serif text-2xl text-obsidian">{active.subject}</div>
                     <div className="mt-1 font-mono text-[10px] uppercase tracking-[0.12em] text-obsidian/45">
-                      {active.permit_no} · {active.county} County
+                      Opened {fmt(active.created_at)}
+                      {active.created_by_email ? ` · ${active.created_by_email}` : ""}
                     </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <Select value={active.status} onValueChange={(v) => changeStatus(v as ProjectStatus)}>
-                      <SelectTrigger className="h-9 w-[230px] rounded-[3px] border-obsidian/15 bg-white text-xs">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {PROJECT_STATUSES.map((s) => (
-                          <SelectItem key={s} value={s}>
-                            {STATUS_LABEL[s]}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <Button asChild variant="ghost" size="sm" className="rounded-[3px] gap-1">
-                      <a href={`/projects/${active.id}`}>
-                        Details <ArrowUpRight className="h-3 w-3" />
-                      </a>
+                  {isAdmin && (
+                    <Button type="button" variant="outline" size="sm" className="rounded-[3px]" onClick={toggleStatus}>
+                      {active.status === "open" ? "Mark resolved" : "Reopen"}
                     </Button>
-                  </div>
+                  )}
                 </div>
 
-                {/* Messages */}
-                <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 bg-paper">
-                  {active.messages.map((m) => (
-                    <div key={m.id} className={`flex ${m.fromAdmin ? "justify-start" : "justify-end"}`}>
-                      <div className={`max-w-[80%] ${m.fromAdmin ? "" : "items-end"}`}>
-                        <div className="flex items-baseline gap-2 mb-1">
-                          <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-obsidian/60">
-                            {m.author}
-                          </span>
-                          {m.fromAdmin && (
-                            <span className="border border-obsidian/30 bg-obsidian text-paper px-1.5 py-0.5 font-mono text-[8px] font-medium uppercase tracking-[0.12em] rounded-[2px]">
-                              Admin
+                <div className="flex-1 space-y-4 overflow-y-auto bg-paper p-4 sm:p-6">
+                  {postsLoading ? (
+                    <div className="flex items-center gap-2 text-sm text-obsidian/50">
+                      <Loader2 className="h-4 w-4 animate-spin" /> Loading messages…
+                    </div>
+                  ) : (
+                    posts.map((m) => (
+                      <div key={m.id} className={`flex ${m.from_admin ? "justify-start" : "justify-end"}`}>
+                        <div className="max-w-[80%]">
+                          <div className="mb-1 flex items-baseline gap-2">
+                            <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-obsidian/60">
+                              {m.author_label ?? m.author_email ?? (m.from_admin ? "Cleard" : "Client")}
                             </span>
-                          )}
-                          <span className="font-mono text-[10px] text-obsidian/40">{m.at}</span>
-                        </div>
-                        <div
-                          className="px-4 py-3 text-sm leading-relaxed rounded-[3px]"
-                          style={
-                            m.fromAdmin
-                              ? { backgroundColor: "var(--obsidian)", color: "var(--paper)" }
-                              : { backgroundColor: "color-mix(in oklab, var(--sky) 22%, white)", color: "var(--obsidian)" }
-                          }
-                        >
-                          {m.body}
-                          {m.attachments && m.attachments.length > 0 && (
-                            <div className="mt-3 space-y-1.5">
-                              {m.attachments.map((a) => (
-                                <div
-                                  key={a.name}
-                                  className="flex items-center gap-2 px-2 py-1.5 text-xs"
-                                  style={{
-                                    backgroundColor: m.fromAdmin
-                                      ? "color-mix(in oklab, var(--paper) 12%, transparent)"
-                                      : "color-mix(in oklab, var(--obsidian) 8%, transparent)",
-                                    borderRadius: "2px",
-                                  }}
-                                >
-                                  <FileText className="h-3 w-3 shrink-0" />
-                                  <span className="font-mono truncate">{a.name}</span>
-                                  <span className="font-mono opacity-60 ml-auto">{a.size}</span>
-                                </div>
-                              ))}
-                            </div>
-                          )}
+                            {m.from_admin && (
+                              <span className="rounded-[2px] border border-obsidian/30 bg-obsidian px-1.5 py-0.5 font-mono text-[8px] uppercase tracking-[0.12em] text-paper">
+                                Cleard
+                              </span>
+                            )}
+                            <span className="font-mono text-[10px] text-obsidian/40">{fmt(m.created_at)}</span>
+                          </div>
+                          <div
+                            className="whitespace-pre-wrap rounded-[3px] px-4 py-3 text-[15px] leading-relaxed"
+                            style={
+                              m.from_admin
+                                ? { backgroundColor: "var(--obsidian)", color: "var(--paper)" }
+                                : { backgroundColor: "color-mix(in oklab, var(--sky) 22%, white)", color: "var(--obsidian)" }
+                            }
+                          >
+                            {m.body}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    ))
+                  )}
                 </div>
 
-                {/* Composer */}
                 <div className="border-t border-obsidian/10 bg-white p-3">
-                  {pending.length > 0 && (
-                    <div className="flex flex-wrap gap-2 mb-2">
-                      {pending.map((a, i) => (
-                        <div
-                          key={`${a.name}-${i}`}
-                          className="flex items-center gap-2 border border-obsidian/15 bg-paper-warm px-2 py-1 text-xs rounded-[3px]"
-                        >
-                          <FileText className="h-3 w-3" />
-                          <span className="font-mono truncate max-w-[200px]">{a.name}</span>
-                          <button
-                            type="button"
-                            onClick={() => setPending((p) => p.filter((_, idx) => idx !== i))}
-                            className="text-obsidian/40 hover:text-oxblood"
-                          >
-                            <X className="h-3 w-3" />
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  )}
                   <div className="flex items-end gap-2">
-                    <input
-                      ref={fileRef}
-                      type="file"
-                      multiple
-                      onChange={(e) => onFiles(e.target.files)}
-                      className="hidden"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => fileRef.current?.click()}
-                      className="h-10 w-10 grid place-items-center border border-obsidian/15 bg-paper-warm hover:bg-paper-warm/70 rounded-[3px] text-obsidian/65"
-                      aria-label="Attach file"
-                    >
-                      <Paperclip className="h-4 w-4" strokeWidth={1.75} />
-                    </button>
-                    <textarea
+                    <Textarea
                       value={draft}
                       onChange={(e) => setDraft(e.target.value)}
                       onKeyDown={(e) => {
                         if (e.key === "Enter" && !e.shiftKey) {
                           e.preventDefault();
-                          sendMessage();
+                          send();
                         }
                       }}
-                      rows={1}
-                      placeholder="Type a message... (Enter to send, Shift+Enter for new line)"
-                      className="flex-1 resize-none border border-obsidian/15 bg-paper-warm px-3 py-2.5 text-sm text-obsidian placeholder:text-obsidian/40 focus:border-obsidian/40 focus:outline-none rounded-[3px] min-h-[40px] max-h-32"
+                      rows={2}
+                      placeholder="Write a reply… (Enter to send, Shift+Enter for a new line)"
+                      className="min-h-[52px] flex-1 resize-none rounded-[3px] border-obsidian/15 bg-paper-warm text-[15px]"
                     />
-                    <Button
-                      type="button"
-                      onClick={sendMessage}
-                      variant="dark"
-                      className="h-10 rounded-[3px] gap-1.5"
-                    >
-                      <Send className="h-3.5 w-3.5" strokeWidth={1.75} />
+                    <Button type="button" variant="dark" onClick={send} disabled={sending} className="h-11 gap-1.5 rounded-[3px]">
+                      {sending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" strokeWidth={1.75} />}
                       Send
                     </Button>
                   </div>
@@ -411,9 +341,58 @@ function MessagesPage() {
               </>
             )}
           </section>
-
         </div>
       </div>
+
+      <Dialog open={newOpen} onOpenChange={setNewOpen}>
+        <DialogContent className="rounded-[3px] border-obsidian/15 bg-white sm:max-w-lg">
+          <DialogHeader>
+            <div className="eyebrow text-obsidian/50">New Message</div>
+            <DialogTitle className="display-serif text-2xl text-obsidian">
+              {isAdmin ? "Message a client" : "Message the Cleard team"}
+            </DialogTitle>
+            <DialogDescription className="text-sm text-obsidian/55">
+              {isAdmin
+                ? "Sent to the client team you are currently viewing."
+                : "Our permitting staff is notified right away and will reply here."}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label className="mb-1.5 block font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/60">
+                Subject
+              </Label>
+              <Input
+                value={newSubject}
+                onChange={(e) => setNewSubject(e.target.value)}
+                placeholder="e.g. Question on Ocean Ridge inspection"
+                className="h-11 rounded-[3px] border-obsidian/15"
+              />
+            </div>
+            <div>
+              <Label className="mb-1.5 block font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/60">
+                Message
+              </Label>
+              <Textarea
+                rows={5}
+                value={newBody}
+                onChange={(e) => setNewBody(e.target.value)}
+                placeholder="How can we help?"
+                className="rounded-[3px] border-obsidian/15 text-[15px]"
+              />
+            </div>
+          </div>
+          <DialogFooter className="gap-2">
+            <Button type="button" variant="ghost" className="rounded-[3px]" onClick={() => setNewOpen(false)}>
+              Cancel
+            </Button>
+            <Button type="button" variant="dark" className="rounded-[3px]" onClick={startThread} disabled={creating}>
+              {creating && <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" />}
+              Send message
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </PortalShell>
   );
 }

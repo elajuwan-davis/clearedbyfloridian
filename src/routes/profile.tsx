@@ -19,6 +19,8 @@ import { NotificationPrefsSection } from "@/components/notification-prefs-sectio
 import { useServerFn } from "@tanstack/react-start";
 import { inviteTeamMemberFn, listMyTeamFn, removeTeamMemberFn, getMyTenantOnboardingFn, setTenantAllowedDomainFn, createInviteTokenFn, revokeInviteTokenFn } from "@/lib/tenants.functions";
 import { useSession } from "@/lib/use-session";
+import { nameFromEmail } from "@/lib/profile-api";
+
 
 export const Route = createFileRoute("/profile")({
   head: () => ({
@@ -33,15 +35,17 @@ export const Route = createFileRoute("/profile")({
 type TeamMember = { user_id: string; email: string; role: string };
 
 function ProfilePage() {
-  const [displayName, setDisplayName] = useState("Elajuwan Davis");
+  const [displayName, setDisplayName] = useState("");
+  const [email, setEmail] = useState<string | null>(null);
   const [company, setCompany] = useState({
-    name: "Cleard",
-    website: "https://floridianinc.com",
-    phone: "(561) 555-0144",
+    name: "",
+    website: "",
+    phone: "",
     address: "",
   });
   const [language, setLanguage] = useState("en");
-  const [emails, setEmails] = useState<string[]>(["info@cleard.com"]);
+  const [emails, setEmails] = useState<string[]>([]);
+
   const [newEmail, setNewEmail] = useState("");
   const [license] = useState({ number: "CPC1459161", type: "CPC (Certified Pool/Spa Contractor)", expires: "2027-08-31" });
   const [pwd, setPwd] = useState({ current: "", next: "", confirm: "" });
@@ -64,8 +68,13 @@ function ProfilePage() {
     (async () => {
       const { data: auth } = await supabase.auth.getUser();
       const uid = auth?.user?.id ?? null;
+      const mail = auth?.user?.email ?? null;
       if (cancelled) return;
       setUserId(uid);
+      setEmail(mail);
+      // Sensible per-user defaults before anything is saved.
+      setDisplayName(nameFromEmail(mail));
+      if (mail) setEmails([mail]);
       if (!uid) return;
       const { data, error } = await supabase
         .from("profiles" as any)
@@ -83,10 +92,13 @@ function ProfilePage() {
         address: String(d.address ?? c.address),
       }));
       if (d.language) setLanguage(String(d.language));
-      if (Array.isArray(d.notification_emails)) setEmails(d.notification_emails as string[]);
+      if (Array.isArray(d.notification_emails) && (d.notification_emails as string[]).length > 0) {
+        setEmails(d.notification_emails as string[]);
+      }
     })();
     return () => { cancelled = true; };
   }, []);
+
 
   function onAvatar(e: React.ChangeEvent<HTMLInputElement>) {
     const f = e.target.files?.[0];
@@ -116,7 +128,8 @@ function ProfilePage() {
 
   async function saveProfile() {
     if (!userId) { toast.success("Profile saved (sign in to persist)"); return; }
-    const { error } = await (supabase.from("profiles" as any) as any).update({
+    const { error } = await (supabase.from("profiles" as any) as any).upsert({
+      id: userId,
       display_name: displayName,
       avatar_url: avatar,
       company_name: company.name,
@@ -125,7 +138,8 @@ function ProfilePage() {
       address: company.address,
       language,
       notification_emails: emails,
-    }).eq("id", userId);
+    }, { onConflict: "id" });
+
     if (error) { toast.error("Save failed: " + error.message); return; }
     toast.success("Profile saved");
   }
@@ -173,8 +187,12 @@ function ProfilePage() {
               <Field label="Display Name">
                 <Input value={displayName} onChange={(e) => setDisplayName(e.target.value)} className="rounded-[3px]" />
               </Field>
+              <Field label="Sign-in Email">
+                <Input value={email ?? ""} readOnly disabled className="rounded-[3px]" />
+              </Field>
               <Button onClick={saveProfile} variant="dark" className="rounded-[3px]">Save</Button>
             </div>
+
           </div>
         </Section>
 

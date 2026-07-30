@@ -63,6 +63,7 @@ import { Route as PortalAlertsRouteImport } from './routes/portal.alerts'
 import { Route as PortalBidReviewRouteImport } from './routes/portal.bid-review'
 import { Route as PortalBuildingDeptRouteImport } from './routes/portal.building-dept'
 import { Route as PortalComplianceRouteImport } from './routes/portal.compliance'
+import { Route as PortalContactsRouteImport } from './routes/portal.contacts'
 import { Route as PortalFeatureRequestsRouteImport } from './routes/portal.feature-requests'
 import { Route as PortalFinancialsRouteImport } from './routes/portal.financials'
 import { Route as PortalInspectionsRouteImport } from './routes/portal.inspections'
@@ -384,6 +385,11 @@ const PortalComplianceRoute = PortalComplianceRouteImport.update({
   path: '/compliance',
   getParentRoute: () => PortalRoute,
 } as any)
+const PortalContactsRoute = PortalContactsRouteImport.update({
+  id: '/contacts',
+  path: '/contacts',
+  getParentRoute: () => PortalRoute,
+} as any)
 const PortalFeatureRequestsRoute = PortalFeatureRequestsRouteImport.update({
   id: '/feature-requests',
   path: '/feature-requests',
@@ -679,6 +685,7 @@ export interface FileRoutesByFullPath {
   '/portal/bid-review': typeof PortalBidReviewRoute
   '/portal/building-dept': typeof PortalBuildingDeptRoute
   '/portal/compliance': typeof PortalComplianceRoute
+  '/portal/contacts': typeof PortalContactsRoute
   '/portal/feature-requests': typeof PortalFeatureRequestsRoute
   '/portal/financials': typeof PortalFinancialsRoute
   '/portal/inspections': typeof PortalInspectionsRoute
@@ -780,6 +787,7 @@ export interface FileRoutesByTo {
   '/portal/bid-review': typeof PortalBidReviewRoute
   '/portal/building-dept': typeof PortalBuildingDeptRoute
   '/portal/compliance': typeof PortalComplianceRoute
+  '/portal/contacts': typeof PortalContactsRoute
   '/portal/feature-requests': typeof PortalFeatureRequestsRoute
   '/portal/financials': typeof PortalFinancialsRoute
   '/portal/inspections': typeof PortalInspectionsRoute
@@ -882,6 +890,7 @@ export interface FileRoutesById {
   '/portal/bid-review': typeof PortalBidReviewRoute
   '/portal/building-dept': typeof PortalBuildingDeptRoute
   '/portal/compliance': typeof PortalComplianceRoute
+  '/portal/contacts': typeof PortalContactsRoute
   '/portal/feature-requests': typeof PortalFeatureRequestsRoute
   '/portal/financials': typeof PortalFinancialsRoute
   '/portal/inspections': typeof PortalInspectionsRoute
@@ -987,6 +996,7 @@ export interface FileRouteTypes {
     | '/portal/bid-review'
     | '/portal/building-dept'
     | '/portal/compliance'
+    | '/portal/contacts'
     | '/portal/feature-requests'
     | '/portal/financials'
     | '/portal/inspections'
@@ -1088,6 +1098,7 @@ export interface FileRouteTypes {
     | '/portal/bid-review'
     | '/portal/building-dept'
     | '/portal/compliance'
+    | '/portal/contacts'
     | '/portal/feature-requests'
     | '/portal/financials'
     | '/portal/inspections'
@@ -1189,6 +1200,7 @@ export interface FileRouteTypes {
     | '/portal/bid-review'
     | '/portal/building-dept'
     | '/portal/compliance'
+    | '/portal/contacts'
     | '/portal/feature-requests'
     | '/portal/financials'
     | '/portal/inspections'
@@ -1681,6 +1693,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PortalComplianceRouteImport
       parentRoute: typeof PortalRoute
     }
+    '/portal/contacts': {
+      id: '/portal/contacts'
+      path: '/contacts'
+      fullPath: '/portal/contacts'
+      preLoaderRoute: typeof PortalContactsRouteImport
+      parentRoute: typeof PortalRoute
+    }
     '/portal/feature-requests': {
       id: '/portal/feature-requests'
       path: '/feature-requests'
@@ -2100,6 +2119,7 @@ interface PortalRouteChildren {
   PortalBidReviewRoute: typeof PortalBidReviewRoute
   PortalBuildingDeptRoute: typeof PortalBuildingDeptRoute
   PortalComplianceRoute: typeof PortalComplianceRoute
+  PortalContactsRoute: typeof PortalContactsRoute
   PortalFeatureRequestsRoute: typeof PortalFeatureRequestsRoute
   PortalFinancialsRoute: typeof PortalFinancialsRoute
   PortalInspectionsRoute: typeof PortalInspectionsRoute
@@ -2132,6 +2152,7 @@ const PortalRouteChildren: PortalRouteChildren = {
   PortalBidReviewRoute: PortalBidReviewRoute,
   PortalBuildingDeptRoute: PortalBuildingDeptRoute,
   PortalComplianceRoute: PortalComplianceRoute,
+  PortalContactsRoute: PortalContactsRoute,
   PortalFeatureRequestsRoute: PortalFeatureRequestsRoute,
   PortalFinancialsRoute: PortalFinancialsRoute,
   PortalInspectionsRoute: PortalInspectionsRoute,
@@ -2249,13 +2270,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

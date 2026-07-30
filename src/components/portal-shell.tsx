@@ -17,6 +17,7 @@ import { useExpirationAlerts } from "@/hooks/use-expiration-alerts";
 import { NotificationBell } from "@/components/notification-bell";
 import { VictoriaWidget } from "@/components/victoria-widget";
 import { useSession, setImpersonatedTenant, type AppRole } from "@/lib/use-session";
+import { useMyIdentity } from "@/lib/profile-api";
 import { listAllTenantsFn } from "@/lib/tenants.functions";
 import type { Alert } from "@/lib/expiration-alerts";
 
@@ -26,52 +27,65 @@ type NavGroup = { label: string; items: NavLink[] };
 
 const navGroups: NavGroup[] = [
   {
+    label: "Dashboard",
+    items: [
+      { to: "/portal", label: "Overview" },
+      { to: "/dashboard", label: "Builder Dashboard" },
+      { to: "/portal/alerts", label: "Victoria Alerts" },
+      { to: "/messages", label: "Messages" },
+    ],
+  },
+  {
     label: "Permits",
     items: [
       { to: "/portal/permits", label: "My Permits", alertKey: "my-permits" },
       { to: "/portal/permits/new", label: "New Permit" },
       { to: "/portal/submissions", label: "Submissions" },
+      { to: "/portal/inspections", label: "Inspections" },
       { to: "/portal/hoa-submittals", label: "HOA Submittals" },
       { to: "/portal/bid-review", label: "Bid Review" },
     ],
   },
   {
+    label: "People",
+    items: [
+      { to: "/portal/contacts", label: "Contacts" },
+      { to: "/forms/subcontractors", label: "Subcontractors" },
+      { to: "/portal/compliance", label: "Compliance" },
+      { to: "/portal/request-coi", label: "Request COI", alertKey: "request-coi" },
+      { to: "/portal/request-sub-insurance", label: "Sub Insurance", alertKey: "sub-insurance" },
+    ],
+  },
+  {
     label: "Financials",
     items: [
-      { to: "/portal/financials", label: "Overview" },
+      { to: "/portal/financials", label: "Financial Overview" },
       { to: "/portal/permit-fees", label: "Permit Fees" },
+      { to: "/invoices", label: "Invoices" },
       { to: "/fee-calculator", label: "Savings Calculator" },
-      { to: "/portal/financials", label: "Before Cleard" },
     ],
   },
   {
     label: "Documents",
     items: [
-      
-      { to: "/portal/building-dept", label: "Building Departments" },
       { to: "/forms", label: "Forms" },
+      { to: "/portal/building-dept", label: "Building Departments" },
+      { to: "/building-dept-logins", label: "Portal Logins" },
+      { to: "/portal/notary-queue", label: "Notary Queue" },
     ],
   },
   {
-    label: "Operations",
+    label: "Resources",
     items: [
-      { to: "/messages", label: "Messages" },
-      { to: "/portal/alerts", label: "Victoria Alerts" },
-      { to: "/portal/reports", label: "Reports" },
       { to: "/portal/guides", label: "Project Guides" },
+      { to: "/municipalities", label: "Municipalities" },
+      { to: "/ask-victoria", label: "Ask Victoria" },
+      { to: "/portal/reports", label: "Reports" },
       { to: "/portal/blog", label: "Blog" },
       { to: "/portal/feature-requests", label: "Feature Requests" },
-    ],
-  },
-  {
-    label: "Marketplace",
-    items: [
       { to: "/portal/marketplace", label: "Marketplace" },
     ],
   },
-
-
-
 ];
 
 // Subs only see a slim nav — their attached projects + their own compliance uploads.
@@ -92,20 +106,19 @@ function navGroupsForRole(role: AppRole | null): NavGroup[] {
 }
 
 const settingsGroup: NavGroup = {
-  label: "Settings",
+  label: "Account",
   items: [
-    { to: "/profile", label: "Profile" },
-    { to: "/profile", label: "Notifications" },
-    { to: "/forms/subcontractors", label: "Team" },
+    { to: "/profile", label: "Profile & Notifications" },
+    { to: "/portal/contacts", label: "Contacts" },
   ],
 };
 
 const subSettingsGroup: NavGroup = {
-  label: "Settings",
+  label: "Account",
   items: [{ to: "/profile", label: "Profile" }],
 };
 
-// Admin-only entries surfaced inside the account menu.
+// Admin-only entries.
 const adminGroup: NavGroup = {
   label: "Admin",
   items: [
@@ -140,16 +153,11 @@ function isProtectedPortalPath(pathname: string) {
   return protectedPortalPrefixes.some((p) => pathname === p || pathname.startsWith(`${p}/`));
 }
 
-const mockUser = {
-  full_name: "Elajuwan Davis",
-  initials: "ED",
-  role: "admin" as "builder" | "staff" | "admin",
-};
-
-const roleLabel: Record<typeof mockUser.role, string> = {
-  builder: "Builder",
-  staff: "Staff",
-  admin: "Admin",
+const roleLabel: Record<string, string> = {
+  admin: "Cleard Admin",
+  gc_owner: "Account Owner",
+  gc_member: "Team Member",
+  subcontractor: "Subcontractor",
 };
 
 function computeAlertKeys(alerts: Alert[]): Set<AlertKey> {
@@ -162,139 +170,153 @@ function computeAlertKeys(alerts: Alert[]): Set<AlertKey> {
   return set;
 }
 
-function isGroupActive(group: NavGroup, pathname: string) {
-  return group.items.some(
-    (it) => pathname === it.to || pathname.startsWith(it.to + "/"),
-  );
+function isItemActive(pathname: string, to: string) {
+  if (to === "/portal") return pathname === "/portal" || pathname === "/portal/";
+  return pathname === to || pathname.startsWith(to + "/");
 }
 
-function NavDropdown({
-  group,
+/** Always-expanded vertical nav — every page visible, large tap targets. */
+function SidebarNav({
   pathname,
   alertKeys,
-}: {
-  group: NavGroup;
-  pathname: string;
-  alertKeys: Set<AlertKey>;
-}) {
-  const active = isGroupActive(group, pathname);
-  const hasAlert = group.items.some((it) => it.alertKey && alertKeys.has(it.alertKey));
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger
-        className="group relative flex items-center gap-1 px-3 h-14 font-mono text-[11px] tracking-[0.18em] uppercase transition-colors outline-none"
-        style={{ color: active ? "var(--obsidian)" : "color-mix(in oklab, var(--obsidian) 65%, transparent)" }}
-      >
-        <span>{group.label}</span>
-        {hasAlert && <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-red-500" />}
-        <ChevronDown className="h-3 w-3 opacity-60 transition-transform group-data-[state=open]:rotate-180" strokeWidth={1.5} />
-        <span
-          aria-hidden
-          className="absolute left-3 right-3 bottom-0 h-[2px] transition-opacity"
-          style={{ backgroundColor: "var(--obsidian)", opacity: active ? 1 : 0 }}
-        />
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="start" className="min-w-[220px] rounded-[3px] p-1">
-        {group.items.map((item, i) => {
-          const itemActive = pathname === item.to || pathname.startsWith(item.to + "/");
-          const alerted = item.alertKey ? alertKeys.has(item.alertKey) : false;
-          return (
-            <DropdownMenuItem key={`${item.to}-${i}`} asChild>
-              <Link
-                to={item.to as never}
-                className="flex items-center justify-between gap-3 px-3 py-2 text-[13px] rounded-[2px] cursor-pointer"
-                style={{
-                  color: itemActive ? "var(--obsidian)" : "color-mix(in oklab, var(--obsidian) 80%, transparent)",
-                  fontWeight: itemActive ? 600 : 400,
-                }}
-              >
-                <span>{item.label}</span>
-                {alerted && <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-red-500" />}
-              </Link>
-            </DropdownMenuItem>
-          );
-        })}
-      </DropdownMenuContent>
-    </DropdownMenu>
-  );
-}
-
-function MobileDrawer({
-  pathname,
-  alertKeys,
-  onNavigate,
-  onSignOut,
   role,
   isAdmin,
+  onNavigate,
 }: {
   pathname: string;
   alertKeys: Set<AlertKey>;
-  onNavigate: () => void;
-  onSignOut: () => void;
   role: AppRole | null;
-  isAdmin?: boolean;
+  isAdmin: boolean;
+  onNavigate?: () => void;
 }) {
   const groups = navGroupsForRole(role);
   const settings = role === "subcontractor" ? subSettingsGroup : settingsGroup;
   const all = [...groups, ...(isAdmin ? [adminGroup] : []), settings];
   return (
-    <div className="flex h-full flex-col bg-white">
-      <div className="h-14 flex items-center justify-between px-5 border-b">
-        <Link to="/" onClick={onNavigate} className="wordmark text-2xl" style={{ color: "var(--obsidian)" }}>
+    <nav className="py-4">
+      {all.map((group) => (
+        <div key={group.label} className="mb-6">
+          <div
+            className="px-5 mb-2 font-mono text-[10px] uppercase tracking-[0.22em]"
+            style={{ color: "color-mix(in oklab, var(--paper) 45%, transparent)" }}
+          >
+            {group.label}
+          </div>
+          <ul>
+            {group.items.map((item, i) => {
+              const active = isItemActive(pathname, item.to);
+              const alerted = item.alertKey ? alertKeys.has(item.alertKey) : false;
+              return (
+                <li key={`${item.to}-${i}`}>
+                  <Link
+                    to={item.to as never}
+                    onClick={onNavigate}
+                    className="flex items-center justify-between gap-3 px-5 py-2.5 text-[15px] transition-colors"
+                    style={{
+                      color: active
+                        ? "var(--paper)"
+                        : "color-mix(in oklab, var(--paper) 72%, transparent)",
+                      fontFamily: "var(--font-subline)",
+                      fontWeight: active ? 600 : 400,
+                      backgroundColor: active
+                        ? "color-mix(in oklab, var(--paper) 12%, transparent)"
+                        : "transparent",
+                      borderLeft: active ? "3px solid var(--sky)" : "3px solid transparent",
+                    }}
+                  >
+                    <span className="truncate">{item.label}</span>
+                    {alerted && <span aria-hidden className="h-2 w-2 shrink-0 rounded-full bg-red-500" />}
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      ))}
+    </nav>
+  );
+}
+
+function SidebarBody({
+  pathname,
+  alertKeys,
+  role,
+  isAdmin,
+  displayName,
+  email,
+  initials,
+  onNavigate,
+  onSignOut,
+}: {
+  pathname: string;
+  alertKeys: Set<AlertKey>;
+  role: AppRole | null;
+  isAdmin: boolean;
+  displayName: string;
+  email: string | null;
+  initials: string;
+  onNavigate?: () => void;
+  onSignOut: () => void;
+}) {
+  return (
+    <div className="flex h-full flex-col" style={{ backgroundColor: "var(--obsidian)" }}>
+      <div
+        className="h-16 flex items-center px-5 border-b shrink-0"
+        style={{ borderColor: "color-mix(in oklab, var(--paper) 12%, transparent)" }}
+      >
+        <Link to="/" onClick={onNavigate} className="wordmark text-3xl" style={{ color: "var(--paper)" }}>
           Cleard
         </Link>
       </div>
-      <div className="flex-1 overflow-y-auto py-4">
-        {all.map((group) => (
-          <div key={group.label} className="mb-5">
-            <div
-              className="px-5 mb-1.5 font-mono text-[10px] uppercase tracking-[0.22em]"
-              style={{ color: "color-mix(in oklab, var(--obsidian) 45%, transparent)" }}
-            >
-              {group.label}
-            </div>
-            {group.items.map((item, i) => {
-              const active = pathname === item.to || pathname.startsWith(item.to + "/");
-              const alerted = item.alertKey ? alertKeys.has(item.alertKey) : false;
-              return (
-                <Link
-                  key={`${item.to}-${i}`}
-                  to={item.to as never}
-                  onClick={onNavigate}
-                  className="flex items-center justify-between gap-3 px-5 py-2.5 text-[14px]"
-                  style={{
-                    color: active ? "var(--obsidian)" : "color-mix(in oklab, var(--obsidian) 75%, transparent)",
-                    fontWeight: active ? 600 : 400,
-                    backgroundColor: active ? "color-mix(in oklab, var(--obsidian) 5%, transparent)" : "transparent",
-                  }}
-                >
-                  <span>{item.label}</span>
-                  {alerted && <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-red-500" />}
-                </Link>
-              );
-            })}
-          </div>
-        ))}
+
+      <div className="flex-1 overflow-y-auto">
+        <SidebarNav
+          pathname={pathname}
+          alertKeys={alertKeys}
+          role={role}
+          isAdmin={isAdmin}
+          onNavigate={onNavigate}
+        />
       </div>
-      <div className="border-t p-4 flex items-center justify-between">
-        <div className="flex items-center gap-2">
+
+      <div
+        className="border-t p-4 shrink-0"
+        style={{ borderColor: "color-mix(in oklab, var(--paper) 12%, transparent)" }}
+      >
+        <div className="flex items-center gap-3 min-w-0">
           <div
-            className="h-9 w-9 grid place-items-center font-mono text-[11px]"
-            style={{ backgroundColor: "var(--obsidian)", color: "white", borderRadius: "3px" }}
+            className="h-10 w-10 shrink-0 grid place-items-center font-mono text-[12px]"
+            style={{ backgroundColor: "var(--sky)", color: "var(--obsidian)", borderRadius: "3px" }}
           >
-            {mockUser.initials}
+            {initials}
           </div>
-          <div className="leading-tight">
-            <div className="text-[13px]" style={{ color: "var(--obsidian)" }}>{mockUser.full_name}</div>
-            <div className="font-mono text-[9px] tracking-[0.18em] uppercase" style={{ color: "color-mix(in oklab, var(--obsidian) 55%, transparent)" }}>
-              {roleLabel[mockUser.role]}
+          <div className="min-w-0 leading-tight">
+            <div className="truncate text-[14px]" style={{ color: "var(--paper)", fontFamily: "var(--font-subline)" }}>
+              {displayName}
+            </div>
+            <div
+              className="truncate font-mono text-[9px] tracking-[0.18em] uppercase"
+              style={{ color: "color-mix(in oklab, var(--paper) 55%, transparent)" }}
+            >
+              {roleLabel[role ?? ""] ?? "Client"}
             </div>
           </div>
         </div>
+        {email && (
+          <div
+            className="mt-2 truncate text-[12px]"
+            style={{ color: "color-mix(in oklab, var(--paper) 55%, transparent)" }}
+          >
+            {email}
+          </div>
+        )}
         <button
           onClick={onSignOut}
-          className="flex items-center gap-1.5 px-3 py-2 text-[12px] font-mono uppercase tracking-[0.15em]"
-          style={{ color: "var(--obsidian)" }}
+          className="mt-3 w-full flex items-center justify-center gap-2 px-3 py-2.5 text-[13px] font-mono uppercase tracking-[0.15em] rounded-[3px]"
+          style={{
+            color: "var(--paper)",
+            border: "1px solid color-mix(in oklab, var(--paper) 25%, transparent)",
+          }}
         >
           <LogOut className="h-3.5 w-3.5" strokeWidth={1.5} />
           Sign out
@@ -311,6 +333,7 @@ export function PortalShell({ children }: { children: ReactNode }) {
   const [authState, setAuthState] = useState<"checking" | "authed" | "anon">("checking");
   const signingOutRef = useRef(false);
   const session = useSession();
+  const me = useMyIdentity();
 
   useEffect(() => {
     let cancelled = false;
@@ -358,6 +381,7 @@ export function PortalShell({ children }: { children: ReactNode }) {
 
   const alerts = useExpirationAlerts();
   const alertKeys = computeAlertKeys(alerts);
+  const displayName = me.displayName || session.email || "Account";
 
   if (authState !== "authed") {
     return (
@@ -371,126 +395,43 @@ export function PortalShell({ children }: { children: ReactNode }) {
 
   return (
     <div className="min-h-screen bg-background">
-      <header
-        className="sticky top-0 z-40 h-14 bg-white border-b flex items-center px-4 sm:px-6 lg:px-8"
-        style={{ borderColor: "color-mix(in oklab, var(--obsidian) 10%, transparent)" }}
-      >
-        {/* Logo */}
-        <Link to="/" className="flex items-baseline gap-2 leading-none shrink-0">
-          <span className="wordmark text-2xl" style={{ color: "var(--obsidian)" }}>Cleard</span>
-          <span
-            className="hidden sm:inline font-mono text-[9px] tracking-[0.22em] uppercase"
-            style={{ color: "color-mix(in oklab, var(--obsidian) 50%, transparent)" }}
-          >
-           
-          </span>
-        </Link>
-        {session.tenantName && (
-          <div
-            className="hidden md:flex items-center ml-4 pl-4 border-l gap-2 min-w-0"
-            style={{ borderColor: "color-mix(in oklab, var(--obsidian) 12%, transparent)" }}
-          >
-            <span
-              className="font-mono text-[9px] tracking-[0.22em] uppercase"
-              style={{ color: "color-mix(in oklab, var(--obsidian) 50%, transparent)" }}
-            >
-              {session.isAdmin ? "Cleard Admin" : "Tenant"}
-            </span>
-            <span
-              className="text-[13px] truncate max-w-[220px]"
-              style={{ color: "var(--obsidian)" }}
-              title={session.tenantName}
-            >
-              {session.tenantName}
-            </span>
-          </div>
-        )}
+      {/* Fixed left sidebar (desktop) */}
+      <aside className="hidden lg:block fixed inset-y-0 left-0 z-40 w-[280px]">
+        <SidebarBody
+          pathname={pathname}
+          alertKeys={alertKeys}
+          role={session.role}
+          isAdmin={session.isAdmin}
+          displayName={displayName}
+          email={session.email}
+          initials={me.initials}
+          onSignOut={handleSignOut}
+        />
+      </aside>
 
-        {/* Desktop nav */}
-        <nav className="hidden lg:flex items-center ml-8 h-14">
-          {navGroupsForRole(session.role).map((g) => (
-            <NavDropdown key={g.label} group={g} pathname={pathname} alertKeys={alertKeys} />
-          ))}
-        </nav>
-
-        {/* Admin tenant switcher */}
-        {session.isAdmin && <AdminTenantSwitcher />}
-
-        <div className="ml-auto flex items-center gap-2">
-          <NotificationBell />
-          {/* Avatar / account menu (desktop) */}
-          <div className="hidden lg:block">
-            <DropdownMenu>
-              <DropdownMenuTrigger className="flex items-center gap-2 h-9 pl-1 pr-2 rounded-[3px] hover:bg-secondary outline-none">
-                <div
-                  className="h-8 w-8 grid place-items-center font-mono text-[11px]"
-                  style={{ backgroundColor: "var(--obsidian)", color: "white", borderRadius: "3px" }}
-                >
-                  {mockUser.initials}
-                </div>
-                <ChevronDown className="h-3 w-3 opacity-60" strokeWidth={1.5} />
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="min-w-[220px] rounded-[3px] p-1">
-                <DropdownMenuLabel className="px-3 py-2">
-                  <div className="text-[13px]" style={{ color: "var(--obsidian)" }}>{mockUser.full_name}</div>
-                  <div className="font-mono text-[9px] tracking-[0.18em] uppercase mt-0.5" style={{ color: "color-mix(in oklab, var(--obsidian) 55%, transparent)" }}>
-                    {roleLabel[mockUser.role]}
-                  </div>
-                </DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                {(session.role === "subcontractor" ? subSettingsGroup : settingsGroup).items.map((item, i) => (
-                  <DropdownMenuItem key={`${item.to}-${i}`} asChild>
-                    <Link to={item.to as never} className="px-3 py-2 text-[13px] rounded-[2px] cursor-pointer" style={{ color: "var(--obsidian)" }}>
-                      {item.label}
-                    </Link>
-                  </DropdownMenuItem>
-                ))}
-                {session.isAdmin && (
-                  <>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuLabel
-                      className="px-3 py-1.5 font-mono text-[9px] tracking-[0.2em] uppercase"
-                      style={{ color: "color-mix(in oklab, var(--obsidian) 55%, transparent)" }}
-                    >
-                      {adminGroup.label}
-                    </DropdownMenuLabel>
-                    {adminGroup.items.map((item, i) => (
-                      <DropdownMenuItem key={`admin-${item.to}-${i}`} asChild>
-                        <Link to={item.to as never} className="px-3 py-2 text-[13px] rounded-[2px] cursor-pointer" style={{ color: "var(--obsidian)" }}>
-                          {item.label}
-                        </Link>
-                      </DropdownMenuItem>
-                    ))}
-                  </>
-                )}
-                <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  onSelect={() => handleSignOut()}
-                  className="px-3 py-2 text-[13px] rounded-[2px] cursor-pointer flex items-center gap-2"
-                  style={{ color: "var(--obsidian)" }}
-                >
-                  <LogOut className="h-3.5 w-3.5" strokeWidth={1.5} />
-                  Sign out
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-
-          {/* Mobile hamburger */}
+      <div className="lg:pl-[280px]">
+        <header
+          className="sticky top-0 z-30 h-16 bg-white border-b flex items-center gap-3 px-4 sm:px-6 lg:px-8"
+          style={{ borderColor: "color-mix(in oklab, var(--obsidian) 10%, transparent)" }}
+        >
+          {/* Mobile hamburger + wordmark */}
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger
               className="lg:hidden p-2 rounded-[3px] hover:bg-secondary"
               aria-label="Open navigation"
             >
-              {open ? <X className="h-5 w-5" strokeWidth={1.5} /> : <Menu className="h-5 w-5" strokeWidth={1.5} />}
+              {open ? <X className="h-6 w-6" strokeWidth={1.5} /> : <Menu className="h-6 w-6" strokeWidth={1.5} />}
             </SheetTrigger>
-            <SheetContent side="right" className="p-0 w-full sm:w-[360px] border-0">
+            <SheetContent side="left" className="p-0 w-[300px] border-0">
               <SheetTitle className="sr-only">Portal navigation</SheetTitle>
-              <MobileDrawer
+              <SidebarBody
                 pathname={pathname}
                 alertKeys={alertKeys}
                 role={session.role}
                 isAdmin={session.isAdmin}
+                displayName={displayName}
+                email={session.email}
+                initials={me.initials}
                 onNavigate={() => setOpen(false)}
                 onSignOut={() => {
                   setOpen(false);
@@ -499,52 +440,128 @@ export function PortalShell({ children }: { children: ReactNode }) {
               />
             </SheetContent>
           </Sheet>
-        </div>
-      </header>
 
-      {session.isAdmin && !session.impersonatingTenantName && (
-        <div
-          className="sticky top-14 z-30 flex flex-wrap items-center justify-between gap-3 px-4 sm:px-6 lg:px-8 py-2 text-[12px]"
-          style={{ backgroundColor: "var(--obsidian)", color: "white" }}
-        >
-          <div className="flex items-center gap-2 min-w-0">
-            <ShieldCheck className="h-3.5 w-3.5 shrink-0" strokeWidth={1.5} />
-            <span className="font-mono text-[10px] tracking-[0.18em] uppercase opacity-70">Admin view</span>
-            <span className="truncate opacity-90">
-              {session.email ?? ""} — full access across all tenants
-            </span>
-          </div>
-          <Link
-            to="/admin"
-            className="font-mono text-[10px] tracking-[0.16em] uppercase underline underline-offset-2 hover:opacity-80"
-          >
-            Admin dashboard
+          <Link to="/" className="lg:hidden wordmark text-2xl" style={{ color: "var(--obsidian)" }}>
+            Cleard
           </Link>
-        </div>
-      )}
 
-      {session.isAdmin && session.impersonatingTenantName && (
-        <div
-          className="sticky top-14 z-30 flex items-center justify-between gap-3 px-4 sm:px-6 lg:px-8 py-2 text-[12px]"
-          style={{ backgroundColor: "var(--obsidian)", color: "white" }}
-        >
-          <div className="flex items-center gap-2 min-w-0">
-            <Building2 className="h-3.5 w-3.5 shrink-0" strokeWidth={1.5} />
-            <span className="font-mono text-[10px] tracking-[0.18em] uppercase opacity-70">Viewing as</span>
-            <span className="truncate">{session.impersonatingTenantName}</span>
+          {session.tenantName && (
+            <div className="hidden md:flex items-center gap-2 min-w-0">
+              <span
+                className="font-mono text-[9px] tracking-[0.22em] uppercase"
+                style={{ color: "color-mix(in oklab, var(--obsidian) 50%, transparent)" }}
+              >
+                {session.isAdmin ? "Cleard Admin" : "Client"}
+              </span>
+              <span
+                className="text-[14px] truncate max-w-[260px]"
+                style={{ color: "var(--obsidian)", fontFamily: "var(--font-subline)" }}
+                title={session.tenantName}
+              >
+                {session.tenantName}
+              </span>
+            </div>
+          )}
+
+          {session.isAdmin && <AdminTenantSwitcher />}
+
+          <div className="ml-auto flex items-center gap-2">
+            <NotificationBell />
+            <div className="hidden sm:block">
+              <DropdownMenu>
+                <DropdownMenuTrigger className="flex items-center gap-2 h-10 pl-1 pr-2 rounded-[3px] hover:bg-secondary outline-none">
+                  <div
+                    className="h-9 w-9 grid place-items-center font-mono text-[11px]"
+                    style={{ backgroundColor: "var(--obsidian)", color: "white", borderRadius: "3px" }}
+                  >
+                    {me.initials}
+                  </div>
+                  <ChevronDown className="h-3 w-3 opacity-60" strokeWidth={1.5} />
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="min-w-[240px] rounded-[3px] p-1">
+                  <DropdownMenuLabel className="px-3 py-2">
+                    <div className="text-[14px]" style={{ color: "var(--obsidian)", fontFamily: "var(--font-subline)" }}>
+                      {displayName}
+                    </div>
+                    <div
+                      className="font-mono text-[9px] tracking-[0.18em] uppercase mt-0.5"
+                      style={{ color: "color-mix(in oklab, var(--obsidian) 55%, transparent)" }}
+                    >
+                      {roleLabel[session.role ?? ""] ?? "Client"}
+                    </div>
+                    {session.email && (
+                      <div className="mt-1 text-[12px] truncate" style={{ color: "color-mix(in oklab, var(--obsidian) 55%, transparent)" }}>
+                        {session.email}
+                      </div>
+                    )}
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  {(session.role === "subcontractor" ? subSettingsGroup : settingsGroup).items.map((item, i) => (
+                    <DropdownMenuItem key={`${item.to}-${i}`} asChild>
+                      <Link to={item.to as never} className="px-3 py-2 text-[13px] rounded-[2px] cursor-pointer" style={{ color: "var(--obsidian)" }}>
+                        {item.label}
+                      </Link>
+                    </DropdownMenuItem>
+                  ))}
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    onSelect={() => handleSignOut()}
+                    className="px-3 py-2 text-[13px] rounded-[2px] cursor-pointer flex items-center gap-2"
+                    style={{ color: "var(--obsidian)" }}
+                  >
+                    <LogOut className="h-3.5 w-3.5" strokeWidth={1.5} />
+                    Sign out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
           </div>
-          <button
-            onClick={() => setImpersonatedTenant(null)}
-            className="font-mono text-[10px] tracking-[0.16em] uppercase underline underline-offset-2 hover:opacity-80"
-          >
-            Exit impersonation
-          </button>
-        </div>
-      )}
+        </header>
 
-      <main className="min-h-[calc(100vh-3.5rem)] px-4 sm:px-6 lg:px-8 py-6 md:py-10">
-        {children}
-      </main>
+        {session.isAdmin && !session.impersonatingTenantName && (
+          <div
+            className="sticky top-16 z-20 flex flex-wrap items-center justify-between gap-3 px-4 sm:px-6 lg:px-8 py-2 text-[12px]"
+            style={{ backgroundColor: "var(--obsidian)", color: "white" }}
+          >
+            <div className="flex items-center gap-2 min-w-0">
+              <ShieldCheck className="h-3.5 w-3.5 shrink-0" strokeWidth={1.5} />
+              <span className="font-mono text-[10px] tracking-[0.18em] uppercase opacity-70">Admin view</span>
+              <span className="truncate opacity-90">
+                {session.email ?? ""} — full access across all clients
+              </span>
+            </div>
+            <Link
+              to="/admin"
+              className="font-mono text-[10px] tracking-[0.16em] uppercase underline underline-offset-2 hover:opacity-80"
+            >
+              Admin dashboard
+            </Link>
+          </div>
+        )}
+
+        {session.isAdmin && session.impersonatingTenantName && (
+          <div
+            className="sticky top-16 z-20 flex items-center justify-between gap-3 px-4 sm:px-6 lg:px-8 py-2 text-[12px]"
+            style={{ backgroundColor: "var(--obsidian)", color: "white" }}
+          >
+            <div className="flex items-center gap-2 min-w-0">
+              <Building2 className="h-3.5 w-3.5 shrink-0" strokeWidth={1.5} />
+              <span className="font-mono text-[10px] tracking-[0.18em] uppercase opacity-70">Viewing as</span>
+              <span className="truncate">{session.impersonatingTenantName}</span>
+            </div>
+            <button
+              onClick={() => setImpersonatedTenant(null)}
+              className="font-mono text-[10px] tracking-[0.16em] uppercase underline underline-offset-2 hover:opacity-80"
+            >
+              Exit impersonation
+            </button>
+          </div>
+        )}
+
+        <main className="min-h-[calc(100vh-4rem)] px-4 sm:px-6 lg:px-8 py-6 md:py-10">
+          {children}
+        </main>
+      </div>
 
       <InternalOnlyVictoria />
     </div>
@@ -584,7 +601,7 @@ function AdminTenantSwitcher() {
   }, [list]);
 
   const current = session.impersonatingTenantId;
-  const currentName = session.impersonatingTenantName ?? "All Tenants";
+  const currentName = session.impersonatingTenantName ?? "All Clients";
 
   return (
     <div className="hidden md:block ml-4">
@@ -601,7 +618,7 @@ function AdminTenantSwitcher() {
         </DropdownMenuTrigger>
         <DropdownMenuContent align="start" className="min-w-[260px] max-h-[380px] overflow-y-auto rounded-[3px] p-1">
           <DropdownMenuLabel className="px-3 py-2 font-mono text-[9px] tracking-[0.2em] uppercase" style={{ color: "color-mix(in oklab, var(--obsidian) 55%, transparent)" }}>
-            Impersonate tenant
+            View as client
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuItem
@@ -609,13 +626,13 @@ function AdminTenantSwitcher() {
             className="px-3 py-2 text-[13px] rounded-[2px] cursor-pointer flex items-center justify-between"
             style={{ color: "var(--obsidian)" }}
           >
-            <span>All Tenants (admin view)</span>
+            <span>All Clients (admin view)</span>
             {!current && <Check className="h-3.5 w-3.5" strokeWidth={1.5} />}
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           {!loaded && <div className="px-3 py-2 text-[12px] text-obsidian/50">Loading…</div>}
           {loaded && tenants.length === 0 && (
-            <div className="px-3 py-2 text-[12px] text-obsidian/50">No tenants yet.</div>
+            <div className="px-3 py-2 text-[12px] text-obsidian/50">No clients yet.</div>
           )}
           {tenants.map((t) => (
             <DropdownMenuItem

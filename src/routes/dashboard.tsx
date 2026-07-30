@@ -1,6 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import { PortalShell } from "@/components/portal-shell";
 import { Button } from "@/components/ui/button";
+import { useMyIdentity, greetingForNow } from "@/lib/profile-api";
+import { listPermits, type PermitRow } from "@/lib/permits-api";
+import { listThreads } from "@/lib/messages-api";
 import {
   AlertTriangle,
   FileSignature,
@@ -12,6 +16,7 @@ import {
   MessageSquare,
 } from "lucide-react";
 
+
 export const Route = createFileRoute("/dashboard")({
   head: () => ({
     meta: [
@@ -22,46 +27,64 @@ export const Route = createFileRoute("/dashboard")({
   component: DashboardPage,
 });
 
-// Mock — replace with profiles + projects queries when wired
-const mockBuilder = { first_name: "Javier", license_verified: false, coi_verified: true, lpoa_signed: false };
-
-const stats = [
-  { label: "Total Projects", value: 7, icon: FolderOpen, accent: false },
-  { label: "Permits Issued", value: 4, icon: ShieldCheck, accent: true },
-  { label: "Corrections Pending", value: 2, icon: AlertCircle, accent: false },
-  { label: "Messages Unread", value: 5, icon: MessageSquare, accent: false },
-];
-
 import { projectStatusMeta as statusMeta, type BadgeTone } from "@/lib/status-badges";
 type ProjectStatus = keyof typeof statusMeta;
-
-
-const projects: Array<{
-  id: string;
-  permit_no: string;
-  name: string;
-  address: string;
-  county: string;
-  value_cents: number;
-  status: ProjectStatus;
-  updated: string;
-}> = [
-  { id: "1", permit_no: "CLR-2026-0142", name: "Ocean Ridge Estate", address: "1247 Banyan Trail", county: "Palm Beach", value_cents: 412_500_000, status: "in_review", updated: "2h ago" },
-  { id: "2", permit_no: "CLR-2026-0138", name: "Sewall's Point Residence", address: "84 Mariner's Cay", county: "Martin", value_cents: 287_000_000, status: "corrections_required", updated: "1d ago" },
-  { id: "3", permit_no: "CLR-2026-0131", name: "Jupiter Island Pool & Cabana", address: "3920 South Beach Rd", county: "Martin", value_cents: 156_800_000, status: "permit_issued", updated: "3d ago" },
-  { id: "4", permit_no: "CLR-2026-0129", name: "Manalapan New Build", address: "1500 S Ocean Blvd", county: "Palm Beach", value_cents: 894_200_000, status: "submitted", updated: "5d ago" },
-  { id: "5", permit_no: "CLR-2026-0122", name: "Stuart Riverfront Addition", address: "212 St Lucie Crescent", county: "Martin", value_cents: 198_400_000, status: "approved", updated: "1w ago" },
-  { id: "6", permit_no: "CLR-2026-0118", name: "Vero Beach Hardscape", address: "770 Ocean Dr", county: "Indian River", value_cents: 124_900_000, status: "permit_issued", updated: "2w ago" },
-];
 
 const fmtMoney = (cents: number) =>
   `$${(cents / 100).toLocaleString("en-US", { maximumFractionDigits: 0 })}`;
 
+const CLOSED = new Set(["approved", "permit_issued", "cancelled"]);
+
+function relTime(iso: string | null | undefined) {
+  if (!iso) return "—";
+  const then = new Date(iso).getTime();
+  if (Number.isNaN(then)) return "—";
+  const mins = Math.max(0, Math.round((Date.now() - then) / 60000));
+  if (mins < 60) return `${mins}m ago`;
+  const h = Math.round(mins / 60);
+  if (h < 24) return `${h}h ago`;
+  const d = Math.round(h / 24);
+  if (d < 7) return `${d}d ago`;
+  return `${Math.round(d / 7)}w ago`;
+}
+
 function DashboardPage() {
-  const hour = new Date().getHours();
-  const greeting = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
-  const needsVerification = !mockBuilder.license_verified || !mockBuilder.coi_verified;
-  const needsLpoa = !mockBuilder.lpoa_signed;
+  const me = useMyIdentity();
+  const [greeting, setGreeting] = useState(() => greetingForNow());
+  const [permits, setPermits] = useState<PermitRow[]>([]);
+  const [unread, setUnread] = useState(0);
+
+  useEffect(() => {
+    listPermits().then(setPermits).catch(() => {});
+    listThreads()
+      .then((t) => setUnread(t.reduce((n, x) => n + (x.client_unread ?? 0), 0)))
+      .catch(() => {});
+    const id = setInterval(() => setGreeting(greetingForNow()), 60_000);
+    return () => clearInterval(id);
+  }, []);
+
+  const active = permits.filter((p) => !CLOSED.has(p.status));
+  const stats = [
+    { label: "Total Projects", value: permits.length, icon: FolderOpen, accent: false },
+    { label: "Permits Issued", value: permits.filter((p) => p.status === "permit_issued").length, icon: ShieldCheck, accent: true },
+    { label: "Corrections Pending", value: permits.filter((p) => p.status === "corrections_required").length, icon: AlertCircle, accent: false },
+    { label: "Messages Unread", value: unread, icon: MessageSquare, accent: false },
+  ];
+
+  const projects = active.slice(0, 6).map((p) => ({
+    id: p.id,
+    permit_no: p.permit_number ?? `CLR-${p.id.slice(0, 8).toUpperCase()}`,
+    name: p.project_name,
+    address: p.job_address,
+    county: p.county ?? p.municipality ?? "—",
+    value_cents: Number(p.construction_value_cents ?? 0),
+    status: (p.status as ProjectStatus),
+    updated: relTime(p.updated_at),
+  }));
+
+  const needsVerification = false;
+  const needsLpoa = false;
+
 
   return (
     <PortalShell>
@@ -70,7 +93,7 @@ function DashboardPage() {
         <div className="min-w-0">
           <div className="label-eyebrow mb-3">Builder dashboard</div>
           <h1 className="display-serif text-3xl sm:text-4xl md:text-5xl leading-[1.05]">
-            {greeting}, <em>{mockBuilder.first_name}</em>.
+            {greeting}{me.firstName ? <>, <em>{me.firstName}</em></> : null}.
           </h1>
         </div>
         <Button
@@ -224,7 +247,9 @@ function ProjectCard({
   const meta = statusMeta[project.status];
   return (
     <Link
-      to="/portal/projects"
+      to="/portal/permits/$id"
+      params={{ id: project.id }}
+
       className="group block p-5 bg-card border hairline transition-colors hover:bg-secondary"
       style={{ borderRadius: "3px" }}
     >

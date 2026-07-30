@@ -239,6 +239,54 @@ export type Database = {
           },
         ]
       }
+      contacts: {
+        Row: {
+          address: string | null
+          company: string | null
+          contact_type: string
+          created_at: string
+          created_by: string | null
+          email: string | null
+          id: string
+          name: string
+          notes: string | null
+          phone: string | null
+          tenant_id: string | null
+          trade: string | null
+          updated_at: string
+        }
+        Insert: {
+          address?: string | null
+          company?: string | null
+          contact_type?: string
+          created_at?: string
+          created_by?: string | null
+          email?: string | null
+          id?: string
+          name: string
+          notes?: string | null
+          phone?: string | null
+          tenant_id?: string | null
+          trade?: string | null
+          updated_at?: string
+        }
+        Update: {
+          address?: string | null
+          company?: string | null
+          contact_type?: string
+          created_at?: string
+          created_by?: string | null
+          email?: string | null
+          id?: string
+          name?: string
+          notes?: string | null
+          phone?: string | null
+          tenant_id?: string | null
+          trade?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       design_professionals: {
         Row: {
           contact_name: string | null
@@ -1001,6 +1049,106 @@ export type Database = {
           },
         ]
       }
+      message_posts: {
+        Row: {
+          author_email: string | null
+          author_id: string | null
+          author_label: string | null
+          body: string
+          created_at: string
+          from_admin: boolean
+          id: string
+          tenant_id: string | null
+          thread_id: string
+        }
+        Insert: {
+          author_email?: string | null
+          author_id?: string | null
+          author_label?: string | null
+          body: string
+          created_at?: string
+          from_admin?: boolean
+          id?: string
+          tenant_id?: string | null
+          thread_id: string
+        }
+        Update: {
+          author_email?: string | null
+          author_id?: string | null
+          author_label?: string | null
+          body?: string
+          created_at?: string
+          from_admin?: boolean
+          id?: string
+          tenant_id?: string | null
+          thread_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "message_posts_thread_id_fkey"
+            columns: ["thread_id"]
+            isOneToOne: false
+            referencedRelation: "message_threads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      message_threads: {
+        Row: {
+          admin_unread: number
+          client_unread: number
+          created_at: string
+          created_by: string | null
+          created_by_email: string | null
+          id: string
+          last_message_at: string
+          last_message_from: string
+          permit_id: string | null
+          status: string
+          subject: string
+          tenant_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          admin_unread?: number
+          client_unread?: number
+          created_at?: string
+          created_by?: string | null
+          created_by_email?: string | null
+          id?: string
+          last_message_at?: string
+          last_message_from?: string
+          permit_id?: string | null
+          status?: string
+          subject: string
+          tenant_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          admin_unread?: number
+          client_unread?: number
+          created_at?: string
+          created_by?: string | null
+          created_by_email?: string | null
+          id?: string
+          last_message_at?: string
+          last_message_from?: string
+          permit_id?: string | null
+          status?: string
+          subject?: string
+          tenant_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "message_threads_permit_id_fkey"
+            columns: ["permit_id"]
+            isOneToOne: false
+            referencedRelation: "permits"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notification_prefs: {
         Row: {
           created_at: string
@@ -1498,6 +1646,51 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      profiles: {
+        Row: {
+          address: string | null
+          avatar_url: string | null
+          company_name: string | null
+          created_at: string
+          display_name: string | null
+          full_name: string | null
+          id: string
+          language: string
+          notification_emails: string[]
+          phone: string | null
+          updated_at: string
+          website: string | null
+        }
+        Insert: {
+          address?: string | null
+          avatar_url?: string | null
+          company_name?: string | null
+          created_at?: string
+          display_name?: string | null
+          full_name?: string | null
+          id: string
+          language?: string
+          notification_emails?: string[]
+          phone?: string | null
+          updated_at?: string
+          website?: string | null
+        }
+        Update: {
+          address?: string | null
+          avatar_url?: string | null
+          company_name?: string | null
+          created_at?: string
+          display_name?: string | null
+          full_name?: string | null
+          id?: string
+          language?: string
+          notification_emails?: string[]
+          phone?: string | null
+          updated_at?: string
+          website?: string | null
+        }
+        Relationships: []
       }
       service_fee_invoices: {
         Row: {
