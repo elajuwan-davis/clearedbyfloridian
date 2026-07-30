@@ -102,6 +102,7 @@ function IconRail({
 }) {
   const sections = sectionsForRole(role, isAdmin);
   const settings = settingsForRole(role);
+  const { bookmarks } = useBookmarks();
   const [openKey, setOpenKey] = useState<string | null>(null);
   const [pinned, setPinned] = useState(false);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -127,13 +128,26 @@ function IconRail({
   function scheduleClose() {
     if (pinned) return;
     if (closeTimer.current) clearTimeout(closeTimer.current);
-    closeTimer.current = setTimeout(() => setOpenKey(null), 180);
+    closeTimer.current = setTimeout(() => setOpenKey(null), 140);
   }
   function cancelClose() {
     if (closeTimer.current) clearTimeout(closeTimer.current);
   }
 
-  const allSections: NavSection[] = [...sections];
+  // Bookmarks behaves like every other section: it opens a flyout listing the
+  // user's pinned pages (falls back to a direct link when nothing is pinned).
+  const allSections: NavSection[] = sections.map((s) =>
+    s.key === "bookmarks" && bookmarks.length > 0
+      ? {
+          ...s,
+          to: undefined,
+          items: [
+            ...bookmarks.map((b) => ({ to: b.path, label: b.label })),
+            { to: "/portal/bookmarks", label: "Manage bookmarks" },
+          ],
+        }
+      : s,
+  );
   const active = [...allSections, settings].find((s) => s.key === openKey) ?? null;
 
   return (
