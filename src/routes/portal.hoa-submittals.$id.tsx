@@ -34,11 +34,11 @@ import {
   type HoaProjectType,
   type HoaChecklistItem,
 } from "@/lib/hoa-submittals";
-import { getHoaTemplate, displayNameFor, type HoaTemplateRow } from "@/lib/hoa-templates";
-import { sendHoaSubmittal } from "@/lib/hoa-send";
+import { getHoaTemplate, displayNameFor, type HoaTemplateShared } from "@/lib/hoa-templates";
+import { sendHoaSubmittalFn, logHoaReplyFn } from "@/lib/hoa.functions";
 import { buildAndStoreBoilerplate, buildAndStoreRemovalAgreement } from "@/lib/hoa-pdf";
 import { logHoaEvent, listHoaEvents, type HoaSubmittalEvent } from "@/lib/hoa-events";
-import { logHoaReply, listHoaReplies, type HoaReplyRow } from "@/lib/hoa-replies";
+import { listHoaReplies, type HoaReplyRow } from "@/lib/hoa-replies";
 
 export const Route = createFileRoute("/portal/hoa-submittals/$id")({
   head: () => ({
