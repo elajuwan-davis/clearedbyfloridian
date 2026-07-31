@@ -288,26 +288,12 @@ function NewPermitPage() {
     }));
   }
 
-  /** Called when the address autocomplete resolves a Places selection.
-   *  Auto-fills municipality from Places address_components: locality first,
-   *  then county fallback (Loxahatchee → Palm Beach County, etc.). */
+  /** Called when the address lookup resolves an address (Google or Census).
+   *  Municipality detection lives in @/lib/address-lookup so the provider can
+   *  be swapped without touching this form. Incorporated cities resolve to the
+   *  city; unincorporated areas resolve to "Unincorporated <County> County". */
   function handleAddressResolved(r: ResolvedAddress) {
-    const norm = (s: string) => s.toLowerCase().replace(/[^a-z]/g, "");
-    let resolvedMuni = "";
-    let matchedList = false;
-    if (r.city) {
-      const target = norm(r.city);
-      const match = MUNICIPALITIES.find((m) => norm(m.name) === target);
-      if (match) { resolvedMuni = match.name; matchedList = true; }
-    }
-    // County fallback — Places locality often names an unincorporated area
-    // (e.g. "Loxahatchee") that isn't a jurisdiction; the county is.
-    if (!resolvedMuni && r.county) {
-      const target = norm(r.county);
-      const countyMatch = MUNICIPALITIES.find((m) => norm(m.name) === target);
-      if (countyMatch) { resolvedMuni = countyMatch.name; matchedList = true; }
-    }
-    if (!resolvedMuni) resolvedMuni = r.city || r.county || "";
+    const { municipality: resolvedMuni, matchedList, unincorporated } = resolveMunicipality(r);
 
     setForm((f) => ({
       ...f,
@@ -315,7 +301,13 @@ function NewPermitPage() {
       municipality: resolvedMuni || f.municipality,
     }));
     if (resolvedMuni) {
-      toast.success(matchedList ? `Matched municipality: ${resolvedMuni}` : `City set to ${resolvedMuni} (not in list — please verify)`);
+      toast.success(
+        unincorporated
+          ? `Unincorporated area — routed to ${resolvedMuni}`
+          : matchedList
+            ? `Matched municipality: ${resolvedMuni}`
+            : `City set to ${resolvedMuni} (not in list — please verify)`,
+      );
     }
     // Kick off Dispatch — pre-flight property intelligence.
     const resolvedAddress = r.streetLine || r.formatted;
@@ -325,6 +317,8 @@ function NewPermitPage() {
       setDispatchConfirmed(false);
     }
   }
+
+
 
 
   const primaryType = form.scopes[0] || "Other";
