@@ -573,6 +573,14 @@ export function PortalShell({ children }: { children: ReactNode }) {
     );
   }
 
+  // Admin-only area: non-staff never see staff tooling, even by typing a URL.
+  // (Data itself is already blocked server-side by RLS + admin assertions.)
+  const isAdminPath = pathname === "/admin" || pathname.startsWith("/admin/");
+  if (isAdminPath && !session.loading && !session.isAdmin) {
+    return <AdminOnly>{children}</AdminOnly>;
+  }
+
+
   return (
     <div className="min-h-screen bg-background">
       {/* Fixed icon rail (desktop) */}
