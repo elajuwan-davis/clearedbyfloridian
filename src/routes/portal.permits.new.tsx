@@ -600,7 +600,7 @@ function NewPermitPage() {
             <div><label className={labelCls}>Project Name *</label><input required className={inputCls} value={form.projectName} onChange={(e) => update("projectName", e.target.value)} /></div>
             <div>
               <label className={labelCls}>Property Address *</label>
-              <AddressAutocomplete
+              <AddressLookupField
                 required
                 className={inputCls}
                 value={form.address}
@@ -608,9 +608,13 @@ function NewPermitPage() {
                 onResolved={(r) => handleAddressResolved(r)}
               />
               <p className="mt-1 text-[11px] text-obsidian/45 flex items-center gap-1.5">
-                <MapPin className="h-3 w-3" /> Florida addresses only — city auto-selects the municipality below.
+                <MapPin className="h-3 w-3" />
+                {activeProvider() === "google"
+                  ? "Florida addresses only — city auto-selects the municipality below."
+                  : "Florida addresses only — enter the full address, then press Look up to auto-fill the municipality."}
               </p>
             </div>
+
             <div className="sm:col-span-2">
               <label className={labelCls}>Municipality / City *</label>
               <ComboboxInput
