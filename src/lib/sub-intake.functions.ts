@@ -37,6 +37,8 @@ const SubmitInput = z.object({
     coi_expiration: z.string().optional().nullable(),
     w9_file_name: z.string().optional().nullable(),
     w9_file_path: z.string().optional().nullable(),
+    id_document_url: z.string().optional().nullable(),
+    id_document_type: z.enum(["drivers_license", "passport"]).optional().nullable(),
   }),
 });
 
@@ -61,6 +63,8 @@ export type PublicSubRecord = {
   coi_expiration: string | null;
   w9_file_name: string | null;
   w9_file_path: string | null;
+  id_document_url: string | null;
+  id_document_type: string | null;
   status: string;
 };
 
@@ -86,7 +90,7 @@ export const getSubByTokenFn = createServerFn({ method: "POST" })
   .handler(async ({ data }): Promise<PublicSubRecord | null> => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: row, error } = await (supabaseAdmin.from("subcontractors" as any) as any)
-      .select("id, company_name, trade, qualifier_name, license_number, license_expiration, license_file_name, license_file_path, contact_first_name, contact_last_name, email, phone, company_address, insurance_carrier_name, insurance_carrier_email, coi_file_name, coi_file_path, coi_expiration, w9_file_name, w9_file_path, status")
+      .select("id, company_name, trade, qualifier_name, license_number, license_expiration, license_file_name, license_file_path, contact_first_name, contact_last_name, email, phone, company_address, insurance_carrier_name, insurance_carrier_email, coi_file_name, coi_file_path, coi_expiration, w9_file_name, w9_file_path, id_document_url, id_document_type, status")
       .eq("completion_token", data.token)
       .maybeSingle();
     if (error) throw new Error(error.message);

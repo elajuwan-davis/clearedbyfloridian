@@ -1,7 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState, type ChangeEvent, type FormEvent } from "react";
 import { Upload, X, CheckCircle2 } from "lucide-react";
+import { IdUpload, EMPTY_ID_UPLOAD, type IdUploadValue } from "@/components/id-upload";
 import { getSubByTokenFn, submitSubIntakeFn, type PublicSubRecord } from "@/lib/sub-intake.functions";
+
 
 export const Route = createFileRoute("/sub-intake/$token")({
   head: () => ({
@@ -21,6 +23,9 @@ function SubIntakeTokenPage() {
   const [patch, setPatch] = useState<Record<string, string | null>>({});
   const [done, setDone] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [idDoc, setIdDoc] = useState<IdUploadValue>(EMPTY_ID_UPLOAD);
+  const [idComplete, setIdComplete] = useState(false);
+
 
   useEffect(() => {
     getSubByTokenFn({ data: { token } })
@@ -78,6 +83,10 @@ function SubIntakeTokenPage() {
 
   async function submit(e: FormEvent) {
     e.preventDefault();
+    if (!idComplete || !idDoc.path || !idDoc.documentType) {
+      alert("Please upload a valid government ID before submitting.");
+      return;
+    }
     setSubmitting(true);
     try {
       for (const key of Object.keys(PATH_KEY) as Array<keyof typeof PATH_KEY>) {
@@ -85,8 +94,18 @@ function SubIntakeTokenPage() {
           throw new Error("One or more documents only has a filename. Please re-upload it before submitting.");
         }
       }
-      await submitSubIntakeFn({ data: { token, patch } });
+      await submitSubIntakeFn({
+        data: {
+          token,
+          patch: {
+            ...patch,
+            id_document_url: idDoc.path,
+            id_document_type: idDoc.documentType,
+          },
+        },
+      });
       setDone(true);
+
     } catch (err) {
       alert("Submission failed: " + (err instanceof Error ? err.message : String(err)));
     } finally { setSubmitting(false); }
@@ -191,11 +210,32 @@ function SubIntakeTokenPage() {
               <FileRow label="Certificate of Insurance (COI)" keyName="coi_file_name" />
               <FileRow label="W-9 Form" keyName="w9_file_name" />
 
-              <div className="pt-2 flex justify-end">
-                <button type="submit" disabled={submitting} className="inline-flex items-center gap-2 bg-obsidian px-5 py-2.5 font-mono text-[11px] uppercase tracking-[0.14em] text-paper hover:bg-obsidian/90 rounded-[3px] disabled:opacity-60">
-                  {submitting ? "Submitting…" : "Submit My Information"}
-                </button>
+              <div className="border-t border-obsidian/10 pt-5">
+                <div className="eyebrow text-obsidian/50">Business &amp; Identity</div>
+                <p className="mt-2 mb-4 text-xs text-obsidian/55">
+                  A government-issued photo ID is required to complete onboarding.
+                </p>
+                <IdUpload
+                  mode={{ kind: "token", token }}
+                  value={idDoc}
+                  onChange={setIdDoc}
+                  onCompleteChange={setIdComplete}
+                />
               </div>
+
+              <div className="pt-2 flex items-center justify-end gap-3">
+                {!idComplete && (
+                  <span className="text-xs text-obsidian/50">
+                    Upload a valid government ID to continue.
+                  </span>
+                )}
+                <span title={idComplete ? undefined : "Upload a valid government ID to continue"}>
+                  <button type="submit" disabled={submitting || !idComplete} className="inline-flex items-center gap-2 bg-obsidian px-5 py-2.5 font-mono text-[11px] uppercase tracking-[0.14em] text-paper hover:bg-obsidian/90 rounded-[3px] disabled:opacity-60">
+                    {submitting ? "Submitting…" : "Submit My Information"}
+                  </button>
+                </span>
+              </div>
+
             </form>
           </>
         )}

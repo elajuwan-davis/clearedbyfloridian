@@ -1697,6 +1697,8 @@ export type Database = {
           email: string | null
           full_name: string | null
           id: string
+          id_document_type: string | null
+          id_document_url: string | null
           language: string
           notification_emails: string[]
           phone: string | null
@@ -1712,6 +1714,8 @@ export type Database = {
           email?: string | null
           full_name?: string | null
           id: string
+          id_document_type?: string | null
+          id_document_url?: string | null
           language?: string
           notification_emails?: string[]
           phone?: string | null
@@ -1727,6 +1731,8 @@ export type Database = {
           email?: string | null
           full_name?: string | null
           id?: string
+          id_document_type?: string | null
+          id_document_url?: string | null
           language?: string
           notification_emails?: string[]
           phone?: string | null
@@ -1842,6 +1848,8 @@ export type Database = {
           dbpr_verified_at: string | null
           email: string | null
           id: string
+          id_document_type: string | null
+          id_document_url: string | null
           insurance_carrier_email: string | null
           insurance_carrier_name: string | null
           license_expiration: string | null
@@ -1885,6 +1893,8 @@ export type Database = {
           dbpr_verified_at?: string | null
           email?: string | null
           id?: string
+          id_document_type?: string | null
+          id_document_url?: string | null
           insurance_carrier_email?: string | null
           insurance_carrier_name?: string | null
           license_expiration?: string | null
@@ -1928,6 +1938,8 @@ export type Database = {
           dbpr_verified_at?: string | null
           email?: string | null
           id?: string
+          id_document_type?: string | null
+          id_document_url?: string | null
           insurance_carrier_email?: string | null
           insurance_carrier_name?: string | null
           license_expiration?: string | null
