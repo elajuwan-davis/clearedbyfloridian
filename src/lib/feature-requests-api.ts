@@ -159,11 +159,22 @@ export async function toggleVote(requestId: string, hasVoted: boolean): Promise<
 
 export async function updateRequestAdmin(
   id: string,
-  patch: Partial<Pick<FeatureRequest, "status" | "internal_note" | "public_response" | "pinned">>,
+  patch: Partial<Pick<FeatureRequest, "status" | "public_response" | "pinned">> & {
+    internal_note?: string | null;
+  },
 ): Promise<FeatureRequest> {
+  const { internal_note, ...requestPatch } = patch;
+  if (internal_note !== undefined) {
+    // Staff notes live in the admin-only table (RLS: admins only).
+    const { error: noteErr } = await supabase
+      .from("feature_request_notes" as any)
+      .upsert({ request_id: id, internal_note }, { onConflict: "request_id" });
+    if (noteErr) throw noteErr;
+  }
   const { data, error } = await supabase
     .from("feature_requests" as any)
-    .update(patch)
+    .update(requestPatch)
+
     .eq("id", id)
     .select("*")
     .single();
