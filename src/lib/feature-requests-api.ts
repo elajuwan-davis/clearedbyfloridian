@@ -85,9 +85,11 @@ export type NewRequestInput = {
 };
 
 export async function listRequestsWithMeta(): Promise<FeatureRequestWithMeta[]> {
-  const [reqRes, voteRes, userRes] = await Promise.all([
+  const [reqRes, voteRes, noteRes, userRes] = await Promise.all([
     supabase.from("feature_requests" as any).select("*").order("pinned", { ascending: false }).order("created_at", { ascending: false }),
     supabase.from("feature_request_votes" as any).select("request_id, user_id"),
+    // Admin-only table: RLS returns nothing for regular clients.
+    supabase.from("feature_request_notes" as any).select("request_id, internal_note"),
     supabase.auth.getUser(),
   ]);
   if (reqRes.error) throw reqRes.error;
@@ -95,6 +97,11 @@ export async function listRequestsWithMeta(): Promise<FeatureRequestWithMeta[]> 
   const uid = userRes.data.user?.id ?? null;
   const rows = ((reqRes.data ?? []) as unknown) as FeatureRequest[];
   const votes = ((voteRes.data ?? []) as unknown) as { request_id: string; user_id: string }[];
+  const notes = new Map<string, string | null>(
+    (((noteRes.data ?? []) as unknown) as { request_id: string; internal_note: string | null }[]).map(
+      (n) => [n.request_id, n.internal_note],
+    ),
+  );
   const byReq = new Map<string, { count: number; mine: boolean }>();
   for (const v of votes) {
     const cur = byReq.get(v.request_id) ?? { count: 0, mine: false };
@@ -104,9 +111,10 @@ export async function listRequestsWithMeta(): Promise<FeatureRequestWithMeta[]> 
   }
   return rows.map((r) => {
     const meta = byReq.get(r.id) ?? { count: 0, mine: false };
-    return { ...r, vote_count: meta.count, user_has_voted: meta.mine };
+    return { ...r, vote_count: meta.count, user_has_voted: meta.mine, internal_note: notes.get(r.id) ?? null };
   });
 }
+
 
 export async function createRequest(input: NewRequestInput): Promise<FeatureRequest> {
   const { data: auth } = await supabase.auth.getUser();
