@@ -60,7 +60,6 @@ export type FeatureRequest = {
   workflow_impact: string;
   priority: string;
   status: FRStatus;
-  internal_note: string | null;
   public_response: string | null;
   pinned: boolean;
   shipped_notified_at: string | null;
@@ -71,7 +70,10 @@ export type FeatureRequest = {
 export type FeatureRequestWithMeta = FeatureRequest & {
   vote_count: number;
   user_has_voted: boolean;
+  /** Admin-only staff note (lives in feature_request_notes; null for non-admins). */
+  internal_note: string | null;
 };
+
 
 export type NewRequestInput = {
   request_type: RequestType;
