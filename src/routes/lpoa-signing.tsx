@@ -182,7 +182,60 @@ function LpoaSigningPage() {
             </div>
           </div>
 
+          {/* Identity Verification — gates the signature step */}
+          <div className="border-t border-obsidian/10 px-8 py-7">
+            <div className="flex items-baseline justify-between gap-4">
+              <div>
+                <div className="font-mono text-[10px] font-medium uppercase tracking-[0.14em] text-obsidian/55">
+                  Identity Verification
+                </div>
+                <div className="mt-1 text-xs text-obsidian/55">
+                  Upload a valid government-issued photo ID before signing.
+                </div>
+              </div>
+              {idComplete && (
+                <span className="inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.12em] text-emerald-700">
+                  <ShieldCheck className="h-3 w-3" />
+                  Verified
+                </span>
+              )}
+            </div>
+
+            <div className="mt-5">
+              <IdUpload
+                mode={{ kind: "authenticated" }}
+                value={idDoc}
+                onChange={setIdDoc}
+                onCompleteChange={setIdComplete}
+              />
+            </div>
+
+            {!sigUnlocked && (
+              <div className="mt-6 flex items-center gap-3">
+                <span title={idComplete ? undefined : "Upload a valid government ID to continue"}>
+                  <Button
+                    type="button"
+                    variant="dark"
+                    disabled={!idComplete}
+                    onClick={() => setSigUnlocked(true)}
+                  >
+                    <PenLine className="mr-2 h-4 w-4" />
+                    Continue to Sign
+                  </Button>
+                </span>
+                {!idComplete && (
+                  <span className="text-xs text-obsidian/50">
+                    Upload a valid government ID to continue.
+                  </span>
+                )}
+              </div>
+            )}
+          </div>
+
+          {sigUnlocked && (
+          <>
           {/* Signature Pad */}
+
           <div className="border-t border-obsidian/10 px-8 py-7">
             <div className="flex items-baseline justify-between">
               <div>
