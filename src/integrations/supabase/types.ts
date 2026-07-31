@@ -889,6 +889,13 @@ export type Database = {
             referencedRelation: "hoa_templates"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "hoa_submittals_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "hoa_templates_shared"
+            referencedColumns: ["id"]
+          },
         ]
       }
       hoa_template_versions: {
@@ -925,6 +932,13 @@ export type Database = {
             columns: ["template_id"]
             isOneToOne: false
             referencedRelation: "hoa_templates"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "hoa_template_versions_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "hoa_templates_shared"
             referencedColumns: ["id"]
           },
         ]
@@ -2454,7 +2468,72 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      hoa_templates_shared: {
+        Row: {
+          arc_meeting_notes: string | null
+          city: string | null
+          community_name: string | null
+          created_at: string | null
+          created_by_tenant_id: string | null
+          current_version: number | null
+          current_version_at: string | null
+          deposit_amount_cents: number | null
+          deposit_type: string | null
+          form_template: Json | null
+          has_contact_email: boolean | null
+          id: string | null
+          last_used_at: string | null
+          required_documents: Json | null
+          submission_method: string | null
+          submission_portal_url: string | null
+          updated_at: string | null
+          uploaded_form_path: string | null
+          usage_count: number | null
+        }
+        Insert: {
+          arc_meeting_notes?: string | null
+          city?: string | null
+          community_name?: string | null
+          created_at?: string | null
+          created_by_tenant_id?: string | null
+          current_version?: number | null
+          current_version_at?: string | null
+          deposit_amount_cents?: number | null
+          deposit_type?: string | null
+          form_template?: Json | null
+          has_contact_email?: never
+          id?: string | null
+          last_used_at?: string | null
+          required_documents?: Json | null
+          submission_method?: string | null
+          submission_portal_url?: string | null
+          updated_at?: string | null
+          uploaded_form_path?: string | null
+          usage_count?: number | null
+        }
+        Update: {
+          arc_meeting_notes?: string | null
+          city?: string | null
+          community_name?: string | null
+          created_at?: string | null
+          created_by_tenant_id?: string | null
+          current_version?: number | null
+          current_version_at?: string | null
+          deposit_amount_cents?: number | null
+          deposit_type?: string | null
+          form_template?: Json | null
+          has_contact_email?: never
+          id?: string | null
+          last_used_at?: string | null
+          required_documents?: Json | null
+          submission_method?: string | null
+          submission_portal_url?: string | null
+          updated_at?: string | null
+          uploaded_form_path?: string | null
+          usage_count?: number | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       consume_invite_token: { Args: { _token: string }; Returns: string }

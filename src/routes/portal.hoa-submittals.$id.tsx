@@ -1,5 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import {
   ArrowLeft,
@@ -34,11 +35,11 @@ import {
   type HoaProjectType,
   type HoaChecklistItem,
 } from "@/lib/hoa-submittals";
-import { getHoaTemplate, displayNameFor, type HoaTemplateRow } from "@/lib/hoa-templates";
-import { sendHoaSubmittal } from "@/lib/hoa-send";
+import { getHoaTemplate, displayNameFor, type HoaTemplateShared } from "@/lib/hoa-templates";
+import { sendHoaSubmittalFn, logHoaReplyFn } from "@/lib/hoa.functions";
 import { buildAndStoreBoilerplate, buildAndStoreRemovalAgreement } from "@/lib/hoa-pdf";
 import { logHoaEvent, listHoaEvents, type HoaSubmittalEvent } from "@/lib/hoa-events";
-import { logHoaReply, listHoaReplies, type HoaReplyRow } from "@/lib/hoa-replies";
+import { listHoaReplies, type HoaReplyRow } from "@/lib/hoa-replies";
 
 export const Route = createFileRoute("/portal/hoa-submittals/$id")({
   head: () => ({
@@ -76,7 +77,7 @@ function HoaSubmittalEditor() {
   const navigate = useNavigate();
   const session = useSession();
   const [row, setRow] = useState<HoaSubmittalRow | null>(null);
-  const [template, setTemplate] = useState<HoaTemplateRow | null>(null);
+  const [template, setTemplate] = useState<HoaTemplateShared | null>(null);
   const [saving, setSaving] = useState(false);
   const [sending, setSending] = useState(false);
   const [generating, setGenerating] = useState<"pdf" | "removal" | null>(null);
@@ -85,6 +86,8 @@ function HoaSubmittalEditor() {
   const [replies, setReplies] = useState<HoaReplyRow[]>([]);
   const [replyDraft, setReplyDraft] = useState({ subject: "", fromEmail: "", body: "" });
   const [loggingReply, setLoggingReply] = useState(false);
+  const sendSubmittal = useServerFn(sendHoaSubmittalFn);
+  const logReply = useServerFn(logHoaReplyFn);
 
   async function refreshTimeline() {
     try {
@@ -291,15 +294,16 @@ function HoaSubmittalEditor() {
     }
     setLoggingReply(true);
     try {
-      await logHoaReply({
-        submittalId: row.id,
-        tenantId: session.effectiveTenantId,
-        loggedBy: session.userId,
-        direction: "inbound",
-        fromEmail: replyDraft.fromEmail || template?.hoa_contact_email || null,
-        fromName: template?.hoa_contact_name ?? null,
-        subject,
-        bodyText: body,
+      // The HOA contact is tenant-private; when the sender is left blank the
+      // server resolves the default from the template contact.
+      await logReply({
+        data: {
+          submittalId: row.id,
+          direction: "inbound",
+          fromEmail: replyDraft.fromEmail || null,
+          subject,
+          bodyText: body,
+        },
       });
       await logHoaEvent({
         submittalId: row.id,
@@ -334,7 +338,7 @@ function HoaSubmittalEditor() {
   async function sendToHoa() {
     if (!row) return;
     if (sending) return;
-    if (!template?.hoa_contact_email) {
+    if (!template?.has_contact_email) {
       toast.error("No HOA contact email on file. Add one to the template first.");
       return;
     }
@@ -355,10 +359,7 @@ function HoaSubmittalEditor() {
     }
     setSending(true);
     try {
-      const res = await sendHoaSubmittal(row.id, {
-        tenantId: session.effectiveTenantId,
-        userId: session.userId,
-      });
+      const res = await sendSubmittal({ data: { submittalId: row.id } });
       const updated = await getHoaSubmittal(row.id);
       if (updated) setRow(updated);
       refreshTimeline();
@@ -437,14 +438,12 @@ function HoaSubmittalEditor() {
           <div className="border border-obsidian/10 bg-white rounded-[3px] px-4 py-3 text-sm flex flex-wrap items-center gap-x-6 gap-y-1">
             <div className="text-xs uppercase tracking-wide text-obsidian/50">Template</div>
             <div className="font-medium text-obsidian">{displayNameFor(template)}</div>
-            {template.hoa_contact_name && (
-              <div className="text-obsidian/70">{template.hoa_contact_name}</div>
-            )}
-            {template.hoa_contact_email && (
-              <div className="text-obsidian/60 inline-flex items-center gap-1">
-                <Mail className="h-3 w-3" /> {template.hoa_contact_email}
-              </div>
-            )}
+            <div className="text-obsidian/60 inline-flex items-center gap-1">
+              <Mail className="h-3 w-3" />{" "}
+              {template.has_contact_email
+                ? "HOA contact on file"
+                : "No HOA contact on file"}
+            </div>
             {template.deposit_amount_cents > 0 && (
               <div className="text-obsidian/60">Deposit ${(template.deposit_amount_cents / 100).toLocaleString()}</div>
             )}
@@ -659,7 +658,7 @@ function HoaSubmittalEditor() {
               />
               <input
                 type="email"
-                placeholder={`From email${template?.hoa_contact_email ? ` (default ${template.hoa_contact_email})` : ""}`}
+                placeholder={template?.has_contact_email ? "From email (defaults to HOA contact)" : "From email"}
                 value={replyDraft.fromEmail}
                 onChange={(e) => setReplyDraft({ ...replyDraft, fromEmail: e.target.value })}
                 className="border border-obsidian/20 bg-white px-3 py-2 text-sm rounded-[3px]"

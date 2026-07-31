@@ -13,7 +13,7 @@ import {
   listHoaTemplates,
   markTemplateUsed,
   displayNameFor,
-  type HoaTemplateRow,
+  type HoaTemplateShared,
 } from "@/lib/hoa-templates";
 
 type NewSearch = { permitId?: string };
@@ -51,7 +51,7 @@ function NewHoaSubmittal() {
   const navigate = useNavigate();
   const { permitId } = useSearch({ from: "/portal/hoa-submittals/new" });
   const session = useSession();
-  const [templates, setTemplates] = useState<HoaTemplateRow[] | null>(null);
+  const [templates, setTemplates] = useState<HoaTemplateShared[] | null>(null);
   const [query, setQuery] = useState("");
   const [starting, setStarting] = useState<string | null>(null);
 
@@ -67,7 +67,7 @@ function NewHoaSubmittal() {
       (t) =>
         t.community_name.toLowerCase().includes(q) ||
         t.city.toLowerCase().includes(q) ||
-        (t.hoa_contact_name ?? "").toLowerCase().includes(q),
+        false,
     );
   }, [templates, query]);
 
@@ -92,7 +92,7 @@ function NewHoaSubmittal() {
     }
   }
 
-  async function useTemplate(tpl: HoaTemplateRow) {
+  async function useTemplate(tpl: HoaTemplateShared) {
     if (starting) return;
     setStarting(tpl.id);
     try {
@@ -194,10 +194,11 @@ function NewHoaSubmittal() {
                   </div>
                 </div>
                 <div className="text-sm text-obsidian/70 space-y-0.5">
-                  {tpl.hoa_contact_name && <div>{tpl.hoa_contact_name}</div>}
-                  {tpl.hoa_contact_email && (
-                    <div className="text-obsidian/60 text-xs">{tpl.hoa_contact_email}</div>
-                  )}
+                  <div className="text-obsidian/60 text-xs">
+                    {tpl.has_contact_email
+                      ? "HOA contact on file"
+                      : "No HOA contact on file"}
+                  </div>
                 </div>
                 <dl className="grid grid-cols-2 gap-y-1 text-xs">
                   <dt className="text-obsidian/50">Docs required</dt>

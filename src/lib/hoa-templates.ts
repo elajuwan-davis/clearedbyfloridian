@@ -40,35 +40,59 @@ export type HoaTemplateInsert = Partial<
   Omit<HoaTemplateRow, "id" | "created_at" | "updated_at" | "usage_count" | "last_used_at">
 > & { community_name: string; city: string };
 
+/**
+ * Cross-tenant, browsing-safe shape read from public.hoa_templates_shared.
+ * HOA contact PII is tenant-private on the base table — the view exposes only
+ * `has_contact_email` so the UI can tell whether a send will work. The contact
+ * itself is resolved server-side at send time (see hoa.functions.ts).
+ */
+export type HoaTemplateShared = Omit<
+  HoaTemplateRow,
+  "hoa_contact_name" | "hoa_contact_email" | "hoa_contact_phone" | "created_by"
+> & { has_contact_email: boolean };
+
 export function displayNameFor(row: Pick<HoaTemplateRow, "community_name" | "city">): string {
   return `${row.community_name} (${row.city})`;
 }
 
 const T = () => supabase.from("hoa_templates" as any) as any;
+/** Shared, non-PII community directory — readable across tenants. */
+const S = () => supabase.from("hoa_templates_shared" as any) as any;
 
-export async function listHoaTemplates(): Promise<HoaTemplateRow[]> {
-  const { data, error } = await T()
+export async function listHoaTemplates(): Promise<HoaTemplateShared[]> {
+  const { data, error } = await S()
     .select("*")
     .order("last_used_at", { ascending: false, nullsFirst: false })
     .order("community_name", { ascending: true });
   if (error) throw error;
-  return (data ?? []) as HoaTemplateRow[];
+  return (data ?? []) as HoaTemplateShared[];
 }
 
-export async function searchHoaTemplates(q: string): Promise<HoaTemplateRow[]> {
+export async function searchHoaTemplates(q: string): Promise<HoaTemplateShared[]> {
   const term = q.trim();
   if (!term) return listHoaTemplates();
   const like = `%${term.replace(/[%_]/g, "")}%`;
-  const { data, error } = await T()
+  const { data, error } = await S()
     .select("*")
     .or(`community_name.ilike.${like},city.ilike.${like}`)
     .order("last_used_at", { ascending: false, nullsFirst: false })
     .limit(50);
   if (error) throw error;
-  return (data ?? []) as HoaTemplateRow[];
+  return (data ?? []) as HoaTemplateShared[];
 }
 
-export async function getHoaTemplate(id: string): Promise<HoaTemplateRow | null> {
+export async function getHoaTemplate(id: string): Promise<HoaTemplateShared | null> {
+  const { data, error } = await S().select("*").eq("id", id).maybeSingle();
+  if (error) throw error;
+  return (data as HoaTemplateShared) ?? null;
+}
+
+/**
+ * Full row including contact fields — only returns data for templates the
+ * caller's own tenant created (or for admins). Used by the create/edit and
+ * versioning path, never for browsing.
+ */
+export async function getHoaTemplateOwn(id: string): Promise<HoaTemplateRow | null> {
   const { data, error } = await T().select("*").eq("id", id).maybeSingle();
   if (error) throw error;
   return (data as HoaTemplateRow) ?? null;
@@ -87,7 +111,7 @@ export async function updateHoaTemplate(
 ): Promise<HoaTemplateRow> {
   // Snapshot the current row into hoa_template_versions before applying the
   // patch — so every template edit produces an auditable history entry.
-  const current = await getHoaTemplate(id);
+  const current = await getHoaTemplateOwn(id);
   if (current) {
     const { insertTemplateVersion } = await import("./hoa-template-versions");
     await insertTemplateVersion(
