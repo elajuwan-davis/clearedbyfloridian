@@ -194,10 +194,11 @@ function NewHoaSubmittal() {
                   </div>
                 </div>
                 <div className="text-sm text-obsidian/70 space-y-0.5">
-                  {tpl.hoa_contact_name && <div>{tpl.hoa_contact_name}</div>}
-                  {tpl.hoa_contact_email && (
-                    <div className="text-obsidian/60 text-xs">{tpl.hoa_contact_email}</div>
-                  )}
+                  <div className="text-obsidian/60 text-xs">
+                    {tpl.has_contact_email
+                      ? "HOA contact on file"
+                      : "No HOA contact on file"}
+                  </div>
                 </div>
                 <dl className="grid grid-cols-2 gap-y-1 text-xs">
                   <dt className="text-obsidian/50">Docs required</dt>
