@@ -292,15 +292,16 @@ function HoaSubmittalEditor() {
     }
     setLoggingReply(true);
     try {
-      await logHoaReply({
-        submittalId: row.id,
-        tenantId: session.effectiveTenantId,
-        loggedBy: session.userId,
-        direction: "inbound",
-        fromEmail: replyDraft.fromEmail || template?.hoa_contact_email || null,
-        fromName: template?.hoa_contact_name ?? null,
-        subject,
-        bodyText: body,
+      // The HOA contact is tenant-private; when the sender is left blank the
+      // server resolves the default from the template contact.
+      await logReply({
+        data: {
+          submittalId: row.id,
+          direction: "inbound",
+          fromEmail: replyDraft.fromEmail || null,
+          subject,
+          bodyText: body,
+        },
       });
       await logHoaEvent({
         submittalId: row.id,
