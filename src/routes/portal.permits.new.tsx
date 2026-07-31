@@ -4,7 +4,8 @@ import { Upload, Check, FileText, ArrowLeft, Send, X, AlertCircle, Plus, Trash2,
 import { toast } from "sonner";
 import { CloudUploadButtons } from "@/components/cloud-upload-buttons";
 import { ComboboxInput } from "@/components/combobox-input";
-import { AddressAutocomplete, type ResolvedAddress } from "@/components/address-autocomplete";
+import { AddressLookupField } from "@/components/address-lookup-field";
+import { activeProvider, resolveMunicipality, type ResolvedAddress } from "@/lib/address-lookup";
 import { createPermit, updatePermit, getPermit, type PermitDoc, type PermitRow, type PermitSub } from "@/lib/permits-api";
 import { listSubs, createSub, type SubRow } from "@/lib/subs-api";
 import { listDesignPros, createDesignPro, type DesignProRow, type DesignProRole } from "@/lib/design-pros-api";
