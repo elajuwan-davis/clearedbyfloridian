@@ -83,6 +83,10 @@ function SubIntakeTokenPage() {
 
   async function submit(e: FormEvent) {
     e.preventDefault();
+    if (!idComplete || !idDoc.path || !idDoc.documentType) {
+      alert("Please upload a valid government ID before submitting.");
+      return;
+    }
     setSubmitting(true);
     try {
       for (const key of Object.keys(PATH_KEY) as Array<keyof typeof PATH_KEY>) {
@@ -90,8 +94,18 @@ function SubIntakeTokenPage() {
           throw new Error("One or more documents only has a filename. Please re-upload it before submitting.");
         }
       }
-      await submitSubIntakeFn({ data: { token, patch } });
+      await submitSubIntakeFn({
+        data: {
+          token,
+          patch: {
+            ...patch,
+            id_document_url: idDoc.path,
+            id_document_type: idDoc.documentType,
+          },
+        },
+      });
       setDone(true);
+
     } catch (err) {
       alert("Submission failed: " + (err instanceof Error ? err.message : String(err)));
     } finally { setSubmitting(false); }
