@@ -111,7 +111,7 @@ export async function updateHoaTemplate(
 ): Promise<HoaTemplateRow> {
   // Snapshot the current row into hoa_template_versions before applying the
   // patch — so every template edit produces an auditable history entry.
-  const current = await getHoaTemplate(id);
+  const current = await getHoaTemplateOwn(id);
   if (current) {
     const { insertTemplateVersion } = await import("./hoa-template-versions");
     await insertTemplateVersion(
