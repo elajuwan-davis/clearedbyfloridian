@@ -46,6 +46,7 @@ import { Route as AdminHubspotSimulateRouteImport } from './routes/admin.hubspot
 import { Route as AdminInvitesRouteImport } from './routes/admin.invites'
 import { Route as AdminReviewQueueRouteImport } from './routes/admin.review-queue'
 import { Route as AdminContractorsRouteImport } from './routes/admin_.contractors'
+import { Route as ApiGeocodeCensusRouteImport } from './routes/api/geocode-census'
 import { Route as ApiVerifyLicenseRouteImport } from './routes/api/verify-license'
 import { Route as BlogIndexRouteImport } from './routes/blog.index'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
@@ -296,6 +297,11 @@ const AdminReviewQueueRoute = AdminReviewQueueRouteImport.update({
 const AdminContractorsRoute = AdminContractorsRouteImport.update({
   id: '/admin_/contractors',
   path: '/admin/contractors',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiGeocodeCensusRoute = ApiGeocodeCensusRouteImport.update({
+  id: '/api/geocode-census',
+  path: '/api/geocode-census',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiVerifyLicenseRoute = ApiVerifyLicenseRouteImport.update({
@@ -677,6 +683,7 @@ export interface FileRoutesByFullPath {
   '/admin/invites': typeof AdminInvitesRoute
   '/admin/review-queue': typeof AdminReviewQueueRoute
   '/admin/contractors': typeof AdminContractorsRoute
+  '/api/geocode-census': typeof ApiGeocodeCensusRoute
   '/api/verify-license': typeof ApiVerifyLicenseRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/building-dept-logins/submit': typeof BuildingDeptLoginsSubmitRoute
@@ -780,6 +787,7 @@ export interface FileRoutesByTo {
   '/admin/invites': typeof AdminInvitesRoute
   '/admin/review-queue': typeof AdminReviewQueueRoute
   '/admin/contractors': typeof AdminContractorsRoute
+  '/api/geocode-census': typeof ApiGeocodeCensusRoute
   '/api/verify-license': typeof ApiVerifyLicenseRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/building-dept-logins/submit': typeof BuildingDeptLoginsSubmitRoute
@@ -884,6 +892,7 @@ export interface FileRoutesById {
   '/admin/invites': typeof AdminInvitesRoute
   '/admin/review-queue': typeof AdminReviewQueueRoute
   '/admin_/contractors': typeof AdminContractorsRoute
+  '/api/geocode-census': typeof ApiGeocodeCensusRoute
   '/api/verify-license': typeof ApiVerifyLicenseRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/building-dept-logins/submit': typeof BuildingDeptLoginsSubmitRoute
@@ -991,6 +1000,7 @@ export interface FileRouteTypes {
     | '/admin/invites'
     | '/admin/review-queue'
     | '/admin/contractors'
+    | '/api/geocode-census'
     | '/api/verify-license'
     | '/blog/$slug'
     | '/building-dept-logins/submit'
@@ -1094,6 +1104,7 @@ export interface FileRouteTypes {
     | '/admin/invites'
     | '/admin/review-queue'
     | '/admin/contractors'
+    | '/api/geocode-census'
     | '/api/verify-license'
     | '/blog/$slug'
     | '/building-dept-logins/submit'
@@ -1197,6 +1208,7 @@ export interface FileRouteTypes {
     | '/admin/invites'
     | '/admin/review-queue'
     | '/admin_/contractors'
+    | '/api/geocode-census'
     | '/api/verify-license'
     | '/blog/$slug'
     | '/building-dept-logins/submit'
@@ -1303,6 +1315,7 @@ export interface RootRouteChildren {
   AdminInvitesRoute: typeof AdminInvitesRoute
   AdminReviewQueueRoute: typeof AdminReviewQueueRoute
   AdminContractorsRoute: typeof AdminContractorsRoute
+  ApiGeocodeCensusRoute: typeof ApiGeocodeCensusRoute
   ApiVerifyLicenseRoute: typeof ApiVerifyLicenseRoute
   BlogSlugRoute: typeof BlogSlugRoute
   HomeownerTokenRoute: typeof HomeownerTokenRoute
@@ -1584,6 +1597,13 @@ declare module '@tanstack/react-router' {
       path: '/admin/contractors'
       fullPath: '/admin/contractors'
       preLoaderRoute: typeof AdminContractorsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/geocode-census': {
+      id: '/api/geocode-census'
+      path: '/api/geocode-census'
+      fullPath: '/api/geocode-census'
+      preLoaderRoute: typeof ApiGeocodeCensusRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/verify-license': {
@@ -2267,6 +2287,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminInvitesRoute: AdminInvitesRoute,
   AdminReviewQueueRoute: AdminReviewQueueRoute,
   AdminContractorsRoute: AdminContractorsRoute,
+  ApiGeocodeCensusRoute: ApiGeocodeCensusRoute,
   ApiVerifyLicenseRoute: ApiVerifyLicenseRoute,
   BlogSlugRoute: BlogSlugRoute,
   HomeownerTokenRoute: HomeownerTokenRoute,
@@ -2291,13 +2312,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

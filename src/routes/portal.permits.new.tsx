@@ -4,7 +4,8 @@ import { Upload, Check, FileText, ArrowLeft, Send, X, AlertCircle, Plus, Trash2,
 import { toast } from "sonner";
 import { CloudUploadButtons } from "@/components/cloud-upload-buttons";
 import { ComboboxInput } from "@/components/combobox-input";
-import { AddressAutocomplete, type ResolvedAddress } from "@/components/address-autocomplete";
+import { AddressLookupField } from "@/components/address-lookup-field";
+import { activeProvider, resolveMunicipality, type ResolvedAddress } from "@/lib/address-lookup";
 import { createPermit, updatePermit, getPermit, type PermitDoc, type PermitRow, type PermitSub } from "@/lib/permits-api";
 import { listSubs, createSub, type SubRow } from "@/lib/subs-api";
 import { listDesignPros, createDesignPro, type DesignProRow, type DesignProRole } from "@/lib/design-pros-api";
@@ -287,26 +288,12 @@ function NewPermitPage() {
     }));
   }
 
-  /** Called when the address autocomplete resolves a Places selection.
-   *  Auto-fills municipality from Places address_components: locality first,
-   *  then county fallback (Loxahatchee → Palm Beach County, etc.). */
+  /** Called when the address lookup resolves an address (Google or Census).
+   *  Municipality detection lives in @/lib/address-lookup so the provider can
+   *  be swapped without touching this form. Incorporated cities resolve to the
+   *  city; unincorporated areas resolve to "Unincorporated <County> County". */
   function handleAddressResolved(r: ResolvedAddress) {
-    const norm = (s: string) => s.toLowerCase().replace(/[^a-z]/g, "");
-    let resolvedMuni = "";
-    let matchedList = false;
-    if (r.city) {
-      const target = norm(r.city);
-      const match = MUNICIPALITIES.find((m) => norm(m.name) === target);
-      if (match) { resolvedMuni = match.name; matchedList = true; }
-    }
-    // County fallback — Places locality often names an unincorporated area
-    // (e.g. "Loxahatchee") that isn't a jurisdiction; the county is.
-    if (!resolvedMuni && r.county) {
-      const target = norm(r.county);
-      const countyMatch = MUNICIPALITIES.find((m) => norm(m.name) === target);
-      if (countyMatch) { resolvedMuni = countyMatch.name; matchedList = true; }
-    }
-    if (!resolvedMuni) resolvedMuni = r.city || r.county || "";
+    const { municipality: resolvedMuni, matchedList, unincorporated } = resolveMunicipality(r);
 
     setForm((f) => ({
       ...f,
@@ -314,7 +301,13 @@ function NewPermitPage() {
       municipality: resolvedMuni || f.municipality,
     }));
     if (resolvedMuni) {
-      toast.success(matchedList ? `Matched municipality: ${resolvedMuni}` : `City set to ${resolvedMuni} (not in list — please verify)`);
+      toast.success(
+        unincorporated
+          ? `Unincorporated area — routed to ${resolvedMuni}`
+          : matchedList
+            ? `Matched municipality: ${resolvedMuni}`
+            : `City set to ${resolvedMuni} (not in list — please verify)`,
+      );
     }
     // Kick off Dispatch — pre-flight property intelligence.
     const resolvedAddress = r.streetLine || r.formatted;
@@ -324,6 +317,8 @@ function NewPermitPage() {
       setDispatchConfirmed(false);
     }
   }
+
+
 
 
   const primaryType = form.scopes[0] || "Other";
@@ -599,7 +594,7 @@ function NewPermitPage() {
             <div><label className={labelCls}>Project Name *</label><input required className={inputCls} value={form.projectName} onChange={(e) => update("projectName", e.target.value)} /></div>
             <div>
               <label className={labelCls}>Property Address *</label>
-              <AddressAutocomplete
+              <AddressLookupField
                 required
                 className={inputCls}
                 value={form.address}
@@ -607,9 +602,13 @@ function NewPermitPage() {
                 onResolved={(r) => handleAddressResolved(r)}
               />
               <p className="mt-1 text-[11px] text-obsidian/45 flex items-center gap-1.5">
-                <MapPin className="h-3 w-3" /> Florida addresses only — city auto-selects the municipality below.
+                <MapPin className="h-3 w-3" />
+                {activeProvider() === "google"
+                  ? "Florida addresses only — city auto-selects the municipality below."
+                  : "Florida addresses only — enter the full address, then press Look up to auto-fill the municipality."}
               </p>
             </div>
+
             <div className="sm:col-span-2">
               <label className={labelCls}>Municipality / City *</label>
               <ComboboxInput
