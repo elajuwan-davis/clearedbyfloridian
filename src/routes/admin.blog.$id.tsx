@@ -1,3 +1,4 @@
+import { AdminOnly } from "@/components/admin-only";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { BlogEditor } from "@/components/blog-editor";
@@ -11,7 +12,11 @@ export const Route = createFileRoute("/admin/blog/$id")({
       { name: "robots", content: "noindex" },
     ],
   }),
-  component: EditPostPage,
+  component: () => (
+    <AdminOnly>
+      <EditPostPage />
+    </AdminOnly>
+  ),
 });
 
 function EditPostPage() {

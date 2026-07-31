@@ -16,6 +16,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useExpirationAlerts } from "@/hooks/use-expiration-alerts";
 import { NotificationBell } from "@/components/notification-bell";
 import { BookmarkToggle } from "@/components/bookmark-toggle";
+import { AdminOnly } from "@/components/admin-only";
+
 import { useBookmarks } from "@/lib/bookmarks-api";
 import { VictoriaWidget } from "@/components/victoria-widget";
 import { useSession, setImpersonatedTenant, type AppRole } from "@/lib/use-session";
@@ -572,6 +574,14 @@ export function PortalShell({ children }: { children: ReactNode }) {
       </div>
     );
   }
+
+  // Admin-only area: non-staff never see staff tooling, even by typing a URL.
+  // (Data itself is already blocked server-side by RLS + admin assertions.)
+  const isAdminPath = pathname === "/admin" || pathname.startsWith("/admin/");
+  if (isAdminPath && !session.loading && !session.isAdmin) {
+    return <AdminOnly>{children}</AdminOnly>;
+  }
+
 
   return (
     <div className="min-h-screen bg-background">
