@@ -40,10 +40,15 @@ function LpoaSigningPage() {
   const [ack1, setAck1] = useState(false);
   const [ack2, setAck2] = useState(false);
   const [hasSig, setHasSig] = useState(false);
+  const [idDoc, setIdDoc] = useState<IdUploadValue>(EMPTY_ID_UPLOAD);
+  const [idComplete, setIdComplete] = useState(false);
+  const [sigUnlocked, setSigUnlocked] = useState(false);
 
   const sigRef = useRef<SignaturePadHandle>(null);
 
-  const canSign = name.trim() && title.trim() && license.trim() && ack1 && ack2 && hasSig;
+  const canSign =
+    name.trim() && title.trim() && license.trim() && idComplete && ack1 && ack2 && hasSig;
+
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
