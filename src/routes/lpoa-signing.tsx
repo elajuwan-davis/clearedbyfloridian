@@ -13,6 +13,8 @@ import {
   Lock,
   FileSignature,
 } from "lucide-react";
+import { IdUpload, EMPTY_ID_UPLOAD, type IdUploadValue } from "@/components/id-upload";
+
 
 export const Route = createFileRoute("/lpoa-signing")({
   head: () => ({
