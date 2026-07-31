@@ -336,7 +336,7 @@ function HoaSubmittalEditor() {
   async function sendToHoa() {
     if (!row) return;
     if (sending) return;
-    if (!template?.hoa_contact_email) {
+    if (!template?.has_contact_email) {
       toast.error("No HOA contact email on file. Add one to the template first.");
       return;
     }
