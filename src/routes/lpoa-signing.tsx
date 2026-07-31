@@ -301,7 +301,10 @@ function LpoaSigningPage() {
               </span>
             </label>
           </div>
+          </>
+          )}
         </article>
+
 
         {/* Footer Actions */}
         <div className="mt-10 flex flex-col-reverse items-stretch justify-between gap-4 border-t border-obsidian/10 pt-8 sm:flex-row sm:items-center">
