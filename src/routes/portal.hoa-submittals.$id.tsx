@@ -1,5 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import {
   ArrowLeft,
@@ -76,7 +77,7 @@ function HoaSubmittalEditor() {
   const navigate = useNavigate();
   const session = useSession();
   const [row, setRow] = useState<HoaSubmittalRow | null>(null);
-  const [template, setTemplate] = useState<HoaTemplateRow | null>(null);
+  const [template, setTemplate] = useState<HoaTemplateShared | null>(null);
   const [saving, setSaving] = useState(false);
   const [sending, setSending] = useState(false);
   const [generating, setGenerating] = useState<"pdf" | "removal" | null>(null);
