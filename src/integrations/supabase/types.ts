@@ -420,6 +420,35 @@ export type Database = {
           },
         ]
       }
+      feature_request_notes: {
+        Row: {
+          created_at: string
+          internal_note: string | null
+          request_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          internal_note?: string | null
+          request_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          internal_note?: string | null
+          request_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "feature_request_notes_request_id_fkey"
+            columns: ["request_id"]
+            isOneToOne: true
+            referencedRelation: "feature_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       feature_request_votes: {
         Row: {
           created_at: string
@@ -456,7 +485,6 @@ export type Database = {
           created_by: string
           description: string
           id: string
-          internal_note: string | null
           pinned: boolean
           priority: string
           public_response: string | null
@@ -474,7 +502,6 @@ export type Database = {
           created_by: string
           description: string
           id?: string
-          internal_note?: string | null
           pinned?: boolean
           priority: string
           public_response?: string | null
@@ -492,7 +519,6 @@ export type Database = {
           created_by?: string
           description?: string
           id?: string
-          internal_note?: string | null
           pinned?: boolean
           priority?: string
           public_response?: string | null
