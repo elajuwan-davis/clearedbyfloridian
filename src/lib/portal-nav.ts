@@ -88,7 +88,7 @@ export const navSections: NavSection[] = [
     label: "Documents",
     icon: FolderOpen,
     items: [
-      { to: "/forms", label: "Forms" },
+      { to: "/forms/payment-authorization", label: "Payment Authorization" },
       { to: "/portal/building-dept", label: "Building Departments" },
       { to: "/building-dept-logins", label: "Portal Logins" },
       { to: "/portal/notary-queue", label: "Notary Queue" },
