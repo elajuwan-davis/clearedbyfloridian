@@ -1,3 +1,4 @@
+import { AdminOnly } from "@/components/admin-only";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Plus, Pencil, Trash2, Eye, EyeOff, ArrowLeft } from "lucide-react";
@@ -20,7 +21,11 @@ export const Route = createFileRoute("/admin/blog/")({
       { name: "robots", content: "noindex" },
     ],
   }),
-  component: AdminBlogIndex,
+  component: () => (
+    <AdminOnly>
+      <AdminBlogIndex />
+    </AdminOnly>
+  ),
 });
 
 function AdminBlogIndex() {

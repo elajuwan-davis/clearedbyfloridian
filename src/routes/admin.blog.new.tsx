@@ -1,3 +1,4 @@
+import { AdminOnly } from "@/components/admin-only";
 import { createFileRoute } from "@tanstack/react-router";
 import { BlogEditor } from "@/components/blog-editor";
 import { isInternalUser } from "@/lib/is-internal-user";
@@ -9,7 +10,11 @@ export const Route = createFileRoute("/admin/blog/new")({
       { name: "robots", content: "noindex" },
     ],
   }),
-  component: NewPostPage,
+  component: () => (
+    <AdminOnly>
+      <NewPostPage />
+    </AdminOnly>
+  ),
 });
 
 function NewPostPage() {
