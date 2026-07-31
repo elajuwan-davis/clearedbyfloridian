@@ -16,6 +16,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useExpirationAlerts } from "@/hooks/use-expiration-alerts";
 import { NotificationBell } from "@/components/notification-bell";
 import { BookmarkToggle } from "@/components/bookmark-toggle";
+import { AdminOnly } from "@/components/admin-only";
+
 import { useBookmarks } from "@/lib/bookmarks-api";
 import { VictoriaWidget } from "@/components/victoria-widget";
 import { useSession, setImpersonatedTenant, type AppRole } from "@/lib/use-session";
