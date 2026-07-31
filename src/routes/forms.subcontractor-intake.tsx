@@ -81,7 +81,7 @@ function SubcontractorIntakePage() {
     <PortalShell>
       <div className="mx-auto max-w-2xl px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
         <button onClick={() => navigate({ to: "/forms/subcontractors" })} className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-[0.14em] text-obsidian/55 hover:text-obsidian mb-6">
-          <ArrowLeft className="h-3 w-3" /> All forms
+          <ArrowLeft className="h-3 w-3" /> Subcontractors
         </button>
 
         <div className="border-b border-obsidian/10 pb-6">
