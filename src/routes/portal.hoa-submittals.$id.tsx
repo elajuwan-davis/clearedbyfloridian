@@ -86,6 +86,8 @@ function HoaSubmittalEditor() {
   const [replies, setReplies] = useState<HoaReplyRow[]>([]);
   const [replyDraft, setReplyDraft] = useState({ subject: "", fromEmail: "", body: "" });
   const [loggingReply, setLoggingReply] = useState(false);
+  const sendSubmittal = useServerFn(sendHoaSubmittalFn);
+  const logReply = useServerFn(logHoaReplyFn);
 
   async function refreshTimeline() {
     try {
@@ -357,10 +359,7 @@ function HoaSubmittalEditor() {
     }
     setSending(true);
     try {
-      const res = await sendHoaSubmittal(row.id, {
-        tenantId: session.effectiveTenantId,
-        userId: session.userId,
-      });
+      const res = await sendSubmittal({ data: { submittalId: row.id } });
       const updated = await getHoaSubmittal(row.id);
       if (updated) setRow(updated);
       refreshTimeline();
@@ -659,7 +658,7 @@ function HoaSubmittalEditor() {
               />
               <input
                 type="email"
-                placeholder={`From email${template?.hoa_contact_email ? ` (default ${template.hoa_contact_email})` : ""}`}
+                placeholder={template?.has_contact_email ? "From email (defaults to HOA contact)" : "From email"}
                 value={replyDraft.fromEmail}
                 onChange={(e) => setReplyDraft({ ...replyDraft, fromEmail: e.target.value })}
                 className="border border-obsidian/20 bg-white px-3 py-2 text-sm rounded-[3px]"
