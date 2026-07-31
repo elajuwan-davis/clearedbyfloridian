@@ -23,6 +23,9 @@ function SubIntakeTokenPage() {
   const [patch, setPatch] = useState<Record<string, string | null>>({});
   const [done, setDone] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [idDoc, setIdDoc] = useState<IdUploadValue>(EMPTY_ID_UPLOAD);
+  const [idComplete, setIdComplete] = useState(false);
+
 
   useEffect(() => {
     getSubByTokenFn({ data: { token } })
