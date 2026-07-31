@@ -53,21 +53,11 @@ export const Route = createFileRoute("/api/geocode-census")({
             const geo = m.geographies ?? {};
             const places = geo["Incorporated Places"];
             const incorporated = !!(places && places.length > 0);
-            const streetLine = [
-              c.fromAddress,
-              c.preQualifier,
-              c.preDirection,
-              c.preType,
-              c.streetName,
-              c.suffixType,
-              c.suffixDirection,
-              c.suffixQualifier,
-            ]
-              .filter(Boolean)
-              .join(" ")
-              .replace(/\s+/g, " ")
-              .trim();
+            // matchedAddress preserves the exact house number the user typed;
+            // addressComponents only carries the census range start.
+            const streetLine = (m.matchedAddress || "").split(",")[0].trim();
             const countyBase = firstName(geo["Counties"]);
+
             return {
               streetLine: streetLine || (m.matchedAddress || "").split(",")[0] || "",
               city: incorporated ? firstName(places) : "",
