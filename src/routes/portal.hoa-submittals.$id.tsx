@@ -439,14 +439,12 @@ function HoaSubmittalEditor() {
           <div className="border border-obsidian/10 bg-white rounded-[3px] px-4 py-3 text-sm flex flex-wrap items-center gap-x-6 gap-y-1">
             <div className="text-xs uppercase tracking-wide text-obsidian/50">Template</div>
             <div className="font-medium text-obsidian">{displayNameFor(template)}</div>
-            {template.hoa_contact_name && (
-              <div className="text-obsidian/70">{template.hoa_contact_name}</div>
-            )}
-            {template.hoa_contact_email && (
-              <div className="text-obsidian/60 inline-flex items-center gap-1">
-                <Mail className="h-3 w-3" /> {template.hoa_contact_email}
-              </div>
-            )}
+            <div className="text-obsidian/60 inline-flex items-center gap-1">
+              <Mail className="h-3 w-3" />{" "}
+              {template.has_contact_email
+                ? "HOA contact on file"
+                : "No HOA contact on file"}
+            </div>
             {template.deposit_amount_cents > 0 && (
               <div className="text-obsidian/60">Deposit ${(template.deposit_amount_cents / 100).toLocaleString()}</div>
             )}
