@@ -64,8 +64,6 @@ export const navSections: NavSection[] = [
     icon: FileText,
     items: [
       { to: "/portal/permits", label: "My Permits", alertKey: "my-permits" },
-      { to: "/portal/permits/new", label: "New Permit" },
-      { to: "/portal/submissions", label: "Submissions" },
       { to: "/portal/inspections", label: "Inspections" },
       { to: "/portal/hoa-submittals", label: "HOA Submittals" },
       { to: "/portal/bid-review", label: "Bid Review" },
@@ -79,8 +77,7 @@ export const navSections: NavSection[] = [
       { to: "/portal/contacts", label: "Contacts" },
       { to: "/forms/subcontractors", label: "Subcontractors" },
       { to: "/portal/compliance", label: "Compliance" },
-      { to: "/portal/request-coi", label: "Request COI", alertKey: "request-coi" },
-      { to: "/portal/request-sub-insurance", label: "Sub Insurance", alertKey: "sub-insurance" },
+      { to: "/portal/request-coi", label: "Insurance Requests", alertKey: "sub-insurance" },
     ],
   },
   {
@@ -111,7 +108,7 @@ export const navSections: NavSection[] = [
     icon: BookOpen,
     items: [
       { to: "/portal/guides", label: "Project Guides" },
-      { to: "/municipalities", label: "Municipalities" },
+      
       { to: "/ask-victoria", label: "Ask Victoria" },
       { to: "/portal/reports", label: "Reports" },
       { to: "/portal/blog", label: "Blog" },

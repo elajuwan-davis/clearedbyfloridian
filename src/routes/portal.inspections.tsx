@@ -39,14 +39,11 @@ function InspectionsPage() {
                   {d.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}
                 </div>
               </div>
-              <div className="md:col-span-4">
+              <div className="md:col-span-7">
                 <div className="font-medium">{i.type}</div>
                 <div className="text-xs text-muted-foreground mt-1">{i.address}</div>
               </div>
-              <div className="md:col-span-3 font-mono text-xs">
-                <div className="text-muted-foreground">Inspector</div>
-                <div className="mt-1">{i.inspector}</div>
-              </div>
+
               <div className="md:col-span-3 md:text-right space-y-2">
                 <StatusBadge status={i.status} />
                 <div>

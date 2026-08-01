@@ -36,7 +36,7 @@ export const listReviewQueueFn = createServerFn({ method: "GET" })
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const db = supabaseAdmin as any;
 
-    const [permitRes, tenantRes, usersRes] = await Promise.all([
+    const [permitRes, tenantRes, profileRes] = await Promise.all([
       db
         .from("permits")
         .select(
@@ -46,7 +46,7 @@ export const listReviewQueueFn = createServerFn({ method: "GET" })
         .eq("status", "draft")
         .order("created_at", { ascending: false }),
       db.from("tenants").select("id, name"),
-      supabaseAdmin.auth.admin.listUsers({ page: 1, perPage: 1000 }),
+      db.from("profiles").select("id, email, display_name"),
     ]);
 
     if (permitRes.error) throw new Error(permitRes.error.message);
@@ -55,8 +55,9 @@ export const listReviewQueueFn = createServerFn({ method: "GET" })
       (tenantRes.data ?? []).map((t: any) => [t.id, t.name as string]),
     );
     const users = new Map<string, any>(
-      (usersRes?.data?.users ?? []).map((u: any) => [u.id, u]),
+      (profileRes.data ?? []).map((p: any) => [p.id, p]),
     );
+
 
     return (permitRes.data ?? []).map((p: any) => ({
       id: p.id,
@@ -67,7 +68,9 @@ export const listReviewQueueFn = createServerFn({ method: "GET" })
       permit_type: p.permit_type ?? null,
       contractor_company: p.contractor_company ?? null,
       tenant_name: p.tenant_id ? (tenants.get(p.tenant_id) ?? null) : null,
-      submitted_by: p.created_by ? (users.get(p.created_by)?.email ?? null) : null,
+      submitted_by: p.created_by
+        ? (users.get(p.created_by)?.email ?? users.get(p.created_by)?.display_name ?? null)
+        : null,
       created_at: p.created_at,
     }));
   });

@@ -118,7 +118,7 @@ export function MyPermitsPage() {
               <RefreshCw className={`h-3.5 w-3.5 ${syncing ? "animate-spin" : ""}`} /> {syncing ? "Syncing…" : "Sync Permits"}
             </button>
             <Link to="/portal/permits/new" className="inline-flex items-center gap-2 bg-obsidian px-4 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-paper hover:bg-obsidian/90 rounded-[3px]">
-              <Plus className="h-3.5 w-3.5" /> New Permit
+              <Plus className="h-3.5 w-3.5" /> Add New Permit
             </Link>
           </div>
         </div>
@@ -133,7 +133,7 @@ export function MyPermitsPage() {
             <FileText className="h-8 w-8 mx-auto text-obsidian/30" strokeWidth={1.5} />
             <p className="mt-3 text-sm text-obsidian/60">No permits yet. Create your first one.</p>
             <Link to="/portal/permits/new" className="mt-4 inline-flex items-center gap-2 bg-obsidian px-4 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-paper rounded-[3px]">
-              <Plus className="h-3.5 w-3.5" /> New Permit
+              <Plus className="h-3.5 w-3.5" /> Add New Permit
             </Link>
           </div>
         )}
