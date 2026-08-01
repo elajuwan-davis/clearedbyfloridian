@@ -1,15 +1,44 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { Menu } from "lucide-react";
+import { Menu, Sun, Moon } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 
 function LogoMark() {
   return (
-    <div className="relative h-9 w-9 border hairline bg-card flex items-center justify-center">
-      <div className="absolute inset-1 border hairline opacity-60" />
-      <span className="relative font-display text-base leading-none">C</span>
-      <span className="absolute -top-1 -right-1 h-1.5 w-1.5 bg-accent rounded-full" />
+    <div
+      className="h-8 w-8 rounded-lg flex items-center justify-center text-white font-bold text-sm"
+      style={{ background: "linear-gradient(135deg, var(--brand, #1B84D4), var(--green, #12A05C))" }}
+    >
+      C
     </div>
+  );
+}
+
+function ThemeToggle() {
+  const [dark, setDark] = React.useState(
+    () => typeof document !== "undefined" && document.documentElement.classList.contains("dark"),
+  );
+  const toggle = () => {
+    const next = !dark;
+    setDark(next);
+    document.documentElement.classList.toggle("dark", next);
+    try {
+      localStorage.setItem("cleard-theme", next ? "dark" : "light");
+    } catch {
+      /* storage unavailable */
+    }
+  };
+  return (
+    <button
+      type="button"
+      onClick={toggle}
+      className="grid place-items-center h-8 w-8 rounded-md border transition-colors hover:bg-secondary"
+      style={{ borderColor: "var(--border)", color: "var(--muted-foreground)" }}
+      title={dark ? "Light mode" : "Dark mode"}
+      aria-label={dark ? "Light mode" : "Dark mode"}
+    >
+      {dark ? <Sun className="h-4 w-4" strokeWidth={1.5} /> : <Moon className="h-4 w-4" strokeWidth={1.5} />}
+    </button>
   );
 }
 
@@ -41,6 +70,7 @@ export function SiteHeader() {
               {l.label}
             </Link>
           ))}
+          <ThemeToggle />
           <Link
             to="/portal"
             className="text-sm font-mono uppercase tracking-[0.18em] text-foreground border hairline px-3 py-1.5 hover:bg-secondary transition-colors"
@@ -75,7 +105,10 @@ export function SiteHeader() {
                   </Link>
                 ))}
               </nav>
-              <div className="p-4 border-t hairline">
+              <div className="p-4 border-t hairline space-y-3">
+                <div className="flex justify-center">
+                  <ThemeToggle />
+                </div>
                 <Link
                   to="/portal"
                   onClick={() => setOpen(false)}
