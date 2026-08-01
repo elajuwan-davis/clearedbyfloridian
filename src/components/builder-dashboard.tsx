@@ -96,7 +96,7 @@ export function BuilderDashboard() {
         <Button
           asChild
           className="h-11 px-5 rounded-[3px] font-subline tracking-wide gap-2"
-          style={{ backgroundColor: "var(--obsidian)", color: "var(--paper)" }}
+          style={{ backgroundColor: "var(--green)", color: "#FFFFFF" }}
         >
           <Link to="/portal/permits/new">
             <Plus className="h-4 w-4" strokeWidth={1.75} />
