@@ -98,7 +98,12 @@
   --border:            var(--rule);
   --input:             oklch(0.92 0.006 80);
   --ring:              var(--brand);
+
+  /* Portal icon rail / flyout — always dark surface with light text */
+  --rail-bg:           #153157;
+  --rail-fg:           #FFFFFF;
 }
+
 
 /* ── Dark mode — toggled via .dark class on <html> ── */
 .dark {
