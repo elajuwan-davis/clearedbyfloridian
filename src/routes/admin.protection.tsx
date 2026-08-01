@@ -72,7 +72,7 @@ const MOCK_ROWS: NoticeRow[] = [
     project: "Whitmore Residence",
     type: "Preliminary Notice",
     filed: "2026-07-09",
-    deadline: "2026-07-24",
+    deadline: "2026-08-28",
     status: "filed",
   },
   {
@@ -80,7 +80,7 @@ const MOCK_ROWS: NoticeRow[] = [
     project: "Alders Estate",
     type: "Mechanic's Lien",
     filed: null,
-    deadline: "2026-08-04",
+    deadline: "2026-08-05",
     status: "pending",
   },
   {
