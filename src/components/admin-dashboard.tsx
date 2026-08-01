@@ -216,9 +216,15 @@ export function AdminDashboard() {
             </span>
           </div>
           <div className="mt-3 grid grid-cols-[minmax(0,1fr)_auto] items-end gap-4 sm:flex sm:flex-wrap sm:justify-between">
-            <h1 className="display-serif text-4xl sm:text-5xl text-obsidian">
-              Operations <em>Desk</em>
-            </h1>
+            <h1
+              className="text-4xl sm:text-5xl font-bold tracking-tight"
+              style={{
+                fontFamily: "'Space Grotesk', 'Inter', system-ui, sans-serif",
+                color: "#0F1E2E",
+                letterSpacing: "-0.02em",
+              }}
+            >
+              Operations Desk
             <div className="flex shrink-0 flex-wrap gap-2">
               <Button asChild variant="outline" className="rounded-[3px]">
                 <Link to="/admin/review-queue">Review queue</Link>
