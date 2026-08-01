@@ -319,7 +319,7 @@ export function AdminDashboard() {
         <div className="mt-6 overflow-hidden border border-obsidian/15 bg-white">
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
-              <thead style={{ backgroundColor: "var(--obsidian)" }}>
+              <thead style={{ backgroundColor: "#0C1B2B" }}>
                 <tr>
                   <Th>Project</Th>
                   <Th>County</Th>
@@ -396,7 +396,7 @@ export function AdminDashboard() {
           <section className="border border-obsidian/15 bg-white">
             <header className="border-b border-obsidian/10 px-5 py-4">
               <div className="eyebrow text-obsidian/50">Client Companies</div>
-              <h2 className="display-serif mt-1 text-2xl text-obsidian">By permit volume</h2>
+              <h2 className="mt-1 text-2xl font-bold tracking-tight" style={{ fontFamily: "'Space Grotesk', sans-serif", color: "#0F1E2E" }}>By permit volume</h2>
             </header>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
@@ -434,7 +434,7 @@ export function AdminDashboard() {
           <section className="border border-obsidian/15 bg-white">
             <header className="border-b border-obsidian/10 px-5 py-4">
               <div className="eyebrow text-obsidian/50">User Accounts</div>
-              <h2 className="display-serif mt-1 text-2xl text-obsidian">Permits added by user</h2>
+              <h2 className="mt-1 text-2xl font-bold tracking-tight" style={{ fontFamily: "'Space Grotesk', sans-serif", color: "#0F1E2E" }}>Permits added by user</h2>
             </header>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
