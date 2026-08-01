@@ -81,7 +81,7 @@ function sectionAlerted(section: NavSection, alertKeys: Set<AlertKey>) {
   return (section.items ?? []).some((i) => i.alertKey && alertKeys.has(i.alertKey));
 }
 
-const railHairline = "color-mix(in oklab, var(--paper) 12%, transparent)";
+const railHairline = "color-mix(in oklab, var(--rail-fg) 14%, transparent)";
 
 /** Slim 64px icon rail with hover/click flyout panels (HubSpot-style). */
 function IconRail({
