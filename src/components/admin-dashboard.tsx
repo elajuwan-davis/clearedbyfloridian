@@ -483,31 +483,31 @@ function StatCard({
   accent?: "sky" | "warn";
   mono?: boolean;
 }) {
+  const accentColor =
+    accent === "sky" ? "#1B84D4" : accent === "warn" ? "#E8861A" : "#0F1E2E";
+
   return (
-    <div className="relative overflow-hidden p-5 text-paper" style={{ backgroundColor: "var(--obsidian)" }}>
-      {accent && (
-        <span
-          aria-hidden
-          className="absolute right-0 top-0 h-12 w-12"
-          style={{
-            background: accent === "sky"
-              ? "linear-gradient(225deg, color-mix(in oklab, var(--sky) 35%, transparent), transparent 60%)"
-              : "linear-gradient(225deg, color-mix(in oklab, var(--oxblood) 40%, transparent), transparent 60%)",
-          }}
-        />
-      )}
-      <div className="flex items-center gap-2 text-paper/55">
-        <span className="text-paper/60">{icon}</span>
+    <div
+      className="relative overflow-hidden p-5 rounded-lg border bg-white"
+      style={{ borderColor: "#E2E8F0", borderLeft: `3px solid ${accentColor}` }}
+    >
+      <div className="flex items-center gap-2" style={{ color: "#7890A4" }}>
+        <span>{icon}</span>
         <span className="font-mono text-[10px] font-medium uppercase tracking-[0.14em]">{label}</span>
       </div>
       <div
-        className={`mt-4 text-paper ${mono ? "font-mono text-3xl tabular-nums" : "display-serif text-4xl"}`}
-        style={accent === "sky" ? { color: "var(--sky)" } : undefined}
+        className={`mt-4 font-bold ${mono ? "font-mono text-3xl tabular-nums" : "text-4xl"}`}
+        style={{
+          color: accentColor,
+          fontFamily: "'Space Grotesk', 'Inter', system-ui, sans-serif",
+        }}
       >
         {value}
       </div>
       {sublabel && (
-        <div className="mt-1 font-mono text-[10px] uppercase tracking-[0.12em] text-paper/45">{sublabel}</div>
+        <div className="mt-1 font-mono text-[10px] uppercase tracking-[0.12em]" style={{ color: "#A0B4C8" }}>
+          {sublabel}
+        </div>
       )}
     </div>
   );
