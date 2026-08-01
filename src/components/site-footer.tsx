@@ -5,12 +5,27 @@ export function SiteFooter() {
     <footer className="border-t hairline mt-32">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 py-16 grid gap-12 md:grid-cols-4">
         <div className="md:col-span-2">
-          <div className="wordmark text-6xl leading-none">Cleard</div>
+          <div className="flex items-center gap-3 mb-4">
+            <div
+              className="h-10 w-10 rounded-xl flex items-center justify-center text-white font-bold text-base"
+              style={{ background: "linear-gradient(135deg, #1B84D4, #12A05C)" }}
+            >
+              C
+            </div>
+            <span className="wordmark text-3xl">Cleard</span>
+          </div>
           <p className="mt-4 max-w-sm text-sm text-muted-foreground">
             Private-provider permitting for Florida's elite general
             contractors — plan review, inspections, and permit coordination
             on a statutory clock.
           </p>
+          <Link
+            to="/portal"
+            className="inline-flex items-center gap-2 mt-5 px-4 py-2.5 rounded-lg text-sm font-semibold text-white transition-opacity hover:opacity-90"
+            style={{ background: "var(--green, #12A05C)" }}
+          >
+            Get early access →
+          </Link>
         </div>
 
         <div>
@@ -24,11 +39,11 @@ export function SiteFooter() {
         <div>
           <div className="label-eyebrow mb-4">Navigate</div>
           <ul className="space-y-2 text-sm">
-            <li><Link to="/services" className="hover:text-accent">Services</Link></li>
-            <li><Link to="/process" className="hover:text-accent">Process</Link></li>
-            <li><Link to="/about" className="hover:text-accent">About</Link></li>
-            <li><Link to="/contact" className="hover:text-accent">Contact</Link></li>
-            <li><Link to="/portal" className="hover:text-accent">Client portal</Link></li>
+            <li><Link to="/services" className="hover:opacity-70 transition-opacity">Services</Link></li>
+            <li><Link to="/process" className="hover:opacity-70 transition-opacity">Process</Link></li>
+            <li><Link to="/about" className="hover:opacity-70 transition-opacity">About</Link></li>
+            <li><Link to="/contact" className="hover:opacity-70 transition-opacity">Contact</Link></li>
+            <li><Link to="/portal" className="hover:opacity-70 transition-opacity">Client portal</Link></li>
           </ul>
         </div>
       </div>
