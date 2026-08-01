@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
-import { ChevronDown, LogOut, Menu, X, Building2, Check, ShieldCheck } from "lucide-react";
+import { ChevronDown, LogOut, Menu, X, Building2, Check, ShieldCheck, Sun, Moon } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
 
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
@@ -601,8 +601,11 @@ export function PortalShell({ children }: { children: ReactNode }) {
 
       <div className="lg:pl-16">
         <header
-          className="sticky top-0 z-30 h-16 bg-white border-b flex items-center gap-3 px-4 sm:px-6 lg:px-8"
-          style={{ borderColor: "color-mix(in oklab, var(--obsidian) 10%, transparent)" }}
+          className="sticky top-0 z-30 h-16 border-b flex items-center gap-3 px-4 sm:px-6 lg:px-8"
+          style={{
+            backgroundColor: "var(--card)",
+            borderColor: "var(--border)",
+          }}
         >
           {/* Mobile hamburger + wordmark */}
           <Sheet open={open} onOpenChange={setOpen}>
@@ -656,6 +659,7 @@ export function PortalShell({ children }: { children: ReactNode }) {
           {session.isAdmin && <AdminTenantSwitcher />}
 
           <div className="ml-auto flex items-center gap-2">
+            <ThemeToggle />
             <BookmarkToggle />
             <NotificationBell />
             <div className="hidden sm:block">
@@ -839,5 +843,37 @@ function AdminTenantSwitcher() {
         </DropdownMenuContent>
       </DropdownMenu>
     </div>
+  );
+}
+
+function ThemeToggle() {
+  const [dark, setDark] = useState(false);
+
+  useEffect(() => {
+    setDark(document.documentElement.classList.contains("dark"));
+  }, []);
+
+  const toggle = () => {
+    const next = !dark;
+    setDark(next);
+    document.documentElement.classList.toggle("dark", next);
+    try {
+      localStorage.setItem("cleard-theme", next ? "dark" : "light");
+    } catch {
+      /* storage unavailable */
+    }
+  };
+
+  return (
+    <button
+      type="button"
+      onClick={toggle}
+      className="grid place-items-center h-9 w-9 rounded-md border transition-colors hover:bg-secondary"
+      style={{ borderColor: "var(--border)", color: "var(--muted-foreground)" }}
+      title={dark ? "Switch to light mode" : "Switch to dark mode"}
+      aria-label={dark ? "Switch to light mode" : "Switch to dark mode"}
+    >
+      {dark ? <Sun className="h-4 w-4" strokeWidth={1.5} /> : <Moon className="h-4 w-4" strokeWidth={1.5} />}
+    </button>
   );
 }

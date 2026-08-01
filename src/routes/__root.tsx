@@ -129,6 +129,13 @@ function RootShell({ children }: { children: ReactNode }) {
     <html lang="en">
       <head>
         <HeadContent />
+        {/* Restore saved theme before first paint */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "try{if(localStorage.getItem('cleard-theme')==='dark')document.documentElement.classList.add('dark')}catch(e){}",
+          }}
+        />
       </head>
       <body>
         {children}
