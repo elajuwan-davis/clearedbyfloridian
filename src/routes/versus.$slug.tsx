@@ -2,7 +2,11 @@ import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { ArrowRight, Check, X, ShieldCheck, Sparkles, Layers } from "lucide-react";
 
 import { MarketingShell } from "@/components/marketing-shell";
-import { findVersusCompetitor, type VersusRow } from "@/lib/versus-competitors";
+import {
+  findVersusCompetitor,
+  type VersusCompetitor,
+  type VersusRow,
+} from "@/lib/versus-competitors";
 
 export const Route = createFileRoute("/versus/$slug")({
   loader: ({ params }) => {
@@ -64,7 +68,7 @@ function Cell({ value }: { value: VersusRow["competitor"] }) {
 }
 
 function VersusDetail() {
-  const { competitor: c } = Route.useLoaderData();
+  const { competitor: c } = Route.useLoaderData() as { competitor: VersusCompetitor };
 
   return (
     <MarketingShell>
