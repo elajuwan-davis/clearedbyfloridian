@@ -16,7 +16,8 @@ export function AlertRow({ alert, onNavigate }: { alert: Alert; onNavigate?: () 
         </div>
       </div>
       <Link
-        to="/portal/request-sub-insurance"
+        to="/portal/request-coi"
+        search={{ tab: "sub" } as never}
         onClick={onNavigate}
         className="font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/70 hover:text-obsidian inline-flex items-center gap-1 shrink-0"
       >
