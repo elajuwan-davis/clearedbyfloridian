@@ -192,41 +192,22 @@ function StatCard({
   icon: typeof FolderOpen;
   accent: boolean;
 }) {
+  const accentColor = accent ? "#1B84D4" : "#0F1E2E";
   return (
     <div
-      className="relative p-5 overflow-hidden rounded-lg border transition-shadow hover:shadow-md"
-      style={{
-        backgroundColor: accent
-          ? "color-mix(in oklab, var(--brand) 8%, var(--card))"
-          : "var(--card)",
-        borderColor: accent
-          ? "color-mix(in oklab, var(--brand) 35%, transparent)"
-          : "var(--border)",
-      }}
+      className="relative overflow-hidden p-5 rounded-lg border bg-white transition-shadow hover:shadow-md"
+      style={{ borderColor: "#E2E8F0", borderLeft: `3px solid ${accentColor}` }}
     >
-      {accent && (
-        <div
-          aria-hidden
-          className="absolute left-0 top-0 bottom-0 w-[3px] rounded-l-lg"
-          style={{ backgroundColor: "var(--brand)" }}
-        />
-      )}
-      <div className="flex items-center justify-between mb-5">
-        <div
-          className="label-eyebrow"
-          style={{ color: accent ? "var(--brand)" : "var(--muted-foreground)" }}
-        >
-          {label}
-        </div>
-        <Icon
-          className="h-3.5 w-3.5"
-          strokeWidth={1.5}
-          style={{ color: accent ? "var(--brand)" : "var(--muted-foreground)" }}
-        />
+      <div className="flex items-center gap-2" style={{ color: "#7890A4" }}>
+        <Icon className="h-4 w-4" strokeWidth={1.5} />
+        <span className="font-mono text-[10px] font-medium uppercase tracking-[0.14em]">{label}</span>
       </div>
       <div
-        className="font-display text-4xl tabular-nums tracking-tight"
-        style={{ color: "var(--foreground)" }}
+        className="mt-4 text-4xl font-bold tabular-nums"
+        style={{
+          color: accentColor,
+          fontFamily: "'Space Grotesk', 'Inter', system-ui, sans-serif",
+        }}
       >
         {value}
       </div>
