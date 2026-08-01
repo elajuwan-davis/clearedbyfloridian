@@ -215,15 +215,18 @@
    Portal is unaffected.
    ========================================================= */
 .marketing-dark {
-  --md-bg: #FFFFFF;
-  --md-surface: #F5F4F1;
-  --md-surface-2: #153157;
-  --md-border: #E5E7EB;
-  --md-text: #1A1A1A;
-  --md-muted: #6B7280;
-  --md-obsidian: #153157;
-  --md-gold: #C8A97E;
-  --md-gold-soft: color-mix(in oklab, #C8A97E 14%, transparent);
+  --md-bg:       #FAFAF8;
+  --md-surface:  #F2EEE8;
+  --md-surface-2:#E8DDD2;
+  --md-border:   #E2E8F0;
+  --md-text:     #0F1E2E;
+  --md-muted:    #6B8299;
+  --md-brand:    #1B84D4;
+  --md-green:    #12A05C;
+  --md-amber:    #E8861A;
+  --md-obsidian: #0C1B2B;
+  --md-gold:     #1B84D4;        /* alias brand for existing md-gold classes */
+  --md-gold-soft:color-mix(in oklab, #1B84D4 14%, transparent);
 
   background-color: var(--md-bg);
   color: var(--md-text);
