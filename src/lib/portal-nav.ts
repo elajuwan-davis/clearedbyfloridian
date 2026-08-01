@@ -121,12 +121,6 @@ export const navSections: NavSection[] = [
   },
 ];
 
-export const complianceSection: NavSection = {
-  key: "compliance-top",
-  label: "Compliance",
-  icon: ClipboardCheck,
-  to: "/compliance",
-};
 
 export const adminSection: NavSection = {
   key: "admin",
