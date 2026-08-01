@@ -169,7 +169,7 @@ export function BuilderDashboard() {
       <div className="flex items-baseline justify-between mb-5">
         <div>
           <div className="label-eyebrow mb-1.5">Active permits</div>
-          <h2 className="display-serif text-2xl">Your projects</h2>
+          <h2 className="text-2xl font-bold tracking-tight" style={{ fontFamily: "'Space Grotesk', sans-serif", color: "#0F1E2E" }}>Your projects</h2>
         </div>
         <Link
           to="/portal/projects"
@@ -252,7 +252,7 @@ function ProjectCard({
         </div>
         <StatusBadge tone={meta.tone}>{meta.label}</StatusBadge>
       </div>
-      <div className="display-serif text-xl leading-tight mb-1">{project.name}</div>
+      <div className="text-xl font-bold tracking-tight leading-tight mb-1" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>{project.name}</div>
       <div className="text-sm text-muted-foreground mb-5">{project.address}</div>
       <div className="flex items-end justify-between pt-3 border-t hairline">
         <div>
