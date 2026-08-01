@@ -46,9 +46,18 @@ export const bookmarksSection: NavSection = {
   to: "/portal/bookmarks",
 };
 
+export const complianceSection: NavSection = {
+  key: "compliance-top",
+  label: "Compliance",
+  icon: ClipboardCheck,
+  to: "/compliance",
+};
+
 export const navSections: NavSection[] = [
   dashboardSection,
   bookmarksSection,
+  complianceSection,
+
   {
     key: "permits",
     label: "Permits",
