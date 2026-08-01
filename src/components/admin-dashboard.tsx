@@ -225,6 +225,7 @@ export function AdminDashboard() {
               }}
             >
               Operations Desk
+            </h1>
             <div className="flex shrink-0 flex-wrap gap-2">
               <Button asChild variant="outline" className="rounded-[3px]">
                 <Link to="/admin/review-queue">Review queue</Link>
