@@ -118,14 +118,19 @@ function LoginPage() {
         />
 
         <div className="relative">
-          <Link to="/" className="inline-block leading-[1]">
-            <div className="wordmark text-5xl text-paper">Cleard</div>
+          <Link to="/" className="flex items-center gap-3">
             <div
-              className="wordmark-subline mt-2"
-              style={{ color: "color-mix(in oklab, var(--paper) 60%, transparent)" }}
+              className="h-9 w-9 rounded-xl flex items-center justify-center text-white font-bold text-base"
+              style={{ background: "linear-gradient(135deg, #1B84D4 0%, #12A05C 100%)", fontFamily: "'Space Grotesk', sans-serif" }}
             >
-             
+              C
             </div>
+            <span
+              className="font-semibold text-[20px]"
+              style={{ fontFamily: "'Space Grotesk', sans-serif", color: "var(--paper)" }}
+            >
+              Cleard
+            </span>
           </Link>
         </div>
 
@@ -137,9 +142,10 @@ function LoginPage() {
             FL Statute 553.791
           </div>
           <p
-            className="display-serif text-3xl leading-[1.15] text-paper"
+            className="text-3xl leading-[1.15] text-paper font-bold"
+            style={{ fontFamily: "'Space Grotesk', 'Inter', sans-serif", letterSpacing: "-0.02em" }}
           >
-            Private‑provider permitting on a <em>statutory clock</em>.
+            Private‑provider permitting on a statutory clock.
           </p>
           <p
             className="text-sm leading-relaxed"
@@ -162,14 +168,29 @@ function LoginPage() {
       <main className="flex flex-col justify-center px-6 py-12 sm:px-12 lg:px-16">
         <div className="w-full max-w-sm mx-auto">
           {/* Mobile wordmark */}
-          <Link to="/" className="lg:hidden block leading-[1] mb-10">
-            <div className="wordmark text-3xl text-foreground">Cleard</div>
-            <div className="wordmark-subline mt-1"></div>
+          <Link to="/" className="lg:hidden flex items-center gap-2.5 mb-10">
+            <div
+              className="h-7 w-7 rounded-lg flex items-center justify-center text-white font-bold text-sm"
+              style={{ background: "linear-gradient(135deg, #1B84D4 0%, #12A05C 100%)", fontFamily: "'Space Grotesk', sans-serif" }}
+            >
+              C
+            </div>
+            <span
+              className="font-semibold text-[17px]"
+              style={{ fontFamily: "'Space Grotesk', sans-serif", color: "var(--foreground)" }}
+            >
+              Cleard
+            </span>
           </Link>
 
           <div className="space-y-2 mb-8">
             <div className="label-eyebrow">Builder portal</div>
-            <h1 className="display-serif text-4xl leading-[1.05]">Sign in.</h1>
+            <h1
+              className="text-4xl leading-[1.05] font-bold"
+              style={{ fontFamily: "'Space Grotesk', 'Inter', sans-serif", letterSpacing: "-0.02em", color: "var(--foreground)" }}
+            >
+              Sign in.
+            </h1>
             <p className="text-sm text-muted-foreground mt-2">
               Access for licensed Florida general contractors.
             </p>
@@ -232,7 +253,7 @@ function LoginPage() {
               type="submit"
               disabled={loading}
               className="w-full h-11 rounded-[3px] font-subline tracking-wide gap-2"
-              style={{ backgroundColor: "var(--obsidian)", color: "var(--paper)" }}
+              style={{ backgroundColor: "#12A05C", color: "#FFFFFF" }}
             >
               {loading ? (
                 <>

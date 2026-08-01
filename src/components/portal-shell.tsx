@@ -169,11 +169,19 @@ function IconRail({
       >
         <Link
           to="/"
-          className="wordmark grid h-16 w-16 shrink-0 place-items-center text-2xl"
-          style={{ color: "var(--paper)", borderBottom: `1px solid ${railHairline}` }}
+          className="grid h-16 w-16 shrink-0 place-items-center"
+          style={{ borderBottom: `1px solid ${railHairline}` }}
           title="Cleard home"
         >
-          C
+          <div
+            className="h-8 w-8 rounded-lg flex items-center justify-center text-white font-bold text-sm"
+            style={{
+              background: "linear-gradient(135deg, #1B84D4 0%, #12A05C 100%)",
+              fontFamily: "'Space Grotesk', sans-serif",
+            }}
+          >
+            C
+          </div>
         </Link>
 
         <div className="flex flex-1 flex-col items-center gap-1 overflow-y-auto py-3">
@@ -419,8 +427,16 @@ function SidebarBody({
   return (
     <div className="flex h-full flex-col" style={{ backgroundColor: "var(--obsidian)" }}>
       <div className="h-16 shrink-0 border-b px-5 flex items-center" style={{ borderColor: railHairline }}>
-        <Link to="/" onClick={onNavigate} className="wordmark text-3xl" style={{ color: "var(--paper)" }}>
-          Cleard
+        <Link to="/" onClick={onNavigate} className="flex items-center gap-2.5">
+          <div
+            className="h-7 w-7 rounded-lg flex items-center justify-center text-white font-bold text-sm"
+            style={{ background: "linear-gradient(135deg, #1B84D4 0%, #12A05C 100%)", fontFamily: "'Space Grotesk', sans-serif" }}
+          >
+            C
+          </div>
+          <span className="font-semibold text-[17px]" style={{ fontFamily: "'Space Grotesk', sans-serif", color: "var(--paper)" }}>
+            Cleard
+          </span>
         </Link>
       </div>
 

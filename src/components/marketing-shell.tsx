@@ -114,7 +114,17 @@ function MarketingFooter() {
     <footer className="md-section-dark mt-24">
       <div className="mx-auto max-w-7xl px-6 lg:px-10 py-14 grid gap-10 md:grid-cols-3 items-start">
         <div>
-          <div className="md-serif text-3xl" style={{ color: "#FFFFFF" }}>Cleard</div>
+          <div className="flex items-center gap-2.5">
+            <div
+              className="h-7 w-7 rounded-lg flex items-center justify-center text-white font-bold text-sm"
+              style={{ background: "linear-gradient(135deg, #1B84D4 0%, #12A05C 100%)", fontFamily: "'Space Grotesk', sans-serif" }}
+            >
+              C
+            </div>
+            <span className="font-semibold text-[18px]" style={{ fontFamily: "'Space Grotesk', sans-serif", color: "#FFFFFF" }}>
+              Cleard
+            </span>
+          </div>
           <div className="mt-4 text-[11px] uppercase tracking-[0.15em]" style={{ color: "color-mix(in oklab, #fff 70%, transparent)" }}>Coverage</div>
           <p className="mt-2 text-sm md-muted leading-relaxed">
             Statewide coverage across Florida.
@@ -165,8 +175,17 @@ export function PageHeader({
       <div className="absolute inset-0 md-grain opacity-60" />
       <div className="relative mx-auto max-w-7xl px-6 lg:px-10 py-24 md:py-36">
         <div className="md-eyebrow md-in md-in-1">{eyebrow}</div>
-        <h1 className="mt-6 md-serif text-4xl sm:text-6xl md:text-7xl max-w-4xl md-in md-in-2"
-            style={{ color: "var(--md-text)" }}>
+        <h1
+          className="mt-6 md-in md-in-2 max-w-4xl"
+          style={{
+            fontFamily: "'Space Grotesk', 'Inter', system-ui, sans-serif",
+            fontWeight: 800,
+            fontSize: "clamp(2.25rem, 6vw, 4.5rem)",
+            lineHeight: 1.05,
+            letterSpacing: "-0.03em",
+            color: "var(--md-text)",
+          }}
+        >
           {title}
         </h1>
         {intro && (
