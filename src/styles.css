@@ -55,49 +55,79 @@
 :root {
   --radius: 0.125rem;
 
-  /* Paper / ink palette — warm off-white over near-black, oxblood accent */
-  --paper: oklch(0.975 0.008 85);
-  --paper-deep: oklch(0.955 0.012 82);
-  --ink: oklch(0.18 0.012 260);
-  --obsidian: oklch(0.16 0.012 260);
-  --obsidian-deep: oklch(0.12 0.012 260);
-  --sky: oklch(0.82 0.11 232);
-  --paper-warm: oklch(0.962 0.011 84);
-  --oxblood: oklch(0.42 0.13 25);
-  --rule: oklch(0.88 0.006 80);
+  /* ── Brand tokens ── */
+  --brand:        #1B84D4;      /* FL sky blue — primary brand */
+  --brand-d:      #1268AC;      /* brand hover */
+  --green:        #12A05C;      /* cleared / approved / CTA */
+  --green-d:      #0D8049;      /* green hover */
+  --amber:        #E8861A;      /* warnings, corrections */
+  --amber-soft:   color-mix(in oklab, #E8861A 14%, transparent);
 
+  /* ── Surface tokens (light mode) ── */
+  --paper:        oklch(0.975 0.008 85);   /* warm off-white */
+  --paper-deep:   oklch(0.955 0.012 82);   /* alt section bg */
+  --sand:         #F2EEE8;                  /* warm concrete/sand */
+  --ink:          oklch(0.18 0.012 260);
+  --obsidian:     oklch(0.16 0.012 260);
+  --obsidian-deep:oklch(0.12 0.012 260);
+  --sky:          #1B84D4;                  /* alias to brand */
+  --paper-warm:   oklch(0.962 0.011 84);
+  --rule:         oklch(0.90 0.006 80);
+  --oxblood:      oklch(0.42 0.13 25);     /* keep for backwards compat */
 
-  --background: var(--paper);
-  --foreground: var(--ink);
-
-  --card: oklch(0.985 0.005 85);
-  --card-foreground: var(--ink);
-
-  --popover: var(--paper);
-  --popover-foreground: var(--ink);
-
-  --primary: var(--ink);
-  --primary-foreground: var(--paper);
-
-  --secondary: var(--paper-deep);
-  --secondary-foreground: var(--ink);
-
-  --muted: var(--paper-deep);
-  --muted-foreground: oklch(0.42 0.012 260);
-
-  /* Oxblood — restrained editorial accent */
-  --accent: oklch(0.32 0.085 25);
-  --accent-foreground: var(--paper);
-
-  --blueprint: var(--accent);
-
-  --destructive: oklch(0.5 0.2 27);
+  /* ── Semantic tokens (light) ── */
+  --background:        var(--paper);
+  --foreground:        var(--ink);
+  --card:              oklch(0.988 0.004 85);
+  --card-foreground:   var(--ink);
+  --popover:           var(--paper);
+  --popover-foreground:var(--ink);
+  --primary:           var(--brand);
+  --primary-foreground:#FFFFFF;
+  --secondary:         var(--paper-deep);
+  --secondary-foreground:var(--ink);
+  --muted:             var(--paper-deep);
+  --muted-foreground:  oklch(0.46 0.012 260);
+  --accent:            var(--brand);
+  --accent-foreground: #FFFFFF;
+  --blueprint:         var(--brand);
+  --destructive:       oklch(0.5 0.2 27);
   --destructive-foreground: var(--paper);
-
-  --border: var(--rule);
-  --input: oklch(0.9 0.006 80);
-  --ring: var(--accent);
+  --border:            var(--rule);
+  --input:             oklch(0.92 0.006 80);
+  --ring:              var(--brand);
 }
+
+/* ── Dark mode — toggled via .dark class on <html> ── */
+.dark {
+  --paper:         #0C1B2B;
+  --paper-deep:    #0F2030;
+  --sand:          #0F2030;
+  --ink:           #EDF2F7;
+  --obsidian:      #07101C;
+  --obsidian-deep: #040C14;
+  --rule:          #1E3448;
+  --paper-warm:    #132133;
+
+  --background:         var(--paper);
+  --foreground:         var(--ink);
+  --card:               #132133;
+  --card-foreground:    var(--ink);
+  --popover:            #132133;
+  --popover-foreground: var(--ink);
+  --primary:            var(--brand);
+  --primary-foreground: #FFFFFF;
+  --secondary:          #0F2030;
+  --secondary-foreground:var(--ink);
+  --muted:              #0F2030;
+  --muted-foreground:   #6B8299;
+  --accent:             var(--brand);
+  --accent-foreground:  #FFFFFF;
+  --border:             #1E3448;
+  --input:              #1A3448;
+  --ring:               var(--brand);
+}
+
 
 @layer base {
   * {
