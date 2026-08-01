@@ -318,7 +318,7 @@ function IconRail({
                 className="mt-3 flex w-full items-center justify-center gap-2 rounded-[3px] px-3 py-2 font-mono text-[11px] uppercase tracking-[0.15em]"
                 style={{
                   color: "var(--rail-fg)",
-                  border: `1px solid color-mix(in oklab, var(--paper) 25%, transparent)`,
+                  border: `1px solid color-mix(in oklab, var(--rail-fg) 25%, transparent)`,
                 }}
               >
                 <LogOut className="h-3.5 w-3.5" strokeWidth={1.5} />
@@ -462,12 +462,12 @@ function SidebarBody({
                       className="flex items-center justify-between gap-3 px-5 py-2.5 text-[15px] transition-colors"
                       style={{
                         color: itemActive
-                          ? "var(--paper)"
-                          : "color-mix(in oklab, var(--paper) 72%, transparent)",
+                          ? "var(--rail-fg)"
+                          : "color-mix(in oklab, var(--rail-fg) 72%, transparent)",
                         fontFamily: "var(--font-subline)",
                         fontWeight: itemActive ? 600 : 400,
                         backgroundColor: itemActive
-                          ? "color-mix(in oklab, var(--paper) 12%, transparent)"
+                          ? "color-mix(in oklab, var(--rail-fg) 12%, transparent)"
                           : "transparent",
                         borderLeft: itemActive ? "3px solid var(--sky)" : "3px solid transparent",
                       }}
@@ -513,7 +513,7 @@ function SidebarBody({
           className="mt-3 flex w-full items-center justify-center gap-2 rounded-[3px] px-3 py-2.5 font-mono text-[13px] uppercase tracking-[0.15em]"
           style={{
             color: "var(--rail-fg)",
-            border: "1px solid color-mix(in oklab, var(--paper) 25%, transparent)",
+            border: "1px solid color-mix(in oklab, var(--rail-fg) 25%, transparent)",
           }}
         >
           <LogOut className="h-3.5 w-3.5" strokeWidth={1.5} />
