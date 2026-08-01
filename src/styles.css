@@ -133,6 +133,9 @@
   --border:             #1E3448;
   --input:              #1A3448;
   --ring:               var(--brand);
+
+  --rail-bg:            #0A1B2E;
+  --rail-fg:            #FFFFFF;
 }
 
 
@@ -420,25 +423,25 @@
   height: 2.75rem;
   width: 2.75rem;
   border-radius: 8px;
-  color: color-mix(in oklab, var(--paper) 78%, transparent);
+  color: color-mix(in oklab, var(--rail-fg) 78%, transparent);
   background-color: transparent;
   transition: background-color 90ms ease-out, color 90ms ease-out;
 }
 .rail-btn:hover,
 .rail-btn:focus-visible {
-  background-color: color-mix(in oklab, var(--paper) 16%, transparent);
-  color: var(--paper);
+  background-color: color-mix(in oklab, var(--rail-fg) 16%, transparent);
+  color: var(--rail-fg);
   outline: none;
 }
 .rail-btn[data-open="true"] {
-  background-color: color-mix(in oklab, var(--paper) 16%, transparent);
-  color: var(--paper);
+  background-color: color-mix(in oklab, var(--rail-fg) 16%, transparent);
+  color: var(--rail-fg);
 }
 .rail-btn[data-active="true"],
 .rail-btn[data-active="true"]:hover,
 .rail-btn[data-active="true"][data-open="true"] {
   background-color: var(--sky);
-  color: var(--obsidian);
+  color: #FFFFFF;
 }
 
 .flyout-link {
@@ -449,20 +452,20 @@
   padding: 0.625rem 1.25rem;
   font-size: 14px;
   font-family: var(--font-subline);
-  color: color-mix(in oklab, var(--paper) 72%, transparent);
+  color: color-mix(in oklab, var(--rail-fg) 72%, transparent);
   border-left: 3px solid transparent;
   transition: background-color 90ms ease-out, color 90ms ease-out;
 }
 .flyout-link:hover,
 .flyout-link:focus-visible {
-  background-color: color-mix(in oklab, var(--paper) 12%, transparent);
-  color: var(--paper);
+  background-color: color-mix(in oklab, var(--rail-fg) 12%, transparent);
+  color: var(--rail-fg);
   border-left-color: color-mix(in oklab, var(--sky) 60%, transparent);
   outline: none;
 }
 .flyout-link[data-active="true"] {
-  background-color: color-mix(in oklab, var(--paper) 14%, transparent);
-  color: var(--paper);
+  background-color: color-mix(in oklab, var(--rail-fg) 14%, transparent);
+  color: var(--rail-fg);
   font-weight: 600;
   border-left-color: var(--sky);
 }
