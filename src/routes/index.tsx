@@ -6,17 +6,17 @@ import { MarketingShell } from "@/components/marketing-shell";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Cleard — Permitting, handled." },
+      { title: "Cleard — Permits shouldn't slow your projects down." },
       {
         name: "description",
         content:
-          "Cleard gives general contractors one intelligent platform to submit, track, and close permits across Florida — powered by Victoria, your AI assistant.",
+          "Cleard gives Florida general contractors one intelligent platform to submit, track, and close permits across Florida — powered by Victoria, your AI permit assistant.",
       },
-      { property: "og:title", content: "Cleard — Permitting, handled." },
+      { property: "og:title", content: "Cleard — Permits shouldn't slow your projects down." },
       {
         property: "og:description",
         content:
-          "One intelligent platform to submit, track, and close permits across Florida — powered by Victoria.",
+          "Cleard gives Florida general contractors one intelligent platform to submit, track, and close permits across Florida — powered by Victoria, your AI permit assistant.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
