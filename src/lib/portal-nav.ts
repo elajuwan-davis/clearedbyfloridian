@@ -108,7 +108,7 @@ export const navSections: NavSection[] = [
     icon: BookOpen,
     items: [
       { to: "/portal/guides", label: "Project Guides" },
-      { to: "/municipalities", label: "Municipalities" },
+      
       { to: "/ask-victoria", label: "Ask Victoria" },
       { to: "/portal/reports", label: "Reports" },
       { to: "/portal/blog", label: "Blog" },
