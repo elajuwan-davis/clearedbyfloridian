@@ -42,7 +42,7 @@ function HomePage() {
 
 function Hero() {
   return (
-    <section className="relative overflow-hidden bg-[var(--paper)]">
+    <section className="relative overflow-hidden" style={{ background: "#FAFAF8" }}>
       {/* Subtle light grain */}
       <div className="absolute inset-0 md-grain opacity-40" />
       {/* Soft brand glow at top */}

@@ -89,8 +89,15 @@ export function BuilderDashboard() {
       <div className="flex flex-wrap items-end justify-between gap-4 mb-8 md:mb-10">
         <div className="min-w-0">
           <div className="label-eyebrow mb-3">Builder dashboard</div>
-          <h1 className="display-serif text-3xl sm:text-4xl md:text-5xl leading-[1.05]">
-            {greeting}{me.firstName ? <>, <em>{me.firstName}</em></> : null}.
+          <h1
+            className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight leading-[1.05]"
+            style={{
+              fontFamily: "'Space Grotesk', 'Inter', system-ui, sans-serif",
+              color: "#0F1E2E",
+              letterSpacing: "-0.02em",
+            }}
+          >
+            {greeting}{me.firstName ? <>, {me.firstName}</> : null}.
           </h1>
         </div>
         <Button
@@ -162,7 +169,7 @@ export function BuilderDashboard() {
       <div className="flex items-baseline justify-between mb-5">
         <div>
           <div className="label-eyebrow mb-1.5">Active permits</div>
-          <h2 className="display-serif text-2xl">Your projects</h2>
+          <h2 className="text-2xl font-bold tracking-tight" style={{ fontFamily: "'Space Grotesk', sans-serif", color: "#0F1E2E" }}>Your projects</h2>
         </div>
         <Link
           to="/portal/projects"
@@ -192,41 +199,22 @@ function StatCard({
   icon: typeof FolderOpen;
   accent: boolean;
 }) {
+  const accentColor = accent ? "#1B84D4" : "#0F1E2E";
   return (
     <div
-      className="relative p-5 overflow-hidden rounded-lg border transition-shadow hover:shadow-md"
-      style={{
-        backgroundColor: accent
-          ? "color-mix(in oklab, var(--brand) 8%, var(--card))"
-          : "var(--card)",
-        borderColor: accent
-          ? "color-mix(in oklab, var(--brand) 35%, transparent)"
-          : "var(--border)",
-      }}
+      className="relative overflow-hidden p-5 rounded-lg border bg-white transition-shadow hover:shadow-md"
+      style={{ borderColor: "#E2E8F0", borderLeft: `3px solid ${accentColor}` }}
     >
-      {accent && (
-        <div
-          aria-hidden
-          className="absolute left-0 top-0 bottom-0 w-[3px] rounded-l-lg"
-          style={{ backgroundColor: "var(--brand)" }}
-        />
-      )}
-      <div className="flex items-center justify-between mb-5">
-        <div
-          className="label-eyebrow"
-          style={{ color: accent ? "var(--brand)" : "var(--muted-foreground)" }}
-        >
-          {label}
-        </div>
-        <Icon
-          className="h-3.5 w-3.5"
-          strokeWidth={1.5}
-          style={{ color: accent ? "var(--brand)" : "var(--muted-foreground)" }}
-        />
+      <div className="flex items-center gap-2" style={{ color: "#7890A4" }}>
+        <Icon className="h-4 w-4" strokeWidth={1.5} />
+        <span className="font-mono text-[10px] font-medium uppercase tracking-[0.14em]">{label}</span>
       </div>
       <div
-        className="font-display text-4xl tabular-nums tracking-tight"
-        style={{ color: "var(--foreground)" }}
+        className="mt-4 text-4xl font-bold tabular-nums"
+        style={{
+          color: accentColor,
+          fontFamily: "'Space Grotesk', 'Inter', system-ui, sans-serif",
+        }}
       >
         {value}
       </div>
@@ -264,7 +252,7 @@ function ProjectCard({
         </div>
         <StatusBadge tone={meta.tone}>{meta.label}</StatusBadge>
       </div>
-      <div className="display-serif text-xl leading-tight mb-1">{project.name}</div>
+      <div className="text-xl font-bold tracking-tight leading-tight mb-1" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>{project.name}</div>
       <div className="text-sm text-muted-foreground mb-5">{project.address}</div>
       <div className="flex items-end justify-between pt-3 border-t hairline">
         <div>

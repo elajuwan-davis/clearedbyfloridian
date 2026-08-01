@@ -216,8 +216,15 @@ export function AdminDashboard() {
             </span>
           </div>
           <div className="mt-3 grid grid-cols-[minmax(0,1fr)_auto] items-end gap-4 sm:flex sm:flex-wrap sm:justify-between">
-            <h1 className="display-serif text-4xl sm:text-5xl text-obsidian">
-              Operations <em>Desk</em>
+            <h1
+              className="text-4xl sm:text-5xl font-bold tracking-tight"
+              style={{
+                fontFamily: "'Space Grotesk', 'Inter', system-ui, sans-serif",
+                color: "#0F1E2E",
+                letterSpacing: "-0.02em",
+              }}
+            >
+              Operations Desk
             </h1>
             <div className="flex shrink-0 flex-wrap gap-2">
               <Button asChild variant="outline" className="rounded-[3px]">
@@ -312,7 +319,7 @@ export function AdminDashboard() {
         <div className="mt-6 overflow-hidden border border-obsidian/15 bg-white">
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
-              <thead style={{ backgroundColor: "var(--obsidian)" }}>
+              <thead style={{ backgroundColor: "#0C1B2B" }}>
                 <tr>
                   <Th>Project</Th>
                   <Th>County</Th>
@@ -389,7 +396,7 @@ export function AdminDashboard() {
           <section className="border border-obsidian/15 bg-white">
             <header className="border-b border-obsidian/10 px-5 py-4">
               <div className="eyebrow text-obsidian/50">Client Companies</div>
-              <h2 className="display-serif mt-1 text-2xl text-obsidian">By permit volume</h2>
+              <h2 className="mt-1 text-2xl font-bold tracking-tight" style={{ fontFamily: "'Space Grotesk', sans-serif", color: "#0F1E2E" }}>By permit volume</h2>
             </header>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
@@ -427,7 +434,7 @@ export function AdminDashboard() {
           <section className="border border-obsidian/15 bg-white">
             <header className="border-b border-obsidian/10 px-5 py-4">
               <div className="eyebrow text-obsidian/50">User Accounts</div>
-              <h2 className="display-serif mt-1 text-2xl text-obsidian">Permits added by user</h2>
+              <h2 className="mt-1 text-2xl font-bold tracking-tight" style={{ fontFamily: "'Space Grotesk', sans-serif", color: "#0F1E2E" }}>Permits added by user</h2>
             </header>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
@@ -483,31 +490,31 @@ function StatCard({
   accent?: "sky" | "warn";
   mono?: boolean;
 }) {
+  const accentColor =
+    accent === "sky" ? "#1B84D4" : accent === "warn" ? "#E8861A" : "#0F1E2E";
+
   return (
-    <div className="relative overflow-hidden p-5 text-paper" style={{ backgroundColor: "var(--obsidian)" }}>
-      {accent && (
-        <span
-          aria-hidden
-          className="absolute right-0 top-0 h-12 w-12"
-          style={{
-            background: accent === "sky"
-              ? "linear-gradient(225deg, color-mix(in oklab, var(--sky) 35%, transparent), transparent 60%)"
-              : "linear-gradient(225deg, color-mix(in oklab, var(--oxblood) 40%, transparent), transparent 60%)",
-          }}
-        />
-      )}
-      <div className="flex items-center gap-2 text-paper/55">
-        <span className="text-paper/60">{icon}</span>
+    <div
+      className="relative overflow-hidden p-5 rounded-lg border bg-white"
+      style={{ borderColor: "#E2E8F0", borderLeft: `3px solid ${accentColor}` }}
+    >
+      <div className="flex items-center gap-2" style={{ color: "#7890A4" }}>
+        <span>{icon}</span>
         <span className="font-mono text-[10px] font-medium uppercase tracking-[0.14em]">{label}</span>
       </div>
       <div
-        className={`mt-4 text-paper ${mono ? "font-mono text-3xl tabular-nums" : "display-serif text-4xl"}`}
-        style={accent === "sky" ? { color: "var(--sky)" } : undefined}
+        className={`mt-4 font-bold ${mono ? "font-mono text-3xl tabular-nums" : "text-4xl"}`}
+        style={{
+          color: accentColor,
+          fontFamily: "'Space Grotesk', 'Inter', system-ui, sans-serif",
+        }}
       >
         {value}
       </div>
       {sublabel && (
-        <div className="mt-1 font-mono text-[10px] uppercase tracking-[0.12em] text-paper/45">{sublabel}</div>
+        <div className="mt-1 font-mono text-[10px] uppercase tracking-[0.12em]" style={{ color: "#A0B4C8" }}>
+          {sublabel}
+        </div>
       )}
     </div>
   );
