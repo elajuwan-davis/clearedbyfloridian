@@ -1,180 +1,212 @@
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { PublicShell, OBSIDIAN, HAIRLINE, MUTED } from "@/components/public-shell";
-import { COMPETITORS, DEFAULT_FEATURE_MATRIX } from "@/lib/competitors";
-import { Check, X, Minus } from "lucide-react";
+import { createFileRoute, Link, redirect } from "@tanstack/react-router";
+import { ArrowRight, Check, X, ShieldCheck, Sparkles, Layers } from "lucide-react";
+
+import { MarketingShell } from "@/components/marketing-shell";
+import {
+  findVersusCompetitor,
+  type VersusCompetitor,
+  type VersusRow,
+} from "@/lib/versus-competitors";
 
 export const Route = createFileRoute("/versus/$slug")({
   loader: ({ params }) => {
-    const competitor = COMPETITORS.find((c) => c.slug === params.slug);
-    if (!competitor) throw notFound();
+    const competitor = findVersusCompetitor(params.slug);
+    if (!competitor) throw redirect({ to: "/versus" });
     return { competitor };
   },
-  head: ({ loaderData }) => {
+  head: ({ params, loaderData }) => {
     if (!loaderData) {
       return { meta: [{ title: "Comparison — Cleard" }, { name: "robots", content: "noindex" }] };
     }
-    const { competitor } = loaderData;
+    const c = loaderData.competitor;
+    const url = `https://cleared.floridianinc.com/versus/${params.slug}`;
+    const title = `Cleard vs ${c.name} — Florida Permit Management Compared`;
     return {
       meta: [
-        { title: `Cleard vs ${competitor.name} — Permit Management Compared` },
-        { name: "description", content: competitor.positioning },
-        { property: "og:title", content: `Cleard vs ${competitor.name}` },
-        { property: "og:description", content: competitor.positioning },
-        { property: "og:type", content: "website" },
+        { title },
+        { name: "description", content: c.sub.slice(0, 158) },
+        { property: "og:title", content: `Cleard vs ${c.name}` },
+        { property: "og:description", content: c.sub.slice(0, 158) },
+        { property: "og:type", content: "article" },
+        { property: "og:url", content: url },
         { name: "twitter:card", content: "summary_large_image" },
       ],
+      links: [{ rel: "canonical", href: url }],
     };
   },
   component: VersusDetail,
-  notFoundComponent: NotFoundView,
 });
 
-function NotFoundView() {
+const ICONS = { shield: ShieldCheck, sparkles: Sparkles, layers: Layers } as const;
+
+function Yes() {
   return (
-    <PublicShell>
-      <section className="px-6 py-32 text-center">
-        <h1 className="display-serif font-bold mb-6" style={{ color: OBSIDIAN, fontSize: "2rem" }}>
-          Comparison not found
-        </h1>
-        <Link to="/versus" className="text-[13px] hover:underline" style={{ color: MUTED }}>
-          ← See all comparisons
-        </Link>
-      </section>
-    </PublicShell>
+    <span
+      className="inline-flex items-center justify-center h-5 w-5 rounded-full"
+      style={{ background: "color-mix(in oklab, var(--green, #12A05C) 18%, transparent)" }}
+      aria-label="Included"
+    >
+      <Check className="h-3 w-3" style={{ color: "var(--green, #12A05C)" }} strokeWidth={3} />
+    </span>
+  );
+}
+
+function No() {
+  return (
+    <span className="inline-flex items-center justify-center h-5 w-5" aria-label="Not included">
+      <X className="h-3.5 w-3.5" style={{ color: "#DC2626", opacity: 0.7 }} strokeWidth={2.5} />
+    </span>
+  );
+}
+
+function Cell({ value }: { value: VersusRow["competitor"] }) {
+  if (value === true) return <Yes />;
+  if (value === false) return <No />;
+  return (
+    <span className="text-[11px] uppercase tracking-[0.16em] md-muted">{value}</span>
   );
 }
 
 function VersusDetail() {
-  const { competitor } = Route.useLoaderData();
+  const { competitor: c } = Route.useLoaderData() as { competitor: VersusCompetitor };
 
   return (
-    <PublicShell>
-      {/* HERO */}
-      <section className="px-6 lg:px-10 py-24 lg:py-28" style={{ backgroundColor: OBSIDIAN }}>
-        <div className="max-w-5xl mx-auto text-center">
-          <div
-            className="font-mono text-[10px] uppercase mb-8"
-            style={{ color: "rgba(255,255,255,0.65)", letterSpacing: "0.32em" }}
-          >
-            Comparison
-          </div>
+    <MarketingShell>
+      {/* Hero */}
+      <section className="relative overflow-hidden border-b md-hairline">
+        <div className="absolute inset-0 md-grain opacity-40" />
+        <div className="relative mx-auto max-w-7xl px-6 lg:px-10 py-24 md:py-32">
+          <div className="md-eyebrow md-in md-in-1">Cleard vs {c.name}</div>
           <h1
-            className="display-serif font-bold leading-[1.05] mb-8"
-            style={{ color: "#fff", fontSize: "clamp(2rem, 5vw, 4rem)", letterSpacing: "-0.02em" }}
+            className="mt-6 md-serif md-in md-in-2 max-w-4xl whitespace-pre-line"
+            style={{
+              color: "var(--md-text)",
+              fontSize: "clamp(2.25rem, 5.5vw, 4.5rem)",
+              lineHeight: 1.05,
+              letterSpacing: "-0.03em",
+            }}
           >
-            Cleard vs {competitor.name}
+            {c.headline}
           </h1>
-          <p className="text-lg max-w-2xl mx-auto" style={{ color: "rgba(255,255,255,0.75)", lineHeight: 1.55 }}>
-            {competitor.positioning}
-          </p>
-        </div>
-      </section>
-
-      {/* TABLE */}
-      <section className="px-6 lg:px-10 py-24">
-        <div className="max-w-5xl mx-auto">
-          <div
-            className="font-mono text-[10px] uppercase mb-6 text-center"
-            style={{ color: OBSIDIAN, letterSpacing: "0.32em" }}
-          >
-            Feature Comparison
-          </div>
-          <h2
-            className="display-serif font-bold leading-[1.05] mb-16 text-center"
-            style={{ color: OBSIDIAN, fontSize: "clamp(1.5rem, 3vw, 2.25rem)", letterSpacing: "-0.02em" }}
-          >
-            What you get, side by side.
-          </h2>
-          <div className="overflow-hidden bg-white" style={{ border: `1px solid ${HAIRLINE}` }}>
-            {/* header */}
-            <div
-              className="grid grid-cols-[1.5fr_1fr_1fr] items-center"
-              style={{ backgroundColor: `color-mix(in oklab, ${OBSIDIAN} 4%, transparent)`, borderBottom: `1px solid ${HAIRLINE}` }}
-            >
-              <div className="px-6 py-4 font-mono text-[10px] uppercase" style={{ color: MUTED, letterSpacing: "0.22em" }}>
-                Feature
-              </div>
-              <div className="px-6 py-4 text-center font-mono text-[10px] uppercase" style={{ color: OBSIDIAN, letterSpacing: "0.22em" }}>
-                Cleard
-              </div>
-              <div className="px-6 py-4 text-center font-mono text-[10px] uppercase" style={{ color: MUTED, letterSpacing: "0.22em" }}>
-                {competitor.name}
-              </div>
-            </div>
-            {/* rows */}
-            {DEFAULT_FEATURE_MATRIX.map((row, i) => (
-              <div
-                key={row.feature}
-                className="grid grid-cols-[1.5fr_1fr_1fr] items-center"
-                style={{ borderBottom: i === DEFAULT_FEATURE_MATRIX.length - 1 ? undefined : `1px solid ${HAIRLINE}` }}
-              >
-                <div className="px-6 py-5 text-[14px]" style={{ color: OBSIDIAN }}>
-                  {row.feature}
-                </div>
-                <div className="px-6 py-5 flex justify-center">
-                  {row.cleared ? (
-                    <Check size={20} strokeWidth={2} style={{ color: "#0a7a3f" }} />
-                  ) : (
-                    <X size={20} strokeWidth={2} style={{ color: "#b91c1c" }} />
-                  )}
-                </div>
-                <div className="px-6 py-5 flex justify-center">
-                  {row.competitor === "no" ? (
-                    <X size={20} strokeWidth={2} style={{ color: "#b91c1c", opacity: 0.7 }} />
-                  ) : (
-                    <Minus size={20} strokeWidth={2} style={{ color: MUTED }} />
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-          <div className="mt-4 flex items-center justify-end gap-6 text-[11px]" style={{ color: MUTED }}>
-            <span className="flex items-center gap-2">
-              <Check size={14} style={{ color: "#0a7a3f" }} /> Included
-            </span>
-            <span className="flex items-center gap-2">
-              <Minus size={14} /> Limited
-            </span>
-            <span className="flex items-center gap-2">
-              <X size={14} style={{ color: "#b91c1c" }} /> Not available
-            </span>
-          </div>
-        </div>
-      </section>
-
-      {/* CTA */}
-      <section className="px-6 lg:px-10 py-24" style={{ backgroundColor: "#fafafa" }}>
-        <div className="max-w-3xl mx-auto text-center">
-          <div
-            className="font-mono text-[10px] uppercase mb-6"
-            style={{ color: OBSIDIAN, letterSpacing: "0.32em" }}
-          >
-            Make the Switch
-          </div>
-          <h2
-            className="display-serif font-bold leading-[1.05] mb-6"
-            style={{ color: OBSIDIAN, fontSize: "clamp(1.75rem, 4vw, 3rem)", letterSpacing: "-0.02em" }}
-          >
-            Ready to switch?
-          </h2>
-          <p className="text-lg mb-10" style={{ color: MUTED }}>
-            Tell us about your operation and we'll get you set up.
-          </p>
-          <Link
-            to="/join"
-            hash="request"
-            className="inline-flex items-center px-8 h-14 text-[12px] font-mono uppercase tracking-[0.24em] transition-opacity hover:opacity-85"
-            style={{ backgroundColor: OBSIDIAN, color: "#fff", borderRadius: 0 }}
-          >
-            Get Started
-          </Link>
-          <div className="mt-8">
-            <Link to="/versus" className="text-[13px] hover:underline" style={{ color: MUTED }}>
-              ← See all comparisons
+          <p className="mt-7 max-w-2xl text-base sm:text-lg md-muted md-in md-in-3">{c.sub}</p>
+          <div className="mt-9 flex flex-col sm:flex-row gap-3 md-in md-in-4">
+            <Link to="/join" hash="request" className="md-btn-primary">
+              Get early access <ArrowRight className="h-4 w-4" />
+            </Link>
+            <Link to="/process" className="md-btn-ghost">
+              See a demo
             </Link>
           </div>
         </div>
       </section>
-    </PublicShell>
+
+      {/* Comparison table */}
+      <section className="mx-auto max-w-5xl px-6 lg:px-10 py-20 md:py-24">
+        <div className="md-eyebrow">Feature comparison</div>
+
+        {/* Desktop table */}
+        <div className="mt-8 hidden md:block overflow-hidden rounded-lg border md-hairline">
+          <table className="w-full border-collapse text-left">
+            <thead>
+              <tr>
+                <th className="px-5 py-4 text-[11px] uppercase tracking-[0.2em] md-muted font-normal">
+                  Feature
+                </th>
+                <th
+                  className="px-5 py-4 text-[12px] uppercase tracking-[0.16em] text-center"
+                  style={{ background: "var(--brand, #1B84D4)", color: "#FFFFFF" }}
+                >
+                  Cleard
+                </th>
+                <th
+                  className="px-5 py-4 text-[12px] uppercase tracking-[0.16em] text-center md-muted"
+                  style={{ background: "color-mix(in oklab, #6B8299 12%, transparent)" }}
+                >
+                  {c.name}
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {c.rows.map((r, i) => (
+                <tr
+                  key={r.feature}
+                  style={{
+                    background:
+                      i % 2 === 1 ? "color-mix(in oklab, #6B8299 6%, transparent)" : "transparent",
+                  }}
+                >
+                  <td className="px-5 py-3.5 text-sm" style={{ color: "var(--md-text)" }}>
+                    {r.feature}
+                  </td>
+                  <td className="px-5 py-3.5 text-center">
+                    <div className="flex justify-center">{r.cleard ? <Yes /> : <No />}</div>
+                  </td>
+                  <td className="px-5 py-3.5 text-center">
+                    <div className="flex justify-center">
+                      <Cell value={r.competitor} />
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Mobile card-per-feature */}
+        <div className="mt-8 md:hidden space-y-2">
+          {c.rows.map((r) => (
+            <div key={r.feature} className="rounded-lg border md-hairline p-4">
+              <div className="text-sm" style={{ color: "var(--md-text)" }}>
+                {r.feature}
+              </div>
+              <div className="mt-3 grid grid-cols-2 gap-3">
+                <div className="flex items-center gap-2">
+                  <span className="text-[11px] uppercase tracking-[0.16em]" style={{ color: "var(--brand, #1B84D4)" }}>
+                    Cleard
+                  </span>
+                  {r.cleard ? <Yes /> : <No />}
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-[11px] uppercase tracking-[0.16em] md-muted">{c.name}</span>
+                  <Cell value={r.competitor} />
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Differentiators */}
+      <section className="mx-auto max-w-7xl px-6 lg:px-10 pb-20 md:pb-24">
+        <div className="grid gap-10 md:grid-cols-3">
+          {c.diffs.map((d) => {
+            const Icon = ICONS[d.icon];
+            return (
+              <div key={d.headline}>
+                <Icon className="h-5 w-5" style={{ color: "var(--brand, #1B84D4)" }} strokeWidth={1.5} />
+                <h3 className="mt-4 md-serif text-2xl" style={{ color: "var(--md-text)" }}>
+                  {d.headline}
+                </h3>
+                <p className="mt-3 text-sm md-muted leading-relaxed">{d.body}</p>
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* CTA strip */}
+      <section className="md-section-dark">
+        <div className="mx-auto max-w-7xl px-6 lg:px-10 py-20 text-center">
+          <h2 className="md-serif text-3xl md:text-5xl" style={{ color: "#FFFFFF" }}>
+            Ready to switch?
+          </h2>
+          <div className="mt-8">
+            <Link to="/join" hash="request" className="md-btn-primary">
+              Get early access to Cleard <ArrowRight className="h-4 w-4" />
+            </Link>
+          </div>
+        </div>
+      </section>
+    </MarketingShell>
   );
 }
