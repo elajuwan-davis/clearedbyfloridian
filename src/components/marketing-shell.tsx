@@ -6,6 +6,7 @@ const NAV_LINKS: Array<{ to: string; label: string; soon?: boolean }> = [
   { to: "/products", label: "Products" },
   { to: "/process", label: "How It Works" },
   { to: "/join", label: "For Builders" },
+  { to: "/versus", label: "Compare" },
   
 ];
 
@@ -122,6 +123,7 @@ function MarketingFooter() {
         <div className="flex flex-wrap gap-x-6 gap-y-2 md:justify-center text-sm">
           <Link to="/products" style={{ color: "#FFFFFF" }}>Products</Link>
           <Link to="/process" style={{ color: "#FFFFFF" }}>How It Works</Link>
+          <Link to="/versus" style={{ color: "#FFFFFF" }}>Compare</Link>
           <a href="https://floridianinc.com/terms" style={{ color: "#FFFFFF" }}>Terms</a>
           <a href="https://floridianinc.com/privacy" style={{ color: "#FFFFFF" }}>Privacy</a>
         </div>
