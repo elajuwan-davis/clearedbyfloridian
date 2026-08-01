@@ -45,6 +45,7 @@ import { Route as AdminFeatureRequestsRouteImport } from './routes/admin.feature
 import { Route as AdminGcClientsRouteImport } from './routes/admin.gc-clients'
 import { Route as AdminHubspotSimulateRouteImport } from './routes/admin.hubspot-simulate'
 import { Route as AdminInvitesRouteImport } from './routes/admin.invites'
+import { Route as AdminProtectionRouteImport } from './routes/admin.protection'
 import { Route as AdminReviewQueueRouteImport } from './routes/admin.review-queue'
 import { Route as AdminContractorsRouteImport } from './routes/admin_.contractors'
 import { Route as ApiGeocodeCensusRouteImport } from './routes/api/geocode-census'
@@ -294,6 +295,11 @@ const AdminHubspotSimulateRoute = AdminHubspotSimulateRouteImport.update({
 const AdminInvitesRoute = AdminInvitesRouteImport.update({
   id: '/admin/invites',
   path: '/admin/invites',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminProtectionRoute = AdminProtectionRouteImport.update({
+  id: '/admin/protection',
+  path: '/admin/protection',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminReviewQueueRoute = AdminReviewQueueRouteImport.update({
@@ -694,6 +700,7 @@ export interface FileRoutesByFullPath {
   '/admin/gc-clients': typeof AdminGcClientsRoute
   '/admin/hubspot-simulate': typeof AdminHubspotSimulateRoute
   '/admin/invites': typeof AdminInvitesRoute
+  '/admin/protection': typeof AdminProtectionRoute
   '/admin/review-queue': typeof AdminReviewQueueRoute
   '/admin/contractors': typeof AdminContractorsRoute
   '/api/geocode-census': typeof ApiGeocodeCensusRoute
@@ -800,6 +807,7 @@ export interface FileRoutesByTo {
   '/admin/gc-clients': typeof AdminGcClientsRoute
   '/admin/hubspot-simulate': typeof AdminHubspotSimulateRoute
   '/admin/invites': typeof AdminInvitesRoute
+  '/admin/protection': typeof AdminProtectionRoute
   '/admin/review-queue': typeof AdminReviewQueueRoute
   '/admin/contractors': typeof AdminContractorsRoute
   '/api/geocode-census': typeof ApiGeocodeCensusRoute
@@ -907,6 +915,7 @@ export interface FileRoutesById {
   '/admin/gc-clients': typeof AdminGcClientsRoute
   '/admin/hubspot-simulate': typeof AdminHubspotSimulateRoute
   '/admin/invites': typeof AdminInvitesRoute
+  '/admin/protection': typeof AdminProtectionRoute
   '/admin/review-queue': typeof AdminReviewQueueRoute
   '/admin_/contractors': typeof AdminContractorsRoute
   '/api/geocode-census': typeof ApiGeocodeCensusRoute
@@ -1017,6 +1026,7 @@ export interface FileRouteTypes {
     | '/admin/gc-clients'
     | '/admin/hubspot-simulate'
     | '/admin/invites'
+    | '/admin/protection'
     | '/admin/review-queue'
     | '/admin/contractors'
     | '/api/geocode-census'
@@ -1123,6 +1133,7 @@ export interface FileRouteTypes {
     | '/admin/gc-clients'
     | '/admin/hubspot-simulate'
     | '/admin/invites'
+    | '/admin/protection'
     | '/admin/review-queue'
     | '/admin/contractors'
     | '/api/geocode-census'
@@ -1229,6 +1240,7 @@ export interface FileRouteTypes {
     | '/admin/gc-clients'
     | '/admin/hubspot-simulate'
     | '/admin/invites'
+    | '/admin/protection'
     | '/admin/review-queue'
     | '/admin_/contractors'
     | '/api/geocode-census'
@@ -1338,6 +1350,7 @@ export interface RootRouteChildren {
   AdminGcClientsRoute: typeof AdminGcClientsRoute
   AdminHubspotSimulateRoute: typeof AdminHubspotSimulateRoute
   AdminInvitesRoute: typeof AdminInvitesRoute
+  AdminProtectionRoute: typeof AdminProtectionRoute
   AdminReviewQueueRoute: typeof AdminReviewQueueRoute
   AdminContractorsRoute: typeof AdminContractorsRoute
   ApiGeocodeCensusRoute: typeof ApiGeocodeCensusRoute
@@ -1616,6 +1629,13 @@ declare module '@tanstack/react-router' {
       path: '/admin/invites'
       fullPath: '/admin/invites'
       preLoaderRoute: typeof AdminInvitesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/protection': {
+      id: '/admin/protection'
+      path: '/admin/protection'
+      fullPath: '/admin/protection'
+      preLoaderRoute: typeof AdminProtectionRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/review-queue': {
@@ -2326,6 +2346,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminGcClientsRoute: AdminGcClientsRoute,
   AdminHubspotSimulateRoute: AdminHubspotSimulateRoute,
   AdminInvitesRoute: AdminInvitesRoute,
+  AdminProtectionRoute: AdminProtectionRoute,
   AdminReviewQueueRoute: AdminReviewQueueRoute,
   AdminContractorsRoute: AdminContractorsRoute,
   ApiGeocodeCensusRoute: ApiGeocodeCensusRoute,
