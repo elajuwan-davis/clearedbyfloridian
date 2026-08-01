@@ -264,7 +264,7 @@ function IconRail({
             top: openTop,
             maxHeight: `calc(100vh - ${openTop}px - 12px)`,
             overflowY: "auto",
-            backgroundColor: "var(--obsidian)",
+            backgroundColor: "var(--rail-bg)",
             borderColor: railHairline,
           }}
         >
