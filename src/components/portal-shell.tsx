@@ -165,7 +165,7 @@ function IconRail({
     <div className="relative h-full" onMouseLeave={scheduleClose} ref={railRef}>
       <div
         className="flex h-full w-16 flex-col items-center"
-        style={{ backgroundColor: "var(--obsidian)" }}
+        style={{ backgroundColor: "var(--rail-bg)" }}
       >
         <Link
           to="/"
@@ -245,7 +245,7 @@ function IconRail({
                 setOpenKey(null);
               }}
               className="grid h-10 w-10 place-items-center font-mono text-[11px]"
-              style={{ backgroundColor: "var(--sky)", color: "var(--obsidian)", borderRadius: "8px" }}
+              style={{ backgroundColor: "var(--sky)", color: "#FFFFFF", borderRadius: "8px" }}
               title={displayName}
             >
               {initials}
@@ -336,7 +336,7 @@ function RailTooltip({ children }: { children: ReactNode }) {
   return (
     <span
       className="pointer-events-none absolute left-[52px] top-1/2 z-[60] hidden -translate-y-1/2 whitespace-nowrap rounded-[3px] px-2 py-1 font-mono text-[10px] uppercase tracking-[0.14em] group-hover:block"
-      style={{ backgroundColor: "var(--paper)", color: "var(--obsidian)" }}
+      style={{ backgroundColor: "var(--paper)", color: "var(--foreground)" }}
     >
       {children}
     </span>
@@ -425,7 +425,7 @@ function SidebarBody({
 }) {
   const sections = [...sectionsForRole(role, isAdmin), settingsForRole(role)];
   return (
-    <div className="flex h-full flex-col" style={{ backgroundColor: "var(--obsidian)" }}>
+    <div className="flex h-full flex-col" style={{ backgroundColor: "var(--rail-bg)" }}>
       <div className="h-16 shrink-0 border-b px-5 flex items-center" style={{ borderColor: railHairline }}>
         <Link to="/" onClick={onNavigate} className="flex items-center gap-2.5">
           <div
@@ -487,7 +487,7 @@ function SidebarBody({
         <div className="flex min-w-0 items-center gap-3">
           <div
             className="grid h-10 w-10 shrink-0 place-items-center font-mono text-[12px]"
-            style={{ backgroundColor: "var(--sky)", color: "var(--obsidian)", borderRadius: "3px" }}
+            style={{ backgroundColor: "var(--sky)", color: "#FFFFFF", borderRadius: "3px" }}
           >
             {initials}
           </div>
@@ -650,7 +650,7 @@ export function PortalShell({ children }: { children: ReactNode }) {
             </SheetContent>
           </Sheet>
 
-          <Link to="/" className="lg:hidden wordmark text-2xl" style={{ color: "var(--obsidian)" }}>
+          <Link to="/" className="lg:hidden wordmark text-2xl" style={{ color: "var(--foreground)" }}>
             Cleard
           </Link>
 
@@ -658,13 +658,13 @@ export function PortalShell({ children }: { children: ReactNode }) {
             <div className="hidden md:flex items-center gap-2 min-w-0">
               <span
                 className="font-mono text-[9px] tracking-[0.22em] uppercase"
-                style={{ color: "color-mix(in oklab, var(--obsidian) 50%, transparent)" }}
+                style={{ color: "var(--muted-foreground)" }}
               >
                 {session.isAdmin ? "Cleard Admin" : "Client"}
               </span>
               <span
                 className="text-[14px] truncate max-w-[260px]"
-                style={{ color: "var(--obsidian)", fontFamily: "var(--font-subline)" }}
+                style={{ color: "var(--foreground)", fontFamily: "var(--font-subline)" }}
                 title={session.tenantName}
               >
                 {session.tenantName}
@@ -691,17 +691,17 @@ export function PortalShell({ children }: { children: ReactNode }) {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="min-w-[240px] rounded-[3px] p-1">
                   <DropdownMenuLabel className="px-3 py-2">
-                    <div className="text-[14px]" style={{ color: "var(--obsidian)", fontFamily: "var(--font-subline)" }}>
+                    <div className="text-[14px]" style={{ color: "var(--foreground)", fontFamily: "var(--font-subline)" }}>
                       {displayName}
                     </div>
                     <div
                       className="font-mono text-[9px] tracking-[0.18em] uppercase mt-0.5"
-                      style={{ color: "color-mix(in oklab, var(--obsidian) 55%, transparent)" }}
+                      style={{ color: "var(--muted-foreground)" }}
                     >
                       {roleLabel[session.role ?? ""] ?? "Client"}
                     </div>
                     {session.email && (
-                      <div className="mt-1 text-[12px] truncate" style={{ color: "color-mix(in oklab, var(--obsidian) 55%, transparent)" }}>
+                      <div className="mt-1 text-[12px] truncate" style={{ color: "var(--muted-foreground)" }}>
                         {session.email}
                       </div>
                     )}
@@ -709,7 +709,7 @@ export function PortalShell({ children }: { children: ReactNode }) {
                   <DropdownMenuSeparator />
                   {(settingsForRole(session.role).items ?? []).map((item, i) => (
                     <DropdownMenuItem key={`${item.to}-${i}`} asChild>
-                      <Link to={item.to as never} className="px-3 py-2 text-[13px] rounded-[2px] cursor-pointer" style={{ color: "var(--obsidian)" }}>
+                      <Link to={item.to as never} className="px-3 py-2 text-[13px] rounded-[2px] cursor-pointer" style={{ color: "var(--foreground)" }}>
                         {item.label}
                       </Link>
                     </DropdownMenuItem>
@@ -718,7 +718,7 @@ export function PortalShell({ children }: { children: ReactNode }) {
                   <DropdownMenuItem
                     onSelect={() => handleSignOut()}
                     className="px-3 py-2 text-[13px] rounded-[2px] cursor-pointer flex items-center gap-2"
-                    style={{ color: "var(--obsidian)" }}
+                    style={{ color: "var(--foreground)" }}
                   >
                     <LogOut className="h-3.5 w-3.5" strokeWidth={1.5} />
                     Sign out
@@ -819,38 +819,38 @@ function AdminTenantSwitcher() {
       <DropdownMenu>
         <DropdownMenuTrigger
           className="flex items-center gap-2 h-9 px-3 border rounded-[3px] hover:bg-secondary outline-none"
-          style={{ borderColor: "color-mix(in oklab, var(--obsidian) 15%, transparent)" }}
+          style={{ borderColor: "var(--border)" }}
         >
-          <Building2 className="h-3.5 w-3.5" strokeWidth={1.5} style={{ color: "var(--obsidian)" }} />
-          <span className="font-mono text-[10px] tracking-[0.16em] uppercase" style={{ color: "var(--obsidian)" }}>
+          <Building2 className="h-3.5 w-3.5" strokeWidth={1.5} style={{ color: "var(--foreground)" }} />
+          <span className="font-mono text-[10px] tracking-[0.16em] uppercase" style={{ color: "var(--foreground)" }}>
             {currentName}
           </span>
           <ChevronDown className="h-3 w-3 opacity-60" strokeWidth={1.5} />
         </DropdownMenuTrigger>
         <DropdownMenuContent align="start" className="min-w-[260px] max-h-[380px] overflow-y-auto rounded-[3px] p-1">
-          <DropdownMenuLabel className="px-3 py-2 font-mono text-[9px] tracking-[0.2em] uppercase" style={{ color: "color-mix(in oklab, var(--obsidian) 55%, transparent)" }}>
+          <DropdownMenuLabel className="px-3 py-2 font-mono text-[9px] tracking-[0.2em] uppercase" style={{ color: "var(--muted-foreground)" }}>
             View as client
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuItem
             onSelect={() => setImpersonatedTenant(null)}
             className="px-3 py-2 text-[13px] rounded-[2px] cursor-pointer flex items-center justify-between"
-            style={{ color: "var(--obsidian)" }}
+            style={{ color: "var(--foreground)" }}
           >
             <span>All Clients (admin view)</span>
             {!current && <Check className="h-3.5 w-3.5" strokeWidth={1.5} />}
           </DropdownMenuItem>
           <DropdownMenuSeparator />
-          {!loaded && <div className="px-3 py-2 text-[12px] text-obsidian/50">Loading…</div>}
+          {!loaded && <div className="px-3 py-2 text-[12px] text-muted-foreground">Loading…</div>}
           {loaded && tenants.length === 0 && (
-            <div className="px-3 py-2 text-[12px] text-obsidian/50">No clients yet.</div>
+            <div className="px-3 py-2 text-[12px] text-muted-foreground">No clients yet.</div>
           )}
           {tenants.map((t) => (
             <DropdownMenuItem
               key={t.id}
               onSelect={() => setImpersonatedTenant({ id: t.id, name: t.name })}
               className="px-3 py-2 text-[13px] rounded-[2px] cursor-pointer flex items-center justify-between gap-3"
-              style={{ color: "var(--obsidian)" }}
+              style={{ color: "var(--foreground)" }}
             >
               <span className="truncate">{t.name}</span>
               {current === t.id && <Check className="h-3.5 w-3.5 shrink-0" strokeWidth={1.5} />}
