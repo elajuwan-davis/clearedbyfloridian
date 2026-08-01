@@ -89,8 +89,15 @@ export function BuilderDashboard() {
       <div className="flex flex-wrap items-end justify-between gap-4 mb-8 md:mb-10">
         <div className="min-w-0">
           <div className="label-eyebrow mb-3">Builder dashboard</div>
-          <h1 className="display-serif text-3xl sm:text-4xl md:text-5xl leading-[1.05]">
-            {greeting}{me.firstName ? <>, <em>{me.firstName}</em></> : null}.
+          <h1
+            className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight leading-[1.05]"
+            style={{
+              fontFamily: "'Space Grotesk', 'Inter', system-ui, sans-serif",
+              color: "#0F1E2E",
+              letterSpacing: "-0.02em",
+            }}
+          >
+            {greeting}{me.firstName ? <>, {me.firstName}</> : null}.
           </h1>
         </div>
         <Button
