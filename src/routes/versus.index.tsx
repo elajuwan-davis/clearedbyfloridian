@@ -1,104 +1,125 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { PublicShell, OBSIDIAN, HAIRLINE, MUTED } from "@/components/public-shell";
-import { COMPETITORS } from "@/lib/competitors";
-import { Square } from "lucide-react";
+import { ArrowRight } from "lucide-react";
+
+import { MarketingShell } from "@/components/marketing-shell";
+import { VERSUS_COMPETITORS } from "@/lib/versus-competitors";
 
 export const Route = createFileRoute("/versus/")({
-  component: VersusHub,
   head: () => ({
     meta: [
-      { title: "Cleard vs the Alternatives — Compare Permit Software" },
-      { name: "description", content: "See how Cleard compares to the alternatives for Florida contractors." },
-      { property: "og:title", content: "Better than the alternative: Build with Cleard" },
-      { property: "og:description", content: "Exploring other ways to handle permitting in Florida? See how Cleard compares." },
+      { title: "Cleard vs The Field — Florida Permit Platforms Compared" },
+      {
+        name: "description",
+        content:
+          "Compare Cleard to PermitFlow, GreenLite, and FCC. Florida private-provider licensing, Victoria AI, and sub compliance built in from day one.",
+      },
+      { property: "og:title", content: "Cleard vs The Field" },
+      {
+        property: "og:description",
+        content:
+          "Every permit platform claims to handle Florida. Only Cleard was built specifically for FL general contractors.",
+      },
       { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://cleared.floridianinc.com/versus" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
+    links: [{ rel: "canonical", href: "https://cleared.floridianinc.com/versus" }],
   }),
+  component: VersusHub,
 });
 
 function VersusHub() {
   return (
-    <PublicShell>
-      {/* HERO */}
-      <section className="px-6 lg:px-10 py-24 lg:py-32" style={{ backgroundColor: OBSIDIAN }}>
-        <div className="max-w-5xl mx-auto text-center">
-          <div
-            className="font-mono text-[10px] uppercase mb-8"
-            style={{ color: "rgba(255,255,255,0.65)", letterSpacing: "0.32em" }}
-          >
-            Comparison
-          </div>
+    <MarketingShell>
+      {/* Hero */}
+      <section className="relative overflow-hidden border-b md-hairline">
+        <div className="absolute inset-0 md-grain opacity-40" />
+        <div className="relative mx-auto max-w-7xl px-6 lg:px-10 py-24 md:py-32">
+          <div className="md-eyebrow md-in md-in-1">Cleard vs The Field</div>
           <h1
-            className="display-serif font-bold leading-[1.05] mb-8"
-            style={{ color: "#fff", fontSize: "clamp(2.25rem, 5.5vw, 4.5rem)", letterSpacing: "-0.02em" }}
+            className="mt-6 md-serif md-in md-in-2 max-w-4xl whitespace-pre-line"
+            style={{
+              color: "var(--md-text)",
+              fontSize: "clamp(2.25rem, 5.5vw, 4.5rem)",
+              lineHeight: 1.05,
+              letterSpacing: "-0.03em",
+            }}
           >
-            Better than the alternative:<br />Build with Cleard.
+            {"Built for Florida.\nNot retrofitted for it."}
           </h1>
-          <p className="text-lg mb-12 max-w-2xl mx-auto" style={{ color: "rgba(255,255,255,0.7)" }}>
-            Exploring other ways to handle permitting in Florida? See how Cleard compares.
+          <p className="mt-7 max-w-2xl text-base sm:text-lg md-muted md-in md-in-3">
+            Every permit platform claims to handle Florida. Only Cleard was built
+            specifically for FL general contractors — with private-provider
+            licensing, Victoria AI, and sub compliance built in from day one.
           </p>
-          <Link
-            to="/join"
-            hash="request"
-            className="inline-flex items-center px-8 h-14 text-[12px] font-mono uppercase tracking-[0.24em] transition-opacity hover:opacity-85"
-            style={{ backgroundColor: "#fff", color: OBSIDIAN, borderRadius: 0 }}
-          >
-            Get Started
-          </Link>
+          <div className="mt-9 md-in md-in-4">
+            <Link to="/join" hash="request" className="md-btn-primary">
+              Get early access <ArrowRight className="h-4 w-4" />
+            </Link>
+          </div>
         </div>
       </section>
 
-      {/* GRID */}
-      <section className="px-6 lg:px-10 py-24">
-        <div className="max-w-7xl mx-auto">
-          <div
-            className="font-mono text-[10px] uppercase mb-6 text-center"
-            style={{ color: OBSIDIAN, letterSpacing: "0.32em" }}
-          >
-            Head to Head
-          </div>
-          <h2
-            className="display-serif font-bold leading-[1.05] mb-16 text-center"
-            style={{ color: OBSIDIAN, fontSize: "clamp(1.75rem, 4vw, 3rem)", letterSpacing: "-0.02em" }}
-          >
-            See how we stack up.
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {COMPETITORS.map((c) => (
-              <Link
-                key={c.slug}
-                to="/versus/$slug"
-                params={{ slug: c.slug }}
-                className="group block bg-white p-6 transition-all hover:-translate-y-0.5"
-                style={{ border: `1px solid ${HAIRLINE}` }}
+      {/* Competitor grid */}
+      <section className="mx-auto max-w-7xl px-6 lg:px-10 py-20 md:py-24">
+        <div className="md-eyebrow">Compare Cleard to</div>
+        <div className="mt-8 grid gap-5 md:grid-cols-3">
+          {VERSUS_COMPETITORS.map((c) => (
+            <Link
+              key={c.slug}
+              to="/versus/$slug"
+              params={{ slug: c.slug }}
+              className="md-card p-7 flex flex-col gap-4 no-underline transition-opacity hover:opacity-90"
+            >
+              <div
+                className="h-11 w-11 rounded-md border md-hairline flex items-center justify-center text-lg font-semibold"
+                style={{ color: "var(--md-muted, #6B8299)" }}
               >
-                <div
-                  className="w-14 h-14 mb-6 flex items-center justify-center"
-                  style={{ backgroundColor: `color-mix(in oklab, ${OBSIDIAN} 6%, transparent)` }}
-                >
-                  <Square size={22} strokeWidth={1.25} style={{ color: MUTED }} />
+                {c.initial}
+              </div>
+              <div className="md-serif text-2xl" style={{ color: "var(--md-text)" }}>
+                {c.name}
+              </div>
+              <p className="text-sm md-muted leading-relaxed flex-1">{c.cardBlurb}</p>
+              <span className="text-[13px] inline-flex items-center gap-1.5" style={{ color: "var(--brand, #1B84D4)" }}>
+                Cleard vs {c.name} <ArrowRight className="h-3.5 w-3.5" />
+              </span>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      {/* Why Cleard wins */}
+      <section className="md-section-dark">
+        <div className="mx-auto max-w-7xl px-6 lg:px-10 py-20 md:py-24">
+          <h2 className="md-serif text-3xl md:text-4xl" style={{ color: "#FFFFFF" }}>
+            Why Cleard wins
+          </h2>
+          <div className="mt-10 grid gap-10 md:grid-cols-3">
+            {[
+              {
+                k: "FL-only depth",
+                v: "Built for Florida Statute 553.791 private-provider licensing. PermitFlow and GreenLite don't hold this license.",
+              },
+              {
+                k: "Victoria AI",
+                v: "Real-time permit intelligence trained on FL municipality data. No competitor has an AI advisor layer.",
+              },
+              {
+                k: "Sub compliance built in",
+                v: "COI enforcement, sub portals, trade-by-trade permit tracking. Not an add-on — it's core.",
+              },
+            ].map((s) => (
+              <div key={s.k}>
+                <div className="md-serif text-2xl" style={{ color: "#FFFFFF" }}>
+                  {s.k}
                 </div>
-                <div className="font-mono text-[9px] uppercase mb-2" style={{ color: MUTED, letterSpacing: "0.22em" }}>
-                  Cleard vs
-                </div>
-                <div
-                  className="display-serif font-bold leading-tight"
-                  style={{ color: OBSIDIAN, fontSize: "1.25rem", letterSpacing: "-0.01em" }}
-                >
-                  {c.name}
-                </div>
-                <div
-                  className="mt-6 text-[11px] font-mono uppercase transition-opacity opacity-60 group-hover:opacity-100"
-                  style={{ color: OBSIDIAN, letterSpacing: "0.22em" }}
-                >
-                  Compare →
-                </div>
-              </Link>
+                <p className="mt-3 text-sm md-muted leading-relaxed">{s.v}</p>
+              </div>
             ))}
           </div>
         </div>
       </section>
-    </PublicShell>
+    </MarketingShell>
   );
 }
