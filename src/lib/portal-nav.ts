@@ -8,6 +8,8 @@ import {
   DollarSign,
   FolderOpen,
   BookOpen,
+  ClipboardCheck,
+
   ShieldCheck,
   Settings,
   HardHat,
