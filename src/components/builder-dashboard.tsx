@@ -194,57 +194,46 @@ function StatCard({
 }) {
   return (
     <div
-      className="relative p-5 overflow-hidden"
+      className="relative p-5 overflow-hidden rounded-lg border transition-shadow hover:shadow-md"
       style={{
-        backgroundColor: "var(--obsidian)",
-        color: "var(--paper)",
-        borderRadius: "3px",
-        border: accent
-          ? "1px solid color-mix(in oklab, var(--sky) 40%, transparent)"
-          : "1px solid color-mix(in oklab, var(--paper) 6%, transparent)",
+        backgroundColor: accent
+          ? "color-mix(in oklab, var(--brand) 8%, var(--card))"
+          : "var(--card)",
+        borderColor: accent
+          ? "color-mix(in oklab, var(--brand) 35%, transparent)"
+          : "var(--border)",
       }}
     >
       {accent && (
-        <>
-          <div
-            aria-hidden
-            className="absolute -top-12 -right-12 h-32 w-32 rounded-full"
-            style={{
-              background: "radial-gradient(circle, color-mix(in oklab, var(--sky) 25%, transparent), transparent 70%)",
-            }}
-          />
-          <div
-            aria-hidden
-            className="absolute left-0 top-0 bottom-0 w-[3px]"
-            style={{ backgroundColor: "var(--sky)" }}
-          />
-        </>
-      )}
-      <div className="relative flex items-center justify-between mb-6">
         <div
-          className="font-mono text-[10px] tracking-[0.18em] uppercase"
-          style={{
-            color: accent
-              ? "color-mix(in oklab, var(--sky) 90%, transparent)"
-              : "color-mix(in oklab, var(--paper) 55%, transparent)",
-          }}
+          aria-hidden
+          className="absolute left-0 top-0 bottom-0 w-[3px] rounded-l-lg"
+          style={{ backgroundColor: "var(--brand)" }}
+        />
+      )}
+      <div className="flex items-center justify-between mb-5">
+        <div
+          className="label-eyebrow"
+          style={{ color: accent ? "var(--brand)" : "var(--muted-foreground)" }}
         >
           {label}
         </div>
         <Icon
           className="h-3.5 w-3.5"
           strokeWidth={1.5}
-          style={{
-            color: accent
-              ? "var(--sky)"
-              : "color-mix(in oklab, var(--paper) 40%, transparent)",
-          }}
+          style={{ color: accent ? "var(--brand)" : "var(--muted-foreground)" }}
         />
       </div>
-      <div className="relative font-display text-4xl tabular-nums tracking-tight">{value}</div>
+      <div
+        className="font-display text-4xl tabular-nums tracking-tight"
+        style={{ color: "var(--foreground)" }}
+      >
+        {value}
+      </div>
     </div>
   );
 }
+
 
 function ProjectCard({
   project,
