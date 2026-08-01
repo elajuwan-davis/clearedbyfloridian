@@ -111,7 +111,7 @@ export function InspectionsPanel({ permitId, tenantId, permitStatus }: { permitI
                 <div className="flex-1 min-w-0">
                   <div className="text-sm font-medium text-obsidian">{labelFor(r.inspection_type)}</div>
                   <div className="text-[10px] font-mono uppercase tracking-[0.14em] text-obsidian/50 mt-1">
-                    Requested {r.requested_date ?? "—"} · Scheduled {r.scheduled_date ?? "—"} · {r.inspector_name ?? "Inspector TBD"}
+                    Requested {r.requested_date ?? "—"} · Scheduled {r.scheduled_date ?? "—"}
                   </div>
                   {r.notes && <div className="text-xs text-obsidian/70 mt-1">{r.notes}</div>}
                 </div>
