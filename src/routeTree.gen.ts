@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as AskVictoriaRouteImport } from './routes/ask-victoria'
 import { Route as BuildingDeptLoginsRouteImport } from './routes/building-dept-logins'
+import { Route as ComplianceRouteImport } from './routes/compliance'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as FeeCalculatorRouteImport } from './routes/fee-calculator'
@@ -133,6 +134,11 @@ const AskVictoriaRoute = AskVictoriaRouteImport.update({
 const BuildingDeptLoginsRoute = BuildingDeptLoginsRouteImport.update({
   id: '/building-dept-logins',
   path: '/building-dept-logins',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ComplianceRoute = ComplianceRouteImport.update({
+  id: '/compliance',
+  path: '/compliance',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ContactRoute = ContactRouteImport.update({
@@ -657,6 +663,7 @@ export interface FileRoutesByFullPath {
   '/about': typeof AboutRoute
   '/ask-victoria': typeof AskVictoriaRoute
   '/building-dept-logins': typeof BuildingDeptLoginsRouteWithChildren
+  '/compliance': typeof ComplianceRoute
   '/contact': typeof ContactRoute
   '/dashboard': typeof DashboardRoute
   '/fee-calculator': typeof FeeCalculatorRoute
@@ -764,6 +771,7 @@ export interface FileRoutesByTo {
   '/about': typeof AboutRoute
   '/ask-victoria': typeof AskVictoriaRoute
   '/building-dept-logins': typeof BuildingDeptLoginsRouteWithChildren
+  '/compliance': typeof ComplianceRoute
   '/contact': typeof ContactRoute
   '/dashboard': typeof DashboardRoute
   '/fee-calculator': typeof FeeCalculatorRoute
@@ -868,6 +876,7 @@ export interface FileRoutesById {
   '/about': typeof AboutRoute
   '/ask-victoria': typeof AskVictoriaRoute
   '/building-dept-logins': typeof BuildingDeptLoginsRouteWithChildren
+  '/compliance': typeof ComplianceRoute
   '/contact': typeof ContactRoute
   '/dashboard': typeof DashboardRoute
   '/fee-calculator': typeof FeeCalculatorRoute
@@ -977,6 +986,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/ask-victoria'
     | '/building-dept-logins'
+    | '/compliance'
     | '/contact'
     | '/dashboard'
     | '/fee-calculator'
@@ -1084,6 +1094,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/ask-victoria'
     | '/building-dept-logins'
+    | '/compliance'
     | '/contact'
     | '/dashboard'
     | '/fee-calculator'
@@ -1187,6 +1198,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/ask-victoria'
     | '/building-dept-logins'
+    | '/compliance'
     | '/contact'
     | '/dashboard'
     | '/fee-calculator'
@@ -1295,6 +1307,7 @@ export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   AskVictoriaRoute: typeof AskVictoriaRoute
   BuildingDeptLoginsRoute: typeof BuildingDeptLoginsRouteWithChildren
+  ComplianceRoute: typeof ComplianceRoute
   ContactRoute: typeof ContactRoute
   DashboardRoute: typeof DashboardRoute
   FeeCalculatorRoute: typeof FeeCalculatorRoute
@@ -1379,6 +1392,13 @@ declare module '@tanstack/react-router' {
       path: '/building-dept-logins'
       fullPath: '/building-dept-logins'
       preLoaderRoute: typeof BuildingDeptLoginsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/compliance': {
+      id: '/compliance'
+      path: '/compliance'
+      fullPath: '/compliance'
+      preLoaderRoute: typeof ComplianceRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/contact': {
@@ -2275,6 +2295,7 @@ const rootRouteChildren: RootRouteChildren = {
   AboutRoute: AboutRoute,
   AskVictoriaRoute: AskVictoriaRoute,
   BuildingDeptLoginsRoute: BuildingDeptLoginsRouteWithChildren,
+  ComplianceRoute: ComplianceRoute,
   ContactRoute: ContactRoute,
   DashboardRoute: DashboardRoute,
   FeeCalculatorRoute: FeeCalculatorRoute,
@@ -2333,13 +2354,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
