@@ -68,7 +68,9 @@ export const listReviewQueueFn = createServerFn({ method: "GET" })
       permit_type: p.permit_type ?? null,
       contractor_company: p.contractor_company ?? null,
       tenant_name: p.tenant_id ? (tenants.get(p.tenant_id) ?? null) : null,
-      submitted_by: p.created_by ? (users.get(p.created_by)?.email ?? null) : null,
+      submitted_by: p.created_by
+        ? (users.get(p.created_by)?.email ?? users.get(p.created_by)?.display_name ?? null)
+        : null,
       created_at: p.created_at,
     }));
   });
