@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as AskVictoriaRouteImport } from './routes/ask-victoria'
 import { Route as BuildingDeptLoginsRouteImport } from './routes/building-dept-logins'
+import { Route as ComplianceRouteImport } from './routes/compliance'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as FeeCalculatorRouteImport } from './routes/fee-calculator'
@@ -44,7 +45,9 @@ import { Route as AdminFeatureRequestsRouteImport } from './routes/admin.feature
 import { Route as AdminGcClientsRouteImport } from './routes/admin.gc-clients'
 import { Route as AdminHubspotSimulateRouteImport } from './routes/admin.hubspot-simulate'
 import { Route as AdminInvitesRouteImport } from './routes/admin.invites'
+import { Route as AdminProtectionRouteImport } from './routes/admin.protection'
 import { Route as AdminReviewQueueRouteImport } from './routes/admin.review-queue'
+import { Route as AdminUtilityLocatesRouteImport } from './routes/admin.utility-locates'
 import { Route as AdminContractorsRouteImport } from './routes/admin_.contractors'
 import { Route as ApiGeocodeCensusRouteImport } from './routes/api/geocode-census'
 import { Route as ApiVerifyLicenseRouteImport } from './routes/api/verify-license'
@@ -133,6 +136,11 @@ const AskVictoriaRoute = AskVictoriaRouteImport.update({
 const BuildingDeptLoginsRoute = BuildingDeptLoginsRouteImport.update({
   id: '/building-dept-logins',
   path: '/building-dept-logins',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ComplianceRoute = ComplianceRouteImport.update({
+  id: '/compliance',
+  path: '/compliance',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ContactRoute = ContactRouteImport.update({
@@ -290,9 +298,19 @@ const AdminInvitesRoute = AdminInvitesRouteImport.update({
   path: '/admin/invites',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminProtectionRoute = AdminProtectionRouteImport.update({
+  id: '/admin/protection',
+  path: '/admin/protection',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminReviewQueueRoute = AdminReviewQueueRouteImport.update({
   id: '/admin/review-queue',
   path: '/admin/review-queue',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminUtilityLocatesRoute = AdminUtilityLocatesRouteImport.update({
+  id: '/admin/utility-locates',
+  path: '/admin/utility-locates',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminContractorsRoute = AdminContractorsRouteImport.update({
@@ -657,6 +675,7 @@ export interface FileRoutesByFullPath {
   '/about': typeof AboutRoute
   '/ask-victoria': typeof AskVictoriaRoute
   '/building-dept-logins': typeof BuildingDeptLoginsRouteWithChildren
+  '/compliance': typeof ComplianceRoute
   '/contact': typeof ContactRoute
   '/dashboard': typeof DashboardRoute
   '/fee-calculator': typeof FeeCalculatorRoute
@@ -687,7 +706,9 @@ export interface FileRoutesByFullPath {
   '/admin/gc-clients': typeof AdminGcClientsRoute
   '/admin/hubspot-simulate': typeof AdminHubspotSimulateRoute
   '/admin/invites': typeof AdminInvitesRoute
+  '/admin/protection': typeof AdminProtectionRoute
   '/admin/review-queue': typeof AdminReviewQueueRoute
+  '/admin/utility-locates': typeof AdminUtilityLocatesRoute
   '/admin/contractors': typeof AdminContractorsRoute
   '/api/geocode-census': typeof ApiGeocodeCensusRoute
   '/api/verify-license': typeof ApiVerifyLicenseRoute
@@ -764,6 +785,7 @@ export interface FileRoutesByTo {
   '/about': typeof AboutRoute
   '/ask-victoria': typeof AskVictoriaRoute
   '/building-dept-logins': typeof BuildingDeptLoginsRouteWithChildren
+  '/compliance': typeof ComplianceRoute
   '/contact': typeof ContactRoute
   '/dashboard': typeof DashboardRoute
   '/fee-calculator': typeof FeeCalculatorRoute
@@ -792,7 +814,9 @@ export interface FileRoutesByTo {
   '/admin/gc-clients': typeof AdminGcClientsRoute
   '/admin/hubspot-simulate': typeof AdminHubspotSimulateRoute
   '/admin/invites': typeof AdminInvitesRoute
+  '/admin/protection': typeof AdminProtectionRoute
   '/admin/review-queue': typeof AdminReviewQueueRoute
+  '/admin/utility-locates': typeof AdminUtilityLocatesRoute
   '/admin/contractors': typeof AdminContractorsRoute
   '/api/geocode-census': typeof ApiGeocodeCensusRoute
   '/api/verify-license': typeof ApiVerifyLicenseRoute
@@ -868,6 +892,7 @@ export interface FileRoutesById {
   '/about': typeof AboutRoute
   '/ask-victoria': typeof AskVictoriaRoute
   '/building-dept-logins': typeof BuildingDeptLoginsRouteWithChildren
+  '/compliance': typeof ComplianceRoute
   '/contact': typeof ContactRoute
   '/dashboard': typeof DashboardRoute
   '/fee-calculator': typeof FeeCalculatorRoute
@@ -898,7 +923,9 @@ export interface FileRoutesById {
   '/admin/gc-clients': typeof AdminGcClientsRoute
   '/admin/hubspot-simulate': typeof AdminHubspotSimulateRoute
   '/admin/invites': typeof AdminInvitesRoute
+  '/admin/protection': typeof AdminProtectionRoute
   '/admin/review-queue': typeof AdminReviewQueueRoute
+  '/admin/utility-locates': typeof AdminUtilityLocatesRoute
   '/admin_/contractors': typeof AdminContractorsRoute
   '/api/geocode-census': typeof ApiGeocodeCensusRoute
   '/api/verify-license': typeof ApiVerifyLicenseRoute
@@ -977,6 +1004,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/ask-victoria'
     | '/building-dept-logins'
+    | '/compliance'
     | '/contact'
     | '/dashboard'
     | '/fee-calculator'
@@ -1007,7 +1035,9 @@ export interface FileRouteTypes {
     | '/admin/gc-clients'
     | '/admin/hubspot-simulate'
     | '/admin/invites'
+    | '/admin/protection'
     | '/admin/review-queue'
+    | '/admin/utility-locates'
     | '/admin/contractors'
     | '/api/geocode-census'
     | '/api/verify-license'
@@ -1084,6 +1114,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/ask-victoria'
     | '/building-dept-logins'
+    | '/compliance'
     | '/contact'
     | '/dashboard'
     | '/fee-calculator'
@@ -1112,7 +1143,9 @@ export interface FileRouteTypes {
     | '/admin/gc-clients'
     | '/admin/hubspot-simulate'
     | '/admin/invites'
+    | '/admin/protection'
     | '/admin/review-queue'
+    | '/admin/utility-locates'
     | '/admin/contractors'
     | '/api/geocode-census'
     | '/api/verify-license'
@@ -1187,6 +1220,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/ask-victoria'
     | '/building-dept-logins'
+    | '/compliance'
     | '/contact'
     | '/dashboard'
     | '/fee-calculator'
@@ -1217,7 +1251,9 @@ export interface FileRouteTypes {
     | '/admin/gc-clients'
     | '/admin/hubspot-simulate'
     | '/admin/invites'
+    | '/admin/protection'
     | '/admin/review-queue'
+    | '/admin/utility-locates'
     | '/admin_/contractors'
     | '/api/geocode-census'
     | '/api/verify-license'
@@ -1295,6 +1331,7 @@ export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   AskVictoriaRoute: typeof AskVictoriaRoute
   BuildingDeptLoginsRoute: typeof BuildingDeptLoginsRouteWithChildren
+  ComplianceRoute: typeof ComplianceRoute
   ContactRoute: typeof ContactRoute
   DashboardRoute: typeof DashboardRoute
   FeeCalculatorRoute: typeof FeeCalculatorRoute
@@ -1325,7 +1362,9 @@ export interface RootRouteChildren {
   AdminGcClientsRoute: typeof AdminGcClientsRoute
   AdminHubspotSimulateRoute: typeof AdminHubspotSimulateRoute
   AdminInvitesRoute: typeof AdminInvitesRoute
+  AdminProtectionRoute: typeof AdminProtectionRoute
   AdminReviewQueueRoute: typeof AdminReviewQueueRoute
+  AdminUtilityLocatesRoute: typeof AdminUtilityLocatesRoute
   AdminContractorsRoute: typeof AdminContractorsRoute
   ApiGeocodeCensusRoute: typeof ApiGeocodeCensusRoute
   ApiVerifyLicenseRoute: typeof ApiVerifyLicenseRoute
@@ -1379,6 +1418,13 @@ declare module '@tanstack/react-router' {
       path: '/building-dept-logins'
       fullPath: '/building-dept-logins'
       preLoaderRoute: typeof BuildingDeptLoginsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/compliance': {
+      id: '/compliance'
+      path: '/compliance'
+      fullPath: '/compliance'
+      preLoaderRoute: typeof ComplianceRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/contact': {
@@ -1598,11 +1644,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminInvitesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/protection': {
+      id: '/admin/protection'
+      path: '/admin/protection'
+      fullPath: '/admin/protection'
+      preLoaderRoute: typeof AdminProtectionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/review-queue': {
       id: '/admin/review-queue'
       path: '/admin/review-queue'
       fullPath: '/admin/review-queue'
       preLoaderRoute: typeof AdminReviewQueueRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/utility-locates': {
+      id: '/admin/utility-locates'
+      path: '/admin/utility-locates'
+      fullPath: '/admin/utility-locates'
+      preLoaderRoute: typeof AdminUtilityLocatesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin_/contractors': {
@@ -2275,6 +2335,7 @@ const rootRouteChildren: RootRouteChildren = {
   AboutRoute: AboutRoute,
   AskVictoriaRoute: AskVictoriaRoute,
   BuildingDeptLoginsRoute: BuildingDeptLoginsRouteWithChildren,
+  ComplianceRoute: ComplianceRoute,
   ContactRoute: ContactRoute,
   DashboardRoute: DashboardRoute,
   FeeCalculatorRoute: FeeCalculatorRoute,
@@ -2305,7 +2366,9 @@ const rootRouteChildren: RootRouteChildren = {
   AdminGcClientsRoute: AdminGcClientsRoute,
   AdminHubspotSimulateRoute: AdminHubspotSimulateRoute,
   AdminInvitesRoute: AdminInvitesRoute,
+  AdminProtectionRoute: AdminProtectionRoute,
   AdminReviewQueueRoute: AdminReviewQueueRoute,
+  AdminUtilityLocatesRoute: AdminUtilityLocatesRoute,
   AdminContractorsRoute: AdminContractorsRoute,
   ApiGeocodeCensusRoute: ApiGeocodeCensusRoute,
   ApiVerifyLicenseRoute: ApiVerifyLicenseRoute,

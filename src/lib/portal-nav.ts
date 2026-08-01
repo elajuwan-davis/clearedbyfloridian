@@ -8,6 +8,8 @@ import {
   DollarSign,
   FolderOpen,
   BookOpen,
+  ClipboardCheck,
+
   ShieldCheck,
   Settings,
   HardHat,
@@ -44,9 +46,18 @@ export const bookmarksSection: NavSection = {
   to: "/portal/bookmarks",
 };
 
+export const complianceSection: NavSection = {
+  key: "compliance-top",
+  label: "Compliance",
+  icon: ClipboardCheck,
+  to: "/compliance",
+};
+
 export const navSections: NavSection[] = [
   dashboardSection,
   bookmarksSection,
+  complianceSection,
+
   {
     key: "permits",
     label: "Permits",
@@ -110,6 +121,7 @@ export const navSections: NavSection[] = [
   },
 ];
 
+
 export const adminSection: NavSection = {
   key: "admin",
   label: "Admin",
@@ -120,8 +132,11 @@ export const adminSection: NavSection = {
     { to: "/admin/activity", label: "Activity Log" },
     { to: "/admin/access-requests", label: "Access Requests" },
     { to: "/admin/gc-clients", label: "GC Clients" },
+    { to: "/admin/protection", label: "Protection", divider: true },
+    { to: "/admin/utility-locates", label: "Utility Locates" },
   ],
 };
+
 
 export const settingsSection: NavSection = {
   key: "settings",
