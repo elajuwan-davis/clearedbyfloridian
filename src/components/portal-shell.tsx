@@ -275,7 +275,7 @@ function IconRail({
           >
             <div
               className="text-[15px] font-semibold"
-              style={{ color: "var(--paper)", fontFamily: "var(--font-subline)" }}
+              style={{ color: "var(--rail-fg)", fontFamily: "var(--font-subline)" }}
             >
               {active.label}
             </div>
@@ -308,7 +308,7 @@ function IconRail({
               {email && (
                 <div
                   className="mt-2 truncate text-[12px]"
-                  style={{ color: "color-mix(in oklab, var(--paper) 55%, transparent)" }}
+                  style={{ color: "color-mix(in oklab, var(--rail-fg) 65%, transparent)" }}
                 >
                   {email}
                 </div>
@@ -317,7 +317,7 @@ function IconRail({
                 onClick={onSignOut}
                 className="mt-3 flex w-full items-center justify-center gap-2 rounded-[3px] px-3 py-2 font-mono text-[11px] uppercase tracking-[0.15em]"
                 style={{
-                  color: "var(--paper)",
+                  color: "var(--rail-fg)",
                   border: `1px solid color-mix(in oklab, var(--paper) 25%, transparent)`,
                 }}
               >
@@ -434,7 +434,7 @@ function SidebarBody({
           >
             C
           </div>
-          <span className="font-semibold text-[17px]" style={{ fontFamily: "'Space Grotesk', sans-serif", color: "var(--paper)" }}>
+          <span className="font-semibold text-[17px]" style={{ fontFamily: "'Space Grotesk', sans-serif", color: "var(--rail-fg)" }}>
             Cleard
           </span>
         </Link>
@@ -445,7 +445,7 @@ function SidebarBody({
           <div key={group.key} className="mb-6">
             <div
               className="mb-2 flex items-center gap-2 px-5 font-mono text-[10px] uppercase tracking-[0.22em]"
-              style={{ color: "color-mix(in oklab, var(--paper) 45%, transparent)" }}
+              style={{ color: "color-mix(in oklab, var(--rail-fg) 45%, transparent)" }}
             >
               <group.icon className="h-3.5 w-3.5" strokeWidth={1.5} />
               {group.label}
@@ -492,19 +492,19 @@ function SidebarBody({
             {initials}
           </div>
           <div className="min-w-0 leading-tight">
-            <div className="truncate text-[14px]" style={{ color: "var(--paper)", fontFamily: "var(--font-subline)" }}>
+            <div className="truncate text-[14px]" style={{ color: "var(--rail-fg)", fontFamily: "var(--font-subline)" }}>
               {displayName}
             </div>
             <div
               className="truncate font-mono text-[9px] uppercase tracking-[0.18em]"
-              style={{ color: "color-mix(in oklab, var(--paper) 55%, transparent)" }}
+              style={{ color: "color-mix(in oklab, var(--rail-fg) 65%, transparent)" }}
             >
               {roleLabel[role ?? ""] ?? "Client"}
             </div>
           </div>
         </div>
         {email && (
-          <div className="mt-2 truncate text-[12px]" style={{ color: "color-mix(in oklab, var(--paper) 55%, transparent)" }}>
+          <div className="mt-2 truncate text-[12px]" style={{ color: "color-mix(in oklab, var(--rail-fg) 65%, transparent)" }}>
             {email}
           </div>
         )}
@@ -512,7 +512,7 @@ function SidebarBody({
           onClick={onSignOut}
           className="mt-3 flex w-full items-center justify-center gap-2 rounded-[3px] px-3 py-2.5 font-mono text-[13px] uppercase tracking-[0.15em]"
           style={{
-            color: "var(--paper)",
+            color: "var(--rail-fg)",
             border: "1px solid color-mix(in oklab, var(--paper) 25%, transparent)",
           }}
         >
