@@ -6,17 +6,17 @@ import { MarketingShell } from "@/components/marketing-shell";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Cleard — Permitting, handled." },
+      { title: "Cleard — Permits shouldn't slow your projects down." },
       {
         name: "description",
         content:
-          "Cleard gives general contractors one intelligent platform to submit, track, and close permits across Florida — powered by Victoria, your AI assistant.",
+          "Cleard gives Florida general contractors one intelligent platform to submit, track, and close permits across Florida — powered by Victoria, your AI permit assistant.",
       },
-      { property: "og:title", content: "Cleard — Permitting, handled." },
+      { property: "og:title", content: "Cleard — Permits shouldn't slow your projects down." },
       {
         property: "og:description",
         content:
-          "One intelligent platform to submit, track, and close permits across Florida — powered by Victoria.",
+          "Cleard gives Florida general contractors one intelligent platform to submit, track, and close permits across Florida — powered by Victoria, your AI permit assistant.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -42,51 +42,93 @@ function HomePage() {
 
 function Hero() {
   return (
-    <section className="relative overflow-hidden">
-      <div className="absolute inset-0 md-grain" />
+    <section className="relative overflow-hidden bg-[var(--paper)]">
+      {/* Subtle light grain */}
+      <div className="absolute inset-0 md-grain opacity-40" />
+      {/* Soft brand glow at top */}
       <div
-        className="absolute inset-0 opacity-[0.4]"
+        className="absolute inset-0 pointer-events-none"
         style={{
           backgroundImage:
-            "radial-gradient(ellipse at 50% -10%, color-mix(in oklab, #153157 60%, transparent) 0%, transparent 55%)",
+            "radial-gradient(ellipse 80% 40% at 50% -5%, color-mix(in oklab, #1B84D4 12%, transparent) 0%, transparent 70%)",
         }}
       />
-      <div className="relative mx-auto max-w-7xl px-6 lg:px-10 pt-24 pb-24 md:pt-36 md:pb-32 text-center">
-        <div className="md-eyebrow md-in md-in-1 justify-center inline-flex items-center gap-2">
-          <Sparkles className="h-3 w-3" /> Now with Victoria · AI Assistant
-        </div>
-        <h1
-          className="mt-8 md-serif md-in md-in-2 mx-auto max-w-5xl"
+      <div className="relative mx-auto max-w-7xl px-6 lg:px-10 pt-24 pb-20 md:pt-36 md:pb-28 text-center">
+        {/* Eyebrow pill */}
+        <div
+          className="md-in md-in-1 inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-[12px] font-medium tracking-[0.06em] uppercase mb-8"
           style={{
-            color: "var(--md-text)",
-            fontSize: "clamp(2.75rem, 7vw, 6.5rem)",
-            letterSpacing: "-0.03em",
-            lineHeight: 1.02,
+            background: "color-mix(in oklab, #12A05C 12%, transparent)",
+            color: "#12A05C",
+            border: "1px solid color-mix(in oklab, #12A05C 30%, transparent)",
           }}
         >
-          Permitting, <em className="italic md-gold">handled.</em>
+          <span className="h-1.5 w-1.5 rounded-full bg-[#12A05C] inline-block" />
+          Now in private beta · Florida GCs
+        </div>
+
+        {/* Headline — bold geometric sans */}
+        <h1
+          className="md-in md-in-2 mx-auto max-w-4xl"
+          style={{
+            fontFamily: "'Space Grotesk', 'Inter', system-ui, sans-serif",
+            fontWeight: 800,
+            fontSize: "clamp(2.5rem, 6.5vw, 5.5rem)",
+            lineHeight: 1.05,
+            letterSpacing: "-0.03em",
+            color: "var(--ink, #0F1E2E)",
+          }}
+        >
+          Permits shouldn't slow your{" "}
+          <span style={{ color: "#1B84D4" }}>projects</span> down.
         </h1>
-        <p className="mt-8 mx-auto max-w-2xl text-lg md-muted md-in md-in-3">
-          Cleard gives general contractors one intelligent platform to submit,
-          track, and close permits across Florida — powered by Victoria, your AI
+
+        {/* Subline */}
+        <p
+          className="md-in md-in-3 mt-7 mx-auto max-w-xl text-lg leading-relaxed"
+          style={{ color: "var(--md-muted, #6B8299)" }}
+        >
+          Cleard gives Florida general contractors one intelligent platform to
+          submit, track, and close permits — powered by Victoria, your AI
           assistant.
         </p>
-        <div className="mt-10 flex flex-col sm:flex-row gap-3 justify-center md-in md-in-4">
-          <Link to="/join" hash="request" className="md-btn-primary">
-            Request Access <ArrowRight className="h-4 w-4" />
+
+        {/* CTAs */}
+        <div className="md-in md-in-4 mt-10 flex flex-col sm:flex-row gap-3 justify-center items-center">
+          <Link
+            to="/join"
+            hash="request"
+            className="inline-flex items-center gap-2 px-7 py-3.5 rounded-lg text-sm font-semibold text-white transition-all"
+            style={{
+              background: "#12A05C",
+              boxShadow: "0 1px 3px color-mix(in oklab, #12A05C 40%, transparent)",
+            }}
+            onMouseEnter={(e) => (e.currentTarget.style.background = "#0D8049")}
+            onMouseLeave={(e) => (e.currentTarget.style.background = "#12A05C")}
+          >
+            Get early access <ArrowRight className="h-4 w-4" />
           </Link>
-          <Link to="/process" className="md-btn-ghost">
-            See How It Works
+          <Link
+            to="/process"
+            className="inline-flex items-center gap-2 px-7 py-3.5 rounded-lg text-sm font-semibold transition-all"
+            style={{ color: "var(--ink, #0F1E2E)", border: "1px solid var(--md-hairline, #E2E8F0)" }}
+          >
+            See a live demo
           </Link>
         </div>
 
-        {/* Floating product mockup */}
-        <div className="mt-20 md:mt-24 relative mx-auto max-w-5xl md-in md-in-4">
+        {/* Trust line */}
+        <p className="md-in md-in-4 mt-4 text-[12px]" style={{ color: "var(--md-muted, #6B8299)" }}>
+          No credit card · Free during beta · FL general contractors only
+        </p>
+
+        {/* App frame mockup */}
+        <div className="md-in md-in-4 mt-20 md:mt-24 relative mx-auto max-w-5xl">
           <div
-            className="absolute -inset-6 rounded-2xl blur-2xl opacity-60"
+            className="absolute -inset-8 rounded-3xl blur-3xl opacity-30"
             style={{
               background:
-                "radial-gradient(ellipse at center, color-mix(in oklab, #C8A97E 25%, transparent) 0%, transparent 65%)",
+                "radial-gradient(ellipse at center, #1B84D4 0%, transparent 65%)",
             }}
           />
           <PortalMockup />
@@ -98,64 +140,116 @@ function Hero() {
 
 function PortalMockup() {
   const rows = [
-    { addr: "412 Ocean Dr, Delray Beach", status: "In Review", tone: "gold" },
-    { addr: "88 Banyan Way, Palm Beach", status: "Approved", tone: "green" },
-    { addr: "1120 Coral Cay, Jupiter", status: "Corrections", tone: "amber" },
-    { addr: "27 Bayside Rd, Stuart", status: "Submitted", tone: "blue" },
+    { addr: "412 Ocean Dr, Delray Beach", status: "In Review", tone: "blue" as const },
+    { addr: "88 Banyan Way, Palm Beach", status: "Approved", tone: "green" as const },
+    { addr: "1120 Coral Cay, Jupiter", status: "Corrections", tone: "amber" as const },
+    { addr: "27 Bayside Rd, Stuart", status: "Submitted", tone: "slate" as const },
   ];
   return (
-    <div className="md-card p-6 md:p-8 text-left relative shadow-2xl"
-      style={{ transform: "perspective(1600px) rotateX(2deg)" }}>
-      <div className="flex items-center justify-between pb-4 border-b md-hairline">
-        <div className="flex items-center gap-2">
-          <div className="h-2.5 w-2.5 rounded-full" style={{ background: "#EF4444" }} />
-          <div className="h-2.5 w-2.5 rounded-full" style={{ background: "#F59E0B" }} />
-          <div className="h-2.5 w-2.5 rounded-full" style={{ background: "#10B981" }} />
+    <div
+      className="rounded-2xl border text-left relative overflow-hidden shadow-2xl"
+      style={{
+        background: "#FAFAF8",
+        borderColor: "#E2E8F0",
+        transform: "perspective(1800px) rotateX(2deg)",
+      }}
+    >
+      {/* Browser chrome */}
+      <div
+        className="flex items-center justify-between px-5 py-3 border-b"
+        style={{ background: "#F2EEE8", borderColor: "#E2E8F0" }}
+      >
+        <div className="flex items-center gap-1.5">
+          <div className="h-2.5 w-2.5 rounded-full bg-[#EF4444]" />
+          <div className="h-2.5 w-2.5 rounded-full bg-[#F59E0B]" />
+          <div className="h-2.5 w-2.5 rounded-full bg-[#10B981]" />
         </div>
-        <div className="text-[11px] uppercase tracking-[0.24em] md-muted">Cleard · Permit Pipeline</div>
-        <div className="text-[11px] md-gold flex items-center gap-1.5">
+        <div className="text-[11px] uppercase tracking-[0.2em]" style={{ color: "#7890A4" }}>
+          Cleard · Permit Pipeline
+        </div>
+        <div className="flex items-center gap-1.5 text-[11px] font-medium" style={{ color: "#1B84D4" }}>
           <Sparkles className="h-3 w-3" /> Victoria
         </div>
       </div>
-      <div className="mt-6 grid grid-cols-3 gap-4">
+
+      {/* Stats row */}
+      <div className="grid grid-cols-3 gap-4 p-6 pb-4">
         {[
-          { k: "12", v: "Active" },
-          { k: "3", v: "In Review" },
-          { k: "2", v: "Corrections" },
+          { k: "12", v: "Active", color: "#1B84D4" },
+          { k: "3", v: "In Review", color: "#E8861A" },
+          { k: "2", v: "Corrections", color: "#DC2626" },
         ].map((s) => (
-          <div key={s.v} className="border md-hairline rounded-md p-4">
-            <div className="md-serif text-3xl md-gold">{s.k}</div>
-            <div className="text-[11px] uppercase tracking-[0.2em] md-muted mt-1">{s.v}</div>
+          <div
+            key={s.v}
+            className="rounded-lg p-4 border"
+            style={{ borderColor: "#E2E8F0", background: "#fff" }}
+          >
+            <div
+              className="text-3xl font-bold"
+              style={{ color: s.color, fontFamily: "'Space Grotesk', sans-serif" }}
+            >
+              {s.k}
+            </div>
+            <div className="text-[11px] uppercase tracking-[0.2em] mt-1" style={{ color: "#7890A4" }}>
+              {s.v}
+            </div>
           </div>
         ))}
       </div>
-      <div className="mt-6 space-y-2">
+
+      {/* Permit rows */}
+      <div className="px-6 pb-4 space-y-2">
         {rows.map((r) => (
-          <div key={r.addr} className="flex items-center justify-between px-4 py-3 rounded-md"
-            style={{ background: "color-mix(in oklab, #0A0E17 55%, transparent)" }}>
+          <div
+            key={r.addr}
+            className="flex items-center justify-between px-4 py-3 rounded-lg border"
+            style={{ background: "#fff", borderColor: "#E2E8F0" }}
+          >
             <div className="flex items-center gap-3 min-w-0">
-              <FileCheck className="h-4 w-4 md-gold shrink-0" />
-              <div className="text-sm truncate" style={{ color: "var(--md-text)" }}>{r.addr}</div>
+              <FileCheck className="h-4 w-4 shrink-0" style={{ color: "#1B84D4" }} />
+              <div className="text-sm truncate" style={{ color: "#0F1E2E" }}>
+                {r.addr}
+              </div>
             </div>
-            <StatusPill tone={r.tone as any}>{r.status}</StatusPill>
+            <StatusPill tone={r.tone}>{r.status}</StatusPill>
           </div>
         ))}
+      </div>
+
+      {/* Victoria alert bar */}
+      <div
+        className="flex items-center gap-3 px-6 py-3 border-t"
+        style={{ background: "color-mix(in oklab, #1B84D4 8%, transparent)", borderColor: "#E2E8F0" }}
+      >
+        <Sparkles className="h-3.5 w-3.5 shrink-0" style={{ color: "#1B84D4" }} />
+        <p className="text-[12px]" style={{ color: "#1B84D4" }}>
+          <strong>Victoria:</strong> COI for Blue Ridge Plumbing expires in 4 days — action required.
+        </p>
       </div>
     </div>
   );
 }
 
-function StatusPill({ tone, children }: { tone: "gold" | "green" | "amber" | "blue"; children: React.ReactNode }) {
+function StatusPill({
+  tone,
+  children,
+}: {
+  tone: "blue" | "green" | "amber" | "slate" | "gold";
+  children: React.ReactNode;
+}) {
   const map: Record<string, { bg: string; fg: string }> = {
-    gold: { bg: "color-mix(in oklab, #C8A97E 18%, transparent)", fg: "#C8A97E" },
-    green: { bg: "color-mix(in oklab, #10B981 18%, transparent)", fg: "#34D399" },
-    amber: { bg: "color-mix(in oklab, #F59E0B 20%, transparent)", fg: "#FBBF24" },
-    blue: { bg: "color-mix(in oklab, #60A5FA 20%, transparent)", fg: "#93C5FD" },
+    blue: { bg: "color-mix(in oklab, #1B84D4 12%, transparent)", fg: "#1268AC" },
+    green: { bg: "color-mix(in oklab, #12A05C 12%, transparent)", fg: "#0D8049" },
+    amber: { bg: "color-mix(in oklab, #E8861A 14%, transparent)", fg: "#C4720F" },
+    slate: { bg: "color-mix(in oklab, #6B8299 12%, transparent)", fg: "#4A6278" },
+    gold: { bg: "color-mix(in oklab, #E8861A 14%, transparent)", fg: "#C4720F" },
   };
   const s = map[tone];
   return (
-    <span className="text-[11px] uppercase tracking-[0.16em] px-2.5 py-1 rounded-sm"
-      style={{ background: s.bg, color: s.fg }}>
+    <span
+      className="text-[11px] uppercase tracking-[0.14em] px-2.5 py-1 rounded-md font-medium"
+      style={{ background: s.bg, color: s.fg }}
+    >
       {children}
     </span>
   );

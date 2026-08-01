@@ -15,8 +15,25 @@ function MarketingNav() {
     <header className="sticky top-0 z-50 border-b md-hairline"
       style={{ background: "rgba(255,255,255,0.92)", backdropFilter: "blur(10px)" }}>
       <div className="mx-auto max-w-7xl px-6 lg:px-10 h-16 flex items-center justify-between">
-        <Link to="/" className="flex items-baseline gap-2 min-w-0">
-          <span className="md-serif text-2xl leading-none" style={{ color: "var(--md-obsidian)" }}>Cleard</span>
+        <Link to="/" className="flex items-center gap-2.5 no-underline min-w-0">
+          <div
+            className="h-7 w-7 rounded-lg flex items-center justify-center text-white font-bold text-sm"
+            style={{
+              background: "linear-gradient(135deg, #1B84D4 0%, #12A05C 100%)",
+              fontFamily: "'Space Grotesk', sans-serif",
+            }}
+          >
+            C
+          </div>
+          <span
+            className="font-semibold text-[15px] tracking-[-0.01em]"
+            style={{
+              fontFamily: "'Space Grotesk', 'Inter', system-ui, sans-serif",
+              color: "var(--ink, #0F1E2E)",
+            }}
+          >
+            Cleard
+          </span>
         </Link>
 
         <nav className="hidden md:flex items-center gap-9">
