@@ -20,6 +20,9 @@ import { useServerFn } from "@tanstack/react-start";
 import { inviteTeamMemberFn, listMyTeamFn, removeTeamMemberFn, getMyTenantOnboardingFn, setTenantAllowedDomainFn, createInviteTokenFn, revokeInviteTokenFn } from "@/lib/tenants.functions";
 import { useSession } from "@/lib/use-session";
 import { nameFromEmail } from "@/lib/profile-api";
+import { PAA_EVT, acceptTos, loadPaa, loadTosAccepted, type PaaRecord } from "@/lib/paa";
+import { PaaSignedCard } from "@/components/paa-sign-dialog";
+
 
 
 export const Route = createFileRoute("/profile")({
