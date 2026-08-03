@@ -1,40 +1,11 @@
 -- ID verification backend for the IdUpload component
--- Adds the required intake_records columns, creates a private storage bucket,
--- and enables RLS policies scoped to the authenticated record owner.
+-- Adds the ID document columns directly to the live `permits` table,
+-- creates the private `id-verification` storage bucket, and enables RLS.
 
--- Ensure the intake_records table exists with an owner column for RLS.
-CREATE TABLE IF NOT EXISTS public.intake_records (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW()
-);
-
--- Add the ID document columns to the intake table.
-ALTER TABLE public.intake_records
+ALTER TABLE public.permits
   ADD COLUMN IF NOT EXISTS id_document_url TEXT,
   ADD COLUMN IF NOT EXISTS id_document_type TEXT CHECK (id_document_type IN ('drivers_license', 'passport')),
   ADD COLUMN IF NOT EXISTS id_uploaded_at TIMESTAMPTZ;
-
--- Enable RLS on the intake table and scope access to the record owner.
-ALTER TABLE public.intake_records ENABLE ROW LEVEL SECURITY;
-
-DO $$
-BEGIN
-  IF NOT EXISTS (
-    SELECT 1 FROM pg_policies
-    WHERE schemaname = 'public' AND tablename = 'intake_records' AND policyname = 'owner_select'
-  ) THEN
-    CREATE POLICY "owner_select" ON public.intake_records FOR SELECT USING (auth.uid() = user_id);
-  END IF;
-
-  IF NOT EXISTS (
-    SELECT 1 FROM pg_policies
-    WHERE schemaname = 'public' AND tablename = 'intake_records' AND policyname = 'owner_update'
-  ) THEN
-    CREATE POLICY "owner_update" ON public.intake_records FOR UPDATE USING (auth.uid() = user_id);
-  END IF;
-END $$;
 
 -- Private storage bucket for uploaded ID documents.
 INSERT INTO storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
@@ -51,6 +22,7 @@ ON CONFLICT (id) DO UPDATE SET
   allowed_mime_types = ARRAY['image/jpeg', 'image/png', 'application/pdf'];
 
 -- Enable RLS on storage objects and scope access to the authenticated owner.
+-- Path convention: id-verification/{user_id}/{permit_id}/{filename}
 ALTER TABLE storage.objects ENABLE ROW LEVEL SECURITY;
 
 DO $$

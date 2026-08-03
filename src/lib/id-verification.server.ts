@@ -1,8 +1,9 @@
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
 /**
- * Returns a short-lived signed URL for a private ID document in the
- * `id-verification` bucket. No public URL is ever exposed.
+ * Returns a short-lived signed URL for a private ID document stored in the
+ * `id-verification` bucket (path is kept on the `permits` table). No public
+ * URL is ever exposed.
  */
 export async function getIdDocumentSignedUrl(
   path: string,
