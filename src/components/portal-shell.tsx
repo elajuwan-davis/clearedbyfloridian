@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
-import { ChevronDown, LogOut, Menu, X, Building2, Check, ShieldCheck, Sun, Moon } from "lucide-react";
+import { ChevronDown, LogOut, Menu, X, Building2, Check, ShieldCheck, Sun, Moon, FileText, MessageSquare, Calendar, Bell } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
 
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
@@ -600,7 +600,7 @@ export function PortalShell({ children }: { children: ReactNode }) {
 
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background overflow-x-hidden">
       {/* Fixed icon rail (desktop) */}
       <aside className="hidden lg:block fixed inset-y-0 left-0 z-40 w-16">
         <IconRail
@@ -769,9 +769,11 @@ export function PortalShell({ children }: { children: ReactNode }) {
           </div>
         )}
 
-        <main className="min-h-[calc(100vh-4rem)] px-4 sm:px-6 lg:px-8 py-6 md:py-10">
+        <main className="min-h-[calc(100vh-4rem)] min-w-0 overflow-x-hidden px-4 sm:px-6 lg:px-8 py-6 md:py-10 pb-24 md:pb-10">
           {children}
         </main>
+
+        <MobileBottomNav pathname={pathname} />
       </div>
 
       <InternalOnlyVictoria />
@@ -891,5 +893,50 @@ function ThemeToggle() {
     >
       {dark ? <Sun className="h-4 w-4" strokeWidth={1.5} /> : <Moon className="h-4 w-4" strokeWidth={1.5} />}
     </button>
+  );
+}
+
+const MOBILE_NAV_ITEMS: Array<{ to: string; label: string; icon: typeof FileText; match: (p: string) => boolean }> = [
+  { to: "/portal/permits", label: "My Permits", icon: FileText, match: (p) => p === "/portal/permits" || p.startsWith("/portal/permits/") || p.startsWith("/my-permits") },
+  { to: "/messages", label: "Messages", icon: MessageSquare, match: (p) => p.startsWith("/messages") },
+  { to: "/portal/calendar", label: "Calendar", icon: Calendar, match: (p) => p.startsWith("/portal/calendar") },
+  { to: "/portal/alerts", label: "Alerts", icon: Bell, match: (p) => p.startsWith("/portal/alerts") },
+];
+
+/** Fixed bottom tab bar for phones (< md). Mirrors the desktop rail's top-level destinations. */
+function MobileBottomNav({ pathname }: { pathname: string }) {
+  return (
+    <nav
+      className="md:hidden fixed inset-x-0 bottom-0 z-40 border-t"
+      style={{
+        backgroundColor: "var(--card)",
+        borderColor: "var(--border)",
+        paddingBottom: "env(safe-area-inset-bottom)",
+      }}
+      aria-label="Primary"
+    >
+      <div className="grid grid-cols-4">
+        {MOBILE_NAV_ITEMS.map((item) => {
+          const active = item.match(pathname);
+          const Icon = item.icon;
+          return (
+            <Link
+              key={item.to}
+              to={item.to as never}
+              className="flex flex-col items-center justify-center gap-1 min-h-[56px] min-w-[44px] py-1.5"
+              style={{ color: active ? "var(--sky)" : "var(--muted-foreground)" }}
+            >
+              <Icon className="h-5 w-5" strokeWidth={active ? 2 : 1.5} />
+              <span
+                className="font-mono text-[9px] uppercase tracking-[0.08em] leading-none"
+                style={{ fontWeight: active ? 700 : 400 }}
+              >
+                {item.label}
+              </span>
+            </Link>
+          );
+        })}
+      </div>
+    </nav>
   );
 }

@@ -72,6 +72,7 @@ import { Route as PortalBidReviewRouteImport } from './routes/portal.bid-review'
 import { Route as PortalBillingRouteImport } from './routes/portal.billing'
 import { Route as PortalBookmarksRouteImport } from './routes/portal.bookmarks'
 import { Route as PortalBuildingDeptRouteImport } from './routes/portal.building-dept'
+import { Route as PortalCalendarRouteImport } from './routes/portal.calendar'
 import { Route as PortalCompanyRouteImport } from './routes/portal.company'
 import { Route as PortalComplianceRouteImport } from './routes/portal.compliance'
 import { Route as PortalContactsRouteImport } from './routes/portal.contacts'
@@ -442,6 +443,11 @@ const PortalBuildingDeptRoute = PortalBuildingDeptRouteImport.update({
   path: '/building-dept',
   getParentRoute: () => PortalRoute,
 } as any)
+const PortalCalendarRoute = PortalCalendarRouteImport.update({
+  id: '/calendar',
+  path: '/calendar',
+  getParentRoute: () => PortalRoute,
+} as any)
 const PortalCompanyRoute = PortalCompanyRouteImport.update({
   id: '/company',
   path: '/company',
@@ -765,6 +771,7 @@ export interface FileRoutesByFullPath {
   '/portal/billing': typeof PortalBillingRoute
   '/portal/bookmarks': typeof PortalBookmarksRoute
   '/portal/building-dept': typeof PortalBuildingDeptRoute
+  '/portal/calendar': typeof PortalCalendarRoute
   '/portal/company': typeof PortalCompanyRoute
   '/portal/compliance': typeof PortalComplianceRoute
   '/portal/contacts': typeof PortalContactsRoute
@@ -879,6 +886,7 @@ export interface FileRoutesByTo {
   '/portal/billing': typeof PortalBillingRoute
   '/portal/bookmarks': typeof PortalBookmarksRoute
   '/portal/building-dept': typeof PortalBuildingDeptRoute
+  '/portal/calendar': typeof PortalCalendarRoute
   '/portal/company': typeof PortalCompanyRoute
   '/portal/compliance': typeof PortalComplianceRoute
   '/portal/contacts': typeof PortalContactsRoute
@@ -994,6 +1002,7 @@ export interface FileRoutesById {
   '/portal/billing': typeof PortalBillingRoute
   '/portal/bookmarks': typeof PortalBookmarksRoute
   '/portal/building-dept': typeof PortalBuildingDeptRoute
+  '/portal/calendar': typeof PortalCalendarRoute
   '/portal/company': typeof PortalCompanyRoute
   '/portal/compliance': typeof PortalComplianceRoute
   '/portal/contacts': typeof PortalContactsRoute
@@ -1112,6 +1121,7 @@ export interface FileRouteTypes {
     | '/portal/billing'
     | '/portal/bookmarks'
     | '/portal/building-dept'
+    | '/portal/calendar'
     | '/portal/company'
     | '/portal/compliance'
     | '/portal/contacts'
@@ -1226,6 +1236,7 @@ export interface FileRouteTypes {
     | '/portal/billing'
     | '/portal/bookmarks'
     | '/portal/building-dept'
+    | '/portal/calendar'
     | '/portal/company'
     | '/portal/compliance'
     | '/portal/contacts'
@@ -1340,6 +1351,7 @@ export interface FileRouteTypes {
     | '/portal/billing'
     | '/portal/bookmarks'
     | '/portal/building-dept'
+    | '/portal/calendar'
     | '/portal/company'
     | '/portal/compliance'
     | '/portal/contacts'
@@ -1909,6 +1921,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PortalBuildingDeptRouteImport
       parentRoute: typeof PortalRoute
     }
+    '/portal/calendar': {
+      id: '/portal/calendar'
+      path: '/calendar'
+      fullPath: '/portal/calendar'
+      preLoaderRoute: typeof PortalCalendarRouteImport
+      parentRoute: typeof PortalRoute
+    }
     '/portal/company': {
       id: '/portal/company'
       path: '/company'
@@ -2357,6 +2376,7 @@ interface PortalRouteChildren {
   PortalBillingRoute: typeof PortalBillingRoute
   PortalBookmarksRoute: typeof PortalBookmarksRoute
   PortalBuildingDeptRoute: typeof PortalBuildingDeptRoute
+  PortalCalendarRoute: typeof PortalCalendarRoute
   PortalCompanyRoute: typeof PortalCompanyRoute
   PortalComplianceRoute: typeof PortalComplianceRoute
   PortalContactsRoute: typeof PortalContactsRoute
@@ -2393,6 +2413,7 @@ const PortalRouteChildren: PortalRouteChildren = {
   PortalBillingRoute: PortalBillingRoute,
   PortalBookmarksRoute: PortalBookmarksRoute,
   PortalBuildingDeptRoute: PortalBuildingDeptRoute,
+  PortalCalendarRoute: PortalCalendarRoute,
   PortalCompanyRoute: PortalCompanyRoute,
   PortalComplianceRoute: PortalComplianceRoute,
   PortalContactsRoute: PortalContactsRoute,

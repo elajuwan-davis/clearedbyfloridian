@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { PortalShell } from "@/components/portal-shell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,11 +7,15 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Upload, X, Plus, ArrowLeft } from "lucide-react";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetFooter } from "@/components/ui/sheet";
+import { Upload, X, Plus, ArrowLeft, MapPin, Sparkles, AlertTriangle, CheckCircle2, Loader2, Wand2 } from "lucide-react";
 import { toast } from "sonner";
 import { CloudUploadButtons } from "@/components/cloud-upload-buttons";
 import { CompanyComplianceBanner } from "@/components/company-compliance-banner";
 import { getCurrentGcCompanyProfile } from "@/lib/gc-company";
+import { AddressLookupField } from "@/components/address-lookup-field";
+import type { ResolvedAddress } from "@/lib/address-lookup";
+import { estimatePermitFee } from "@/lib/fee-schedules";
 
 export const Route = createFileRoute("/forms/permit-intake")({
   head: () => ({ meta: [{ title: "Permit Intake — Cleard" }, { name: "robots", content: "noindex" }] }),
@@ -30,6 +34,9 @@ type Step1 = {
   privateProvider: string;
   existingPermit: string;
   municipality: string;
+  county: string;
+  folio: string;
+  squareFootage: string;
   subtrades: string[];
   scope: string;
   valuation: string;
@@ -50,6 +57,13 @@ type Step2 = {
   notes: string;
 };
 
+type LicenseCheck = {
+  status: "pending" | "found" | "expired" | "not-found";
+  qualifierName?: string;
+  licenseType?: string;
+  expiration?: string;
+};
+
 function defaultStep1(): Step1 {
   return {
     category: "Residential",
@@ -58,6 +72,9 @@ function defaultStep1(): Step1 {
     privateProvider: "Cleard",
     existingPermit: "",
     municipality: "",
+    county: "",
+    folio: "",
+    squareFootage: "",
     subtrades: [],
     scope: "",
     valuation: "",
@@ -81,6 +98,30 @@ function defaultStep2(): Step2 {
   };
 }
 
+/** Deterministic scope-of-work narrative, built from the intake fields so far. */
+function draftScopeNarrative(s1: Step1): string {
+  const trades = s1.subtrades.length > 0 ? s1.subtrades.join(", ") : "no additional subtrades identified";
+  const municipality = s1.municipality.trim() || "the governing jurisdiction";
+  const sqFt = s1.squareFootage.trim();
+  const valuation = s1.valuation.trim();
+  const category = s1.category.toLowerCase();
+
+  const lines: string[] = [];
+  lines.push(
+    `This application requests a ${category} building permit for the property located at ${s1.address.trim() || "[project address]"}, within ${municipality}.`,
+  );
+  lines.push(
+    `The scope of work consists of ${category} construction${sqFt ? ` totaling approximately ${sqFt} square feet` : ""}${
+      valuation ? ` with an estimated construction value of $${Number(valuation).toLocaleString("en-US")}` : ""
+    }. Work will be performed in accordance with the Florida Building Code and all applicable local amendments enforced by ${municipality}.`,
+  );
+  lines.push(`Subtrades involved in this permit: ${trades}.`);
+  lines.push(
+    "All work will be completed by state-licensed contractors under the supervision of the qualifying agent listed on this application. Required inspections will be scheduled at each applicable phase, and signed/sealed plans, energy calculations, and supporting documentation will be submitted with this package.",
+  );
+  return lines.join("\n\n");
+}
+
 function PermitIntakePage() {
   const navigate = useNavigate();
   const [step, setStep] = useState<1 | 2>(1);
@@ -88,6 +129,10 @@ function PermitIntakePage() {
   const [s2, setS2] = useState<Step2>(defaultStep2);
   const [files, setFiles] = useState<File[]>([]);
   const [requiredDocs, setRequiredDocs] = useState<Record<string, File | null>>({});
+  const [licenseChecks, setLicenseChecks] = useState<Record<number, LicenseCheck>>({});
+  const [victoriaOpen, setVictoriaOpen] = useState(false);
+  const [victoriaDrafting, setVictoriaDrafting] = useState(false);
+  const [victoriaDraft, setVictoriaDraft] = useState("");
 
   function toggleSubtrade(name: string) {
     setS1((s) => ({
@@ -127,7 +172,82 @@ function PermitIntakePage() {
     setFiles((f) => [...f, ...incoming]);
   }
 
+  function onAddressResolved(r: ResolvedAddress) {
+    setS1((s) => ({
+      ...s,
+      address: r.formatted || s.address,
+      municipality: r.incorporated ? r.city : s.municipality,
+      county: r.county || s.county,
+      // Folio/parcel lookup isn't wired to a data source yet.
+      folio: "lookup pending",
+    }));
+  }
+
+  function checkLicense(index: number) {
+    const raw = s2.licenses[index]?.trim();
+    if (!raw) {
+      setLicenseChecks((c) => ({ ...c, [index]: undefined as unknown as LicenseCheck }));
+      return;
+    }
+    const profile = getCurrentGcCompanyProfile();
+    const normalize = (v: string) => v.replace(/[^a-z0-9]/gi, "").toUpperCase();
+    const candidates = [profile.primaryQualifier, profile.secondaryQualifier].filter(Boolean) as Array<{
+      name: string;
+      licenseNumber: string;
+      licenseType: string;
+      expiration: string;
+      dbprStatus: string;
+    }>;
+    const match = candidates.find((q) => normalize(q.licenseNumber) === normalize(raw));
+    if (!match) {
+      setLicenseChecks((c) => ({ ...c, [index]: { status: "not-found" } }));
+      return;
+    }
+    const expired = match.dbprStatus === "expired" || new Date(match.expiration).getTime() < Date.now();
+    setLicenseChecks((c) => ({
+      ...c,
+      [index]: {
+        status: expired ? "expired" : "found",
+        qualifierName: match.name,
+        licenseType: match.licenseType,
+        expiration: match.expiration,
+      },
+    }));
+  }
+
+  function openVictoria() {
+    setVictoriaOpen(true);
+    setVictoriaDrafting(true);
+    setVictoriaDraft("");
+    // Deterministic local generation — no external Victoria/AI wiring found for
+    // scope narratives yet, so this produces a well-formed template from the
+    // intake data already entered.
+    window.setTimeout(() => {
+      setVictoriaDraft(draftScopeNarrative(s1));
+      setVictoriaDrafting(false);
+    }, 700);
+  }
+
+  function acceptVictoriaDraft() {
+    setS1((s) => ({ ...s, scope: victoriaDraft }));
+    setVictoriaOpen(false);
+    toast.success("Scope of work updated from Victoria's draft");
+  }
+
   const requiredDocList = s1.category === "Commercial" ? REQUIRED_DOCS_COM : REQUIRED_DOCS_RES;
+
+  const feeCategory = s1.category === "Commercial" ? "commercial" : "residential";
+  const feeEstimate = useMemo(
+    () =>
+      estimatePermitFee({
+        municipality: s1.municipality,
+        category: feeCategory,
+        squareFootage: Number(s1.squareFootage) || 0,
+        constructionValue: Number(s1.valuation) || 0,
+      }),
+    [s1.municipality, feeCategory, s1.squareFootage, s1.valuation],
+  );
+  const showFeeEstimate = Number(s1.squareFootage) > 0 || Number(s1.valuation) > 0;
 
   return (
     <PortalShell>
@@ -172,7 +292,22 @@ function PermitIntakePage() {
             </Field>
 
             <Field label="Project Address" required>
-              <Input className="rounded-[3px]" value={s1.address} onChange={(e) => setS1({ ...s1, address: e.target.value })} placeholder="1247 Banyan Trail, Ocean Ridge, FL" />
+              <AddressLookupField
+                className="flex-1 h-10 rounded-[3px] border border-obsidian/15 bg-white px-3 text-sm text-obsidian placeholder:text-obsidian/40 focus:border-obsidian/40 focus:outline-none"
+                value={s1.address}
+                onChange={(v) => setS1((s) => ({ ...s, address: v }))}
+                onResolved={onAddressResolved}
+              />
+              {(s1.municipality || s1.county || s1.folio) && (
+                <div className="mt-2 flex flex-wrap items-center gap-2 text-[11px] font-mono uppercase tracking-[0.1em] text-obsidian/60">
+                  <MapPin className="h-3 w-3 text-obsidian/40" />
+                  {s1.municipality && <span className="border border-obsidian/15 bg-paper-warm px-2 py-1 rounded-[2px]">{s1.municipality}</span>}
+                  {s1.county && <span className="border border-obsidian/15 bg-paper-warm px-2 py-1 rounded-[2px]">{s1.county}</span>}
+                  <span className="border border-dashed border-obsidian/25 px-2 py-1 rounded-[2px] text-obsidian/45">
+                    Folio: {s1.folio || "lookup pending"}
+                  </span>
+                </div>
+              )}
             </Field>
 
             <div className="grid sm:grid-cols-2 gap-4">
@@ -190,8 +325,29 @@ function PermitIntakePage() {
             </div>
 
             <Field label="Municipality" required>
-              <Input className="rounded-[3px]" value={s1.municipality} onChange={(e) => setS1({ ...s1, municipality: e.target.value })} placeholder="Search jurisdiction…" />
+              <Input className="rounded-[3px]" value={s1.municipality} onChange={(e) => setS1({ ...s1, municipality: e.target.value })} placeholder="Search jurisdiction… (auto-fills from address)" />
             </Field>
+
+            <div className="grid sm:grid-cols-2 gap-4">
+              <Field label="Square Footage">
+                <Input type="number" min={0} className="rounded-[3px] tabular-nums" value={s1.squareFootage} onChange={(e) => setS1({ ...s1, squareFootage: e.target.value })} placeholder="2400" />
+              </Field>
+              <Field label="Valuation of Project ($)" required>
+                <Input type="number" min={0} className="rounded-[3px] tabular-nums" value={s1.valuation} onChange={(e) => setS1({ ...s1, valuation: e.target.value })} placeholder="4125000" />
+              </Field>
+            </div>
+
+            {showFeeEstimate && (
+              <div className="border border-sky/40 bg-sky/10 rounded-[3px] px-4 py-3.5">
+                <div className="flex flex-wrap items-baseline justify-between gap-2">
+                  <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/60">Estimated Permit Fee</span>
+                  <span className="display-serif text-2xl text-obsidian tabular-nums">${feeEstimate.toLocaleString("en-US")}</span>
+                </div>
+                <p className="mt-1 text-[11px] text-obsidian/55">
+                  Estimate only — based on {s1.municipality || "a default"} fee schedule, square footage, and construction value. Final fees are set by the building department at submittal.
+                </p>
+              </div>
+            )}
 
             <Field label="Subtrades">
               <div className="flex flex-wrap gap-2">
@@ -217,11 +373,17 @@ function PermitIntakePage() {
             </Field>
 
             <Field label="Detailed Scope of Work" required>
+              <div className="flex items-center justify-between gap-2 mb-1.5">
+                <span className="sr-only">Scope of Work</span>
+                <button
+                  type="button"
+                  onClick={openVictoria}
+                  className="ml-auto inline-flex items-center gap-1.5 text-xs font-mono uppercase tracking-[0.12em] text-sky hover:text-obsidian"
+                >
+                  <Wand2 className="h-3.5 w-3.5" /> Draft with Victoria
+                </button>
+              </div>
               <Textarea className="rounded-[3px] min-h-[140px]" value={s1.scope} onChange={(e) => setS1({ ...s1, scope: e.target.value })} placeholder="Describe the work, materials, square footage, and any HVHZ or oceanfront details." />
-            </Field>
-
-            <Field label="Valuation of Project ($)" required>
-              <Input type="number" min={0} className="rounded-[3px] tabular-nums" value={s1.valuation} onChange={(e) => setS1({ ...s1, valuation: e.target.value })} placeholder="4125000" />
             </Field>
 
             <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-obsidian/10">
@@ -246,18 +408,44 @@ function PermitIntakePage() {
               </div>
               <Field label="License Number(s)">
                 <div className="space-y-2">
-                  {s2.licenses.map((lic, i) => (
-                    <div key={i} className="flex gap-2">
-                      <Input className="rounded-[3px] font-mono" value={lic} onChange={(e) => {
-                        const next = [...s2.licenses]; next[i] = e.target.value; setS2({ ...s2, licenses: next });
-                      }} />
-                      {s2.licenses.length > 1 && (
-                        <button type="button" onClick={() => setS2({ ...s2, licenses: s2.licenses.filter((_, j) => j !== i) })} className="p-2 text-obsidian/40 hover:text-oxblood">
-                          <X className="h-4 w-4" />
-                        </button>
-                      )}
-                    </div>
-                  ))}
+                  {s2.licenses.map((lic, i) => {
+                    const check = licenseChecks[i];
+                    return (
+                      <div key={i}>
+                        <div className="flex gap-2">
+                          <Input
+                            className="rounded-[3px] font-mono"
+                            value={lic}
+                            onChange={(e) => {
+                              const next = [...s2.licenses]; next[i] = e.target.value; setS2({ ...s2, licenses: next });
+                              setLicenseChecks((c) => { const nc = { ...c }; delete nc[i]; return nc; });
+                            }}
+                            onBlur={() => checkLicense(i)}
+                          />
+                          {s2.licenses.length > 1 && (
+                            <button type="button" onClick={() => setS2({ ...s2, licenses: s2.licenses.filter((_, j) => j !== i) })} className="p-2 text-obsidian/40 hover:text-oxblood">
+                              <X className="h-4 w-4" />
+                            </button>
+                          )}
+                        </div>
+                        {check?.status === "found" && (
+                          <div className="mt-1.5 flex items-start gap-1.5 text-[12px] text-emerald-700">
+                            <CheckCircle2 className="h-3.5 w-3.5 shrink-0 mt-0.5" />
+                            <span>{check.qualifierName} — {check.licenseType} — active through {check.expiration}</span>
+                          </div>
+                        )}
+                        {check?.status === "expired" && (
+                          <div className="mt-1.5 flex items-start gap-1.5 text-[12px] text-oxblood">
+                            <AlertTriangle className="h-3.5 w-3.5 shrink-0 mt-0.5" />
+                            <span>{check.qualifierName ?? "Qualifier"} — license expired {check.expiration ? `on ${check.expiration}` : ""}. Update before submitting.</span>
+                          </div>
+                        )}
+                        {check?.status === "not-found" && (
+                          <div className="mt-1.5 text-[12px] text-obsidian/50">Qualifier lookup pending — license not found on file.</div>
+                        )}
+                      </div>
+                    );
+                  })}
                   <button type="button" onClick={() => setS2({ ...s2, licenses: [...s2.licenses, ""] })} className="inline-flex items-center gap-1.5 text-xs font-mono uppercase tracking-[0.14em] text-obsidian/65 hover:text-obsidian">
                     <Plus className="h-3 w-3" /> Add another license
                   </button>
@@ -313,6 +501,44 @@ function PermitIntakePage() {
           </div>
         )}
       </div>
+
+      <Sheet open={victoriaOpen} onOpenChange={setVictoriaOpen}>
+        <SheetContent side="right" className="w-full sm:max-w-lg p-0 flex flex-col">
+          <SheetHeader className="p-6 pb-4 border-b border-obsidian/10">
+            <div className="eyebrow text-obsidian/50 flex items-center gap-1.5">
+              <Sparkles className="h-3.5 w-3.5" /> Victoria
+            </div>
+            <SheetTitle className="display-serif text-2xl text-obsidian">Draft scope of work</SheetTitle>
+            <SheetDescription className="text-sm text-obsidian/55">
+              Generated from the project details entered so far. Review, edit, and accept to fill in the field.
+            </SheetDescription>
+          </SheetHeader>
+          <div className="flex-1 overflow-y-auto p-6">
+            {victoriaDrafting ? (
+              <div className="flex items-center gap-2 text-sm text-obsidian/55">
+                <Loader2 className="h-4 w-4 animate-spin" /> Drafting a narrative for {s1.municipality || "this jurisdiction"}…
+              </div>
+            ) : (
+              <Textarea
+                value={victoriaDraft}
+                onChange={(e) => setVictoriaDraft(e.target.value)}
+                className="rounded-[3px] min-h-[280px] text-sm leading-relaxed"
+              />
+            )}
+          </div>
+          <SheetFooter className="p-6 pt-4 border-t border-obsidian/10 flex-row gap-2">
+            <Button type="button" variant="ghost" className="rounded-[3px]" onClick={() => setVictoriaOpen(false)}>
+              Dismiss
+            </Button>
+            <Button type="button" variant="outline" className="rounded-[3px] ml-auto" onClick={openVictoria} disabled={victoriaDrafting}>
+              Regenerate
+            </Button>
+            <Button type="button" variant="dark" className="rounded-[3px]" onClick={acceptVictoriaDraft} disabled={victoriaDrafting || !victoriaDraft}>
+              Accept
+            </Button>
+          </SheetFooter>
+        </SheetContent>
+      </Sheet>
     </PortalShell>
   );
 }
