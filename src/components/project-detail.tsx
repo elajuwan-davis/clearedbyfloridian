@@ -19,6 +19,28 @@ import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { PROJECTS, getProjectById, fullAddress, type Project } from "@/lib/projects-data";
 import { VENDORS, getVendor, setVendor, type Vendor } from "@/lib/project-vendors";
 
+function VendorManagedBanner({ project }: { project: Project }) {
+  const [vendor, setVendorState] = useState<Vendor | null>(null);
+  useEffect(() => {
+    const sync = () => setVendorState(getVendor(project.name));
+    sync();
+    window.addEventListener("project-vendors:changed", sync);
+    return () => window.removeEventListener("project-vendors:changed", sync);
+  }, [project.name]);
+  if (!vendor) return null;
+  return (
+    <div className="mt-4 flex items-start gap-3 rounded-[3px] border border-slate-300 bg-slate-100 px-4 py-3">
+      <Info className="mt-0.5 h-4 w-4 shrink-0 text-slate-500" />
+      <div>
+        <div className="font-mono text-[10px] uppercase tracking-[0.14em] text-slate-500">Vendor Managed · Record Copy</div>
+        <p className="mt-1 text-sm text-slate-700">
+          This permit is managed by {vendor}. Cléared maintains a record copy only.
+        </p>
+      </div>
+    </div>
+  );
+}
+
 function VendorSelect({ project }: { project: Project }) {
   const [vendor, setVendorState] = useState<Vendor | "">("");
   useEffect(() => {
