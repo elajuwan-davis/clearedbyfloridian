@@ -67,8 +67,10 @@ import { Route as PermitCardIdRouteImport } from './routes/permit-card.$id'
 import { Route as PortalIndexRouteImport } from './routes/portal.index'
 import { Route as PortalAlertsRouteImport } from './routes/portal.alerts'
 import { Route as PortalBidReviewRouteImport } from './routes/portal.bid-review'
+import { Route as PortalBillingRouteImport } from './routes/portal.billing'
 import { Route as PortalBookmarksRouteImport } from './routes/portal.bookmarks'
 import { Route as PortalBuildingDeptRouteImport } from './routes/portal.building-dept'
+import { Route as PortalCompanyRouteImport } from './routes/portal.company'
 import { Route as PortalComplianceRouteImport } from './routes/portal.compliance'
 import { Route as PortalContactsRouteImport } from './routes/portal.contacts'
 import { Route as PortalFeatureRequestsRouteImport } from './routes/portal.feature-requests'
@@ -413,6 +415,11 @@ const PortalBidReviewRoute = PortalBidReviewRouteImport.update({
   path: '/bid-review',
   getParentRoute: () => PortalRoute,
 } as any)
+const PortalBillingRoute = PortalBillingRouteImport.update({
+  id: '/billing',
+  path: '/billing',
+  getParentRoute: () => PortalRoute,
+} as any)
 const PortalBookmarksRoute = PortalBookmarksRouteImport.update({
   id: '/bookmarks',
   path: '/bookmarks',
@@ -421,6 +428,11 @@ const PortalBookmarksRoute = PortalBookmarksRouteImport.update({
 const PortalBuildingDeptRoute = PortalBuildingDeptRouteImport.update({
   id: '/building-dept',
   path: '/building-dept',
+  getParentRoute: () => PortalRoute,
+} as any)
+const PortalCompanyRoute = PortalCompanyRouteImport.update({
+  id: '/company',
+  path: '/company',
   getParentRoute: () => PortalRoute,
 } as any)
 const PortalComplianceRoute = PortalComplianceRouteImport.update({
@@ -736,8 +748,10 @@ export interface FileRoutesByFullPath {
   '/permit-card/$id': typeof PermitCardIdRoute
   '/portal/alerts': typeof PortalAlertsRoute
   '/portal/bid-review': typeof PortalBidReviewRoute
+  '/portal/billing': typeof PortalBillingRoute
   '/portal/bookmarks': typeof PortalBookmarksRoute
   '/portal/building-dept': typeof PortalBuildingDeptRoute
+  '/portal/company': typeof PortalCompanyRoute
   '/portal/compliance': typeof PortalComplianceRoute
   '/portal/contacts': typeof PortalContactsRoute
   '/portal/feature-requests': typeof PortalFeatureRequestsRoute
@@ -846,8 +860,10 @@ export interface FileRoutesByTo {
   '/permit-card/$id': typeof PermitCardIdRoute
   '/portal/alerts': typeof PortalAlertsRoute
   '/portal/bid-review': typeof PortalBidReviewRoute
+  '/portal/billing': typeof PortalBillingRoute
   '/portal/bookmarks': typeof PortalBookmarksRoute
   '/portal/building-dept': typeof PortalBuildingDeptRoute
+  '/portal/company': typeof PortalCompanyRoute
   '/portal/compliance': typeof PortalComplianceRoute
   '/portal/contacts': typeof PortalContactsRoute
   '/portal/feature-requests': typeof PortalFeatureRequestsRoute
@@ -957,8 +973,10 @@ export interface FileRoutesById {
   '/permit-card/$id': typeof PermitCardIdRoute
   '/portal/alerts': typeof PortalAlertsRoute
   '/portal/bid-review': typeof PortalBidReviewRoute
+  '/portal/billing': typeof PortalBillingRoute
   '/portal/bookmarks': typeof PortalBookmarksRoute
   '/portal/building-dept': typeof PortalBuildingDeptRoute
+  '/portal/company': typeof PortalCompanyRoute
   '/portal/compliance': typeof PortalComplianceRoute
   '/portal/contacts': typeof PortalContactsRoute
   '/portal/feature-requests': typeof PortalFeatureRequestsRoute
@@ -1071,8 +1089,10 @@ export interface FileRouteTypes {
     | '/permit-card/$id'
     | '/portal/alerts'
     | '/portal/bid-review'
+    | '/portal/billing'
     | '/portal/bookmarks'
     | '/portal/building-dept'
+    | '/portal/company'
     | '/portal/compliance'
     | '/portal/contacts'
     | '/portal/feature-requests'
@@ -1181,8 +1201,10 @@ export interface FileRouteTypes {
     | '/permit-card/$id'
     | '/portal/alerts'
     | '/portal/bid-review'
+    | '/portal/billing'
     | '/portal/bookmarks'
     | '/portal/building-dept'
+    | '/portal/company'
     | '/portal/compliance'
     | '/portal/contacts'
     | '/portal/feature-requests'
@@ -1291,8 +1313,10 @@ export interface FileRouteTypes {
     | '/permit-card/$id'
     | '/portal/alerts'
     | '/portal/bid-review'
+    | '/portal/billing'
     | '/portal/bookmarks'
     | '/portal/building-dept'
+    | '/portal/company'
     | '/portal/compliance'
     | '/portal/contacts'
     | '/portal/feature-requests'
@@ -1824,6 +1848,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PortalBidReviewRouteImport
       parentRoute: typeof PortalRoute
     }
+    '/portal/billing': {
+      id: '/portal/billing'
+      path: '/billing'
+      fullPath: '/portal/billing'
+      preLoaderRoute: typeof PortalBillingRouteImport
+      parentRoute: typeof PortalRoute
+    }
     '/portal/bookmarks': {
       id: '/portal/bookmarks'
       path: '/bookmarks'
@@ -1836,6 +1867,13 @@ declare module '@tanstack/react-router' {
       path: '/building-dept'
       fullPath: '/portal/building-dept'
       preLoaderRoute: typeof PortalBuildingDeptRouteImport
+      parentRoute: typeof PortalRoute
+    }
+    '/portal/company': {
+      id: '/portal/company'
+      path: '/company'
+      fullPath: '/portal/company'
+      preLoaderRoute: typeof PortalCompanyRouteImport
       parentRoute: typeof PortalRoute
     }
     '/portal/compliance': {
@@ -2276,8 +2314,10 @@ const PortalSubmissionsRouteWithChildren =
 interface PortalRouteChildren {
   PortalAlertsRoute: typeof PortalAlertsRoute
   PortalBidReviewRoute: typeof PortalBidReviewRoute
+  PortalBillingRoute: typeof PortalBillingRoute
   PortalBookmarksRoute: typeof PortalBookmarksRoute
   PortalBuildingDeptRoute: typeof PortalBuildingDeptRoute
+  PortalCompanyRoute: typeof PortalCompanyRoute
   PortalComplianceRoute: typeof PortalComplianceRoute
   PortalContactsRoute: typeof PortalContactsRoute
   PortalFeatureRequestsRoute: typeof PortalFeatureRequestsRoute
@@ -2310,8 +2350,10 @@ interface PortalRouteChildren {
 const PortalRouteChildren: PortalRouteChildren = {
   PortalAlertsRoute: PortalAlertsRoute,
   PortalBidReviewRoute: PortalBidReviewRoute,
+  PortalBillingRoute: PortalBillingRoute,
   PortalBookmarksRoute: PortalBookmarksRoute,
   PortalBuildingDeptRoute: PortalBuildingDeptRoute,
+  PortalCompanyRoute: PortalCompanyRoute,
   PortalComplianceRoute: PortalComplianceRoute,
   PortalContactsRoute: PortalContactsRoute,
   PortalFeatureRequestsRoute: PortalFeatureRequestsRoute,
@@ -2438,3 +2480,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
