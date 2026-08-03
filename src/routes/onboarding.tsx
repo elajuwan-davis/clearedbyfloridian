@@ -150,7 +150,7 @@ function OnboardingPage() {
         {step === "company" && (
           <form onSubmit={submitCompany} className="space-y-5">
             <div className="space-y-2">
-              <div className="label-eyebrow">Step 2 of 2</div>
+              <div className="label-eyebrow">Step 2 of 3</div>
               <h1 className="display-serif text-3xl leading-tight">Confirm your company.</h1>
               <p className="text-sm text-muted-foreground">
                 We'll set up your portal with this information.
