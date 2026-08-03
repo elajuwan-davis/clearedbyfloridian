@@ -11,6 +11,8 @@ import {
   ClipboardCheck,
 
   ShieldCheck,
+  Scale,
+
   Settings,
   HardHat,
   type LucideIcon,
