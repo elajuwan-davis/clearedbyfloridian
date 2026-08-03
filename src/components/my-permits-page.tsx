@@ -229,16 +229,17 @@ export function MyPermitsPage() {
                                     {p.municipality}
                                   </span>
                                 )}
-                                {c.missingFields.length > 0 && (
+                                {!vendor && c.missingFields.length > 0 && (
                                   <span className="inline-flex items-center gap-1 border border-red-500/40 bg-red-50 px-1.5 py-0.5 text-[9px] font-mono uppercase tracking-[0.1em] text-red-700 rounded-[2px]">
                                     <AlertTriangle className="h-2.5 w-2.5" /> {c.missingFields.length}
                                   </span>
                                 )}
-                                {c.missingDocs.length > 0 && (
+                                {!vendor && c.missingDocs.length > 0 && (
                                   <span className="inline-flex items-center gap-1 border border-amber-500/40 bg-amber-50 px-1.5 py-0.5 text-[9px] font-mono uppercase tracking-[0.1em] text-amber-700 rounded-[2px]">
                                     <FileText className="h-2.5 w-2.5" /> {c.missingDocs.length}
                                   </span>
                                 )}
+
                               </div>
 
                               <div className="mt-4 flex items-center gap-2">
