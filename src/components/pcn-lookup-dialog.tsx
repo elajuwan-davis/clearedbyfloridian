@@ -10,11 +10,13 @@ export function PCNLookupDialog({
   open,
   onOpenChange,
   project,
+  permitId,
   onSaved,
 }: {
   open: boolean;
   onOpenChange: (v: boolean) => void;
   project: Project;
+  permitId?: string;
   onSaved?: (pcn: string) => void;
 }) {
   const [value, setValue] = useState("");
@@ -22,10 +24,10 @@ export function PCNLookupDialog({
 
   useEffect(() => {
     if (open) {
-      setValue(getPCN(project.id));
+      getPCN({ projectId: project.id, permitId }).then(setValue);
       setCopied(false);
     }
-  }, [open, project.id]);
+  }, [open, project.id, permitId]);
 
   const appraiser = appraiserForCounty(project.county);
   const fullAddr = `${project.address}, ${project.city}, ${project.state} ${project.zip ?? ""}`.trim();
@@ -37,8 +39,8 @@ export function PCNLookupDialog({
     });
   }
 
-  function save() {
-    setPCN(project.id, value);
+  async function save() {
+    await setPCN({ projectId: project.id, permitId }, value);
     onSaved?.(value.trim());
     onOpenChange(false);
   }

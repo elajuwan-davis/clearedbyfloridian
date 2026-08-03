@@ -5,7 +5,7 @@ import { Printer, ArrowLeft, ShieldCheck } from "lucide-react";
 import { getProjectById, fullAddress, type Project } from "@/lib/projects-data";
 import { findPortalForAddress } from "@/lib/municipalities";
 import { buildInspections, loadInspections, POOL_INSPECTIONS, type Inspection } from "@/lib/inspections";
-import { getAppraiser } from "@/lib/property-appraiser";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/permit-card/$id")({
   head: () => ({
@@ -32,11 +32,19 @@ function PermitCardPage() {
 
 function PermitCard({ project }: { project: Project }) {
   const portal = findPortalForAddress(`${project.address}, ${project.city}`);
-  const appraiser = typeof window !== "undefined" ? getAppraiser(project.id) : null;
+  const [dispatch, setDispatch] = useState<{ owner_name: string | null; parcel_id: string | null; flood_zone: string | null } | null>(null);
   const [inspections, setInspections] = useState<Inspection[]>(() => buildInspections(false));
 
   useEffect(() => {
     setInspections(loadInspections(project.id, buildInspections(false)));
+    supabase
+      .from("dispatch_results")
+      .select("owner_name, parcel_id, flood_zone")
+      .eq("permit_id", project.id)
+      .order("fetched_at", { ascending: false })
+      .limit(1)
+      .maybeSingle()
+      .then(({ data }) => setDispatch(data));
   }, [project.id]);
 
   const passed = inspections.filter((i) => i.status === "passed").length;
@@ -89,12 +97,11 @@ function PermitCard({ project }: { project: Project }) {
             <Field label="Florida License" value="CPC1459161" mono />
             <Field label="Issue Date" value={issueDate} mono />
             <Field label="Municipality" value={portal?.name ?? project.city} />
-            {appraiser && (
+            {dispatch && (
               <>
-                <Field label="Owner of Record" value={appraiser.owner_of_record} />
-                <Field label="PCN" value={appraiser.pcn} mono />
-                <Field label="Flood Zone" value={appraiser.flood_zone} mono />
-                <Field label="Year Built" value={appraiser.year_built} mono />
+                <Field label="Owner of Record" value={dispatch.owner_name ?? "—"} />
+                <Field label="PCN" value={dispatch.parcel_id ?? "—"} mono />
+                <Field label="Flood Zone" value={dispatch.flood_zone ?? "—"} mono />
               </>
             )}
           </section>

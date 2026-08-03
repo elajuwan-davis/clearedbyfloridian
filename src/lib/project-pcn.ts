@@ -1,9 +1,20 @@
-// LocalStorage-backed per-project PCN (Parcel Control Number) + address override store.
+// PCN (Parcel Control Number) storage.
+//
+// When a real `permitId` is known, the canonical value lives in `permits.pcn`.
+// When only a seed/fake project id is available (e.g. project-detail.tsx), the
+// value falls back to localStorage for offline display.
+
+import { supabase } from "@/integrations/supabase/client";
 
 export type ProjectPCN = {
   projectId: string;
   pcn: string;
   updatedAt: string;
+};
+
+export type PCNContext = {
+  projectId: string;
+  permitId?: string;
 };
 
 const KEY = "cleared.projectPCNs.v1";
@@ -24,20 +35,41 @@ function write(list: ProjectPCN[]) {
   window.dispatchEvent(new CustomEvent("project-pcn:changed"));
 }
 
-export function getPCN(projectId: string): string {
-  return read().find((p) => p.projectId === projectId)?.pcn ?? "";
+function isUuid(value: string | undefined): boolean {
+  if (!value) return false;
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value);
 }
 
-export function setPCN(projectId: string, pcn: string) {
-  const list = read().filter((p) => p.projectId !== projectId);
+export async function getPCN(ctx: PCNContext): Promise<string> {
+  if (ctx.permitId && isUuid(ctx.permitId)) {
+    const { data, error } = await supabase
+      .from("permits")
+      .select("pcn")
+      .eq("id", ctx.permitId)
+      .maybeSingle();
+    if (!error && data?.pcn) return data.pcn;
+  }
+  return read().find((p) => p.projectId === ctx.projectId)?.pcn ?? "";
+}
+
+export async function setPCN(ctx: PCNContext, pcn: string) {
   const trimmed = pcn.trim();
+
+  if (ctx.permitId && isUuid(ctx.permitId) && trimmed) {
+    const { error } = await supabase
+      .from("permits")
+      .update({ pcn: trimmed })
+      .eq("id", ctx.permitId);
+    if (error) throw error;
+  }
+
+  const list = read().filter((p) => p.projectId !== ctx.projectId);
   if (trimmed) {
-    list.push({ projectId, pcn: trimmed, updatedAt: new Date().toISOString() });
+    list.push({ projectId: ctx.projectId, pcn: trimmed, updatedAt: new Date().toISOString() });
   }
   write(list);
 }
 
-// County property appraiser search URLs.
 export const COUNTY_APPRAISER_URLS: Record<string, { name: string; url: string }> = {
   "Palm Beach": {
     name: "Palm Beach County PAPA",

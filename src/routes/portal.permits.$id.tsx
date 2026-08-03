@@ -22,7 +22,7 @@ import type { DispatchResult } from "@/lib/dispatch";
 import { getPermit, updatePermit, deletePermit, permitCompleteness, getEffectiveDocs, getHiddenFieldKeys, withHiddenFieldKeys, ensureSubTokens, type PermitRow, type PermitStatus, type PermitDoc, type PermitSub } from "@/lib/permits-api";
 import { PermitDocUploader } from "@/components/permit-doc-uploader";
 import { deletePermitFile } from "@/lib/permit-storage";
-import { fetchAppraiserRecord } from "@/lib/property-appraiser";
+import { supabase } from "@/integrations/supabase/client";
 import { generatePermitExportPdf, suggestExportFilename } from "@/lib/permit-export";
 import { uploadFileToGoogleDrive, getGoogleDriveStatus, startGoogleDriveConnect, saveGoogleDriveConnection } from "@/lib/google-drive.functions";
 import { connectAppUser, getTopLevelAppUrl, isEmbeddedAppView, openAppInTopLevelTab } from "@/integrations/lovable/appUserConnectorClient";
@@ -473,17 +473,23 @@ function PermitDetailPage() {
                 <button
                   type="button"
                   disabled={!editing || pcnLoading || !e.job_address || !e.county}
-                  title={!e.job_address || !e.county ? "Address and county required" : "Look up PCN from county property appraiser"}
+                  title={!e.job_address || !e.county ? "Address and county required" : "Look up PCN from dispatch cache"}
                   onClick={async () => {
                     if (!e.job_address || !e.county) return;
                     setPcnLoading(true);
                     try {
-                      const rec = await fetchAppraiserRecord(e.job_address, e.city ?? "", e.county, e.owner_name ?? "");
-                      if (rec?.pcn) {
-                        set("pcn", rec.pcn);
-                        toast.success(`PCN found from ${rec.source}`);
+                      const { data } = await supabase
+                        .from("dispatch_results")
+                        .select("parcel_id, parcel_source, fetched_at")
+                        .eq("permit_id", e.id)
+                        .order("fetched_at", { ascending: false })
+                        .limit(1)
+                        .maybeSingle();
+                      if (data?.parcel_id) {
+                        set("pcn", data.parcel_id);
+                        toast.success(`PCN found from ${data.parcel_source ?? "dispatch"}`);
                       } else {
-                        toast.error("Not found — enter manually");
+                        toast.error("Not found — run Dispatch or enter manually");
                       }
                     } catch {
                       toast.error("Not found — enter manually");
