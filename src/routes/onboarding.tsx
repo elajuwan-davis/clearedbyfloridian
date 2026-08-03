@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Loader2, ArrowRight } from "lucide-react";
+import { PaaSignStep } from "@/components/paa-sign-dialog";
+
 
 export const Route = createFileRoute("/onboarding")({
   head: () => ({
@@ -22,7 +24,9 @@ export const Route = createFileRoute("/onboarding")({
 function OnboardingPage() {
   const navigate = useNavigate();
   const updateTenant = useServerFn(updateMyTenantFn);
-  const [step, setStep] = useState<"password" | "company" | "checking">("checking");
+  const [step, setStep] = useState<"password" | "company" | "paa" | "checking">("checking");
+  const [signerEmail, setSignerEmail] = useState("");
+
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [tenantName, setTenantName] = useState("");
@@ -38,7 +42,9 @@ function OnboardingPage() {
         setStep("password");
         return;
       }
+      setSignerEmail(data.session.user.email ?? "");
       setStep("password");
+
     });
   }, []);
 
@@ -72,7 +78,7 @@ function OnboardingPage() {
           license_number: licenseNumber.trim() || null,
         },
       });
-      navigate({ to: "/portal", replace: true });
+      setStep("paa");
     } catch (err) {
       setError((err as Error).message);
     } finally {
@@ -82,7 +88,7 @@ function OnboardingPage() {
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center px-6 py-12">
-      <div className="w-full max-w-md">
+      <div className={`w-full ${step === "paa" ? "max-w-2xl" : "max-w-md"}`}>
         <div className="mb-10 text-center">
           <div className="wordmark text-4xl" style={{ color: "var(--obsidian)" }}>
             Cleard
@@ -99,7 +105,7 @@ function OnboardingPage() {
         {step === "password" && (
           <form onSubmit={submitPassword} className="space-y-5">
             <div className="space-y-2">
-              <div className="label-eyebrow">Step 1 of 2</div>
+              <div className="label-eyebrow">Step 1 of 3</div>
               <h1 className="display-serif text-3xl leading-tight">Set your password.</h1>
               <p className="text-sm text-muted-foreground">
                 Choose a password to secure your account.
@@ -144,7 +150,7 @@ function OnboardingPage() {
         {step === "company" && (
           <form onSubmit={submitCompany} className="space-y-5">
             <div className="space-y-2">
-              <div className="label-eyebrow">Step 2 of 2</div>
+              <div className="label-eyebrow">Step 2 of 3</div>
               <h1 className="display-serif text-3xl leading-tight">Confirm your company.</h1>
               <p className="text-sm text-muted-foreground">
                 We'll set up your portal with this information.
@@ -176,11 +182,29 @@ function OnboardingPage() {
               className="w-full h-11 rounded-[3px] gap-2"
               style={{ backgroundColor: "var(--obsidian)", color: "var(--paper)" }}
             >
-              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <>Enter portal <ArrowRight className="h-4 w-4" /></>}
+              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <>Continue <ArrowRight className="h-4 w-4" /></>}
             </Button>
           </form>
         )}
+
+        {step === "paa" && (
+          <div className="space-y-5">
+            <div className="space-y-2">
+              <div className="label-eyebrow">Step 3 of 3</div>
+              <h1 className="display-serif text-3xl leading-tight">Sign your Permit Agent Authorization.</h1>
+              <p className="text-sm text-muted-foreground">
+                Required before we can file on your behalf. You cannot enter the portal until this is signed.
+              </p>
+            </div>
+            <PaaSignStep
+              defaultName={tenantName}
+              defaultEmail={signerEmail}
+              onSigned={() => navigate({ to: "/portal", replace: true })}
+            />
+          </div>
+        )}
       </div>
+
     </div>
   );
 }

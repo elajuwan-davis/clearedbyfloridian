@@ -11,6 +11,8 @@ import {
   ClipboardCheck,
 
   ShieldCheck,
+  Scale,
+
   Settings,
   HardHat,
   type LucideIcon,
@@ -119,6 +121,16 @@ export const navSections: NavSection[] = [
 ];
 
 
+export const legalSection: NavSection = {
+  key: "legal",
+  label: "Legal",
+  icon: Scale,
+  items: [
+    { to: "/legal", label: "Document Library" },
+    { to: "/legal/notary-queue", label: "Remote Notary Queue" },
+  ],
+};
+
 export const adminSection: NavSection = {
   key: "admin",
   label: "Admin",
@@ -133,6 +145,7 @@ export const adminSection: NavSection = {
     { to: "/admin/utility-locates", label: "Utility Locates" },
   ],
 };
+
 
 
 export const settingsSection: NavSection = {
@@ -169,8 +182,9 @@ export const subSettingsSection: NavSection = {
 
 export function sectionsForRole(role: AppRole | null, isAdmin: boolean): NavSection[] {
   if (role === "subcontractor") return subNavSections;
-  return isAdmin ? [...navSections, adminSection] : navSections;
+  return isAdmin ? [...navSections, legalSection, adminSection] : navSections;
 }
+
 
 export function settingsForRole(role: AppRole | null): NavSection {
   return role === "subcontractor" ? subSettingsSection : settingsSection;

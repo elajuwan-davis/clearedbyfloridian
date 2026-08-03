@@ -20,6 +20,9 @@ import { useServerFn } from "@tanstack/react-start";
 import { inviteTeamMemberFn, listMyTeamFn, removeTeamMemberFn, getMyTenantOnboardingFn, setTenantAllowedDomainFn, createInviteTokenFn, revokeInviteTokenFn } from "@/lib/tenants.functions";
 import { useSession } from "@/lib/use-session";
 import { nameFromEmail } from "@/lib/profile-api";
+import { PAA_EVT, acceptTos, loadPaa, loadTosAccepted, type PaaRecord } from "@/lib/paa";
+import { PaaSignedCard } from "@/components/paa-sign-dialog";
+
 
 
 export const Route = createFileRoute("/profile")({
@@ -361,6 +364,11 @@ function ProfilePage() {
           )}
         </Section>
 
+        {/* Legal */}
+        <Section title="Legal" subtitle="Signed authorizations and platform agreements on file.">
+          <LegalSectionBody />
+        </Section>
+
 
         {/* Password */}
         <Section title="Change Password">
@@ -684,3 +692,57 @@ function TeamOnboardingSection() {
   );
 }
 
+
+/** GC-facing read-only Legal section: signed PAA + Terms acceptance. */
+function LegalSectionBody() {
+  const [paa, setPaaRec] = useState<PaaRecord | null>(null);
+  const [tos, setTos] = useState<string | null>(null);
+
+  useEffect(() => {
+    const refresh = () => { setPaaRec(loadPaa()); setTos(loadTosAccepted()); };
+    refresh();
+    window.addEventListener(PAA_EVT, refresh);
+    return () => window.removeEventListener(PAA_EVT, refresh);
+  }, []);
+
+  return (
+    <div className="space-y-5 max-w-2xl">
+      {paa ? (
+        <PaaSignedCard rec={paa} />
+      ) : (
+        <div className="border border-amber-600/30 bg-amber-50 p-5 rounded-[3px]">
+          <div className="font-mono text-[10px] uppercase tracking-[0.14em] text-amber-800">
+            Permit Agent Authorization — not signed
+          </div>
+          <p className="mt-2 text-sm text-obsidian/70">
+            We can't file NTBOs or submit applications as your authorized agent until this is signed.
+          </p>
+          <Button asChild variant="dark" size="sm" className="mt-4 rounded-[3px] gap-1.5">
+            <Link to="/onboarding">Sign now <ArrowRight className="h-3.5 w-3.5" /></Link>
+          </Button>
+        </div>
+      )}
+
+      <div className="border border-obsidian/12 bg-white p-5 rounded-[3px]">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <div className="text-sm font-medium text-obsidian">Terms of Service</div>
+            <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-obsidian/55">
+              {tos ? `Accepted ${new Date(tos).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}` : "Not yet accepted"}
+            </div>
+          </div>
+          {!tos && (
+            <Button
+              size="sm"
+              variant="outline"
+              className="rounded-[3px]"
+              onClick={() => { acceptTos(); toast.success("Terms of Service accepted"); }}
+            >
+              Accept Terms
+            </Button>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}

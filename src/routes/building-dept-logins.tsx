@@ -2,6 +2,9 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { PortalShell } from "@/components/portal-shell";
 import { Button } from "@/components/ui/button";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { MunicipalityContactsTab } from "@/components/municipal-contacts";
+
 import {
   ChevronDown, Copy, Eye, EyeOff, FileText, Plus, Search, Check, ExternalLink,
 } from "lucide-react";
@@ -184,6 +187,21 @@ function BuildingDeptLoginsPage() {
 
                 {isOpen && (
                   <div className="px-5 sm:px-12 pb-6 pt-1 space-y-6">
+                    {/* Sub-tabs: credentials + municipal contacts */}
+                    <Tabs defaultValue="credentials">
+                      <TabsList className="rounded-[3px] bg-paper-warm p-1">
+                        <TabsTrigger value="credentials" className="rounded-[3px] font-mono text-[10px] uppercase tracking-[0.12em]">
+                          Credentials
+                        </TabsTrigger>
+                        <TabsTrigger value="contacts" className="rounded-[3px] font-mono text-[10px] uppercase tracking-[0.12em]">
+                          Contacts
+                        </TabsTrigger>
+                      </TabsList>
+                      <TabsContent value="contacts" className="mt-5">
+                        <MunicipalityContactsTab muni={l.municipality} />
+                      </TabsContent>
+                      <TabsContent value="credentials" className="mt-5 space-y-6">
+
                     {/* Portal + registration */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
                       <Field label="Portal">
@@ -245,8 +263,11 @@ function BuildingDeptLoginsPage() {
                         })}
                       </ul>
                     </div>
+                      </TabsContent>
+                    </Tabs>
                   </div>
                 )}
+
               </div>
             );
           })}

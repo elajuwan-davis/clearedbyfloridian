@@ -12,6 +12,8 @@ import { ProjectComplianceTab } from "@/components/project-compliance-tab";
 import { PortalShell } from "@/components/portal-shell";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { MunicipalityContactsPanel } from "@/components/municipal-contacts";
+
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { PROJECTS, getProjectById, fullAddress, type Project } from "@/lib/projects-data";
@@ -303,7 +305,12 @@ function OverviewTab({ project }: { project: Project }) {
             })}
           </ol>
         </SectionCard>
+
+        <div className="mt-6">
+          <MunicipalityContactsPanel city={project.city} county={project.county} />
+        </div>
       </aside>
+
     </div>
   );
 }
