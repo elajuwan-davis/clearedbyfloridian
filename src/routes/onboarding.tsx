@@ -182,11 +182,29 @@ function OnboardingPage() {
               className="w-full h-11 rounded-[3px] gap-2"
               style={{ backgroundColor: "var(--obsidian)", color: "var(--paper)" }}
             >
-              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <>Enter portal <ArrowRight className="h-4 w-4" /></>}
+              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <>Continue <ArrowRight className="h-4 w-4" /></>}
             </Button>
           </form>
         )}
+
+        {step === "paa" && (
+          <div className="space-y-5">
+            <div className="space-y-2">
+              <div className="label-eyebrow">Step 3 of 3</div>
+              <h1 className="display-serif text-3xl leading-tight">Sign your Permit Agent Authorization.</h1>
+              <p className="text-sm text-muted-foreground">
+                Required before we can file on your behalf. You cannot enter the portal until this is signed.
+              </p>
+            </div>
+            <PaaSignStep
+              defaultName={tenantName}
+              defaultEmail={signerEmail}
+              onSigned={() => navigate({ to: "/portal", replace: true })}
+            />
+          </div>
+        )}
       </div>
+
     </div>
   );
 }
