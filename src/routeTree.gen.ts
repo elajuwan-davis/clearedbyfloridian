@@ -123,6 +123,7 @@ import { Route as PortalSubmissionsIdRouteImport } from './routes/portal.submiss
 import { Route as ApiPublicEmailOutboxProcessRouteImport } from './routes/api/public/email-outbox.process'
 import { Route as ApiPublicHubspotDealWebhookRouteImport } from './routes/api/public/hubspot.deal-webhook'
 import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments/webhook'
+import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 import { Route as PortalHoaSubmittalsTemplatesNewRouteImport } from './routes/portal.hoa-submittals.templates.new'
 import { Route as PortalPermitsIdBundleRouteImport } from './routes/portal.permits.$id.bundle'
 
@@ -706,6 +707,12 @@ const ApiPublicPaymentsWebhookRoute =
     path: '/api/public/payments/webhook',
     getParentRoute: () => rootRouteImport,
   } as any)
+const LovableEmailQueueProcessRoute =
+  LovableEmailQueueProcessRouteImport.update({
+    id: '/lovable/email/queue/process',
+    path: '/lovable/email/queue/process',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const PortalHoaSubmittalsTemplatesNewRoute =
   PortalHoaSubmittalsTemplatesNewRouteImport.update({
     id: '/hoa-submittals/templates/new',
@@ -833,6 +840,7 @@ export interface FileRoutesByFullPath {
   '/api/public/email-outbox/process': typeof ApiPublicEmailOutboxProcessRoute
   '/api/public/hubspot/deal-webhook': typeof ApiPublicHubspotDealWebhookRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
+  '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
   '/portal/hoa-submittals/templates/new': typeof PortalHoaSubmittalsTemplatesNewRoute
   '/portal/permits/$id/bundle': typeof PortalPermitsIdBundleRoute
 }
@@ -947,6 +955,7 @@ export interface FileRoutesByTo {
   '/api/public/email-outbox/process': typeof ApiPublicEmailOutboxProcessRoute
   '/api/public/hubspot/deal-webhook': typeof ApiPublicHubspotDealWebhookRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
+  '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
   '/portal/hoa-submittals/templates/new': typeof PortalHoaSubmittalsTemplatesNewRoute
   '/portal/permits/$id/bundle': typeof PortalPermitsIdBundleRoute
 }
@@ -1066,6 +1075,7 @@ export interface FileRoutesById {
   '/api/public/email-outbox/process': typeof ApiPublicEmailOutboxProcessRoute
   '/api/public/hubspot/deal-webhook': typeof ApiPublicHubspotDealWebhookRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
+  '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
   '/portal/hoa-submittals/templates/new': typeof PortalHoaSubmittalsTemplatesNewRoute
   '/portal/permits/$id/bundle': typeof PortalPermitsIdBundleRoute
 }
@@ -1186,6 +1196,7 @@ export interface FileRouteTypes {
     | '/api/public/email-outbox/process'
     | '/api/public/hubspot/deal-webhook'
     | '/api/public/payments/webhook'
+    | '/lovable/email/queue/process'
     | '/portal/hoa-submittals/templates/new'
     | '/portal/permits/$id/bundle'
   fileRoutesByTo: FileRoutesByTo
@@ -1300,6 +1311,7 @@ export interface FileRouteTypes {
     | '/api/public/email-outbox/process'
     | '/api/public/hubspot/deal-webhook'
     | '/api/public/payments/webhook'
+    | '/lovable/email/queue/process'
     | '/portal/hoa-submittals/templates/new'
     | '/portal/permits/$id/bundle'
   id:
@@ -1418,6 +1430,7 @@ export interface FileRouteTypes {
     | '/api/public/email-outbox/process'
     | '/api/public/hubspot/deal-webhook'
     | '/api/public/payments/webhook'
+    | '/lovable/email/queue/process'
     | '/portal/hoa-submittals/templates/new'
     | '/portal/permits/$id/bundle'
   fileRoutesById: FileRoutesById
@@ -1489,6 +1502,7 @@ export interface RootRouteChildren {
   ApiPublicEmailOutboxProcessRoute: typeof ApiPublicEmailOutboxProcessRoute
   ApiPublicHubspotDealWebhookRoute: typeof ApiPublicHubspotDealWebhookRoute
   ApiPublicPaymentsWebhookRoute: typeof ApiPublicPaymentsWebhookRoute
+  LovableEmailQueueProcessRoute: typeof LovableEmailQueueProcessRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -2291,6 +2305,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicPaymentsWebhookRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/lovable/email/queue/process': {
+      id: '/lovable/email/queue/process'
+      path: '/lovable/email/queue/process'
+      fullPath: '/lovable/email/queue/process'
+      preLoaderRoute: typeof LovableEmailQueueProcessRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/portal/hoa-submittals/templates/new': {
       id: '/portal/hoa-submittals/templates/new'
       path: '/hoa-submittals/templates/new'
@@ -2560,6 +2581,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicEmailOutboxProcessRoute: ApiPublicEmailOutboxProcessRoute,
   ApiPublicHubspotDealWebhookRoute: ApiPublicHubspotDealWebhookRoute,
   ApiPublicPaymentsWebhookRoute: ApiPublicPaymentsWebhookRoute,
+  LovableEmailQueueProcessRoute: LovableEmailQueueProcessRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
