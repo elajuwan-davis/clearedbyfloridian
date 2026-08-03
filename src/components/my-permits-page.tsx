@@ -6,6 +6,8 @@ import { isInternalUser } from "@/lib/is-internal-user";
 import { isEscalatedByName } from "@/lib/staff-ops";
 import { listPermits, updatePermit, permitCompleteness, type PermitRow, type PermitStatus } from "@/lib/permits-api";
 import { syncAllPermits, getLastRun, formatRelative } from "@/lib/permit-sync";
+import { getVendor } from "@/lib/project-vendors";
+
 
 type GroupKey = "intake" | "preparing" | "submitted" | "on_hold" | "outsourced" | "issued" | "cancelled";
 
