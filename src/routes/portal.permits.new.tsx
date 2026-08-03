@@ -292,7 +292,7 @@ function NewPermitPage() {
    *  Municipality detection lives in @/lib/address-lookup so the provider can
    *  be swapped without touching this form. Incorporated cities resolve to the
    *  city; unincorporated areas resolve to "Unincorporated <County> County". */
-  function handleAddressResolved(r: ResolvedAddress) {
+  async function handleAddressResolved(r: ResolvedAddress) {
     const { municipality: resolvedMuni, matchedList, unincorporated } = resolveMunicipality(r);
 
     setForm((f) => ({
@@ -312,7 +312,11 @@ function NewPermitPage() {
     // Kick off Dispatch — pre-flight property intelligence.
     const resolvedAddress = r.streetLine || r.formatted;
     if (resolvedAddress) {
-      const result = runDispatch({ address: resolvedAddress, city: resolvedMuni || r.city || null });
+      const result = await runDispatch({
+        address: resolvedAddress,
+        city: resolvedMuni || r.city || null,
+        county: r.county,
+      });
       setDispatch(result);
       setDispatchConfirmed(false);
     }

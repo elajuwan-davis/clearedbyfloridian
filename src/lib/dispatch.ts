@@ -1,25 +1,22 @@
 // Dispatch — pre-flight property intelligence.
 //
-// Runs on address entry during Pre-Check intake and surfaces jurisdiction,
-// flood zone, wind speed, parcel/owner/year built/assessed value, and any
-// prior permit history *before* documents are uploaded.
-//
-// Live data sources will be wired by backend later:
-//   - Jurisdiction: FGDL / county GIS point-in-polygon
-//   - Flood zone / BFE: FEMA National Flood Hazard Layer (NFHL)
-//   - Wind speed: ASCE 7 hazard tool (700yr MRI)
-//   - Parcel / owner / year built / assessed: FL DOR NAL, county PAPA
-//   - Permit history: county permit search (varies)
-//
-// For now this returns deterministic mock data keyed off the address so the
-// UI can render immediately and the persisted intake_payload.dispatch field
-// keeps a stable shape across environments.
+// Calls the live dispatch-flood-zone and dispatch-parcel edge functions for
+// real FEMA flood zone and PAPA parcel data. Falls back to deterministic mock
+// data if either call fails (e.g., functions not deployed or upstream APIs
+// unavailable) so the UI always has a stable shape.
 
-export type DispatchFloodZone = "AE" | "X" | "VE" | "A" | "AO" | "D" | "X (shaded)";
+export type DispatchFloodZone =
+  | "AE"
+  | "X"
+  | "VE"
+  | "A"
+  | "AO"
+  | "D"
+  | "X (shaded)";
 
 export type DispatchPriorPermit = {
   permit_number: string;
-  issued_date: string;    // yyyy-mm-dd
+  issued_date: string;
   work_description: string;
   status: string;
 };
@@ -29,21 +26,21 @@ export type DispatchResult = {
   fetched_at: string;
   source: "mock" | "live";
   jurisdiction: {
-    name: string;              // e.g. "City of West Palm Beach"
-    county: string;            // e.g. "Palm Beach County"
-    department: string;        // e.g. "Building Department"
+    name: string;
+    county: string;
+    department: string;
     portal_url?: string;
   };
   flood: {
     zone: DispatchFloodZone;
-    sfha: boolean;                 // Special Flood Hazard Area
+    sfha: boolean;
     base_flood_elevation_ft: number | null;
-    firm_panel: string | null;     // e.g. "12099C0975F"
+    firm_panel: string | null;
   };
   wind: {
-    design_wind_speed_mph: number; // 700yr MRI per ASCE 7
+    design_wind_speed_mph: number;
     exposure_category: "B" | "C" | "D";
-    hvhz: boolean;                 // High Velocity Hurricane Zone
+    hvhz: boolean;
   };
   parcel: {
     parcel_id: string | null;
@@ -54,6 +51,12 @@ export type DispatchResult = {
   };
   permit_history: DispatchPriorPermit[];
 };
+
+const env = import.meta as any;
+const SUPABASE_URL =
+  env?.env?.VITE_SUPABASE_URL ??
+  env?.env?.SUPABASE_URL ??
+  (typeof process !== "undefined" ? process.env.SUPABASE_URL : undefined);
 
 /** Cheap deterministic hash so mock output stays stable per address. */
 function hash(s: string): number {
@@ -67,22 +70,11 @@ function hash(s: string): number {
 
 const FLOOD_ZONES: DispatchFloodZone[] = ["X", "X", "X", "AE", "AE", "VE", "X (shaded)"];
 
-/**
- * Return mock dispatch data for an address. Deterministic — the same address
- * always yields the same result so the UI is stable across renders.
- *
- * Backend will replace this with a server function that calls FEMA NFHL,
- * FL DOR NAL, and county PAPA endpoints; the return shape stays identical.
- */
-export function runDispatch(input: {
-  address: string;
-  city?: string | null;
-  county?: string | null;
-}): DispatchResult {
-  const key = `${input.address}|${input.city ?? ""}|${input.county ?? ""}`.toLowerCase();
+function buildMock(input: { address: string; city: string | null; county: string }): DispatchResult {
+  const key = `${input.address}|${input.city ?? ""}|${input.county}`.toLowerCase();
   const h = hash(key);
 
-  const county = (input.county && input.county.trim()) || "Palm Beach County";
+  const county = input.county.trim() || "Palm Beach County";
   const city = (input.city && input.city.trim()) || "West Palm Beach";
   const isHVHZ = /miami-dade|broward/i.test(county);
 
@@ -105,7 +97,7 @@ export function runDispatch(input: {
   const assessed = 450_000_00 + ((h >> 11) % 2_500_000) * 100;
   const livingArea = 2200 + ((h >> 9) % 3800);
 
-  const priorCount = (h >> 13) % 4; // 0-3
+  const priorCount = (h >> 13) % 4;
   const permit_history: DispatchPriorPermit[] = [];
   const kinds = [
     { desc: "Re-roof (asphalt shingle to metal)", status: "Closed" },
@@ -154,6 +146,63 @@ export function runDispatch(input: {
     },
     permit_history,
   };
+}
+
+export async function runDispatch(input: {
+  address: string;
+  city?: string | null;
+  county?: string | null;
+}): Promise<DispatchResult> {
+  const county = (input.county ?? "Palm Beach County").replace(/\s*county\s*$/i, "").trim();
+  const city = input.city?.trim() ?? "";
+
+  const base = SUPABASE_URL?.replace(/\/$/, "");
+  if (!base) {
+    return buildMock({ address: input.address, city, county });
+  }
+
+  try {
+    const [floodResp, parcelResp] = await Promise.all([
+      fetch(`${base}/functions/v1/dispatch-flood-zone?address=${encodeURIComponent(input.address)}`).catch(() => null),
+      fetch(`${base}/functions/v1/dispatch-parcel?address=${encodeURIComponent(input.address)}&county=${encodeURIComponent(county)}`).catch(() => null),
+    ]);
+
+    let flood: { flood_zone?: string; in_sfha?: boolean; base_flood_elev?: number | null; fetched_at?: string } | null = null;
+    let parcel: { parcel_id?: string | null; owner_name?: string | null; fetched_at?: string } | null = null;
+
+    if (floodResp && floodResp.ok) {
+      flood = await floodResp.json();
+    }
+    if (parcelResp && parcelResp.ok) {
+      parcel = await parcelResp.json();
+    }
+
+    if (!flood && !parcel) {
+      return buildMock({ address: input.address, city, county });
+    }
+
+    const mock = buildMock({ address: input.address, city, county });
+    const fetchedAt = new Date().toISOString();
+
+    return {
+      ...mock,
+      source: "live",
+      fetched_at: fetchedAt,
+      flood: {
+        ...mock.flood,
+        zone: (flood?.flood_zone as DispatchFloodZone) ?? mock.flood.zone,
+        sfha: flood?.in_sfha ?? mock.flood.sfha,
+        base_flood_elevation_ft: flood?.base_flood_elev ?? null,
+      },
+      parcel: {
+        ...mock.parcel,
+        parcel_id: parcel?.parcel_id ?? null,
+        owner_name: parcel?.owner_name ?? null,
+      },
+    };
+  } catch {
+    return buildMock({ address: input.address, city, county });
+  }
 }
 
 export function dispatchSummary(d: DispatchResult): string {

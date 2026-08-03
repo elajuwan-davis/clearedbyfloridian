@@ -12,7 +12,28 @@ function isSfha(zone: string) {
   return /^[AV]/i.test(zone);
 }
 
+const CORS_HEADERS = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type, Authorization, apikey",
+};
+
+function jsonResponse(body: unknown, status = 200, extraHeaders: Record<string, string> = {}) {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { "Content-Type": "application/json", ...CORS_HEADERS, ...extraHeaders },
+  });
+}
+
+function textResponse(text: string, status = 200) {
+  return new Response(text, { status, headers: CORS_HEADERS });
+}
+
 Deno.serve(async (req: Request) => {
+  if (req.method === "OPTIONS") {
+    return new Response(null, { status: 204, headers: CORS_HEADERS });
+  }
+
   const url = new URL(req.url);
   const address = url.searchParams.get("address");
   let lat: number | null = Number(url.searchParams.get("lat"));
@@ -20,7 +41,7 @@ Deno.serve(async (req: Request) => {
   const permitId = url.searchParams.get("permit_id") ?? null;
 
   if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
-    return new Response("Supabase not configured", { status: 500 });
+    return textResponse("Supabase not configured", 500);
   }
 
   const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
@@ -29,10 +50,7 @@ Deno.serve(async (req: Request) => {
 
   if (Number.isNaN(lat) || Number.isNaN(lon)) {
     if (!address) {
-      return new Response(
-        "Provide either address or lat/lon parameters",
-        { status: 400 },
-      );
+      return textResponse("Provide either address or lat/lon parameters", 400);
     }
 
     const geoUrl =
@@ -40,12 +58,12 @@ Deno.serve(async (req: Request) => {
       `address=${encodeURIComponent(address)}&benchmark=4&format=json`;
     const geoRes = await fetch(geoUrl);
     if (!geoRes.ok) {
-      return new Response("Geocoding service failed", { status: 502 });
+      return textResponse("Geocoding service failed", 502);
     }
     const geo = await geoRes.json();
     const match = geo.result?.addressMatches?.[0];
     if (!match) {
-      return new Response("Address not found", { status: 404 });
+      return textResponse("Address not found", 404);
     }
     lat = Number(match.coordinates.y);
     lon = Number(match.coordinates.x);
@@ -62,10 +80,7 @@ Deno.serve(async (req: Request) => {
     .limit(1);
 
   if (cached && cached.length > 0) {
-    return new Response(JSON.stringify(cached[0]), {
-      status: 200,
-      headers: { "Content-Type": "application/json" },
-    });
+    return jsonResponse(cached[0]);
   }
 
   const femaUrl =
@@ -76,7 +91,7 @@ Deno.serve(async (req: Request) => {
 
   const femaRes = await fetch(femaUrl);
   if (!femaRes.ok) {
-    return new Response("FEMA service failed", { status: 502 });
+    return textResponse("FEMA service failed", 502);
   }
   const fema = await femaRes.json();
 
@@ -103,11 +118,8 @@ Deno.serve(async (req: Request) => {
 
   if (error) {
     console.error(error);
-    return new Response("Failed to cache result", { status: 500 });
+    return textResponse("Failed to cache result", 500);
   }
 
-  return new Response(JSON.stringify(inserted), {
-    status: 200,
-    headers: { "Content-Type": "application/json" },
-  });
+  return jsonResponse(inserted);
 });

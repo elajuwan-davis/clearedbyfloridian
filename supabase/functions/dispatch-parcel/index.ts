@@ -8,14 +8,35 @@ const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
 
 const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
 
+const CORS_HEADERS = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type, Authorization, apikey",
+};
+
+function jsonResponse(body: unknown, status = 200, extraHeaders: Record<string, string> = {}) {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { "Content-Type": "application/json", ...CORS_HEADERS, ...extraHeaders },
+  });
+}
+
+function textResponse(text: string, status = 200) {
+  return new Response(text, { status, headers: CORS_HEADERS });
+}
+
 Deno.serve(async (req: Request) => {
+  if (req.method === "OPTIONS") {
+    return new Response(null, { status: 204, headers: CORS_HEADERS });
+  }
+
   const url = new URL(req.url);
   const address = url.searchParams.get("address");
   const county = (url.searchParams.get("county") ?? "").trim().toLowerCase();
   const permitId = url.searchParams.get("permit_id") ?? null;
 
   if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
-    return new Response("Supabase not configured", { status: 500 });
+    return textResponse("Supabase not configured", 500);
   }
 
   const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
@@ -23,7 +44,7 @@ Deno.serve(async (req: Request) => {
   });
 
   if (!county || !address) {
-    return new Response("Missing county or address", { status: 400 });
+    return textResponse("Missing county or address", 400);
   }
 
   const normalizedCounty = county.replace(/\s+/g, " ").trim();
@@ -38,10 +59,7 @@ Deno.serve(async (req: Request) => {
       .select()
       .single();
 
-    return new Response(JSON.stringify(data), {
-      status: 200,
-      headers: { "Content-Type": "application/json" },
-    });
+    return jsonResponse(data);
   }
 
   const geoUrl =
@@ -50,7 +68,7 @@ Deno.serve(async (req: Request) => {
 
   const geoRes = await fetch(geoUrl);
   if (!geoRes.ok) {
-    return new Response("Geocoding service failed", { status: 502 });
+    return textResponse("Geocoding service failed", 502);
   }
   const geo = await geoRes.json();
   const match = geo.result?.addressMatches?.[0];
@@ -64,10 +82,7 @@ Deno.serve(async (req: Request) => {
       .select()
       .single();
 
-    return new Response(JSON.stringify(data), {
-      status: 200,
-      headers: { "Content-Type": "application/json" },
-    });
+    return jsonResponse(data);
   }
 
   const lat = Number(match.coordinates.y);
@@ -85,10 +100,7 @@ Deno.serve(async (req: Request) => {
     .limit(1);
 
   if (cached && cached.length > 0 && cached[0].parcel_source) {
-    return new Response(JSON.stringify(cached[0]), {
-      status: 200,
-      headers: { "Content-Type": "application/json" },
-    });
+    return jsonResponse(cached[0]);
   }
 
   const papaUrl =
@@ -99,7 +111,7 @@ Deno.serve(async (req: Request) => {
 
   const papaRes = await fetch(papaUrl);
   if (!papaRes.ok) {
-    return new Response("PAPA service failed", { status: 502 });
+    return textResponse("PAPA service failed", 502);
   }
   const papa = await papaRes.json();
 
@@ -120,10 +132,7 @@ Deno.serve(async (req: Request) => {
       .select()
       .single();
 
-    return new Response(JSON.stringify(data), {
-      status: 200,
-      headers: { "Content-Type": "application/json" },
-    });
+    return jsonResponse(data);
   }
 
   const { data } = await supabase
@@ -140,8 +149,5 @@ Deno.serve(async (req: Request) => {
     .select()
     .single();
 
-  return new Response(JSON.stringify(data), {
-    status: 200,
-    headers: { "Content-Type": "application/json" },
-  });
+  return jsonResponse(data);
 });
