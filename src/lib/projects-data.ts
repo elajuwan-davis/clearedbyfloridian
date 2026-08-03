@@ -135,9 +135,11 @@ export const PROJECTS: Project[] = SEED.map((s) => {
     status: s.status ?? "in_review",
     value_cents,
     permit_types,
+    vendor: defaultVendorFor(s.name),
     submitted_at: submitted,
     updated_at: submitted,
   };
+
 });
 
 export function getProjectById(id: string): Project | null {
