@@ -6,6 +6,8 @@ import {
   ClipboardCheck, LayoutGrid, Pencil, CheckCircle2, Circle, AlertTriangle,
   ShieldCheck,
 } from "lucide-react";
+import { RotateCcw } from "lucide-react";
+import { ProjectRevisionsTab } from "@/components/project-revisions-tab";
 import { ProjectComplianceTab } from "@/components/project-compliance-tab";
 import { PortalShell } from "@/components/portal-shell";
 import { Button } from "@/components/ui/button";
@@ -150,6 +152,7 @@ export function ProjectDetail({ project }: { project: Project }) {
         <Tabs defaultValue="overview" className="mt-8">
           <TabsList className="flex h-auto w-full flex-wrap justify-start gap-1 rounded-[3px] bg-paper-warm p-1">
             <TabTrigger value="overview" icon={<LayoutGrid className="h-3.5 w-3.5" />} label="Overview" />
+            <TabTrigger value="revisions" icon={<RotateCcw className="h-3.5 w-3.5" />} label="Revisions" />
             <TabTrigger value="inspections" icon={<ClipboardCheck className="h-3.5 w-3.5" />} label="Inspections" />
             <TabTrigger value="documents" icon={<FileText className="h-3.5 w-3.5" />} label="Documents" />
             <TabTrigger value="hoa" icon={<FileSignature className="h-3.5 w-3.5" />} label="HOA Submittal" />
@@ -160,6 +163,7 @@ export function ProjectDetail({ project }: { project: Project }) {
           </TabsList>
 
           <TabsContent value="overview" className="mt-6"><OverviewTab project={project} /></TabsContent>
+          <TabsContent value="revisions" className="mt-6"><ProjectRevisionsTab project={project} internal={internal} /></TabsContent>
           <TabsContent value="inspections" className="mt-6">
             <InspectionsSection
               projectId={project.id}
