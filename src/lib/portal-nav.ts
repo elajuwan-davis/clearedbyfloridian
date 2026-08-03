@@ -182,8 +182,9 @@ export const subSettingsSection: NavSection = {
 
 export function sectionsForRole(role: AppRole | null, isAdmin: boolean): NavSection[] {
   if (role === "subcontractor") return subNavSections;
-  return isAdmin ? [...navSections, adminSection] : navSections;
+  return isAdmin ? [...navSections, legalSection, adminSection] : navSections;
 }
+
 
 export function settingsForRole(role: AppRole | null): NavSection {
   return role === "subcontractor" ? subSettingsSection : settingsSection;
