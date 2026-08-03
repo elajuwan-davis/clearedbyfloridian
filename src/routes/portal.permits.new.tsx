@@ -1,14 +1,38 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState, type ChangeEvent, type DragEvent } from "react";
-import { Upload, Check, FileText, ArrowLeft, Send, X, AlertCircle, Plus, Trash2, Sparkles, MapPin } from "lucide-react";
+import {
+  Upload,
+  Check,
+  FileText,
+  ArrowLeft,
+  Send,
+  X,
+  AlertCircle,
+  Plus,
+  Trash2,
+  Sparkles,
+  MapPin,
+} from "lucide-react";
 import { toast } from "sonner";
 import { CloudUploadButtons } from "@/components/cloud-upload-buttons";
 import { ComboboxInput } from "@/components/combobox-input";
 import { AddressLookupField } from "@/components/address-lookup-field";
 import { activeProvider, resolveMunicipality, type ResolvedAddress } from "@/lib/address-lookup";
-import { createPermit, updatePermit, getPermit, type PermitDoc, type PermitRow, type PermitSub } from "@/lib/permits-api";
+import {
+  createPermit,
+  updatePermit,
+  getPermit,
+  type PermitDoc,
+  type PermitRow,
+  type PermitSub,
+} from "@/lib/permits-api";
 import { listSubs, createSub, type SubRow } from "@/lib/subs-api";
-import { listDesignPros, createDesignPro, type DesignProRow, type DesignProRole } from "@/lib/design-pros-api";
+import {
+  listDesignPros,
+  createDesignPro,
+  type DesignProRow,
+  type DesignProRole,
+} from "@/lib/design-pros-api";
 import { triggerNotification } from "@/lib/notifications-api";
 import { MUNICIPALITIES } from "@/lib/municipalities";
 import { getChecklist } from "@/lib/permit-checklists";
@@ -23,20 +47,14 @@ import { MunicipalityReadinessPanel } from "@/components/municipality-readiness-
 import type { SubmittalDocSnapshot } from "@/lib/submittal-package";
 import type { GcDocKey } from "@/lib/gc-compliance";
 
-
-
 export const Route = createFileRoute("/portal/permits/new")({
   validateSearch: (search: Record<string, unknown>): { edit?: string } =>
     typeof search.edit === "string" ? { edit: search.edit } : {},
   head: () => ({
-    meta: [
-      { title: "New Permit Intake — Cleard" },
-      { name: "robots", content: "noindex" },
-    ],
+    meta: [{ title: "New Permit Intake — Cleard" }, { name: "robots", content: "noindex" }],
   }),
   component: NewPermitPage,
 });
-
 
 const SCOPE_OPTIONS = [
   "Pool / Spa",
@@ -58,22 +76,17 @@ const SCOPE_OPTIONS = [
 const SCOPE_TO_TRADE: Record<string, string> = {
   "Pool / Spa": "Pool / Spa",
   "Hardscape / Pavers": "Hardscape / Pavers",
-  "Electrical": "Electrical",
-  "Plumbing": "Plumbing",
-  "Gas": "Gas / LP",
+  Electrical: "Electrical",
+  Plumbing: "Plumbing",
+  Gas: "Gas / LP",
   "Mechanical / HVAC": "Mechanical / HVAC",
-  "Structural": "Structural",
-  "Roofing": "Roofing",
-  "Fence": "Fence",
-  "Demolition": "Demolition",
-  "Other": "Other",
+  Structural: "Structural",
+  Roofing: "Roofing",
+  Fence: "Fence",
+  Demolition: "Demolition",
+  Other: "Other",
 };
-const OPTIONAL_SCOPES = new Set([
-  "Hardscape / Pavers",
-  "Structural",
-  "Demolition",
-  "Other",
-]);
+const OPTIONAL_SCOPES = new Set(["Hardscape / Pavers", "Structural", "Demolition", "Other"]);
 
 type DocState = { uploaded: string | null; na: boolean; deferred: boolean };
 
@@ -115,7 +128,9 @@ function NewPermitPage() {
   const [dispatch, setDispatch] = useState<DispatchResult | null>(null);
   const [dispatchConfirmed, setDispatchConfirmed] = useState(false);
   const [submittalPackage, setSubmittalPackage] = useState<SubmittalDocSnapshot[]>([]);
-  const [initialSubmittalKeys, setInitialSubmittalKeys] = useState<GcDocKey[] | undefined>(undefined);
+  const [initialSubmittalKeys, setInitialSubmittalKeys] = useState<GcDocKey[] | undefined>(
+    undefined,
+  );
   const [form, setForm] = useState({
     step: 1 as 1 | 2,
     projectName: "",
@@ -150,15 +165,26 @@ function NewPermitPage() {
     extraDocs: [] as string[],
   });
 
-  useEffect(() => { listSubs().then(setSavedSubs).catch(() => {}); }, []);
-  useEffect(() => { listDesignPros().then(setSavedPros).catch(() => {}); }, []);
+  useEffect(() => {
+    listSubs()
+      .then(setSavedSubs)
+      .catch(() => {});
+  }, []);
+  useEffect(() => {
+    listDesignPros()
+      .then(setSavedPros)
+      .catch(() => {});
+  }, []);
 
   // Load existing permit for editing
   useEffect(() => {
     if (!editId) return;
     getPermit(editId)
       .then((r) => {
-        if (!r) { toast.error("Permit not found"); return; }
+        if (!r) {
+          toast.error("Permit not found");
+          return;
+        }
         setOriginalRow(r);
         const ip = (r.intake_payload ?? {}) as Record<string, any>;
         const architect = (ip.architect ?? {}) as Record<string, string>;
@@ -245,7 +271,6 @@ function NewPermitPage() {
     setForm((f) => ({ ...f, docs: { ...f.docs, [key]: { ...f.docs[key], ...patch } } }));
   }
 
-
   /** Toggling a scope also spawns / retires its inline sub row (1:1). */
   function toggleScope(scope: string) {
     setForm((f) => {
@@ -261,9 +286,7 @@ function NewPermitPage() {
       // If a filled sub already exists for the same trade (e.g. Pool
       // and Pool/Spa both mapping to Pool trade), reuse its data.
       const existing = f.subs.find((s) => s.trade === trade && s.companyName.trim() && !s.skipped);
-      const seed: SubIntake = existing
-        ? { ...existing, scope, skipped: false }
-        : emptySub(scope);
+      const seed: SubIntake = existing ? { ...existing, scope, skipped: false } : emptySub(scope);
       return { ...f, scopes: [...f.scopes, scope], subs: [...f.subs, seed] };
     });
   }
@@ -280,9 +303,16 @@ function NewPermitPage() {
       ...f,
       subs: f.subs.map((s) =>
         s.scope === scope
-          ? (s.skipped
-              ? { ...s, skipped: false }
-              : { ...s, skipped: true, companyName: "", licenseNumber: "", contactName: "", contactEmail: "" })
+          ? s.skipped
+            ? { ...s, skipped: false }
+            : {
+                ...s,
+                skipped: true,
+                companyName: "",
+                licenseNumber: "",
+                contactName: "",
+                contactEmail: "",
+              }
           : s,
       ),
     }));
@@ -322,14 +352,18 @@ function NewPermitPage() {
     }
   }
 
-
-
-
   const primaryType = form.scopes[0] || "Other";
-  const checklist = useMemo(() => getChecklist(form.municipality, primaryType), [form.municipality, primaryType]);
+  const checklist = useMemo(
+    () => getChecklist(form.municipality, primaryType),
+    [form.municipality, primaryType],
+  );
 
   const docsComplete = useMemo(
-    () => checklist.filter((d) => { const s = form.docs[d.key]; return s && (s.uploaded || s.na || s.deferred); }).length,
+    () =>
+      checklist.filter((d) => {
+        const s = form.docs[d.key];
+        return s && (s.uploaded || s.na || s.deferred);
+      }).length,
     [form.docs, checklist],
   );
 
@@ -338,9 +372,10 @@ function NewPermitPage() {
 
   // True once this permit exists AND has an auto-generated NOC on file.
   const hasNoc = useMemo(
-    () => (originalRow?.documents ?? []).some(
-      (d) => d.key === "notice_of_commencement_review" && d.status === "uploaded",
-    ),
+    () =>
+      (originalRow?.documents ?? []).some(
+        (d) => d.key === "notice_of_commencement_review" && d.status === "uploaded",
+      ),
     [originalRow],
   );
 
@@ -354,7 +389,11 @@ function NewPermitPage() {
 
   const [dismissedReuse, setDismissedReuse] = useState<Set<number>>(new Set());
   function dismissReuse(idx: number) {
-    setDismissedReuse((prev) => { const n = new Set(prev); n.add(idx); return n; });
+    setDismissedReuse((prev) => {
+      const n = new Set(prev);
+      n.add(idx);
+      return n;
+    });
   }
 
   /** For an empty sub row of a given trade, find an already-filled sub on
@@ -363,7 +402,9 @@ function NewPermitPage() {
     if (dismissedReuse.has(idx)) return null;
     const row = form.subs[idx];
     if (!row || row.companyName.trim()) return null;
-    const match = form.subs.find((s, i) => i !== idx && s.trade === row.trade && s.companyName.trim());
+    const match = form.subs.find(
+      (s, i) => i !== idx && s.trade === row.trade && s.companyName.trim(),
+    );
     return match ?? null;
   }
 
@@ -373,7 +414,6 @@ function NewPermitPage() {
       subs: f.subs.map((s, i) => (i === idx ? { ...source, trade: s.trade } : s)),
     }));
   }
-
 
   function handleFile(key: string, e: ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -388,8 +428,6 @@ function NewPermitPage() {
     const files = Array.from(e.target.files ?? []).slice(0, 30 - form.extraDocs.length);
     if (files.length) update("extraDocs", [...form.extraDocs, ...files.map((f) => f.name)]);
   }
-
-
 
   async function maybeSaveDesignPro(
     role: DesignProRole,
@@ -412,7 +450,9 @@ function NewPermitPage() {
         license_number: license || null,
         email: email || null,
       });
-    } catch { /* best-effort */ }
+    } catch {
+      /* best-effort */
+    }
   }
 
   async function submit() {
@@ -421,11 +461,12 @@ function NewPermitPage() {
       return;
     }
 
-
     setSaving(true);
     try {
       for (const s of filledSubs) {
-        const exists = savedSubs.find((x) => x.company_name.trim().toLowerCase() === s.companyName.trim().toLowerCase());
+        const exists = savedSubs.find(
+          (x) => x.company_name.trim().toLowerCase() === s.companyName.trim().toLowerCase(),
+        );
         if (!exists) {
           await createSub({
             company_name: s.companyName,
@@ -437,12 +478,32 @@ function NewPermitPage() {
         }
       }
 
-      await maybeSaveDesignPro("architect", saveArchitectToContacts, form.architectFirm, form.architectContact, form.architectLicense, form.architectEmail);
-      await maybeSaveDesignPro("engineer", saveEngineerToContacts, form.engineerFirm, form.engineerContact, form.engineerLicense, form.engineerEmail);
+      await maybeSaveDesignPro(
+        "architect",
+        saveArchitectToContacts,
+        form.architectFirm,
+        form.architectContact,
+        form.architectLicense,
+        form.architectEmail,
+      );
+      await maybeSaveDesignPro(
+        "engineer",
+        saveEngineerToContacts,
+        form.engineerFirm,
+        form.engineerContact,
+        form.engineerLicense,
+        form.engineerEmail,
+      );
 
       const documents: PermitDoc[] = checklist.map((d) => {
         const s = form.docs[d.key] ?? { uploaded: null, na: false, deferred: false };
-        const status: PermitDoc["status"] = s.uploaded ? "uploaded" : s.deferred ? "pending" : s.na ? "not_applicable" : "missing";
+        const status: PermitDoc["status"] = s.uploaded
+          ? "uploaded"
+          : s.deferred
+            ? "pending"
+            : s.na
+              ? "not_applicable"
+              : "missing";
         return { key: d.key, label: d.label, required: d.required, status, filename: s.uploaded };
       });
 
@@ -530,7 +591,9 @@ function NewPermitPage() {
             body: `${form.contractorCompany || "GC"} updated permit submission on ${new Date().toLocaleDateString()}. Review changes.`,
             permit_id: updated.id,
           });
-        } catch { /* best-effort */ }
+        } catch {
+          /* best-effort */
+        }
         toast.success("Submission updated");
         navigate({ to: "/portal/permits/$id", params: { id: rowId } });
       } else {
@@ -554,519 +617,804 @@ function NewPermitPage() {
         toast.success(wantBundle ? "Bundle permit created" : "Permit created");
         if (wantBundle) navigate({ to: "/portal/permits/$id/bundle", params: { id: rowId } });
         else navigate({ to: "/portal/permits/$id", params: { id: rowId } });
-
       }
     } catch (e) {
-      toast.error((isEditing ? "Failed to update permit: " : "Failed to create permit: ") + (e instanceof Error ? e.message : String(e)));
+      toast.error(
+        (isEditing ? "Failed to update permit: " : "Failed to create permit: ") +
+          (e instanceof Error ? e.message : String(e)),
+      );
     } finally {
       setSaving(false);
     }
   }
 
-
   const inputCls =
     "block w-full border border-obsidian/15 bg-white px-3 py-2 text-sm text-obsidian placeholder:text-obsidian/40 focus:border-obsidian/40 focus:outline-none rounded-[3px]";
-  const labelCls = "block text-[11px] font-mono uppercase tracking-[0.14em] text-obsidian/60 mb-1.5";
+  const labelCls =
+    "block text-[11px] font-mono uppercase tracking-[0.14em] text-obsidian/60 mb-1.5";
   const sectionCls = "text-[11px] font-mono uppercase tracking-[0.18em] text-obsidian/75";
 
   return (
     <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-8 lg:py-12 grid gap-8 lg:grid-cols-[minmax(0,1fr)_320px]">
-    <div className="min-w-0">
-
-      <div className="border-b border-obsidian/10 pb-6">
-        <div className="eyebrow text-obsidian/50">Permit Intake</div>
-        <div className="mt-2 flex flex-wrap items-end justify-between gap-3">
-          <h1 className="display-serif text-4xl sm:text-5xl text-obsidian">{isEditing ? "Edit Submission" : "New Permit"}</h1>
-          <Link to="/my-permits" className="font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/55 hover:text-obsidian">Cancel</Link>
-        </div>
-        <div className="mt-6 flex items-center gap-3">
-          {[1, 2].map((n) => (
-            <div key={n} className="flex items-center gap-2">
-              <div className={`h-7 w-7 grid place-items-center rounded-full font-mono text-[11px] ${form.step >= n ? "bg-obsidian text-paper" : "bg-obsidian/10 text-obsidian/50"}`}>{n}</div>
-              <span className={`font-mono text-[10px] uppercase tracking-[0.14em] ${form.step === n ? "text-obsidian" : "text-obsidian/45"}`}>
-                {n === 1 ? "Project Details" : "Contact & Documents"}
-              </span>
-              {n === 1 && <div className="w-8 h-px bg-obsidian/15" />}
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {form.step === 1 ? (
-        <div className="mt-6 space-y-6 bg-white border border-obsidian/10 rounded-[3px] p-6 sm:p-8">
-          <div className="grid gap-5 sm:grid-cols-2">
-            <div><label className={labelCls}>Project Name *</label><input required className={inputCls} value={form.projectName} onChange={(e) => update("projectName", e.target.value)} /></div>
-            <div>
-              <label className={labelCls}>Property Address *</label>
-              <AddressLookupField
-                required
-                className={inputCls}
-                value={form.address}
-                onChange={(v) => update("address", v)}
-                onResolved={(r) => handleAddressResolved(r)}
-              />
-              <p className="mt-1 text-[11px] text-obsidian/45 flex items-center gap-1.5">
-                <MapPin className="h-3 w-3" />
-                {activeProvider() === "google"
-                  ? "Florida addresses only — city auto-selects the municipality below."
-                  : "Florida addresses only — enter the full address, then press Look up to auto-fill the municipality."}
-              </p>
-            </div>
-
-            <div className="sm:col-span-2">
-              <label className={labelCls}>Municipality / City *</label>
-              <ComboboxInput
-                value={form.municipality}
-                onChange={(v) => update("municipality", v)}
-                options={MUNICIPALITIES.map((m) => ({ value: m.name, label: m.name, sublabel: m.note }))}
-                placeholder="Type to search or enter freeform…"
-                allowFreeform
-              />
-            </div>
+      <div className="min-w-0">
+        <div className="border-b border-obsidian/10 pb-6">
+          <div className="eyebrow text-obsidian/50">Permit Intake</div>
+          <div className="mt-2 flex flex-wrap items-end justify-between gap-3">
+            <h1 className="display-serif text-4xl sm:text-5xl text-obsidian">
+              {isEditing ? "Edit Submission" : "New Permit"}
+            </h1>
+            <Link
+              to="/my-permits"
+              className="font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/55 hover:text-obsidian"
+            >
+              Cancel
+            </Link>
           </div>
-
-          {dispatch && (
-            <DispatchCard
-              data={dispatch}
-              confirmed={dispatchConfirmed}
-              onConfirm={() => setDispatchConfirmed(true)}
-            />
-          )}
-
-          {form.municipality && (
-            <MunicipalityReadinessPanel
-              municipality={form.municipality}
-              initialSelectedKeys={initialSubmittalKeys}
-              onSubmittalChange={setSubmittalPackage}
-            />
-          )}
-
-          {/* Total Project Value + live service fee estimate */}
-          <div className="pt-2 space-y-2">
-            <label className={labelCls}>Total Project Value (USD) *</label>
-            <input
-              type="number"
-              min={0}
-              step={1000}
-              inputMode="numeric"
-              value={form.totalProjectValue}
-              onChange={(e) => update("totalProjectValue", e.target.value)}
-              placeholder="e.g. 1250000"
-              className="w-full h-11 px-3 rounded-[3px] border border-obsidian/20 bg-white text-sm focus:outline-none focus:border-obsidian"
-            />
-            {(() => {
-              const v = Number(form.totalProjectValue || 0);
-              if (!v || v <= 0) {
-                return (
-                  <p className="text-[11px] text-obsidian/50">
-                    Cleard service fee = 1% under $1M · 0.5% at $1M and above. All permit administration, plan review, inspections, and C.O. coordination bundled — no à la carte.
-                  </p>
-                );
-              }
-              const rate = v >= 1_000_000 ? 0.005 : 0.01;
-              const fee = Math.round(v * rate);
-              const fmt = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
-              return (
-                <div className="rounded-[3px] border border-obsidian/15 bg-[#153157]/[0.03] px-4 py-3">
-                  <div className="text-[10px] font-mono uppercase tracking-[0.15em] text-obsidian/60">
-                    Estimated Cleard service fee
-                  </div>
-                  <div className="display-serif text-2xl text-obsidian mt-1">
-                    {fmt.format(fee)}
-                    <span className="ml-2 text-[11px] font-mono uppercase tracking-[0.15em] text-obsidian/50">
-                      · {(rate * 100).toFixed(1)}% of project value
-                    </span>
-                  </div>
-                  <div className="text-[11px] text-obsidian/60 mt-1.5 leading-relaxed">
-                    Invoiced when this permit reaches <em>Cleared for Takeoff</em>. All services bundled — permit administration, plan review, inspections, C.O. coordination, and Victoria AI.
-                  </div>
+          <div className="mt-6 flex items-center gap-3">
+            {[1, 2].map((n) => (
+              <div key={n} className="flex items-center gap-2">
+                <div
+                  className={`h-7 w-7 grid place-items-center rounded-full font-mono text-[11px] ${form.step >= n ? "bg-obsidian text-paper" : "bg-obsidian/10 text-obsidian/50"}`}
+                >
+                  {n}
                 </div>
-              );
-            })()}
-          </div>
-
-
-
-
-
-          {/* Scope multi-select */}
-          <div className="pt-2 space-y-3">
-            <label className={labelCls}>Scope of Work (select all that apply)</label>
-            <div className="flex flex-wrap gap-2">
-              {SCOPE_OPTIONS.map((s) => {
-                const selected = form.scopes.includes(s);
-                const helper =
-                  s === "Structural"
-                    ? "Includes pergolas, outdoor kitchens, summer kitchens, shade structures, retaining walls, and hardscape extensions."
-                    : undefined;
-                return (
-                  <button
-                    key={s}
-                    type="button"
-                    onClick={() => toggleScope(s)}
-                    title={helper}
-                    className={`px-3 py-1.5 rounded-[3px] text-[12px] border transition-colors ${
-                      selected
-                        ? "bg-obsidian text-white border-obsidian"
-                        : "bg-white text-obsidian/70 border-obsidian/20 hover:border-obsidian/40"
-                    }`}
-                  >
-                    {selected && <Check className="inline h-3 w-3 mr-1" />}
-                    {s}
-                  </button>
-                );
-              })}
-
-            </div>
-            {form.scopes.includes("Structural") && (
-              <p className="text-[11px] text-obsidian/60 leading-relaxed">
-                <span className="font-mono uppercase tracking-[0.14em] text-obsidian/50">Structural includes:</span>{" "}
-                pergolas, outdoor kitchens, summer kitchens, shade structures, retaining walls, and hardscape extensions.
-              </p>
-            )}
-            {form.scopes.length > 0 && (
-
-              <div className="flex flex-wrap gap-1.5 pt-1">
-                {form.scopes.map((s) => (
-                  <span key={s} className="inline-flex items-center gap-1.5 bg-[#153157] text-white px-2.5 py-1 rounded-[3px] text-[11px] font-medium">
-                    {s}
-                    <button type="button" onClick={() => toggleScope(s)} className="text-white/70 hover:text-white">
-                      <X className="h-3 w-3" />
-                    </button>
-                  </span>
-                ))}
+                <span
+                  className={`font-mono text-[10px] uppercase tracking-[0.14em] ${form.step === n ? "text-obsidian" : "text-obsidian/45"}`}
+                >
+                  {n === 1 ? "Project Details" : "Contact & Documents"}
+                </span>
+                {n === 1 && <div className="w-8 h-px bg-obsidian/15" />}
               </div>
+            ))}
+          </div>
+        </div>
+
+        {form.step === 1 ? (
+          <div className="mt-6 space-y-6 bg-white border border-obsidian/10 rounded-[3px] p-6 sm:p-8">
+            <div className="grid gap-5 sm:grid-cols-2">
+              <div>
+                <label className={labelCls}>Project Name *</label>
+                <input
+                  required
+                  className={inputCls}
+                  value={form.projectName}
+                  onChange={(e) => update("projectName", e.target.value)}
+                />
+              </div>
+              <div>
+                <label className={labelCls}>Property Address *</label>
+                <AddressLookupField
+                  required
+                  className={inputCls}
+                  value={form.address}
+                  onChange={(v) => update("address", v)}
+                  onResolved={(r) => handleAddressResolved(r)}
+                />
+                <p className="mt-1 text-[11px] text-obsidian/45 flex items-center gap-1.5">
+                  <MapPin className="h-3 w-3" />
+                  {activeProvider() === "google"
+                    ? "Florida addresses only — city auto-selects the municipality below."
+                    : "Florida addresses only — enter the full address, then press Look up to auto-fill the municipality."}
+                </p>
+              </div>
+
+              <div className="sm:col-span-2">
+                <label className={labelCls}>Municipality / City *</label>
+                <ComboboxInput
+                  value={form.municipality}
+                  onChange={(v) => update("municipality", v)}
+                  options={MUNICIPALITIES.map((m) => ({
+                    value: m.name,
+                    label: m.name,
+                    sublabel: m.note,
+                  }))}
+                  placeholder="Type to search or enter freeform…"
+                  allowFreeform
+                />
+              </div>
+            </div>
+
+            {dispatch && (
+              <DispatchCard
+                data={dispatch}
+                confirmed={dispatchConfirmed}
+                onConfirm={() => setDispatchConfirmed(true)}
+              />
             )}
 
-            {/* Inline subcontractor row per selected scope */}
-            {form.scopes.length > 0 && (
-              <div className="pt-4 space-y-4">
-                <div className={sectionCls}>Subcontractor per Trade</div>
-                <p className="text-[12px] text-obsidian/60 -mt-2">
-                  One sub per selected scope. Skip any row you'll fill in later — the trade stays on the permit.
-                </p>
-                {form.subs.map((s) => {
-                  const idx = form.subs.findIndex((x) => x.scope === s.scope);
-                  const reuse = reuseCandidateFor(idx);
-                  const optional = OPTIONAL_SCOPES.has(s.scope);
+            {form.municipality && (
+              <MunicipalityReadinessPanel
+                municipality={form.municipality}
+                initialSelectedKeys={initialSubmittalKeys}
+                onSubmittalChange={setSubmittalPackage}
+              />
+            )}
+
+            {/* Total Project Value + live service fee estimate */}
+            <div className="pt-2 space-y-2">
+              <label className={labelCls}>Total Project Value (USD) *</label>
+              <input
+                type="number"
+                min={0}
+                step={1000}
+                inputMode="numeric"
+                value={form.totalProjectValue}
+                onChange={(e) => update("totalProjectValue", e.target.value)}
+                placeholder="e.g. 1250000"
+                className="w-full h-11 px-3 rounded-[3px] border border-obsidian/20 bg-white text-sm focus:outline-none focus:border-obsidian"
+              />
+              {(() => {
+                const v = Number(form.totalProjectValue || 0);
+                if (!v || v <= 0) {
                   return (
-                    <div key={s.scope} className="space-y-2">
-                      {reuse && !s.skipped && (
-                        <div className="flex items-start gap-3 border border-[#153157]/30 bg-[#B6DAEA]/15 rounded-[3px] px-4 py-3">
-                          <Sparkles className="mt-0.5 h-4 w-4 shrink-0 text-[#153157]" />
-                          <div className="flex-1 text-[13px] text-obsidian/85">
-                            <div className="text-obsidian font-medium">
-                              {s.trade} is already on this job — {reuse.companyName} is handling it.
-                            </div>
-                            <div className="mt-0.5 text-obsidian/60 text-[12px]">Reuse the same contractor to avoid a redundant sub entry.</div>
-                          </div>
-                          <div className="flex flex-col gap-1.5 shrink-0">
-                            <button
-                              type="button"
-                              onClick={() => applyReuse(idx, reuse)}
-                              className="inline-flex items-center justify-center bg-obsidian px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-paper hover:bg-obsidian/90 rounded-[3px]"
-                            >
-                              Use {reuse.companyName.length > 22 ? reuse.companyName.slice(0, 20) + "…" : reuse.companyName}
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => dismissReuse(idx)}
-                              className="font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/50 hover:text-obsidian"
-                            >
-                              Dismiss
-                            </button>
-                          </div>
-                        </div>
-                      )}
-                      <div className={`border rounded-[3px] p-4 space-y-3 ${s.skipped ? "border-dashed border-obsidian/15 bg-obsidian/[0.02]" : "border-obsidian/12"}`}>
-                        <div className="flex items-center justify-between gap-3">
-                          <div className="flex items-center gap-2">
-                            <span className="inline-flex items-center bg-[#153157] text-white px-2 py-0.5 rounded-[3px] text-[10px] font-mono uppercase tracking-[0.12em]">
-                              {s.trade}
-                            </span>
-                            {optional && (
-                              <span className="text-[10px] font-mono uppercase tracking-[0.12em] text-obsidian/45">Optional</span>
-                            )}
-                          </div>
-                          <button
-                            type="button"
-                            onClick={() => toggleSubSkip(s.scope)}
-                            className="font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/55 hover:text-obsidian underline underline-offset-2"
-                          >
-                            {s.skipped ? "Add sub info" : "Skip for now"}
-                          </button>
-                        </div>
-                        {!s.skipped && (
-                          <div className="grid gap-3 sm:grid-cols-2">
-                            <div><label className={labelCls}>Company Name</label><input className={inputCls} value={s.companyName} onChange={(e) => updateSubByScope(s.scope, { companyName: e.target.value })} /></div>
-                            <div><label className={labelCls}>License #</label><input className={inputCls} value={s.licenseNumber} onChange={(e) => updateSubByScope(s.scope, { licenseNumber: e.target.value })} /></div>
-                            <div><label className={labelCls}>Contact Name</label><input className={inputCls} value={s.contactName} onChange={(e) => updateSubByScope(s.scope, { contactName: e.target.value })} /></div>
-                            <div><label className={labelCls}>Contact Email</label><input type="email" className={inputCls} value={s.contactEmail} onChange={(e) => updateSubByScope(s.scope, { contactEmail: e.target.value })} /></div>
-                          </div>
-                        )}
-                      </div>
+                    <p className="text-[11px] text-obsidian/50">
+                      Cleard service fee = 1% under $1M · 0.5% at $1M and above. All permit
+                      administration, plan review, inspections, and C.O. coordination bundled — no à
+                      la carte.
+                    </p>
+                  );
+                }
+                const rate = v >= 1_000_000 ? 0.005 : 0.01;
+                const fee = Math.round(v * rate);
+                const fmt = new Intl.NumberFormat("en-US", {
+                  style: "currency",
+                  currency: "USD",
+                  maximumFractionDigits: 0,
+                });
+                return (
+                  <div className="rounded-[3px] border border-obsidian/15 bg-[#153157]/[0.03] px-4 py-3">
+                    <div className="text-[10px] font-mono uppercase tracking-[0.15em] text-obsidian/60">
+                      Estimated Cleard service fee
                     </div>
+                    <div className="display-serif text-2xl text-obsidian mt-1">
+                      {fmt.format(fee)}
+                      <span className="ml-2 text-[11px] font-mono uppercase tracking-[0.15em] text-obsidian/50">
+                        · {(rate * 100).toFixed(1)}% of project value
+                      </span>
+                    </div>
+                    <div className="text-[11px] text-obsidian/60 mt-1.5 leading-relaxed">
+                      Invoiced when this permit reaches <em>Cleared for Takeoff</em>. All services
+                      bundled — permit administration, plan review, inspections, C.O. coordination,
+                      and Victoria AI.
+                    </div>
+                  </div>
+                );
+              })()}
+            </div>
+
+            {/* Scope multi-select */}
+            <div className="pt-2 space-y-3">
+              <label className={labelCls}>Scope of Work (select all that apply)</label>
+              <div className="flex flex-wrap gap-2">
+                {SCOPE_OPTIONS.map((s) => {
+                  const selected = form.scopes.includes(s);
+                  const helper =
+                    s === "Structural"
+                      ? "Includes pergolas, outdoor kitchens, summer kitchens, shade structures, retaining walls, and hardscape extensions."
+                      : undefined;
+                  return (
+                    <button
+                      key={s}
+                      type="button"
+                      onClick={() => toggleScope(s)}
+                      title={helper}
+                      className={`px-3 py-1.5 rounded-[3px] text-[12px] border transition-colors ${
+                        selected
+                          ? "bg-obsidian text-white border-obsidian"
+                          : "bg-white text-obsidian/70 border-obsidian/20 hover:border-obsidian/40"
+                      }`}
+                    >
+                      {selected && <Check className="inline h-3 w-3 mr-1" />}
+                      {s}
+                    </button>
                   );
                 })}
-                {filledSubs.length > 0 && (
-                  <div className="border-l-2 border-[#153157] bg-obsidian/[0.03] px-4 py-3 text-[12px] text-obsidian/80">
-                    {wantBundle
-                      ? <>This submission will cover <strong>{filledSubs.length} trades</strong> under one GC permit (auto-bundled).</>
-                      : <>1 trade added — add more scopes to bundle under a single GC permit.</>}
-                  </div>
-                )}
               </div>
-            )}
-          </div>
+              {form.scopes.includes("Structural") && (
+                <p className="text-[11px] text-obsidian/60 leading-relaxed">
+                  <span className="font-mono uppercase tracking-[0.14em] text-obsidian/50">
+                    Structural includes:
+                  </span>{" "}
+                  pergolas, outdoor kitchens, summer kitchens, shade structures, retaining walls,
+                  and hardscape extensions.
+                </p>
+              )}
+              {form.scopes.length > 0 && (
+                <div className="flex flex-wrap gap-1.5 pt-1">
+                  {form.scopes.map((s) => (
+                    <span
+                      key={s}
+                      className="inline-flex items-center gap-1.5 bg-[#153157] text-white px-2.5 py-1 rounded-[3px] text-[11px] font-medium"
+                    >
+                      {s}
+                      <button
+                        type="button"
+                        onClick={() => toggleScope(s)}
+                        className="text-white/70 hover:text-white"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              )}
 
-
-          <div>
-            <label className={labelCls}>Scope Narrative</label>
-            <textarea rows={3} className={inputCls} value={form.description} onChange={(e) => update("description", e.target.value)} placeholder="Describe the work in more detail…" />
-          </div>
-
-          {/* Architect / Engineer — from shared contacts */}
-          <div className="grid gap-5 sm:grid-cols-2 pt-2">
-            <ProContactBlock
-              role="architect"
-              label="Architect of Record"
-              options={savedPros.filter((p) => p.role === "architect")}
-              firm={form.architectFirm}
-              contact={form.architectContact}
-              license={form.architectLicense}
-              email={form.architectEmail}
-              onFirm={(v) => update("architectFirm", v)}
-              onContact={(v) => update("architectContact", v)}
-              onLicense={(v) => update("architectLicense", v)}
-              onEmail={(v) => update("architectEmail", v)}
-              onPick={(p) => setForm((f) => ({
-                ...f,
-                architectFirm: p.firm_name,
-                architectContact: p.contact_name ?? "",
-                architectLicense: p.license_number ?? "",
-                architectEmail: p.email ?? "",
-              }))}
-              saveNew={saveArchitectToContacts}
-              onSaveNew={setSaveArchitectToContacts}
-              inputCls={inputCls}
-              labelCls={labelCls}
-            />
-            <ProContactBlock
-              role="engineer"
-              label="Engineer"
-              options={savedPros.filter((p) => p.role === "engineer")}
-              firm={form.engineerFirm}
-              contact={form.engineerContact}
-              license={form.engineerLicense}
-              email={form.engineerEmail}
-              onFirm={(v) => update("engineerFirm", v)}
-              onContact={(v) => update("engineerContact", v)}
-              onLicense={(v) => update("engineerLicense", v)}
-              onEmail={(v) => update("engineerEmail", v)}
-              onPick={(p) => setForm((f) => ({
-                ...f,
-                engineerFirm: p.firm_name,
-                engineerContact: p.contact_name ?? "",
-                engineerLicense: p.license_number ?? "",
-                engineerEmail: p.email ?? "",
-              }))}
-              saveNew={saveEngineerToContacts}
-              onSaveNew={setSaveEngineerToContacts}
-              inputCls={inputCls}
-              labelCls={labelCls}
-            />
-          </div>
-
-
-          {hasNoc && (
-            <NocAwarenessRibbon scopeKey={`permits:${editId ?? "new"}`} />
-          )}
-
-          {jobTrades.length > 0 && (
-            <TradesOnJobPanel
-              trades={jobTrades}
-              title="Trades on this Job"
-              emptyLabel="No trades added yet."
-            />
-          )}
-
-
-
-
-          <div>
-            <label className={labelCls}>Submitted Date</label>
-            <input type="date" className={`${inputCls} max-w-xs`} value={form.submittedDate} onChange={(e) => update("submittedDate", e.target.value)} />
-          </div>
-
-          <div className="flex justify-end pt-2 border-t border-obsidian/10">
-            <button type="button" onClick={() => update("step", 2)} className="inline-flex items-center gap-2 bg-obsidian px-5 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-paper hover:bg-obsidian/90 rounded-[3px]">
-              Next: Contact & Documents
-            </button>
-          </div>
-        </div>
-      ) : (
-        <div className="mt-6 space-y-8">
-          <div className="bg-white border border-obsidian/10 rounded-[3px] p-6 sm:p-8 space-y-5">
-            <div className={sectionCls}>Contractor Information</div>
-            <div className="grid gap-5 sm:grid-cols-2">
-              <div><label className={labelCls}>Contractor Company Name *</label><input required className={inputCls} value={form.contractorCompany} onChange={(e) => update("contractorCompany", e.target.value)} /></div>
-              <div><label className={labelCls}>Contractor Qualifier Name *</label><input required className={inputCls} value={form.contractorQualifier} onChange={(e) => update("contractorQualifier", e.target.value)} /></div>
-              <div className="sm:col-span-2"><label className={labelCls}>Company Address</label><input className={inputCls} value={form.companyAddress} onChange={(e) => update("companyAddress", e.target.value)} /></div>
-              <div><label className={labelCls}>Point of Contact *</label><input required className={inputCls} value={form.poc} onChange={(e) => update("poc", e.target.value)} /></div>
-              <div><label className={labelCls}>POC Phone *</label><input required className={inputCls} value={form.pocPhone} onChange={(e) => update("pocPhone", e.target.value)} /></div>
-              <div><label className={labelCls}>POC Email *</label><input type="email" required className={inputCls} value={form.pocEmail} onChange={(e) => update("pocEmail", e.target.value)} /></div>
-              <div><label className={labelCls}>License Number *</label><input required className={inputCls} value={form.licenseNumber} onChange={(e) => update("licenseNumber", e.target.value)} /></div>
-            </div>
-          </div>
-
-          <div className="bg-white border border-obsidian/10 rounded-[3px] p-6 sm:p-8 space-y-5">
-            <div className={sectionCls}>Property Owner Information</div>
-            <div>
-              <label className={labelCls}>Name of Owner</label>
-              <input className={inputCls} value={form.ownerName} onChange={(e) => update("ownerName", e.target.value)} />
-            </div>
-            <div>
-              <label className={labelCls}>Name of Trust / Corp / LLC</label>
-              <input className={inputCls} value={form.ownerEntity} onChange={(e) => update("ownerEntity", e.target.value)} />
-            </div>
-            <div className="grid gap-5 sm:grid-cols-2">
-              <div><label className={labelCls}>Signer Phone</label><input className={inputCls} value={form.signerPhone} onChange={(e) => update("signerPhone", e.target.value)} /></div>
-              <div><label className={labelCls}>Signer Email</label><input type="email" className={inputCls} value={form.signerEmail} onChange={(e) => update("signerEmail", e.target.value)} /></div>
-            </div>
-          </div>
-
-          <div className="bg-white border border-obsidian/10 rounded-[3px] p-6 sm:p-8 space-y-5">
-            <div className="flex items-end justify-between gap-3 flex-wrap">
-              <div>
-                <div className={sectionCls}>Upload Documents</div>
-                <p className="mt-1 text-[12px] text-obsidian/60">Drawings can be uploaded after intake.</p>
-              </div>
-              <div className="flex items-center gap-4">
-                {!docsSkipped && (
-                  <div className="text-right">
-                    <div className="font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/55">{docsComplete} of {checklist.length} complete</div>
-                    <div className="mt-1.5 h-1.5 w-40 bg-obsidian/10 rounded-full overflow-hidden">
-                      <div className="h-full bg-emerald-500" style={{ width: `${checklist.length ? (docsComplete / checklist.length) * 100 : 0}%` }} />
-                    </div>
-                  </div>
-                )}
-                <button
-                  type="button"
-                  onClick={() => setDocsSkipped((v) => !v)}
-                  className="font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/55 hover:text-obsidian underline underline-offset-2"
-                >
-                  {docsSkipped ? "Undo skip" : "Skip for now"}
-                </button>
-              </div>
-            </div>
-
-            {docsSkipped ? (
-              <div className="text-[12px] text-obsidian/60 bg-obsidian/[0.03] border border-obsidian/10 rounded-[3px] p-3">
-                Skipped — you can upload documents later from the project dashboard.
-              </div>
-            ) : (
-              <>
-                <ul className="space-y-3">
-                  {checklist.map((d) => {
-                    const s = form.docs[d.key] ?? { uploaded: null, na: false, deferred: false };
-                    const done = s.uploaded || s.na || s.deferred;
+              {/* Inline subcontractor row per selected scope */}
+              {form.scopes.length > 0 && (
+                <div className="pt-4 space-y-4">
+                  <div className={sectionCls}>Subcontractor per Trade</div>
+                  <p className="text-[12px] text-obsidian/60 -mt-2">
+                    One sub per selected scope. Skip any row you'll fill in later — the trade stays
+                    on the permit.
+                  </p>
+                  {form.subs.map((s) => {
+                    const idx = form.subs.findIndex((x) => x.scope === s.scope);
+                    const reuse = reuseCandidateFor(idx);
+                    const optional = OPTIONAL_SCOPES.has(s.scope);
                     return (
-                      <li key={d.key} className="border border-obsidian/10 rounded-[3px] p-4">
-                        <div className="flex flex-wrap items-start justify-between gap-3 mb-3">
-                          <div className="min-w-0 flex-1">
-                            <div className="flex items-center gap-2 flex-wrap">
-                              {done ? <Check className="h-4 w-4 text-emerald-600" /> : <FileText className="h-4 w-4 text-obsidian/40" />}
-                              <span className="text-sm font-medium text-obsidian">{d.label}</span>
-                              <span className={`font-mono text-[9px] uppercase tracking-[0.14em] px-1.5 py-0.5 rounded ${d.required ? "bg-red-50 text-red-700" : "bg-obsidian/8 text-obsidian/60"}`}>
-                                {d.required ? "Required" : "Optional"}
-                              </span>
-                              {s.deferred && <span className="font-mono text-[9px] uppercase tracking-[0.14em] px-1.5 py-0.5 rounded bg-amber-100 text-amber-800">Pending — upload later</span>}
+                      <div key={s.scope} className="space-y-2">
+                        {reuse && !s.skipped && (
+                          <div className="flex items-start gap-3 border border-[#153157]/30 bg-[#B6DAEA]/15 rounded-[3px] px-4 py-3">
+                            <Sparkles className="mt-0.5 h-4 w-4 shrink-0 text-[#153157]" />
+                            <div className="flex-1 text-[13px] text-obsidian/85">
+                              <div className="text-obsidian font-medium">
+                                {s.trade} is already on this job — {reuse.companyName} is handling
+                                it.
+                              </div>
+                              <div className="mt-0.5 text-obsidian/60 text-[12px]">
+                                Reuse the same contractor to avoid a redundant sub entry.
+                              </div>
                             </div>
-                            <p className="mt-1 text-[12px] text-obsidian/60">{d.desc}</p>
-                          </div>
-                        </div>
-
-                        {s.uploaded ? (
-                          <div className="flex items-center justify-between gap-2 text-[12px] text-obsidian/80 bg-emerald-50 border border-emerald-200 px-3 py-2 rounded-[3px]">
-                            <div className="flex items-center gap-2 min-w-0"><FileText className="h-3.5 w-3.5 shrink-0 text-emerald-700" /><span className="truncate">{s.uploaded}</span></div>
-                            <button type="button" onClick={() => updateDoc(d.key, { uploaded: null })} className="text-obsidian/50 hover:text-obsidian shrink-0"><X className="h-3.5 w-3.5" /></button>
-                          </div>
-                        ) : s.deferred ? (
-                          <div className="flex items-center justify-between gap-2 text-[12px] text-amber-900 bg-amber-50 border border-amber-200 px-3 py-2 rounded-[3px]">
-                            <div className="flex items-center gap-2"><AlertCircle className="h-3.5 w-3.5 text-amber-700" />Marked as pending — you'll upload later.</div>
-                            <button type="button" onClick={() => updateDoc(d.key, { deferred: false })} className="font-mono text-[10px] uppercase tracking-[0.14em] text-amber-800 hover:text-amber-900">Undo</button>
-                          </div>
-                        ) : (
-                          <div onDragOver={(e) => e.preventDefault()} onDrop={(e) => handleDrop(d.key, e)} className="border-2 border-dashed border-obsidian/20 hover:border-obsidian/40 bg-obsidian/[0.02] rounded-[3px] px-4 py-5 text-center transition-colors">
-                            <Upload className="mx-auto h-5 w-5 text-obsidian/40" strokeWidth={1.5} />
-                            <p className="mt-2 text-[12px] text-obsidian/65">
-                              Drag & drop a PDF here, or{" "}
-                              <label className="text-obsidian font-medium underline cursor-pointer">
-                                browse
-                                <input type="file" accept="application/pdf" className="hidden" onChange={(e) => handleFile(d.key, e)} />
-                              </label>
-                            </p>
-                            <CloudUploadButtons />
-
+                            <div className="flex flex-col gap-1.5 shrink-0">
+                              <button
+                                type="button"
+                                onClick={() => applyReuse(idx, reuse)}
+                                className="inline-flex items-center justify-center bg-obsidian px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-paper hover:bg-obsidian/90 rounded-[3px]"
+                              >
+                                Use{" "}
+                                {reuse.companyName.length > 22
+                                  ? reuse.companyName.slice(0, 20) + "…"
+                                  : reuse.companyName}
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => dismissReuse(idx)}
+                                className="font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/50 hover:text-obsidian"
+                              >
+                                Dismiss
+                              </button>
+                            </div>
                           </div>
                         )}
-
-                        <div className="mt-3 flex items-center gap-4 flex-wrap">
-                          {!d.required && !s.uploaded && (
-                            <label className="flex items-center gap-1.5 text-[11px] text-obsidian/70">
-                              <input type="checkbox" checked={s.na} onChange={(e) => updateDoc(d.key, { na: e.target.checked, uploaded: null, deferred: false })} />
-                              Does not apply
-                            </label>
-                          )}
-                          {d.canDefer && !s.uploaded && (
-                            <label className="flex items-center gap-1.5 text-[11px] text-amber-800">
-                              <input type="checkbox" checked={s.deferred} onChange={(e) => updateDoc(d.key, { deferred: e.target.checked, na: false, uploaded: null })} />
-                              I'll upload this later
-                            </label>
+                        <div
+                          className={`border rounded-[3px] p-4 space-y-3 ${s.skipped ? "border-dashed border-obsidian/15 bg-obsidian/[0.02]" : "border-obsidian/12"}`}
+                        >
+                          <div className="flex items-center justify-between gap-3">
+                            <div className="flex items-center gap-2">
+                              <span className="inline-flex items-center bg-[#153157] text-white px-2 py-0.5 rounded-[3px] text-[10px] font-mono uppercase tracking-[0.12em]">
+                                {s.trade}
+                              </span>
+                              {optional && (
+                                <span className="text-[10px] font-mono uppercase tracking-[0.12em] text-obsidian/45">
+                                  Optional
+                                </span>
+                              )}
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => toggleSubSkip(s.scope)}
+                              className="font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/55 hover:text-obsidian underline underline-offset-2"
+                            >
+                              {s.skipped ? "Add sub info" : "Skip for now"}
+                            </button>
+                          </div>
+                          {!s.skipped && (
+                            <div className="grid gap-3 sm:grid-cols-2">
+                              <div>
+                                <label className={labelCls}>Company Name</label>
+                                <input
+                                  className={inputCls}
+                                  value={s.companyName}
+                                  onChange={(e) =>
+                                    updateSubByScope(s.scope, { companyName: e.target.value })
+                                  }
+                                />
+                              </div>
+                              <div>
+                                <label className={labelCls}>License #</label>
+                                <input
+                                  className={inputCls}
+                                  value={s.licenseNumber}
+                                  onChange={(e) =>
+                                    updateSubByScope(s.scope, { licenseNumber: e.target.value })
+                                  }
+                                />
+                              </div>
+                              <div>
+                                <label className={labelCls}>Contact Name</label>
+                                <input
+                                  className={inputCls}
+                                  value={s.contactName}
+                                  onChange={(e) =>
+                                    updateSubByScope(s.scope, { contactName: e.target.value })
+                                  }
+                                />
+                              </div>
+                              <div>
+                                <label className={labelCls}>Contact Email</label>
+                                <input
+                                  type="email"
+                                  className={inputCls}
+                                  value={s.contactEmail}
+                                  onChange={(e) =>
+                                    updateSubByScope(s.scope, { contactEmail: e.target.value })
+                                  }
+                                />
+                              </div>
+                            </div>
                           )}
                         </div>
-                      </li>
+                      </div>
                     );
                   })}
-                </ul>
-
-                <div className="pt-2">
-                  <div className={sectionCls}>Additional Documents</div>
-                  <label className="mt-3 inline-flex items-center gap-2 cursor-pointer border border-obsidian/20 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian rounded-[3px] hover:bg-obsidian/5">
-                    <Upload className="h-3.5 w-3.5" /> Add PDFs ({form.extraDocs.length}/30)
-                    <input type="file" accept="application/pdf" multiple className="hidden" onChange={handleExtraFiles} />
-                  </label>
-                  {form.extraDocs.length > 0 && (
-                    <ul className="mt-3 space-y-1">
-                      {form.extraDocs.map((name, i) => (
-                        <li key={i} className="flex items-center justify-between gap-2 text-[12px] text-obsidian/70 bg-obsidian/5 px-2 py-1 rounded-[3px]">
-                          <span className="truncate">{name}</span>
-                          <button type="button" onClick={() => update("extraDocs", form.extraDocs.filter((_, j) => j !== i))}><X className="h-3 w-3" /></button>
-                        </li>
-                      ))}
-                    </ul>
+                  {filledSubs.length > 0 && (
+                    <div className="border-l-2 border-[#153157] bg-obsidian/[0.03] px-4 py-3 text-[12px] text-obsidian/80">
+                      {wantBundle ? (
+                        <>
+                          This submission will cover <strong>{filledSubs.length} trades</strong>{" "}
+                          under one GC permit (auto-bundled).
+                        </>
+                      ) : (
+                        <>1 trade added — add more scopes to bundle under a single GC permit.</>
+                      )}
+                    </div>
                   )}
                 </div>
-              </>
+              )}
+            </div>
+
+            <div>
+              <label className={labelCls}>Scope Narrative</label>
+              <textarea
+                rows={3}
+                className={inputCls}
+                value={form.description}
+                onChange={(e) => update("description", e.target.value)}
+                placeholder="Describe the work in more detail…"
+              />
+            </div>
+
+            {/* Architect / Engineer — from shared contacts */}
+            <div className="grid gap-5 sm:grid-cols-2 pt-2">
+              <ProContactBlock
+                role="architect"
+                label="Architect of Record"
+                options={savedPros.filter((p) => p.role === "architect")}
+                firm={form.architectFirm}
+                contact={form.architectContact}
+                license={form.architectLicense}
+                email={form.architectEmail}
+                onFirm={(v) => update("architectFirm", v)}
+                onContact={(v) => update("architectContact", v)}
+                onLicense={(v) => update("architectLicense", v)}
+                onEmail={(v) => update("architectEmail", v)}
+                onPick={(p) =>
+                  setForm((f) => ({
+                    ...f,
+                    architectFirm: p.firm_name,
+                    architectContact: p.contact_name ?? "",
+                    architectLicense: p.license_number ?? "",
+                    architectEmail: p.email ?? "",
+                  }))
+                }
+                saveNew={saveArchitectToContacts}
+                onSaveNew={setSaveArchitectToContacts}
+                inputCls={inputCls}
+                labelCls={labelCls}
+              />
+              <ProContactBlock
+                role="engineer"
+                label="Engineer"
+                options={savedPros.filter((p) => p.role === "engineer")}
+                firm={form.engineerFirm}
+                contact={form.engineerContact}
+                license={form.engineerLicense}
+                email={form.engineerEmail}
+                onFirm={(v) => update("engineerFirm", v)}
+                onContact={(v) => update("engineerContact", v)}
+                onLicense={(v) => update("engineerLicense", v)}
+                onEmail={(v) => update("engineerEmail", v)}
+                onPick={(p) =>
+                  setForm((f) => ({
+                    ...f,
+                    engineerFirm: p.firm_name,
+                    engineerContact: p.contact_name ?? "",
+                    engineerLicense: p.license_number ?? "",
+                    engineerEmail: p.email ?? "",
+                  }))
+                }
+                saveNew={saveEngineerToContacts}
+                onSaveNew={setSaveEngineerToContacts}
+                inputCls={inputCls}
+                labelCls={labelCls}
+              />
+            </div>
+
+            {hasNoc && <NocAwarenessRibbon scopeKey={`permits:${editId ?? "new"}`} />}
+
+            {jobTrades.length > 0 && (
+              <TradesOnJobPanel
+                trades={jobTrades}
+                title="Trades on this Job"
+                emptyLabel="No trades added yet."
+              />
             )}
 
             <div>
-              <label className={labelCls}>Additional Notes</label>
-              <textarea rows={3} className={inputCls} value={form.additionalNotes} onChange={(e) => update("additionalNotes", e.target.value)} />
+              <label className={labelCls}>Submitted Date</label>
+              <input
+                type="date"
+                className={`${inputCls} max-w-xs`}
+                value={form.submittedDate}
+                onChange={(e) => update("submittedDate", e.target.value)}
+              />
+            </div>
+
+            <div className="flex justify-end pt-2 border-t border-obsidian/10">
+              <button
+                type="button"
+                onClick={() => update("step", 2)}
+                className="inline-flex items-center gap-2 bg-obsidian px-5 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-paper hover:bg-obsidian/90 rounded-[3px]"
+              >
+                Next: Contact & Documents
+              </button>
             </div>
           </div>
+        ) : (
+          <div className="mt-6 space-y-8">
+            <div className="bg-white border border-obsidian/10 rounded-[3px] p-6 sm:p-8 space-y-5">
+              <div className={sectionCls}>Contractor Information</div>
+              <div className="grid gap-5 sm:grid-cols-2">
+                <div>
+                  <label className={labelCls}>Contractor Company Name *</label>
+                  <input
+                    required
+                    className={inputCls}
+                    value={form.contractorCompany}
+                    onChange={(e) => update("contractorCompany", e.target.value)}
+                  />
+                </div>
+                <div>
+                  <label className={labelCls}>Contractor Qualifier Name *</label>
+                  <input
+                    required
+                    className={inputCls}
+                    value={form.contractorQualifier}
+                    onChange={(e) => update("contractorQualifier", e.target.value)}
+                  />
+                </div>
+                <div className="sm:col-span-2">
+                  <label className={labelCls}>Company Address</label>
+                  <input
+                    className={inputCls}
+                    value={form.companyAddress}
+                    onChange={(e) => update("companyAddress", e.target.value)}
+                  />
+                </div>
+                <div>
+                  <label className={labelCls}>Point of Contact *</label>
+                  <input
+                    required
+                    className={inputCls}
+                    value={form.poc}
+                    onChange={(e) => update("poc", e.target.value)}
+                  />
+                </div>
+                <div>
+                  <label className={labelCls}>POC Phone *</label>
+                  <input
+                    required
+                    className={inputCls}
+                    value={form.pocPhone}
+                    onChange={(e) => update("pocPhone", e.target.value)}
+                  />
+                </div>
+                <div>
+                  <label className={labelCls}>POC Email *</label>
+                  <input
+                    type="email"
+                    required
+                    className={inputCls}
+                    value={form.pocEmail}
+                    onChange={(e) => update("pocEmail", e.target.value)}
+                  />
+                </div>
+                <div>
+                  <label className={labelCls}>License Number *</label>
+                  <input
+                    required
+                    className={inputCls}
+                    value={form.licenseNumber}
+                    onChange={(e) => update("licenseNumber", e.target.value)}
+                  />
+                </div>
+              </div>
+            </div>
 
-          <div className="flex flex-wrap items-center justify-between gap-2 pt-2">
-            <button type="button" onClick={() => update("step", 1)} className="inline-flex items-center gap-2 border border-obsidian/20 px-4 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian rounded-[3px]">
-              <ArrowLeft className="h-3.5 w-3.5" /> Back
-            </button>
-            <button type="button" disabled={saving} onClick={submit} className="inline-flex items-center gap-2 px-5 py-2.5 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian rounded-[3px] disabled:opacity-60" style={{ backgroundColor: "#E4B93B" }}>
-              <Send className="h-3.5 w-3.5" /> {saving ? "Saving…" : isEditing ? "Save Changes" : "Submit Permit Intake"}
-            </button>
+            <div className="bg-white border border-obsidian/10 rounded-[3px] p-6 sm:p-8 space-y-5">
+              <div className={sectionCls}>Property Owner Information</div>
+              <div>
+                <label className={labelCls}>Name of Owner</label>
+                <input
+                  className={inputCls}
+                  value={form.ownerName}
+                  onChange={(e) => update("ownerName", e.target.value)}
+                />
+              </div>
+              <div>
+                <label className={labelCls}>Name of Trust / Corp / LLC</label>
+                <input
+                  className={inputCls}
+                  value={form.ownerEntity}
+                  onChange={(e) => update("ownerEntity", e.target.value)}
+                />
+              </div>
+              <div className="grid gap-5 sm:grid-cols-2">
+                <div>
+                  <label className={labelCls}>Signer Phone</label>
+                  <input
+                    className={inputCls}
+                    value={form.signerPhone}
+                    onChange={(e) => update("signerPhone", e.target.value)}
+                  />
+                </div>
+                <div>
+                  <label className={labelCls}>Signer Email</label>
+                  <input
+                    type="email"
+                    className={inputCls}
+                    value={form.signerEmail}
+                    onChange={(e) => update("signerEmail", e.target.value)}
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white border border-obsidian/10 rounded-[3px] p-6 sm:p-8 space-y-5">
+              <div className="flex items-end justify-between gap-3 flex-wrap">
+                <div>
+                  <div className={sectionCls}>Upload Documents</div>
+                  <p className="mt-1 text-[12px] text-obsidian/60">
+                    Drawings can be uploaded after intake.
+                  </p>
+                </div>
+                <div className="flex items-center gap-4">
+                  {!docsSkipped && (
+                    <div className="text-right">
+                      <div className="font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/55">
+                        {docsComplete} of {checklist.length} complete
+                      </div>
+                      <div className="mt-1.5 h-1.5 w-40 bg-obsidian/10 rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-emerald-500"
+                          style={{
+                            width: `${checklist.length ? (docsComplete / checklist.length) * 100 : 0}%`,
+                          }}
+                        />
+                      </div>
+                    </div>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => setDocsSkipped((v) => !v)}
+                    className="font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/55 hover:text-obsidian underline underline-offset-2"
+                  >
+                    {docsSkipped ? "Undo skip" : "Skip for now"}
+                  </button>
+                </div>
+              </div>
+
+              {docsSkipped ? (
+                <div className="text-[12px] text-obsidian/60 bg-obsidian/[0.03] border border-obsidian/10 rounded-[3px] p-3">
+                  Skipped — you can upload documents later from the project dashboard.
+                </div>
+              ) : (
+                <>
+                  <ul className="space-y-3">
+                    {checklist.map((d) => {
+                      const s = form.docs[d.key] ?? { uploaded: null, na: false, deferred: false };
+                      const done = s.uploaded || s.na || s.deferred;
+                      return (
+                        <li key={d.key} className="border border-obsidian/10 rounded-[3px] p-4">
+                          <div className="flex flex-wrap items-start justify-between gap-3 mb-3">
+                            <div className="min-w-0 flex-1">
+                              <div className="flex items-center gap-2 flex-wrap">
+                                {done ? (
+                                  <Check className="h-4 w-4 text-emerald-600" />
+                                ) : (
+                                  <FileText className="h-4 w-4 text-obsidian/40" />
+                                )}
+                                <span className="text-sm font-medium text-obsidian">{d.label}</span>
+                                <span
+                                  className={`font-mono text-[9px] uppercase tracking-[0.14em] px-1.5 py-0.5 rounded ${d.required ? "bg-red-50 text-red-700" : "bg-obsidian/8 text-obsidian/60"}`}
+                                >
+                                  {d.required ? "Required" : "Optional"}
+                                </span>
+                                {s.deferred && (
+                                  <span className="font-mono text-[9px] uppercase tracking-[0.14em] px-1.5 py-0.5 rounded bg-amber-100 text-amber-800">
+                                    Pending — upload later
+                                  </span>
+                                )}
+                              </div>
+                              <p className="mt-1 text-[12px] text-obsidian/60">{d.desc}</p>
+                            </div>
+                          </div>
+
+                          {s.uploaded ? (
+                            <div className="flex items-center justify-between gap-2 text-[12px] text-obsidian/80 bg-emerald-50 border border-emerald-200 px-3 py-2 rounded-[3px]">
+                              <div className="flex items-center gap-2 min-w-0">
+                                <FileText className="h-3.5 w-3.5 shrink-0 text-emerald-700" />
+                                <span className="truncate">{s.uploaded}</span>
+                              </div>
+                              <button
+                                type="button"
+                                onClick={() => updateDoc(d.key, { uploaded: null })}
+                                className="text-obsidian/50 hover:text-obsidian shrink-0"
+                              >
+                                <X className="h-3.5 w-3.5" />
+                              </button>
+                            </div>
+                          ) : s.deferred ? (
+                            <div className="flex items-center justify-between gap-2 text-[12px] text-amber-900 bg-amber-50 border border-amber-200 px-3 py-2 rounded-[3px]">
+                              <div className="flex items-center gap-2">
+                                <AlertCircle className="h-3.5 w-3.5 text-amber-700" />
+                                Marked as pending — you'll upload later.
+                              </div>
+                              <button
+                                type="button"
+                                onClick={() => updateDoc(d.key, { deferred: false })}
+                                className="font-mono text-[10px] uppercase tracking-[0.14em] text-amber-800 hover:text-amber-900"
+                              >
+                                Undo
+                              </button>
+                            </div>
+                          ) : (
+                            <div
+                              onDragOver={(e) => e.preventDefault()}
+                              onDrop={(e) => handleDrop(d.key, e)}
+                              className="border-2 border-dashed border-obsidian/20 hover:border-obsidian/40 bg-obsidian/[0.02] rounded-[3px] px-4 py-5 text-center transition-colors"
+                            >
+                              <Upload
+                                className="mx-auto h-5 w-5 text-obsidian/40"
+                                strokeWidth={1.5}
+                              />
+                              <p className="mt-2 text-[12px] text-obsidian/65">
+                                Drag & drop a PDF here, or{" "}
+                                <label className="text-obsidian font-medium underline cursor-pointer">
+                                  browse
+                                  <input
+                                    type="file"
+                                    accept="application/pdf"
+                                    className="hidden"
+                                    onChange={(e) => handleFile(d.key, e)}
+                                  />
+                                </label>
+                              </p>
+                              <CloudUploadButtons />
+                            </div>
+                          )}
+
+                          <div className="mt-3 flex items-center gap-4 flex-wrap">
+                            {!d.required && !s.uploaded && (
+                              <label className="flex items-center gap-1.5 text-[11px] text-obsidian/70">
+                                <input
+                                  type="checkbox"
+                                  checked={s.na}
+                                  onChange={(e) =>
+                                    updateDoc(d.key, {
+                                      na: e.target.checked,
+                                      uploaded: null,
+                                      deferred: false,
+                                    })
+                                  }
+                                />
+                                Does not apply
+                              </label>
+                            )}
+                            {d.canDefer && !s.uploaded && (
+                              <label className="flex items-center gap-1.5 text-[11px] text-amber-800">
+                                <input
+                                  type="checkbox"
+                                  checked={s.deferred}
+                                  onChange={(e) =>
+                                    updateDoc(d.key, {
+                                      deferred: e.target.checked,
+                                      na: false,
+                                      uploaded: null,
+                                    })
+                                  }
+                                />
+                                I'll upload this later
+                              </label>
+                            )}
+                          </div>
+                        </li>
+                      );
+                    })}
+                  </ul>
+
+                  <div className="pt-2">
+                    <div className={sectionCls}>Additional Documents</div>
+                    <label className="mt-3 inline-flex items-center gap-2 cursor-pointer border border-obsidian/20 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian rounded-[3px] hover:bg-obsidian/5">
+                      <Upload className="h-3.5 w-3.5" /> Add PDFs ({form.extraDocs.length}/30)
+                      <input
+                        type="file"
+                        accept="application/pdf"
+                        multiple
+                        className="hidden"
+                        onChange={handleExtraFiles}
+                      />
+                    </label>
+                    {form.extraDocs.length > 0 && (
+                      <ul className="mt-3 space-y-1">
+                        {form.extraDocs.map((name, i) => (
+                          <li
+                            key={i}
+                            className="flex items-center justify-between gap-2 text-[12px] text-obsidian/70 bg-obsidian/5 px-2 py-1 rounded-[3px]"
+                          >
+                            <span className="truncate">{name}</span>
+                            <button
+                              type="button"
+                              onClick={() =>
+                                update(
+                                  "extraDocs",
+                                  form.extraDocs.filter((_, j) => j !== i),
+                                )
+                              }
+                            >
+                              <X className="h-3 w-3" />
+                            </button>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                </>
+              )}
+
+              <div>
+                <label className={labelCls}>Additional Notes</label>
+                <textarea
+                  rows={3}
+                  className={inputCls}
+                  value={form.additionalNotes}
+                  onChange={(e) => update("additionalNotes", e.target.value)}
+                />
+              </div>
+            </div>
+
+            <div className="flex flex-wrap items-center justify-between gap-2 pt-2">
+              <button
+                type="button"
+                onClick={() => update("step", 1)}
+                className="inline-flex items-center gap-2 border border-obsidian/20 px-4 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian rounded-[3px]"
+              >
+                <ArrowLeft className="h-3.5 w-3.5" /> Back
+              </button>
+              <button
+                type="button"
+                disabled={saving}
+                onClick={submit}
+                className="inline-flex items-center gap-2 px-5 py-2.5 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian rounded-[3px] disabled:opacity-60"
+                style={{ backgroundColor: "#E4B93B" }}
+              >
+                <Send className="h-3.5 w-3.5" />{" "}
+                {saving ? "Saving…" : isEditing ? "Save Changes" : "Submit Permit Intake"}
+              </button>
+            </div>
           </div>
-        </div>
-      )}
-    </div>
+        )}
+      </div>
       <VictoriaIntelligencePanel
         mode="permit"
         municipality={form.municipality}
@@ -1077,7 +1425,6 @@ function NewPermitPage() {
       />
     </div>
   );
-
 }
 
 function ProContactBlock(props: {
@@ -1099,7 +1446,9 @@ function ProContactBlock(props: {
   labelCls: string;
 }) {
   const { options, inputCls, labelCls } = props;
-  const knownMatch = options.find((p) => p.firm_name.trim().toLowerCase() === props.firm.trim().toLowerCase());
+  const knownMatch = options.find(
+    (p) => p.firm_name.trim().toLowerCase() === props.firm.trim().toLowerCase(),
+  );
   return (
     <div className="space-y-2 border border-obsidian/10 rounded-[3px] p-3">
       <label className={labelCls}>{props.label}</label>
@@ -1121,17 +1470,36 @@ function ProContactBlock(props: {
         allowFreeform
       />
       <div className="grid gap-2 sm:grid-cols-2">
-        <input className={inputCls} value={props.contact} onChange={(e) => props.onContact(e.target.value)} placeholder="Contact name" />
-        <input className={inputCls} value={props.license} onChange={(e) => props.onLicense(e.target.value)} placeholder="License #" />
-        <input className={`${inputCls} sm:col-span-2`} type="email" value={props.email} onChange={(e) => props.onEmail(e.target.value)} placeholder="Email" />
+        <input
+          className={inputCls}
+          value={props.contact}
+          onChange={(e) => props.onContact(e.target.value)}
+          placeholder="Contact name"
+        />
+        <input
+          className={inputCls}
+          value={props.license}
+          onChange={(e) => props.onLicense(e.target.value)}
+          placeholder="License #"
+        />
+        <input
+          className={`${inputCls} sm:col-span-2`}
+          type="email"
+          value={props.email}
+          onChange={(e) => props.onEmail(e.target.value)}
+          placeholder="Email"
+        />
       </div>
       {props.firm.trim() && !knownMatch && (
         <label className="flex items-center gap-2 text-[11px] text-obsidian/70 pt-1">
-          <input type="checkbox" checked={props.saveNew} onChange={(e) => props.onSaveNew(e.target.checked)} />
+          <input
+            type="checkbox"
+            checked={props.saveNew}
+            onChange={(e) => props.onSaveNew(e.target.checked)}
+          />
           Save to contacts for future permits
         </label>
       )}
     </div>
   );
 }
-
