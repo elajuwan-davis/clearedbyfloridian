@@ -24,7 +24,9 @@ export const Route = createFileRoute("/onboarding")({
 function OnboardingPage() {
   const navigate = useNavigate();
   const updateTenant = useServerFn(updateMyTenantFn);
-  const [step, setStep] = useState<"password" | "company" | "checking">("checking");
+  const [step, setStep] = useState<"password" | "company" | "paa" | "checking">("checking");
+  const [signerEmail, setSignerEmail] = useState("");
+
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [tenantName, setTenantName] = useState("");
