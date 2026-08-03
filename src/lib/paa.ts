@@ -1,3 +1,5 @@
+import { supabase } from "@/integrations/supabase/client";
+
 // Permit Agent Authorization (PAA) — one-time document GCs sign at onboarding.
 // Placeholder language pending attorney review. Stored locally; swap `read`/`write`
 // for a server function + SignWell webhook when the provider is wired.
@@ -80,6 +82,36 @@ export function savePaa(input: { signerName: string; signerEmail: string }): Paa
   window.localStorage.setItem(PAA_KEY, JSON.stringify(rec));
   window.dispatchEvent(new CustomEvent(PAA_EVT));
   return rec;
+}
+
+/**
+ * Mirror a signed PAA into `paa_signatures` so server-side checks (Agent 1's
+ * intake validator) can see it. Best-effort: the localStorage record stays the
+ * source of truth for the UI until the SignWell webhook is wired.
+ */
+export async function persistPaaSignature(rec: PaaRecord): Promise<void> {
+  try {
+    const { data: auth } = await supabase.auth.getUser();
+    const uid = auth?.user?.id;
+    if (!uid) return;
+    const { data: member } = await (supabase.from("tenant_members" as any) as any)
+      .select("tenant_id")
+      .eq("user_id", uid)
+      .maybeSingle();
+    const tenantId = (member as { tenant_id?: string } | null)?.tenant_id;
+    if (!tenantId) return;
+    await (supabase.from("paa_signatures" as any) as any).insert({
+      tenant_id: tenantId,
+      version: rec.version,
+      signer_name: rec.signerName,
+      signer_email: rec.signerEmail,
+      signed_at: rec.signedAt,
+      provider: rec.provider,
+      envelope_id: rec.envelopeId,
+    });
+  } catch {
+    /* best-effort — the UI already has the signature */
+  }
 }
 
 export function loadTosAccepted(): string | null {

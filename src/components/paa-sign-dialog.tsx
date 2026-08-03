@@ -7,7 +7,7 @@ import { FileSignature, ShieldCheck, Download, AlertTriangle, CheckCircle2 } fro
 import { toast } from "sonner";
 import {
   PAA_BODY, PAA_DRAFT_NOTICE, PAA_TITLE, PAA_VERSION,
-  downloadPaa, loadPaa, savePaa, type PaaRecord,
+  downloadPaa, loadPaa, persistPaaSignature, savePaa, type PaaRecord,
 } from "@/lib/paa";
 
 export function PaaDraftBanner() {
@@ -69,6 +69,7 @@ export function PaaSignStep({
     // SignWell account is connected; the completion callback saves the same record.
     await new Promise((r) => setTimeout(r, 700));
     const saved = savePaa({ signerName: name, signerEmail: email });
+    await persistPaaSignature(saved);
     setRec(saved);
     setSending(false);
     toast.success("Permit Agent Authorization signed");
