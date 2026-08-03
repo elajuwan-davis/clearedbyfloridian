@@ -303,7 +303,12 @@ function OverviewTab({ project }: { project: Project }) {
             })}
           </ol>
         </SectionCard>
+
+        <div className="mt-6">
+          <MunicipalityContactsPanel city={project.city} county={project.county} />
+        </div>
       </aside>
+
     </div>
   );
 }
