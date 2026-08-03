@@ -40,6 +40,7 @@ import { Route as SubPortalRouteImport } from './routes/sub-portal'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminAccessRequestsRouteImport } from './routes/admin.access-requests'
 import { Route as AdminActivityRouteImport } from './routes/admin.activity'
+import { Route as AdminAuditRouteImport } from './routes/admin.audit'
 import { Route as AdminBuildersRouteImport } from './routes/admin.builders'
 import { Route as AdminFeatureRequestsRouteImport } from './routes/admin.feature-requests'
 import { Route as AdminGcClientsRouteImport } from './routes/admin.gc-clients'
@@ -278,6 +279,11 @@ const AdminAccessRequestsRoute = AdminAccessRequestsRouteImport.update({
 const AdminActivityRoute = AdminActivityRouteImport.update({
   id: '/admin/activity',
   path: '/admin/activity',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminAuditRoute = AdminAuditRouteImport.update({
+  id: '/admin/audit',
+  path: '/admin/audit',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminBuildersRoute = AdminBuildersRouteImport.update({
@@ -743,6 +749,7 @@ export interface FileRoutesByFullPath {
   '/sub-portal': typeof SubPortalRouteWithChildren
   '/admin/access-requests': typeof AdminAccessRequestsRoute
   '/admin/activity': typeof AdminActivityRoute
+  '/admin/audit': typeof AdminAuditRoute
   '/admin/builders': typeof AdminBuildersRoute
   '/admin/feature-requests': typeof AdminFeatureRequestsRoute
   '/admin/gc-clients': typeof AdminGcClientsRoute
@@ -858,6 +865,7 @@ export interface FileRoutesByTo {
   '/sub-portal': typeof SubPortalRouteWithChildren
   '/admin/access-requests': typeof AdminAccessRequestsRoute
   '/admin/activity': typeof AdminActivityRoute
+  '/admin/audit': typeof AdminAuditRoute
   '/admin/builders': typeof AdminBuildersRoute
   '/admin/feature-requests': typeof AdminFeatureRequestsRoute
   '/admin/gc-clients': typeof AdminGcClientsRoute
@@ -974,6 +982,7 @@ export interface FileRoutesById {
   '/sub-portal': typeof SubPortalRouteWithChildren
   '/admin/access-requests': typeof AdminAccessRequestsRoute
   '/admin/activity': typeof AdminActivityRoute
+  '/admin/audit': typeof AdminAuditRoute
   '/admin/builders': typeof AdminBuildersRoute
   '/admin/feature-requests': typeof AdminFeatureRequestsRoute
   '/admin/gc-clients': typeof AdminGcClientsRoute
@@ -1093,6 +1102,7 @@ export interface FileRouteTypes {
     | '/sub-portal'
     | '/admin/access-requests'
     | '/admin/activity'
+    | '/admin/audit'
     | '/admin/builders'
     | '/admin/feature-requests'
     | '/admin/gc-clients'
@@ -1208,6 +1218,7 @@ export interface FileRouteTypes {
     | '/sub-portal'
     | '/admin/access-requests'
     | '/admin/activity'
+    | '/admin/audit'
     | '/admin/builders'
     | '/admin/feature-requests'
     | '/admin/gc-clients'
@@ -1323,6 +1334,7 @@ export interface FileRouteTypes {
     | '/sub-portal'
     | '/admin/access-requests'
     | '/admin/activity'
+    | '/admin/audit'
     | '/admin/builders'
     | '/admin/feature-requests'
     | '/admin/gc-clients'
@@ -1441,6 +1453,7 @@ export interface RootRouteChildren {
   SubPortalRoute: typeof SubPortalRouteWithChildren
   AdminAccessRequestsRoute: typeof AdminAccessRequestsRoute
   AdminActivityRoute: typeof AdminActivityRoute
+  AdminAuditRoute: typeof AdminAuditRoute
   AdminBuildersRoute: typeof AdminBuildersRoute
   AdminFeatureRequestsRoute: typeof AdminFeatureRequestsRoute
   AdminGcClientsRoute: typeof AdminGcClientsRoute
@@ -1695,6 +1708,13 @@ declare module '@tanstack/react-router' {
       path: '/admin/activity'
       fullPath: '/admin/activity'
       preLoaderRoute: typeof AdminActivityRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/audit': {
+      id: '/admin/audit'
+      path: '/admin/audit'
+      fullPath: '/admin/audit'
+      preLoaderRoute: typeof AdminAuditRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/builders': {
@@ -2504,6 +2524,7 @@ const rootRouteChildren: RootRouteChildren = {
   SubPortalRoute: SubPortalRouteWithChildren,
   AdminAccessRequestsRoute: AdminAccessRequestsRoute,
   AdminActivityRoute: AdminActivityRoute,
+  AdminAuditRoute: AdminAuditRoute,
   AdminBuildersRoute: AdminBuildersRoute,
   AdminFeatureRequestsRoute: AdminFeatureRequestsRoute,
   AdminGcClientsRoute: AdminGcClientsRoute,
