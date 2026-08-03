@@ -12,7 +12,7 @@ Deno.serve(async (req: Request) => {
   const url = new URL(req.url);
   const address = url.searchParams.get("address");
   const county = (url.searchParams.get("county") ?? "").trim().toLowerCase();
-  const projectId = url.searchParams.get("project_id") ?? null;
+  const permitId = url.searchParams.get("permit_id") ?? null;
 
   if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
     return new Response("Supabase not configured", { status: 500 });
@@ -32,7 +32,7 @@ Deno.serve(async (req: Request) => {
     const { data } = await supabase
       .from("dispatch_results")
       .insert({
-        project_id: projectId,
+        permit_id: permitId,
         parcel_source: "unavailable",
       })
       .select()
@@ -58,7 +58,7 @@ Deno.serve(async (req: Request) => {
     const { data } = await supabase
       .from("dispatch_results")
       .insert({
-        project_id: projectId,
+        permit_id: permitId,
         parcel_source: "unavailable",
       })
       .select()
@@ -79,7 +79,7 @@ Deno.serve(async (req: Request) => {
     .select("*")
     .eq("latitude", lat)
     .eq("longitude", lon)
-    .eq("project_id", projectId)
+    .eq("permit_id", permitId)
     .gte("fetched_at", since)
     .order("fetched_at", { ascending: false })
     .limit(1);
@@ -111,7 +111,7 @@ Deno.serve(async (req: Request) => {
     const { data } = await supabase
       .from("dispatch_results")
       .insert({
-        project_id: projectId,
+        permit_id: permitId,
         latitude: lat,
         longitude: lon,
         parcel_source: "unavailable",
@@ -129,7 +129,7 @@ Deno.serve(async (req: Request) => {
   const { data } = await supabase
     .from("dispatch_results")
     .insert({
-      project_id: projectId,
+      permit_id: permitId,
       latitude: lat,
       longitude: lon,
       parcel_id: parcelId,

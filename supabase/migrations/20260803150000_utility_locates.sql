@@ -2,7 +2,7 @@
 
 CREATE TABLE IF NOT EXISTS public.utility_locates (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  project_id UUID REFERENCES public.projects(id) ON DELETE CASCADE,
+  permit_id UUID REFERENCES public.permits(id) ON DELETE CASCADE,
   ticket_number TEXT,
   request_date DATE NOT NULL DEFAULT CURRENT_DATE,
   excavation_date DATE NOT NULL,
@@ -26,7 +26,7 @@ BEGIN
     WHERE schemaname = 'public' AND tablename = 'utility_locates' AND policyname = 'tenant_access'
   ) THEN
     CREATE POLICY "tenant_access" ON public.utility_locates
-      USING (project_id IN (SELECT id FROM public.projects WHERE tenant_id = auth.uid()));
+      USING (permit_id IN (SELECT id FROM public.permits WHERE tenant_id = public.current_tenant_id()));
   END IF;
 END $$;
 

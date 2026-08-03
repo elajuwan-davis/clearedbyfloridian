@@ -17,7 +17,7 @@ Deno.serve(async (req: Request) => {
   const address = url.searchParams.get("address");
   let lat: number | null = Number(url.searchParams.get("lat"));
   let lon: number | null = Number(url.searchParams.get("lon"));
-  const projectId = url.searchParams.get("project_id") ?? null;
+  const permitId = url.searchParams.get("permit_id") ?? null;
 
   if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
     return new Response("Supabase not configured", { status: 500 });
@@ -90,7 +90,7 @@ Deno.serve(async (req: Request) => {
   const { data: inserted, error } = await supabase
     .from("dispatch_results")
     .insert({
-      project_id: projectId,
+      permit_id: permitId,
       latitude: lat,
       longitude: lon,
       flood_zone: floodZone,

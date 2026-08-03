@@ -1,12 +1,15 @@
--- Lien notice tracking schema with daily deadline check.
+-- Lien notice tracking for notice types not already covered by live tables:
+--   - nto_filings  covers preliminary notice (Notice to Owner)
+--   - lien_releases covers sub-specific lien releases
+-- This table covers: mechanics_lien and bond_claim deadlines.
 
 CREATE TABLE IF NOT EXISTS public.lien_notices (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  project_id UUID REFERENCES public.projects(id) ON DELETE CASCADE,
-  notice_type TEXT NOT NULL CHECK (notice_type IN ('preliminary_notice','mechanics_lien','lien_release','bond_claim')),
+  permit_id UUID REFERENCES public.permits(id) ON DELETE CASCADE,
+  notice_type TEXT NOT NULL CHECK (notice_type IN ('mechanics_lien', 'bond_claim')),
   filed_date DATE,
   deadline_date DATE,
-  status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('filed','pending','overdue','not_required')),
+  status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('filed', 'pending', 'overdue', 'not_required')),
   property_owner TEXT,
   contractor_name TEXT,
   project_address TEXT,
@@ -26,7 +29,7 @@ BEGIN
     WHERE schemaname = 'public' AND tablename = 'lien_notices' AND policyname = 'tenant_access'
   ) THEN
     CREATE POLICY "tenant_access" ON public.lien_notices
-      USING (project_id IN (SELECT id FROM public.projects WHERE tenant_id = auth.uid()));
+      USING (permit_id IN (SELECT id FROM public.permits WHERE tenant_id = public.current_tenant_id()));
   END IF;
 END $$;
 

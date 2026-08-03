@@ -1,8 +1,8 @@
--- Dispatch results cache for FEMA flood zone lookups.
+-- Dispatch results cache for FEMA flood zone and PAPA parcel lookups.
 
 CREATE TABLE IF NOT EXISTS public.dispatch_results (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  project_id UUID REFERENCES public.projects(id) ON DELETE CASCADE,
+  permit_id UUID REFERENCES public.permits(id) ON DELETE CASCADE,
   latitude NUMERIC(10,7),
   longitude NUMERIC(10,7),
   flood_zone TEXT,
