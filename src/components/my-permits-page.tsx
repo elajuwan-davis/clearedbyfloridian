@@ -142,6 +142,28 @@ export function MyPermitsPage() {
           <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search by project, address, county…" className="block w-full border border-obsidian/15 bg-white pl-9 pr-3 py-2 text-sm text-obsidian placeholder:text-obsidian/40 focus:border-obsidian/40 focus:outline-none rounded-[3px]" />
         </div>
 
+        {/* Management filter — separate Cléared work from vendor record copies. */}
+        <div className="mt-4 inline-flex overflow-hidden rounded-[3px] border border-obsidian/20">
+          {([
+            { key: "cleared", label: "Cléared Managed" },
+            { key: "vendor", label: "Vendor Managed" },
+            { key: "all", label: "All" },
+          ] as const).map((opt) => (
+            <button
+              key={opt.key}
+              type="button"
+              onClick={() => setManagement(opt.key)}
+              className={`px-3 py-2 font-mono text-[10px] uppercase tracking-[0.12em] border-r border-obsidian/15 last:border-r-0 ${
+                management === opt.key ? "bg-obsidian text-paper" : "bg-white text-obsidian/65 hover:bg-paper-warm"
+              }`}
+            >
+              {opt.label}
+            </button>
+          ))}
+        </div>
+
+
+
         {permits.length === 0 && !loading && (
           <div className="mt-10 border border-dashed border-obsidian/20 rounded-[3px] p-12 text-center">
             <FileText className="h-8 w-8 mx-auto text-obsidian/30" strokeWidth={1.5} />
