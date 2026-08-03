@@ -17,6 +17,34 @@ import { MunicipalityContactsPanel } from "@/components/municipal-contacts";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { PROJECTS, getProjectById, fullAddress, type Project } from "@/lib/projects-data";
+import { VENDORS, getVendor, setVendor, type Vendor } from "@/lib/project-vendors";
+
+function VendorSelect({ project }: { project: Project }) {
+  const [vendor, setVendorState] = useState<Vendor | "">("");
+  useEffect(() => {
+    setVendorState(getVendor(project.name) ?? "");
+  }, [project.name]);
+  return (
+    <div>
+      <div className="font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/45">Outsourced Vendor</div>
+      <select
+        value={vendor}
+        onChange={(e) => {
+          const next = (e.target.value || null) as Vendor | null;
+          setVendorState(next ?? "");
+          setVendor(project.name, next);
+        }}
+        className="mt-1.5 w-full max-w-xs border border-obsidian/20 bg-white px-2 py-1.5 text-sm text-obsidian rounded-[3px] focus:outline-none focus:border-obsidian/50"
+      >
+        <option value="">— No vendor assigned</option>
+        {VENDORS.map((v) => (
+          <option key={v} value={v}>{v}</option>
+        ))}
+      </select>
+    </div>
+  );
+}
+
 import { projectStatusMeta, toneClass } from "@/lib/status-badges";
 import { findPortalForAddress } from "@/lib/municipalities";
 import { InspectionsSection } from "@/components/inspections-section";
