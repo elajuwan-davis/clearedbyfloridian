@@ -191,20 +191,22 @@ export function MyPermitsPage() {
                       {g.items.map((p) => {
                         const c = permitCompleteness(p);
                         const issued = p.status === "permit_issued";
+                        const vendor = getVendor(p.project_name);
                         const barColor = c.percent === 100 ? "#16a34a" : c.percent >= 60 ? "#153157" : c.percent >= 30 ? "#d97706" : "#dc2626";
                         return (
-                          <div key={p.id} className="group relative flex flex-col border border-obsidian/10 bg-white hover:border-obsidian/30 transition-colors rounded-[3px]">
+                          <div key={p.id} className={`group relative flex flex-col border bg-white transition-colors rounded-[3px] ${vendor ? "border-slate-300 hover:border-slate-400 bg-slate-50/60" : "border-obsidian/10 hover:border-obsidian/30"}`}>
                             <Link to="/portal/permits/$id" params={{ id: p.id }} className="flex-1 p-4">
                               <div className="flex items-start justify-between gap-2">
                                 <div className="min-w-0 flex-1">
                                   <div className="text-sm font-medium text-obsidian truncate">{p.project_name}</div>
-                                  {getVendor(p.project_name) && (
-                                    <div className="mt-1 inline-flex items-center border border-obsidian/12 bg-obsidian/5 px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-[0.1em] text-obsidian/50 rounded-[2px]">
-                                      {getVendor(p.project_name)}
+                                  {vendor && (
+                                    <div className="mt-1 inline-flex items-center border border-slate-400/60 bg-slate-200/70 px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-[0.1em] text-slate-700 rounded-[2px]" title={`Managed by ${vendor} — record copy only`}>
+                                      Vendor Managed · {vendor}
                                     </div>
                                   )}
                                   <div className="mt-0.5 text-xs text-obsidian/55 truncate">{p.job_address}</div>
                                 </div>
+
 
                                 <span className="shrink-0 font-mono text-[9px] uppercase tracking-[0.1em] text-obsidian/70 border border-obsidian/15 px-1.5 py-0.5 rounded-[2px]">
                                   {STATUS_LABEL[p.status]}
