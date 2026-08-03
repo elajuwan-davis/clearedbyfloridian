@@ -1,7 +1,7 @@
 // LocalStorage-backed notary request store.
 // Cleard performs remote online notarization in-house per FL Stat §117.265.
 
-export type NotaryStatus = "requested" | "completed";
+export type NotaryStatus = "requested" | "scheduled" | "completed" | "failed";
 
 export type NotaryRequest = {
   id: string;
@@ -16,7 +16,13 @@ export type NotaryRequest = {
   createdBy: string;
   completedAt?: string;
   notarizedFilename?: string;
+  /** Remote Online Notarization session details. */
+  sessionAt?: string;
+  provider?: string;
+  confirmationNumber?: string;
+  failureReason?: string;
 };
+
 
 const KEY = "cleared.notaryRequests.v1";
 const EVT = "notary-requests:changed";
