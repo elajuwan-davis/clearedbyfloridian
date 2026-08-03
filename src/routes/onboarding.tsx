@@ -42,7 +42,9 @@ function OnboardingPage() {
         setStep("password");
         return;
       }
+      setSignerEmail(data.session.user.email ?? "");
       setStep("password");
+
     });
   }, []);
 
