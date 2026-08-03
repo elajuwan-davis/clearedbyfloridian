@@ -361,6 +361,11 @@ function ProfilePage() {
           )}
         </Section>
 
+        {/* Legal */}
+        <Section title="Legal" subtitle="Signed authorizations and platform agreements on file.">
+          <LegalSectionBody />
+        </Section>
+
 
         {/* Password */}
         <Section title="Change Password">
