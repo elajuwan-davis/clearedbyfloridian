@@ -1,7 +1,9 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { PortalShell } from "@/components/portal-shell";
-import { ChevronDown, Search, AlertTriangle, Plus, FileText, RefreshCw } from "lucide-react";
+import { ChevronDown, Search, AlertTriangle, Plus, FileText, RefreshCw, Flag } from "lucide-react";
+import { isInternalUser } from "@/lib/is-internal-user";
+import { isEscalatedByName } from "@/lib/staff-ops";
 import { listPermits, updatePermit, permitCompleteness, type PermitRow, type PermitStatus } from "@/lib/permits-api";
 import { syncAllPermits, getLastRun, formatRelative } from "@/lib/permit-sync";
 
@@ -49,6 +51,7 @@ export function MyPermitsPage() {
   const [open, setOpen] = useState<Record<GroupKey, boolean>>({
     intake: true, preparing: true, submitted: true, on_hold: true, outsourced: true, issued: true, cancelled: false,
   });
+  const internal = isInternalUser();
 
   async function changeStatus(id: string, status: PermitStatus) {
     setUpdatingId(id);
@@ -167,6 +170,11 @@ export function MyPermitsPage() {
                                 <span className="shrink-0 font-mono text-[9px] uppercase tracking-[0.1em] text-obsidian/70 border border-obsidian/15 px-1.5 py-0.5 rounded-[2px]">
                                   {STATUS_LABEL[p.status]}
                                 </span>
+                                {internal && isEscalatedByName(p.project_name) && (
+                                  <span className="shrink-0 inline-flex items-center gap-1 border border-red-500/50 bg-red-50 px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-[0.1em] text-red-800 rounded-[2px]" title="Escalated">
+                                    <Flag className="h-2.5 w-2.5" /> Escalated
+                                  </span>
+                                )}
                               </div>
 
                               <div className="mt-3 flex flex-wrap items-center gap-1.5">
