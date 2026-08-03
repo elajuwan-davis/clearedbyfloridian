@@ -15,6 +15,8 @@ export const Route = createFileRoute("/projects")({
 
 import { projectStatusMeta as statusMeta, toneClass } from "@/lib/status-badges";
 import { PROJECTS, fullAddress } from "@/lib/projects-data";
+import { getVendor, VENDORS, VENDOR_PLACEHOLDER } from "@/lib/project-vendors";
+import { useMemo, useState } from "react";
 
 const projects = PROJECTS.map((p) => ({
   id: p.id,
@@ -33,6 +35,22 @@ const fmtMoney = (cents: number) =>
   `$${(cents / 100).toLocaleString("en-US", { maximumFractionDigits: 0 })}`;
 
 function ProjectsPage() {
+  const [vendorFilter, setVendorFilter] = useState<string>("all");
+  const [vendorSort, setVendorSort] = useState<"none" | "asc" | "desc">("none");
+
+  const rows = useMemo(() => {
+    const withVendor = projects.map((p) => ({ ...p, vendor: getVendor(p.name) }));
+    const filtered =
+      vendorFilter === "all"
+        ? withVendor
+        : vendorFilter === "none"
+          ? withVendor.filter((p) => !p.vendor)
+          : withVendor.filter((p) => p.vendor === vendorFilter);
+    if (vendorSort === "none") return filtered;
+    const dir = vendorSort === "asc" ? 1 : -1;
+    return [...filtered].sort((a, b) => (a.vendor ?? "zzz").localeCompare(b.vendor ?? "zzz") * dir);
+  }, [vendorFilter, vendorSort]);
+
   return (
     <PortalShell>
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
