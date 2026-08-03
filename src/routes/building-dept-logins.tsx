@@ -2,6 +2,9 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { PortalShell } from "@/components/portal-shell";
 import { Button } from "@/components/ui/button";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { MunicipalityContactsTab } from "@/components/municipal-contacts";
+
 import {
   ChevronDown, Copy, Eye, EyeOff, FileText, Plus, Search, Check, ExternalLink,
 } from "lucide-react";
