@@ -5,6 +5,8 @@ import { Loader2 } from "lucide-react";
 
 import { PortalShell } from "@/components/portal-shell";
 import { listReviewQueueFn, type ReviewQueueRow } from "@/lib/review-queue.functions";
+import { isVendorManaged } from "@/lib/project-vendors";
+
 
 export const Route = createFileRoute("/admin/review-queue")({
   head: () => ({
