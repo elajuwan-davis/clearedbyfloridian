@@ -172,35 +172,45 @@ export async function runDispatch(input: {
 
     if (floodResp && floodResp.ok) {
       flood = await floodResp.json();
-    }
-    if (parcelResp && parcelResp.ok) {
-      parcel = await parcelResp.json();
+    } else if (floodResp) {
+      const body = await floodResp.text().catch(() => "");
+      console.warn(`[runDispatch] dispatch-flood-zone returned ${floodResp.status}:`, body);
     }
 
-    if (!flood && !parcel) {
+    if (parcelResp && parcelResp.ok) {
+      parcel = await parcelResp.json();
+    } else if (parcelResp) {
+      const body = await parcelResp.text().catch(() => "");
+      console.warn(`[runDispatch] dispatch-parcel returned ${parcelResp.status}:`, body);
+    }
+
+    if (!flood || !parcel) {
+      console.warn("[runDispatch] falling back to mock — one or both live calls failed");
       return buildMock({ address: input.address, city, county });
     }
 
-    const mock = buildMock({ address: input.address, city, county });
     const fetchedAt = new Date().toISOString();
 
     return {
-      ...mock,
+      ...buildMock({ address: input.address, city, county }),
       source: "live",
       fetched_at: fetchedAt,
       flood: {
-        ...mock.flood,
-        zone: (flood?.flood_zone as DispatchFloodZone) ?? mock.flood.zone,
-        sfha: flood?.in_sfha ?? mock.flood.sfha,
+        zone: (flood?.flood_zone as DispatchFloodZone) ?? "X",
+        sfha: flood?.in_sfha ?? false,
         base_flood_elevation_ft: flood?.base_flood_elev ?? null,
+        firm_panel: null,
       },
       parcel: {
-        ...mock.parcel,
         parcel_id: parcel?.parcel_id ?? null,
         owner_name: parcel?.owner_name ?? null,
+        year_built: null,
+        assessed_value_cents: null,
+        living_area_sqft: null,
       },
     };
-  } catch {
+  } catch (err) {
+    console.warn("[runDispatch] exception calling live functions:", err);
     return buildMock({ address: input.address, city, county });
   }
 }
