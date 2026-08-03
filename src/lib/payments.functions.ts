@@ -146,6 +146,12 @@ export const createServiceFeeCheckout = createServerFn({ method: "POST" })
 
       const customerId = await resolveOrCreateCustomer(stripe, { email, userId });
 
+      const { data: permitRow } = await (supabase.from("permits" as any) as any)
+        .select("tenant_id")
+        .eq("id", data.permitId)
+        .maybeSingle();
+      const tenantId = (permitRow as any)?.tenant_id ?? null;
+
       const session = await stripe.checkout.sessions.create({
         line_items: [
           serviceFeeLineItem,
@@ -172,6 +178,7 @@ export const createServiceFeeCheckout = createServerFn({ method: "POST" })
       // Record pending invoice row (idempotent by session).
       await supabase.from("service_fee_invoices" as any).insert({
         permit_id: data.permitId,
+        tenant_id: tenantId,
         project_value_cents: Math.round(data.projectValueUsd * 100),
         fee_cents: feeCents,
         processing_fee_cents: processingCents,
@@ -277,6 +284,124 @@ export const listSavedPaymentMethods = createServerFn({ method: "POST" })
           expMonth: pm.card?.exp_month ?? null,
           expYear: pm.card?.exp_year ?? null,
         })),
+      };
+    } catch (error) {
+      return { error: getStripeErrorMessage(error) };
+    }
+  });
+
+type ChargeResult =
+  | { ok: true; paymentIntentId: string; amountCents: number; methodLabel: string }
+  | { error: string };
+
+/**
+ * Charge a pending service_fee_invoices row using a payment method already
+ * vaulted via Payment Authorization (setup-mode Checkout).
+ * Staff "Mark Paid" on /portal/billing uses this instead of a manual toggle.
+ */
+export const chargeServiceFeeWithSavedMethod = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: {
+    invoiceId: string;
+    environment: StripeEnv;
+    paymentMethodId?: string;
+  }) => {
+    if (!/^[a-f0-9-]{36}$/i.test(data.invoiceId)) throw new Error("Invalid invoiceId");
+    return data;
+  })
+  .handler(async ({ data, context }): Promise<ChargeResult> => {
+    try {
+      const { userId, claims, supabase } = context;
+      const email = (claims as any)?.email as string | undefined;
+      const stripe = createStripeClient(data.environment);
+
+      const { data: invoice, error: invErr } = await (supabase.from("service_fee_invoices" as any) as any)
+        .select("id, permit_id, tenant_id, fee_cents, processing_fee_cents, status, environment")
+        .eq("id", data.invoiceId)
+        .maybeSingle();
+      if (invErr) return { error: invErr.message };
+      if (!invoice) return { error: "Invoice not found" };
+      if (invoice.status === "paid") return { error: "Invoice is already paid" };
+      if (invoice.status === "refunded") return { error: "Invoice was refunded" };
+
+      const amountCents =
+        Number(invoice.fee_cents ?? 0) + Number(invoice.processing_fee_cents ?? 0);
+      if (amountCents <= 0) return { error: "Invoice has no chargeable amount" };
+
+      // Prefer the tenant's Stripe customer from subscriptions; fall back to caller.
+      let customerId: string | null = null;
+      if (invoice.tenant_id) {
+        const { data: sub } = await (supabase.from("subscriptions" as any) as any)
+          .select("stripe_customer_id, user_id")
+          .eq("tenant_id", invoice.tenant_id)
+          .eq("environment", data.environment)
+          .order("created_at", { ascending: false })
+          .limit(1)
+          .maybeSingle();
+        if (sub?.stripe_customer_id) customerId = sub.stripe_customer_id as string;
+      }
+      if (!customerId) {
+        customerId = await resolveOrCreateCustomer(stripe, { email, userId });
+      }
+
+      const methods = await stripe.paymentMethods.list({ customer: customerId, limit: 10 });
+      if (!methods.data.length) {
+        return {
+          error:
+            "No saved payment method on file. Have the GC complete Payment Authorization first.",
+        };
+      }
+
+      const pm =
+        (data.paymentMethodId
+          ? methods.data.find((m) => m.id === data.paymentMethodId)
+          : undefined) ?? methods.data[0];
+
+      const methodLabel =
+        pm.card
+          ? `Card ending ${pm.card.last4}`
+          : pm.us_bank_account
+            ? `ACH ending ${pm.us_bank_account.last4}`
+            : pm.type;
+
+      const intent = await stripe.paymentIntents.create({
+        amount: amountCents,
+        currency: "usd",
+        customer: customerId,
+        payment_method: pm.id,
+        confirm: true,
+        off_session: true,
+        description: `Cleard Service Fee — invoice ${invoice.id}`,
+        metadata: {
+          kind: "service_fee",
+          invoiceId: invoice.id,
+          permitId: invoice.permit_id,
+          chargedBy: userId,
+        },
+      });
+
+      if (intent.status !== "succeeded" && intent.status !== "processing") {
+        return {
+          error: `Payment did not succeed (status: ${intent.status}).`,
+        };
+      }
+
+      const paidAt = new Date().toISOString();
+      const { error: updErr } = await (supabase.from("service_fee_invoices" as any) as any)
+        .update({
+          status: "paid",
+          paid_at: paidAt,
+          stripe_payment_intent_id: intent.id,
+          updated_at: paidAt,
+        })
+        .eq("id", invoice.id);
+      if (updErr) return { error: updErr.message };
+
+      return {
+        ok: true,
+        paymentIntentId: intent.id,
+        amountCents,
+        methodLabel,
       };
     } catch (error) {
       return { error: getStripeErrorMessage(error) };

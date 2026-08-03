@@ -41,11 +41,9 @@ function GCPortal() {
     } catch {
       setPendingSigs([]);
     }
-    try {
-      setNotary(listNotaryRequests().filter((n) => assignedIds.has(n.projectId)));
-    } catch {
-      setNotary([]);
-    }
+    void listNotaryRequests()
+      .then((all) => setNotary(all.filter((n) => assignedIds.has(n.projectId) || assignedIds.has(n.permitId))))
+      .catch(() => setNotary([]));
   }, [navigate]);
 
   if (!client) return null;

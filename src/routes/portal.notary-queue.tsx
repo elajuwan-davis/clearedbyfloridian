@@ -1,8 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Stamp, CheckCircle2 } from "lucide-react";
+import { Stamp, CheckCircle2, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 import {
   listNotaryRequests,
   completeNotary,
@@ -18,51 +19,76 @@ export const Route = createFileRoute("/portal/notary-queue")({
 
 function NotaryQueuePage() {
   const [reqs, setReqs] = useState<NotaryRequest[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const refresh = useCallback(async () => {
+    try {
+      setReqs(await listNotaryRequests());
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed to load notary queue");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
-    const refresh = () => setReqs(listNotaryRequests());
-    refresh();
-    window.addEventListener(NOTARY_EVT, refresh);
-    return () => window.removeEventListener(NOTARY_EVT, refresh);
-  }, []);
+    void refresh();
+    const onEvt = () => void refresh();
+    window.addEventListener(NOTARY_EVT, onEvt);
+    return () => window.removeEventListener(NOTARY_EVT, onEvt);
+  }, [refresh]);
 
   return (
     <>
       <div className="mx-auto max-w-5xl px-6 py-10">
-        <div className="font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/55">Internal · Ops Queue</div>
+        <div className="font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/55">
+          Internal · Ops Queue
+        </div>
         <h1 className="display-serif mt-1 text-4xl text-obsidian">Notary Requests</h1>
         <p className="mt-2 text-sm text-obsidian/60">
-          In-house remote online notarization pursuant to Florida Statute §117.265. Notifications route to info@cleard.com.
+          In-house remote online notarization pursuant to Florida Statute §117.265. Notifications
+          route to info@cleard.com.
         </p>
 
         <div className="mt-8 space-y-3">
-          {reqs.length === 0 && (
+          {loading && (
+            <div className="flex items-center gap-2 text-sm text-obsidian/50">
+              <Loader2 className="h-4 w-4 animate-spin" /> Loading…
+            </div>
+          )}
+          {!loading && reqs.length === 0 && (
             <div className="border border-obsidian/12 bg-white p-10 text-center rounded-[3px]">
               <Stamp className="mx-auto h-6 w-6 text-obsidian/40" />
               <div className="mt-3 text-sm text-obsidian/60">No notary requests in the queue.</div>
             </div>
           )}
-          {reqs.map((r) => <NotaryRow key={r.id} r={r} />)}
+          {reqs.map((r) => (
+            <NotaryRow key={r.id} r={r} onChanged={refresh} />
+          ))}
         </div>
       </div>
     </>
   );
 }
 
-function NotaryRow({ r }: { r: NotaryRequest }) {
+function NotaryRow({ r, onChanged }: { r: NotaryRequest; onChanged: () => Promise<void> }) {
   const badge = notaryBadge(r.status);
   const [notarizedFilename, setNotarizedFilename] = useState("");
+  const [busy, setBusy] = useState(false);
 
   return (
     <div className="border border-obsidian/12 bg-white rounded-[3px] p-4">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0">
           <div className="flex items-center gap-2">
-            <span className={`font-mono text-[9px] uppercase tracking-[0.12em] px-1.5 py-0.5 rounded-[3px] inline-flex items-center gap-1 ${badge.className}`}>
+            <span
+              className={`font-mono text-[9px] uppercase tracking-[0.12em] px-1.5 py-0.5 rounded-[3px] inline-flex items-center gap-1 ${badge.className}`}
+            >
               {badge.iconSeal && <Stamp className="h-2.5 w-2.5" />} {badge.label}
             </span>
             <Link
-              to="/portal/projects/$id" params={{ id: r.projectId }}
+              to="/portal/permits/$id"
+              params={{ id: r.permitId }}
               className="text-sm font-semibold text-obsidian hover:underline"
             >
               {r.projectName}
@@ -79,17 +105,50 @@ function NotaryRow({ r }: { r: NotaryRequest }) {
       {r.status === "requested" && (
         <div className="mt-4 flex flex-wrap items-end gap-3 border-t border-obsidian/8 pt-4">
           <div className="flex-1 min-w-[260px]">
-            <label className="font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/55">Notarized filename</label>
-            <Input value={notarizedFilename} onChange={(e) => setNotarizedFilename(e.target.value)} placeholder="notarized-owner-auth.pdf" className="mt-1.5 rounded-[3px]" />
+            <label className="font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/55">
+              Notarized filename
+            </label>
+            <Input
+              value={notarizedFilename}
+              onChange={(e) => setNotarizedFilename(e.target.value)}
+              placeholder="notarized-owner-auth.pdf"
+              className="mt-1.5 rounded-[3px]"
+            />
           </div>
-          <Button variant="dark" className="rounded-[3px]" disabled={!notarizedFilename.trim()} onClick={async () => {
-            const name = notarizedFilename.trim();
-            completeNotary(r.id, name);
-            try {
-              await addDoc({ projectId: r.projectId, type: "Civil / Other", filename: `[Notarized] ${name}`, uploadedBy: "Cleard Notary" });
-            } catch { /* non-blocking */ }
-          }}>
-            <CheckCircle2 className="h-4 w-4 mr-2" /> Mark Complete
+          <Button
+            variant="dark"
+            className="rounded-[3px]"
+            disabled={!notarizedFilename.trim() || busy}
+            onClick={async () => {
+              const name = notarizedFilename.trim();
+              setBusy(true);
+              try {
+                await completeNotary(r.id, name);
+                try {
+                  await addDoc({
+                    projectId: r.permitId,
+                    type: "Civil / Other",
+                    filename: `[Notarized] ${name}`,
+                    uploadedBy: "Cleard Notary",
+                  });
+                } catch {
+                  /* non-blocking — project-documents may still be local */
+                }
+                toast.success("Marked complete");
+                await onChanged();
+              } catch (e) {
+                toast.error(e instanceof Error ? e.message : "Failed to complete");
+              } finally {
+                setBusy(false);
+              }
+            }}
+          >
+            {busy ? (
+              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+            ) : (
+              <CheckCircle2 className="h-4 w-4 mr-2" />
+            )}
+            Mark Complete
           </Button>
         </div>
       )}

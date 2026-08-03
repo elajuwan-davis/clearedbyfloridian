@@ -335,12 +335,26 @@ function DocumentsTab({ project, internal }: { project: Project; internal: boole
   const [tick, setTick] = useState(0);
   const [sigDialog, setSigDialog] = useState<{ documentName: string; docId?: string } | null>(null);
   const [notaryDialog, setNotaryDialog] = useState<{ documentName: string; docId?: string } | null>(null);
+  const [notaryByDoc, setNotaryByDoc] = useState<Record<string, Awaited<ReturnType<typeof notaryForDoc>>>>({});
   const role = typeof window !== "undefined" ? getPortalRole() : "gc";
   const showNotary = canRequestNotary(role);
+  const isLivePermit = /^[a-f0-9-]{36}$/i.test(project.id);
 
   useEffect(() => {
     const refresh = () => {
-      void listDocs(project.id).then((list) => setDocs(list));
+      void listDocs(project.id).then(async (list) => {
+        setDocs(list);
+        if (isLivePermit) {
+          const entries = await Promise.all(
+            list.map(async (d) => [d.id, await notaryForDoc(d.id).catch(() => undefined)] as const),
+          );
+          const map: Record<string, Awaited<ReturnType<typeof notaryForDoc>>> = {};
+          for (const [id, n] of entries) if (n) map[id] = n;
+          setNotaryByDoc(map);
+        } else {
+          setNotaryByDoc({});
+        }
+      });
       void getPCN({ projectId: project.id }).then((v) => setPcnLocal(v));
       setTick((t) => t + 1);
     };
@@ -348,7 +362,7 @@ function DocumentsTab({ project, internal }: { project: Project; internal: boole
     const evts = ["project-docs:changed", "project-pcn:changed", SIG_EVT, NOTARY_EVT];
     evts.forEach((e) => window.addEventListener(e, refresh));
     return () => evts.forEach((e) => window.removeEventListener(e, refresh));
-  }, [project.id]);
+  }, [project.id, isLivePermit]);
 
   const byType = useMemo(() => {
     const map: Record<string, ProjectDoc[]> = {};
@@ -426,7 +440,7 @@ function DocumentsTab({ project, internal }: { project: Project; internal: boole
                 <ul className="divide-y divide-obsidian/5">
                   {items.map((d) => {
                     const sig = getSignatureForDoc(d.id);
-                    const notary = notaryForDoc(d.id);
+                    const notary = notaryByDoc[d.id];
                     return (
                       <li key={d.id} className="flex flex-wrap items-center gap-3 px-4 py-3">
                         <FileText className="h-4 w-4 shrink-0 text-obsidian/50" />
@@ -465,7 +479,13 @@ function DocumentsTab({ project, internal }: { project: Project; internal: boole
                           {showNotary && (
                             <Button
                               variant="outline" size="sm" className="h-7 rounded-[3px] text-[11px]"
-                              onClick={() => setNotaryDialog({ documentName: d.filename, docId: d.id })}
+                              onClick={() => {
+                                if (!isLivePermit) {
+                                  toast.error("Notary requests require a live permit record.");
+                                  return;
+                                }
+                                setNotaryDialog({ documentName: d.filename, docId: d.id });
+                              }}
                             >
                               <Stamp className="h-3 w-3 mr-1" /> Request Notary
                             </Button>
@@ -542,11 +562,12 @@ function DocumentsTab({ project, internal }: { project: Project; internal: boole
           docId={sigDialog.docId}
         />
       )}
-      {notaryDialog && (
+      {notaryDialog && isLivePermit && (
         <RequestNotaryDialog
           open={!!notaryDialog}
           onOpenChange={(v) => !v && setNotaryDialog(null)}
-          project={project}
+          permitId={project.id}
+          projectName={project.name}
           documentName={notaryDialog.documentName}
           docId={notaryDialog.docId}
         />

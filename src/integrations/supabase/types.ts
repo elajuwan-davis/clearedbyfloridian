@@ -1606,6 +1606,78 @@ export type Database = {
         }
         Relationships: []
       }
+      notary_requests: {
+        Row: {
+          id: string
+          permit_id: string
+          tenant_id: string | null
+          document_name: string
+          doc_id: string | null
+          status: string
+          notes: string | null
+          created_by: string | null
+          created_at: string
+          completed_at: string | null
+          notarized_filename: string | null
+          session_at: string | null
+          provider: string | null
+          confirmation_number: string | null
+          failure_reason: string | null
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          permit_id: string
+          tenant_id?: string | null
+          document_name: string
+          doc_id?: string | null
+          status?: string
+          notes?: string | null
+          created_by?: string | null
+          created_at?: string
+          completed_at?: string | null
+          notarized_filename?: string | null
+          session_at?: string | null
+          provider?: string | null
+          confirmation_number?: string | null
+          failure_reason?: string | null
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          permit_id?: string
+          tenant_id?: string | null
+          document_name?: string
+          doc_id?: string | null
+          status?: string
+          notes?: string | null
+          created_by?: string | null
+          created_at?: string
+          completed_at?: string | null
+          notarized_filename?: string | null
+          session_at?: string | null
+          provider?: string | null
+          confirmation_number?: string | null
+          failure_reason?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notary_requests_permit_id_fkey"
+            columns: ["permit_id"]
+            isOneToOne: false
+            referencedRelation: "permits"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notary_requests_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       nto_filings: {
         Row: {
           contractor_address: string
