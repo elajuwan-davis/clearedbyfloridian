@@ -7,6 +7,8 @@ import { isInternalUser } from "@/lib/is-internal-user";
 import { CLEARED_STAFF, getAllOps, getStaffById } from "@/lib/staff-ops";
 import { PROJECTS, getProjectById } from "@/lib/projects-data";
 import { projectStatusMeta, toneClass } from "@/lib/status-badges";
+import { isVendorManaged } from "@/lib/project-vendors";
+
 
 export const Route = createFileRoute("/admin/workload")({
   head: () => ({
