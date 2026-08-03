@@ -43,6 +43,7 @@ import { Route as AdminActivityRouteImport } from './routes/admin.activity'
 import { Route as AdminBuildersRouteImport } from './routes/admin.builders'
 import { Route as AdminFeatureRequestsRouteImport } from './routes/admin.feature-requests'
 import { Route as AdminGcClientsRouteImport } from './routes/admin.gc-clients'
+import { Route as AdminGcComplianceRouteImport } from './routes/admin.gc-compliance'
 import { Route as AdminHubspotSimulateRouteImport } from './routes/admin.hubspot-simulate'
 import { Route as AdminInvitesRouteImport } from './routes/admin.invites'
 import { Route as AdminProtectionRouteImport } from './routes/admin.protection'
@@ -290,6 +291,11 @@ const AdminFeatureRequestsRoute = AdminFeatureRequestsRouteImport.update({
 const AdminGcClientsRoute = AdminGcClientsRouteImport.update({
   id: '/admin/gc-clients',
   path: '/admin/gc-clients',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminGcComplianceRoute = AdminGcComplianceRouteImport.update({
+  id: '/admin/gc-compliance',
+  path: '/admin/gc-compliance',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminHubspotSimulateRoute = AdminHubspotSimulateRouteImport.update({
@@ -728,6 +734,7 @@ export interface FileRoutesByFullPath {
   '/admin/builders': typeof AdminBuildersRoute
   '/admin/feature-requests': typeof AdminFeatureRequestsRoute
   '/admin/gc-clients': typeof AdminGcClientsRoute
+  '/admin/gc-compliance': typeof AdminGcComplianceRoute
   '/admin/hubspot-simulate': typeof AdminHubspotSimulateRoute
   '/admin/invites': typeof AdminInvitesRoute
   '/admin/protection': typeof AdminProtectionRoute
@@ -840,6 +847,7 @@ export interface FileRoutesByTo {
   '/admin/builders': typeof AdminBuildersRoute
   '/admin/feature-requests': typeof AdminFeatureRequestsRoute
   '/admin/gc-clients': typeof AdminGcClientsRoute
+  '/admin/gc-compliance': typeof AdminGcComplianceRoute
   '/admin/hubspot-simulate': typeof AdminHubspotSimulateRoute
   '/admin/invites': typeof AdminInvitesRoute
   '/admin/protection': typeof AdminProtectionRoute
@@ -953,6 +961,7 @@ export interface FileRoutesById {
   '/admin/builders': typeof AdminBuildersRoute
   '/admin/feature-requests': typeof AdminFeatureRequestsRoute
   '/admin/gc-clients': typeof AdminGcClientsRoute
+  '/admin/gc-compliance': typeof AdminGcComplianceRoute
   '/admin/hubspot-simulate': typeof AdminHubspotSimulateRoute
   '/admin/invites': typeof AdminInvitesRoute
   '/admin/protection': typeof AdminProtectionRoute
@@ -1069,6 +1078,7 @@ export interface FileRouteTypes {
     | '/admin/builders'
     | '/admin/feature-requests'
     | '/admin/gc-clients'
+    | '/admin/gc-compliance'
     | '/admin/hubspot-simulate'
     | '/admin/invites'
     | '/admin/protection'
@@ -1181,6 +1191,7 @@ export interface FileRouteTypes {
     | '/admin/builders'
     | '/admin/feature-requests'
     | '/admin/gc-clients'
+    | '/admin/gc-compliance'
     | '/admin/hubspot-simulate'
     | '/admin/invites'
     | '/admin/protection'
@@ -1293,6 +1304,7 @@ export interface FileRouteTypes {
     | '/admin/builders'
     | '/admin/feature-requests'
     | '/admin/gc-clients'
+    | '/admin/gc-compliance'
     | '/admin/hubspot-simulate'
     | '/admin/invites'
     | '/admin/protection'
@@ -1408,6 +1420,7 @@ export interface RootRouteChildren {
   AdminBuildersRoute: typeof AdminBuildersRoute
   AdminFeatureRequestsRoute: typeof AdminFeatureRequestsRoute
   AdminGcClientsRoute: typeof AdminGcClientsRoute
+  AdminGcComplianceRoute: typeof AdminGcComplianceRoute
   AdminHubspotSimulateRoute: typeof AdminHubspotSimulateRoute
   AdminInvitesRoute: typeof AdminInvitesRoute
   AdminProtectionRoute: typeof AdminProtectionRoute
@@ -1678,6 +1691,13 @@ declare module '@tanstack/react-router' {
       path: '/admin/gc-clients'
       fullPath: '/admin/gc-clients'
       preLoaderRoute: typeof AdminGcClientsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/gc-compliance': {
+      id: '/admin/gc-compliance'
+      path: '/admin/gc-compliance'
+      fullPath: '/admin/gc-compliance'
+      preLoaderRoute: typeof AdminGcComplianceRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/hubspot-simulate': {
@@ -2446,6 +2466,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminBuildersRoute: AdminBuildersRoute,
   AdminFeatureRequestsRoute: AdminFeatureRequestsRoute,
   AdminGcClientsRoute: AdminGcClientsRoute,
+  AdminGcComplianceRoute: AdminGcComplianceRoute,
   AdminHubspotSimulateRoute: AdminHubspotSimulateRoute,
   AdminInvitesRoute: AdminInvitesRoute,
   AdminProtectionRoute: AdminProtectionRoute,
@@ -2480,3 +2501,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
