@@ -150,6 +150,7 @@ export function ProjectDetail({ project }: { project: Project }) {
         <Tabs defaultValue="overview" className="mt-8">
           <TabsList className="flex h-auto w-full flex-wrap justify-start gap-1 rounded-[3px] bg-paper-warm p-1">
             <TabTrigger value="overview" icon={<LayoutGrid className="h-3.5 w-3.5" />} label="Overview" />
+            <TabTrigger value="revisions" icon={<RotateCcw className="h-3.5 w-3.5" />} label="Revisions" />
             <TabTrigger value="inspections" icon={<ClipboardCheck className="h-3.5 w-3.5" />} label="Inspections" />
             <TabTrigger value="documents" icon={<FileText className="h-3.5 w-3.5" />} label="Documents" />
             <TabTrigger value="hoa" icon={<FileSignature className="h-3.5 w-3.5" />} label="HOA Submittal" />
