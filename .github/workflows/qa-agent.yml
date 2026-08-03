@@ -1,0 +1,98 @@
+name: QA Agent
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: write
+  statuses: write
+
+jobs:
+  qa:
+    name: Review PR
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout PR head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install QA dependencies
+        run: pip install anthropic
+
+      - name: Save PR body
+        env:
+          PR_BODY: ${{ github.event.pull_request.body }}
+        run: |
+          python - <<'PY'
+          import os
+          body = os.environ.get('PR_BODY', '') or ''
+          with open('pr_body.txt', 'w', encoding='utf-8') as f:
+              f.write(body)
+          PY
+
+      - name: Extract spec
+        run: python scripts/qa/extract_spec.py pr_body.txt spec.txt
+
+      - name: Fetch PR diff
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh pr diff ${{ github.event.pull_request.number }} --patch > pr.diff
+
+      - name: Run QA assessment
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          python scripts/qa/run_qa.py \
+            --model claude-haiku-4-5-20251001 \
+            --diff pr.diff \
+            --spec spec.txt \
+            --output qa_result.json
+
+      - name: Post QA comment and status
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -e
+          STATUS=$(python - <<'PY'
+          import json
+          with open('qa_result.json', 'r', encoding='utf-8') as f:
+              result = json.load(f)
+
+          score = float(result.get('score', 0))
+          critical = result.get('critical_gaps', [])
+          gaps = result.get('gaps', [])
+          summary = result.get('summary', '')
+          passed = result.get('pass', False) and score >= 7 and not critical
+
+          state = 'success' if passed else 'failure'
+          header = '## QA Agent passed' if passed else '## QA Agent failed'
+          comment = f'{header}\n\n**Score:** {score}/10\n\n{summary}\n'
+          if not passed:
+              if critical:
+                  comment += '\n### Critical gaps\n'
+                  for i, c in enumerate(critical, 1):
+                      comment += f'{i}. {c}\n'
+              if gaps:
+                  comment += '\n### Gaps\n'
+                  for i, g in enumerate(gaps, 1):
+                      comment += f'{i}. {g}\n'
+
+          with open('qa_comment.md', 'w', encoding='utf-8') as f:
+              f.write(comment)
+
+          print(state, end='')
+          PY)
+          gh pr comment ${{ github.event.pull_request.number }} --body-file qa_comment.md
+          gh api repos/${{ github.repository }}/statuses/${{ github.event.pull_request.head.sha }} \
+            -f state="$STATUS" \
+            -f context="QA Agent" \
+            -f description="QA Agent $STATUS" \
+            -f target_url="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
