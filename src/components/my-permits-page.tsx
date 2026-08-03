@@ -49,6 +49,8 @@ export function MyPermitsPage() {
   const [lastSync, setLastSync] = useState<string | null>(null);
   const [syncMsg, setSyncMsg] = useState<string | null>(null);
   const [query, setQuery] = useState("");
+  const [management, setManagement] = useState<"all" | "cleared" | "vendor">("all");
+
   const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [open, setOpen] = useState<Record<GroupKey, boolean>>({
     intake: true, preparing: true, submitted: true, on_hold: true, outsourced: true, issued: true, cancelled: false,
