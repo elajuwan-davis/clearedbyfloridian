@@ -46,6 +46,10 @@ Storage. See `README.md` / `FEATURES.md` for the full feature map.
 `prettier/prettier` formatting errors on `main`. That is the repo's current state, not an
 environment problem; do not mass-reformat unrelated files to "fix" lint.
 
-### Supabase edge functions
-`supabase/functions/*` are Deno edge functions deployed to Supabase separately; they are not part
-of the local `bun run dev` app runtime.
+### Supabase migrations & edge functions
+- Schema changes belong in `supabase/migrations/*.sql` (and related app/types code) in git.
+- **Do not try to apply migrations to the live Lovable Cloud / Supabase database from Cloud Agents.**
+  Push the SQL + app changes to GitHub via a PR; the human migrates/applies them on the Lovable
+  side. Same for `supabase/functions/*` — ship the files in git; deployment is out of band.
+- `supabase/functions/*` are Deno edge functions; they are not part of the local `bun run dev`
+  app runtime.
