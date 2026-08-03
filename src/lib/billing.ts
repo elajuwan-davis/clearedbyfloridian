@@ -135,7 +135,7 @@ function rowToInvoice(row: any): Invoice {
       },
       {
         id: `${row.id}-proc`,
-        type: "Processing Fee",
+        type: "Processing Fee" as const,
         description: "Payment processing fee (2.9% + $0.30)",
         amountCents: processingFeeCents,
       },
