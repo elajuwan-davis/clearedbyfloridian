@@ -5,6 +5,7 @@ import {
   createStripeClient,
   getStripeErrorMessage,
 } from "@/lib/stripe.server";
+import { calculateCleardFee, getCleardTier } from "@/lib/pricing.ts";
 
 type CheckoutResult = { clientSecret: string } | { error: string };
 type PortalResult = { url: string } | { error: string };
@@ -40,6 +41,19 @@ async function resolveOrCreateCustomer(
     ...(options.userId && { metadata: { userId: options.userId } }),
   });
   return created.id;
+}
+
+function getTierProductId(tier: 1 | 2 | 3): string {
+  const envKey = `STRIPE_TIER_${tier}_PRODUCT_ID`;
+  const id = process.env[envKey];
+  if (!id) throw new Error(`${envKey} is not configured`);
+  return id;
+}
+
+function getTier1PriceId(): string {
+  const id = process.env.STRIPE_TIER_1_PRICE_ID;
+  if (!id) throw new Error("STRIPE_TIER_1_PRICE_ID is not configured");
+  return id;
 }
 
 /**
@@ -85,7 +99,7 @@ export const createSubscriptionCheckout = createServerFn({ method: "POST" })
 
 /**
  * Cleard per-project service fee checkout.
- * Uses dynamic price_data — 1% under $1M, 0.5% at $1M+.
+ * Three fixed/variable pricing tiers based on project contract value.
  * Processing fee (2.9% + $0.30) added as a second line item.
  */
 export const createServiceFeeCheckout = createServerFn({ method: "POST" })
@@ -109,25 +123,32 @@ export const createServiceFeeCheckout = createServerFn({ method: "POST" })
       const email = (claims as any)?.email as string | undefined;
       const stripe = createStripeClient(data.environment);
 
-      const rate = data.projectValueUsd >= 1_000_000 ? 0.005 : 0.01;
-      const feeCents = Math.round(data.projectValueUsd * rate * 100);
+      const tier = getCleardTier(data.projectValueUsd);
+      const feeDollars = calculateCleardFee(data.projectValueUsd);
+      const feeCents = Math.round(feeDollars * 100);
       const processingCents = Math.round(feeCents * 0.029 + 30);
+
+      const tierProductId = getTierProductId(tier);
+      const serviceFeeLineItem =
+        tier === 1
+          ? {
+              price: getTier1PriceId(),
+              quantity: 1,
+            }
+          : {
+              price_data: {
+                currency: "usd",
+                product: tierProductId,
+                unit_amount: feeCents,
+              },
+              quantity: 1,
+            };
 
       const customerId = await resolveOrCreateCustomer(stripe, { email, userId });
 
       const session = await stripe.checkout.sessions.create({
         line_items: [
-          {
-            price_data: {
-              currency: "usd",
-              product_data: {
-                name: `Cleard Service Fee — ${data.projectAddress}`,
-                description: `Per-project service fee (${(rate * 100).toFixed(1)}% of $${data.projectValueUsd.toLocaleString()} project value). Includes permit administration, plan review, inspections, and C.O. coordination.`,
-              },
-              unit_amount: feeCents,
-            },
-            quantity: 1,
-          },
+          serviceFeeLineItem,
           {
             price_data: {
               currency: "usd",
