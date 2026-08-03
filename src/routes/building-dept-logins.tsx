@@ -260,8 +260,11 @@ function BuildingDeptLoginsPage() {
                         })}
                       </ul>
                     </div>
+                      </TabsContent>
+                    </Tabs>
                   </div>
                 )}
+
               </div>
             );
           })}
