@@ -41,7 +41,7 @@ export function PropertyAppraiserDialog({
   function save() {
     if (!rec) return;
     saveAppraiser(project.id, rec);
-    setPCN(project.id, rec.pcn);
+    void setPCN({ projectId: project.id }, rec.pcn);
     setSaved(true);
     setTimeout(() => onOpenChange(false), 700);
   }

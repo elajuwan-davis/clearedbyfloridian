@@ -341,7 +341,7 @@ function DocumentsTab({ project, internal }: { project: Project; internal: boole
   useEffect(() => {
     const refresh = () => {
       void listDocs(project.id).then((list) => setDocs(list));
-      setPcnLocal(getPCN(project.id));
+      void getPCN({ projectId: project.id }).then((v) => setPcnLocal(v));
       setTick((t) => t + 1);
     };
     refresh();
