@@ -105,7 +105,7 @@ function OnboardingPage() {
         {step === "password" && (
           <form onSubmit={submitPassword} className="space-y-5">
             <div className="space-y-2">
-              <div className="label-eyebrow">Step 1 of 2</div>
+              <div className="label-eyebrow">Step 1 of 3</div>
               <h1 className="display-serif text-3xl leading-tight">Set your password.</h1>
               <p className="text-sm text-muted-foreground">
                 Choose a password to secure your account.
