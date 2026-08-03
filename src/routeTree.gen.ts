@@ -40,14 +40,17 @@ import { Route as SubPortalRouteImport } from './routes/sub-portal'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminAccessRequestsRouteImport } from './routes/admin.access-requests'
 import { Route as AdminActivityRouteImport } from './routes/admin.activity'
+import { Route as AdminAuditRouteImport } from './routes/admin.audit'
 import { Route as AdminBuildersRouteImport } from './routes/admin.builders'
 import { Route as AdminFeatureRequestsRouteImport } from './routes/admin.feature-requests'
 import { Route as AdminGcClientsRouteImport } from './routes/admin.gc-clients'
+import { Route as AdminGcComplianceRouteImport } from './routes/admin.gc-compliance'
 import { Route as AdminHubspotSimulateRouteImport } from './routes/admin.hubspot-simulate'
 import { Route as AdminInvitesRouteImport } from './routes/admin.invites'
 import { Route as AdminProtectionRouteImport } from './routes/admin.protection'
 import { Route as AdminReviewQueueRouteImport } from './routes/admin.review-queue'
 import { Route as AdminUtilityLocatesRouteImport } from './routes/admin.utility-locates'
+import { Route as AdminWorkloadRouteImport } from './routes/admin.workload'
 import { Route as AdminContractorsRouteImport } from './routes/admin_.contractors'
 import { Route as ApiGeocodeCensusRouteImport } from './routes/api/geocode-census'
 import { Route as ApiVerifyLicenseRouteImport } from './routes/api/verify-license'
@@ -67,8 +70,11 @@ import { Route as PermitCardIdRouteImport } from './routes/permit-card.$id'
 import { Route as PortalIndexRouteImport } from './routes/portal.index'
 import { Route as PortalAlertsRouteImport } from './routes/portal.alerts'
 import { Route as PortalBidReviewRouteImport } from './routes/portal.bid-review'
+import { Route as PortalBillingRouteImport } from './routes/portal.billing'
 import { Route as PortalBookmarksRouteImport } from './routes/portal.bookmarks'
 import { Route as PortalBuildingDeptRouteImport } from './routes/portal.building-dept'
+import { Route as PortalCalendarRouteImport } from './routes/portal.calendar'
+import { Route as PortalCompanyRouteImport } from './routes/portal.company'
 import { Route as PortalComplianceRouteImport } from './routes/portal.compliance'
 import { Route as PortalContactsRouteImport } from './routes/portal.contacts'
 import { Route as PortalFeatureRequestsRouteImport } from './routes/portal.feature-requests'
@@ -275,6 +281,11 @@ const AdminActivityRoute = AdminActivityRouteImport.update({
   path: '/admin/activity',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminAuditRoute = AdminAuditRouteImport.update({
+  id: '/admin/audit',
+  path: '/admin/audit',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminBuildersRoute = AdminBuildersRouteImport.update({
   id: '/admin/builders',
   path: '/admin/builders',
@@ -288,6 +299,11 @@ const AdminFeatureRequestsRoute = AdminFeatureRequestsRouteImport.update({
 const AdminGcClientsRoute = AdminGcClientsRouteImport.update({
   id: '/admin/gc-clients',
   path: '/admin/gc-clients',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminGcComplianceRoute = AdminGcComplianceRouteImport.update({
+  id: '/admin/gc-compliance',
+  path: '/admin/gc-compliance',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminHubspotSimulateRoute = AdminHubspotSimulateRouteImport.update({
@@ -313,6 +329,11 @@ const AdminReviewQueueRoute = AdminReviewQueueRouteImport.update({
 const AdminUtilityLocatesRoute = AdminUtilityLocatesRouteImport.update({
   id: '/admin/utility-locates',
   path: '/admin/utility-locates',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminWorkloadRoute = AdminWorkloadRouteImport.update({
+  id: '/admin/workload',
+  path: '/admin/workload',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminContractorsRoute = AdminContractorsRouteImport.update({
@@ -413,6 +434,11 @@ const PortalBidReviewRoute = PortalBidReviewRouteImport.update({
   path: '/bid-review',
   getParentRoute: () => PortalRoute,
 } as any)
+const PortalBillingRoute = PortalBillingRouteImport.update({
+  id: '/billing',
+  path: '/billing',
+  getParentRoute: () => PortalRoute,
+} as any)
 const PortalBookmarksRoute = PortalBookmarksRouteImport.update({
   id: '/bookmarks',
   path: '/bookmarks',
@@ -421,6 +447,16 @@ const PortalBookmarksRoute = PortalBookmarksRouteImport.update({
 const PortalBuildingDeptRoute = PortalBuildingDeptRouteImport.update({
   id: '/building-dept',
   path: '/building-dept',
+  getParentRoute: () => PortalRoute,
+} as any)
+const PortalCalendarRoute = PortalCalendarRouteImport.update({
+  id: '/calendar',
+  path: '/calendar',
+  getParentRoute: () => PortalRoute,
+} as any)
+const PortalCompanyRoute = PortalCompanyRouteImport.update({
+  id: '/company',
+  path: '/company',
   getParentRoute: () => PortalRoute,
 } as any)
 const PortalComplianceRoute = PortalComplianceRouteImport.update({
@@ -713,14 +749,17 @@ export interface FileRoutesByFullPath {
   '/sub-portal': typeof SubPortalRouteWithChildren
   '/admin/access-requests': typeof AdminAccessRequestsRoute
   '/admin/activity': typeof AdminActivityRoute
+  '/admin/audit': typeof AdminAuditRoute
   '/admin/builders': typeof AdminBuildersRoute
   '/admin/feature-requests': typeof AdminFeatureRequestsRoute
   '/admin/gc-clients': typeof AdminGcClientsRoute
+  '/admin/gc-compliance': typeof AdminGcComplianceRoute
   '/admin/hubspot-simulate': typeof AdminHubspotSimulateRoute
   '/admin/invites': typeof AdminInvitesRoute
   '/admin/protection': typeof AdminProtectionRoute
   '/admin/review-queue': typeof AdminReviewQueueRoute
   '/admin/utility-locates': typeof AdminUtilityLocatesRoute
+  '/admin/workload': typeof AdminWorkloadRoute
   '/admin/contractors': typeof AdminContractorsRoute
   '/api/geocode-census': typeof ApiGeocodeCensusRoute
   '/api/verify-license': typeof ApiVerifyLicenseRoute
@@ -736,8 +775,11 @@ export interface FileRoutesByFullPath {
   '/permit-card/$id': typeof PermitCardIdRoute
   '/portal/alerts': typeof PortalAlertsRoute
   '/portal/bid-review': typeof PortalBidReviewRoute
+  '/portal/billing': typeof PortalBillingRoute
   '/portal/bookmarks': typeof PortalBookmarksRoute
   '/portal/building-dept': typeof PortalBuildingDeptRoute
+  '/portal/calendar': typeof PortalCalendarRoute
+  '/portal/company': typeof PortalCompanyRoute
   '/portal/compliance': typeof PortalComplianceRoute
   '/portal/contacts': typeof PortalContactsRoute
   '/portal/feature-requests': typeof PortalFeatureRequestsRoute
@@ -823,14 +865,17 @@ export interface FileRoutesByTo {
   '/sub-portal': typeof SubPortalRouteWithChildren
   '/admin/access-requests': typeof AdminAccessRequestsRoute
   '/admin/activity': typeof AdminActivityRoute
+  '/admin/audit': typeof AdminAuditRoute
   '/admin/builders': typeof AdminBuildersRoute
   '/admin/feature-requests': typeof AdminFeatureRequestsRoute
   '/admin/gc-clients': typeof AdminGcClientsRoute
+  '/admin/gc-compliance': typeof AdminGcComplianceRoute
   '/admin/hubspot-simulate': typeof AdminHubspotSimulateRoute
   '/admin/invites': typeof AdminInvitesRoute
   '/admin/protection': typeof AdminProtectionRoute
   '/admin/review-queue': typeof AdminReviewQueueRoute
   '/admin/utility-locates': typeof AdminUtilityLocatesRoute
+  '/admin/workload': typeof AdminWorkloadRoute
   '/admin/contractors': typeof AdminContractorsRoute
   '/api/geocode-census': typeof ApiGeocodeCensusRoute
   '/api/verify-license': typeof ApiVerifyLicenseRoute
@@ -846,8 +891,11 @@ export interface FileRoutesByTo {
   '/permit-card/$id': typeof PermitCardIdRoute
   '/portal/alerts': typeof PortalAlertsRoute
   '/portal/bid-review': typeof PortalBidReviewRoute
+  '/portal/billing': typeof PortalBillingRoute
   '/portal/bookmarks': typeof PortalBookmarksRoute
   '/portal/building-dept': typeof PortalBuildingDeptRoute
+  '/portal/calendar': typeof PortalCalendarRoute
+  '/portal/company': typeof PortalCompanyRoute
   '/portal/compliance': typeof PortalComplianceRoute
   '/portal/contacts': typeof PortalContactsRoute
   '/portal/feature-requests': typeof PortalFeatureRequestsRoute
@@ -934,14 +982,17 @@ export interface FileRoutesById {
   '/sub-portal': typeof SubPortalRouteWithChildren
   '/admin/access-requests': typeof AdminAccessRequestsRoute
   '/admin/activity': typeof AdminActivityRoute
+  '/admin/audit': typeof AdminAuditRoute
   '/admin/builders': typeof AdminBuildersRoute
   '/admin/feature-requests': typeof AdminFeatureRequestsRoute
   '/admin/gc-clients': typeof AdminGcClientsRoute
+  '/admin/gc-compliance': typeof AdminGcComplianceRoute
   '/admin/hubspot-simulate': typeof AdminHubspotSimulateRoute
   '/admin/invites': typeof AdminInvitesRoute
   '/admin/protection': typeof AdminProtectionRoute
   '/admin/review-queue': typeof AdminReviewQueueRoute
   '/admin/utility-locates': typeof AdminUtilityLocatesRoute
+  '/admin/workload': typeof AdminWorkloadRoute
   '/admin_/contractors': typeof AdminContractorsRoute
   '/api/geocode-census': typeof ApiGeocodeCensusRoute
   '/api/verify-license': typeof ApiVerifyLicenseRoute
@@ -957,8 +1008,11 @@ export interface FileRoutesById {
   '/permit-card/$id': typeof PermitCardIdRoute
   '/portal/alerts': typeof PortalAlertsRoute
   '/portal/bid-review': typeof PortalBidReviewRoute
+  '/portal/billing': typeof PortalBillingRoute
   '/portal/bookmarks': typeof PortalBookmarksRoute
   '/portal/building-dept': typeof PortalBuildingDeptRoute
+  '/portal/calendar': typeof PortalCalendarRoute
+  '/portal/company': typeof PortalCompanyRoute
   '/portal/compliance': typeof PortalComplianceRoute
   '/portal/contacts': typeof PortalContactsRoute
   '/portal/feature-requests': typeof PortalFeatureRequestsRoute
@@ -1048,14 +1102,17 @@ export interface FileRouteTypes {
     | '/sub-portal'
     | '/admin/access-requests'
     | '/admin/activity'
+    | '/admin/audit'
     | '/admin/builders'
     | '/admin/feature-requests'
     | '/admin/gc-clients'
+    | '/admin/gc-compliance'
     | '/admin/hubspot-simulate'
     | '/admin/invites'
     | '/admin/protection'
     | '/admin/review-queue'
     | '/admin/utility-locates'
+    | '/admin/workload'
     | '/admin/contractors'
     | '/api/geocode-census'
     | '/api/verify-license'
@@ -1071,8 +1128,11 @@ export interface FileRouteTypes {
     | '/permit-card/$id'
     | '/portal/alerts'
     | '/portal/bid-review'
+    | '/portal/billing'
     | '/portal/bookmarks'
     | '/portal/building-dept'
+    | '/portal/calendar'
+    | '/portal/company'
     | '/portal/compliance'
     | '/portal/contacts'
     | '/portal/feature-requests'
@@ -1158,14 +1218,17 @@ export interface FileRouteTypes {
     | '/sub-portal'
     | '/admin/access-requests'
     | '/admin/activity'
+    | '/admin/audit'
     | '/admin/builders'
     | '/admin/feature-requests'
     | '/admin/gc-clients'
+    | '/admin/gc-compliance'
     | '/admin/hubspot-simulate'
     | '/admin/invites'
     | '/admin/protection'
     | '/admin/review-queue'
     | '/admin/utility-locates'
+    | '/admin/workload'
     | '/admin/contractors'
     | '/api/geocode-census'
     | '/api/verify-license'
@@ -1181,8 +1244,11 @@ export interface FileRouteTypes {
     | '/permit-card/$id'
     | '/portal/alerts'
     | '/portal/bid-review'
+    | '/portal/billing'
     | '/portal/bookmarks'
     | '/portal/building-dept'
+    | '/portal/calendar'
+    | '/portal/company'
     | '/portal/compliance'
     | '/portal/contacts'
     | '/portal/feature-requests'
@@ -1268,14 +1334,17 @@ export interface FileRouteTypes {
     | '/sub-portal'
     | '/admin/access-requests'
     | '/admin/activity'
+    | '/admin/audit'
     | '/admin/builders'
     | '/admin/feature-requests'
     | '/admin/gc-clients'
+    | '/admin/gc-compliance'
     | '/admin/hubspot-simulate'
     | '/admin/invites'
     | '/admin/protection'
     | '/admin/review-queue'
     | '/admin/utility-locates'
+    | '/admin/workload'
     | '/admin_/contractors'
     | '/api/geocode-census'
     | '/api/verify-license'
@@ -1291,8 +1360,11 @@ export interface FileRouteTypes {
     | '/permit-card/$id'
     | '/portal/alerts'
     | '/portal/bid-review'
+    | '/portal/billing'
     | '/portal/bookmarks'
     | '/portal/building-dept'
+    | '/portal/calendar'
+    | '/portal/company'
     | '/portal/compliance'
     | '/portal/contacts'
     | '/portal/feature-requests'
@@ -1381,14 +1453,17 @@ export interface RootRouteChildren {
   SubPortalRoute: typeof SubPortalRouteWithChildren
   AdminAccessRequestsRoute: typeof AdminAccessRequestsRoute
   AdminActivityRoute: typeof AdminActivityRoute
+  AdminAuditRoute: typeof AdminAuditRoute
   AdminBuildersRoute: typeof AdminBuildersRoute
   AdminFeatureRequestsRoute: typeof AdminFeatureRequestsRoute
   AdminGcClientsRoute: typeof AdminGcClientsRoute
+  AdminGcComplianceRoute: typeof AdminGcComplianceRoute
   AdminHubspotSimulateRoute: typeof AdminHubspotSimulateRoute
   AdminInvitesRoute: typeof AdminInvitesRoute
   AdminProtectionRoute: typeof AdminProtectionRoute
   AdminReviewQueueRoute: typeof AdminReviewQueueRoute
   AdminUtilityLocatesRoute: typeof AdminUtilityLocatesRoute
+  AdminWorkloadRoute: typeof AdminWorkloadRoute
   AdminContractorsRoute: typeof AdminContractorsRoute
   ApiGeocodeCensusRoute: typeof ApiGeocodeCensusRoute
   ApiVerifyLicenseRoute: typeof ApiVerifyLicenseRoute
@@ -1635,6 +1710,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminActivityRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/audit': {
+      id: '/admin/audit'
+      path: '/admin/audit'
+      fullPath: '/admin/audit'
+      preLoaderRoute: typeof AdminAuditRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/builders': {
       id: '/admin/builders'
       path: '/admin/builders'
@@ -1654,6 +1736,13 @@ declare module '@tanstack/react-router' {
       path: '/admin/gc-clients'
       fullPath: '/admin/gc-clients'
       preLoaderRoute: typeof AdminGcClientsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/gc-compliance': {
+      id: '/admin/gc-compliance'
+      path: '/admin/gc-compliance'
+      fullPath: '/admin/gc-compliance'
+      preLoaderRoute: typeof AdminGcComplianceRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/hubspot-simulate': {
@@ -1689,6 +1778,13 @@ declare module '@tanstack/react-router' {
       path: '/admin/utility-locates'
       fullPath: '/admin/utility-locates'
       preLoaderRoute: typeof AdminUtilityLocatesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/workload': {
+      id: '/admin/workload'
+      path: '/admin/workload'
+      fullPath: '/admin/workload'
+      preLoaderRoute: typeof AdminWorkloadRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin_/contractors': {
@@ -1824,6 +1920,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PortalBidReviewRouteImport
       parentRoute: typeof PortalRoute
     }
+    '/portal/billing': {
+      id: '/portal/billing'
+      path: '/billing'
+      fullPath: '/portal/billing'
+      preLoaderRoute: typeof PortalBillingRouteImport
+      parentRoute: typeof PortalRoute
+    }
     '/portal/bookmarks': {
       id: '/portal/bookmarks'
       path: '/bookmarks'
@@ -1836,6 +1939,20 @@ declare module '@tanstack/react-router' {
       path: '/building-dept'
       fullPath: '/portal/building-dept'
       preLoaderRoute: typeof PortalBuildingDeptRouteImport
+      parentRoute: typeof PortalRoute
+    }
+    '/portal/calendar': {
+      id: '/portal/calendar'
+      path: '/calendar'
+      fullPath: '/portal/calendar'
+      preLoaderRoute: typeof PortalCalendarRouteImport
+      parentRoute: typeof PortalRoute
+    }
+    '/portal/company': {
+      id: '/portal/company'
+      path: '/company'
+      fullPath: '/portal/company'
+      preLoaderRoute: typeof PortalCompanyRouteImport
       parentRoute: typeof PortalRoute
     }
     '/portal/compliance': {
@@ -2276,8 +2393,11 @@ const PortalSubmissionsRouteWithChildren =
 interface PortalRouteChildren {
   PortalAlertsRoute: typeof PortalAlertsRoute
   PortalBidReviewRoute: typeof PortalBidReviewRoute
+  PortalBillingRoute: typeof PortalBillingRoute
   PortalBookmarksRoute: typeof PortalBookmarksRoute
   PortalBuildingDeptRoute: typeof PortalBuildingDeptRoute
+  PortalCalendarRoute: typeof PortalCalendarRoute
+  PortalCompanyRoute: typeof PortalCompanyRoute
   PortalComplianceRoute: typeof PortalComplianceRoute
   PortalContactsRoute: typeof PortalContactsRoute
   PortalFeatureRequestsRoute: typeof PortalFeatureRequestsRoute
@@ -2310,8 +2430,11 @@ interface PortalRouteChildren {
 const PortalRouteChildren: PortalRouteChildren = {
   PortalAlertsRoute: PortalAlertsRoute,
   PortalBidReviewRoute: PortalBidReviewRoute,
+  PortalBillingRoute: PortalBillingRoute,
   PortalBookmarksRoute: PortalBookmarksRoute,
   PortalBuildingDeptRoute: PortalBuildingDeptRoute,
+  PortalCalendarRoute: PortalCalendarRoute,
+  PortalCompanyRoute: PortalCompanyRoute,
   PortalComplianceRoute: PortalComplianceRoute,
   PortalContactsRoute: PortalContactsRoute,
   PortalFeatureRequestsRoute: PortalFeatureRequestsRoute,
@@ -2401,14 +2524,17 @@ const rootRouteChildren: RootRouteChildren = {
   SubPortalRoute: SubPortalRouteWithChildren,
   AdminAccessRequestsRoute: AdminAccessRequestsRoute,
   AdminActivityRoute: AdminActivityRoute,
+  AdminAuditRoute: AdminAuditRoute,
   AdminBuildersRoute: AdminBuildersRoute,
   AdminFeatureRequestsRoute: AdminFeatureRequestsRoute,
   AdminGcClientsRoute: AdminGcClientsRoute,
+  AdminGcComplianceRoute: AdminGcComplianceRoute,
   AdminHubspotSimulateRoute: AdminHubspotSimulateRoute,
   AdminInvitesRoute: AdminInvitesRoute,
   AdminProtectionRoute: AdminProtectionRoute,
   AdminReviewQueueRoute: AdminReviewQueueRoute,
   AdminUtilityLocatesRoute: AdminUtilityLocatesRoute,
+  AdminWorkloadRoute: AdminWorkloadRoute,
   AdminContractorsRoute: AdminContractorsRoute,
   ApiGeocodeCensusRoute: ApiGeocodeCensusRoute,
   ApiVerifyLicenseRoute: ApiVerifyLicenseRoute,

@@ -300,6 +300,7 @@ export function PermitDocUploader({ permit, doc, onChange, readOnly = false, onR
                   type="file"
                   className="hidden"
                   accept=".pdf,.png,.jpg,.jpeg,.webp,.heic,.doc,.docx"
+                  capture="environment"
                   onChange={(e) => {
                     const f = e.target.files?.[0];
                     if (f) handleFile(f);

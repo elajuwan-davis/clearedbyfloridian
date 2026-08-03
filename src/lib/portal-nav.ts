@@ -12,6 +12,8 @@ import {
 
   ShieldCheck,
   Scale,
+  CreditCard,
+  CalendarDays,
 
   Settings,
   HardHat,
@@ -55,9 +57,29 @@ export const complianceSection: NavSection = {
   to: "/compliance",
 };
 
+export const calendarSection: NavSection = {
+  key: "calendar",
+  label: "Calendar",
+  icon: CalendarDays,
+  to: "/portal/calendar",
+};
+
+export const billingSection: NavSection = {
+  key: "billing",
+  label: "Billing",
+  icon: CreditCard,
+  items: [
+    { to: "/portal/billing", label: "Billing Overview" },
+    { to: "/invoices", label: "Invoices" },
+    { to: "/portal/company", label: "Company Profile" },
+  ],
+};
+
 export const navSections: NavSection[] = [
   dashboardSection,
   bookmarksSection,
+  calendarSection,
+  billingSection,
   complianceSection,
 
   {
@@ -88,6 +110,7 @@ export const navSections: NavSection[] = [
     icon: DollarSign,
     items: [
       { to: "/portal/financials", label: "Financial Overview" },
+      { to: "/portal/billing", label: "Billing & Invoicing" },
       { to: "/portal/permit-fees", label: "Permit Fees" },
       { to: "/invoices", label: "Invoices" },
       { to: "/fee-calculator", label: "Savings Calculator" },
@@ -141,6 +164,9 @@ export const adminSection: NavSection = {
     { to: "/admin/activity", label: "Activity Log" },
     { to: "/admin/access-requests", label: "Access Requests" },
     { to: "/admin/gc-clients", label: "GC Clients" },
+    { to: "/admin/workload", label: "Staff Workload" },
+    { to: "/admin/gc-compliance", label: "GC Compliance" },
+    { to: "/admin/audit", label: "Audit Trail" },
     { to: "/admin/protection", label: "Protection", divider: true },
     { to: "/admin/utility-locates", label: "Utility Locates" },
   ],
@@ -154,6 +180,7 @@ export const settingsSection: NavSection = {
   icon: Settings,
   items: [
     { to: "/profile", label: "Profile & Notifications" },
+    { to: "/portal/company", label: "Company Profile" },
     { to: "/portal/contacts", label: "Contacts" },
     { to: "/portal/bookmarks", label: "Bookmarks" },
   ],
@@ -197,7 +224,7 @@ export function isItemActive(pathname: string, to: string) {
 
 /** Best-effort human label for an arbitrary portal path (used by bookmarks). */
 export function labelForPath(pathname: string): string {
-  const all = [...navSections, adminSection, settingsSection, ...subNavSections];
+  const all = [...navSections, billingSection, calendarSection, legalSection, adminSection, settingsSection, ...subNavSections];
   let best: { len: number; label: string } | null = null;
   for (const s of all) {
     const entries: Array<{ to: string; label: string }> = s.to

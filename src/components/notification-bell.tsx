@@ -81,7 +81,7 @@ export function NotificationBell() {
       </button>
 
       {open && (
-        <div className="absolute right-0 mt-2 w-[380px] max-w-[calc(100vw-1rem)] bg-background border hairline rounded-[3px] shadow-2xl z-50">
+        <div className="absolute right-0 mt-2 w-[min(380px,92vw)] bg-background border hairline rounded-[3px] shadow-2xl z-50">
           <div className="px-4 py-3 border-b hairline flex items-center justify-between">
             <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
               Notifications

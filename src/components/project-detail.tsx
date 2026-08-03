@@ -47,6 +47,10 @@ import { FileSignature, FileCheck2, MapPinned, Send, Stamp } from "lucide-react"
 import { getSignatureForDoc, sigBadge, sigStatusForDocument, SIG_EVT } from "@/lib/signature-requests";
 import { notaryForDoc, notaryBadge, NOTARY_EVT } from "@/lib/notary-requests";
 import { getPortalRole, canRequestNotary } from "@/lib/portal-role";
+import { ProjectInternalOps } from "@/components/project-internal-ops";
+import { ProjectAuditTab } from "@/components/project-audit-tab";
+import { logAudit } from "@/lib/audit-log";
+import { ShieldAlert, History } from "lucide-react";
 
 const fmtMoneyWhole = (cents: number) =>
   `$${(cents / 100).toLocaleString("en-US", { maximumFractionDigits: 0 })}`;
@@ -162,6 +166,8 @@ export function ProjectDetail({ project }: { project: Project }) {
             <TabTrigger value="compliance" icon={<ShieldCheck className="h-3.5 w-3.5" />} label="Compliance" />
             <TabTrigger value="fees" icon={<DollarSign className="h-3.5 w-3.5" />} label="Permit Fees" />
             <TabTrigger value="notes" icon={<MessageSquare className="h-3.5 w-3.5" />} label="Notes" />
+            <TabTrigger value="activity" icon={<History className="h-3.5 w-3.5" />} label="Activity" />
+            {internal && <TabTrigger value="internal" icon={<ShieldAlert className="h-3.5 w-3.5" />} label="Internal" />}
           </TabsList>
 
           <TabsContent value="overview" className="mt-6"><OverviewTab project={project} /></TabsContent>
@@ -181,6 +187,8 @@ export function ProjectDetail({ project }: { project: Project }) {
           <TabsContent value="compliance" className="mt-6"><ProjectComplianceTab /></TabsContent>
           <TabsContent value="fees" className="mt-6"><FeesTab project={project} internal={internal} /></TabsContent>
           <TabsContent value="notes" className="mt-6"><NotesTab project={project} /></TabsContent>
+          <TabsContent value="activity" className="mt-6"><ProjectAuditTab project={project} /></TabsContent>
+          {internal && <TabsContent value="internal" className="mt-6"><ProjectInternalOps project={project} /></TabsContent>}
         </Tabs>
       </div>
     </PortalShell>
@@ -602,6 +610,7 @@ function UploadDocDialog({
         uploadedBy: localStorage.getItem("cleared_demo_user") || "Team",
       });
       toast.success(`Uploaded ${file.name}`);
+      logAudit(localStorage.getItem("cleared_demo_user") || "Team", "document.uploaded", { projectId, record: file.name, details: `${type} uploaded` });
       setFile(null);
       onOpenChange(false);
     } catch (e) {
