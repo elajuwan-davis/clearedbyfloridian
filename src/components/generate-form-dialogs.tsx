@@ -62,7 +62,7 @@ export function GenerateNTBODialog({
   useEffect(() => {
     if (open) {
       setProjectName(project.name);
-      setParcelTaxId(getPCN(project.id));
+      void getPCN({ projectId: project.id }).then((v) => setParcelTaxId(v));
       setContractorId("");
     }
   }, [open, project]);
