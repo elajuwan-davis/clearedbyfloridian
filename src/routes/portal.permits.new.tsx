@@ -46,6 +46,7 @@ import { runDispatch, type DispatchResult } from "@/lib/dispatch";
 import { MunicipalityReadinessPanel } from "@/components/municipality-readiness-panel";
 import type { SubmittalDocSnapshot } from "@/lib/submittal-package";
 import type { GcDocKey } from "@/lib/gc-compliance";
+import { draftScope, type ScopeDraft } from "@/lib/scope-draft";
 
 export const Route = createFileRoute("/portal/permits/new")({
   validateSearch: (search: Record<string, unknown>): { edit?: string } =>
@@ -128,6 +129,8 @@ function NewPermitPage() {
   const [dispatch, setDispatch] = useState<DispatchResult | null>(null);
   const [dispatchConfirmed, setDispatchConfirmed] = useState(false);
   const [submittalPackage, setSubmittalPackage] = useState<SubmittalDocSnapshot[]>([]);
+  const [scopeDrafting, setScopeDrafting] = useState(false);
+  const [scopeDraft, setScopeDraft] = useState<ScopeDraft | null>(null);
   const [initialSubmittalKeys, setInitialSubmittalKeys] = useState<GcDocKey[] | undefined>(
     undefined,
   );
@@ -269,6 +272,27 @@ function NewPermitPage() {
   }
   function updateDoc(key: string, patch: Partial<DocState>) {
     setForm((f) => ({ ...f, docs: { ...f.docs, [key]: { ...f.docs[key], ...patch } } }));
+  }
+
+  /** On-demand scope draft — same edge function the green-transition trigger calls. */
+  async function runScopeDraft() {
+    setScopeDrafting(true);
+    try {
+      const draft = await draftScope({
+        permitId: editId,
+        description: form.description,
+        projectName: form.projectName,
+        permitType: form.scopes.join(" · "),
+        municipality: form.municipality,
+        jobAddress: form.address,
+      });
+      setScopeDraft(draft);
+      toast.success("Formal scope drafted");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Could not draft the scope");
+    } finally {
+      setScopeDrafting(false);
+    }
   }
 
   /** Toggling a scope also spawns / retires its inline sub row (1:1). */
@@ -974,7 +998,18 @@ function NewPermitPage() {
             </div>
 
             <div>
-              <label className={labelCls}>Scope Narrative</label>
+              <div className="flex items-end justify-between gap-3">
+                <label className={labelCls}>Scope Narrative</label>
+                <button
+                  type="button"
+                  disabled={scopeDrafting || form.description.trim().length < 12}
+                  onClick={runScopeDraft}
+                  className="mb-1.5 inline-flex items-center gap-1.5 rounded-[3px] border border-obsidian/20 px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/70 transition hover:border-obsidian/40 hover:text-obsidian disabled:opacity-40"
+                >
+                  <Sparkles className="h-3 w-3" />
+                  {scopeDrafting ? "Drafting…" : "Draft formal scope"}
+                </button>
+              </div>
               <textarea
                 rows={3}
                 className={inputCls}
@@ -982,6 +1017,43 @@ function NewPermitPage() {
                 onChange={(e) => update("description", e.target.value)}
                 placeholder="Describe the work in more detail…"
               />
+              {scopeDraft && (
+                <div className="mt-3 space-y-3 rounded-[3px] border border-obsidian/12 bg-obsidian/[0.02] p-4">
+                  <div>
+                    <div className="font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/55">
+                      Application scope (concise)
+                    </div>
+                    <p className="mt-1 text-[13px] leading-relaxed text-obsidian">
+                      {scopeDraft.concise}
+                    </p>
+                  </div>
+                  <div>
+                    <div className="font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/55">
+                      Detailed scope
+                    </div>
+                    <p className="mt-1 whitespace-pre-line text-[13px] leading-relaxed text-obsidian/80">
+                      {scopeDraft.detailed}
+                    </p>
+                  </div>
+                  {scopeDraft.code_sections.length > 0 && (
+                    <div className="font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/55">
+                      Cited: {scopeDraft.code_sections.join(" · ")}
+                    </div>
+                  )}
+                  {scopeDraft.missing_information.length > 0 && (
+                    <div className="border-l-2 border-amber-600/40 bg-amber-50 px-3 py-2 text-[12px] text-amber-900">
+                      Still needed: {scopeDraft.missing_information.join("; ")}
+                    </div>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => update("description", scopeDraft.detailed)}
+                    className="rounded-[3px] bg-[#153157] px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-white"
+                  >
+                    Use detailed scope
+                  </button>
+                </div>
+              )}
             </div>
 
             {/* Architect / Engineer — from shared contacts */}
