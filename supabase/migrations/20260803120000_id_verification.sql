@@ -1,13 +1,8 @@
--- ID verification backend for the IdUpload component
--- Adds the ID document columns directly to the live `permits` table,
--- creates the private `id-verification` storage bucket, and enables RLS.
+-- ID verification storage: private `id-verification` bucket for future use.
+-- Existing `profiles` and `subcontractors` already store ID document paths in
+-- `id_document_url` / `id_document_type` and use the `id-documents` bucket.
+-- No columns are added to any table by this migration.
 
-ALTER TABLE public.permits
-  ADD COLUMN IF NOT EXISTS id_document_url TEXT,
-  ADD COLUMN IF NOT EXISTS id_document_type TEXT CHECK (id_document_type IN ('drivers_license', 'passport')),
-  ADD COLUMN IF NOT EXISTS id_uploaded_at TIMESTAMPTZ;
-
--- Private storage bucket for uploaded ID documents.
 INSERT INTO storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
 VALUES (
   'id-verification',
@@ -22,7 +17,7 @@ ON CONFLICT (id) DO UPDATE SET
   allowed_mime_types = ARRAY['image/jpeg', 'image/png', 'application/pdf'];
 
 -- Enable RLS on storage objects and scope access to the authenticated owner.
--- Path convention: id-verification/{user_id}/{permit_id}/{filename}
+-- Path convention: id-verification/{user_id}/{...}/{filename}
 ALTER TABLE storage.objects ENABLE ROW LEVEL SECURITY;
 
 DO $$
