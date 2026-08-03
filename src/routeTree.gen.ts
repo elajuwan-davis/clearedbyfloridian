@@ -49,6 +49,7 @@ import { Route as AdminInvitesRouteImport } from './routes/admin.invites'
 import { Route as AdminProtectionRouteImport } from './routes/admin.protection'
 import { Route as AdminReviewQueueRouteImport } from './routes/admin.review-queue'
 import { Route as AdminUtilityLocatesRouteImport } from './routes/admin.utility-locates'
+import { Route as AdminWorkloadRouteImport } from './routes/admin.workload'
 import { Route as AdminContractorsRouteImport } from './routes/admin_.contractors'
 import { Route as ApiGeocodeCensusRouteImport } from './routes/api/geocode-census'
 import { Route as ApiVerifyLicenseRouteImport } from './routes/api/verify-license'
@@ -321,6 +322,11 @@ const AdminReviewQueueRoute = AdminReviewQueueRouteImport.update({
 const AdminUtilityLocatesRoute = AdminUtilityLocatesRouteImport.update({
   id: '/admin/utility-locates',
   path: '/admin/utility-locates',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminWorkloadRoute = AdminWorkloadRouteImport.update({
+  id: '/admin/workload',
+  path: '/admin/workload',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminContractorsRoute = AdminContractorsRouteImport.update({
@@ -740,6 +746,7 @@ export interface FileRoutesByFullPath {
   '/admin/protection': typeof AdminProtectionRoute
   '/admin/review-queue': typeof AdminReviewQueueRoute
   '/admin/utility-locates': typeof AdminUtilityLocatesRoute
+  '/admin/workload': typeof AdminWorkloadRoute
   '/admin/contractors': typeof AdminContractorsRoute
   '/api/geocode-census': typeof ApiGeocodeCensusRoute
   '/api/verify-license': typeof ApiVerifyLicenseRoute
@@ -853,6 +860,7 @@ export interface FileRoutesByTo {
   '/admin/protection': typeof AdminProtectionRoute
   '/admin/review-queue': typeof AdminReviewQueueRoute
   '/admin/utility-locates': typeof AdminUtilityLocatesRoute
+  '/admin/workload': typeof AdminWorkloadRoute
   '/admin/contractors': typeof AdminContractorsRoute
   '/api/geocode-census': typeof ApiGeocodeCensusRoute
   '/api/verify-license': typeof ApiVerifyLicenseRoute
@@ -967,6 +975,7 @@ export interface FileRoutesById {
   '/admin/protection': typeof AdminProtectionRoute
   '/admin/review-queue': typeof AdminReviewQueueRoute
   '/admin/utility-locates': typeof AdminUtilityLocatesRoute
+  '/admin/workload': typeof AdminWorkloadRoute
   '/admin_/contractors': typeof AdminContractorsRoute
   '/api/geocode-census': typeof ApiGeocodeCensusRoute
   '/api/verify-license': typeof ApiVerifyLicenseRoute
@@ -1084,6 +1093,7 @@ export interface FileRouteTypes {
     | '/admin/protection'
     | '/admin/review-queue'
     | '/admin/utility-locates'
+    | '/admin/workload'
     | '/admin/contractors'
     | '/api/geocode-census'
     | '/api/verify-license'
@@ -1197,6 +1207,7 @@ export interface FileRouteTypes {
     | '/admin/protection'
     | '/admin/review-queue'
     | '/admin/utility-locates'
+    | '/admin/workload'
     | '/admin/contractors'
     | '/api/geocode-census'
     | '/api/verify-license'
@@ -1310,6 +1321,7 @@ export interface FileRouteTypes {
     | '/admin/protection'
     | '/admin/review-queue'
     | '/admin/utility-locates'
+    | '/admin/workload'
     | '/admin_/contractors'
     | '/api/geocode-census'
     | '/api/verify-license'
@@ -1426,6 +1438,7 @@ export interface RootRouteChildren {
   AdminProtectionRoute: typeof AdminProtectionRoute
   AdminReviewQueueRoute: typeof AdminReviewQueueRoute
   AdminUtilityLocatesRoute: typeof AdminUtilityLocatesRoute
+  AdminWorkloadRoute: typeof AdminWorkloadRoute
   AdminContractorsRoute: typeof AdminContractorsRoute
   ApiGeocodeCensusRoute: typeof ApiGeocodeCensusRoute
   ApiVerifyLicenseRoute: typeof ApiVerifyLicenseRoute
@@ -1733,6 +1746,13 @@ declare module '@tanstack/react-router' {
       path: '/admin/utility-locates'
       fullPath: '/admin/utility-locates'
       preLoaderRoute: typeof AdminUtilityLocatesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/workload': {
+      id: '/admin/workload'
+      path: '/admin/workload'
+      fullPath: '/admin/workload'
+      preLoaderRoute: typeof AdminWorkloadRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin_/contractors': {
@@ -2472,6 +2492,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminProtectionRoute: AdminProtectionRoute,
   AdminReviewQueueRoute: AdminReviewQueueRoute,
   AdminUtilityLocatesRoute: AdminUtilityLocatesRoute,
+  AdminWorkloadRoute: AdminWorkloadRoute,
   AdminContractorsRoute: AdminContractorsRoute,
   ApiGeocodeCensusRoute: ApiGeocodeCensusRoute,
   ApiVerifyLicenseRoute: ApiVerifyLicenseRoute,
