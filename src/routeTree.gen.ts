@@ -62,6 +62,7 @@ import { Route as FormsSubcontractorsRouteImport } from './routes/forms.subcontr
 import { Route as HomeownerTokenRouteImport } from './routes/homeowner.$token'
 import { Route as JoinTokenRouteImport } from './routes/join_.$token'
 import { Route as LegalIndexRouteImport } from './routes/legal.index'
+import { Route as LegalNotaryQueueRouteImport } from './routes/legal.notary-queue'
 import { Route as PermitCardIdRouteImport } from './routes/permit-card.$id'
 import { Route as PortalIndexRouteImport } from './routes/portal.index'
 import { Route as PortalAlertsRouteImport } from './routes/portal.alerts'
@@ -385,6 +386,11 @@ const JoinTokenRoute = JoinTokenRouteImport.update({
 const LegalIndexRoute = LegalIndexRouteImport.update({
   id: '/legal/',
   path: '/legal/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LegalNotaryQueueRoute = LegalNotaryQueueRouteImport.update({
+  id: '/legal/notary-queue',
+  path: '/legal/notary-queue',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PermitCardIdRoute = PermitCardIdRouteImport.update({
@@ -726,6 +732,7 @@ export interface FileRoutesByFullPath {
   '/forms/subcontractors': typeof FormsSubcontractorsRoute
   '/homeowner/$token': typeof HomeownerTokenRoute
   '/join/$token': typeof JoinTokenRoute
+  '/legal/notary-queue': typeof LegalNotaryQueueRoute
   '/permit-card/$id': typeof PermitCardIdRoute
   '/portal/alerts': typeof PortalAlertsRoute
   '/portal/bid-review': typeof PortalBidReviewRoute
@@ -835,6 +842,7 @@ export interface FileRoutesByTo {
   '/forms/subcontractors': typeof FormsSubcontractorsRoute
   '/homeowner/$token': typeof HomeownerTokenRoute
   '/join/$token': typeof JoinTokenRoute
+  '/legal/notary-queue': typeof LegalNotaryQueueRoute
   '/permit-card/$id': typeof PermitCardIdRoute
   '/portal/alerts': typeof PortalAlertsRoute
   '/portal/bid-review': typeof PortalBidReviewRoute
@@ -945,6 +953,7 @@ export interface FileRoutesById {
   '/forms/subcontractors': typeof FormsSubcontractorsRoute
   '/homeowner/$token': typeof HomeownerTokenRoute
   '/join_/$token': typeof JoinTokenRoute
+  '/legal/notary-queue': typeof LegalNotaryQueueRoute
   '/permit-card/$id': typeof PermitCardIdRoute
   '/portal/alerts': typeof PortalAlertsRoute
   '/portal/bid-review': typeof PortalBidReviewRoute
@@ -1058,6 +1067,7 @@ export interface FileRouteTypes {
     | '/forms/subcontractors'
     | '/homeowner/$token'
     | '/join/$token'
+    | '/legal/notary-queue'
     | '/permit-card/$id'
     | '/portal/alerts'
     | '/portal/bid-review'
@@ -1167,6 +1177,7 @@ export interface FileRouteTypes {
     | '/forms/subcontractors'
     | '/homeowner/$token'
     | '/join/$token'
+    | '/legal/notary-queue'
     | '/permit-card/$id'
     | '/portal/alerts'
     | '/portal/bid-review'
@@ -1276,6 +1287,7 @@ export interface FileRouteTypes {
     | '/forms/subcontractors'
     | '/homeowner/$token'
     | '/join_/$token'
+    | '/legal/notary-queue'
     | '/permit-card/$id'
     | '/portal/alerts'
     | '/portal/bid-review'
@@ -1383,6 +1395,7 @@ export interface RootRouteChildren {
   BlogSlugRoute: typeof BlogSlugRoute
   HomeownerTokenRoute: typeof HomeownerTokenRoute
   JoinTokenRoute: typeof JoinTokenRoute
+  LegalNotaryQueueRoute: typeof LegalNotaryQueueRoute
   PermitCardIdRoute: typeof PermitCardIdRoute
   SubIntakeTokenRoute: typeof SubIntakeTokenRoute
   VersusSlugRoute: typeof VersusSlugRoute
@@ -1774,6 +1787,13 @@ declare module '@tanstack/react-router' {
       path: '/legal'
       fullPath: '/legal/'
       preLoaderRoute: typeof LegalIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/legal/notary-queue': {
+      id: '/legal/notary-queue'
+      path: '/legal/notary-queue'
+      fullPath: '/legal/notary-queue'
+      preLoaderRoute: typeof LegalNotaryQueueRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/permit-card/$id': {
@@ -2395,6 +2415,7 @@ const rootRouteChildren: RootRouteChildren = {
   BlogSlugRoute: BlogSlugRoute,
   HomeownerTokenRoute: HomeownerTokenRoute,
   JoinTokenRoute: JoinTokenRoute,
+  LegalNotaryQueueRoute: LegalNotaryQueueRoute,
   PermitCardIdRoute: PermitCardIdRoute,
   SubIntakeTokenRoute: SubIntakeTokenRoute,
   VersusSlugRoute: VersusSlugRoute,
