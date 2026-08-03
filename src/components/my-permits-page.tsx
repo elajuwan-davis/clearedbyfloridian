@@ -165,8 +165,14 @@ export function MyPermitsPage() {
                               <div className="flex items-start justify-between gap-2">
                                 <div className="min-w-0 flex-1">
                                   <div className="text-sm font-medium text-obsidian truncate">{p.project_name}</div>
+                                  {getVendor(p.project_name) && (
+                                    <div className="mt-1 inline-flex items-center border border-obsidian/12 bg-obsidian/5 px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-[0.1em] text-obsidian/50 rounded-[2px]">
+                                      {getVendor(p.project_name)}
+                                    </div>
+                                  )}
                                   <div className="mt-0.5 text-xs text-obsidian/55 truncate">{p.job_address}</div>
                                 </div>
+
                                 <span className="shrink-0 font-mono text-[9px] uppercase tracking-[0.1em] text-obsidian/70 border border-obsidian/15 px-1.5 py-0.5 rounded-[2px]">
                                   {STATUS_LABEL[p.status]}
                                 </span>
