@@ -98,9 +98,16 @@ export function MyPermitsPage() {
 
   const filtered = useMemo(() => {
     const q = query.toLowerCase().trim();
-    if (!q) return permits;
-    return permits.filter((p) => `${p.project_name} ${p.job_address} ${p.county ?? ""} ${p.municipality ?? ""}`.toLowerCase().includes(q));
-  }, [permits, query]);
+    let rows = permits;
+    if (management !== "all") {
+      rows = rows.filter((p) =>
+        management === "vendor" ? isVendorManaged(p.project_name) : !isVendorManaged(p.project_name),
+      );
+    }
+    if (!q) return rows;
+    return rows.filter((p) => `${p.project_name} ${p.job_address} ${p.county ?? ""} ${p.municipality ?? ""}`.toLowerCase().includes(q));
+  }, [permits, query, management]);
+
 
   const grouped = useMemo(
     () => GROUPS.map((g) => ({ ...g, items: filtered.filter((p) => g.statuses.includes(p.status)) })),
