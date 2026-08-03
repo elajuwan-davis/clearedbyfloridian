@@ -261,8 +261,12 @@ function OverviewTab({ project }: { project: Project }) {
                 <InfoRow label="Scope" value={project.scope} />
               </div>
             )}
+            <div className="sm:col-span-2">
+              <VendorSelect project={project} />
+            </div>
           </div>
         </SectionCard>
+
 
         <SectionCard title="Permit Types">
           <div className="flex flex-wrap gap-2">
