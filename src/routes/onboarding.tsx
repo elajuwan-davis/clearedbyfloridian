@@ -78,7 +78,7 @@ function OnboardingPage() {
           license_number: licenseNumber.trim() || null,
         },
       });
-      navigate({ to: "/portal", replace: true });
+      setStep("paa");
     } catch (err) {
       setError((err as Error).message);
     } finally {
