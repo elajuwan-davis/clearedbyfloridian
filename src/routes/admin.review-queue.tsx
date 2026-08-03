@@ -45,8 +45,10 @@ function ReviewQueuePage() {
     (async () => {
       try {
         const data = (await load({} as any)) as ReviewQueueRow[];
-        if (alive) setRows(data);
+        // Vendor-managed permits are record copies only — not internal work items.
+        if (alive) setRows(data.filter((r) => !isVendorManaged(r.project_name)));
       } catch (e: any) {
+
         if (alive) setError(e?.message ?? "Failed to load review queue");
       } finally {
         if (alive) setLoading(false);
