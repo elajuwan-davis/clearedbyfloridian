@@ -120,6 +120,10 @@ export function ProjectDetail({ project }: { project: Project }) {
           <span className="text-obsidian/80 truncate">{project.name}</span>
         </nav>
 
+        <VendorManagedBanner project={project} />
+
+
+
         {/* Header */}
         <header className="mt-6 border-b border-obsidian/10 pb-8">
           <div className="flex flex-wrap items-center gap-2">
