@@ -106,7 +106,7 @@ function RoundCard({ row, project, internal }: { row: RevisionRound; project: Pr
   async function download(path: string | null, name: string) {
     if (!path) return;
     try {
-      const url = await getDocDownloadUrl(path);
+      const url = await getDocDownloadUrl(path, name);
       const a = document.createElement("a");
       a.href = url;
       a.download = name;
