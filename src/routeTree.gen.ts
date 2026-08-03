@@ -61,6 +61,7 @@ import { Route as FormsSubcontractorIntakeRouteImport } from './routes/forms.sub
 import { Route as FormsSubcontractorsRouteImport } from './routes/forms.subcontractors'
 import { Route as HomeownerTokenRouteImport } from './routes/homeowner.$token'
 import { Route as JoinTokenRouteImport } from './routes/join_.$token'
+import { Route as LegalIndexRouteImport } from './routes/legal.index'
 import { Route as PermitCardIdRouteImport } from './routes/permit-card.$id'
 import { Route as PortalIndexRouteImport } from './routes/portal.index'
 import { Route as PortalAlertsRouteImport } from './routes/portal.alerts'
@@ -379,6 +380,11 @@ const HomeownerTokenRoute = HomeownerTokenRouteImport.update({
 const JoinTokenRoute = JoinTokenRouteImport.update({
   id: '/join_/$token',
   path: '/join/$token',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LegalIndexRoute = LegalIndexRouteImport.update({
+  id: '/legal/',
+  path: '/legal/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PermitCardIdRoute = PermitCardIdRouteImport.update({
@@ -748,6 +754,7 @@ export interface FileRoutesByFullPath {
   '/admin/': typeof AdminIndexRoute
   '/blog/': typeof BlogIndexRoute
   '/forms/': typeof FormsIndexRoute
+  '/legal/': typeof LegalIndexRoute
   '/portal/': typeof PortalIndexRoute
   '/versus/': typeof VersusIndexRoute
   '/admin/blog/$id': typeof AdminBlogIdRoute
@@ -854,6 +861,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminIndexRoute
   '/blog': typeof BlogIndexRoute
   '/forms': typeof FormsIndexRoute
+  '/legal': typeof LegalIndexRoute
   '/portal': typeof PortalIndexRoute
   '/versus': typeof VersusIndexRoute
   '/admin/blog/$id': typeof AdminBlogIdRoute
@@ -965,6 +973,7 @@ export interface FileRoutesById {
   '/admin/': typeof AdminIndexRoute
   '/blog/': typeof BlogIndexRoute
   '/forms/': typeof FormsIndexRoute
+  '/legal/': typeof LegalIndexRoute
   '/portal/': typeof PortalIndexRoute
   '/versus/': typeof VersusIndexRoute
   '/admin/blog/$id': typeof AdminBlogIdRoute
@@ -1077,6 +1086,7 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/blog/'
     | '/forms/'
+    | '/legal/'
     | '/portal/'
     | '/versus/'
     | '/admin/blog/$id'
@@ -1183,6 +1193,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/blog'
     | '/forms'
+    | '/legal'
     | '/portal'
     | '/versus'
     | '/admin/blog/$id'
@@ -1293,6 +1304,7 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/blog/'
     | '/forms/'
+    | '/legal/'
     | '/portal/'
     | '/versus/'
     | '/admin/blog/$id'
@@ -1376,6 +1388,7 @@ export interface RootRouteChildren {
   VersusSlugRoute: typeof VersusSlugRoute
   AdminIndexRoute: typeof AdminIndexRoute
   BlogIndexRoute: typeof BlogIndexRoute
+  LegalIndexRoute: typeof LegalIndexRoute
   VersusIndexRoute: typeof VersusIndexRoute
   AdminBlogIdRoute: typeof AdminBlogIdRoute
   AdminBlogNewRoute: typeof AdminBlogNewRoute
@@ -1754,6 +1767,13 @@ declare module '@tanstack/react-router' {
       path: '/join/$token'
       fullPath: '/join/$token'
       preLoaderRoute: typeof JoinTokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/legal/': {
+      id: '/legal/'
+      path: '/legal'
+      fullPath: '/legal/'
+      preLoaderRoute: typeof LegalIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/permit-card/$id': {
@@ -2380,6 +2400,7 @@ const rootRouteChildren: RootRouteChildren = {
   VersusSlugRoute: VersusSlugRoute,
   AdminIndexRoute: AdminIndexRoute,
   BlogIndexRoute: BlogIndexRoute,
+  LegalIndexRoute: LegalIndexRoute,
   VersusIndexRoute: VersusIndexRoute,
   AdminBlogIdRoute: AdminBlogIdRoute,
   AdminBlogNewRoute: AdminBlogNewRoute,
