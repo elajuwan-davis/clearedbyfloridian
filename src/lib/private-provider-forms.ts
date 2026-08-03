@@ -67,9 +67,25 @@ const MUTED = rgb(0.35, 0.35, 0.35);
 const RULE = rgb(0.75, 0.75, 0.75);
 const OBSIDIAN = rgb(0.082, 0.192, 0.341); // #153157
 
+// Standard Helvetica/WinAnsi throws on characters it cannot encode ("Ō" in
+// FLŌRIDIAN, smart quotes pasted into intake fields), which aborts the whole
+// document. Fold to the nearest Latin-1 form instead.
+function pdfSafe(text: string): string {
+  // WinAnsi covers Latin-1 plus a handful of punctuation code points; everything
+  // else is dropped rather than thrown on.
+  const WIN_ANSI_EXTRAS =
+    /[\u20ac\u201a\u0192\u201e\u2026\u2020\u2021\u02c6\u2030\u0160\u2039\u0152\u017d\u2018\u2019\u201c\u201d\u2022\u2013\u2014\u02dc\u2122\u0161\u203a\u0153\u017e\u0178]/;
+  return text
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .split("")
+    .filter((ch) => ch.charCodeAt(0) <= 0xff || WIN_ANSI_EXTRAS.test(ch))
+    .join("");
+}
+
 function drawWrapped(
   ctx: DrawCtx,
-  text: string,
+  rawText: string,
   opts: { size?: number; font?: PDFFont; color?: ReturnType<typeof rgb>; maxWidth?: number; lineGap?: number } = {},
 ) {
   const size = opts.size ?? 10;
@@ -77,7 +93,7 @@ function drawWrapped(
   const color = opts.color ?? INK;
   const maxWidth = opts.maxWidth ?? PAGE_W - MARGIN * 2;
   const lineGap = opts.lineGap ?? 3;
-  const words = text.split(/\s+/);
+  const words = pdfSafe(rawText).split(/\s+/);
   let line = "";
   const lines: string[] = [];
   for (const w of words) {
@@ -99,7 +115,7 @@ function drawWrapped(
 function drawLabelValue(ctx: DrawCtx, label: string, value: string) {
   const labelSize = 8;
   const valueSize = 11;
-  ctx.page.drawText(label.toUpperCase(), {
+  ctx.page.drawText(pdfSafe(label).toUpperCase(), {
     x: MARGIN,
     y: ctx.y,
     size: labelSize,
@@ -107,7 +123,7 @@ function drawLabelValue(ctx: DrawCtx, label: string, value: string) {
     color: MUTED,
   });
   ctx.y -= labelSize + 4;
-  ctx.page.drawText(value || "—", {
+  ctx.page.drawText(pdfSafe(value) || "—", {
     x: MARGIN,
     y: ctx.y,
     size: valueSize,
@@ -132,21 +148,21 @@ function drawHeader(ctx: DrawCtx, title: string, subtitle: string) {
     height: 100,
     color: OBSIDIAN,
   });
-  ctx.page.drawText("FLŌRIDIAN — CLEARED PRIVATE PROVIDER", {
+  ctx.page.drawText(pdfSafe("FLŌRIDIAN — CLEARED PRIVATE PROVIDER"), {
     x: MARGIN,
     y: PAGE_H - 45,
     size: 9,
     font: ctx.bold,
     color: rgb(0.71, 0.855, 0.918), // Sky
   });
-  ctx.page.drawText(title, {
+  ctx.page.drawText(pdfSafe(title), {
     x: MARGIN,
     y: PAGE_H - 68,
     size: 18,
     font: ctx.bold,
     color: rgb(1, 1, 1),
   });
-  ctx.page.drawText(subtitle, {
+  ctx.page.drawText(pdfSafe(subtitle), {
     x: MARGIN,
     y: PAGE_H - 88,
     size: 9,
@@ -158,7 +174,7 @@ function drawHeader(ctx: DrawCtx, title: string, subtitle: string) {
 
 function drawSectionTitle(ctx: DrawCtx, text: string) {
   ctx.y -= 4;
-  ctx.page.drawText(text.toUpperCase(), {
+  ctx.page.drawText(pdfSafe(text).toUpperCase(), {
     x: MARGIN,
     y: ctx.y,
     size: 9,
@@ -271,7 +287,7 @@ export async function generateNTBO(fields: NTBOFields): Promise<Uint8Array> {
   drawLabelValue(ctx, "Florida License #", fields.licenseNumber);
 
   drawSectionTitle(ctx, "Signatory");
-  ctx.page.drawText(`Signatory Type: ${fields.signatoryType}`, {
+  ctx.page.drawText(pdfSafe(`Signatory Type: ${fields.signatoryType}`), {
     x: MARGIN,
     y: ctx.y,
     size: 10,
