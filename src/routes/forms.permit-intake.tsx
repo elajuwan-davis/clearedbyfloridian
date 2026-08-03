@@ -10,6 +10,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Upload, X, Plus, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 import { CloudUploadButtons } from "@/components/cloud-upload-buttons";
+import { CompanyComplianceBanner } from "@/components/company-compliance-banner";
+import { getCurrentGcCompanyProfile } from "@/lib/gc-company";
 
 export const Route = createFileRoute("/forms/permit-intake")({
   head: () => ({ meta: [{ title: "Permit Intake — Cleard" }, { name: "robots", content: "noindex" }] }),
@@ -138,6 +140,10 @@ function PermitIntakePage() {
           <div className="eyebrow text-obsidian/50">Form / 01 — Permit Intake</div>
           <h1 className="display-serif mt-3 text-4xl text-obsidian">{step === 1 ? "Project Details" : "Contact & Documents"}</h1>
           <Steps current={step} />
+        </div>
+
+        <div className="mt-6">
+          <CompanyComplianceBanner profile={getCurrentGcCompanyProfile()} />
         </div>
 
         {step === 1 ? (
