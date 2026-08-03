@@ -239,6 +239,69 @@ export type Database = {
           },
         ]
       }
+      coi_records: {
+        Row: {
+          carrier_name: string | null
+          coverage_type: string
+          created_at: string | null
+          document_url: string | null
+          effective_date: string | null
+          expiration_date: string
+          id: string
+          permit_id: string | null
+          policy_number: string | null
+          status: string
+          subcontractor_id: string | null
+          updated_at: string | null
+          uploaded_by: string | null
+        }
+        Insert: {
+          carrier_name?: string | null
+          coverage_type: string
+          created_at?: string | null
+          document_url?: string | null
+          effective_date?: string | null
+          expiration_date: string
+          id?: string
+          permit_id?: string | null
+          policy_number?: string | null
+          status?: string
+          subcontractor_id?: string | null
+          updated_at?: string | null
+          uploaded_by?: string | null
+        }
+        Update: {
+          carrier_name?: string | null
+          coverage_type?: string
+          created_at?: string | null
+          document_url?: string | null
+          effective_date?: string | null
+          expiration_date?: string
+          id?: string
+          permit_id?: string | null
+          policy_number?: string | null
+          status?: string
+          subcontractor_id?: string | null
+          updated_at?: string | null
+          uploaded_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "coi_records_permit_id_fkey"
+            columns: ["permit_id"]
+            isOneToOne: false
+            referencedRelation: "permits"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "coi_records_subcontractor_id_fkey"
+            columns: ["subcontractor_id"]
+            isOneToOne: false
+            referencedRelation: "subcontractors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       contacts: {
         Row: {
           address: string | null
@@ -336,6 +399,68 @@ export type Database = {
             columns: ["tenant_id"]
             isOneToOne: false
             referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      dispatch_results: {
+        Row: {
+          assessed_value: number | null
+          base_flood_elev: number | null
+          fetched_at: string | null
+          flood_zone: string | null
+          id: string
+          in_sfha: boolean | null
+          latitude: number | null
+          legal_description: string | null
+          longitude: number | null
+          owner_name: string | null
+          parcel_id: string | null
+          parcel_source: string | null
+          permit_id: string | null
+          raw_response: Json | null
+          year_built: number | null
+        }
+        Insert: {
+          assessed_value?: number | null
+          base_flood_elev?: number | null
+          fetched_at?: string | null
+          flood_zone?: string | null
+          id?: string
+          in_sfha?: boolean | null
+          latitude?: number | null
+          legal_description?: string | null
+          longitude?: number | null
+          owner_name?: string | null
+          parcel_id?: string | null
+          parcel_source?: string | null
+          permit_id?: string | null
+          raw_response?: Json | null
+          year_built?: number | null
+        }
+        Update: {
+          assessed_value?: number | null
+          base_flood_elev?: number | null
+          fetched_at?: string | null
+          flood_zone?: string | null
+          id?: string
+          in_sfha?: boolean | null
+          latitude?: number | null
+          legal_description?: string | null
+          longitude?: number | null
+          owner_name?: string | null
+          parcel_id?: string | null
+          parcel_source?: string | null
+          permit_id?: string | null
+          raw_response?: Json | null
+          year_built?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dispatch_results_permit_id_fkey"
+            columns: ["permit_id"]
+            isOneToOne: false
+            referencedRelation: "permits"
             referencedColumns: ["id"]
           },
         ]
@@ -572,6 +697,38 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "gc_coi_minimums_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      gc_email_addresses: {
+        Row: {
+          alias: string
+          created_at: string | null
+          full_email: string | null
+          id: string
+          tenant_id: string | null
+        }
+        Insert: {
+          alias: string
+          created_at?: string | null
+          full_email?: string | null
+          id?: string
+          tenant_id?: string | null
+        }
+        Update: {
+          alias?: string
+          created_at?: string | null
+          full_email?: string | null
+          id?: string
+          tenant_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "gc_email_addresses_tenant_id_fkey"
             columns: ["tenant_id"]
             isOneToOne: false
             referencedRelation: "tenants"
@@ -1017,6 +1174,95 @@ export type Database = {
           usage_count?: number
         }
         Relationships: []
+      }
+      inbound_email_errors: {
+        Row: {
+          alias: string | null
+          created_at: string | null
+          from_email: string | null
+          id: string
+          reason: string | null
+          subject: string | null
+          to_email: string | null
+        }
+        Insert: {
+          alias?: string | null
+          created_at?: string | null
+          from_email?: string | null
+          id?: string
+          reason?: string | null
+          subject?: string | null
+          to_email?: string | null
+        }
+        Update: {
+          alias?: string | null
+          created_at?: string | null
+          from_email?: string | null
+          id?: string
+          reason?: string | null
+          subject?: string | null
+          to_email?: string | null
+        }
+        Relationships: []
+      }
+      lien_notices: {
+        Row: {
+          contractor_name: string | null
+          created_at: string | null
+          created_by: string | null
+          deadline_date: string | null
+          document_url: string | null
+          filed_date: string | null
+          id: string
+          notes: string | null
+          notice_type: string
+          permit_id: string | null
+          project_address: string | null
+          property_owner: string | null
+          scope_of_work: string | null
+          status: string
+        }
+        Insert: {
+          contractor_name?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          deadline_date?: string | null
+          document_url?: string | null
+          filed_date?: string | null
+          id?: string
+          notes?: string | null
+          notice_type: string
+          permit_id?: string | null
+          project_address?: string | null
+          property_owner?: string | null
+          scope_of_work?: string | null
+          status?: string
+        }
+        Update: {
+          contractor_name?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          deadline_date?: string | null
+          document_url?: string | null
+          filed_date?: string | null
+          id?: string
+          notes?: string | null
+          notice_type?: string
+          permit_id?: string | null
+          project_address?: string | null
+          property_owner?: string | null
+          scope_of_work?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lien_notices_permit_id_fkey"
+            columns: ["permit_id"]
+            isOneToOne: false
+            referencedRelation: "permits"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       lien_releases: {
         Row: {
@@ -2425,6 +2671,65 @@ export type Database = {
         }
         Relationships: []
       }
+      utility_locates: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          dig_area_description: string | null
+          excavation_date: string
+          excavation_type: string | null
+          expiration_date: string | null
+          id: string
+          notes: string | null
+          permit_id: string | null
+          request_date: string
+          site_contact_name: string | null
+          site_contact_phone: string | null
+          status: string
+          ticket_number: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          dig_area_description?: string | null
+          excavation_date: string
+          excavation_type?: string | null
+          expiration_date?: string | null
+          id?: string
+          notes?: string | null
+          permit_id?: string | null
+          request_date?: string
+          site_contact_name?: string | null
+          site_contact_phone?: string | null
+          status?: string
+          ticket_number?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          dig_area_description?: string | null
+          excavation_date?: string
+          excavation_type?: string | null
+          expiration_date?: string | null
+          id?: string
+          notes?: string | null
+          permit_id?: string | null
+          request_date?: string
+          site_contact_name?: string | null
+          site_contact_phone?: string | null
+          status?: string
+          ticket_number?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "utility_locates_permit_id_fkey"
+            columns: ["permit_id"]
+            isOneToOne: false
+            referencedRelation: "permits"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       victoria_alerts: {
         Row: {
           acknowledged_at: string | null
@@ -2548,9 +2853,11 @@ export type Database = {
       }
     }
     Functions: {
+      check_lien_deadlines: { Args: never; Returns: undefined }
       consume_invite_token: { Args: { _token: string }; Returns: string }
       current_tenant_id: { Args: never; Returns: string }
       current_user_email: { Args: never; Returns: string }
+      expire_utility_locates: { Args: never; Returns: undefined }
       get_homeowner_permit: {
         Args: { _token: string }
         Returns: {
@@ -2601,6 +2908,7 @@ export type Database = {
         Returns: boolean
       }
       sub_can_see_permit: { Args: { _permit_id: string }; Returns: boolean }
+      update_coi_status: { Args: never; Returns: undefined }
     }
     Enums: {
       app_role: "admin" | "gc_owner" | "gc_member" | "subcontractor"
