@@ -1,6 +1,6 @@
-// GC email intake — SendGrid/Postmark Inbound Parse → permit record.
-// Matches the recipient alias to a tenant, creates a permit record, and saves
-// attachments to Supabase Storage. Unmatched aliases are logged.
+// GC email intake — SendGrid/Postmark Inbound Parse → real permit record.
+// Matches the recipient alias to a tenant, inserts into `permits`, and saves
+// attachments to the `intake-docs` bucket. Unmatched aliases are logged.
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.3";
 
@@ -66,24 +66,27 @@ Deno.serve(async (req: Request) => {
     return badRequest("Unmatched alias");
   }
 
-  const { id: emailAddressId, tenant_id: tenantId } = matches[0];
+  const { tenant_id: tenantId } = matches[0];
 
   const { data: permit, error: permitError } = await supabase
-    .from("permit_records")
+    .from("permits")
     .insert({
       tenant_id: tenantId,
-      gc_email_address_id: emailAddressId,
-      subject,
-      sender: from,
-      body_preview: text.slice(0, 500),
-      status: "pre_check",
+      project_name: subject,
+      poc_email: from,
+      status: "submitted",
+      // The permit requires a job_address, but the email itself doesn't include
+      // a property address. GCs fill this in during follow-up.
+      job_address: "TBD",
+      description: text.slice(0, 500) || null,
+      intake_payload: { from, to, subject, body: text },
     })
     .select("id")
     .single();
 
   if (permitError || !permit) {
     console.error(permitError);
-    return new Response("Failed to create permit record", { status: 500 });
+    return new Response("Failed to create permit", { status: 500 });
   }
 
   const bucket = supabase.storage.from("intake-docs");
