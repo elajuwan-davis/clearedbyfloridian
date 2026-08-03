@@ -7,6 +7,8 @@ import { PROJECTS } from "./projects-data";
 import { projectStatusMeta, type ProjectStatus } from "./status-badges";
 import { addNote } from "./project-notes";
 import { triggerForStatusChange } from "./client-notifications";
+import { isVendorManaged } from "./project-vendors";
+
 
 
 const TS_KEY = "cleared.permitSync.timestamps.v1";
