@@ -163,6 +163,7 @@ export function ProjectDetail({ project }: { project: Project }) {
           </TabsList>
 
           <TabsContent value="overview" className="mt-6"><OverviewTab project={project} /></TabsContent>
+          <TabsContent value="revisions" className="mt-6"><ProjectRevisionsTab project={project} internal={internal} /></TabsContent>
           <TabsContent value="inspections" className="mt-6">
             <InspectionsSection
               projectId={project.id}
