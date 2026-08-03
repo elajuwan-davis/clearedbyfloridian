@@ -51,5 +51,9 @@ environment problem; do not mass-reformat unrelated files to "fix" lint.
 - **Do not try to apply migrations to the live Lovable Cloud / Supabase database from Cloud Agents.**
   Push the SQL + app changes to GitHub via a PR; the human migrates/applies them on the Lovable
   side. Same for `supabase/functions/*` — ship the files in git; deployment is out of band.
+- **When a task includes any new/changed files under `supabase/migrations/` (or edge functions
+  that need deploying), say so clearly in the final message** — list the migration file names and
+  tell the human the work is ready for them to migrate/apply on Supabase/Lovable. Do not assume
+  they noticed the SQL in the PR.
 - `supabase/functions/*` are Deno edge functions; they are not part of the local `bun run dev`
   app runtime.
