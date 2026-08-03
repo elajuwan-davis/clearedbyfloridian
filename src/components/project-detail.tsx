@@ -6,7 +6,7 @@ import {
   ClipboardCheck, LayoutGrid, Pencil, CheckCircle2, Circle, AlertTriangle,
   ShieldCheck,
 } from "lucide-react";
-import { RotateCcw } from "lucide-react";
+import { RotateCcw, Info } from "lucide-react";
 import { ProjectRevisionsTab } from "@/components/project-revisions-tab";
 import { ProjectComplianceTab } from "@/components/project-compliance-tab";
 import { PortalShell } from "@/components/portal-shell";
