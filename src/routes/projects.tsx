@@ -71,14 +71,39 @@ function ProjectsPage() {
           </Button>
         </div>
 
+        {/* Vendor filter */}
+        <div className="mt-6 flex items-center gap-2">
+          <label className="font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/50">Vendor</label>
+          <select
+            value={vendorFilter}
+            onChange={(e) => setVendorFilter(e.target.value)}
+            className="border border-obsidian/20 bg-white px-2 py-1.5 font-mono text-[10px] uppercase tracking-[0.1em] text-obsidian rounded-[3px] focus:outline-none focus:border-obsidian/50"
+          >
+            <option value="all">All vendors</option>
+            {VENDORS.map((v) => (
+              <option key={v} value={v}>{v}</option>
+            ))}
+            <option value="none">Unassigned</option>
+          </select>
+        </div>
+
         {/* Table */}
-        <div className="mt-8 overflow-hidden border border-obsidian/10 bg-white">
+        <div className="mt-4 overflow-hidden border border-obsidian/10 bg-white">
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-obsidian/10 bg-paper-warm">
                   <th className="px-6 py-4 text-left font-mono text-[10px] font-medium uppercase tracking-[0.14em] text-obsidian/50">Project / Address</th>
                   <th className="px-6 py-4 text-left font-mono text-[10px] font-medium uppercase tracking-[0.14em] text-obsidian/50">County</th>
+                  <th className="px-6 py-4 text-left font-mono text-[10px] font-medium uppercase tracking-[0.14em] text-obsidian/50">
+                    <button
+                      type="button"
+                      onClick={() => setVendorSort((s) => (s === "asc" ? "desc" : s === "desc" ? "none" : "asc"))}
+                      className="uppercase tracking-[0.14em] hover:text-obsidian"
+                    >
+                      Vendor {vendorSort === "asc" ? "↑" : vendorSort === "desc" ? "↓" : ""}
+                    </button>
+                  </th>
                   <th className="px-6 py-4 text-right font-mono text-[10px] font-medium uppercase tracking-[0.14em] text-obsidian/50">Construction Value</th>
                   <th className="px-6 py-4 text-left font-mono text-[10px] font-medium uppercase tracking-[0.14em] text-obsidian/50">Permit Types</th>
                   <th className="px-6 py-4 text-left font-mono text-[10px] font-medium uppercase tracking-[0.14em] text-obsidian/50">Status</th>
@@ -87,7 +112,7 @@ function ProjectsPage() {
                 </tr>
               </thead>
               <tbody>
-                {projects.map((p) => {
+                {rows.map((p) => {
                   const meta = statusMeta[p.status];
                   return (
                     <tr key={p.id} className="border-b border-obsidian/5 transition-colors hover:bg-paper-warm/50">
@@ -97,6 +122,15 @@ function ProjectsPage() {
                         <div className="mt-1.5 font-mono text-[10px] uppercase tracking-[0.12em] text-obsidian/40">{p.permit_no}</div>
                       </td>
                       <td className="px-6 py-5 text-obsidian/75">{p.county}</td>
+                      <td className="px-6 py-5">
+                        {p.vendor ? (
+                          <span className="inline-flex items-center border border-obsidian/12 bg-obsidian/5 px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.1em] text-obsidian/55 rounded-[2px]">
+                            {p.vendor}
+                          </span>
+                        ) : (
+                          <span className="text-obsidian/35">{VENDOR_PLACEHOLDER}</span>
+                        )}
+                      </td>
                       <td className="px-6 py-5 text-right font-mono tabular-nums text-obsidian">{fmtMoney(p.value_cents)}</td>
                       <td className="px-6 py-5">
                         <div className="flex flex-wrap gap-1">
@@ -133,8 +167,9 @@ function ProjectsPage() {
         </div>
 
         <p className="mt-6 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/40">
-          {projects.length} projects · Broward through the Treasure Coast
+          {rows.length} projects · Broward through the Treasure Coast
         </p>
+
       </div>
     </PortalShell>
   );
