@@ -880,10 +880,14 @@ export type Database = {
         Row: {
           city_name: string
           created_at: string
+          derm: boolean
+          e_plan: boolean
           id: string
           municipality_slug: string
           notes: string | null
           password_ciphertext: string
+          portal_url: string | null
+          registration: string | null
           tenant_id: string | null
           updated_at: string
           user_id: string
@@ -892,10 +896,14 @@ export type Database = {
         Insert: {
           city_name: string
           created_at?: string
+          derm?: boolean
+          e_plan?: boolean
           id?: string
           municipality_slug: string
           notes?: string | null
           password_ciphertext: string
+          portal_url?: string | null
+          registration?: string | null
           tenant_id?: string | null
           updated_at?: string
           user_id: string
@@ -904,10 +912,14 @@ export type Database = {
         Update: {
           city_name?: string
           created_at?: string
+          derm?: boolean
+          e_plan?: boolean
           id?: string
           municipality_slug?: string
           notes?: string | null
           password_ciphertext?: string
+          portal_url?: string | null
+          registration?: string | null
           tenant_id?: string | null
           updated_at?: string
           user_id?: string
@@ -2253,6 +2265,56 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "permits_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      portal_login_documents: {
+        Row: {
+          created_at: string
+          doc_label: string
+          expiration_date: string | null
+          file_name: string | null
+          file_path: string
+          id: string
+          municipality: string
+          municipality_slug: string
+          tenant_id: string | null
+          uploaded_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          doc_label: string
+          expiration_date?: string | null
+          file_name?: string | null
+          file_path: string
+          id?: string
+          municipality: string
+          municipality_slug: string
+          tenant_id?: string | null
+          uploaded_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          doc_label?: string
+          expiration_date?: string | null
+          file_name?: string | null
+          file_path?: string
+          id?: string
+          municipality?: string
+          municipality_slug?: string
+          tenant_id?: string | null
+          uploaded_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "portal_login_documents_tenant_id_fkey"
             columns: ["tenant_id"]
             isOneToOne: false
             referencedRelation: "tenants"

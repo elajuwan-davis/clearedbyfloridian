@@ -84,3 +84,12 @@ environment problem; do not mass-reformat unrelated files to "fix" lint.
   `insurance-requests/{tenant_id}/{request_id}/…` (`src/lib/insurance-requests.functions.ts`).
 - Submit inserts a row then creates a `notifications` row (admins see all via RLS).
 - Requires migration `supabase/migrations/20260804160000_insurance_requests.sql`.
+
+### Building Dept Logins (`/building-dept-logins`)
+- Credentials live in `gc_portal_logins` (AES-256-GCM via `APP_USER_CONNECTION_KEY_SECRET`).
+  List returns metadata only; plaintext only via `revealOwnPortalLogin` / admin `revealPortalLogin`.
+- Documents: `portal_login_documents` + private bucket `portal-login-docs`. Expired status uses
+  real `expiration_date` vs today (`isDocExpired`).
+- Submit route writes through `savePortalLogin` + document uploads — not a fake toast.
+- Requires migration `supabase/migrations/20260804170000_portal_login_documents.sql`.
+- Contacts sub-tab is still localStorage (`municipal-contacts.ts`) — separate from credentials.
