@@ -274,3 +274,58 @@ Observed locally, in this order:
   `check_failing` rows; `send_permit_status_digest()` notifies staff once a day.
 - `authenticated` is refused on `claim_permit_status_poll` and `apply_permit_status_check`,
   and can only insert a `correction_notices` row as staff with `source='staff_upload'`.
+
+## Agent 7 — corrections-parser + the approval gate
+
+No `LOVABLE_API_KEY` locally, so `stub-ai-gateway.ts` stands in for the model. It is not a
+model: it reads the letter out of the prompt and answers with a plan quoting that letter's own
+numbered comments — which is what the real system prompt demands — so the rig can show that
+letter-specific content survives the pipeline and that a bad answer is refused.
+
+```bash
+sed '/CREATE EXTENSION IF NOT EXISTS pg_net/d' supabase/migrations/20260807120000_corrections_parser.sql \
+  | docker exec -i cleard-pg psql -v ON_ERROR_STOP=1 -U postgres
+docker cp scripts/local-test/correction-letter.txt cleard-pg:/tmp/    # \set reads it server-side
+docker exec -i cleard-pg psql -v ON_ERROR_STOP=1 -U postgres < scripts/local-test/seed-agent7.sql
+docker exec -i cleard-pg psql -U postgres -c "notify pgrst, 'reload schema';"
+
+deno test supabase/functions/_shared/correction-parse_test.ts supabase/functions/_shared/pdf-text_test.ts
+deno run -A scripts/local-test/make-correction-pdf.ts        # the letter as a real PDF in storage
+
+STUB_MODE=plan deno run --allow-net --allow-env scripts/local-test/stub-ai-gateway.ts   # :8300
+SUPABASE_URL=http://localhost:54331 SUPABASE_SERVICE_ROLE_KEY="$SERVICE_JWT" \
+APP_BASE_URL=http://localhost:54331 LOVABLE_API_KEY=local \
+AI_GATEWAY_URL=http://localhost:8300/v1/chat/completions \
+  deno run -A supabase/functions/corrections-parser/index.ts
+
+curl -s -X POST localhost:8000 -H "Authorization: Bearer $SERVICE_JWT" \
+  -d '{"action":"parse","notice_id":"c7000000-0000-0000-0000-000000000001"}'
+curl -s -X POST localhost:8000 -H "Authorization: Bearer $SERVICE_JWT" \
+  -d '{"action":"send","plan_id":"<id>"}'      # 409 until a staff member approves
+curl -s -X POST localhost:54330/rpc/approve_correction_plan -H "Authorization: Bearer $STAFF" \
+  -H 'Content-Type: application/json' -d '{"_plan_id":"<id>","_note":"Verified against the letter"}'
+```
+
+Observed locally, in this order:
+
+- The six-comment Plantation letter parses into six items — structural calculations (engineer),
+  the A-101 egress dimension (architect), the unrecorded NOC (owner), the wrong-address Form
+  R405, the $412.00 fee and the qualifier mismatch — each quoting the letter's own wording,
+  with `FBC, Building 1010.1.1` / `F.S. 713.135(1)(d)` carried through and the August 14
+  resubmittal date preserved. `numbered_comments_found` = 6 = `item_count`.
+- Same result with `raw_text` cleared, straight out of the PDF in storage (2.2k characters of
+  text, line breaks intact) — that is the poller's real path.
+- `action:send` before approval → `409 correction plan is not approved — refusing to send`,
+  and `email_outbox` stays empty.
+- A staff approval through PostgREST records the approver and fires the release trigger
+  (`net.sent_requests` shows `corrections-parser` / `send`); the send then queues one
+  `permit_correction_ack` row and logs `correction_acknowledgment_sent`. A replayed send is a
+  no-op.
+- A GC JWT is refused on `approve_correction_plan`, cannot PATCH `correction_plans`, gets `[]`
+  from `correction_review_queue`, and cannot read a plan at all until it is approved — the
+  draft letter is staff-only.
+- Rejection needs a reason, leaves the row `rejected`, and dispatches nothing.
+- `STUB_MODE=invalid` (an invented category) and `STUB_MODE=prose` are both refused with no
+  plan written; the notice returns to `new` and staff are notified to handle it manually. Same
+  for a notice with no readable text, and for the gateway being unreachable.
+- A staff upload into `correction_notices` fires the parse trigger with the new notice id.

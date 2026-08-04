@@ -18,6 +18,7 @@ import { AdminPermitReviewActions } from "@/components/admin-permit-review-actio
 import { ServiceFeeInvoicePanel } from "@/components/service-fee-invoice-panel";
 import { PreSubmissionGate } from "@/components/pre-submission-gate";
 import { MunicipalitySubmissionGate } from "@/components/municipality-submission-gate";
+import { CorrectionReviewGate } from "@/components/correction-review-gate";
 import type { DispatchResult } from "@/lib/dispatch";
 
 
@@ -630,6 +631,10 @@ function PermitDetailPage() {
             permitId={row.id}
             preSubmissionPassed={presubStatus === "pass"}
           />
+        </div>
+        {/* Agent 7: renders itself only once a correction notice has been parsed. */}
+        <div className="mt-4">
+          <CorrectionReviewGate permitId={row.id} />
         </div>
       </section>
 
