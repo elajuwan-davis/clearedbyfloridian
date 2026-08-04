@@ -1,7 +1,28 @@
-// A vendored copy of this file lives at supabase/functions/_shared/nto-pdf.ts for the edge
-// runtime (Agent 2's document-generation). Changes here do not propagate — copy them.
+// Vendored copy of src/lib/nto-pdf.ts for the Deno edge runtime — NOT the live source.
+// The app bundle keeps using src/lib/nto-pdf.ts; a fix there does not reach the edge
+// functions until it is copied here as well. This copy also declares NtoRow locally,
+// because src/lib/nto-api.ts cannot be imported here.
 import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
-import type { NtoRow } from "@/lib/nto-api";
+// Vendored for the Deno edge runtime: the app's src/ tree is not part of the
+// function bundle, so the row shape is declared locally instead of imported.
+type NtoRow = {
+  id: string;
+  permit_id: string;
+  owner_name: string | null;
+  owner_address: string | null;
+  owner_email: string | null;
+  property_address: string | null;
+  contractor_name: string;
+  contractor_address: string;
+  work_description: string | null;
+  first_work_date: string | null;
+  status: string;
+  sent_via: string | null;
+  sent_at: string | null;
+  pdf_path: string | null;
+  created_at: string;
+  updated_at: string;
+};
 
 const OBSIDIAN = rgb(21 / 255, 49 / 255, 87 / 255);
 const INK = rgb(0.1, 0.1, 0.1);

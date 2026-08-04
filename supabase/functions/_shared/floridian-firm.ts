@@ -1,5 +1,6 @@
-// A vendored copy of this file lives at supabase/functions/_shared/floridian-firm.ts for the edge
-// runtime (Agent 2's document-generation). Changes here do not propagate — copy them.
+// Vendored copy of src/lib/floridian-firm.ts for the Deno edge runtime — NOT the live source.
+// The app bundle keeps using src/lib/floridian-firm.ts; a fix there does not reach the edge
+// functions until it is copied here as well. Currently byte-identical to it.
 // Cleard firm data used to pre-fill official forms.
 export const FLORIDIAN_FIRM = {
   firmName: "Cleard",
