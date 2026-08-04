@@ -5,6 +5,10 @@
 //
 //   /rest/v1/*            → proxied to the local PostgREST container (real SQL,
 //                           real RLS-bypassing service_role, real tables)
+//   /storage/v1/*         → files on disk under STORAGE_DIR, with the same
+//                           upload / createSignedUrl / download surface
+//                           supabase-js uses (signed URLs are real and
+//                           downloadable from this server)
 //   /api/geocode-census   → proxied to the *real* US Census geocoder, normalised
 //                           exactly like src/routes/api/geocode-census.ts
 //   /api/verify-license   → fixture. myfloridalicense.com answers server-side
@@ -21,6 +25,7 @@
 const PORT = Number(Deno.env.get("PORT") ?? 54331);
 const POSTGREST_URL = Deno.env.get("POSTGREST_URL") ?? "http://localhost:54330";
 const SERVICE_JWT = Deno.env.get("SERVICE_JWT") ?? "";
+const STORAGE_DIR = Deno.env.get("STORAGE_DIR") ?? "/tmp/cleard-local-storage";
 
 const CENSUS = "https://geocoding.geo.census.gov/geocoder/geographies/onelineaddress";
 
@@ -82,8 +87,61 @@ async function geocode(address: string): Promise<Response> {
   return Response.json({ matches });
 }
 
+// --- storage stand-in -------------------------------------------------------
+
+const storagePath = (bucketAndKey: string): string => `${STORAGE_DIR}/${bucketAndKey}`;
+
+async function storageWrite(bucketAndKey: string, bytes: Uint8Array): Promise<void> {
+  const full = storagePath(bucketAndKey);
+  await Deno.mkdir(full.slice(0, full.lastIndexOf("/")), { recursive: true });
+  await Deno.writeFile(full, bytes);
+}
+
+async function storageRead(bucketAndKey: string): Promise<Uint8Array | null> {
+  try {
+    return await Deno.readFile(storagePath(bucketAndKey));
+  } catch {
+    return null;
+  }
+}
+
+async function handleStorage(req: Request, url: URL): Promise<Response> {
+  const rest = url.pathname.replace("/storage/v1/object/", "");
+
+  // createSignedUrl → { signedURL }
+  if (rest.startsWith("sign/")) {
+    const key = rest.slice("sign/".length);
+    // supabase-js prefixes this with the storage base URL, so it must be relative
+    // to /storage/v1 exactly like the real API's response.
+    return Response.json({ signedURL: `/object/signed/${key}?token=local` });
+  }
+
+  // signed download
+  if (rest.startsWith("signed/")) {
+    const bytes = await storageRead(rest.slice("signed/".length));
+    if (!bytes) return new Response("Not found", { status: 404 });
+    return new Response(bytes, { headers: { "Content-Type": "application/pdf" } });
+  }
+
+  if (req.method === "POST" || req.method === "PUT") {
+    const buf = new Uint8Array(await req.arrayBuffer());
+    await storageWrite(rest, buf);
+    return Response.json({ Key: rest });
+  }
+
+  if (req.method === "GET") {
+    const bytes = await storageRead(rest);
+    if (!bytes) return new Response("Not found", { status: 404 });
+    return new Response(bytes, { headers: { "Content-Type": "application/pdf" } });
+  }
+
+  return new Response("Not found", { status: 404 });
+}
+
 Deno.serve({ port: PORT }, async (req) => {
   const url = new URL(req.url);
+
+  if (url.pathname.startsWith("/storage/v1/object/")) return await handleStorage(req, url);
 
   if (url.pathname.startsWith("/rest/v1/")) {
     const target = `${POSTGREST_URL}${url.pathname.replace("/rest/v1", "")}${url.search}`;

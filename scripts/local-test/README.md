@@ -43,6 +43,36 @@ curl -s -X POST http://localhost:8000 -H 'Content-Type: application/json' \
   -d '{"permit_id":"44444444-4444-4444-4444-444444444444"}'   # expired GC → red
 ```
 
+## Agent 2 — document-generation
+
+```bash
+sed '/CREATE EXTENSION IF NOT EXISTS pg_net/d' supabase/migrations/20260805130000_document_generation.sql \
+  | docker exec -i cleard-pg psql -v ON_ERROR_STOP=1 -U postgres
+docker exec -i cleard-pg psql -v ON_ERROR_STOP=1 -U postgres < scripts/local-test/seed-agent2.sql
+docker exec -i cleard-pg psql -U postgres -c "notify pgrst, 'reload schema';"
+
+SUPABASE_URL=http://localhost:54331 SUPABASE_SERVICE_ROLE_KEY="$SERVICE_JWT" \
+  deno run -A --config supabase/functions/deno.json supabase/functions/document-generation/index.ts
+
+# fully-populated permit -> 2-form bundle, no notification
+curl -s -X POST http://localhost:8000 -H 'Content-Type: application/json' \
+  -d '{"permit_id":"33333333-3333-3333-3333-333333333333"}'
+# permit missing owner_name / company_address -> un-fillable notification
+curl -s -X POST http://localhost:8000 -H 'Content-Type: application/json' \
+  -d '{"permit_id":"55555555-5555-5555-5555-555555555555"}'
+```
+
+`signed_url` in the response is downloadable straight from the mock storage
+(`curl "$signed_url" -o bundle.pdf`). The trigger is exercised with a status
+transition rather than an insert:
+
+```bash
+docker exec -i cleard-pg psql -U postgres \
+  -c "update public.permits set validation_status='amber' where id='55555555-5555-5555-5555-555555555555';" \
+  -c "update public.permits set validation_status='green' where id='55555555-5555-5555-5555-555555555555';" \
+  -c "select url, body->>'permit_id' from net.sent_requests;"
+```
+
 Assert the trigger itself fired (it records its pg_net call instead of sending it):
 
 ```bash

@@ -106,10 +106,34 @@ CREATE TABLE IF NOT EXISTS public.permits (
   description text,
   contractor_company text,
   contractor_qualifier text,
+  company_address text,
   license_number text,
+  pcn text,
+  poc text,
+  poc_phone text,
+  poc_email text,
   submitted_date date,
   documents jsonb NOT NULL DEFAULT '[]'::jsonb,
   intake_payload jsonb
+);
+
+CREATE TABLE IF NOT EXISTS public.nto_filings (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  permit_id uuid NOT NULL REFERENCES public.permits(id) ON DELETE CASCADE,
+  owner_name text,
+  owner_address text,
+  owner_email text,
+  property_address text,
+  contractor_name text NOT NULL DEFAULT '',
+  contractor_address text NOT NULL DEFAULT '',
+  work_description text,
+  first_work_date date,
+  status text NOT NULL DEFAULT 'not_filed',
+  sent_via text,
+  sent_at timestamptz,
+  pdf_path text,
+  created_at timestamptz NOT NULL DEFAULT now(),
+  updated_at timestamptz NOT NULL DEFAULT now()
 );
 
 CREATE TABLE IF NOT EXISTS public.notifications (
