@@ -1,8 +1,9 @@
 // Agent 4 — Pre-Submission Completeness.
 //
 // Invoked directly by the "Route for Signatures" staff action and re-run by the
-// submit gate ({ permit_id }). There is no pg_net trigger for this one — it is a
-// staff-initiated gate, not a reaction to a row change.
+// submit gate ({ permit_id }). Callers must present either a staff (admin) JWT or the
+// service-role key — see _shared/caller-auth.ts. There is no pg_net trigger for this one —
+// it is a staff-initiated gate, not a reaction to a row change.
 //
 // Every check is a boolean data query. The only model call in this function is an
 // ADVISORY read of the plan set (claude-haiku-4-5) layered on top of the deterministic
@@ -14,11 +15,12 @@
 //   2. signatures        → signature_requests (all routed requests signed)
 //   3. plans_format      → PDF parsed with pdf-lib: page count + sheet dimensions
 //   4. fee_collected     → service_fee_invoices.status
-//   5. nto_ready         → nto_filings.pdf_path + status
+//   5. nto_ready         → nto_filings.status (sent | confirmed)
 //   6. license_active    → LIVE /api/verify-license (Agent 1's result is not trusted)
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.3";
 import { PDFDocument } from "https://esm.sh/pdf-lib@1.17.1";
+import { CallerAuthError, requireStaffCaller } from "../_shared/caller-auth.ts";
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL") ?? "";
 const SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
@@ -191,10 +193,17 @@ const PLAN_KEYS = ["plan", "drawing", "sheet", "blueprint"];
 const isPlanDoc = (d: PermitDoc) =>
   PLAN_KEYS.some((k) => `${d.key} ${d.label}`.toLowerCase().includes(k));
 
-async function checkPlansFormat(
-  admin: ReturnType<typeof createClient>,
-  permit: PermitRow,
-): Promise<Check> {
+type StorageReader = {
+  storage: {
+    from: (bucket: string) => {
+      download: (
+        path: string,
+      ) => Promise<{ data: Blob | null; error: { message: string } | null }>;
+    };
+  };
+};
+
+async function checkPlansFormat(admin: StorageReader, permit: PermitRow): Promise<Check> {
   const plans = (permit.documents ?? []).filter(
     (d) => isPlanDoc(d) && d.status === "uploaded" && d.path,
   );
@@ -341,7 +350,8 @@ function checkFee(
 
 // --- 5. NTO ready -----------------------------------------------------------
 
-const NTO_READY_STATUSES = ["ready", "generated", "sent", "filed", "recorded"];
+// nto_filings.status vocabulary (src/lib/nto-api.ts): not_filed | draft | sent | confirmed.
+const NTO_READY_STATUSES = ["sent", "confirmed"];
 
 function checkNto(
   nto: { status: string; pdf_path: string | null; sent_at: string | null } | null,
@@ -353,15 +363,6 @@ function checkNto(
       pass: false,
       blocking: true,
       reason: "No NTO filing record for this permit.",
-    };
-  }
-  if (!nto.pdf_path) {
-    return {
-      key: "nto_ready",
-      label: "NTO ready",
-      pass: false,
-      blocking: true,
-      reason: `NTO record exists (${nto.status}) but no generated PDF is stored.`,
     };
   }
   if (!NTO_READY_STATUSES.includes(nto.status)) {
@@ -378,7 +379,11 @@ function checkNto(
     label: "NTO ready",
     pass: true,
     blocking: true,
-    reason: `NTO ${nto.status} with PDF at ${nto.pdf_path}.`,
+    // pdf_path is advisory: NTO PDFs are generated client-side and are not always stored,
+    // so its absence does not mean the notice was not served.
+    reason: `NTO ${nto.status}${nto.sent_at ? ` on ${nto.sent_at.slice(0, 10)}` : ""}${
+      nto.pdf_path ? ` with PDF at ${nto.pdf_path}` : " (no stored PDF)"
+    }.`,
   };
 }
 
@@ -447,17 +452,23 @@ async function checkLicenseLive(permit: PermitRow): Promise<Check> {
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: cors });
 
+  if (req.method !== "POST") return json({ error: "POST required" }, 405);
+
+  const admin = createClient(SUPABASE_URL, SERVICE_KEY, {
+    auth: { persistSession: false },
+  });
+
   try {
+    // This function reads a permit and writes its gate verdict under the service role, so
+    // the caller has to be Cleard staff (or another Cleard component).
+    await requireStaffCaller(req, { supabaseUrl: SUPABASE_URL, serviceKey: SERVICE_KEY });
+
     const body = (await req.json().catch(() => ({}))) as {
       permit_id?: string;
       record?: { id?: string };
     };
     const permitId = body.permit_id ?? body.record?.id;
     if (!permitId) return json({ error: "permit_id required" }, 400);
-
-    const admin = createClient(SUPABASE_URL, SERVICE_KEY, {
-      auth: { persistSession: false },
-    });
 
     const { data: permit, error } = await admin
       .from("permits")
@@ -534,6 +545,7 @@ Deno.serve(async (req) => {
 
     return json({ permit_id: permitId, status, report });
   } catch (err) {
+    if (err instanceof CallerAuthError) return json({ error: err.message }, err.status);
     console.error("pre-submission-check failed", err);
     return json({ error: String(err) }, 500);
   }

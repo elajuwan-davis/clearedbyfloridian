@@ -36,7 +36,7 @@ type Props = {
 };
 
 export function PreSubmissionGate({ permit, onSubmitToMunicipality }: Props) {
-  const { isAdmin, loading } = useSession();
+  const { isAdmin, loading, email: staffEmail } = useSession();
   const [report, setReport] = useState<PreSubmissionReport | null>(null);
   const [sigs, setSigs] = useState<SignatureRequestRow[]>([]);
   const [running, setRunning] = useState(false);
@@ -87,8 +87,13 @@ export function PreSubmissionGate({ permit, onSubmitToMunicipality }: Props) {
   }
 
   async function markSigned(row: SignatureRequestRow) {
+    // Staff attest on the signer's behalf, so the ledger records who signed and who
+    // attested to it — never the recipient's email in place of a name.
+    const signer = window.prompt(`Who signed "${row.document_name}"?`, "")?.trim();
+    if (signer === undefined) return;
+    const attestedBy = staffEmail ? ` (attested by ${staffEmail})` : "";
     try {
-      await markSignatureSigned(row.id, row.recipient_email);
+      await markSignatureSigned(row.id, `${signer || "Signer not named"}${attestedBy}`);
       await refresh();
       toast.success("Signature recorded — re-run the check to refresh the gate");
     } catch (e) {
