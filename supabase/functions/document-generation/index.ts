@@ -11,10 +11,10 @@
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.3";
 import { PDFDocument } from "pdf-lib";
-import { buildNtoPdfBytes } from "../../../src/lib/nto-pdf.ts";
-import { generateOwnerAuth, generateNTBO } from "../../../src/lib/private-provider-forms.ts";
-import { getChecklist } from "../../../src/lib/permit-checklists.ts";
-import { FLORIDIAN_FIRM } from "../../../src/lib/floridian-firm.ts";
+import { buildNtoPdfBytes } from "../_shared/nto-pdf.ts";
+import { generateOwnerAuth, generateNTBO } from "../_shared/private-provider-forms.ts";
+import { getChecklist } from "../_shared/permit-checklists.ts";
+import { FLORIDIAN_FIRM } from "../_shared/floridian-firm.ts";
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL") ?? "";
 const SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
