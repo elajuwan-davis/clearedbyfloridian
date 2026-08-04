@@ -1,0 +1,47 @@
+CITY OF PLANTATION
+BUILDING DEPARTMENT — PLAN REVIEW
+401 NW 70th Terrace, Plantation, FL 33317
+
+PLAN REVIEW COMMENTS — CORRECTIONS REQUIRED
+
+Record Number: 26BLD-004512
+Project Address: 1420 SW 68th Terrace, Plantation, FL 33317
+Scope: Interior alteration and 14' x 22' rear covered canopy addition
+Review Discipline: Structural / Building
+Reviewer: M. Alvarez, Plans Examiner
+Date of Review: July 30, 2026
+Resubmittal Due: August 14, 2026
+
+The following comments must be addressed. Provide a written response letter
+addressing each comment individually, along with revised documents, on resubmittal.
+
+1. Provide signed and sealed structural calculations for the new rear canopy,
+   including wind load in accordance with FBC, Building (8th Edition, 2023)
+   Section 1609 and ASCE 7-22 for Risk Category II, Vult 175 mph, Exposure C.
+   Sheet S-101 shows the framing but no supporting calculations were submitted.
+
+2. Sheet A-101 does not dimension the required 3'-0" clear egress width at the
+   new interior door between the kitchen and the dining area. Revise the floor
+   plan to dimension the clear opening. FBC, Building 1010.1.1.
+
+3. The Notice of Commencement submitted with this application is unrecorded.
+   Submit a copy of the Notice of Commencement bearing the Broward County
+   Clerk's recording stamp and book/page prior to first inspection, per
+   F.S. 713.135(1)(d).
+
+4. The energy calculation submitted (Form R405) is for a different address
+   (1420 SW 68th Street) and is unsigned. Submit the corrected, signed Form
+   R405 for this address.
+
+5. Outstanding plan review fee of $412.00 must be paid before the permit will
+   be issued. Pay online through the Citizen Access portal or at the counter.
+
+6. The contractor of record listed on the application (Floridian Inc.) does not
+   match the qualifier on file for license CGC1520394. Submit an updated
+   qualifier authorization letter on company letterhead.
+
+This review does not constitute approval of any portion of the work not
+specifically reviewed. Resubmit through the Citizen Access portal.
+
+M. Alvarez
+Plans Examiner, City of Plantation
