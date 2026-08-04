@@ -1345,6 +1345,88 @@ export type Database = {
         }
         Relationships: []
       }
+      insurance_requests: {
+        Row: {
+          additional_insured: boolean
+          attached_file_name: string | null
+          attached_file_path: string | null
+          created_at: string
+          created_by: string | null
+          details: string | null
+          holder_address: string | null
+          holder_name: string | null
+          id: string
+          permit_id: string | null
+          project_address: string | null
+          project_name: string | null
+          request_type: string
+          status: string
+          subcontractor_id: string | null
+          tenant_id: string
+          updated_at: string
+        }
+        Insert: {
+          additional_insured?: boolean
+          attached_file_name?: string | null
+          attached_file_path?: string | null
+          created_at?: string
+          created_by?: string | null
+          details?: string | null
+          holder_address?: string | null
+          holder_name?: string | null
+          id?: string
+          permit_id?: string | null
+          project_address?: string | null
+          project_name?: string | null
+          request_type: string
+          status?: string
+          subcontractor_id?: string | null
+          tenant_id: string
+          updated_at?: string
+        }
+        Update: {
+          additional_insured?: boolean
+          attached_file_name?: string | null
+          attached_file_path?: string | null
+          created_at?: string
+          created_by?: string | null
+          details?: string | null
+          holder_address?: string | null
+          holder_name?: string | null
+          id?: string
+          permit_id?: string | null
+          project_address?: string | null
+          project_name?: string | null
+          request_type?: string
+          status?: string
+          subcontractor_id?: string | null
+          tenant_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "insurance_requests_permit_id_fkey"
+            columns: ["permit_id"]
+            isOneToOne: false
+            referencedRelation: "permits"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "insurance_requests_subcontractor_id_fkey"
+            columns: ["subcontractor_id"]
+            isOneToOne: false
+            referencedRelation: "subcontractors"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "insurance_requests_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       legal_document_versions: {
         Row: {
           change_notes: string | null

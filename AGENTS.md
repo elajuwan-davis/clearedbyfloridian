@@ -67,6 +67,7 @@ environment problem; do not mass-reformat unrelated files to "fix" lint.
   DBPR checker.
 - Requires migration `supabase/migrations/20260804140000_gc_company_profiles.sql` applied on
   Lovable/Supabase before save/upload works against the hosted DB.
+
 ### Legal Document Library (`/legal`)
 - Live data: `public.legal_documents` + `public.legal_document_versions` with private Storage
   bucket `legal-documents`. Client API: `src/lib/legal-docs.ts`; signed upload/download via
@@ -75,3 +76,11 @@ environment problem; do not mass-reformat unrelated files to "fix" lint.
   but each version has a real `file_path` — not a JSONB snapshot.
 - Requires migration `supabase/migrations/20260804150000_legal_documents.sql` applied on
   Lovable/Supabase before upload/download works against the hosted DB.
+
+### Insurance Requests (`/portal/request-coi`)
+- Live data: `public.insurance_requests` (types `coi_request` | `sub_update`). Subs come from
+  `listSubs()` / `subcontractors` — never `subcontractor-library.ts` on this page.
+- Optional COI PDF uploads reuse the existing private `coi-documents` bucket under
+  `insurance-requests/{tenant_id}/{request_id}/…` (`src/lib/insurance-requests.functions.ts`).
+- Submit inserts a row then creates a `notifications` row (admins see all via RLS).
+- Requires migration `supabase/migrations/20260804160000_insurance_requests.sql`.
