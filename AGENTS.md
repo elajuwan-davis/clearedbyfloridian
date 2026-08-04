@@ -57,3 +57,13 @@ environment problem; do not mass-reformat unrelated files to "fix" lint.
   they noticed the SQL in the PR.
 - `supabase/functions/*` are Deno edge functions; they are not part of the local `bun run dev`
   app runtime.
+
+### Company profile (`/portal/company`)
+- Live data lives in `public.gc_company_profiles` (one row per tenant) + private Storage bucket
+  `company-compliance-docs`. Client API: `src/lib/gc-company.ts`; uploads via
+  `src/lib/company-docs.functions.ts` (signed URL pattern, same as ID verification).
+- Saving a profile auto-validates qualifiers through existing `verifyDbprLicense()` in
+  `src/lib/dbpr-api.ts` (same `/api/verify-license` path as Compliance) — do not add a second
+  DBPR checker.
+- Requires migration `supabase/migrations/20260804140000_gc_company_profiles.sql` applied on
+  Lovable/Supabase before save/upload works against the hosted DB.
