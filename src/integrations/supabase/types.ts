@@ -4321,7 +4321,6 @@ export type Database = {
       }
     }
     Functions: {
-      __tmp_store_edge_key: { Args: { _value: string }; Returns: string }
       apply_permit_status_check: {
         Args: {
           _correction?: Json
