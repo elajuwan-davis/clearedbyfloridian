@@ -16,6 +16,7 @@
 // already approved by a staff member, so a bug in the UI cannot file a permit.
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.3";
+import { CallerAuthError, requireStaffCaller, type Caller } from "../_shared/caller-auth.ts";
 import {
   draftDocuments,
   emailDraft,
@@ -45,7 +46,11 @@ const json = (body: unknown, status = 200) =>
     headers: { "Content-Type": "application/json", ...cors },
   });
 
-type SupabaseAdmin = ReturnType<typeof createClient>;
+// Explicit generics: bare ReturnType<typeof createClient> resolves the schema parameter to
+// `never`, which no real client satisfies.
+// deno-lint-ignore no-explicit-any
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type SupabaseAdmin = ReturnType<typeof createClient<any, "public", any>>;
 
 // select('*'): the columns the agents add arrive across several migrations, and a draft
 // should not fail because one of them has not been applied yet.
@@ -100,7 +105,8 @@ async function notifyStaff(admin: SupabaseAdmin, permitId: string, title: string
 
 async function handleDraft(
   admin: SupabaseAdmin,
-  body: { permit_id?: string; municipality_slug?: string; created_by?: string },
+  caller: Caller,
+  body: { permit_id?: string; municipality_slug?: string },
 ) {
   const permitId = body.permit_id;
   if (!permitId) return json({ error: "permit_id required" }, 400);
@@ -174,7 +180,8 @@ async function handleDraft(
       status: "draft_pending_approval",
       draft,
       pre_submission_report: check.report ?? null,
-      created_by: body.created_by ?? null,
+      // Attribution comes from the verified caller, never from the request body.
+      created_by: caller.userId,
     })
     .select("*")
     .single();
@@ -307,12 +314,13 @@ async function handleExecute(admin: SupabaseAdmin, body: { submission_id?: strin
     throw obErr;
   }
 
-  const now = new Date().toISOString();
+  // Queued is not filed. The outbox dispatcher's result promotes this row to 'submitted'
+  // (or 'failed') through trg_email_outbox_submission_result, so an application that never
+  // left Resend never reads as filed with the department.
   const { error: upErr } = await admin
     .from("municipality_submissions")
     .update({
-      status: "submitted",
-      submitted_at: now,
+      status: "submitting",
       email_outbox_id: (outbox as { id: string }).id,
       attempts: 1,
     })
@@ -321,30 +329,16 @@ async function handleExecute(admin: SupabaseAdmin, body: { submission_id?: strin
 
   await admin.from("municipality_submission_events").insert({
     submission_id: sub.id,
-    event_type: "submitted_by_email",
+    event_type: "queued_for_email_dispatch",
     actor_label: "Cleard automation",
-    detail: { to: email.to, outbox_id: (outbox as { id: string }).id },
+    detail: {
+      to: email.to,
+      outbox_id: (outbox as { id: string }).id,
+      attachments: (sub.draft?.documents ?? []).length,
+    },
   });
 
-  await admin.from("permits").update({ status: "submitted" }).eq("id", sub.permit_id);
-
-  await admin.from("activity_events").insert({
-    tenant_id: sub.tenant_id,
-    permit_id: sub.permit_id,
-    event_type: "municipality_submitted",
-    actor_label: "Cleard automation",
-    summary: `Filed with ${sub.draft?.municipality?.city_name ?? "the building department"} by email intake`,
-    details: { submission_id: sub.id, to: email.to },
-  });
-
-  await notifyStaff(
-    admin,
-    sub.permit_id,
-    `Filed with ${sub.draft?.municipality?.city_name ?? "building department"}`,
-    `The approved package was sent to ${email.to}. A confirmation number is recorded when the department replies.`,
-  );
-
-  return json({ ok: true, submitted: true, channel: "email", submission_id: sub.id });
+  return json({ ok: true, queued_for: "email_dispatcher", channel: "email", submission_id: sub.id });
 }
 
 async function markFailed(admin: SupabaseAdmin, id: string, reason: string) {
@@ -363,6 +357,7 @@ async function markFailed(admin: SupabaseAdmin, id: string, reason: string) {
 // --- action: status (what the UI polls) ------------------------------------
 
 async function handleStatus(admin: SupabaseAdmin, body: { permit_id?: string }) {
+  // The caller is already verified staff or service (see Deno.serve below).
   if (!body.permit_id) return json({ error: "permit_id required" }, 400);
   const { data, error } = await admin
     .from("municipality_submissions")
@@ -383,16 +378,22 @@ Deno.serve(async (req) => {
   const admin = createClient(SUPABASE_URL, SERVICE_KEY, { auth: { persistSession: false } });
 
   try {
+    // This function runs under the service role and reaches a municipality, so it decides
+    // who may ask: the pg_net release trigger (service key) or a signed-in staff user.
+    const caller = await requireStaffCaller(req, {
+      supabaseUrl: SUPABASE_URL,
+      serviceKey: SERVICE_KEY,
+    });
+
     const body = (await req.json().catch(() => ({}))) as {
       action?: string;
       permit_id?: string;
       submission_id?: string;
       municipality_slug?: string;
-      created_by?: string;
     };
     switch (body.action ?? "draft") {
       case "draft":
-        return await handleDraft(admin, body);
+        return await handleDraft(admin, caller, body);
       case "execute":
         return await handleExecute(admin, body);
       case "status":
@@ -401,6 +402,7 @@ Deno.serve(async (req) => {
         return json({ error: `unknown action '${body.action}'` }, 400);
     }
   } catch (err) {
+    if (err instanceof CallerAuthError) return json({ error: err.message }, err.status);
     console.error("municipality-submit failed", err);
     const message =
       err instanceof Error

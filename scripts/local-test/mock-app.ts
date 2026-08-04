@@ -142,8 +142,39 @@ async function handleStorage(req: Request, url: URL): Promise<Response> {
   return new Response("Not found", { status: 404 });
 }
 
+/**
+ * GoTrue's /auth/v1/user, enough of it for the caller-authorization checks: the local JWTs
+ * are HS256 with a `sub`, so the claim is echoed back as the user. No signature check —
+ * this rig only ever sees tokens it minted itself.
+ */
+function handleAuthUser(req: Request): Response {
+  const token = (req.headers.get("Authorization") ?? "").replace(/^Bearer\s+/i, "");
+  const part = token.split(".")[1];
+  if (!part) return Response.json({ error: "invalid token" }, { status: 401 });
+  try {
+    const claims = JSON.parse(atob(part.replace(/-/g, "+").replace(/_/g, "/"))) as {
+      sub?: string;
+      email?: string;
+      role?: string;
+    };
+    if (!claims.sub) return Response.json({ error: "no sub" }, { status: 401 });
+    return Response.json({
+      id: claims.sub,
+      aud: "authenticated",
+      role: claims.role ?? "authenticated",
+      email: claims.email ?? `${claims.sub}@local.test`,
+      user_metadata: {},
+      app_metadata: {},
+    });
+  } catch {
+    return Response.json({ error: "unparseable token" }, { status: 401 });
+  }
+}
+
 Deno.serve({ port: PORT }, async (req) => {
   const url = new URL(req.url);
+
+  if (url.pathname === "/auth/v1/user") return handleAuthUser(req);
 
   if (url.pathname.startsWith("/storage/v1/object/")) return await handleStorage(req, url);
 

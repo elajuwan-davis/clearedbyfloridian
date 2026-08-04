@@ -75,13 +75,13 @@ export async function draftMunicipalitySubmission(input: {
   permitId: string;
   municipalitySlug?: string;
 }): Promise<MunicipalitySubmission> {
-  const { data: session } = await supabase.auth.getUser();
+  // No created_by here: the edge function attributes the draft to the caller it verified,
+  // so the browser cannot claim someone else made it.
   const { data, error } = await supabase.functions.invoke("municipality-submit", {
     body: {
       action: "draft",
       permit_id: input.permitId,
       municipality_slug: input.municipalitySlug ?? null,
-      created_by: session?.user?.id ?? null,
     },
   });
   if (error) throw new Error(error.message);

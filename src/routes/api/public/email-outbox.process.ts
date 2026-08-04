@@ -12,6 +12,9 @@ import { createFileRoute } from "@tanstack/react-router";
 const FROM_ADDRESS = "Cleard <info@cleard.com>";
 const MAX_ATTEMPTS = 5;
 const BATCH_SIZE = 20;
+const BUCKET = "permit-files";
+// Resend caps a message at 40MB; stay well inside it, base64 inflates by ~4/3.
+const MAX_ATTACHMENT_BYTES = 18 * 1024 * 1024;
 
 function unauthorized() {
   return new Response("Unauthorized", { status: 401 });
@@ -36,9 +39,68 @@ type OutboxRow = {
   status: string;
   related_submittal_id: string | null;
   tenant_id: string | null;
+  /** Storage paths in permit-files, written by whoever queued the email. */
+  attachments: Array<{ label?: string; path?: string; filename?: string }> | null;
 };
 
-async function sendViaResend(row: OutboxRow): Promise<{ ok: true; providerId: string | null } | { ok: false; error: string; retriable: boolean }> {
+type LoadedAttachment = { filename: string; content: string };
+
+/** Only the storage read this worker needs, so it does not depend on the generated schema. */
+type StorageReader = {
+  storage: {
+    from: (bucket: string) => {
+      download: (
+        path: string,
+      ) => Promise<{ data: Blob | null; error: { message: string } | null }>;
+    };
+  };
+};
+
+/**
+ * Attachments are stored as bucket paths, not bytes: a permit application emailed to a
+ * building department is worthless without them, so a failure to load one aborts the send
+ * rather than delivering an empty application.
+ */
+async function loadAttachments(
+  admin: StorageReader,
+  row: OutboxRow,
+): Promise<{ ok: true; files: LoadedAttachment[] } | { ok: false; error: string; retriable: boolean }> {
+  const wanted = (row.attachments ?? []).filter((a) => a?.path);
+  if (wanted.length === 0) return { ok: true, files: [] };
+
+  const files: LoadedAttachment[] = [];
+  let total = 0;
+  for (const att of wanted) {
+    const path = att.path as string;
+    const { data, error } = await admin.storage.from(BUCKET).download(path);
+    if (error || !data) {
+      return {
+        ok: false,
+        retriable: true,
+        error: `attachment ${path} could not be read: ${error?.message ?? "no data"}`,
+      };
+    }
+    const bytes = new Uint8Array(await data.arrayBuffer());
+    total += bytes.byteLength;
+    if (total > MAX_ATTACHMENT_BYTES) {
+      return {
+        ok: false,
+        retriable: false,
+        error: `attachments exceed ${Math.round(MAX_ATTACHMENT_BYTES / 1024 / 1024)}MB — send the package as a shared link instead`,
+      };
+    }
+    files.push({
+      filename: att.filename ?? path.split("/").pop() ?? `${att.label ?? "attachment"}.pdf`,
+      content: Buffer.from(bytes).toString("base64"),
+    });
+  }
+  return { ok: true, files };
+}
+
+async function sendViaResend(
+  row: OutboxRow,
+  attachments: LoadedAttachment[],
+): Promise<{ ok: true; providerId: string | null } | { ok: false; error: string; retriable: boolean }> {
   const LOVABLE_API_KEY = process.env.LOVABLE_API_KEY;
   const RESEND_API_KEY = process.env.RESEND_API_KEY;
   if (!LOVABLE_API_KEY || !RESEND_API_KEY) {
@@ -63,6 +125,7 @@ async function sendViaResend(row: OutboxRow): Promise<{ ok: true; providerId: st
       subject: row.subject,
       text: row.body_text,
       html: row.body_html ?? undefined,
+      attachments: attachments.length ? attachments : undefined,
       headers: row.related_submittal_id
         ? { "X-Cleard-Submittal": row.related_submittal_id }
         : undefined,
@@ -133,7 +196,8 @@ export const Route = createFileRoute("/api/public/email-outbox/process")({
             .maybeSingle();
           if (!claim.data) continue; // someone else grabbed it
 
-          const result = await sendViaResend(row);
+          const loaded = await loadAttachments(supabaseAdmin, row);
+          const result = loaded.ok ? await sendViaResend(row, loaded.files) : loaded;
           if (result.ok) {
             await (supabaseAdmin.from("email_outbox" as any) as any)
               .update({

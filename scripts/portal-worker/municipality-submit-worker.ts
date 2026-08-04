@@ -20,7 +20,7 @@
 //      optional MUNICIPALITY_SLUG (default 'plantation'), WORKER_NAME, HEADFUL=1.
 
 import { createDecipheriv } from "node:crypto";
-import { mkdtemp, writeFile } from "node:fs/promises";
+import { mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
@@ -76,7 +76,13 @@ async function logEvent(
   });
 }
 
-/** Portal credentials for this permit's GC, from the existing encrypted store. */
+/**
+ * Portal credentials for this permit's GC, from the existing encrypted store.
+ *
+ * The login must be attributable to the permit: its creator first, otherwise the permit's
+ * tenant when that tenant has exactly one login for the municipality. Filing under some
+ * other contractor's account is worse than not filing, so anything ambiguous throws.
+ */
 async function portalCredentials(admin: SupabaseClient, permitId: string, slug: string) {
   const { data: permit, error } = await admin
     .from("permits")
@@ -85,22 +91,54 @@ async function portalCredentials(admin: SupabaseClient, permitId: string, slug: 
     .maybeSingle();
   if (error) throw error;
 
-  let query = admin
-    .from("gc_portal_logins")
-    .select("username_ciphertext, password_ciphertext, user_id")
-    .eq("municipality_slug", slug);
-  if (permit?.created_by) query = query.eq("user_id", permit.created_by);
+  const base = () =>
+    admin
+      .from("gc_portal_logins")
+      .select("username_ciphertext, password_ciphertext, user_id, tenant_id")
+      .eq("municipality_slug", slug);
 
-  const { data, error: credErr } = await query.limit(1).maybeSingle();
-  if (credErr) throw credErr;
-  if (!data) {
+  type Login = {
+    username_ciphertext: string;
+    password_ciphertext: string;
+    user_id: string | null;
+    tenant_id: string | null;
+  };
+  let login: Login | null = null;
+
+  if (permit?.created_by) {
+    const { data, error: credErr } = await base().eq("user_id", permit.created_by).limit(2);
+    if (credErr) throw credErr;
+    const rows = (data ?? []) as Login[];
+    if (rows.length === 0) {
+      throw new Error(
+        `no stored ${slug} portal login for the contractor who created this permit — save one under Building Dept Logins`,
+      );
+    }
+    login = rows[0];
+  } else if (permit?.tenant_id) {
+    const { data, error: credErr } = await base().eq("tenant_id", permit.tenant_id).limit(2);
+    if (credErr) throw credErr;
+    const rows = (data ?? []) as Login[];
+    if (rows.length === 0) {
+      throw new Error(
+        `no stored ${slug} portal login for this permit's contractor account — save one under Building Dept Logins`,
+      );
+    }
+    if (rows.length > 1) {
+      throw new Error(
+        `this permit has no creator on record and its account has several ${slug} logins — set permits.created_by so the filing account is unambiguous`,
+      );
+    }
+    login = rows[0];
+  } else {
     throw new Error(
-      `no stored ${slug} portal login for this permit's GC — save one under Building Dept Logins`,
+      "permit has neither a creator nor a tenant — refusing to guess which portal login to file under",
     );
   }
+
   return {
-    username: decryptSecret(data.username_ciphertext as string),
-    password: decryptSecret(data.password_ciphertext as string),
+    username: decryptSecret(login.username_ciphertext),
+    password: decryptSecret(login.password_ciphertext),
   };
 }
 
@@ -242,19 +280,32 @@ async function acaSubmit(page: Page) {
 // --- job runner ------------------------------------------------------------
 
 async function runJob(admin: SupabaseClient, sub: Submission) {
-  if (!sub.approved_by) throw new Error(`submission ${sub.id} has no approver — refusing to file`);
-  const portalUrl = sub.draft?.municipality?.portal_url;
-  const fields = sub.draft?.portal_fields ?? {};
-  const documents = sub.draft?.documents ?? [];
-  if (!portalUrl) throw new Error("draft has no portal_url");
+  // Everything after the claim runs inside the failure handler: the row is already
+  // 'submitting', so any error here — a missing portal_url, an unattributable login, a
+  // browser that will not start — has to release the claim rather than wedge the filing.
+  let browser: Awaited<ReturnType<typeof chromium.launch>> | null = null;
+  let context: Awaited<ReturnType<NonNullable<typeof browser>["newContext"]>> | null = null;
+  let page: Page | null = null;
+  let tempDir: string | null = null;
 
-  const creds = await portalCredentials(admin, sub.permit_id, sub.municipality_slug);
-  const { files } = await downloadDocuments(admin, documents);
-
-  const browser = await chromium.launch({ headless: !process.env.HEADFUL });
-  const context = await browser.newContext({ acceptDownloads: true });
-  const page = await context.newPage();
   try {
+    if (!sub.approved_by) {
+      throw new Error(`submission ${sub.id} has no approver — refusing to file`);
+    }
+    const portalUrl = sub.draft?.municipality?.portal_url;
+    const fields = sub.draft?.portal_fields ?? {};
+    const documents = sub.draft?.documents ?? [];
+    if (!portalUrl) throw new Error("draft has no portal_url");
+
+    const creds = await portalCredentials(admin, sub.permit_id, sub.municipality_slug);
+    const downloaded = await downloadDocuments(admin, documents);
+    tempDir = downloaded.dir;
+    const files = downloaded.files;
+
+    browser = await chromium.launch({ headless: !process.env.HEADFUL });
+    context = await browser.newContext({ acceptDownloads: true });
+    page = await context.newPage();
+
     await acaLogin(page, portalUrl, creds.username, creds.password);
     await logEvent(admin, sub.id, "portal_logged_in", { portal_url: portalUrl });
 
@@ -274,6 +325,9 @@ async function runJob(admin: SupabaseClient, sub: Submission) {
         .eq("id", sub.id);
       await logEvent(admin, sub.id, "dry_run_stopped_before_submit", { screenshot: path });
       console.log(`[dry-run] stopped before Submit; review page captured at ${path}`);
+      // Releasing the row makes it immediately re-claimable, so a polling worker would walk
+      // the portal again every cycle. One practice run per submission per process.
+      dryRunDone.add(sub.id);
       return;
     }
 
@@ -332,7 +386,7 @@ async function runJob(admin: SupabaseClient, sub: Submission) {
     console.log(`submitted ${sub.id}${confirmation ? ` → ${confirmation}` : ""}`);
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
-    const shot = await page.screenshot({ fullPage: true }).catch(() => null);
+    const shot = page ? await page.screenshot({ fullPage: true }).catch(() => null) : null;
     const path = shot ? await uploadReceipt(admin, sub, shot, "failure") : null;
     await admin
       .from("municipality_submissions")
@@ -347,10 +401,15 @@ async function runJob(admin: SupabaseClient, sub: Submission) {
     );
     console.error(`job ${sub.id} failed: ${message}`);
   } finally {
-    await context.close();
-    await browser.close();
+    if (context) await context.close().catch(() => {});
+    if (browser) await browser.close().catch(() => {});
+    // The downloaded application package is customer data; it does not stay on the worker.
+    if (tempDir) await rm(tempDir, { recursive: true, force: true }).catch(() => {});
   }
 }
+
+/** Submissions already practice-run in this process, so --dry-run does not loop. */
+const dryRunDone = new Set<string>();
 
 async function uploadReceipt(admin: SupabaseClient, sub: Submission, bytes: Buffer, kind: string) {
   const path = `permits/${sub.permit_id}/submissions/${sub.id}-${kind}-${Date.now()}.png`;
@@ -404,16 +463,29 @@ async function main() {
   const admin = createClient(SUPABASE_URL, SERVICE_KEY, { auth: { persistSession: false } });
 
   for (;;) {
-    const job = await claim(admin);
-    if (job) {
-      console.log(
-        `claimed ${job.id} (permit ${job.permit_id}, approved by ${job.approved_by})${
-          DRY_RUN ? " [dry-run]" : ""
-        }`,
-      );
-      await runJob(admin, job);
-    } else if (ONCE) {
-      console.log("no approved portal submissions waiting");
+    // A claim or job failure must never end the process: the next poll has to keep serving
+    // the other approved filings.
+    try {
+      const job = await claim(admin);
+      if (job && DRY_RUN && dryRunDone.has(job.id)) {
+        // Already practice-run here; releasing it again would just re-walk the portal.
+        await admin
+          .from("municipality_submissions")
+          .update({ status: "approved", claimed_at: null, claimed_by: null })
+          .eq("id", job.id);
+        console.log(`[dry-run] ${job.id} already exercised in this run — skipping`);
+      } else if (job) {
+        console.log(
+          `claimed ${job.id} (permit ${job.permit_id}, approved by ${job.approved_by})${
+            DRY_RUN ? " [dry-run]" : ""
+          }`,
+        );
+        await runJob(admin, job);
+      } else if (ONCE) {
+        console.log("no approved portal submissions waiting");
+      }
+    } catch (err) {
+      console.error(`worker cycle failed: ${err instanceof Error ? err.message : String(err)}`);
     }
     if (ONCE) return;
     await new Promise((r) => setTimeout(r, POLL_MS));

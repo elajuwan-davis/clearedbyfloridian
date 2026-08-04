@@ -467,3 +467,87 @@ $$;
 -- Worker-only: never granted to authenticated, so no browser can claim a filing job.
 REVOKE ALL ON FUNCTION public.claim_municipality_submission(text, text) FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION public.claim_municipality_submission(text, text) TO service_role;
+
+-- ---------------------------------------------------------------------------
+-- Email channel: 'submitted' means the building department actually received it
+--
+-- The edge function only queues the email (with the application package as
+-- permit-files attachments) and leaves the submission in 'submitting'. The outbox
+-- dispatcher's own result promotes it: sent -> submitted, failed -> failed. Without this,
+-- a queued-but-undeliverable email would read as a filed permit.
+-- ---------------------------------------------------------------------------
+
+CREATE OR REPLACE FUNCTION public.tg_email_outbox_submission_result()
+RETURNS trigger
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+  v_sub public.municipality_submissions;
+BEGIN
+  IF NEW.status = OLD.status THEN
+    RETURN NEW;
+  END IF;
+
+  SELECT * INTO v_sub FROM public.municipality_submissions
+   WHERE email_outbox_id = NEW.id AND channel = 'email'
+   ORDER BY created_at DESC LIMIT 1;
+  IF NOT FOUND THEN
+    RETURN NEW;
+  END IF;
+
+  IF NEW.status = 'sent' THEN
+    UPDATE public.municipality_submissions
+       SET status = 'submitted', submitted_at = COALESCE(NEW.sent_at, now()), last_error = NULL
+     WHERE id = v_sub.id AND status <> 'submitted';
+
+    INSERT INTO public.municipality_submission_events
+      (submission_id, event_type, actor_label, detail)
+    VALUES (v_sub.id, 'email_delivered', 'email dispatcher',
+            jsonb_build_object('outbox_id', NEW.id, 'provider_message_id', NEW.provider_message_id));
+
+    UPDATE public.permits SET status = 'submitted' WHERE id = v_sub.permit_id;
+
+    INSERT INTO public.activity_events
+      (tenant_id, permit_id, event_type, actor_label, summary, details)
+    VALUES (v_sub.tenant_id, v_sub.permit_id, 'municipality_submitted', 'email dispatcher',
+            format('Application emailed to %s', NEW.to_email),
+            jsonb_build_object('submission_id', v_sub.id, 'outbox_id', NEW.id));
+
+    INSERT INTO public.notifications (user_id, kind, title, body, permit_id)
+    SELECT ur.user_id, 'municipality_submission',
+           format('Application emailed to %s', NEW.to_email),
+           'The building department received the application package by email.',
+           v_sub.permit_id
+      FROM public.user_roles ur WHERE ur.role = 'admin';
+
+  ELSIF NEW.status = 'failed' THEN
+    UPDATE public.municipality_submissions
+       SET status = 'failed',
+           last_error = COALESCE(NEW.error, 'email delivery failed'),
+           claimed_at = NULL, claimed_by = NULL
+     WHERE id = v_sub.id;
+
+    INSERT INTO public.municipality_submission_events
+      (submission_id, event_type, actor_label, detail)
+    VALUES (v_sub.id, 'failed', 'email dispatcher',
+            jsonb_build_object('outbox_id', NEW.id, 'reason', NEW.error));
+
+    INSERT INTO public.notifications (user_id, kind, title, body, permit_id)
+    SELECT ur.user_id, 'municipality_submission',
+           'Emailed permit application could not be delivered',
+           COALESCE(NEW.error, 'email delivery failed') ||
+             ' — nothing was filed; the approval is still on record and can be retried.',
+           v_sub.permit_id
+      FROM public.user_roles ur WHERE ur.role = 'admin';
+  END IF;
+
+  RETURN NEW;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS trg_email_outbox_submission_result ON public.email_outbox;
+CREATE TRIGGER trg_email_outbox_submission_result
+  AFTER UPDATE OF status ON public.email_outbox
+  FOR EACH ROW EXECUTE FUNCTION public.tg_email_outbox_submission_result();

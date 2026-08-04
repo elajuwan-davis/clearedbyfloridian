@@ -39,9 +39,14 @@ type Props = {
    * that card's job — it drafts and waits for staff approval — so this only scrolls.
    */
   onSubmitToMunicipality?: () => void;
+  /**
+   * Fired whenever this gate learns the current verdict, so the municipality submission
+   * card below reflects a re-run without a page reload.
+   */
+  onVerdict?: (status: PreSubmissionReport["status"] | null) => void;
 };
 
-export function PreSubmissionGate({ permit, onSubmitToMunicipality }: Props) {
+export function PreSubmissionGate({ permit, onSubmitToMunicipality, onVerdict }: Props) {
   const { isAdmin, loading } = useSession();
   const [report, setReport] = useState<PreSubmissionReport | null>(null);
   const [sigs, setSigs] = useState<SignatureRequestRow[]>([]);
@@ -57,7 +62,8 @@ export function PreSubmissionGate({ permit, onSubmitToMunicipality }: Props) {
     ]);
     setReport(r);
     setSigs(s);
-  }, [permit.id]);
+    onVerdict?.(r?.status ?? null);
+  }, [permit.id, onVerdict]);
 
   useEffect(() => {
     void refresh();
@@ -80,6 +86,7 @@ export function PreSubmissionGate({ permit, onSubmitToMunicipality }: Props) {
       }
       const result = await runPreSubmissionCheck(permit.id);
       setReport(result);
+      onVerdict?.(result.status);
       await refresh();
       toast[result.status === "pass" ? "success" : "warning"](
         result.status === "pass"
