@@ -12,12 +12,21 @@
 //   ACA_USER / ACA_PASS  — credentials it accepts (default aca-user / aca-pass)
 //   ACA_NO_RECORD_NUMBER=1 — return a receipt with no readable record number
 //
+// It also serves the record-status side used by the Agent 6 poller: a record search, the
+// record page carrying "Record Status: ...", and a downloadable corrections letter.
+//   ACA_RECORD_NUMBER   — the record the search knows about (default 26BLD-004512)
+//   ACA_RECORD_STATUS   — what the record page reports (default "Plan Review")
+//   ACA_CORRECTIONS=1   — record page links a plan-review corrections letter
+//
 // State is a single in-process application, which is all one worker run needs.
 
 const PORT = Number(Deno.env.get("PORT") ?? 54340);
 const USER = Deno.env.get("ACA_USER") ?? "aca-user";
 const PASS = Deno.env.get("ACA_PASS") ?? "aca-pass";
 const NO_RECORD_NUMBER = Deno.env.get("ACA_NO_RECORD_NUMBER") === "1";
+const RECORD_NUMBER = Deno.env.get("ACA_RECORD_NUMBER") ?? "26BLD-004512";
+const RECORD_STATUS = Deno.env.get("ACA_RECORD_STATUS") ?? "Plan Review";
+const CORRECTIONS = Deno.env.get("ACA_CORRECTIONS") === "1";
 
 const submitted: Record<string, unknown> = {};
 const uploads: string[] = [];
@@ -55,11 +64,47 @@ function handleLoginPost(form: URLSearchParams): string {
   if (form.get("LoginName") !== USER || form.get("Password") !== PASS) {
     return page("Login", "<div>Invalid login or password.</div>");
   }
-  return page(
-    "Account",
-    `<a href="/CitizenAccess/Create.aspx" id="ctl00_linkCreate">Create an Application</a>`,
-  );
+  return page("Account", accountBody());
 }
+
+/** The logged-in landing page: create an application, or look one up by record number. */
+const accountBody = () =>
+  `<a href="/CitizenAccess/Create.aspx" id="ctl00_linkCreate">Create an Application</a>
+   <form method="POST" action="/CitizenAccess/Search.aspx">
+     <input type="text" name="searchNumber"
+            id="ctl00_PlaceHolderMain_generalSearchForm_txtGSPermitNumber" />
+     <a href="#" id="ctl00_PlaceHolderMain_btnNewSearch"
+        onclick="document.forms[0].submit();return false;">Search</a>
+   </form>`;
+
+const searchResults = (query: string) =>
+  page(
+    "Search Results",
+    query.trim() && RECORD_NUMBER.toLowerCase().includes(query.trim().toLowerCase())
+      ? `<table><tr><td><a href="/CitizenAccess/Record.aspx?id=${RECORD_NUMBER}">${RECORD_NUMBER}</a></td>
+           <td>Building Permit</td></tr></table>`
+      : `<div>No records found matching your search.</div>`,
+  );
+
+const recordPage = () =>
+  page(
+    "Record",
+    `<h2>Record ${RECORD_NUMBER}:</h2>
+     <div>Commercial Interior Buildout</div>
+     <div>Record Status: ${RECORD_STATUS}</div>
+     <div>Date Submitted: 07/25/2026</div>
+     ${
+       CORRECTIONS
+         ? `<a href="/CitizenAccess/CorrectionLetter.pdf"
+              id="ctl00_PlaceHolderMain_lnkCorrections">Plan Review Comments (2)</a>`
+         : ""
+     }`,
+  );
+
+// Smallest thing a PDF reader will accept; the poller only stores the bytes.
+const CORRECTION_PDF = new TextEncoder().encode(
+  "%PDF-1.4\n1 0 obj<</Type/Catalog>>endobj\ntrailer<</Root 1 0 R>>\n%%EOF\n",
+);
 
 const disclaimer = () =>
   page(
@@ -146,6 +191,15 @@ Deno.serve({ port: PORT }, async (req) => {
   const html = (body: string) => new Response(body, { headers: { "Content-Type": "text/html" } });
 
   if (req.method === "GET") {
+    if (url.pathname === "/CitizenAccess/CorrectionLetter.pdf") {
+      return new Response(CORRECTION_PDF, {
+        headers: {
+          "Content-Type": "application/pdf",
+          "Content-Disposition": 'attachment; filename="corrections-26BLD-004512.pdf"',
+        },
+      });
+    }
+    if (url.pathname === "/CitizenAccess/Record.aspx") return html(recordPage());
     const route = routes[url.pathname];
     if (route) return html(route(new URLSearchParams()));
     if (url.pathname === "/CitizenAccess/Create.aspx") return html(disclaimer());
@@ -173,6 +227,8 @@ Deno.serve({ port: PORT }, async (req) => {
   switch (url.pathname) {
     case "/CitizenAccess/Login.aspx":
       return html(handleLoginPost(new URLSearchParams([...form].map(([k, v]) => [k, String(v)]))));
+    case "/CitizenAccess/Search.aspx":
+      return html(searchResults(get("searchNumber") ?? ""));
     case "/CitizenAccess/Types.aspx":
       return html(recordTypes());
     case "/CitizenAccess/Address.aspx":

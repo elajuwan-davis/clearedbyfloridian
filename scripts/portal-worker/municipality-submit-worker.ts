@@ -19,19 +19,25 @@
 // Env: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, APP_USER_CONNECTION_KEY_SECRET,
 //      optional MUNICIPALITY_SLUG (default 'plantation'), WORKER_NAME, HEADFUL=1.
 
-import { createDecipheriv } from "node:crypto";
 import { mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { chromium, type Page } from "playwright";
 import { extractConfirmationNumber } from "../../supabase/functions/_shared/submission-draft.ts";
+import {
+  BUCKET,
+  acaLogin,
+  claimOne,
+  notifyStaff,
+  portalCredentials,
+  uploadBytes,
+} from "./shared.ts";
 
 const SUPABASE_URL = process.env.SUPABASE_URL ?? "";
 const SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY ?? "";
 const SLUG = process.env.MUNICIPALITY_SLUG ?? "plantation";
 const WORKER = process.env.WORKER_NAME ?? `portal-worker-${process.pid}`;
-const BUCKET = "permit-files";
 const DRY_RUN = process.argv.includes("--dry-run");
 const ONCE = process.argv.includes("--once");
 const POLL_MS = Number(process.env.POLL_MS ?? 30_000);
@@ -52,24 +58,6 @@ type Submission = {
   };
 };
 
-function decryptSecret(stored: string): string {
-  const raw = process.env.APP_USER_CONNECTION_KEY_SECRET;
-  if (!raw) throw new Error("APP_USER_CONNECTION_KEY_SECRET is not set");
-  const key = Buffer.from(raw, "base64");
-  // Say which input is wrong rather than letting node throw about key lengths, and never
-  // put the key itself in the message.
-  if (key.length !== 32) {
-    throw new Error(
-      `APP_USER_CONNECTION_KEY_SECRET must be 32 bytes of base64 (got ${key.length})`,
-    );
-  }
-  const buf = Buffer.from(stored, "base64");
-  if (buf.length <= 28) throw new Error("stored credential is truncated or not base64");
-  const decipher = createDecipheriv("aes-256-gcm", key, buf.subarray(0, 12));
-  decipher.setAuthTag(buf.subarray(12, 28));
-  return Buffer.concat([decipher.update(buf.subarray(28)), decipher.final()]).toString("utf8");
-}
-
 async function logEvent(
   admin: SupabaseClient,
   submissionId: string,
@@ -82,72 +70,6 @@ async function logEvent(
     actor_label: WORKER,
     detail,
   });
-}
-
-/**
- * Portal credentials for this permit's GC, from the existing encrypted store.
- *
- * The login must be attributable to the permit: its creator first, otherwise the permit's
- * tenant when that tenant has exactly one login for the municipality. Filing under some
- * other contractor's account is worse than not filing, so anything ambiguous throws.
- */
-async function portalCredentials(admin: SupabaseClient, permitId: string, slug: string) {
-  const { data: permit, error } = await admin
-    .from("permits")
-    .select("created_by, tenant_id")
-    .eq("id", permitId)
-    .maybeSingle();
-  if (error) throw error;
-
-  const base = () =>
-    admin
-      .from("gc_portal_logins")
-      .select("username_ciphertext, password_ciphertext, user_id, tenant_id")
-      .eq("municipality_slug", slug);
-
-  type Login = {
-    username_ciphertext: string;
-    password_ciphertext: string;
-    user_id: string | null;
-    tenant_id: string | null;
-  };
-  let login: Login | null = null;
-
-  if (permit?.created_by) {
-    const { data, error: credErr } = await base().eq("user_id", permit.created_by).limit(2);
-    if (credErr) throw credErr;
-    const rows = (data ?? []) as Login[];
-    if (rows.length === 0) {
-      throw new Error(
-        `no stored ${slug} portal login for the contractor who created this permit — save one under Building Dept Logins`,
-      );
-    }
-    login = rows[0];
-  } else if (permit?.tenant_id) {
-    const { data, error: credErr } = await base().eq("tenant_id", permit.tenant_id).limit(2);
-    if (credErr) throw credErr;
-    const rows = (data ?? []) as Login[];
-    if (rows.length === 0) {
-      throw new Error(
-        `no stored ${slug} portal login for this permit's contractor account — save one under Building Dept Logins`,
-      );
-    }
-    if (rows.length > 1) {
-      throw new Error(
-        `this permit has no creator on record and its account has several ${slug} logins — set permits.created_by so the filing account is unambiguous`,
-      );
-    }
-    login = rows[0];
-  } else {
-    throw new Error(
-      "permit has neither a creator nor a tenant — refusing to guess which portal login to file under",
-    );
-  }
-
-  return {
-    username: decryptSecret(login.username_ciphertext),
-    password: decryptSecret(login.password_ciphertext),
-  };
 }
 
 async function downloadDocuments(
@@ -166,32 +88,10 @@ async function downloadDocuments(
   return { dir, files };
 }
 
-// --- Accela Citizen Access driver ------------------------------------------
+// --- Accela Citizen Access application wizard -------------------------------
 //
-// ACA installs share the same page structure across cities (the control ids are
-// generated by Accela, not by Plantation), so the selectors below are ACA-generic with a
-// text fallback. Every step fails loudly rather than clicking blindly, because a wrong
-// click here is a real filing.
-
-async function acaLogin(page: Page, portalUrl: string, username: string, password: string) {
-  await page.goto(portalUrl, { waitUntil: "domcontentloaded" });
-  const loginLink = page.getByRole("link", { name: /login|sign in/i }).first();
-  if (await loginLink.count()) await loginLink.click().catch(() => {});
-  await page.fill(
-    'input[id*="LoginName"], input[name*="LoginName"], input[type="email"]',
-    username,
-  );
-  await page.fill('input[id*="Password"], input[type="password"]', password);
-  await Promise.all([
-    page.waitForLoadState("domcontentloaded"),
-    page.click('a[id*="Login"], input[type="submit"][value*="Login" i], button:has-text("Login")'),
-  ]);
-  const failed = await page
-    .locator("text=/invalid (login|user)|incorrect password/i")
-    .count()
-    .catch(() => 0);
-  if (failed) throw new Error("portal rejected the stored credentials");
-}
+// The login lives in shared.ts (Agent 6's poller needs the same one). Every step below
+// fails loudly rather than clicking blindly, because a wrong click here is a real filing.
 
 async function acaFillApplication(
   page: Page,
@@ -386,6 +286,7 @@ async function runJob(admin: SupabaseClient, sub: Submission) {
     await notifyStaff(
       admin,
       sub.permit_id,
+      "municipality_submission",
       `Filed with ${sub.draft?.municipality?.city_name ?? sub.municipality_slug}`,
       confirmation
         ? `Confirmation number ${confirmation}.`
@@ -404,6 +305,7 @@ async function runJob(admin: SupabaseClient, sub: Submission) {
     await notifyStaff(
       admin,
       sub.permit_id,
+      "municipality_submission",
       `Portal submission failed — ${sub.draft?.municipality?.city_name ?? sub.municipality_slug}`,
       `${message} (nothing was filed; the approval is still on record and can be retried)`,
     );
@@ -419,42 +321,16 @@ async function runJob(admin: SupabaseClient, sub: Submission) {
 /** Submissions already practice-run in this process, so --dry-run does not loop. */
 const dryRunDone = new Set<string>();
 
-async function uploadReceipt(admin: SupabaseClient, sub: Submission, bytes: Buffer, kind: string) {
+function uploadReceipt(admin: SupabaseClient, sub: Submission, bytes: Buffer, kind: string) {
   const path = `permits/${sub.permit_id}/submissions/${sub.id}-${kind}-${Date.now()}.png`;
-  const { error } = await admin.storage
-    .from(BUCKET)
-    .upload(path, bytes, { contentType: "image/png", upsert: true });
-  if (error) {
-    console.warn(`receipt upload failed: ${error.message}`);
-    return null;
-  }
-  return path;
-}
-
-async function notifyStaff(admin: SupabaseClient, permitId: string, title: string, body: string) {
-  const { data } = await admin.from("user_roles").select("user_id").eq("role", "admin");
-  const rows = (data ?? []) as Array<{ user_id: string }>;
-  if (rows.length === 0) return;
-  await admin.from("notifications").insert(
-    rows.map((r) => ({
-      user_id: r.user_id,
-      kind: "municipality_submission",
-      title,
-      body,
-      permit_id: permitId,
-    })),
-  );
+  return uploadBytes(admin, path, bytes, "image/png");
 }
 
 async function claim(admin: SupabaseClient): Promise<Submission | null> {
-  const { data, error } = await admin.rpc("claim_municipality_submission", {
+  const job = await claimOne<Submission>(admin, "claim_municipality_submission", {
     _worker: WORKER,
     _slug: SLUG,
   });
-  if (error) throw error;
-  // SETOF: zero rows means no approved work. Never act on a row without an id.
-  const rows = (Array.isArray(data) ? data : data ? [data] : []) as Submission[];
-  const job = rows.find((r) => Boolean(r?.id));
   if (!job) return null;
   if (job.status !== "submitting" || !job.approved_by) {
     throw new Error(
@@ -501,7 +377,7 @@ async function main() {
 }
 
 // Exported for the driver unit tests; only runs the loop when invoked directly.
-export { acaLogin, acaFillApplication, acaSubmit, decryptSecret };
+export { acaFillApplication, acaSubmit };
 
 if (process.argv[1]?.endsWith("municipality-submit-worker.ts")) {
   await main();

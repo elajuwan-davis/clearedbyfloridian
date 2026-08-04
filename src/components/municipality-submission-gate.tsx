@@ -22,6 +22,11 @@ import {
   type MunicipalitySubmission,
   type SubmissionEvent,
 } from "@/lib/municipality-submit";
+import {
+  listCorrectionNotices,
+  correctionNoticeUrl,
+  type CorrectionNotice,
+} from "@/lib/permit-status";
 
 type Props = {
   permitId: string;
@@ -33,6 +38,7 @@ export function MunicipalitySubmissionGate({ permitId, preSubmissionPassed }: Pr
   const { isAdmin, loading } = useSession();
   const [submission, setSubmission] = useState<MunicipalitySubmission | null>(null);
   const [events, setEvents] = useState<SubmissionEvent[]>([]);
+  const [notices, setNotices] = useState<CorrectionNotice[]>([]);
   const [busy, setBusy] = useState(false);
   const [note, setNote] = useState("");
 
@@ -40,6 +46,7 @@ export function MunicipalitySubmissionGate({ permitId, preSubmissionPassed }: Pr
     const row = await loadLatestSubmission(permitId).catch(() => null);
     setSubmission(row);
     setEvents(row ? await listSubmissionEvents(row.id).catch(() => []) : []);
+    setNotices(await listCorrectionNotices(permitId).catch(() => []));
   }, [permitId]);
 
   useEffect(() => {
@@ -223,6 +230,49 @@ export function MunicipalitySubmissionGate({ permitId, preSubmissionPassed }: Pr
         <div className="mt-3 flex gap-2 rounded-[3px] border border-red-200 bg-red-50 p-2 text-xs text-red-900">
           <AlertTriangle className="h-4 w-4 shrink-0" />
           {submission.last_error}
+        </div>
+      )}
+
+      {/* Agent 6: what the 4-hourly poll last read off the portal, and anything it found. */}
+      {submission?.status === "submitted" && (
+        <div className="mt-3 rounded-[3px] border border-obsidian/12 bg-parchment/40 p-2 text-xs text-obsidian/75">
+          <span className="font-semibold">Portal status</span>{" "}
+          {submission.portal_status_raw ?? "not read yet"}
+          {submission.portal_status_checked_at && (
+            <span className="text-obsidian/50">
+              {" "}
+              · checked {new Date(submission.portal_status_checked_at).toLocaleString()}
+            </span>
+          )}
+        </div>
+      )}
+
+      {notices.length > 0 && (
+        <div className="mt-3 rounded-[3px] border border-amber-200 bg-amber-50 p-2 text-xs text-amber-900">
+          <div className="font-semibold">Correction notices</div>
+          <ul className="mt-1 space-y-1">
+            {notices.map((n) => (
+              <li key={n.id} className="flex flex-wrap items-center gap-2">
+                <span>{n.notice_label ?? "Correction notice"}</span>
+                <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-amber-800">
+                  {n.status}
+                </span>
+                {n.document_path && (
+                  <button
+                    type="button"
+                    className="underline"
+                    onClick={async () => {
+                      const url = await correctionNoticeUrl(n.document_path!);
+                      if (url) window.open(url, "_blank", "noopener");
+                      else toast.error("Could not open the notice");
+                    }}
+                  >
+                    open
+                  </button>
+                )}
+              </li>
+            ))}
+          </ul>
         </div>
       )}
 
