@@ -182,3 +182,62 @@ replayed event → `duplicate: true` and no second write. `provider_confirmed` a
 SignWell identifier columns are rejected for the `authenticated` role by the ledger
 trigger. pre-submission-check blocks a staff-attested signature ("marked signed but not
 confirmed by SignWell") and passes only once the webhook has confirmed it.
+
+## Agent 5 — municipality-submit + the portal worker
+
+Approval-gate tests need no browser; the portal driver is exercised against
+`fake-aca.ts`, a local stand-in for an Accela Citizen Access install, so nothing is ever
+filed with a real building department.
+
+```bash
+sed '/CREATE EXTENSION IF NOT EXISTS pg_net/d' supabase/migrations/20260805170000_municipality_submit.sql \
+  | docker exec -i cleard-pg psql -v ON_ERROR_STOP=1 -U postgres
+docker exec -i cleard-pg psql -v ON_ERROR_STOP=1 -U postgres < scripts/local-test/seed-agent5.sql
+docker exec -i cleard-pg psql -U postgres -c "notify pgrst, 'reload schema';"
+
+deno test supabase/functions/_shared/submission-draft_test.ts     # draft + confirmation parsing
+
+# pre-submission-check must be reachable, so run it on its own port and point the
+# submitter at it (SUPABASE_FUNCTIONS_URL).
+SUPABASE_URL=http://localhost:54331 SUPABASE_SERVICE_ROLE_KEY="$SERVICE_JWT" \
+SUPABASE_FUNCTIONS_URL=http://localhost:8001 \
+  deno run -A supabase/functions/municipality-submit/index.ts
+
+curl -s -X POST localhost:8000 -H 'Content-Type: application/json' \
+  -d '{"action":"draft","permit_id":"77777777-7777-7777-7777-777777777777"}'   # 409, nothing drafted
+curl -s -X POST localhost:8000 -H 'Content-Type: application/json' \
+  -d '{"action":"draft","permit_id":"66666666-6666-6666-6666-666666666666"}'   # draft_pending_approval
+curl -s -X POST localhost:8000 -H 'Content-Type: application/json' \
+  -d '{"action":"execute","submission_id":"<id>"}'                             # 409 until approved
+```
+
+Approve as a staff member through PostgREST (an `authenticated` JWT whose `sub` has the
+admin role); a GC JWT must be refused:
+
+```bash
+curl -s -X POST http://localhost:54330/rpc/approve_municipality_submission \
+  -H "Authorization: Bearer $STAFF_JWT" -H 'Content-Type: application/json' \
+  -d '{"_submission_id":"<id>","_note":"Reviewed plans + fee"}'
+docker exec cleard-pg psql -U postgres -c "select url, body->>'action' from net.sent_requests;"
+```
+
+Portal worker (Node 22+, `npm run portal-worker`) against the fake ACA:
+
+```bash
+deno run --allow-net --allow-env --allow-read scripts/local-test/fake-aca.ts   # :54340
+docker exec cleard-pg psql -U postgres -c "update public.municipality_submission_targets
+  set portal_url='http://localhost:54340/CitizenAccess/Default.aspx' where slug='plantation';"
+# store aca-user / aca-pass in gc_portal_logins, encrypted with the same AES-256-GCM
+# format src/lib/portal-logins-crypto.server.ts uses, then:
+SUPABASE_URL=http://localhost:54331 SUPABASE_SERVICE_ROLE_KEY="$SERVICE_JWT" \
+APP_USER_CONNECTION_KEY_SECRET="$KEY" npm run portal-worker -- --once [--dry-run]
+```
+
+Observed locally: the worker finds nothing while the draft is unapproved ("no approved
+portal submissions waiting"); after approval it claims the row, logs in with the decrypted
+credentials, uploads all three documents, and records `26BLD-004512` from the receipt.
+`--dry-run` stops before Submit and returns the row to `approved`. With
+`ACA_NO_RECORD_NUMBER=1` the row is `submitted` with no confirmation number and an explicit
+`last_error` instead of an invented one. Wrong stored credentials → `failed`, approval
+retained, staff notified, nothing filed. The email channel (seeded `davie` target) queues
+into `email_outbox` with three attachments only after approval.

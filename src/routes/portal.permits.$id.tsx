@@ -17,6 +17,7 @@ import { SubmittalPackageSection } from "@/components/submittal-package-section"
 import { AdminPermitReviewActions } from "@/components/admin-permit-review-actions";
 import { ServiceFeeInvoicePanel } from "@/components/service-fee-invoice-panel";
 import { PreSubmissionGate } from "@/components/pre-submission-gate";
+import { MunicipalitySubmissionGate } from "@/components/municipality-submission-gate";
 import type { DispatchResult } from "@/lib/dispatch";
 
 
@@ -59,6 +60,9 @@ function PermitDetailPage() {
   const [exportBlob, setExportBlob] = useState<Blob | null>(null);
   const [exportUrl, setExportUrl] = useState<string | null>(null);
   const [driveUploading, setDriveUploading] = useState(false);
+  // Live verdict from the pre-submission gate; the permit row's copy is only the seed, and
+  // goes stale the moment staff re-run the check.
+  const [presubStatus, setPresubStatus] = useState<string | null>(null);
   
 
 
@@ -620,7 +624,13 @@ function PermitDetailPage() {
       {/* Pre-submission completeness gate */}
       <section id="pre-submission" className="mt-10">
         <div className="eyebrow text-obsidian/50 mb-3">Pre-Submission</div>
-        <PreSubmissionGate permit={row} />
+        <PreSubmissionGate permit={row} onVerdict={setPresubStatus} />
+        <div className="mt-4">
+          <MunicipalitySubmissionGate
+            permitId={row.id}
+            preSubmissionPassed={presubStatus === "pass"}
+          />
+        </div>
       </section>
 
       <div className="mt-6">

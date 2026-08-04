@@ -34,11 +34,19 @@ import {
 
 type Props = {
   permit: PermitRow;
-  /** Wired to Agent 5's municipality-submit action once that lands. */
+  /**
+   * Optional shortcut to the municipality submission card below the gate. Submitting is
+   * that card's job — it drafts and waits for staff approval — so this only scrolls.
+   */
   onSubmitToMunicipality?: () => void;
+  /**
+   * Fired whenever this gate learns the current verdict, so the municipality submission
+   * card below reflects a re-run without a page reload.
+   */
+  onVerdict?: (status: PreSubmissionReport["status"] | null) => void;
 };
 
-export function PreSubmissionGate({ permit, onSubmitToMunicipality }: Props) {
+export function PreSubmissionGate({ permit, onSubmitToMunicipality, onVerdict }: Props) {
   const { isAdmin, loading } = useSession();
   const [report, setReport] = useState<PreSubmissionReport | null>(null);
   const [sigs, setSigs] = useState<SignatureRequestRow[]>([]);
@@ -54,7 +62,8 @@ export function PreSubmissionGate({ permit, onSubmitToMunicipality }: Props) {
     ]);
     setReport(r);
     setSigs(s);
-  }, [permit.id]);
+    onVerdict?.(r?.status ?? null);
+  }, [permit.id, onVerdict]);
 
   useEffect(() => {
     void refresh();
@@ -77,6 +86,7 @@ export function PreSubmissionGate({ permit, onSubmitToMunicipality }: Props) {
       }
       const result = await runPreSubmissionCheck(permit.id);
       setReport(result);
+      onVerdict?.(result.status);
       await refresh();
       toast[result.status === "pass" ? "success" : "warning"](
         result.status === "pass"
@@ -160,7 +170,9 @@ export function PreSubmissionGate({ permit, onSubmitToMunicipality }: Props) {
           onClick={() =>
             onSubmitToMunicipality
               ? onSubmitToMunicipality()
-              : toast.message("Municipality submission lands with Agent 5")
+              : document
+                  .getElementById("municipality-submission")
+                  ?.scrollIntoView({ behavior: "smooth" })
           }
         >
           <Send className="h-4 w-4 mr-2" /> Submit to Municipality
