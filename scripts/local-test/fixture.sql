@@ -143,7 +143,9 @@ CREATE TABLE IF NOT EXISTS public.nto_filings (
 
 CREATE TABLE IF NOT EXISTS public.notifications (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id uuid REFERENCES auth.users(id) ON DELETE CASCADE,
+  -- NOT NULL, matching production: a recipient-less notification is rejected there,
+  -- so the harness must reject it too.
+  user_id uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   kind text NOT NULL,
   title text NOT NULL,
   body text,

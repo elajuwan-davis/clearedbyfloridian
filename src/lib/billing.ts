@@ -128,13 +128,14 @@ function rowToInvoice(row: any): Invoice {
     lineItems: [
       {
         id: `${row.id}-fee`,
-        type: "Service Fee",
+        type: "Service Fee" as const,
+
         description: `Cleard service fee — ${projectName}`,
         amountCents: feeCents,
       },
       {
         id: `${row.id}-proc`,
-        type: "Processing Fee",
+        type: "Processing Fee" as const,
         description: "Payment processing fee (2.9% + $0.30)",
         amountCents: processingFeeCents,
       },

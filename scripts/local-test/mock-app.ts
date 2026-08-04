@@ -112,6 +112,7 @@ async function handleStorage(req: Request, url: URL): Promise<Response> {
     .replace("/storage/v1/object/", "")
     .replace(/^authenticated\//, "");
 
+
   // createSignedUrl → { signedURL }
   if (rest.startsWith("sign/")) {
     const key = rest.slice("sign/".length);

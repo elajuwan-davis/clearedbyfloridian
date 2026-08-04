@@ -6,6 +6,8 @@ import { isInternalUser } from "@/lib/is-internal-user";
 import { isEscalatedByName } from "@/lib/staff-ops";
 import { listPermits, updatePermit, permitCompleteness, type PermitRow, type PermitStatus } from "@/lib/permits-api";
 import { syncAllPermits, getLastRun, formatRelative } from "@/lib/permit-sync";
+import { getVendor, isVendorManaged } from "@/lib/project-vendors";
+
 
 type GroupKey = "intake" | "preparing" | "submitted" | "on_hold" | "outsourced" | "issued" | "cancelled";
 
@@ -47,6 +49,8 @@ export function MyPermitsPage() {
   const [lastSync, setLastSync] = useState<string | null>(null);
   const [syncMsg, setSyncMsg] = useState<string | null>(null);
   const [query, setQuery] = useState("");
+  const [management, setManagement] = useState<"all" | "cleared" | "vendor">("all");
+
   const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [open, setOpen] = useState<Record<GroupKey, boolean>>({
     intake: true, preparing: true, submitted: true, on_hold: true, outsourced: true, issued: true, cancelled: false,
@@ -94,9 +98,16 @@ export function MyPermitsPage() {
 
   const filtered = useMemo(() => {
     const q = query.toLowerCase().trim();
-    if (!q) return permits;
-    return permits.filter((p) => `${p.project_name} ${p.job_address} ${p.county ?? ""} ${p.municipality ?? ""}`.toLowerCase().includes(q));
-  }, [permits, query]);
+    let rows = permits;
+    if (management !== "all") {
+      rows = rows.filter((p) =>
+        management === "vendor" ? isVendorManaged(p.project_name) : !isVendorManaged(p.project_name),
+      );
+    }
+    if (!q) return rows;
+    return rows.filter((p) => `${p.project_name} ${p.job_address} ${p.county ?? ""} ${p.municipality ?? ""}`.toLowerCase().includes(q));
+  }, [permits, query, management]);
+
 
   const grouped = useMemo(
     () => GROUPS.map((g) => ({ ...g, items: filtered.filter((p) => g.statuses.includes(p.status)) })),
@@ -131,6 +142,28 @@ export function MyPermitsPage() {
           <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search by project, address, county…" className="block w-full border border-obsidian/15 bg-white pl-9 pr-3 py-2 text-sm text-obsidian placeholder:text-obsidian/40 focus:border-obsidian/40 focus:outline-none rounded-[3px]" />
         </div>
 
+        {/* Management filter — separate Cléared work from vendor record copies. */}
+        <div className="mt-4 inline-flex overflow-hidden rounded-[3px] border border-obsidian/20">
+          {([
+            { key: "cleared", label: "Cléared Managed" },
+            { key: "vendor", label: "Vendor Managed" },
+            { key: "all", label: "All" },
+          ] as const).map((opt) => (
+            <button
+              key={opt.key}
+              type="button"
+              onClick={() => setManagement(opt.key)}
+              className={`px-3 py-2 font-mono text-[10px] uppercase tracking-[0.12em] border-r border-obsidian/15 last:border-r-0 ${
+                management === opt.key ? "bg-obsidian text-paper" : "bg-white text-obsidian/65 hover:bg-paper-warm"
+              }`}
+            >
+              {opt.label}
+            </button>
+          ))}
+        </div>
+
+
+
         {permits.length === 0 && !loading && (
           <div className="mt-10 border border-dashed border-obsidian/20 rounded-[3px] p-12 text-center">
             <FileText className="h-8 w-8 mx-auto text-obsidian/30" strokeWidth={1.5} />
@@ -158,15 +191,23 @@ export function MyPermitsPage() {
                       {g.items.map((p) => {
                         const c = permitCompleteness(p);
                         const issued = p.status === "permit_issued";
+                        const vendor = getVendor(p.project_name);
                         const barColor = c.percent === 100 ? "#16a34a" : c.percent >= 60 ? "#153157" : c.percent >= 30 ? "#d97706" : "#dc2626";
                         return (
-                          <div key={p.id} className="group relative flex flex-col border border-obsidian/10 bg-white hover:border-obsidian/30 transition-colors rounded-[3px]">
+                          <div key={p.id} className={`group relative flex flex-col border bg-white transition-colors rounded-[3px] ${vendor ? "border-slate-300 hover:border-slate-400 bg-slate-50/60" : "border-obsidian/10 hover:border-obsidian/30"}`}>
                             <Link to="/portal/permits/$id" params={{ id: p.id }} className="flex-1 p-4">
                               <div className="flex items-start justify-between gap-2">
                                 <div className="min-w-0 flex-1">
                                   <div className="text-sm font-medium text-obsidian truncate">{p.project_name}</div>
+                                  {vendor && (
+                                    <div className="mt-1 inline-flex items-center border border-slate-400/60 bg-slate-200/70 px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-[0.1em] text-slate-700 rounded-[2px]" title={`Managed by ${vendor} — record copy only`}>
+                                      Vendor Managed · {vendor}
+                                    </div>
+                                  )}
                                   <div className="mt-0.5 text-xs text-obsidian/55 truncate">{p.job_address}</div>
                                 </div>
+
+
                                 <span className="shrink-0 font-mono text-[9px] uppercase tracking-[0.1em] text-obsidian/70 border border-obsidian/15 px-1.5 py-0.5 rounded-[2px]">
                                   {STATUS_LABEL[p.status]}
                                 </span>
@@ -188,16 +229,17 @@ export function MyPermitsPage() {
                                     {p.municipality}
                                   </span>
                                 )}
-                                {c.missingFields.length > 0 && (
+                                {!vendor && c.missingFields.length > 0 && (
                                   <span className="inline-flex items-center gap-1 border border-red-500/40 bg-red-50 px-1.5 py-0.5 text-[9px] font-mono uppercase tracking-[0.1em] text-red-700 rounded-[2px]">
                                     <AlertTriangle className="h-2.5 w-2.5" /> {c.missingFields.length}
                                   </span>
                                 )}
-                                {c.missingDocs.length > 0 && (
+                                {!vendor && c.missingDocs.length > 0 && (
                                   <span className="inline-flex items-center gap-1 border border-amber-500/40 bg-amber-50 px-1.5 py-0.5 text-[9px] font-mono uppercase tracking-[0.1em] text-amber-700 rounded-[2px]">
                                     <FileText className="h-2.5 w-2.5" /> {c.missingDocs.length}
                                   </span>
                                 )}
+
                               </div>
 
                               <div className="mt-4 flex items-center gap-2">

@@ -7,6 +7,8 @@ import { PROJECTS } from "./projects-data";
 import { projectStatusMeta, type ProjectStatus } from "./status-badges";
 import { addNote } from "./project-notes";
 import { triggerForStatusChange } from "./client-notifications";
+import { isVendorManaged } from "./project-vendors";
+
 
 
 const TS_KEY = "cleared.permitSync.timestamps.v1";
@@ -79,9 +81,12 @@ export async function syncAllPermits(): Promise<SyncResult> {
   // Mock: advance ~15% of eligible projects per run (deterministic per run seed).
   const runSeed = Date.now();
   const eligible = PROJECTS.filter((p) => {
+    // Vendor-managed projects are record copies — no automated workflows run on them.
+    if (isVendorManaged(p.name)) return false;
     const current = overrides[p.id] ?? p.status;
     return NEXT[current] !== undefined;
   });
+
 
   // Pick roughly 2–3 for a visible "updated" result.
   const pickCount = Math.min(eligible.length, Math.max(2, Math.floor(eligible.length * 0.1)));

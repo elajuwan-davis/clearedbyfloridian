@@ -30,3 +30,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Deno lockfile for edge functions (regenerated on deploy)
+supabase/functions/deno.lock
+deno.lock
