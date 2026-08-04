@@ -1345,6 +1345,86 @@ export type Database = {
         }
         Relationships: []
       }
+      legal_document_versions: {
+        Row: {
+          change_notes: string | null
+          created_at: string
+          created_by: string | null
+          file_name: string | null
+          file_path: string
+          id: string
+          legal_document_id: string
+          version_label: string
+        }
+        Insert: {
+          change_notes?: string | null
+          created_at?: string
+          created_by?: string | null
+          file_name?: string | null
+          file_path: string
+          id?: string
+          legal_document_id: string
+          version_label: string
+        }
+        Update: {
+          change_notes?: string | null
+          created_at?: string
+          created_by?: string | null
+          file_name?: string | null
+          file_path?: string
+          id?: string
+          legal_document_id?: string
+          version_label?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "legal_document_versions_legal_document_id_fkey"
+            columns: ["legal_document_id"]
+            isOneToOne: false
+            referencedRelation: "legal_documents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      legal_documents: {
+        Row: {
+          created_at: string
+          current_version: string
+          gc_name: string | null
+          id: string
+          name: string
+          notes: string | null
+          signed_at: string | null
+          status: string
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          current_version?: string
+          gc_name?: string | null
+          id?: string
+          name: string
+          notes?: string | null
+          signed_at?: string | null
+          status?: string
+          type: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          current_version?: string
+          gc_name?: string | null
+          id?: string
+          name?: string
+          notes?: string | null
+          signed_at?: string | null
+          status?: string
+          type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       lien_notices: {
         Row: {
           contractor_name: string | null

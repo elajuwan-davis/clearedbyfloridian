@@ -67,3 +67,11 @@ environment problem; do not mass-reformat unrelated files to "fix" lint.
   DBPR checker.
 - Requires migration `supabase/migrations/20260804140000_gc_company_profiles.sql` applied on
   Lovable/Supabase before save/upload works against the hosted DB.
+### Legal Document Library (`/legal`)
+- Live data: `public.legal_documents` + `public.legal_document_versions` with private Storage
+  bucket `legal-documents`. Client API: `src/lib/legal-docs.ts`; signed upload/download via
+  `src/lib/legal-docs.functions.ts`. Admin-only (RLS `is_admin()` + `AdminOnly` UI gate).
+- Versioning mirrors HOA templates (parent `current_version` pointer + child version rows),
+  but each version has a real `file_path` — not a JSONB snapshot.
+- Requires migration `supabase/migrations/20260804150000_legal_documents.sql` applied on
+  Lovable/Supabase before upload/download works against the hosted DB.
