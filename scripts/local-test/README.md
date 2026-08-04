@@ -106,3 +106,38 @@ APP_BASE_URL=http://localhost:54334 ... deno run -A supabase/functions/intake-va
 # no admin recipient -> notified 0 and an explicit console error, no rejected insert
 docker exec -i cleard-pg psql -U postgres -c "delete from public.user_roles where role='admin';"
 ```
+
+## Agent 4 — pre-submission-check
+
+```bash
+psql < scripts/local-test/seed-agent4.sql          # fixtures + service_fee_invoices
+deno run -A scripts/local-test/make-plan-pdfs.ts   # sheet-size + letter-size plan sets
+psql < supabase/migrations/20260805150000_pre_submission_check.sql   # re-run: the RLS policy
+                                                   # needs permit_in_current_tenant from the seed
+
+APP_BASE_URL=http://localhost:54331 SUPABASE_URL=http://localhost:54331 \
+SUPABASE_SERVICE_ROLE_KEY=$(cat /tmp/service.jwt) \
+deno run -A supabase/functions/pre-submission-check/index.ts
+
+# 6666… complete -> pass; 7777… identical but signature still 'sent' -> blocked
+curl -s -X POST http://localhost:8000 -H 'Content-Type: application/json' \
+  -d '{"permit_id":"66666666-6666-6666-6666-666666666666"}'
+curl -s -X POST http://localhost:8000 -H 'Content-Type: application/json' \
+  -d '{"permit_id":"77777777-7777-7777-7777-777777777777"}'
+```
+
+Point a permit's plan doc at `99999999-…/plans.pdf` (letter-size) to see the format
+check reject it, and set `service_fee_invoices.status='pending'` / an unknown licence
+number to see those blocks. The provider-truth guard:
+
+```bash
+# 'provider' from a browser role is rejected; from service_role it is accepted
+psql -c "set role authenticated; insert into public.signature_requests
+  (permit_id, document_name, recipient_email, status, status_source)
+  values ('66666666-6666-6666-6666-666666666666','forged','x@y.com','signed','provider');"
+```
+
+`plans_format` is deterministic (pdf-lib page count + sheet dimensions); the
+claude-haiku-4-5 call is advisory text only and is skipped entirely without
+`LOVABLE_API_KEY`.
+

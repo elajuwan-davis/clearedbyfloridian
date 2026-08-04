@@ -106,7 +106,12 @@ async function storageRead(bucketAndKey: string): Promise<Uint8Array | null> {
 }
 
 async function handleStorage(req: Request, url: URL): Promise<Response> {
-  const rest = url.pathname.replace("/storage/v1/object/", "");
+  // .download() fetches /object/authenticated/<bucket>/<key>; the prefix is not part
+  // of the stored key.
+  const rest = url.pathname
+    .replace("/storage/v1/object/", "")
+    .replace(/^authenticated\//, "");
+
 
   // createSignedUrl → { signedURL }
   if (rest.startsWith("sign/")) {
