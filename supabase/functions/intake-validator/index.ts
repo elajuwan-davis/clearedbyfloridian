@@ -100,15 +100,26 @@ async function checkAddress(permit: PermitRow): Promise<Check> {
         detail: `Address lookup service returned ${resp.status} — jurisdiction unconfirmed.`,
       };
     }
-    const json = (await resp.json()) as { matches?: CensusMatch[] };
+    const json = (await resp.json()) as { matches?: CensusMatch[]; error?: string };
     const match = (json.matches ?? [])[0];
     if (!match) {
-      return {
-        key: "address",
-        label: "Address & jurisdiction",
-        severity: "red",
-        detail: `Address "${address}" did not resolve to a Florida jurisdiction.`,
-      };
+      // The route answers 200 for upstream trouble too, signalling it only through
+      // `error`. A genuine zero-match is red; a service failure degrades to amber
+      // like every other transient path here.
+      const isNoMatch = !json.error || /no match found/i.test(json.error);
+      return isNoMatch
+        ? {
+            key: "address",
+            label: "Address & jurisdiction",
+            severity: "red",
+            detail: `Address "${address}" did not resolve to a Florida jurisdiction.`,
+          }
+        : {
+            key: "address",
+            label: "Address & jurisdiction",
+            severity: "amber",
+            detail: `Address lookup unavailable (${json.error}) — jurisdiction unconfirmed.`,
+          };
     }
 
     const jurisdiction =
@@ -562,9 +573,16 @@ async function notifyStaff(
   const failed = checks.filter((c) => c.severity !== "green");
   const { data: admins } = await supabase.from("user_roles").select("user_id").eq("role", "admin");
   const recipients = ((admins ?? []) as Array<{ user_id: string }>).map((a) => a.user_id);
-  const targets: Array<string | null> = recipients.length > 0 ? recipients : [null];
+  if (recipients.length === 0) {
+    // notifications.user_id is NOT NULL, so there is no recipient-less row to fall
+    // back to — say so loudly instead of writing a row the database will reject.
+    console.error(
+      `intake ${status} on permit ${permit.id} could not be notified: no admin recipients`,
+    );
+    return 0;
+  }
 
-  const rows = targets.map((user_id) => ({
+  const rows = recipients.map((user_id) => ({
     user_id,
     kind: "action_required",
     title: `Intake ${status.toUpperCase()} — ${permit.project_name ?? permit.job_address ?? "New permit"}`,

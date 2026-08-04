@@ -59,3 +59,20 @@ What is real here and what is not:
   from any automated caller.
 - No `LOVABLE_API_KEY` locally, so the model-written summary falls back to the
   deterministic one. The status is identical either way — the model never decides it.
+
+## Degraded-path checks (added after review)
+
+```bash
+# address lookup outage -> amber, not red
+cat > /tmp/outage.ts <<'TS'
+Deno.serve({ port: 54334 }, (req) =>
+  new URL(req.url).pathname === "/api/geocode-census"
+    ? Response.json({ matches: [], error: "Lookup service unreachable." })
+    : Response.json({ license_number: "x", status: "active", expiration: "2030-01-01" }));
+TS
+deno run --allow-net /tmp/outage.ts &
+APP_BASE_URL=http://localhost:54334 ... deno run -A supabase/functions/intake-validator/index.ts
+
+# no admin recipient -> notified 0 and an explicit console error, no rejected insert
+docker exec -i cleard-pg psql -U postgres -c "delete from public.user_roles where role='admin';"
+```

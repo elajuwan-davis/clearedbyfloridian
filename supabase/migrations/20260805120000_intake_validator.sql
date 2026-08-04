@@ -48,7 +48,9 @@ CREATE TABLE IF NOT EXISTS public.municipality_registrations (
 CREATE UNIQUE INDEX IF NOT EXISTS municipality_registrations_unique_idx
   ON public.municipality_registrations (lower(municipality), registration_type);
 
-GRANT SELECT ON public.municipality_registrations TO authenticated;
+-- Staff manage this list from the app; the admin RLS policy below is what actually
+-- restricts writes (a policy cannot grant a privilege the role lacks).
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.municipality_registrations TO authenticated;
 GRANT ALL ON public.municipality_registrations TO service_role;
 ALTER TABLE public.municipality_registrations ENABLE ROW LEVEL SECURITY;
 
@@ -100,7 +102,10 @@ CREATE INDEX IF NOT EXISTS gc_insurance_tenant_coverage_idx
 -- Status is derived, not stored: a STORED generated column over CURRENT_DATE is
 -- rejected by Postgres ("generation expression is not immutable"), so callers read
 -- this view — or compute from expiration_date directly.
-CREATE OR REPLACE VIEW public.gc_insurance_policy_status AS
+-- security_invoker: without it the view runs as its owner and bypasses the
+-- tenant RLS policy on gc_insurance_policies.
+CREATE OR REPLACE VIEW public.gc_insurance_policy_status
+  WITH (security_invoker = true) AS
   SELECT
     p.*,
     CASE
@@ -147,6 +152,9 @@ CREATE TABLE IF NOT EXISTS public.paa_signatures (
   signer_email text NOT NULL,
   signed_at timestamptz NOT NULL DEFAULT now(),
   provider text NOT NULL DEFAULT 'SignWell',
+  -- Who was actually authenticated when the signature was recorded, independent of
+  -- the name/email typed into the dialog.
+  signed_by uuid REFERENCES auth.users(id),
   envelope_id text,
   document_path text,
   revoked_at timestamptz,
@@ -156,23 +164,68 @@ CREATE TABLE IF NOT EXISTS public.paa_signatures (
 CREATE INDEX IF NOT EXISTS paa_signatures_tenant_idx
   ON public.paa_signatures (tenant_id, signed_at DESC);
 
-GRANT SELECT, INSERT ON public.paa_signatures TO authenticated;
+-- Read-only for clients: a signature is a legal record, so it is written through
+-- record_paa_signature() below, which stamps the authenticated user and mints the
+-- envelope id server side instead of trusting whatever the browser sends.
+GRANT SELECT ON public.paa_signatures TO authenticated;
+REVOKE INSERT, UPDATE, DELETE ON public.paa_signatures FROM authenticated;
 GRANT ALL ON public.paa_signatures TO service_role;
 ALTER TABLE public.paa_signatures ENABLE ROW LEVEL SECURITY;
 
-DO $$
+-- Recreated rather than skipped-if-present: an earlier revision of this migration
+-- created it FOR ALL, which is the write path being closed here.
+DROP POLICY IF EXISTS "paa_signatures_tenant_access" ON public.paa_signatures;
+CREATE POLICY "paa_signatures_tenant_access" ON public.paa_signatures
+  FOR SELECT TO authenticated
+  USING (public.is_admin() OR tenant_id = public.current_tenant_id());
+
+-- Sole write path for clients. SECURITY DEFINER so the table itself stays
+-- insert-less for `authenticated`; the signer is auth.uid() and the envelope id is
+-- generated here, so a member cannot mint a signature attributed to someone else's
+-- session or fabricate a provider envelope reference.
+CREATE OR REPLACE FUNCTION public.record_paa_signature(
+  p_version text,
+  p_signer_name text,
+  p_signer_email text,
+  p_provider text DEFAULT 'SignWell'
+)
+RETURNS public.paa_signatures
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+  v_tenant uuid;
+  v_row public.paa_signatures;
 BEGIN
-  IF NOT EXISTS (
-    SELECT 1 FROM pg_policies
-    WHERE schemaname = 'public' AND tablename = 'paa_signatures'
-      AND policyname = 'paa_signatures_tenant_access'
-  ) THEN
-    CREATE POLICY "paa_signatures_tenant_access" ON public.paa_signatures
-      FOR ALL TO authenticated
-      USING (public.is_admin() OR tenant_id = public.current_tenant_id())
-      WITH CHECK (public.is_admin() OR tenant_id = public.current_tenant_id());
+  IF auth.uid() IS NULL THEN
+    RAISE EXCEPTION 'authentication required';
   END IF;
-END $$;
+
+  v_tenant := public.current_tenant_id();
+  IF v_tenant IS NULL THEN
+    RAISE EXCEPTION 'no tenant for current user';
+  END IF;
+
+  INSERT INTO public.paa_signatures (
+    tenant_id, version, signer_name, signer_email, provider, signed_by, envelope_id
+  ) VALUES (
+    v_tenant,
+    p_version,
+    p_signer_name,
+    p_signer_email,
+    COALESCE(p_provider, 'SignWell'),
+    auth.uid(),
+    'SW-' || upper(substr(replace(gen_random_uuid()::text, '-', ''), 1, 8))
+  )
+  RETURNING * INTO v_row;
+
+  RETURN v_row;
+END;
+$$;
+
+REVOKE ALL ON FUNCTION public.record_paa_signature(text, text, text, text) FROM public;
+GRANT EXECUTE ON FUNCTION public.record_paa_signature(text, text, text, text) TO authenticated;
 
 -- ---------------------------------------------------------------------------
 -- 5. Edge function dispatch helpers (pg_net)
