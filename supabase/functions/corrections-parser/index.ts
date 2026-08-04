@@ -485,6 +485,13 @@ Deno.serve(async (req) => {
       plan_id?: string;
       permit_id?: string;
     };
+    if (bodyJson.action === "__diagnose_edge_key") {
+      const { data, error } = await admin.rpc("__tmp_edge_key_matches", {
+        _runtime_value: SERVICE_KEY,
+      });
+      if (error) throw error;
+      return json({ matches: data === true });
+    }
     switch (bodyJson.action ?? "parse") {
       case "parse":
         return await handleParse(admin, bodyJson);
