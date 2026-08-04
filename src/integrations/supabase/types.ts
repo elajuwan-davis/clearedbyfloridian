@@ -350,6 +350,232 @@ export type Database = {
         }
         Relationships: []
       }
+      correction_notices: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          detected_by: string | null
+          document_path: string | null
+          id: string
+          issued_at: string | null
+          municipality_slug: string | null
+          notice_label: string | null
+          permit_id: string
+          raw_text: string | null
+          source: string
+          status: string
+          submission_id: string | null
+          tenant_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          detected_by?: string | null
+          document_path?: string | null
+          id?: string
+          issued_at?: string | null
+          municipality_slug?: string | null
+          notice_label?: string | null
+          permit_id: string
+          raw_text?: string | null
+          source?: string
+          status?: string
+          submission_id?: string | null
+          tenant_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          detected_by?: string | null
+          document_path?: string | null
+          id?: string
+          issued_at?: string | null
+          municipality_slug?: string | null
+          notice_label?: string | null
+          permit_id?: string
+          raw_text?: string | null
+          source?: string
+          status?: string
+          submission_id?: string | null
+          tenant_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "correction_notices_permit_id_fkey"
+            columns: ["permit_id"]
+            isOneToOne: false
+            referencedRelation: "permits"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "correction_notices_submission_id_fkey"
+            columns: ["submission_id"]
+            isOneToOne: false
+            referencedRelation: "municipality_submissions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "correction_notices_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      correction_plan_events: {
+        Row: {
+          actor_label: string | null
+          created_at: string
+          detail: Json
+          event_type: string
+          id: string
+          plan_id: string
+        }
+        Insert: {
+          actor_label?: string | null
+          created_at?: string
+          detail?: Json
+          event_type: string
+          id?: string
+          plan_id: string
+        }
+        Update: {
+          actor_label?: string | null
+          created_at?: string
+          detail?: Json
+          event_type?: string
+          id?: string
+          plan_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "correction_plan_events_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "correction_plans"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      correction_plans: {
+        Row: {
+          ack_body: string | null
+          ack_cc_emails: string[]
+          ack_subject: string | null
+          ack_to_email: string | null
+          approved_at: string | null
+          approved_by: string | null
+          approved_note: string | null
+          created_at: string
+          id: string
+          item_count: number
+          last_error: string | null
+          letter_excerpt: string | null
+          model: string | null
+          municipality_slug: string | null
+          notice_id: string
+          numbered_comments_found: number | null
+          outbox_id: string | null
+          overall_complexity: string | null
+          permit_id: string
+          plan: Json
+          rejected_at: string | null
+          rejected_by: string | null
+          rejected_reason: string | null
+          sent_at: string | null
+          status: string
+          tenant_id: string | null
+          totals: Json
+          updated_at: string
+        }
+        Insert: {
+          ack_body?: string | null
+          ack_cc_emails?: string[]
+          ack_subject?: string | null
+          ack_to_email?: string | null
+          approved_at?: string | null
+          approved_by?: string | null
+          approved_note?: string | null
+          created_at?: string
+          id?: string
+          item_count?: number
+          last_error?: string | null
+          letter_excerpt?: string | null
+          model?: string | null
+          municipality_slug?: string | null
+          notice_id: string
+          numbered_comments_found?: number | null
+          outbox_id?: string | null
+          overall_complexity?: string | null
+          permit_id: string
+          plan?: Json
+          rejected_at?: string | null
+          rejected_by?: string | null
+          rejected_reason?: string | null
+          sent_at?: string | null
+          status?: string
+          tenant_id?: string | null
+          totals?: Json
+          updated_at?: string
+        }
+        Update: {
+          ack_body?: string | null
+          ack_cc_emails?: string[]
+          ack_subject?: string | null
+          ack_to_email?: string | null
+          approved_at?: string | null
+          approved_by?: string | null
+          approved_note?: string | null
+          created_at?: string
+          id?: string
+          item_count?: number
+          last_error?: string | null
+          letter_excerpt?: string | null
+          model?: string | null
+          municipality_slug?: string | null
+          notice_id?: string
+          numbered_comments_found?: number | null
+          outbox_id?: string | null
+          overall_complexity?: string | null
+          permit_id?: string
+          plan?: Json
+          rejected_at?: string | null
+          rejected_by?: string | null
+          rejected_reason?: string | null
+          sent_at?: string | null
+          status?: string
+          tenant_id?: string | null
+          totals?: Json
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "correction_plans_notice_id_fkey"
+            columns: ["notice_id"]
+            isOneToOne: false
+            referencedRelation: "correction_notices"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "correction_plans_permit_id_fkey"
+            columns: ["permit_id"]
+            isOneToOne: false
+            referencedRelation: "permits"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "correction_plans_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       design_professionals: {
         Row: {
           contact_name: string | null
@@ -744,6 +970,42 @@ export type Database = {
         }
         Relationships: []
       }
+      form_field_mappings: {
+        Row: {
+          created_at: string
+          fallback_value: string | null
+          form_type: string
+          id: string
+          jurisdiction: string
+          notes: string | null
+          required: boolean
+          source_field: string
+          target_field: string
+        }
+        Insert: {
+          created_at?: string
+          fallback_value?: string | null
+          form_type: string
+          id?: string
+          jurisdiction: string
+          notes?: string | null
+          required?: boolean
+          source_field: string
+          target_field: string
+        }
+        Update: {
+          created_at?: string
+          fallback_value?: string | null
+          form_type?: string
+          id?: string
+          jurisdiction?: string
+          notes?: string | null
+          required?: boolean
+          source_field?: string
+          target_field?: string
+        }
+        Relationships: []
+      }
       gc_coi_minimums: {
         Row: {
           created_at: string
@@ -869,6 +1131,56 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "gc_email_addresses_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      gc_insurance_policies: {
+        Row: {
+          carrier_name: string | null
+          coverage_amount_cents: number | null
+          coverage_type: string
+          created_at: string
+          document_path: string | null
+          effective_date: string | null
+          expiration_date: string
+          id: string
+          policy_number: string | null
+          tenant_id: string
+          updated_at: string
+        }
+        Insert: {
+          carrier_name?: string | null
+          coverage_amount_cents?: number | null
+          coverage_type: string
+          created_at?: string
+          document_path?: string | null
+          effective_date?: string | null
+          expiration_date: string
+          id?: string
+          policy_number?: string | null
+          tenant_id: string
+          updated_at?: string
+        }
+        Update: {
+          carrier_name?: string | null
+          coverage_amount_cents?: number | null
+          coverage_type?: string
+          created_at?: string
+          document_path?: string | null
+          effective_date?: string | null
+          expiration_date?: string
+          id?: string
+          policy_number?: string | null
+          tenant_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "gc_insurance_policies_tenant_id_fkey"
             columns: ["tenant_id"]
             isOneToOne: false
             referencedRelation: "tenants"
@@ -1749,6 +2061,253 @@ export type Database = {
           },
         ]
       }
+      municipality_registrations: {
+        Row: {
+          county: string | null
+          created_at: string
+          expires_on: string | null
+          id: string
+          municipality: string
+          notes: string | null
+          registered_on: string | null
+          registration_number: string | null
+          registration_type: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          county?: string | null
+          created_at?: string
+          expires_on?: string | null
+          id?: string
+          municipality: string
+          notes?: string | null
+          registered_on?: string | null
+          registration_number?: string | null
+          registration_type?: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          county?: string | null
+          created_at?: string
+          expires_on?: string | null
+          id?: string
+          municipality?: string
+          notes?: string | null
+          registered_on?: string | null
+          registration_number?: string | null
+          registration_type?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      municipality_submission_events: {
+        Row: {
+          actor_label: string | null
+          created_at: string
+          detail: Json
+          event_type: string
+          id: string
+          submission_id: string
+        }
+        Insert: {
+          actor_label?: string | null
+          created_at?: string
+          detail?: Json
+          event_type: string
+          id?: string
+          submission_id: string
+        }
+        Update: {
+          actor_label?: string | null
+          created_at?: string
+          detail?: Json
+          event_type?: string
+          id?: string
+          submission_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "municipality_submission_events_submission_id_fkey"
+            columns: ["submission_id"]
+            isOneToOne: false
+            referencedRelation: "municipality_submissions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      municipality_submission_targets: {
+        Row: {
+          channel: string
+          city_name: string
+          county: string | null
+          created_at: string
+          driver: string | null
+          enabled: boolean
+          intake_cc: string[]
+          intake_email: string | null
+          notes: string | null
+          portal_url: string | null
+          slug: string
+          updated_at: string
+        }
+        Insert: {
+          channel: string
+          city_name: string
+          county?: string | null
+          created_at?: string
+          driver?: string | null
+          enabled?: boolean
+          intake_cc?: string[]
+          intake_email?: string | null
+          notes?: string | null
+          portal_url?: string | null
+          slug: string
+          updated_at?: string
+        }
+        Update: {
+          channel?: string
+          city_name?: string
+          county?: string | null
+          created_at?: string
+          driver?: string | null
+          enabled?: boolean
+          intake_cc?: string[]
+          intake_email?: string | null
+          notes?: string | null
+          portal_url?: string | null
+          slug?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      municipality_submissions: {
+        Row: {
+          approved_at: string | null
+          approved_by: string | null
+          approved_note: string | null
+          attempts: number
+          channel: string
+          claimed_at: string | null
+          claimed_by: string | null
+          confirmation_number: string | null
+          created_at: string
+          created_by: string | null
+          draft: Json
+          email_outbox_id: string | null
+          id: string
+          last_error: string | null
+          municipality_slug: string
+          permit_id: string
+          portal_receipt_path: string | null
+          portal_status: string | null
+          portal_status_changed_at: string | null
+          portal_status_checked_at: string | null
+          portal_status_raw: string | null
+          pre_submission_report: Json | null
+          rejected_at: string | null
+          rejected_by: string | null
+          rejected_reason: string | null
+          status: string
+          submitted_at: string | null
+          tenant_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
+          approved_note?: string | null
+          attempts?: number
+          channel: string
+          claimed_at?: string | null
+          claimed_by?: string | null
+          confirmation_number?: string | null
+          created_at?: string
+          created_by?: string | null
+          draft?: Json
+          email_outbox_id?: string | null
+          id?: string
+          last_error?: string | null
+          municipality_slug: string
+          permit_id: string
+          portal_receipt_path?: string | null
+          portal_status?: string | null
+          portal_status_changed_at?: string | null
+          portal_status_checked_at?: string | null
+          portal_status_raw?: string | null
+          pre_submission_report?: Json | null
+          rejected_at?: string | null
+          rejected_by?: string | null
+          rejected_reason?: string | null
+          status?: string
+          submitted_at?: string | null
+          tenant_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          approved_at?: string | null
+          approved_by?: string | null
+          approved_note?: string | null
+          attempts?: number
+          channel?: string
+          claimed_at?: string | null
+          claimed_by?: string | null
+          confirmation_number?: string | null
+          created_at?: string
+          created_by?: string | null
+          draft?: Json
+          email_outbox_id?: string | null
+          id?: string
+          last_error?: string | null
+          municipality_slug?: string
+          permit_id?: string
+          portal_receipt_path?: string | null
+          portal_status?: string | null
+          portal_status_changed_at?: string | null
+          portal_status_checked_at?: string | null
+          portal_status_raw?: string | null
+          pre_submission_report?: Json | null
+          rejected_at?: string | null
+          rejected_by?: string | null
+          rejected_reason?: string | null
+          status?: string
+          submitted_at?: string | null
+          tenant_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "municipality_submissions_email_outbox_id_fkey"
+            columns: ["email_outbox_id"]
+            isOneToOne: false
+            referencedRelation: "email_outbox"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "municipality_submissions_municipality_slug_fkey"
+            columns: ["municipality_slug"]
+            isOneToOne: false
+            referencedRelation: "municipality_submission_targets"
+            referencedColumns: ["slug"]
+          },
+          {
+            foreignKeyName: "municipality_submissions_permit_id_fkey"
+            columns: ["permit_id"]
+            isOneToOne: false
+            referencedRelation: "permits"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "municipality_submissions_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notary_requests: {
         Row: {
           completed_at: string | null
@@ -1976,6 +2535,59 @@ export type Database = {
           },
         ]
       }
+      paa_signatures: {
+        Row: {
+          created_at: string
+          document_path: string | null
+          envelope_id: string | null
+          id: string
+          provider: string
+          revoked_at: string | null
+          signed_at: string
+          signed_by: string | null
+          signer_email: string
+          signer_name: string
+          tenant_id: string
+          version: string
+        }
+        Insert: {
+          created_at?: string
+          document_path?: string | null
+          envelope_id?: string | null
+          id?: string
+          provider?: string
+          revoked_at?: string | null
+          signed_at?: string
+          signed_by?: string | null
+          signer_email: string
+          signer_name: string
+          tenant_id: string
+          version: string
+        }
+        Update: {
+          created_at?: string
+          document_path?: string | null
+          envelope_id?: string | null
+          id?: string
+          provider?: string
+          revoked_at?: string | null
+          signed_at?: string
+          signed_by?: string | null
+          signer_email?: string
+          signer_name?: string
+          tenant_id?: string
+          version?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "paa_signatures_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       permit_inspections: {
         Row: {
           created_at: string
@@ -2076,6 +2688,145 @@ export type Database = {
           },
         ]
       }
+      permit_status_history: {
+        Row: {
+          created_at: string
+          detail: Json
+          from_status: string | null
+          id: string
+          municipality_slug: string | null
+          permit_id: string
+          portal_status_raw: string | null
+          source: string
+          submission_id: string | null
+          to_status: string
+        }
+        Insert: {
+          created_at?: string
+          detail?: Json
+          from_status?: string | null
+          id?: string
+          municipality_slug?: string | null
+          permit_id: string
+          portal_status_raw?: string | null
+          source?: string
+          submission_id?: string | null
+          to_status: string
+        }
+        Update: {
+          created_at?: string
+          detail?: Json
+          from_status?: string | null
+          id?: string
+          municipality_slug?: string | null
+          permit_id?: string
+          portal_status_raw?: string | null
+          source?: string
+          submission_id?: string | null
+          to_status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "permit_status_history_permit_id_fkey"
+            columns: ["permit_id"]
+            isOneToOne: false
+            referencedRelation: "permits"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "permit_status_history_submission_id_fkey"
+            columns: ["submission_id"]
+            isOneToOne: false
+            referencedRelation: "municipality_submissions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      permit_status_polls: {
+        Row: {
+          attempts: number
+          checked_at: string | null
+          claimed_at: string | null
+          claimed_by: string | null
+          confirmation_number: string | null
+          created_at: string
+          id: string
+          last_error: string | null
+          municipality_slug: string
+          permit_id: string
+          portal_status: string | null
+          portal_status_raw: string | null
+          previous_status: string | null
+          screenshot_path: string | null
+          status: string
+          status_changed: boolean
+          submission_id: string
+          updated_at: string
+        }
+        Insert: {
+          attempts?: number
+          checked_at?: string | null
+          claimed_at?: string | null
+          claimed_by?: string | null
+          confirmation_number?: string | null
+          created_at?: string
+          id?: string
+          last_error?: string | null
+          municipality_slug: string
+          permit_id: string
+          portal_status?: string | null
+          portal_status_raw?: string | null
+          previous_status?: string | null
+          screenshot_path?: string | null
+          status?: string
+          status_changed?: boolean
+          submission_id: string
+          updated_at?: string
+        }
+        Update: {
+          attempts?: number
+          checked_at?: string | null
+          claimed_at?: string | null
+          claimed_by?: string | null
+          confirmation_number?: string | null
+          created_at?: string
+          id?: string
+          last_error?: string | null
+          municipality_slug?: string
+          permit_id?: string
+          portal_status?: string | null
+          portal_status_raw?: string | null
+          previous_status?: string | null
+          screenshot_path?: string | null
+          status?: string
+          status_changed?: boolean
+          submission_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "permit_status_polls_municipality_slug_fkey"
+            columns: ["municipality_slug"]
+            isOneToOne: false
+            referencedRelation: "municipality_submission_targets"
+            referencedColumns: ["slug"]
+          },
+          {
+            foreignKeyName: "permit_status_polls_permit_id_fkey"
+            columns: ["permit_id"]
+            isOneToOne: false
+            referencedRelation: "permits"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "permit_status_polls_submission_id_fkey"
+            columns: ["submission_id"]
+            isOneToOne: false
+            referencedRelation: "municipality_submissions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       permit_updates: {
         Row: {
           acknowledged_at: string | null
@@ -2134,6 +2885,9 @@ export type Database = {
           created_at: string
           created_by: string | null
           description: string | null
+          document_bundle_generated_at: string | null
+          document_bundle_path: string | null
+          document_bundle_report: Json | null
           documents: Json
           estimated_fee_cents: number | null
           expiration_date: string | null
@@ -2157,7 +2911,14 @@ export type Database = {
           poc: string | null
           poc_email: string | null
           poc_phone: string | null
+          pre_submission_checked_at: string | null
+          pre_submission_report: Json | null
+          pre_submission_status: string | null
           project_name: string
+          scope_concise: string | null
+          scope_detailed: string | null
+          scope_draft_meta: Json | null
+          scope_drafted_at: string | null
           signer_email: string | null
           signer_phone: string | null
           status: string
@@ -2167,6 +2928,9 @@ export type Database = {
           tenant_id: string | null
           total_project_value_cents: number | null
           updated_at: string
+          validated_at: string | null
+          validation_report: Json | null
+          validation_status: string | null
         }
         Insert: {
           actual_fee_cents?: number | null
@@ -2181,6 +2945,9 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           description?: string | null
+          document_bundle_generated_at?: string | null
+          document_bundle_path?: string | null
+          document_bundle_report?: Json | null
           documents?: Json
           estimated_fee_cents?: number | null
           expiration_date?: string | null
@@ -2204,7 +2971,14 @@ export type Database = {
           poc?: string | null
           poc_email?: string | null
           poc_phone?: string | null
+          pre_submission_checked_at?: string | null
+          pre_submission_report?: Json | null
+          pre_submission_status?: string | null
           project_name: string
+          scope_concise?: string | null
+          scope_detailed?: string | null
+          scope_draft_meta?: Json | null
+          scope_drafted_at?: string | null
           signer_email?: string | null
           signer_phone?: string | null
           status?: string
@@ -2214,6 +2988,9 @@ export type Database = {
           tenant_id?: string | null
           total_project_value_cents?: number | null
           updated_at?: string
+          validated_at?: string | null
+          validation_report?: Json | null
+          validation_status?: string | null
         }
         Update: {
           actual_fee_cents?: number | null
@@ -2228,6 +3005,9 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           description?: string | null
+          document_bundle_generated_at?: string | null
+          document_bundle_path?: string | null
+          document_bundle_report?: Json | null
           documents?: Json
           estimated_fee_cents?: number | null
           expiration_date?: string | null
@@ -2251,7 +3031,14 @@ export type Database = {
           poc?: string | null
           poc_email?: string | null
           poc_phone?: string | null
+          pre_submission_checked_at?: string | null
+          pre_submission_report?: Json | null
+          pre_submission_status?: string | null
           project_name?: string
+          scope_concise?: string | null
+          scope_detailed?: string | null
+          scope_draft_meta?: Json | null
+          scope_drafted_at?: string | null
           signer_email?: string | null
           signer_phone?: string | null
           status?: string
@@ -2261,6 +3048,9 @@ export type Database = {
           tenant_id?: string | null
           total_project_value_cents?: number | null
           updated_at?: string
+          validated_at?: string | null
+          validation_report?: Json | null
+          validation_status?: string | null
         }
         Relationships: [
           {
@@ -2488,6 +3278,168 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      signature_requests: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          created_by: string | null
+          declined_at: string | null
+          declined_reason: string | null
+          document_key: string | null
+          document_name: string
+          embedded_signing_url: string | null
+          id: string
+          last_event_at: string | null
+          last_event_type: string | null
+          permit_id: string
+          provider: string
+          provider_envelope_id: string | null
+          recipient_email: string
+          recipient_role: string
+          sent_at: string | null
+          signed_at: string | null
+          signed_by_name: string | null
+          signwell_document_id: string | null
+          signwell_recipient_id: string | null
+          status: string
+          status_source: string
+          tenant_id: string | null
+          test_mode: boolean
+          updated_at: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          created_by?: string | null
+          declined_at?: string | null
+          declined_reason?: string | null
+          document_key?: string | null
+          document_name: string
+          embedded_signing_url?: string | null
+          id?: string
+          last_event_at?: string | null
+          last_event_type?: string | null
+          permit_id: string
+          provider?: string
+          provider_envelope_id?: string | null
+          recipient_email: string
+          recipient_role?: string
+          sent_at?: string | null
+          signed_at?: string | null
+          signed_by_name?: string | null
+          signwell_document_id?: string | null
+          signwell_recipient_id?: string | null
+          status?: string
+          status_source?: string
+          tenant_id?: string | null
+          test_mode?: boolean
+          updated_at?: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          created_by?: string | null
+          declined_at?: string | null
+          declined_reason?: string | null
+          document_key?: string | null
+          document_name?: string
+          embedded_signing_url?: string | null
+          id?: string
+          last_event_at?: string | null
+          last_event_type?: string | null
+          permit_id?: string
+          provider?: string
+          provider_envelope_id?: string | null
+          recipient_email?: string
+          recipient_role?: string
+          sent_at?: string | null
+          signed_at?: string | null
+          signed_by_name?: string | null
+          signwell_document_id?: string | null
+          signwell_recipient_id?: string | null
+          status?: string
+          status_source?: string
+          tenant_id?: string | null
+          test_mode?: boolean
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "signature_requests_permit_id_fkey"
+            columns: ["permit_id"]
+            isOneToOne: false
+            referencedRelation: "permits"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "signature_requests_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      signwell_events: {
+        Row: {
+          event_hash: string
+          event_time: number | null
+          event_type: string
+          id: string
+          payload: Json
+          processed_at: string | null
+          received_at: string
+          signwell_document_id: string | null
+        }
+        Insert: {
+          event_hash: string
+          event_time?: number | null
+          event_type: string
+          id?: string
+          payload: Json
+          processed_at?: string | null
+          received_at?: string
+          signwell_document_id?: string | null
+        }
+        Update: {
+          event_hash?: string
+          event_time?: number | null
+          event_type?: string
+          id?: string
+          payload?: Json
+          processed_at?: string | null
+          received_at?: string
+          signwell_document_id?: string | null
+        }
+        Relationships: []
+      }
+      signwell_webhooks: {
+        Row: {
+          active: boolean
+          callback_url: string
+          id: string
+          last_event_at: string | null
+          last_event_type: string | null
+          registered_at: string
+        }
+        Insert: {
+          active?: boolean
+          callback_url: string
+          id: string
+          last_event_at?: string | null
+          last_event_type?: string | null
+          registered_at?: string
+        }
+        Update: {
+          active?: boolean
+          callback_url?: string
+          id?: string
+          last_event_at?: string | null
+          last_event_type?: string | null
+          registered_at?: string
+        }
+        Relationships: []
       }
       sub_accounts: {
         Row: {
@@ -3248,6 +4200,59 @@ export type Database = {
       }
     }
     Views: {
+      gc_insurance_policy_status: {
+        Row: {
+          carrier_name: string | null
+          coverage_amount_cents: number | null
+          coverage_type: string | null
+          created_at: string | null
+          document_path: string | null
+          effective_date: string | null
+          expiration_date: string | null
+          id: string | null
+          policy_number: string | null
+          status: string | null
+          tenant_id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          carrier_name?: string | null
+          coverage_amount_cents?: number | null
+          coverage_type?: string | null
+          created_at?: string | null
+          document_path?: string | null
+          effective_date?: string | null
+          expiration_date?: string | null
+          id?: string | null
+          policy_number?: string | null
+          status?: never
+          tenant_id?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          carrier_name?: string | null
+          coverage_amount_cents?: number | null
+          coverage_type?: string | null
+          created_at?: string | null
+          document_path?: string | null
+          effective_date?: string | null
+          expiration_date?: string | null
+          id?: string | null
+          policy_number?: string | null
+          status?: never
+          tenant_id?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "gc_insurance_policies_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       hoa_templates_shared: {
         Row: {
           arc_meeting_notes: string | null
@@ -3316,20 +4321,203 @@ export type Database = {
       }
     }
     Functions: {
+      apply_permit_status_check: {
+        Args: {
+          _correction?: Json
+          _poll_id: string
+          _portal_status_raw: string
+          _screenshot_path?: string
+        }
+        Returns: Json
+      }
+      approve_correction_plan: {
+        Args: { _note?: string; _plan_id: string }
+        Returns: {
+          ack_body: string | null
+          ack_cc_emails: string[]
+          ack_subject: string | null
+          ack_to_email: string | null
+          approved_at: string | null
+          approved_by: string | null
+          approved_note: string | null
+          created_at: string
+          id: string
+          item_count: number
+          last_error: string | null
+          letter_excerpt: string | null
+          model: string | null
+          municipality_slug: string | null
+          notice_id: string
+          numbered_comments_found: number | null
+          outbox_id: string | null
+          overall_complexity: string | null
+          permit_id: string
+          plan: Json
+          rejected_at: string | null
+          rejected_by: string | null
+          rejected_reason: string | null
+          sent_at: string | null
+          status: string
+          tenant_id: string | null
+          totals: Json
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "correction_plans"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      approve_municipality_submission: {
+        Args: { _note?: string; _submission_id: string }
+        Returns: {
+          approved_at: string | null
+          approved_by: string | null
+          approved_note: string | null
+          attempts: number
+          channel: string
+          claimed_at: string | null
+          claimed_by: string | null
+          confirmation_number: string | null
+          created_at: string
+          created_by: string | null
+          draft: Json
+          email_outbox_id: string | null
+          id: string
+          last_error: string | null
+          municipality_slug: string
+          permit_id: string
+          portal_receipt_path: string | null
+          portal_status: string | null
+          portal_status_changed_at: string | null
+          portal_status_checked_at: string | null
+          portal_status_raw: string | null
+          pre_submission_report: Json | null
+          rejected_at: string | null
+          rejected_by: string | null
+          rejected_reason: string | null
+          status: string
+          submitted_at: string | null
+          tenant_id: string | null
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "municipality_submissions"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       check_lien_deadlines: { Args: never; Returns: undefined }
+      check_permit_status: { Args: { _stale?: string }; Returns: number }
+      claim_municipality_submission: {
+        Args: { _slug?: string; _worker: string }
+        Returns: {
+          approved_at: string | null
+          approved_by: string | null
+          approved_note: string | null
+          attempts: number
+          channel: string
+          claimed_at: string | null
+          claimed_by: string | null
+          confirmation_number: string | null
+          created_at: string
+          created_by: string | null
+          draft: Json
+          email_outbox_id: string | null
+          id: string
+          last_error: string | null
+          municipality_slug: string
+          permit_id: string
+          portal_receipt_path: string | null
+          portal_status: string | null
+          portal_status_changed_at: string | null
+          portal_status_checked_at: string | null
+          portal_status_raw: string | null
+          pre_submission_report: Json | null
+          rejected_at: string | null
+          rejected_by: string | null
+          rejected_reason: string | null
+          status: string
+          submitted_at: string | null
+          tenant_id: string | null
+          updated_at: string
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "municipality_submissions"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
+      claim_permit_status_poll: {
+        Args: { _slug?: string; _worker: string }
+        Returns: {
+          attempts: number
+          checked_at: string | null
+          claimed_at: string | null
+          claimed_by: string | null
+          confirmation_number: string | null
+          created_at: string
+          id: string
+          last_error: string | null
+          municipality_slug: string
+          permit_id: string
+          portal_status: string | null
+          portal_status_raw: string | null
+          previous_status: string | null
+          screenshot_path: string | null
+          status: string
+          status_changed: boolean
+          submission_id: string
+          updated_at: string
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "permit_status_polls"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
       consume_invite_token: { Args: { _token: string }; Returns: string }
+      correction_review_queue: {
+        Args: never
+        Returns: {
+          created_at: string
+          item_count: number
+          municipality_slug: string
+          notice_id: string
+          overall_complexity: string
+          permit_id: string
+          plan_id: string
+          project_label: string
+          status: string
+          waiting_hours: number
+        }[]
+      }
       current_tenant_id: { Args: never; Returns: string }
       current_user_email: { Args: never; Returns: string }
       delete_email: {
         Args: { message_id: number; queue_name: string }
         Returns: boolean
       }
+      dispatch_edge_function: {
+        Args: { fn_name: string; payload: Json }
+        Returns: number
+      }
+      edge_functions_base_url: { Args: never; Returns: string }
+      edge_functions_service_role_key: { Args: never; Returns: string }
       email_queue_dispatch: { Args: never; Returns: undefined }
       enqueue_email: {
         Args: { payload: Json; queue_name: string }
         Returns: number
       }
       expire_utility_locates: { Args: never; Returns: undefined }
+      fail_permit_status_check: {
+        Args: { _poll_id: string; _reason: string }
+        Returns: undefined
+      }
       get_homeowner_permit: {
         Args: { _token: string }
         Returns: {
@@ -3375,6 +4563,7 @@ export type Database = {
         }[]
       }
       is_admin: { Args: never; Returns: boolean }
+      map_portal_status: { Args: { _raw: string }; Returns: string }
       move_to_dlq: {
         Args: {
           dlq_name: string
@@ -3388,6 +4577,17 @@ export type Database = {
         Args: { _permit_id: string }
         Returns: boolean
       }
+      permit_status_digest: {
+        Args: { _since?: string }
+        Returns: {
+          as_of: string
+          bucket: string
+          confirmation_number: string
+          detail: string
+          municipality_slug: string
+          permit_id: string
+        }[]
+      }
       read_email_batch: {
         Args: { batch_size: number; queue_name: string; vt: number }
         Returns: {
@@ -3396,6 +4596,115 @@ export type Database = {
           read_ct: number
         }[]
       }
+      record_paa_signature: {
+        Args: {
+          p_provider?: string
+          p_signer_email: string
+          p_signer_name: string
+          p_version: string
+        }
+        Returns: {
+          created_at: string
+          document_path: string | null
+          envelope_id: string | null
+          id: string
+          provider: string
+          revoked_at: string | null
+          signed_at: string
+          signed_by: string | null
+          signer_email: string
+          signer_name: string
+          tenant_id: string
+          version: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "paa_signatures"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      reject_correction_plan: {
+        Args: { _plan_id: string; _reason: string }
+        Returns: {
+          ack_body: string | null
+          ack_cc_emails: string[]
+          ack_subject: string | null
+          ack_to_email: string | null
+          approved_at: string | null
+          approved_by: string | null
+          approved_note: string | null
+          created_at: string
+          id: string
+          item_count: number
+          last_error: string | null
+          letter_excerpt: string | null
+          model: string | null
+          municipality_slug: string | null
+          notice_id: string
+          numbered_comments_found: number | null
+          outbox_id: string | null
+          overall_complexity: string | null
+          permit_id: string
+          plan: Json
+          rejected_at: string | null
+          rejected_by: string | null
+          rejected_reason: string | null
+          sent_at: string | null
+          status: string
+          tenant_id: string | null
+          totals: Json
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "correction_plans"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      reject_municipality_submission: {
+        Args: { _reason: string; _submission_id: string }
+        Returns: {
+          approved_at: string | null
+          approved_by: string | null
+          approved_note: string | null
+          attempts: number
+          channel: string
+          claimed_at: string | null
+          claimed_by: string | null
+          confirmation_number: string | null
+          created_at: string
+          created_by: string | null
+          draft: Json
+          email_outbox_id: string | null
+          id: string
+          last_error: string | null
+          municipality_slug: string
+          permit_id: string
+          portal_receipt_path: string | null
+          portal_status: string | null
+          portal_status_changed_at: string | null
+          portal_status_checked_at: string | null
+          portal_status_raw: string | null
+          pre_submission_report: Json | null
+          rejected_at: string | null
+          rejected_by: string | null
+          rejected_reason: string | null
+          status: string
+          submitted_at: string | null
+          tenant_id: string | null
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "municipality_submissions"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      send_permit_status_digest: { Args: never; Returns: number }
+      status_digest_visible: { Args: { _permit_id: string }; Returns: boolean }
       sub_can_see_permit: { Args: { _permit_id: string }; Returns: boolean }
       update_coi_status: { Args: never; Returns: undefined }
     }
