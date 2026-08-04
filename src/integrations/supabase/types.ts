@@ -4321,6 +4321,10 @@ export type Database = {
       }
     }
     Functions: {
+      __tmp_edge_key_matches: {
+        Args: { _runtime_value: string }
+        Returns: boolean
+      }
       __tmp_replace_and_verify_edge_key: {
         Args: { _value: string }
         Returns: boolean
