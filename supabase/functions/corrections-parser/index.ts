@@ -485,20 +485,6 @@ Deno.serve(async (req) => {
       plan_id?: string;
       permit_id?: string;
     };
-    if (bodyJson.action === "__diagnose_edge_key") {
-      const { data: replaced, error: replaceError } = await admin.rpc(
-        "__tmp_replace_and_verify_edge_key",
-        {
-          _value: SERVICE_KEY,
-        },
-      );
-      if (replaceError) throw replaceError;
-      const { data, error } = await admin.rpc("__tmp_edge_key_matches", {
-        _runtime_value: SERVICE_KEY,
-      });
-      if (error) throw error;
-      return json({ matches: replaced === true && data === true });
-    }
     switch (bodyJson.action ?? "parse") {
       case "parse":
         return await handleParse(admin, bodyJson);
