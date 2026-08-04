@@ -791,6 +791,59 @@ export type Database = {
           },
         ]
       }
+      gc_company_profiles: {
+        Row: {
+          bond: Json | null
+          created_at: string
+          dba: string
+          entity_type: string
+          general_liability: Json
+          id: string
+          legal_name: string
+          primary_qualifier: Json
+          secondary_qualifier: Json | null
+          tenant_id: string
+          updated_at: string
+          workers_comp: Json
+        }
+        Insert: {
+          bond?: Json | null
+          created_at?: string
+          dba?: string
+          entity_type?: string
+          general_liability?: Json
+          id?: string
+          legal_name?: string
+          primary_qualifier?: Json
+          secondary_qualifier?: Json | null
+          tenant_id: string
+          updated_at?: string
+          workers_comp?: Json
+        }
+        Update: {
+          bond?: Json | null
+          created_at?: string
+          dba?: string
+          entity_type?: string
+          general_liability?: Json
+          id?: string
+          legal_name?: string
+          primary_qualifier?: Json
+          secondary_qualifier?: Json | null
+          tenant_id?: string
+          updated_at?: string
+          workers_comp?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "gc_company_profiles_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: true
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       gc_email_addresses: {
         Row: {
           alias: string

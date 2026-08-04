@@ -4,9 +4,10 @@ import { isInternalUser } from "@/lib/is-internal-user";
 import {
   listGcCompanyProfiles,
   complianceFlags,
+  GC_COMPANY_EVT,
   type GcCompanyProfile,
 } from "@/lib/gc-company";
-import { ShieldAlert, ShieldCheck, AlertTriangle, Lock } from "lucide-react";
+import { ShieldAlert, ShieldCheck, AlertTriangle, Lock, Loader2 } from "lucide-react";
 
 export const Route = createFileRoute("/admin/gc-compliance")({
   head: () => ({
@@ -56,14 +57,20 @@ function StatusBadge({ status }: { status: "expired" | "expiring" | "clear" }) {
 function GcComplianceAdmin() {
   const [allowed, setAllowed] = useState(false);
   const [profiles, setProfiles] = useState<GcCompanyProfile[]>([]);
+  const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState<Tab>("all");
 
   useEffect(() => {
     setAllowed(isInternalUser());
-    setProfiles(listGcCompanyProfiles());
-    const refresh = () => setProfiles(listGcCompanyProfiles());
-    window.addEventListener("gc-company:changed", refresh);
-    return () => window.removeEventListener("gc-company:changed", refresh);
+    const refresh = () => {
+      void listGcCompanyProfiles()
+        .then(setProfiles)
+        .catch(() => setProfiles([]))
+        .finally(() => setLoading(false));
+    };
+    refresh();
+    window.addEventListener(GC_COMPANY_EVT, refresh);
+    return () => window.removeEventListener(GC_COMPANY_EVT, refresh);
   }, []);
 
   const rows = useMemo(() => {
@@ -86,6 +93,14 @@ function GcComplianceAdmin() {
           This dashboard is limited to Cleard staff. Sign in with an internal account to view GC compliance
           status.
         </p>
+      </div>
+    );
+  }
+
+  if (loading) {
+    return (
+      <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-16 text-sm text-obsidian/50 flex items-center gap-2">
+        <Loader2 className="h-4 w-4 animate-spin" /> Loading GC compliance…
       </div>
     );
   }

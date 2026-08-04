@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { PortalShell } from "@/components/portal-shell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,10 +12,11 @@ import { Upload, X, Plus, ArrowLeft, MapPin, Sparkles, AlertTriangle, CheckCircl
 import { toast } from "sonner";
 import { CloudUploadButtons } from "@/components/cloud-upload-buttons";
 import { CompanyComplianceBanner } from "@/components/company-compliance-banner";
-import { getCurrentGcCompanyProfile } from "@/lib/gc-company";
+import { emptyGcCompanyProfile, getCurrentGcCompanyProfile, type GcCompanyProfile } from "@/lib/gc-company";
 import { AddressLookupField } from "@/components/address-lookup-field";
 import type { ResolvedAddress } from "@/lib/address-lookup";
 import { estimatePermitFee } from "@/lib/fee-schedules";
+import { useSession } from "@/lib/use-session";
 
 export const Route = createFileRoute("/forms/permit-intake")({
   head: () => ({ meta: [{ title: "Permit Intake — Cleard" }, { name: "robots", content: "noindex" }] }),
@@ -124,6 +125,10 @@ function draftScopeNarrative(s1: Step1): string {
 
 function PermitIntakePage() {
   const navigate = useNavigate();
+  const session = useSession();
+  const [companyProfile, setCompanyProfile] = useState<GcCompanyProfile>(() =>
+    emptyGcCompanyProfile(""),
+  );
   const [step, setStep] = useState<1 | 2>(1);
   const [s1, setS1] = useState<Step1>(defaultStep1);
   const [s2, setS2] = useState<Step2>(defaultStep2);
@@ -133,6 +138,19 @@ function PermitIntakePage() {
   const [victoriaOpen, setVictoriaOpen] = useState(false);
   const [victoriaDrafting, setVictoriaDrafting] = useState(false);
   const [victoriaDraft, setVictoriaDraft] = useState("");
+
+  useEffect(() => {
+    if (!session.effectiveTenantId) return;
+    let cancelled = false;
+    void getCurrentGcCompanyProfile(session.effectiveTenantId, session.tenantName)
+      .then((p) => {
+        if (!cancelled) setCompanyProfile(p);
+      })
+      .catch(() => undefined);
+    return () => {
+      cancelled = true;
+    };
+  }, [session.effectiveTenantId, session.tenantName]);
 
   function toggleSubtrade(name: string) {
     setS1((s) => ({
@@ -189,9 +207,10 @@ function PermitIntakePage() {
       setLicenseChecks((c) => ({ ...c, [index]: undefined as unknown as LicenseCheck }));
       return;
     }
-    const profile = getCurrentGcCompanyProfile();
     const normalize = (v: string) => v.replace(/[^a-z0-9]/gi, "").toUpperCase();
-    const candidates = [profile.primaryQualifier, profile.secondaryQualifier].filter(Boolean) as Array<{
+    const candidates = [companyProfile.primaryQualifier, companyProfile.secondaryQualifier].filter(
+      Boolean,
+    ) as Array<{
       name: string;
       licenseNumber: string;
       licenseType: string;
@@ -263,7 +282,7 @@ function PermitIntakePage() {
         </div>
 
         <div className="mt-6">
-          <CompanyComplianceBanner profile={getCurrentGcCompanyProfile()} />
+          <CompanyComplianceBanner profile={companyProfile} />
         </div>
 
         {step === 1 ? (
