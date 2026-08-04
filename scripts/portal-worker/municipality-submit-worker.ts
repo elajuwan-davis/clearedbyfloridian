@@ -56,7 +56,15 @@ function decryptSecret(stored: string): string {
   const raw = process.env.APP_USER_CONNECTION_KEY_SECRET;
   if (!raw) throw new Error("APP_USER_CONNECTION_KEY_SECRET is not set");
   const key = Buffer.from(raw, "base64");
+  // Say which input is wrong rather than letting node throw about key lengths, and never
+  // put the key itself in the message.
+  if (key.length !== 32) {
+    throw new Error(
+      `APP_USER_CONNECTION_KEY_SECRET must be 32 bytes of base64 (got ${key.length})`,
+    );
+  }
   const buf = Buffer.from(stored, "base64");
+  if (buf.length <= 28) throw new Error("stored credential is truncated or not base64");
   const decipher = createDecipheriv("aes-256-gcm", key, buf.subarray(0, 12));
   decipher.setAuthTag(buf.subarray(12, 28));
   return Buffer.concat([decipher.update(buf.subarray(28)), decipher.final()]).toString("utf8");

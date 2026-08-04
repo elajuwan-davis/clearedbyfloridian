@@ -292,6 +292,14 @@ async function handleExecute(admin: SupabaseAdmin, body: { submission_id?: strin
     return json({ error: "email target has no intake address" }, 422);
   }
 
+  // An email filing with nothing attached is not a filing; the building department would
+  // just have to ask for the package.
+  const attachments = (sub.draft?.documents ?? []).filter((d) => d?.path);
+  if (attachments.length === 0) {
+    await markFailed(admin, sub.id, "no documents to attach — nothing would be filed");
+    return json({ error: "submission has no documents to attach" }, 422);
+  }
+
   const { data: outbox, error: obErr } = await admin
     .from("email_outbox")
     .insert({
@@ -300,10 +308,7 @@ async function handleExecute(admin: SupabaseAdmin, body: { submission_id?: strin
       cc_emails: email.cc ?? [],
       subject: email.subject ?? "Permit application",
       body_text: email.body_text ?? "",
-      attachments: (sub.draft?.documents ?? []).map((d) => ({
-        label: d.label,
-        path: d.path,
-      })),
+      attachments: attachments.map((d) => ({ label: d.label, path: d.path })),
       status: "queued",
       tenant_id: sub.tenant_id,
     })
