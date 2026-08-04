@@ -242,6 +242,24 @@ credentials, uploads all three documents, and records `26BLD-004512` from the re
 retained, staff notified, nothing filed. The email channel (seeded `davie` target) queues
 into `email_outbox` with three attachments only after approval.
 
+A rehearsal row — `draft.test_only = true` — travels the same approval path but can never
+file:
+
+```bash
+# claim refuses it, and the same row without test_only is claimable
+docker exec cleard-pg psql -U postgres -c "set role service_role;
+  select count(*) from public.claim_municipality_submission('test-worker','plantation');"
+# filing it directly is refused by trg_municipality_submissions_no_test_filing
+docker exec cleard-pg psql -U postgres -c "update public.municipality_submissions
+  set status='submitting' where (draft->>'test_only')::boolean;"
+```
+
+Observed locally: claim returns 0 rows for the test row and 1 for the identical row without
+the flag; `status='submitting'` raises `submission … is marked draft.test_only`; and
+`action: execute` answers `{"ok":true,"test_only":true,"filed":false}`, writing a
+`test_only_no_action` event with no `queued_for_portal_worker` event and no `email_outbox`
+row (the same row without the flag queues one).
+
 ## Agent 6 — status polling (check_permit_status + the status worker)
 
 `fixture.sql` stubs `cron.schedule/unschedule` into a `cron.job` table, so the migration's

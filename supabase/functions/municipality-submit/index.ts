@@ -256,6 +256,7 @@ async function handleExecute(admin: SupabaseAdmin, body: { submission_id?: strin
     status: string;
     approved_by: string | null;
     draft: {
+      test_only?: boolean;
       email?: { to?: string; cc?: string[]; subject?: string; body_text?: string } | null;
       documents?: Array<{ label: string; path: string }>;
       municipality?: { city_name?: string; portal_url?: string };
@@ -272,6 +273,26 @@ async function handleExecute(admin: SupabaseAdmin, body: { submission_id?: strin
       },
       409,
     );
+  }
+
+  // A rehearsal row proves the gate and the trigger chain without a filing: it stops here,
+  // before the portal queue and before anything reaches email_outbox. claim_municipality_
+  // submission() skips it too, so the worker never sees it either.
+  if (sub.draft?.test_only === true) {
+    await admin.from("municipality_submission_events").insert({
+      submission_id: sub.id,
+      event_type: "test_only_no_action",
+      actor_label: "Cleard automation",
+      detail: { channel: sub.channel, filed: false },
+    });
+    await admin
+      .from("municipality_submissions")
+      .update({
+        status: "failed",
+        last_error: "draft.test_only is true — rehearsal row, nothing was filed",
+      })
+      .eq("id", sub.id);
+    return json({ ok: true, test_only: true, filed: false, submission_id: sub.id });
   }
 
   if (sub.channel === "portal") {
@@ -343,7 +364,12 @@ async function handleExecute(admin: SupabaseAdmin, body: { submission_id?: strin
     },
   });
 
-  return json({ ok: true, queued_for: "email_dispatcher", channel: "email", submission_id: sub.id });
+  return json({
+    ok: true,
+    queued_for: "email_dispatcher",
+    channel: "email",
+    submission_id: sub.id,
+  });
 }
 
 async function markFailed(admin: SupabaseAdmin, id: string, reason: string) {
