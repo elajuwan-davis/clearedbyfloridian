@@ -182,17 +182,8 @@ BEGIN
   END IF;
 END $$;
 
-CREATE OR REPLACE FUNCTION public.tg_touch_updated_at()
-RETURNS trigger
-LANGUAGE plpgsql
-SET search_path = public
-AS $$
-BEGIN
-  NEW.updated_at := now();
-  RETURN NEW;
-END;
-$$;
-
+-- public.tg_touch_updated_at() already exists (it maintains updated_at on permits and
+-- friends); reused rather than redefined.
 DROP TRIGGER IF EXISTS trg_permit_status_polls_touch ON public.permit_status_polls;
 CREATE TRIGGER trg_permit_status_polls_touch
   BEFORE UPDATE ON public.permit_status_polls
