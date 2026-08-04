@@ -273,6 +273,21 @@ DECLARE
   service_key text;
   request_id bigint;
 BEGIN
+  -- The service_role key travels in this request, so the target is not free-form: only the
+  -- functions Cleard's own triggers dispatch to are accepted, and no path/query characters
+  -- can be smuggled into the URL.
+  IF fn_name IS NULL OR fn_name NOT IN (
+    'intake-validator',
+    'document-generation',
+    'scope-draft',
+    'pre-submission-check',
+    'municipality-submit',
+    'corrections-parser',
+    'signwell-send'
+  ) THEN
+    RAISE EXCEPTION 'dispatch_edge_function: % is not a dispatchable Cleard function', fn_name;
+  END IF;
+
   service_key := public.edge_functions_service_role_key();
   IF service_key IS NULL THEN
     RAISE WARNING 'dispatch_edge_function(%): no service_role key in vault, skipping', fn_name;
@@ -292,6 +307,16 @@ BEGIN
   RETURN request_id;
 END;
 $$;
+
+-- These three are internals of the trigger plumbing: they read the vault and speak with the
+-- service_role key, so no client role may call them. The trigger functions below are
+-- SECURITY DEFINER, so they still can.
+REVOKE ALL ON FUNCTION public.edge_functions_service_role_key() FROM PUBLIC;
+REVOKE ALL ON FUNCTION public.edge_functions_base_url() FROM PUBLIC;
+REVOKE ALL ON FUNCTION public.dispatch_edge_function(text, jsonb) FROM PUBLIC;
+REVOKE ALL ON FUNCTION public.edge_functions_service_role_key() FROM anon, authenticated;
+REVOKE ALL ON FUNCTION public.edge_functions_base_url() FROM anon, authenticated;
+REVOKE ALL ON FUNCTION public.dispatch_edge_function(text, jsonb) FROM anon, authenticated;
 
 -- ---------------------------------------------------------------------------
 -- 6. Trigger: every new permit is validated immediately

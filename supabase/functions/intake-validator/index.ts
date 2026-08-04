@@ -122,10 +122,14 @@ async function checkAddress(permit: PermitRow): Promise<Check> {
           };
     }
 
-    const jurisdiction =
-      match.incorporated && match.city
-        ? match.city
-        : `${match.county ?? ""} (unincorporated)`.trim();
+    const unincorporated = !(match.incorporated && match.city);
+    // Two values on purpose: a label for staff to read, and the bare place name the
+    // registration lookup compares against. "(unincorporated)" in a lookup key never
+    // matches a stored municipality or county.
+    const jurisdictionKey = (unincorporated ? match.county : match.city) ?? "";
+    const jurisdiction = unincorporated
+      ? `${match.county ?? ""} (unincorporated)`.trim()
+      : (match.city as string);
 
     if (match.state && match.state !== "FL") {
       return {
@@ -133,7 +137,7 @@ async function checkAddress(permit: PermitRow): Promise<Check> {
         label: "Address & jurisdiction",
         severity: "red",
         detail: `Address resolves to ${match.state}, outside Florida.`,
-        data: { jurisdiction, resolved: match },
+        data: { jurisdiction, jurisdiction_key: jurisdictionKey, unincorporated, resolved: match },
       };
     }
 
@@ -142,7 +146,7 @@ async function checkAddress(permit: PermitRow): Promise<Check> {
       label: "Address & jurisdiction",
       severity: "green",
       detail: `Resolved to ${jurisdiction}, ${match.county ?? "unknown county"}.`,
-      data: { jurisdiction, resolved: match },
+      data: { jurisdiction, jurisdiction_key: jurisdictionKey, unincorporated, resolved: match },
     };
   } catch (err) {
     return {
@@ -207,7 +211,10 @@ async function checkLicense(permit: PermitRow): Promise<Check> {
         data: result,
       };
     }
-    if (result.status === "unknown") {
+    // "not_found" is what the DBPR scraper reports when it could not read a holder name or
+    // license type out of the page — a parse failure or an interstitial, not proof that the
+    // license does not exist. Only a status the state actually stated is red.
+    if (result.status === "unknown" || result.status === "not_found") {
       return {
         key: "gc_license",
         label: "GC license active (DBPR)",
@@ -220,7 +227,7 @@ async function checkLicense(permit: PermitRow): Promise<Check> {
       key: "gc_license",
       label: "GC license active (DBPR)",
       severity: "red",
-      detail: `License ${ln} is ${result.status}${
+      detail: `DBPR reports license ${ln} as ${result.status.replace(/_/g, " ")}${
         result.expiration ? ` (expired ${result.expiration})` : ""
       } — cannot pull a permit under it.`,
       data: result,
@@ -373,7 +380,10 @@ async function checkRegistration(
       .toLowerCase()
       .replace(/\s+county$/, "")
       .trim();
-  const match = rows.find((r) => candidates.some((c) => norm(r.municipality) === norm(c)));
+  // An unincorporated address is permitted by the county, so a county registration counts.
+  const match = rows.find((r) =>
+    candidates.some((c) => norm(r.municipality) === norm(c) || norm(r.county ?? "") === norm(c)),
+  );
 
   if (!match) {
     return {
@@ -640,7 +650,11 @@ Deno.serve(async (req: Request) => {
     checkInsurance(supabase, permit),
     checkPaa(supabase, permit),
   ]);
-  const resolvedJurisdiction = (address.data?.jurisdiction as string | undefined) ?? null;
+  // The registration lookup wants the bare place name, not the display label.
+  const resolvedJurisdiction =
+    (address.data?.jurisdiction_key as string | undefined) ??
+    (address.data?.jurisdiction as string | undefined) ??
+    null;
   const registration = await checkRegistration(supabase, permit, resolvedJurisdiction);
 
   const checks = [address, license, insurance, registration, paa];
