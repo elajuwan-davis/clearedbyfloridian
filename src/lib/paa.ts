@@ -1,3 +1,5 @@
+import { supabase } from "@/integrations/supabase/client";
+
 // Permit Agent Authorization (PAA) — one-time document GCs sign at onboarding.
 // Placeholder language pending attorney review. Stored locally; swap `read`/`write`
 // for a server function + SignWell webhook when the provider is wired.
@@ -10,38 +12,31 @@ export const PAA_TITLE = "Permit Agent Authorization";
 export const PAA_BODY: Array<{ heading: string; body: string }> = [
   {
     heading: "1. Appointment of Authorized Agent",
-    body:
-      "The undersigned general contractor (\"Contractor\") appoints Cléared, the private provider permitting division of Flōridian LLC (\"Cléared\"), as its authorized permit agent for all building permit activity undertaken on Contractor's behalf in the State of Florida. This appointment remains in effect until revoked in writing by Contractor.",
+    body: 'The undersigned general contractor ("Contractor") appoints Cléared, the private provider permitting division of Flōridian LLC ("Cléared"), as its authorized permit agent for all building permit activity undertaken on Contractor\'s behalf in the State of Florida. This appointment remains in effect until revoked in writing by Contractor.',
   },
   {
     heading: "2. Scope of Authority",
-    body:
-      "Contractor authorizes Cléared to (a) prepare, sign, and submit permit applications and supporting documents as authorized agent of record; (b) prepare, execute, and file Notices to Owner and Notices to Builder/Owner (NTBO) on Contractor's behalf; (c) communicate directly with building departments, plan reviewers, inspection coordinators, and other municipal officials regarding Contractor's projects; and (d) receive issued permits, permit cards, correction notices, and inspection results on Contractor's behalf.",
+    body: "Contractor authorizes Cléared to (a) prepare, sign, and submit permit applications and supporting documents as authorized agent of record; (b) prepare, execute, and file Notices to Owner and Notices to Builder/Owner (NTBO) on Contractor's behalf; (c) communicate directly with building departments, plan reviewers, inspection coordinators, and other municipal officials regarding Contractor's projects; and (d) receive issued permits, permit cards, correction notices, and inspection results on Contractor's behalf.",
   },
   {
     heading: "3. Contractor Responsibilities",
-    body:
-      "Contractor remains the licensed qualifier of record for all permitted work and retains sole responsibility for means, methods, code compliance in the field, and payment of all municipal fees. Contractor agrees to provide accurate project information, current license and insurance documentation, and signed and sealed construction documents in a timely manner.",
+    body: "Contractor remains the licensed qualifier of record for all permitted work and retains sole responsibility for means, methods, code compliance in the field, and payment of all municipal fees. Contractor agrees to provide accurate project information, current license and insurance documentation, and signed and sealed construction documents in a timely manner.",
   },
   {
     heading: "4. Private Provider Services",
-    body:
-      "Where Contractor elects private provider plan review or inspection services pursuant to Section 553.791, Florida Statutes, Cléared will furnish the statutory notice to the local building official and perform 2-day plan review and same-day inspections through duly licensed personnel.",
+    body: "Where Contractor elects private provider plan review or inspection services pursuant to Section 553.791, Florida Statutes, Cléared will furnish the statutory notice to the local building official and perform 2-day plan review and same-day inspections through duly licensed personnel.",
   },
   {
     heading: "5. Fees and Authorization to Charge",
-    body:
-      "Contractor authorizes Cléared to advance municipal permit and plan review fees on Contractor's behalf and to charge those amounts, together with Cléared's service fees, to the payment method on file under Contractor's Payment Authorization.",
+    body: "Contractor authorizes Cléared to advance municipal permit and plan review fees on Contractor's behalf and to charge those amounts, together with Cléared's service fees, to the payment method on file under Contractor's Payment Authorization.",
   },
   {
     heading: "6. Limitation of Authority",
-    body:
-      "This authorization does not empower Cléared to enter into construction contracts, waive lien rights, settle claims, or bind Contractor to any obligation unrelated to permit administration.",
+    body: "This authorization does not empower Cléared to enter into construction contracts, waive lien rights, settle claims, or bind Contractor to any obligation unrelated to permit administration.",
   },
   {
     heading: "7. Term and Revocation",
-    body:
-      "This authorization is effective on the date signed below and continues until revoked. Revocation does not affect permits already applied for or issued prior to the effective date of revocation.",
+    body: "This authorization is effective on the date signed below and continues until revoked. Revocation does not affect permits already applied for or issued prior to the effective date of revocation.",
   },
 ];
 
@@ -80,6 +75,29 @@ export function savePaa(input: { signerName: string; signerEmail: string }): Paa
   window.localStorage.setItem(PAA_KEY, JSON.stringify(rec));
   window.dispatchEvent(new CustomEvent(PAA_EVT));
   return rec;
+}
+
+/**
+ * Mirror a signed PAA into `paa_signatures` so server-side checks (Agent 1's
+ * intake validator) can see it. Best-effort: the localStorage record stays the
+ * source of truth for the UI until the SignWell webhook is wired.
+ */
+export async function persistPaaSignature(rec: PaaRecord): Promise<void> {
+  try {
+    // record_paa_signature() is the only write path: it resolves the tenant, stamps
+    // the authenticated signer and mints the envelope id server side, so the client
+    // cannot record a signature for another user or fabricate an envelope reference.
+    await (
+      supabase.rpc as unknown as (fn: string, args: Record<string, string>) => Promise<unknown>
+    )("record_paa_signature", {
+      p_version: rec.version,
+      p_signer_name: rec.signerName,
+      p_signer_email: rec.signerEmail,
+      p_provider: rec.provider,
+    });
+  } catch {
+    /* best-effort — the UI already has the signature */
+  }
 }
 
 export function loadTosAccepted(): string | null {
