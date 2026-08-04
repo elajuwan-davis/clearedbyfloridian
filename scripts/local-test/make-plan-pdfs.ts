@@ -23,10 +23,7 @@ async function put(key: string, bytes: Uint8Array) {
   console.log("wrote", path, bytes.length, "bytes");
 }
 
-const permits = [
-  "66666666-6666-6666-6666-666666666666",
-  "77777777-7777-7777-7777-777777777777",
-];
+const permits = ["66666666-6666-6666-6666-666666666666", "77777777-7777-7777-7777-777777777777"];
 
 for (const id of permits) {
   await put(`${id}/plans.pdf`, await pdf(6, ARCH_D));

@@ -1,10 +1,5 @@
 import { assertEquals, assertThrows } from "https://deno.land/std@0.224.0/assert/mod.ts";
-import {
-  countNumberedComments,
-  parsePlan,
-  planTotals,
-  userPrompt,
-} from "./correction-parse.ts";
+import { countNumberedComments, parsePlan, planTotals, userPrompt } from "./correction-parse.ts";
 
 const validItem = {
   ordinal: 1,
@@ -94,8 +89,14 @@ Deno.test("totals are computed here, not asked of the model", () => {
     plan({
       items: [
         validItem,
-        { ...validItem, ordinal: 2, category: "fee", complexity: "low", estimated_hours: null,
-          responsible_party: "gc" },
+        {
+          ...validItem,
+          ordinal: 2,
+          category: "fee",
+          complexity: "low",
+          estimated_hours: null,
+          responsible_party: "gc",
+        },
       ],
     }),
   );

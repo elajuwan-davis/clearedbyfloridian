@@ -343,7 +343,12 @@ async function handleExecute(admin: SupabaseAdmin, body: { submission_id?: strin
     },
   });
 
-  return json({ ok: true, queued_for: "email_dispatcher", channel: "email", submission_id: sub.id });
+  return json({
+    ok: true,
+    queued_for: "email_dispatcher",
+    channel: "email",
+    submission_id: sub.id,
+  });
 }
 
 async function markFailed(admin: SupabaseAdmin, id: string, reason: string) {

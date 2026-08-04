@@ -8,8 +8,7 @@ import { PDFDocument, StandardFonts } from "https://esm.sh/pdf-lib@1.17.1";
 
 const STORAGE_DIR = Deno.env.get("STORAGE_DIR") ?? "/tmp/cleard-local-storage";
 const BUCKET = "permit-files";
-const KEY =
-  "permits/33333333-3333-3333-3333-333333333333/corrections/plan-review-comments-1.pdf";
+const KEY = "permits/33333333-3333-3333-3333-333333333333/corrections/plan-review-comments-1.pdf";
 
 const letter = await Deno.readTextFile("scripts/local-test/correction-letter.txt");
 const doc = await PDFDocument.create();

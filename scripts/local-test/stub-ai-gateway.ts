@@ -155,7 +155,8 @@ Deno.serve({ port: PORT }, async (req) => {
     messages?: Array<{ role: string; content: string }>;
   };
   lastPrompt.system = body.messages?.[0]?.content;
-  lastPrompt.user = body.messages?.[1]?.content ?? body.messages?.find((m) => m.role === "user")?.content;
+  lastPrompt.user =
+    body.messages?.[1]?.content ?? body.messages?.find((m) => m.role === "user")?.content;
   const prompt = lastPrompt.user ?? "";
 
   console.log("--- stub gateway received ---");

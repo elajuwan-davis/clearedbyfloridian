@@ -142,8 +142,8 @@ export function extractConfirmationNumber(pageText: string): string | null {
   // The label patterns require a digit in the captured token, so prose like
   // "Record Number: pending assignment" is not mistaken for a record number.
   const patterns = [
-    /Record\s*(?:Number|#)\s*[:\-]?\s*((?=[A-Z0-9-]*\d)[A-Z0-9][A-Z0-9-]{5,})/i,
-    /Permit\s*(?:Number|#)\s*[:\-]?\s*((?=[A-Z0-9-]*\d)[A-Z0-9][A-Z0-9-]{5,})/i,
+    /Record\s*(?:Number|#)\s*[:-]?\s*((?=[A-Z0-9-]*\d)[A-Z0-9][A-Z0-9-]{5,})/i,
+    /Permit\s*(?:Number|#)\s*[:-]?\s*((?=[A-Z0-9-]*\d)[A-Z0-9][A-Z0-9-]{5,})/i,
     /\b(\d{2}[A-Z]{2,4}-\d{4,})\b/,
     /\b([A-Z]{2,4}-\d{2}-\d{4,})\b/,
   ];

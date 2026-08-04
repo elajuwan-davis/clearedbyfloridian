@@ -218,9 +218,7 @@ const isPlanDoc = (d: PermitDoc) =>
 type StorageReader = {
   storage: {
     from: (bucket: string) => {
-      download: (
-        path: string,
-      ) => Promise<{ data: Blob | null; error: { message: string } | null }>;
+      download: (path: string) => Promise<{ data: Blob | null; error: { message: string } | null }>;
     };
   };
 };

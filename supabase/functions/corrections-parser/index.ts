@@ -105,7 +105,10 @@ async function letterText(admin: SupabaseAdmin, notice: NoticeRow): Promise<stri
     if (error) throw new Error(`could not download ${notice.document_path}: ${error.message}`);
     const bytes = new Uint8Array(await data.arrayBuffer());
     const extracted = await pdfText(bytes);
-    const combined = [inline, extracted].filter((s) => s && s.trim()).join("\n\n").trim();
+    const combined = [inline, extracted]
+      .filter((s) => s && s.trim())
+      .join("\n\n")
+      .trim();
     if (combined.length >= 80) return combined;
     throw new Error(
       `no readable text in ${notice.document_path} — the notice is probably a scan; ` +
@@ -117,7 +120,9 @@ async function letterText(admin: SupabaseAdmin, notice: NoticeRow): Promise<stri
   throw new Error("correction notice has neither text nor a stored document");
 }
 
-async function draftWithModel(ctx: LetterContext): Promise<{ plan: CorrectionPlan; model: string }> {
+async function draftWithModel(
+  ctx: LetterContext,
+): Promise<{ plan: CorrectionPlan; model: string }> {
   if (!LOVABLE_API_KEY) {
     throw new Error("LOVABLE_API_KEY is not configured — cannot draft a correction plan");
   }
@@ -418,7 +423,11 @@ async function handleSend(admin: SupabaseAdmin, body: { plan_id?: string }) {
 
   await admin
     .from("correction_plans")
-    .update({ status: "sent", sent_at: new Date().toISOString(), outbox_id: (outbox as { id: string }).id })
+    .update({
+      status: "sent",
+      sent_at: new Date().toISOString(),
+      outbox_id: (outbox as { id: string }).id,
+    })
     .eq("id", row.id);
 
   await admin.from("correction_plan_events").insert({
@@ -441,7 +450,10 @@ async function handleSend(admin: SupabaseAdmin, body: { plan_id?: string }) {
 }
 
 async function markFailed(admin: SupabaseAdmin, id: string, reason: string) {
-  await admin.from("correction_plans").update({ status: "failed", last_error: reason }).eq("id", id);
+  await admin
+    .from("correction_plans")
+    .update({ status: "failed", last_error: reason })
+    .eq("id", id);
   await admin.from("correction_plan_events").insert({
     plan_id: id,
     event_type: "failed",

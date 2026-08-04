@@ -106,9 +106,10 @@ Deno.serve(async (req) => {
       .from("signwell_events")
       .select("id, processed_at")
       .eq("event_hash", verified.hash);
-    const { data: existing } = await (documentId
-      ? lookup.eq("signwell_document_id", documentId)
-      : lookup.is("signwell_document_id", null)
+    const { data: existing } = await (
+      documentId
+        ? lookup.eq("signwell_document_id", documentId)
+        : lookup.is("signwell_document_id", null)
     ).maybeSingle();
     const prior = existing as { id: string; processed_at: string | null } | null;
     // Already fully applied — replaying is a no-op.
