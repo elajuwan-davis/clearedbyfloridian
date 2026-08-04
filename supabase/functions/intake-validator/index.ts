@@ -244,7 +244,11 @@ async function checkLicense(permit: PermitRow): Promise<Check> {
 
 // --- 3. GC insurance -------------------------------------------------------
 
-type SupabaseClient = ReturnType<typeof createClient>;
+// Explicit generics: a bare ReturnType<typeof createClient> resolves the schema parameter
+// to `never`, which no real client satisfies.
+// deno-lint-ignore no-explicit-any
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type SupabaseClient = ReturnType<typeof createClient<any, "public", any>>;
 
 async function checkInsurance(supabase: SupabaseClient, permit: PermitRow): Promise<Check> {
   if (!permit.tenant_id) {
