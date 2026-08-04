@@ -21,6 +21,7 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.3";
 import { PDFDocument } from "https://esm.sh/pdf-lib@1.17.1";
 import { CallerAuthError, requireStaffCaller } from "../_shared/caller-auth.ts";
+import { errorMessage } from "../_shared/errors.ts";
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL") ?? "";
 const SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
@@ -258,7 +259,7 @@ async function checkPlansFormat(admin: StorageReader, permit: PermitRow): Promis
     try {
       pdf = await PDFDocument.load(bytes, { ignoreEncryption: true });
     } catch (err) {
-      problems.push(`${name}: not a readable PDF (${String(err)}).`);
+      problems.push(`${name}: not a readable PDF (${errorMessage(err)}).`);
       continue;
     }
     const pages = pdf.getPages();
@@ -464,7 +465,7 @@ async function checkLicenseLive(permit: PermitRow): Promise<Check> {
       label: "GC license active (live DBPR re-check)",
       pass: false,
       blocking: true,
-      reason: `DBPR re-check failed (${String(err)}) — submission stays blocked until the license can be confirmed.`,
+      reason: `DBPR re-check failed (${errorMessage(err)}) — submission stays blocked until the license can be confirmed.`,
     };
   }
 }
@@ -571,6 +572,6 @@ Deno.serve(async (req) => {
   } catch (err) {
     if (err instanceof CallerAuthError) return json({ error: err.message }, err.status);
     console.error("pre-submission-check failed", err);
-    return json({ error: String(err) }, 500);
+    return json({ error: errorMessage(err) }, 500);
   }
 });

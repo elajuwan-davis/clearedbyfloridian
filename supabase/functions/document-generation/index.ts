@@ -15,6 +15,7 @@ import { buildNtoPdfBytes } from "../../../src/lib/nto-pdf.ts";
 import { generateOwnerAuth, generateNTBO } from "../../../src/lib/private-provider-forms.ts";
 import { getChecklist } from "../../../src/lib/permit-checklists.ts";
 import { FLORIDIAN_FIRM } from "../../../src/lib/floridian-firm.ts";
+import { errorMessage } from "../_shared/errors.ts";
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL") ?? "";
 const SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
@@ -394,7 +395,7 @@ Deno.serve(async (req) => {
     );
   } catch (err) {
     console.error("document-generation failed", err);
-    return new Response(JSON.stringify({ error: String(err) }), {
+    return new Response(JSON.stringify({ error: errorMessage(err) }), {
       status: 500,
       headers: { ...cors, "Content-Type": "application/json" },
     });

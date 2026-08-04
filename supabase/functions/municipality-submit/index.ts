@@ -17,6 +17,7 @@
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.3";
 import { CallerAuthError, requireStaffCaller, type Caller } from "../_shared/caller-auth.ts";
+import { errorMessage } from "../_shared/errors.ts";
 import {
   draftDocuments,
   emailDraft,
@@ -435,12 +436,6 @@ Deno.serve(async (req) => {
   } catch (err) {
     if (err instanceof CallerAuthError) return json({ error: err.message }, err.status);
     console.error("municipality-submit failed", err);
-    const message =
-      err instanceof Error
-        ? err.message
-        : typeof err === "object" && err !== null && "message" in err
-          ? String((err as { message: unknown }).message)
-          : String(err);
-    return json({ error: message }, 500);
+    return json({ error: errorMessage(err) }, 500);
   }
 });

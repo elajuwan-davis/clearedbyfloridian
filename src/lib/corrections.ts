@@ -4,6 +4,11 @@
 // approval goes through the approve_correction_plan() RPC (staff-only, SECURITY DEFINER) and
 // it is the database trigger that releases the acknowledgment, so no UI bug can mail the GC
 // or a building department.
+//
+// The category / complexity / party unions below mirror the closed sets that the parser
+// validates against in supabase/functions/_shared/correction-parse.ts, and the status union
+// mirrors the correction_plans CHECK constraint. None of the three is the source of truth for
+// the others — widening one alone leaves the other two rejecting the new value.
 
 import { supabase } from "@/integrations/supabase/client";
 

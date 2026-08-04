@@ -16,6 +16,7 @@
 //   5. PAA signed and on file               → paa_signatures
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.3";
+import { errorMessage } from "../_shared/errors.ts";
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
@@ -153,7 +154,7 @@ async function checkAddress(permit: PermitRow): Promise<Check> {
       key: "address",
       label: "Address & jurisdiction",
       severity: "amber",
-      detail: `Address lookup failed: ${String(err)}`,
+      detail: `Address lookup failed: ${errorMessage(err)}`,
     };
   }
 }
@@ -237,7 +238,7 @@ async function checkLicense(permit: PermitRow): Promise<Check> {
       key: "gc_license",
       label: "GC license active (DBPR)",
       severity: "amber",
-      detail: `DBPR lookup failed: ${String(err)}`,
+      detail: `DBPR lookup failed: ${errorMessage(err)}`,
     };
   }
 }
