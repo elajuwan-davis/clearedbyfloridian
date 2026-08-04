@@ -28,7 +28,8 @@ export function SendForSignatureDialog({
   onOpenChange,
   project,
   documentName,
-  docId,
+  documentKey,
+  documentPath,
   onSent,
 }: {
   open: boolean;
@@ -36,8 +37,10 @@ export function SendForSignatureDialog({
   /** Live permit record — project.id is the permit UUID for live permits. */
   project: Project;
   documentName: string;
-  /** Permit document key to sign; defaults to the generated submittal bundle. */
-  docId?: string;
+  /** Logical permit document key (e.g. 'signed_application'). */
+  documentKey?: string;
+  /** Storage path of an uploaded file, when the caller picked a specific document. */
+  documentPath?: string;
   onSent?: () => void;
 }) {
   const [email, setEmail] = useState("");
@@ -66,7 +69,8 @@ export function SendForSignatureDialog({
     try {
       const req = await sendForSignature({
         permitId: project.id,
-        documentKey: docId,
+        documentKey,
+        documentPath,
         documentName,
         recipientEmail: email.trim(),
         recipientRole: role,

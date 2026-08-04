@@ -340,7 +340,12 @@ function DocumentsTab({ project, internal }: { project: Project; internal: boole
   const [pcnOpen, setPcnOpen] = useState(false);
   const [pcn, setPcnLocal] = useState("");
   const [tick, setTick] = useState(0);
-  const [sigDialog, setSigDialog] = useState<{ documentName: string; docId?: string } | null>(null);
+  // docPath is a storage path for an uploaded file; docKey is a logical permit document key.
+  const [sigDialog, setSigDialog] = useState<{
+    documentName: string;
+    docPath?: string;
+    docKey?: string;
+  } | null>(null);
   const [notaryDialog, setNotaryDialog] = useState<{ documentName: string; docId?: string } | null>(null);
   const [notaryByDoc, setNotaryByDoc] = useState<Record<string, Awaited<ReturnType<typeof notaryForDoc>>>>({});
   const [sigByDoc, setSigByDoc] = useState<Record<string, SignatureRequest | undefined>>({});
@@ -405,7 +410,7 @@ function DocumentsTab({ project, internal }: { project: Project; internal: boole
   }, [project.id, isLivePermit, tick]);
 
   // SignWell needs a permit record to attach the document and ledger row to.
-  function requestSignature(target: { documentName: string; docId?: string }) {
+  function requestSignature(target: { documentName: string; docPath?: string; docKey?: string }) {
     if (!isLivePermit) {
       toast.error("Signature routing requires a live permit record.");
       return;
@@ -518,7 +523,7 @@ function DocumentsTab({ project, internal }: { project: Project; internal: boole
                         <div className="flex items-center gap-1">
                           <Button
                             variant="outline" size="sm" className="h-7 rounded-[3px] text-[11px]"
-                            onClick={() => requestSignature({ documentName: d.filename, docId: d.id })}
+                            onClick={() => requestSignature({ documentName: d.filename, docPath: d.id })}
                           >
                             <Send className="h-3 w-3 mr-1" /> Send for Signature
                           </Button>
@@ -605,7 +610,8 @@ function DocumentsTab({ project, internal }: { project: Project; internal: boole
           onOpenChange={(v) => !v && setSigDialog(null)}
           project={project}
           documentName={sigDialog.documentName}
-          docId={sigDialog.docId}
+          documentKey={sigDialog.docKey}
+          documentPath={sigDialog.docPath}
         />
       )}
       {notaryDialog && isLivePermit && (

@@ -125,11 +125,17 @@ CREATE TABLE IF NOT EXISTS public.signwell_events (
   event_hash text NOT NULL,
   signwell_document_id text,
   payload jsonb NOT NULL,
-  processed_at timestamptz NOT NULL DEFAULT now()
+  received_at timestamptz NOT NULL DEFAULT now(),
+  -- NULL until the ledger work for this event actually succeeded. A provider retry of an
+  -- unprocessed event is replayed rather than dismissed as a duplicate.
+  processed_at timestamptz
 );
 
-CREATE UNIQUE INDEX IF NOT EXISTS signwell_events_hash_key
-  ON public.signwell_events (event_hash);
+-- The hash is HMAC(webhook_id, '<type>@<unix seconds>'), so two documents reaching the same
+-- event type within the same second share a hash. Uniqueness is therefore per document.
+DROP INDEX IF EXISTS public.signwell_events_hash_key;
+CREATE UNIQUE INDEX IF NOT EXISTS signwell_events_hash_document_key
+  ON public.signwell_events (event_hash, coalesce(signwell_document_id, ''));
 
 REVOKE ALL ON public.signwell_events FROM authenticated, anon;
 GRANT ALL ON public.signwell_events TO service_role;

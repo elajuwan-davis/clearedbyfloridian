@@ -10,6 +10,10 @@
 // document_signed fires once per signer and does not mean the document is done, so it is
 // recorded as progress only.
 //
+// Events are logged unprocessed and only marked processed_at once the ledger write for that
+// event succeeded, so a retry after a failed write (or before signwell-send has inserted the
+// ledger row) is replayed instead of being swallowed as a duplicate.
+//
 // This function must be deployed with JWT verification disabled (SignWell cannot send a
 // Supabase JWT); the HMAC check is the authentication.
 
@@ -80,26 +84,59 @@ Deno.serve(async (req) => {
   const object = payload.data?.object ?? {};
   const documentId = object.id ?? null;
 
-  // Replays carry the same hash; the unique index makes processing idempotent.
-  const { error: logErr } = await admin.from("signwell_events").insert({
-    event_type: verified.type,
-    event_time: typeof verified.time === "string" ? Number(verified.time) : verified.time,
-    event_hash: verified.hash,
-    signwell_document_id: documentId,
-    payload,
-  });
+  // The event is recorded unprocessed first and only marked processed once the ledger work
+  // below succeeds, so a provider retry after a failed ledger write is replayed instead of
+  // being dismissed as a duplicate. Uniqueness is per (hash, document).
+  const { data: inserted, error: logErr } = await admin
+    .from("signwell_events")
+    .insert({
+      event_type: verified.type,
+      event_time: typeof verified.time === "string" ? Number(verified.time) : verified.time,
+      event_hash: verified.hash,
+      signwell_document_id: documentId,
+      payload,
+    })
+    .select("id")
+    .maybeSingle();
+
+  let eventRowId = (inserted as { id: string } | null)?.id ?? null;
+
   if (logErr && /duplicate key/i.test(logErr.message)) {
-    return json({ ok: true, duplicate: true, event: verified.type });
+    const lookup = admin
+      .from("signwell_events")
+      .select("id, processed_at")
+      .eq("event_hash", verified.hash);
+    const { data: existing } = await (documentId
+      ? lookup.eq("signwell_document_id", documentId)
+      : lookup.is("signwell_document_id", null)
+    ).maybeSingle();
+    const prior = existing as { id: string; processed_at: string | null } | null;
+    // Already fully applied — replaying is a no-op.
+    if (prior?.processed_at) {
+      return json({ ok: true, duplicate: true, event: verified.type });
+    }
+    eventRowId = prior?.id ?? null;
+  } else if (logErr) {
+    console.error("signwell-webhook: event log insert failed", logErr.message);
   }
-  if (logErr) console.error("signwell-webhook: event log insert failed", logErr.message);
+
+  const markProcessed = async () => {
+    if (!eventRowId) return;
+    await admin
+      .from("signwell_events")
+      .update({ processed_at: new Date().toISOString() })
+      .eq("id", eventRowId);
+  };
 
   await admin
     .from("signwell_webhooks")
     .update({ last_event_at: new Date().toISOString(), last_event_type: verified.type })
     .in("id", webhookIds);
 
-  if (!documentId)
+  if (!documentId) {
+    await markProcessed();
     return json({ ok: true, event: verified.type, note: "no document id in payload" });
+  }
 
   const { data: rows } = await admin
     .from("signature_requests")
@@ -116,8 +153,13 @@ Deno.serve(async (req) => {
   }>;
 
   if (ledger.length === 0) {
+    // signwell-send may not have written the ledger row yet. The event stays unprocessed and
+    // a non-2xx answer asks SignWell to retry, so completion is not lost to a race.
     console.warn(`signwell-webhook: no signature_requests row for document ${documentId}`);
-    return json({ ok: true, event: verified.type, matched: 0 });
+    return json(
+      { error: "no ledger row for document yet — retry", event: verified.type, matched: 0 },
+      409,
+    );
   }
 
   const now = new Date().toISOString();
@@ -158,6 +200,7 @@ Deno.serve(async (req) => {
       });
     }
 
+    await markProcessed();
     return json({
       ok: true,
       event: verified.type,
@@ -209,6 +252,7 @@ Deno.serve(async (req) => {
     });
   }
 
+  await markProcessed();
   return json({
     ok: true,
     event: verified.type,
