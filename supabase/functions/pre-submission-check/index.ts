@@ -12,7 +12,7 @@
 //
 // Checks:
 //   1. required_forms    → permits.documents + Agent 2's document_bundle_report
-//   2. signatures        → signature_requests (all routed requests signed)
+//   2. signatures        → signature_requests (every routed request SignWell-confirmed)
 //   3. plans_format      → PDF parsed with pdf-lib: page count + sheet dimensions
 //   4. fee_collected     → service_fee_invoices.status
 //   5. nto_ready         → nto_filings.status (sent | confirmed)
@@ -32,6 +32,7 @@ const AI_URL =
   Deno.env.get("AI_GATEWAY_URL") ?? "https://ai.gateway.lovable.dev/v1/chat/completions";
 const PLAN_REVIEW_MODEL = Deno.env.get("PLAN_REVIEW_MODEL") ?? "anthropic/claude-haiku-4-5";
 const BUCKET = "permit-files";
+const SIGNWELL_CONFIGURED = Boolean(Deno.env.get("SIGNWELL_API_KEY"));
 
 // A plan sheet is at least tabloid (11x17in = 792x1224pt). Anything letter-sized is a
 // document printed to PDF, not a drawing set.
@@ -139,7 +140,7 @@ function checkRequiredForms(permit: PermitRow): Check {
   };
 }
 
-// --- 2. signatures obtained (SignWell ledger) -------------------------------
+// --- 2. signatures obtained (SignWell-confirmed) ----------------------------
 
 type SignatureRow = {
   document_name: string;
@@ -147,13 +148,17 @@ type SignatureRow = {
   status: string;
   status_source: string;
   signed_at: string | null;
+  signwell_document_id: string | null;
 };
 
+// SignWell is wired for real, so a staff attestation is no longer acceptable evidence:
+// only a row the signwell-webhook promoted to 'provider_confirmed' on document_completed
+// counts. status_source='provider_confirmed' cannot be written by a browser.
 function checkSignatures(rows: SignatureRow[]): Check {
   if (rows.length === 0) {
     return {
       key: "signatures",
-      label: "Signatures obtained",
+      label: "Signatures obtained (SignWell-confirmed)",
       pass: false,
       blocking: true,
       reason: "No signature requests routed for this permit.",
@@ -166,24 +171,41 @@ function checkSignatures(rows: SignatureRow[]): Check {
       .join("; ");
     return {
       key: "signatures",
-      label: "Signatures obtained",
+      label: "Signatures obtained (SignWell-confirmed)",
       pass: false,
       blocking: true,
       reason: `${outstanding.length} signature(s) outstanding: ${detail}.`,
       data: { outstanding },
     };
   }
-  const manual = rows.filter((r) => r.status_source !== "provider").length;
+  const attested = rows.filter((r) => r.status_source !== "provider_confirmed");
+  if (attested.length > 0) {
+    const detail = attested
+      .map(
+        (r) =>
+          `${r.document_name} → ${r.recipient_email} (staff_attested${
+            r.signwell_document_id
+              ? ", awaiting SignWell document_completed"
+              : ", never sent through SignWell"
+          })`,
+      )
+      .join("; ");
+    return {
+      key: "signatures",
+      label: "Signatures obtained (SignWell-confirmed)",
+      pass: false,
+      blocking: true,
+      reason: `${attested.length} signature(s) marked signed but not confirmed by SignWell: ${detail}.`,
+      data: { staff_attested: attested },
+    };
+  }
   return {
     key: "signatures",
-    label: "Signatures obtained",
+    label: "Signatures obtained (SignWell-confirmed)",
     pass: true,
     blocking: true,
-    reason:
-      manual > 0
-        ? `All ${rows.length} signature(s) recorded as signed — ${manual} staff-attested (SignWell is not connected, so no provider confirmation exists).`
-        : `All ${rows.length} signature(s) confirmed by SignWell.`,
-    data: { total: rows.length, staff_attested: manual },
+    reason: `All ${rows.length} signature(s) confirmed by SignWell (document_completed).`,
+    data: { total: rows.length, provider_confirmed: rows.length },
   };
 }
 
@@ -484,7 +506,9 @@ Deno.serve(async (req) => {
     const [{ data: sigs }, { data: invoices }, { data: nto }] = await Promise.all([
       admin
         .from("signature_requests")
-        .select("document_name, recipient_email, status, status_source, signed_at")
+        .select(
+          "document_name, recipient_email, status, status_source, signed_at, signwell_document_id",
+        )
         .eq("permit_id", permitId),
       admin
         .from("service_fee_invoices")
@@ -516,7 +540,7 @@ Deno.serve(async (req) => {
     const report = {
       status,
       checked_at: new Date().toISOString(),
-      signwell_configured: false,
+      signwell_configured: SIGNWELL_CONFIGURED,
       checks,
       blocking_reasons: blockers.map((c) => `${c.label}: ${c.reason}`),
     };

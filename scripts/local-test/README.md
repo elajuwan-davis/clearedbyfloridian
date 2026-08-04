@@ -141,3 +141,44 @@ psql -c "set role authenticated; insert into public.signature_requests
 claude-haiku-4-5 call is advisory text only and is skipped entirely without
 `LOVABLE_API_KEY`.
 
+## SignWell — signwell-send + signwell-webhook
+
+The retry policy and the event-hash scheme are covered by unit tests, no rig needed:
+
+```bash
+deno test -A supabase/functions/_shared/signwell_test.ts
+```
+
+The rest runs against the local rig with a mock SignWell API, so no real
+`SIGNWELL_API_KEY` is involved:
+
+```bash
+sed '/CREATE EXTENSION IF NOT EXISTS pg_net/d' supabase/migrations/20260805160000_signwell_integration.sql \
+  | docker exec -i cleard-pg psql -v ON_ERROR_STOP=1 -U postgres
+docker exec -i cleard-pg psql -U postgres -c "notify pgrst, 'reload schema';"
+
+# The webhook id is the HMAC key; register one locally.
+docker exec -i cleard-pg psql -U postgres -c "insert into public.signwell_webhooks (id, callback_url)
+  values ('hook_local_test','http://localhost:54331/functions/v1/signwell-webhook') on conflict do nothing;"
+
+# signwell-send against a mock that 429s once, then succeeds (proves the retry path,
+# the X-Api-Key header, and that the embedded_signing_url is stored)
+SIGNWELL_BASE_URL=http://localhost:8200/api/v1 SIGNWELL_API_KEY=local-test-key \
+SIGNWELL_TEST_MODE=true SUPABASE_URL=http://localhost:54331 \
+SUPABASE_SERVICE_ROLE_KEY=$(cat /tmp/service.jwt) \
+  deno run -A supabase/functions/signwell-send/index.ts
+
+# signwell-webhook: hash = HMAC-SHA256(webhook_id, "<type>@<time>")
+HASH=$(python3 -c "import hmac,hashlib;print(hmac.new(b'hook_local_test',b'document_completed@1700000200',hashlib.sha256).hexdigest())")
+curl -s -X POST http://localhost:8000 -H 'Content-Type: application/json' \
+  -d "{\"event\":{\"type\":\"document_completed\",\"time\":1700000200,\"hash\":\"$HASH\"},
+       \"data\":{\"object\":{\"id\":\"doc_local_1\",\"status\":\"Completed\"}}}"
+```
+
+Observed locally: a wrong hash → `401 invalid event hash` with no write;
+`document_signed` → `provider_confirmed: false` (status untouched, event recorded);
+`document_completed` → row `signed / provider_confirmed` + `activity_events` entry; a
+replayed event → `duplicate: true` and no second write. `provider_confirmed` and the
+SignWell identifier columns are rejected for the `authenticated` role by the ledger
+trigger. pre-submission-check blocks a staff-attested signature ("marked signed but not
+confirmed by SignWell") and passes only once the webhook has confirmed it.
