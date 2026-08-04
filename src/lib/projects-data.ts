@@ -3,6 +3,7 @@
 
 import type { ProjectStatus } from "./status-badges";
 import { getHubspotProject } from "./hubspot-projects";
+import { defaultVendorFor, type Vendor } from "./project-vendors";
 
 export type Project = {
   id: string;
@@ -18,9 +19,12 @@ export type Project = {
   status: ProjectStatus;
   value_cents: number;
   permit_types: string[];
+  /** Outsourced permit vendor, when assigned. */
+  vendor?: Vendor | null;
   submitted_at: string;
   updated_at: string;
 };
+
 
 // County mapping by city — Palm Beach + Treasure Coast (+ Broward/Miami-Dade edge cases).
 const COUNTY_BY_CITY: Record<string, string> = {
@@ -131,9 +135,11 @@ export const PROJECTS: Project[] = SEED.map((s) => {
     status: s.status ?? "in_review",
     value_cents,
     permit_types,
+    vendor: defaultVendorFor(s.name),
     submitted_at: submitted,
     updated_at: submitted,
   };
+
 });
 
 export function getProjectById(id: string): Project | null {

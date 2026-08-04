@@ -45,7 +45,7 @@ function ThemeToggle() {
 const navLinks = [
   { to: "/services", label: "Services" },
   { to: "/process", label: "Process" },
-  { to: "/versus", label: "Compare" },
+  
   { to: "/about", label: "About" },
   { to: "/municipalities", label: "Coverage" },
   { to: "/blog", label: "Blog" },

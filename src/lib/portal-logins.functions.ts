@@ -1,8 +1,10 @@
 // GC building-department portal login credentials.
 // Stored encrypted (AES-256-GCM) so plaintext is never readable in the DB.
 //
-// - Save/List (has_login flag only) callable by authenticated GC users.
-// - Reveal (decrypt) is admin-only (Cleard staff), used at portal-submission time.
+// - Save/List (metadata + has_login flags only) callable by authenticated GC users.
+// - Reveal (decrypt) only via controlled server fns — never via a direct table select.
+// - Owner can reveal their own credentials; Cleard staff (admin email allowlist) can
+//   reveal any GC's credentials at portal-submission time.
 
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
@@ -20,12 +22,31 @@ function isAdmin(claims: Record<string, unknown> | undefined | null): boolean {
   return !!email && ADMIN_EMAILS.has(email.toLowerCase());
 }
 
+export type PortalLoginFlag = {
+  id: string;
+  municipality_slug: string;
+  city_name: string;
+  notes: string | null;
+  updated_at: string;
+  portal_url: string | null;
+  registration: string | null;
+  e_plan: boolean;
+  derm: boolean;
+  tenant_id: string | null;
+  user_id: string;
+};
+
 const SaveSchema = z.object({
   municipality_slug: z.string().min(1).max(200),
   city_name: z.string().min(1).max(200),
   username: z.string().min(1).max(500),
   password: z.string().min(1).max(500),
   notes: z.string().max(2000).optional().nullable(),
+  portal_url: z.string().max(500).optional().nullable(),
+  registration: z.string().max(500).optional().nullable(),
+  e_plan: z.boolean().optional(),
+  derm: z.boolean().optional(),
+  tenant_id: z.string().uuid().optional().nullable(),
 });
 
 export const savePortalLogin = createServerFn({ method: "POST" })
@@ -37,11 +58,16 @@ export const savePortalLogin = createServerFn({ method: "POST" })
     const { error } = await supabaseAdmin.from("gc_portal_logins" as any).upsert(
       {
         user_id: context.userId,
+        tenant_id: data.tenant_id ?? null,
         municipality_slug: data.municipality_slug,
         city_name: data.city_name,
         username_ciphertext: encryptSecret(data.username),
         password_ciphertext: encryptSecret(data.password),
         notes: data.notes ?? null,
+        portal_url: data.portal_url ?? null,
+        registration: data.registration ?? null,
+        e_plan: data.e_plan ?? false,
+        derm: data.derm ?? false,
         updated_at: new Date().toISOString(),
       },
       { onConflict: "user_id,municipality_slug" },
@@ -64,26 +90,47 @@ export const deletePortalLogin = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
-// Returns which municipalities the current GC has stored logins for.
-// No plaintext is returned — only presence flags + notes + updated_at.
+/** Metadata only — no ciphertext. */
 export const listPortalLoginFlags = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data, error } = await supabaseAdmin
       .from("gc_portal_logins" as any)
-      .select("municipality_slug, city_name, notes, updated_at")
-      .eq("user_id", context.userId);
+      .select(
+        "id, user_id, tenant_id, municipality_slug, city_name, notes, updated_at, portal_url, registration, e_plan, derm",
+      )
+      .eq("user_id", context.userId)
+      .order("city_name", { ascending: true });
     if (error) throw new Error(error.message);
-    return (data ?? []) as unknown as Array<{
-      municipality_slug: string;
-      city_name: string;
-      notes: string | null;
-      updated_at: string;
-    }>;
+    return (data ?? []) as unknown as PortalLoginFlag[];
   });
 
-// Admin-only reveal for Cleard staff to log into portals on behalf of GCs.
+/** Owner reveal — decrypt only the caller's own credentials. */
+export const revealOwnPortalLogin = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: unknown) =>
+    z.object({ municipality_slug: z.string().min(1) }).parse(data),
+  )
+  .handler(async ({ data, context }) => {
+    const { decryptSecret } = await import("@/lib/portal-logins-crypto.server");
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: row, error } = await supabaseAdmin
+      .from("gc_portal_logins" as any)
+      .select("username_ciphertext, password_ciphertext, notes")
+      .eq("user_id", context.userId)
+      .eq("municipality_slug", data.municipality_slug)
+      .maybeSingle();
+    if (error) throw new Error(error.message);
+    if (!row) return null;
+    return {
+      username: decryptSecret((row as any).username_ciphertext),
+      password: decryptSecret((row as any).password_ciphertext),
+      notes: (row as any).notes as string | null,
+    };
+  });
+
+/** Admin-only reveal for Cleard staff to log into portals on behalf of GCs. */
 export const revealPortalLogin = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data: unknown) =>

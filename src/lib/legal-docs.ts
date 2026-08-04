@@ -1,5 +1,10 @@
-// Internal legal document library + NTBO templates. LocalStorage-backed so staff
-// can add versions without a migration; seeded with the current document set.
+// Internal legal document library + NTBO templates.
+// Backed by public.legal_documents + legal_document_versions and the
+// private `legal-documents` Storage bucket (signed URL upload/download).
+// Version history mirrors hoa_template_versions (parent pointer + child rows),
+// with a real file_path per version instead of a JSONB snapshot.
+
+import { supabase } from "@/integrations/supabase/client";
 
 export type LegalDocType =
   | "Permit Agent Authorization"
@@ -18,6 +23,17 @@ export const LEGAL_STATUS_META: Record<LegalDocStatus, { label: string; classNam
   pending_review: { label: "Pending Review", className: "border-amber-600/30 bg-amber-50 text-amber-800" },
 };
 
+export type LegalDocVersion = {
+  id: string;
+  legalDocumentId: string;
+  versionLabel: string;
+  filePath: string;
+  fileName: string | null;
+  changeNotes: string | null;
+  createdAt: string;
+  createdBy: string | null;
+};
+
 export type LegalDoc = {
   id: string;
   name: string;
@@ -32,85 +48,167 @@ export type LegalDoc = {
 };
 
 export const LEGAL_EVT = "legal-docs:changed";
-const KEY = "cleared.legalDocs.v1";
 
-const SEED: LegalDoc[] = [
-  { id: "paa-master", name: "Permit Agent Authorization — Master Template", type: "Permit Agent Authorization", version: "v0.9", updatedAt: "2026-07-28", status: "pending_review", notes: "Placeholder language circulated to counsel 7/28." },
-  { id: "paa-coastline", name: "PAA — Coastline Builders Group (executed)", type: "Signed PAA", version: "v0.9", updatedAt: "2026-06-11", status: "active", gcName: "Coastline Builders Group", signedAt: "2026-06-11" },
-  { id: "paa-harborline", name: "PAA — Harborline Residential (executed)", type: "Signed PAA", version: "v0.9", updatedAt: "2026-05-02", status: "active", gcName: "Harborline Residential LLC", signedAt: "2026-05-02" },
-  { id: "paa-atlantic", name: "PAA — Atlantic Ridge Custom Homes (executed)", type: "Signed PAA", version: "v0.8", updatedAt: "2026-03-19", status: "active", gcName: "Atlantic Ridge Custom Homes", signedAt: "2026-03-19" },
-
-  { id: "ntbo-pbc", name: "NTBO Template — Palm Beach County", type: "NTBO Template", version: "v2.1", updatedAt: "2026-06-02", status: "active" },
-  { id: "ntbo-slc", name: "NTBO Template — St. Lucie County", type: "NTBO Template", version: "v1.8", updatedAt: "2026-05-14", status: "active" },
-  { id: "ntbo-psl", name: "NTBO Template — City of Port St. Lucie", type: "NTBO Template", version: "v1.6", updatedAt: "2026-05-27", status: "active" },
-  { id: "ntbo-martin", name: "NTBO Template — Martin County", type: "NTBO Template", version: "v2.0", updatedAt: "2026-04-30", status: "active" },
-  { id: "ntbo-fp", name: "NTBO Template — City of Fort Pierce", type: "NTBO Template", version: "v1.2", updatedAt: "2026-05-20", status: "pending_review", notes: "Historic district recording language still under review." },
-
-  { id: "tos", name: "Terms of Service", type: "Terms of Service", version: "v1.3", updatedAt: "2026-04-08", status: "active" },
-  { id: "privacy", name: "Privacy Policy", type: "Privacy Policy", version: "v1.2", updatedAt: "2026-04-08", status: "active" },
-  { id: "indemnification", name: "Indemnification Agreement", type: "Indemnification Agreement", version: "v0.4", updatedAt: "2026-07-21", status: "pending_review", notes: "Placeholder indemnity caps pending attorney review." },
-  { id: "auth-letter-county", name: "Contractor Authorization Letter — County Submittals", type: "Contractor Authorization Letter", version: "v1.5", updatedAt: "2026-06-18", status: "active" },
-  { id: "auth-letter-city", name: "Contractor Authorization Letter — Municipal Submittals", type: "Contractor Authorization Letter", version: "v1.1", updatedAt: "2026-05-05", status: "draft" },
-];
-
-function read(): LegalDoc[] {
-  if (typeof window === "undefined") return SEED;
-  try {
-    const raw = window.localStorage.getItem(KEY);
-    if (!raw) {
-      window.localStorage.setItem(KEY, JSON.stringify(SEED));
-      return SEED;
-    }
-    return JSON.parse(raw) as LegalDoc[];
-  } catch {
-    return SEED;
+function notifyChanged() {
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(new CustomEvent(LEGAL_EVT));
   }
 }
 
-function write(list: LegalDoc[]) {
-  if (typeof window === "undefined") return;
-  window.localStorage.setItem(KEY, JSON.stringify(list));
-  window.dispatchEvent(new CustomEvent(LEGAL_EVT));
+function mapDoc(row: any): LegalDoc {
+  const updated = (row.updated_at as string) ?? new Date().toISOString();
+  return {
+    id: row.id as string,
+    name: (row.name as string) ?? "",
+    type: row.type as LegalDocType,
+    version: (row.current_version as string) ?? "v1.0",
+    updatedAt: updated.slice(0, 10),
+    status: (row.status as LegalDocStatus) ?? "pending_review",
+    gcName: (row.gc_name as string | null) ?? undefined,
+    signedAt: row.signed_at ? String(row.signed_at).slice(0, 10) : undefined,
+    notes: (row.notes as string | null) ?? undefined,
+  };
 }
 
-export function listLegalDocs(): LegalDoc[] {
-  return read().slice().sort((a, b) => (a.updatedAt < b.updatedAt ? 1 : -1));
+function mapVersion(row: any): LegalDocVersion {
+  return {
+    id: row.id as string,
+    legalDocumentId: row.legal_document_id as string,
+    versionLabel: row.version_label as string,
+    filePath: row.file_path as string,
+    fileName: (row.file_name as string | null) ?? null,
+    changeNotes: (row.change_notes as string | null) ?? null,
+    createdAt: row.created_at as string,
+    createdBy: (row.created_by as string | null) ?? null,
+  };
 }
 
-export function addLegalDoc(input: Omit<LegalDoc, "id">): LegalDoc {
-  const row: LegalDoc = { ...input, id: Math.random().toString(36).slice(2, 10) };
-  write([row, ...read()]);
-  return row;
+export async function listLegalDocs(): Promise<LegalDoc[]> {
+  const { data, error } = await supabase
+    .from("legal_documents")
+    .select("*")
+    .order("updated_at", { ascending: false });
+  if (error) throw error;
+  return (data ?? []).map(mapDoc);
 }
 
-/** Bump a document to the next version and mark it pending review. */
-export function newLegalVersion(id: string, version: string, notes?: string) {
-  write(read().map((d) => (
-    d.id === id
-      ? { ...d, version, updatedAt: new Date().toISOString().slice(0, 10), status: "pending_review" as LegalDocStatus, notes: notes ?? d.notes }
-      : d
-  )));
+export async function listLegalDocVersions(documentId: string): Promise<LegalDocVersion[]> {
+  const { data, error } = await supabase
+    .from("legal_document_versions")
+    .select("*")
+    .eq("legal_document_id", documentId)
+    .order("created_at", { ascending: false });
+  if (error) throw error;
+  return (data ?? []).map(mapVersion);
 }
 
-export function downloadLegalDoc(doc: LegalDoc) {
-  if (typeof window === "undefined") return;
-  const text = [
-    `CLÉARED — ${doc.name}`,
-    `Type: ${doc.type}`,
-    `Version: ${doc.version}`,
-    `Last updated: ${doc.updatedAt}`,
-    `Status: ${LEGAL_STATUS_META[doc.status].label}`,
-    doc.gcName ? `Executed by: ${doc.gcName} on ${doc.signedAt}` : "",
-    "",
-    doc.status === "pending_review" ? "DRAFT — PENDING ATTORNEY REVIEW" : "",
-    "",
-    doc.notes ?? "",
-  ].filter(Boolean).join("\n");
-  const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = `${doc.name.replace(/[^a-z0-9]+/gi, "-").toLowerCase()}.txt`;
-  a.click();
-  URL.revokeObjectURL(url);
+export async function getCurrentVersionFilePath(doc: LegalDoc): Promise<string | null> {
+  const { data, error } = await supabase
+    .from("legal_document_versions")
+    .select("file_path")
+    .eq("legal_document_id", doc.id)
+    .eq("version_label", doc.version)
+    .maybeSingle();
+  if (error) throw error;
+  if (data?.file_path) return data.file_path as string;
+  // Fallback: most recent version if labels drifted.
+  const versions = await listLegalDocVersions(doc.id);
+  return versions[0]?.filePath ?? null;
+}
+
+export type AddLegalDocInput = {
+  id?: string;
+  name: string;
+  type: LegalDocType;
+  version: string;
+  status: LegalDocStatus;
+  notes?: string;
+  gcName?: string;
+  signedAt?: string;
+  filePath: string;
+  fileName: string;
+};
+
+/** Create a legal document and its initial version row (file already uploaded). */
+export async function addLegalDoc(input: AddLegalDocInput): Promise<LegalDoc> {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  const docPayload = {
+    ...(input.id ? { id: input.id } : {}),
+    name: input.name,
+    type: input.type,
+    current_version: input.version,
+    status: input.status,
+    notes: input.notes ?? null,
+    gc_name: input.gcName ?? null,
+    signed_at: input.signedAt ?? null,
+    updated_at: new Date().toISOString(),
+  };
+
+  const { data: doc, error: docErr } = await supabase
+    .from("legal_documents")
+    .insert(docPayload)
+    .select("*")
+    .single();
+  if (docErr) throw docErr;
+
+  const { error: verErr } = await supabase.from("legal_document_versions").insert({
+    legal_document_id: doc.id,
+    version_label: input.version,
+    file_path: input.filePath,
+    file_name: input.fileName,
+    change_notes: input.notes ?? "Initial upload",
+    created_by: user?.id ?? null,
+  });
+  if (verErr) throw verErr;
+
+  notifyChanged();
+  return mapDoc(doc);
+}
+
+export type NewLegalVersionInput = {
+  documentId: string;
+  version: string;
+  notes?: string;
+  filePath: string;
+  fileName: string;
+};
+
+/**
+ * Insert a new version row and bump the parent's current_version pointer
+ * (same pattern as hoa_templates.current_version + hoa_template_versions).
+ * Marks the document pending_review.
+ */
+export async function newLegalVersion(input: NewLegalVersionInput): Promise<LegalDoc> {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  const { error: verErr } = await supabase.from("legal_document_versions").insert({
+    legal_document_id: input.documentId,
+    version_label: input.version,
+    file_path: input.filePath,
+    file_name: input.fileName,
+    change_notes: input.notes ?? null,
+    created_by: user?.id ?? null,
+  });
+  if (verErr) throw verErr;
+
+  const { data: doc, error: docErr } = await supabase
+    .from("legal_documents")
+    .update({
+      current_version: input.version,
+      status: "pending_review",
+      ...(input.notes !== undefined ? { notes: input.notes || null } : {}),
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", input.documentId)
+    .select("*")
+    .single();
+  if (docErr) throw docErr;
+
+  notifyChanged();
+  return mapDoc(doc);
 }

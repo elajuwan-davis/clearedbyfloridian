@@ -1,7 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState, type FormEvent } from "react";
-import { FileCheck2, CheckCircle2, ShieldAlert } from "lucide-react";
-import { loadSubLibrary, type SubRecord } from "@/lib/subcontractor-library";
+import { useServerFn } from "@tanstack/react-start";
+import { FileCheck2, CheckCircle2, ShieldAlert, Loader2 } from "lucide-react";
+import { toast } from "sonner";
+import { listSubs, type SubRow } from "@/lib/subs-api";
+import { useSession } from "@/lib/use-session";
+import { createCoiRequest, createSubUpdateRequest } from "@/lib/insurance-requests-api";
+import { createInsuranceRequestUploadUrlFn } from "@/lib/insurance-requests.functions";
 import { CloudUploadButtons } from "@/components/cloud-upload-buttons";
 
 type Tab = "coi" | "sub";
@@ -28,6 +33,15 @@ const inputCls =
   "block w-full border border-obsidian/15 bg-white px-3 py-2 text-sm text-obsidian placeholder:text-obsidian/40 focus:border-obsidian/40 focus:outline-none rounded-[3px]";
 const labelCls = "block text-[11px] font-mono uppercase tracking-[0.14em] text-obsidian/60 mb-1.5";
 
+function newId() {
+  if (typeof crypto !== "undefined" && "randomUUID" in crypto) return crypto.randomUUID();
+  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
+    const r = (Math.random() * 16) | 0;
+    const v = c === "x" ? r : (r & 0x3) | 0x8;
+    return v.toString(16);
+  });
+}
+
 function Submitted({ copy, onReset }: { copy: string; onReset: () => void }) {
   return (
     <div className="mt-8 border border-obsidian/10 bg-white rounded-[3px] p-10 text-center">
@@ -45,12 +59,28 @@ function Submitted({ copy, onReset }: { copy: string; onReset: () => void }) {
   );
 }
 
-function useSubLibrary() {
-  const [library, setLibrary] = useState<SubRecord[]>([]);
+function useRealSubs() {
+  const [subs, setSubs] = useState<SubRow[]>([]);
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
-    setLibrary(loadSubLibrary());
+    let cancelled = false;
+    void listSubs()
+      .then((rows) => {
+        if (!cancelled) setSubs(rows);
+      })
+      .catch(() => {
+        if (!cancelled) setSubs([]);
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
   }, []);
-  return library;
+
+  return { subs, loading };
 }
 
 function InsuranceRequestsPage() {
@@ -105,10 +135,13 @@ function InsuranceRequestsPage() {
 }
 
 function CoiForm() {
+  const session = useSession();
+  const createUpload = useServerFn(createInsuranceRequestUploadUrlFn);
+  const { subs, loading: subsLoading } = useRealSubs();
   const [submitted, setSubmitted] = useState(false);
-  const library = useSubLibrary();
-  const [subIdx, setSubIdx] = useState<string>("");
+  const [subId, setSubId] = useState<string>("");
   const [coiFile, setCoiFile] = useState<File | null>(null);
+  const [saving, setSaving] = useState(false);
   const [form, setForm] = useState({
     projectName: "",
     projectAddress: "",
@@ -119,15 +152,67 @@ function CoiForm() {
   });
 
   const selectedSub = useMemo(
-    () => (subIdx === "" ? null : library[Number(subIdx)] ?? null),
-    [library, subIdx],
+    () => (subId ? subs.find((s) => s.id === subId) ?? null : null),
+    [subs, subId],
   );
 
   function reset() {
     setSubmitted(false);
-    setSubIdx("");
+    setSubId("");
     setCoiFile(null);
     setForm({ projectName: "", projectAddress: "", holderName: "", holderAddress: "", additionalInsured: false, notes: "" });
+  }
+
+  async function onSubmit(e: FormEvent) {
+    e.preventDefault();
+    const tenantId = session.effectiveTenantId;
+    if (!tenantId) {
+      toast.error("No tenant assigned to this account yet.");
+      return;
+    }
+    if (!subId) {
+      toast.error("Select a subcontractor");
+      return;
+    }
+    setSaving(true);
+    try {
+      const requestId = newId();
+      let attachedFilePath: string | null = null;
+      let attachedFileName: string | null = null;
+
+      if (coiFile) {
+        const signed = await createUpload({
+          data: { tenantId, requestId, filename: coiFile.name },
+        });
+        const put = await fetch(signed.signedUrl, {
+          method: "PUT",
+          headers: { "Content-Type": coiFile.type || "application/pdf" },
+          body: coiFile,
+        });
+        if (!put.ok) throw new Error(`COI upload failed (${put.status})`);
+        attachedFilePath = signed.path;
+        attachedFileName = coiFile.name;
+      }
+
+      await createCoiRequest({
+        id: requestId,
+        tenantId,
+        subcontractorId: subId,
+        projectName: form.projectName.trim(),
+        projectAddress: form.projectAddress.trim(),
+        holderName: form.holderName.trim(),
+        holderAddress: form.holderAddress.trim(),
+        additionalInsured: form.additionalInsured,
+        notes: form.notes.trim() || undefined,
+        attachedFilePath,
+        attachedFileName,
+      });
+      setSubmitted(true);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Submit failed");
+    } finally {
+      setSaving(false);
+    }
   }
 
   if (submitted) {
@@ -140,13 +225,7 @@ function CoiForm() {
   }
 
   return (
-    <form
-      onSubmit={(e: FormEvent) => {
-        e.preventDefault();
-        setSubmitted(true);
-      }}
-      className="mt-8 space-y-5 bg-white border border-obsidian/10 rounded-[3px] p-6 sm:p-8"
-    >
+    <form onSubmit={(e) => void onSubmit(e)} className="mt-8 space-y-5 bg-white border border-obsidian/10 rounded-[3px] p-6 sm:p-8">
       <p className="text-sm text-obsidian/60">
         Select the subcontractor needing an updated certificate. Cleard will coordinate with their carrier and
         deliver the certificate to the holder.
@@ -154,24 +233,28 @@ function CoiForm() {
 
       <div>
         <label className={labelCls}>Subcontractor</label>
-        {library.length === 0 ? (
+        {subsLoading ? (
+          <div className="text-[12px] text-obsidian/55 border border-dashed border-obsidian/20 rounded-[3px] p-3 inline-flex items-center gap-2">
+            <Loader2 className="h-3.5 w-3.5 animate-spin" /> Loading subcontractors…
+          </div>
+        ) : subs.length === 0 ? (
           <div className="text-[12px] text-obsidian/55 border border-dashed border-obsidian/20 rounded-[3px] p-3">
             No saved subcontractors yet. Add subs on a Permit Intake to populate this list.
           </div>
         ) : (
-          <select className={inputCls} value={subIdx} onChange={(e) => setSubIdx(e.target.value)} required>
+          <select className={inputCls} value={subId} onChange={(e) => setSubId(e.target.value)} required>
             <option value="">Select a subcontractor</option>
-            {library.map((s, i) => (
-              <option key={i} value={String(i)}>
-                {s.companyName}{s.trade ? ` — ${s.trade}` : ""}
-                {s.insuranceCarrierEmail ? ` · ${s.insuranceCarrierEmail}` : ""}
+            {subs.map((s) => (
+              <option key={s.id} value={s.id}>
+                {s.company_name}{s.trade ? ` — ${s.trade}` : ""}
+                {s.insurance_carrier_email ? ` · ${s.insurance_carrier_email}` : ""}
               </option>
             ))}
           </select>
         )}
         {selectedSub && (
           <div className="mt-2 text-[12px] text-obsidian/70 bg-obsidian/5 rounded-[3px] px-3 py-2">
-            <div><span className="font-mono uppercase tracking-[0.14em] text-[10px] text-obsidian/55">Carrier Email:</span> {selectedSub.insuranceCarrierEmail || "—"}</div>
+            <div><span className="font-mono uppercase tracking-[0.14em] text-[10px] text-obsidian/55">Carrier Email:</span> {selectedSub.insurance_carrier_email || "—"}</div>
           </div>
         )}
       </div>
@@ -249,7 +332,12 @@ function CoiForm() {
       </div>
 
       <div className="pt-2 flex justify-end">
-        <button type="submit" className="inline-flex items-center gap-2 bg-obsidian px-5 py-2.5 font-mono text-[11px] uppercase tracking-[0.14em] text-paper hover:bg-obsidian/90 rounded-[3px]">
+        <button
+          type="submit"
+          disabled={saving || subsLoading || !session.effectiveTenantId}
+          className="inline-flex items-center gap-2 bg-obsidian px-5 py-2.5 font-mono text-[11px] uppercase tracking-[0.14em] text-paper hover:bg-obsidian/90 rounded-[3px] disabled:opacity-60"
+        >
+          {saving ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : null}
           Submit Request
         </button>
       </div>
@@ -258,15 +346,47 @@ function CoiForm() {
 }
 
 function SubInsuranceForm() {
+  const session = useSession();
+  const { subs, loading: subsLoading } = useRealSubs();
   const [submitted, setSubmitted] = useState(false);
-  const library = useSubLibrary();
-  const [subIdx, setSubIdx] = useState("");
+  const [subId, setSubId] = useState("");
   const [details, setDetails] = useState("");
+  const [saving, setSaving] = useState(false);
 
   const selected = useMemo(
-    () => (subIdx === "" ? null : library[Number(subIdx)] ?? null),
-    [library, subIdx],
+    () => (subId ? subs.find((s) => s.id === subId) ?? null : null),
+    [subs, subId],
   );
+
+  async function onSubmit(e: FormEvent) {
+    e.preventDefault();
+    const tenantId = session.effectiveTenantId;
+    if (!tenantId) {
+      toast.error("No tenant assigned to this account yet.");
+      return;
+    }
+    if (!subId) {
+      toast.error("Select a subcontractor");
+      return;
+    }
+    if (!details.trim()) {
+      toast.error("Describe what needs to be updated");
+      return;
+    }
+    setSaving(true);
+    try {
+      await createSubUpdateRequest({
+        tenantId,
+        subcontractorId: subId,
+        details: details.trim(),
+      });
+      setSubmitted(true);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Submit failed");
+    } finally {
+      setSaving(false);
+    }
+  }
 
   if (submitted) {
     return (
@@ -274,7 +394,7 @@ function SubInsuranceForm() {
         copy="Your request has been submitted. Cleard will follow up within 1 business day."
         onReset={() => {
           setSubmitted(false);
-          setSubIdx("");
+          setSubId("");
           setDetails("");
         }}
       />
@@ -282,37 +402,35 @@ function SubInsuranceForm() {
   }
 
   return (
-    <form
-      onSubmit={(e: FormEvent) => {
-        e.preventDefault();
-        setSubmitted(true);
-      }}
-      className="mt-8 space-y-5 bg-white border border-obsidian/10 rounded-[3px] p-6 sm:p-8"
-    >
+    <form onSubmit={(e) => void onSubmit(e)} className="mt-8 space-y-5 bg-white border border-obsidian/10 rounded-[3px] p-6 sm:p-8">
       <p className="text-sm text-obsidian/60">
         Flag a subcontractor whose insurance needs to be updated. Cleard will contact their carrier directly.
       </p>
 
       <div>
         <label className={labelCls}>Subcontractor</label>
-        {library.length === 0 ? (
+        {subsLoading ? (
+          <div className="text-[12px] text-obsidian/55 border border-dashed border-obsidian/20 rounded-[3px] p-3 inline-flex items-center gap-2">
+            <Loader2 className="h-3.5 w-3.5 animate-spin" /> Loading subcontractors…
+          </div>
+        ) : subs.length === 0 ? (
           <div className="text-[12px] text-obsidian/55 border border-dashed border-obsidian/20 rounded-[3px] p-3">
             No saved subcontractors yet. Add subs on a Permit Intake to populate this list.
           </div>
         ) : (
-          <select className={inputCls} value={subIdx} onChange={(e) => setSubIdx(e.target.value)} required>
+          <select className={inputCls} value={subId} onChange={(e) => setSubId(e.target.value)} required>
             <option value="">Select a subcontractor</option>
-            {library.map((s, i) => (
-              <option key={i} value={String(i)}>
-                {s.companyName}{s.trade ? ` — ${s.trade}` : ""}
+            {subs.map((s) => (
+              <option key={s.id} value={s.id}>
+                {s.company_name}{s.trade ? ` — ${s.trade}` : ""}
               </option>
             ))}
           </select>
         )}
         {selected && (
           <div className="mt-2 text-[12px] text-obsidian/70 bg-obsidian/5 rounded-[3px] px-3 py-2 space-y-0.5">
-            <div><span className="font-mono uppercase tracking-[0.14em] text-[10px] text-obsidian/55">Qualifier:</span> {selected.qualifierName || "—"}</div>
-            <div><span className="font-mono uppercase tracking-[0.14em] text-[10px] text-obsidian/55">Carrier Email:</span> {selected.insuranceCarrierEmail || "—"}</div>
+            <div><span className="font-mono uppercase tracking-[0.14em] text-[10px] text-obsidian/55">Qualifier:</span> {selected.qualifier_name || "—"}</div>
+            <div><span className="font-mono uppercase tracking-[0.14em] text-[10px] text-obsidian/55">Carrier Email:</span> {selected.insurance_carrier_email || "—"}</div>
           </div>
         )}
       </div>
@@ -330,7 +448,12 @@ function SubInsuranceForm() {
       </div>
 
       <div className="pt-2 flex justify-end">
-        <button type="submit" className="inline-flex items-center gap-2 bg-obsidian px-5 py-2.5 font-mono text-[11px] uppercase tracking-[0.14em] text-paper hover:bg-obsidian/90 rounded-[3px]">
+        <button
+          type="submit"
+          disabled={saving || subsLoading || !session.effectiveTenantId}
+          className="inline-flex items-center gap-2 bg-obsidian px-5 py-2.5 font-mono text-[11px] uppercase tracking-[0.14em] text-paper hover:bg-obsidian/90 rounded-[3px] disabled:opacity-60"
+        >
+          {saving ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : null}
           Submit Request
         </button>
       </div>

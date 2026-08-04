@@ -1,12 +1,25 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
 import { PortalShell } from "@/components/portal-shell";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { MunicipalityContactsTab } from "@/components/municipal-contacts";
-
+import { MUNICIPALITIES } from "@/lib/municipalities";
 import {
-  ChevronDown, Copy, Eye, EyeOff, FileText, Plus, Search, Check, ExternalLink,
+  listPortalLoginFlags,
+  revealOwnPortalLogin,
+  type PortalLoginFlag,
+} from "@/lib/portal-logins.functions";
+import {
+  getPortalLoginDocUrlFn,
+  isDocExpired,
+  listPortalLoginDocuments,
+  type PortalLoginDocument,
+} from "@/lib/portal-login-docs";
+import { toast } from "sonner";
+import {
+  ChevronDown, Copy, Eye, EyeOff, FileText, Plus, Search, Check, ExternalLink, Loader2,
 } from "lucide-react";
 
 export const Route = createFileRoute("/building-dept-logins")({
@@ -19,118 +32,86 @@ export const Route = createFileRoute("/building-dept-logins")({
   component: BuildingDeptLoginsPage,
 });
 
-type DocLink = { label: string; expires: string }; // ISO date or "—"
-type Login = {
-  id: string;
-  municipality: string;
+type EnrichedLogin = PortalLoginFlag & {
   county: string;
+  resolvedPortalUrl: string | null;
   status: "active" | "needs_updated";
-  portalUrl: string;
-  registration: string;
-  username: string;
-  password: string;
-  ePlan: boolean;
-  derm: boolean;
-  docs: DocLink[];
+  docs: PortalLoginDocument[];
 };
 
-const LOGINS: Login[] = [
-  {
-    id: "pb-county", municipality: "Palm Beach County", county: "Palm Beach", status: "active",
-    portalUrl: "https://epzb.pbcgov.org", registration: "Contractor Registration #CRC-0294831",
-    username: "coastline.builders", password: "PBcz!2026-Trade$",
-    ePlan: true, derm: false,
-    docs: [
-      { label: "COI — Certificate of Insurance", expires: "2027-03-12" },
-      { label: "WC — Workers Compensation", expires: "2026-11-30" },
-      { label: "Occupational License", expires: "2026-09-01" },
-      { label: "BTR — Business Tax Receipt", expires: "2026-09-30" },
-      { label: "Qualifier Driver's License", expires: "2028-04-22" },
-    ],
-  },
-  {
-    id: "palm-beach-town", municipality: "Town of Palm Beach", county: "Palm Beach", status: "active",
-    portalUrl: "https://townofpalmbeach.com/permitting", registration: "Local Reg #TPB-2024-1187",
-    username: "j.mendez@coastlinebuilders.com", password: "OceanBlvd!88Manalapan",
-    ePlan: true, derm: false,
-    docs: [
-      { label: "COI — Certificate of Insurance", expires: "2027-03-12" },
-      { label: "WC — Workers Compensation", expires: "2026-11-30" },
-      { label: "Local BTR", expires: "2026-09-30" },
-    ],
-  },
-  {
-    id: "manalapan", municipality: "Town of Manalapan", county: "Palm Beach", status: "needs_updated",
-    portalUrl: "https://manalapan.org/permits", registration: "Local Reg #MAN-2025-0341",
-    username: "coastline.gc", password: "T3mp!Manalapan",
-    ePlan: false, derm: false,
-    docs: [
-      { label: "COI — Certificate of Insurance", expires: "2026-04-01" }, // expired vs Jun 2026
-      { label: "Local BTR", expires: "2026-09-30" },
-    ],
-  },
-  {
-    id: "martin-county", municipality: "Martin County", county: "Martin", status: "active",
-    portalUrl: "https://www.martin.fl.us/building", registration: "County Reg #MC-CG-19044",
-    username: "coastline.builders", password: "Stuart!River2026",
-    ePlan: true, derm: false,
-    docs: [
-      { label: "COI — Certificate of Insurance", expires: "2027-03-12" },
-      { label: "WC — Workers Compensation", expires: "2026-11-30" },
-      { label: "BTR — Business Tax Receipt", expires: "2026-09-30" },
-      { label: "Qualifier Driver's License", expires: "2028-04-22" },
-    ],
-  },
-  {
-    id: "indian-river-county", municipality: "Indian River County", county: "Indian River", status: "active",
-    portalUrl: "https://www.ircgov.com/building", registration: "County Reg #IRC-GC-4421",
-    username: "coastline.gc", password: "VeroOceanDr!26",
-    ePlan: true, derm: false,
-    docs: [
-      { label: "COI — Certificate of Insurance", expires: "2027-03-12" },
-      { label: "Local BTR", expires: "2026-12-31" },
-    ],
-  },
-  {
-    id: "st-lucie", municipality: "St. Lucie County", county: "St. Lucie", status: "needs_updated",
-    portalUrl: "https://www.stlucieco.gov/building", registration: "County Reg #SLC-GC-7782",
-    username: "coastline.builders", password: "PortStLucie!2026",
-    ePlan: true, derm: false,
-    docs: [
-      { label: "Occupational License", expires: "2026-05-15" }, // expired
-      { label: "WC — Workers Compensation", expires: "2026-11-30" },
-    ],
-  },
-];
-
-const TODAY = new Date("2026-06-07");
-
-function fmtDate(iso: string) {
-  if (!iso || iso === "—") return "—";
-  const d = new Date(iso);
+function fmtDate(iso: string | null | undefined) {
+  if (!iso) return "—";
+  const d = new Date(`${iso}T00:00:00`);
+  if (isNaN(d.getTime())) return "—";
   return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 }
-function isExpired(iso: string) {
-  if (!iso || iso === "—") return false;
-  return new Date(iso).getTime() < TODAY.getTime();
+
+function enrich(flags: PortalLoginFlag[], docsBySlug: Map<string, PortalLoginDocument[]>): EnrichedLogin[] {
+  return flags.map((f) => {
+    const meta = MUNICIPALITIES.find(
+      (m) =>
+        m.name.toLowerCase() === f.city_name.toLowerCase() ||
+        m.name.toLowerCase().replace(/[^a-z0-9]+/g, "-") === f.municipality_slug,
+    );
+    const docs = docsBySlug.get(f.municipality_slug) ?? [];
+    const expiredCount = docs.filter((d) => isDocExpired(d.expiration_date)).length;
+    return {
+      ...f,
+      county: meta?.county ?? "—",
+      resolvedPortalUrl: f.portal_url || meta?.url || null,
+      status: expiredCount > 0 ? "needs_updated" : "active",
+      docs,
+    };
+  });
 }
 
 function BuildingDeptLoginsPage() {
+  const listFlags = useServerFn(listPortalLoginFlags);
   const [query, setQuery] = useState("");
-  const [open, setOpen] = useState<string | null>(LOGINS[0].id);
+  const [open, setOpen] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [rows, setRows] = useState<EnrichedLogin[]>([]);
+
+  const reload = useCallback(async () => {
+    setLoading(true);
+    try {
+      const flags = await listFlags();
+      const docs = await listPortalLoginDocuments().catch(() => [] as PortalLoginDocument[]);
+      const bySlug = new Map<string, PortalLoginDocument[]>();
+      for (const d of docs) {
+        const list = bySlug.get(d.municipality_slug) ?? [];
+        list.push(d);
+        bySlug.set(d.municipality_slug, list);
+      }
+      const enriched = enrich(flags, bySlug);
+      setRows(enriched);
+      setOpen((prev) => {
+        if (prev && enriched.some((r) => r.municipality_slug === prev)) return prev;
+        return enriched[0]?.municipality_slug ?? null;
+      });
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed to load portal logins");
+      setRows([]);
+    } finally {
+      setLoading(false);
+    }
+  }, [listFlags]);
+
+  useEffect(() => {
+    void reload();
+  }, [reload]);
 
   const filtered = useMemo(() => {
     const q = query.toLowerCase().trim();
-    if (!q) return LOGINS;
-    return LOGINS.filter((l) =>
-      `${l.municipality} ${l.county} ${l.registration}`.toLowerCase().includes(q),
+    if (!q) return rows;
+    return rows.filter((l) =>
+      `${l.city_name} ${l.county} ${l.registration ?? ""}`.toLowerCase().includes(q),
     );
-  }, [query]);
+  }, [query, rows]);
 
   return (
     <PortalShell>
       <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
-        {/* Header */}
         <div className="flex flex-wrap items-end justify-between gap-4 border-b border-obsidian/10 pb-8">
           <div>
             <div className="eyebrow text-obsidian/50">Credentials Vault</div>
@@ -146,7 +127,6 @@ function BuildingDeptLoginsPage() {
           </Button>
         </div>
 
-        {/* Search */}
         <div className="mt-6 relative max-w-md">
           <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-obsidian/40" />
           <input
@@ -157,25 +137,37 @@ function BuildingDeptLoginsPage() {
           />
         </div>
 
-        {/* Accordion list */}
         <div className="mt-8 border border-obsidian/15 bg-white">
-          {filtered.length === 0 && (
-            <div className="px-5 py-10 text-center text-sm text-obsidian/50">No municipalities match.</div>
+          {loading && (
+            <div className="px-5 py-10 text-center text-sm text-obsidian/50 inline-flex w-full items-center justify-center gap-2">
+              <Loader2 className="h-4 w-4 animate-spin" /> Loading vault…
+            </div>
+          )}
+          {!loading && filtered.length === 0 && (
+            <div className="px-5 py-10 text-center text-sm text-obsidian/50">
+              No portal logins saved yet.{" "}
+              <Link to="/building-dept-logins/submit" className="text-sky underline underline-offset-2">
+                Submit a new login
+              </Link>
+              .
+            </div>
           )}
           {filtered.map((l) => {
-            const isOpen = open === l.id;
-            const expiredCount = l.docs.filter((d) => isExpired(d.expires)).length;
+            const isOpen = open === l.municipality_slug;
+            const expiredCount = l.docs.filter((d) => isDocExpired(d.expiration_date)).length;
             return (
-              <div key={l.id} className="border-b border-obsidian/10 last:border-0">
+              <div key={l.municipality_slug} className="border-b border-obsidian/10 last:border-0">
                 <button
                   type="button"
-                  onClick={() => setOpen(isOpen ? null : l.id)}
+                  onClick={() => setOpen(isOpen ? null : l.municipality_slug)}
                   className="w-full flex flex-wrap items-center gap-3 px-5 py-4 text-left hover:bg-paper-warm/50 transition-colors"
                 >
                   <ChevronDown className={`h-4 w-4 text-obsidian/40 transition-transform shrink-0 ${isOpen ? "rotate-180" : ""}`} />
                   <div className="min-w-0 flex-1">
-                    <div className="text-sm font-medium text-obsidian truncate">{l.municipality}</div>
-                    <div className="text-xs text-obsidian/55 truncate">{l.county} County</div>
+                    <div className="text-sm font-medium text-obsidian truncate">{l.city_name}</div>
+                    <div className="text-xs text-obsidian/55 truncate">
+                      {l.county === "—" ? "Jurisdiction" : `${l.county} County`}
+                    </div>
                   </div>
                   {expiredCount > 0 && (
                     <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-oxblood border border-oxblood/30 bg-oxblood/10 px-2 py-0.5 rounded-[2px]">
@@ -187,7 +179,6 @@ function BuildingDeptLoginsPage() {
 
                 {isOpen && (
                   <div className="px-5 sm:px-12 pb-6 pt-1 space-y-6">
-                    {/* Sub-tabs: credentials + municipal contacts */}
                     <Tabs defaultValue="credentials">
                       <TabsList className="rounded-[3px] bg-paper-warm p-1">
                         <TabsTrigger value="credentials" className="rounded-[3px] font-mono text-[10px] uppercase tracking-[0.12em]">
@@ -198,76 +189,77 @@ function BuildingDeptLoginsPage() {
                         </TabsTrigger>
                       </TabsList>
                       <TabsContent value="contacts" className="mt-5">
-                        <MunicipalityContactsTab muni={l.municipality} />
+                        <MunicipalityContactsTab muni={l.city_name} />
                       </TabsContent>
                       <TabsContent value="credentials" className="mt-5 space-y-6">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
+                          <Field label="Portal">
+                            {l.resolvedPortalUrl ? (
+                              <a
+                                href={l.resolvedPortalUrl}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="inline-flex items-center gap-1.5 text-sm text-sky hover:opacity-70"
+                              >
+                                {l.resolvedPortalUrl.replace(/^https?:\/\//, "")}
+                                <ExternalLink className="h-3 w-3" />
+                              </a>
+                            ) : (
+                              <div className="text-sm text-obsidian/50">—</div>
+                            )}
+                          </Field>
+                          <Field label="Registration">
+                            <div className="text-sm text-obsidian">{l.registration || "—"}</div>
+                          </Field>
 
-                    {/* Portal + registration */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
-                      <Field label="Portal">
-                        <a
-                          href={l.portalUrl}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="inline-flex items-center gap-1.5 text-sm text-sky hover:opacity-70"
-                        >
-                          {l.portalUrl.replace(/^https?:\/\//, "")}
-                          <ExternalLink className="h-3 w-3" />
-                        </a>
-                      </Field>
-                      <Field label="Registration">
-                        <div className="text-sm text-obsidian">{l.registration}</div>
-                      </Field>
+                          <Field label="Username">
+                            <RevealedSecretField municipalitySlug={l.municipality_slug} field="username" />
+                          </Field>
+                          <Field label="Password">
+                            <RevealedSecretField municipalitySlug={l.municipality_slug} field="password" />
+                          </Field>
 
-                      <Field label="Username">
-                        <CopyValue value={l.username} mono />
-                      </Field>
-                      <Field label="Password">
-                        <PasswordValue value={l.password} />
-                      </Field>
-
-                      <Field label="Portal Features">
-                        <div className="flex gap-2">
-                          <FeatureTag on={l.ePlan} label="ePlan" />
-                          <FeatureTag on={l.derm} label="DERM" />
+                          <Field label="Portal Features">
+                            <div className="flex gap-2">
+                              <FeatureTag on={l.e_plan} label="ePlan" />
+                              <FeatureTag on={l.derm} label="DERM" />
+                            </div>
+                          </Field>
                         </div>
-                      </Field>
-                    </div>
 
-                    {/* Documents */}
-                    <div>
-                      <div className="eyebrow text-obsidian/55 mb-3">Documents on file</div>
-                      <ul className="border border-obsidian/10 divide-y divide-obsidian/5">
-                        {l.docs.map((d) => {
-                          const expired = isExpired(d.expires);
-                          return (
-                            <li key={d.label} className="flex items-center gap-3 px-4 py-3">
-                              <FileText className="h-4 w-4 text-obsidian/40 shrink-0" />
-                              <div className="flex-1 min-w-0">
-                                <div className="text-sm text-obsidian truncate">{d.label}</div>
-                              </div>
-                              <div
-                                className="font-mono text-[11px] tabular-nums"
-                                style={{ color: expired ? "var(--accent)" : "var(--obsidian)" }}
-                              >
-                                {expired ? "Expired " : "Exp. "}{fmtDate(d.expires)}
-                              </div>
-                              <button
-                                type="button"
-                                className="font-mono text-[10px] uppercase tracking-[0.12em] text-sky hover:opacity-70"
-                              >
-                                View
-                              </button>
-                            </li>
-                          );
-                        })}
-                      </ul>
-                    </div>
+                        <div>
+                          <div className="eyebrow text-obsidian/55 mb-3">Documents on file</div>
+                          {l.docs.length === 0 ? (
+                            <div className="border border-dashed border-obsidian/15 px-4 py-6 text-center text-xs text-obsidian/45 rounded-[3px]">
+                              No documents uploaded for this municipality yet.
+                            </div>
+                          ) : (
+                            <ul className="border border-obsidian/10 divide-y divide-obsidian/5">
+                              {l.docs.map((d) => {
+                                const expired = isDocExpired(d.expiration_date);
+                                return (
+                                  <li key={d.id} className="flex items-center gap-3 px-4 py-3">
+                                    <FileText className="h-4 w-4 text-obsidian/40 shrink-0" />
+                                    <div className="flex-1 min-w-0">
+                                      <div className="text-sm text-obsidian truncate">{d.doc_label}</div>
+                                    </div>
+                                    <div
+                                      className="font-mono text-[11px] tabular-nums"
+                                      style={{ color: expired ? "var(--accent)" : "var(--obsidian)" }}
+                                    >
+                                      {expired ? "Expired " : "Exp. "}{fmtDate(d.expiration_date)}
+                                    </div>
+                                    <ViewDocButton path={d.file_path} />
+                                  </li>
+                                );
+                              })}
+                            </ul>
+                          )}
+                        </div>
                       </TabsContent>
                     </Tabs>
                   </div>
                 )}
-
               </div>
             );
           })}
@@ -277,7 +269,7 @@ function BuildingDeptLoginsPage() {
   );
 }
 
-function StatusBadge({ status }: { status: Login["status"] }) {
+function StatusBadge({ status }: { status: "active" | "needs_updated" }) {
   const cls =
     status === "active"
       ? "bg-emerald-600/10 text-emerald-700 border-emerald-600/30"
@@ -305,7 +297,11 @@ function CopyButton({ value }: { value: string }) {
     <button
       type="button"
       onClick={async () => {
-        try { await navigator.clipboard.writeText(value); setDone(true); setTimeout(() => setDone(false), 1500); } catch { /* */ }
+        try {
+          await navigator.clipboard.writeText(value);
+          setDone(true);
+          setTimeout(() => setDone(false), 1500);
+        } catch { /* */ }
       }}
       className="p-1.5 text-obsidian/40 hover:text-obsidian transition-colors"
       aria-label="Copy"
@@ -315,32 +311,92 @@ function CopyButton({ value }: { value: string }) {
   );
 }
 
-function CopyValue({ value, mono }: { value: string; mono?: boolean }) {
+/** Username/password only appear after a controlled revealOwnPortalLogin call. */
+function RevealedSecretField({
+  municipalitySlug,
+  field,
+}: {
+  municipalitySlug: string;
+  field: "username" | "password";
+}) {
+  const reveal = useServerFn(revealOwnPortalLogin);
+  const [value, setValue] = useState<string | null>(null);
+  const [shown, setShown] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  async function doReveal() {
+    if (value) {
+      setShown((s) => !s);
+      return;
+    }
+    setLoading(true);
+    try {
+      const res = await reveal({ data: { municipality_slug: municipalitySlug } });
+      if (!res) throw new Error("No credentials on file");
+      setValue(field === "username" ? res.username : res.password);
+      setShown(true);
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Reveal failed");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  const display = !value
+    ? "••••••••••••"
+    : field === "password" && !shown
+      ? "•".repeat(Math.min(value.length, 14))
+      : value;
+
   return (
     <div className="flex items-center gap-1 border border-obsidian/10 bg-paper-warm/50 px-3 py-1.5 rounded-[3px]">
-      <span className={`flex-1 min-w-0 truncate text-sm text-obsidian ${mono ? "font-mono tabular-nums" : ""}`}>{value}</span>
-      <CopyButton value={value} />
+      <span className="flex-1 min-w-0 truncate text-sm text-obsidian font-mono tabular-nums">{display}</span>
+      <button
+        type="button"
+        onClick={() => void doReveal()}
+        disabled={loading}
+        className="p-1.5 text-obsidian/40 hover:text-obsidian transition-colors"
+        aria-label={value && shown ? "Hide" : "Reveal"}
+      >
+        {loading ? (
+          <Loader2 className="h-3.5 w-3.5 animate-spin" />
+        ) : value && shown ? (
+          <EyeOff className="h-3.5 w-3.5" />
+        ) : (
+          <Eye className="h-3.5 w-3.5" />
+        )}
+      </button>
+      {value && <CopyButton value={value} />}
     </div>
   );
 }
 
-function PasswordValue({ value }: { value: string }) {
-  const [shown, setShown] = useState(false);
+function ViewDocButton({ path }: { path: string }) {
+  const getUrl = useServerFn(getPortalLoginDocUrlFn);
+  const [opening, setOpening] = useState(false);
+
+  async function open() {
+    setOpening(true);
+    try {
+      const { url } = await getUrl({ data: { path } });
+      window.open(url, "_blank", "noopener,noreferrer");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Could not open file");
+    } finally {
+      setOpening(false);
+    }
+  }
+
   return (
-    <div className="flex items-center gap-1 border border-obsidian/10 bg-paper-warm/50 px-3 py-1.5 rounded-[3px]">
-      <span className="flex-1 min-w-0 truncate text-sm text-obsidian font-mono tabular-nums">
-        {shown ? value : "•".repeat(Math.min(value.length, 14))}
-      </span>
-      <button
-        type="button"
-        onClick={() => setShown((s) => !s)}
-        className="p-1.5 text-obsidian/40 hover:text-obsidian transition-colors"
-        aria-label={shown ? "Hide" : "Show"}
-      >
-        {shown ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
-      </button>
-      <CopyButton value={value} />
-    </div>
+    <button
+      type="button"
+      onClick={() => void open()}
+      disabled={opening}
+      className="font-mono text-[10px] uppercase tracking-[0.12em] text-sky hover:opacity-70 inline-flex items-center gap-1"
+    >
+      {opening ? <Loader2 className="h-3 w-3 animate-spin" /> : null}
+      View
+    </button>
   );
 }
 
