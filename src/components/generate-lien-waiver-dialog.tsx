@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { X } from "lucide-react";
+import { toast } from "sonner";
 import type { SubRecord } from "@/lib/subcontractor-library";
 import {
   WAIVER_TYPE_LABEL,
@@ -45,22 +46,32 @@ export function GenerateLienWaiverDialog({ sub, projectId, propertyAddress, onCl
       propertyAddress,
     });
 
+    // Routing through SignWell needs a live permit record; for demo projects the waiver is
+    // still stored, it just is not sent.
+    let routed = false;
     if (sub.email) {
       try {
         await sendForSignature({
-          projectId,
+          permitId: projectId,
           documentName: `Lien Waiver — ${WAIVER_TYPE_LABEL[waiverType]} — ${sub.companyName}`,
           recipientEmail: sub.email,
+          recipientName: sub.companyName,
           recipientRole: "Subcontractor",
           message: `Please sign this ${WAIVER_TYPE_LABEL[waiverType]} for ${propertyAddress}. Executed pursuant to Florida Statute §713.20.`,
         });
-      } catch { /* ignore mock failures */ }
+        routed = true;
+      } catch (e) {
+        toast.error(
+          "Waiver stored, but not sent for signature: " +
+            (e instanceof Error ? e.message : String(e)),
+        );
+      }
     }
 
     addNote(
       projectId,
       "System",
-      `Lien waiver sent via Signwell: ${WAIVER_TYPE_LABEL[waiverType]} — ${sub.companyName} — $${amountNum.toLocaleString()}`
+      `${routed ? "Lien waiver sent via SignWell" : "Lien waiver generated"}: ${WAIVER_TYPE_LABEL[waiverType]} — ${sub.companyName} — $${amountNum.toLocaleString()}`
     );
     void waiver;
     setBusy(false);

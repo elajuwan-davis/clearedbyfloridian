@@ -1,8 +1,11 @@
 // Agent 4 — "Route for Signatures" action + the Submit gate it unlocks.
 //
-// Routing for signatures is what triggers pre-submission-check; Submit to Municipality
-// stays disabled until that check comes back with a full pass, and every blocked item
-// shows its own specific reason.
+// Routing for signatures creates a real SignWell document (embedded signing) and triggers
+// pre-submission-check; Submit to Municipality stays disabled until that check comes back
+// with a full pass, and every blocked item shows its own specific reason.
+//
+// There is no "mark signed" affordance: only SignWell's HMAC-verified document_completed
+// webhook can confirm a signature, and the gate requires that confirmation.
 
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -15,6 +18,8 @@ import {
   ShieldAlert,
   Upload,
 } from "lucide-react";
+import { EmbeddedSigningDialog } from "@/components/embedded-signing-dialog";
+import { sendForSignature, type SignatureRequest } from "@/lib/signature-requests";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useSession } from "@/lib/use-session";
@@ -22,8 +27,6 @@ import type { PermitRow } from "@/lib/permits-api";
 import {
   listSignatureRequestRows,
   loadPreSubmissionReport,
-  markSignatureSigned,
-  recordSignatureRequest,
   runPreSubmissionCheck,
   type PreSubmissionReport,
   type SignatureRequestRow,
@@ -36,12 +39,13 @@ type Props = {
 };
 
 export function PreSubmissionGate({ permit, onSubmitToMunicipality }: Props) {
-  const { isAdmin, loading, email: staffEmail } = useSession();
+  const { isAdmin, loading } = useSession();
   const [report, setReport] = useState<PreSubmissionReport | null>(null);
   const [sigs, setSigs] = useState<SignatureRequestRow[]>([]);
   const [running, setRunning] = useState(false);
   const [email, setEmail] = useState("");
   const [docName, setDocName] = useState("Permit application package");
+  const [signing, setSigning] = useState<SignatureRequest | null>(null);
 
   const refresh = useCallback(async () => {
     const [r, s] = await Promise.all([
@@ -62,14 +66,14 @@ export function PreSubmissionGate({ permit, onSubmitToMunicipality }: Props) {
     setRunning(true);
     try {
       if (email.trim()) {
-        await recordSignatureRequest({
+        const req = await sendForSignature({
           permitId: permit.id,
-          tenantId: permit.tenant_id,
           documentName: docName.trim() || "Permit application package",
           recipientEmail: email.trim(),
           recipientRole: "General Contractor",
         });
         setEmail("");
+        if (req.embeddedSigningUrl) setSigning(req);
       }
       const result = await runPreSubmissionCheck(permit.id);
       setReport(result);
@@ -83,21 +87,6 @@ export function PreSubmissionGate({ permit, onSubmitToMunicipality }: Props) {
       toast.error(e instanceof Error ? e.message : "Pre-submission check failed");
     } finally {
       setRunning(false);
-    }
-  }
-
-  async function markSigned(row: SignatureRequestRow) {
-    // Staff attest on the signer's behalf, so the ledger records who signed and who
-    // attested to it — never the recipient's email in place of a name.
-    const signer = window.prompt(`Who signed "${row.document_name}"?`, "")?.trim();
-    if (signer === undefined) return;
-    const attestedBy = staffEmail ? ` (attested by ${staffEmail})` : "";
-    try {
-      await markSignatureSigned(row.id, `${signer || "Signer not named"}${attestedBy}`);
-      await refresh();
-      toast.success("Signature recorded — re-run the check to refresh the gate");
-    } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Could not record the signature");
     }
   }
 
@@ -199,8 +188,8 @@ export function PreSubmissionGate({ permit, onSubmitToMunicipality }: Props) {
       {report && !report.signwell_configured && (
         <div className="mt-3 flex gap-2 rounded-[3px] border border-amber-200 bg-amber-50 p-2 text-xs text-amber-900">
           <ShieldAlert className="h-4 w-4 shrink-0" />
-          SignWell is not connected — signature rows are staff attestations, not provider
-          confirmations. Connecting SignWell replaces them with webhook-written evidence.
+          SIGNWELL_API_KEY is not set on the edge functions, so documents cannot be routed for
+          signature and no signature can reach provider-confirmed.
         </div>
       )}
 
@@ -219,20 +208,58 @@ export function PreSubmissionGate({ permit, onSubmitToMunicipality }: Props) {
                 <span className="font-mono text-[9px] uppercase tracking-[0.12em] text-obsidian/50">
                   {s.status}
                 </span>
-                {s.status !== "signed" && (
+                <span
+                  className={`font-mono text-[9px] uppercase tracking-[0.12em] px-1.5 py-0.5 rounded-[3px] ${
+                    s.status_source === "provider_confirmed"
+                      ? "bg-emerald-50 text-emerald-800"
+                      : "bg-amber-50 text-amber-800"
+                  }`}
+                  title={
+                    s.status_source === "provider_confirmed"
+                      ? `SignWell confirmed ${s.completed_at ?? ""}`
+                      : "Awaiting SignWell document_completed"
+                  }
+                >
+                  {s.status_source === "provider_confirmed" ? "SignWell confirmed" : "unconfirmed"}
+                </span>
+                {s.embedded_signing_url && s.status !== "signed" && (
                   <Button
                     size="sm"
                     variant="outline"
                     className="ml-auto h-6 rounded-[3px] text-[10px]"
-                    onClick={() => markSigned(s)}
+                    onClick={() =>
+                      setSigning({
+                        id: s.id,
+                        projectId: s.permit_id,
+                        permitId: s.permit_id,
+                        docId: s.document_key ?? undefined,
+                        documentName: s.document_name,
+                        recipientEmail: s.recipient_email,
+                        recipientRole: "General Contractor",
+                        status: s.status,
+                        statusSource: s.status_source,
+                        createdAt: s.sent_at ?? new Date().toISOString(),
+                        embeddedSigningUrl: s.embedded_signing_url ?? undefined,
+                        testMode: Boolean(s.test_mode),
+                      })
+                    }
                   >
-                    Mark signed
+                    Open signing
                   </Button>
                 )}
               </li>
             ))}
           </ul>
         </div>
+      )}
+
+      {signing && (
+        <EmbeddedSigningDialog
+          open={!!signing}
+          onOpenChange={(v) => !v && setSigning(null)}
+          request={signing}
+          onCompleted={() => void refresh()}
+        />
       )}
     </div>
   );

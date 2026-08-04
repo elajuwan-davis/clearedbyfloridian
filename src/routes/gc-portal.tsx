@@ -34,13 +34,13 @@ function GCPortal() {
     const assigned = PROJECTS.filter((p) => c.projectIds.includes(p.id));
     setProjects(assigned);
     const assignedIds = new Set(assigned.map((p) => p.id));
-    try {
-      setPendingSigs(
-        listSignatureRequests().filter((s) => assignedIds.has(s.projectId) && s.status !== "signed")
-      );
-    } catch {
-      setPendingSigs([]);
-    }
+    void listSignatureRequests()
+      .then((all) =>
+        setPendingSigs(
+          all.filter((s) => assignedIds.has(s.permitId) && s.status !== "signed"),
+        ),
+      )
+      .catch(() => setPendingSigs([]));
     void listNotaryRequests()
       .then((all) => setNotary(all.filter((n) => assignedIds.has(n.projectId) || assignedIds.has(n.permitId))))
       .catch(() => setNotary([]));

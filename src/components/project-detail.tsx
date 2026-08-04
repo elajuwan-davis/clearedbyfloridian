@@ -44,7 +44,14 @@ import { LIEN_WAIVER_EVT, WAIVER_TYPE_LABEL, listWaivers, waiverBadge, type Lien
 
 import { getPCN } from "@/lib/project-pcn";
 import { FileSignature, FileCheck2, MapPinned, Send, Stamp } from "lucide-react";
-import { getSignatureForDoc, sigBadge, sigStatusForDocument, SIG_EVT } from "@/lib/signature-requests";
+import {
+  getSignatureForDoc,
+  sigBadge,
+  sigSourceBadge,
+  sigStatusForDocument,
+  SIG_EVT,
+  type SignatureRequest,
+} from "@/lib/signature-requests";
 import { notaryForDoc, notaryBadge, NOTARY_EVT } from "@/lib/notary-requests";
 import { getPortalRole, canRequestNotary } from "@/lib/portal-role";
 import { ProjectInternalOps } from "@/components/project-internal-ops";
@@ -336,6 +343,7 @@ function DocumentsTab({ project, internal }: { project: Project; internal: boole
   const [sigDialog, setSigDialog] = useState<{ documentName: string; docId?: string } | null>(null);
   const [notaryDialog, setNotaryDialog] = useState<{ documentName: string; docId?: string } | null>(null);
   const [notaryByDoc, setNotaryByDoc] = useState<Record<string, Awaited<ReturnType<typeof notaryForDoc>>>>({});
+  const [sigByDoc, setSigByDoc] = useState<Record<string, SignatureRequest | undefined>>({});
   const role = typeof window !== "undefined" ? getPortalRole() : "gc";
   const showNotary = canRequestNotary(role);
   const isLivePermit = /^[a-f0-9-]{36}$/i.test(project.id);
@@ -351,8 +359,18 @@ function DocumentsTab({ project, internal }: { project: Project; internal: boole
           const map: Record<string, Awaited<ReturnType<typeof notaryForDoc>>> = {};
           for (const [id, n] of entries) if (n) map[id] = n;
           setNotaryByDoc(map);
+
+          const sigEntries = await Promise.all(
+            list.map(
+              async (d) => [d.id, await getSignatureForDoc(d.id).catch(() => undefined)] as const,
+            ),
+          );
+          const sigMap: Record<string, SignatureRequest | undefined> = {};
+          for (const [id, s] of sigEntries) if (s) sigMap[id] = s;
+          setSigByDoc(sigMap);
         } else {
           setNotaryByDoc({});
+          setSigByDoc({});
         }
       });
       void getPCN({ projectId: project.id }).then((v) => setPcnLocal(v));
@@ -371,8 +389,29 @@ function DocumentsTab({ project, internal }: { project: Project; internal: boole
     return map;
   }, [docs]);
 
-  const ntboSig = useMemo(() => sigStatusForDocument(project.id, "NTBO"), [project.id, tick]);
-  const ownerSig = useMemo(() => sigStatusForDocument(project.id, "Owner Authorization"), [project.id, tick]);
+  // Signature state is provider truth from the ledger, so it is fetched, not derived.
+  const [ntboSig, setNtboSig] = useState<SignatureRequest | undefined>();
+  const [ownerSig, setOwnerSig] = useState<SignatureRequest | undefined>();
+  useEffect(() => {
+    if (!isLivePermit) {
+      setNtboSig(undefined);
+      setOwnerSig(undefined);
+      return;
+    }
+    void sigStatusForDocument(project.id, "NTBO").catch(() => undefined).then(setNtboSig);
+    void sigStatusForDocument(project.id, "Owner Authorization")
+      .catch(() => undefined)
+      .then(setOwnerSig);
+  }, [project.id, isLivePermit, tick]);
+
+  // SignWell needs a permit record to attach the document and ledger row to.
+  function requestSignature(target: { documentName: string; docId?: string }) {
+    if (!isLivePermit) {
+      toast.error("Signature routing requires a live permit record.");
+      return;
+    }
+    setSigDialog(target);
+  }
 
   return (
     <div className="space-y-6">
@@ -400,7 +439,7 @@ function DocumentsTab({ project, internal }: { project: Project; internal: boole
             meta="Form 61G20-2.005 · §553.791"
             sigStatus={ntboSig ? sigBadge(ntboSig.status) : null}
             onGenerate={() => setNtboOpen(true)}
-            onSend={() => setSigDialog({ documentName: "NTBO" })}
+            onSend={() => requestSignature({ documentName: "NTBO" })}
           />
           <GenerateCard
             icon={<FileCheck2 className="h-4 w-4 text-obsidian/60" />}
@@ -409,7 +448,7 @@ function DocumentsTab({ project, internal }: { project: Project; internal: boole
             meta="FL Statute §553.791"
             sigStatus={ownerSig ? sigBadge(ownerSig.status) : null}
             onGenerate={() => setOwnerOpen(true)}
-            onSend={() => setSigDialog({ documentName: "Owner Authorization" })}
+            onSend={() => requestSignature({ documentName: "Owner Authorization" })}
           />
         </div>
       </div>
@@ -439,7 +478,7 @@ function DocumentsTab({ project, internal }: { project: Project; internal: boole
               ) : (
                 <ul className="divide-y divide-obsidian/5">
                   {items.map((d) => {
-                    const sig = getSignatureForDoc(d.id);
+                    const sig = sigByDoc[d.id];
                     const notary = notaryByDoc[d.id];
                     return (
                       <li key={d.id} className="flex flex-wrap items-center gap-3 px-4 py-3">
@@ -453,6 +492,13 @@ function DocumentsTab({ project, internal }: { project: Project; internal: boole
                                 className={`font-mono text-[9px] uppercase tracking-[0.12em] px-1.5 py-0.5 rounded-[3px] ${sigBadge(sig.status).className}`}
                               >
                                 {sigBadge(sig.status).label}
+                              </span>
+                            )}
+                            {sig && sigSourceBadge(sig) && (
+                              <span
+                                className={`font-mono text-[9px] uppercase tracking-[0.12em] px-1.5 py-0.5 rounded-[3px] ${sigSourceBadge(sig)!.className}`}
+                              >
+                                {sigSourceBadge(sig)!.label}
                               </span>
                             )}
                             {notary && (
@@ -472,7 +518,7 @@ function DocumentsTab({ project, internal }: { project: Project; internal: boole
                         <div className="flex items-center gap-1">
                           <Button
                             variant="outline" size="sm" className="h-7 rounded-[3px] text-[11px]"
-                            onClick={() => setSigDialog({ documentName: d.filename, docId: d.id })}
+                            onClick={() => requestSignature({ documentName: d.filename, docId: d.id })}
                           >
                             <Send className="h-3 w-3 mr-1" /> Send for Signature
                           </Button>
@@ -553,7 +599,7 @@ function DocumentsTab({ project, internal }: { project: Project; internal: boole
       <PCNLookupDialog open={pcnOpen} onOpenChange={setPcnOpen} project={project} />
       <GenerateNTBODialog open={ntboOpen} onOpenChange={setNtboOpen} project={project} />
       <GenerateOwnerAuthDialog open={ownerOpen} onOpenChange={setOwnerOpen} project={project} />
-      {sigDialog && (
+      {sigDialog && isLivePermit && (
         <SendForSignatureDialog
           open={!!sigDialog}
           onOpenChange={(v) => !v && setSigDialog(null)}

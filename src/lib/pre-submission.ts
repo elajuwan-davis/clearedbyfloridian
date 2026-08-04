@@ -1,9 +1,12 @@
 // Agent 4 — client side of the pre-submission completeness gate.
 //
 // The verdict is produced entirely by the `pre-submission-check` edge function; this
-// module only invokes it, reads the stored report back, and maintains the server-side
-// signature ledger the check queries (src/lib/signature-requests.ts is localStorage
-// only — SignWell is not connected).
+// module only invokes it and reads the stored report and signature ledger back.
+//
+// Signatures are routed through the real SignWell API (src/lib/signature-requests.ts) and
+// confirmed only by the HMAC-verified `signwell-webhook`, so there is deliberately no
+// client path here for recording or marking a signature — the gate requires
+// status_source='provider_confirmed', which only the service role can write.
 
 import { supabase } from "@/integrations/supabase/client";
 
@@ -32,10 +35,15 @@ export type SignatureRequestRow = {
   recipient_email: string;
   recipient_role: string;
   status: "draft" | "sent" | "viewed" | "signed" | "declined";
-  status_source: "provider" | "manual";
+  status_source: "provider_confirmed" | "staff_attested";
   sent_at: string | null;
   signed_at: string | null;
+  completed_at: string | null;
   signed_by_name: string | null;
+  signwell_document_id: string | null;
+  embedded_signing_url: string | null;
+  test_mode: boolean | null;
+  last_event_type: string | null;
 };
 
 // signature_requests and the pre_submission_* columns post-date the generated
@@ -70,47 +78,4 @@ export async function listSignatureRequestRows(permitId: string): Promise<Signat
     .eq("permit_id", permitId)
     .order("created_at", { ascending: false });
   return (data ?? []) as SignatureRequestRow[];
-}
-
-/**
- * Record a routed signature request server side so the completeness check has
- * something deterministic to query. status_source stays 'manual' — a database trigger
- * only lets the service role write 'provider'.
- */
-export async function recordSignatureRequest(input: {
-  permitId: string;
-  tenantId?: string | null;
-  documentKey?: string | null;
-  documentName: string;
-  recipientEmail: string;
-  recipientRole: string;
-}): Promise<SignatureRequestRow> {
-  const { data, error } = await table("signature_requests")
-    .insert({
-      permit_id: input.permitId,
-      tenant_id: input.tenantId ?? null,
-      document_key: input.documentKey ?? null,
-      document_name: input.documentName,
-      recipient_email: input.recipientEmail,
-      recipient_role: input.recipientRole,
-      status: "sent",
-      status_source: "manual",
-      sent_at: new Date().toISOString(),
-    })
-    .select("*")
-    .single();
-  if (error) throw new Error(error.message);
-  return data as SignatureRequestRow;
-}
-
-export async function markSignatureSigned(id: string, signerName: string): Promise<void> {
-  const { error } = await table("signature_requests")
-    .update({
-      status: "signed",
-      status_source: "manual",
-      signed_at: new Date().toISOString(),
-      signed_by_name: signerName,
-    })
-    .eq("id", id);
-  if (error) throw new Error(error.message);
 }
