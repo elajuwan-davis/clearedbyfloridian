@@ -7,6 +7,8 @@ import { isInternalUser } from "@/lib/is-internal-user";
 import { CLEARED_STAFF, getAllOps, getStaffById } from "@/lib/staff-ops";
 import { PROJECTS, getProjectById } from "@/lib/projects-data";
 import { projectStatusMeta, toneClass } from "@/lib/status-badges";
+import { isVendorManaged } from "@/lib/project-vendors";
+
 
 export const Route = createFileRoute("/admin/workload")({
   head: () => ({
@@ -52,12 +54,14 @@ function WorkloadPage() {
       const mine = ops.filter((o) => o.assigneeId === staff.id);
       const projects = mine
         .map((o) => ({ ops: o, project: getProjectById(o.projectId) }))
-        .filter((r) => !!r.project);
+        // Vendor-managed projects are record copies only — never staff work items.
+        .filter((r) => !!r.project && !isVendorManaged(r.project.name));
       const active = projects.filter((r) => ACTIVE_STATUSES.has(r.project!.status));
       const escalated = projects.filter((r) => r.ops.escalated);
       return { staff, active, escalated, all: projects };
     });
   }, [tick]);
+
 
   if (!ready || !internal) return null;
 

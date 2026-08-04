@@ -90,6 +90,23 @@ What is real here and what is not:
 - No `LOVABLE_API_KEY` locally, so the model-written summary falls back to the
   deterministic one. The status is identical either way — the model never decides it.
 
+## Degraded-path checks (added after review)
+
+```bash
+# address lookup outage -> amber, not red
+cat > /tmp/outage.ts <<'TS'
+Deno.serve({ port: 54334 }, (req) =>
+  new URL(req.url).pathname === "/api/geocode-census"
+    ? Response.json({ matches: [], error: "Lookup service unreachable." })
+    : Response.json({ license_number: "x", status: "active", expiration: "2030-01-01" }));
+TS
+deno run --allow-net /tmp/outage.ts &
+APP_BASE_URL=http://localhost:54334 ... deno run -A supabase/functions/intake-validator/index.ts
+
+# no admin recipient -> notified 0 and an explicit console error, no rejected insert
+docker exec -i cleard-pg psql -U postgres -c "delete from public.user_roles where role='admin';"
+```
+
 ## Agent 4 — pre-submission-check
 
 ```bash
@@ -277,8 +294,9 @@ Observed locally, in this order:
 
 ## Agent 7 — corrections-parser + the approval gate
 
-No `LOVABLE_API_KEY` locally, so `stub-ai-gateway.ts` stands in for the model. It is not a
-model: it reads the letter out of the prompt and answers with a plan quoting that letter's own
+No `LOVABLE_API_KEY` locally, so `stub-ai-gateway-corrections.ts` stands in for the model
+(Agent 3's `stub-ai-gateway.ts` answers with a scope fixture, which is a different contract).
+It is not a model: it reads the letter out of the prompt and answers with a plan quoting that letter's own
 numbered comments — which is what the real system prompt demands — so the rig can show that
 letter-specific content survives the pipeline and that a bad answer is refused.
 
@@ -292,7 +310,7 @@ docker exec -i cleard-pg psql -U postgres -c "notify pgrst, 'reload schema';"
 deno test supabase/functions/_shared/correction-parse_test.ts supabase/functions/_shared/pdf-text_test.ts
 deno run -A scripts/local-test/make-correction-pdf.ts        # the letter as a real PDF in storage
 
-STUB_MODE=plan deno run --allow-net --allow-env scripts/local-test/stub-ai-gateway.ts   # :8300
+STUB_MODE=plan deno run --allow-net --allow-env scripts/local-test/stub-ai-gateway-corrections.ts   # :8300
 SUPABASE_URL=http://localhost:54331 SUPABASE_SERVICE_ROLE_KEY="$SERVICE_JWT" \
 APP_BASE_URL=http://localhost:54331 LOVABLE_API_KEY=local \
 AI_GATEWAY_URL=http://localhost:8300/v1/chat/completions \

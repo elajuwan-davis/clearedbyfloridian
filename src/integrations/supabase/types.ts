@@ -791,6 +791,59 @@ export type Database = {
           },
         ]
       }
+      gc_company_profiles: {
+        Row: {
+          bond: Json | null
+          created_at: string
+          dba: string
+          entity_type: string
+          general_liability: Json
+          id: string
+          legal_name: string
+          primary_qualifier: Json
+          secondary_qualifier: Json | null
+          tenant_id: string
+          updated_at: string
+          workers_comp: Json
+        }
+        Insert: {
+          bond?: Json | null
+          created_at?: string
+          dba?: string
+          entity_type?: string
+          general_liability?: Json
+          id?: string
+          legal_name?: string
+          primary_qualifier?: Json
+          secondary_qualifier?: Json | null
+          tenant_id: string
+          updated_at?: string
+          workers_comp?: Json
+        }
+        Update: {
+          bond?: Json | null
+          created_at?: string
+          dba?: string
+          entity_type?: string
+          general_liability?: Json
+          id?: string
+          legal_name?: string
+          primary_qualifier?: Json
+          secondary_qualifier?: Json | null
+          tenant_id?: string
+          updated_at?: string
+          workers_comp?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "gc_company_profiles_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: true
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       gc_email_addresses: {
         Row: {
           alias: string
@@ -827,10 +880,14 @@ export type Database = {
         Row: {
           city_name: string
           created_at: string
+          derm: boolean
+          e_plan: boolean
           id: string
           municipality_slug: string
           notes: string | null
           password_ciphertext: string
+          portal_url: string | null
+          registration: string | null
           tenant_id: string | null
           updated_at: string
           user_id: string
@@ -839,10 +896,14 @@ export type Database = {
         Insert: {
           city_name: string
           created_at?: string
+          derm?: boolean
+          e_plan?: boolean
           id?: string
           municipality_slug: string
           notes?: string | null
           password_ciphertext: string
+          portal_url?: string | null
+          registration?: string | null
           tenant_id?: string | null
           updated_at?: string
           user_id: string
@@ -851,10 +912,14 @@ export type Database = {
         Update: {
           city_name?: string
           created_at?: string
+          derm?: boolean
+          e_plan?: boolean
           id?: string
           municipality_slug?: string
           notes?: string | null
           password_ciphertext?: string
+          portal_url?: string | null
+          registration?: string | null
           tenant_id?: string | null
           updated_at?: string
           user_id?: string
@@ -1292,6 +1357,168 @@ export type Database = {
         }
         Relationships: []
       }
+      insurance_requests: {
+        Row: {
+          additional_insured: boolean
+          attached_file_name: string | null
+          attached_file_path: string | null
+          created_at: string
+          created_by: string | null
+          details: string | null
+          holder_address: string | null
+          holder_name: string | null
+          id: string
+          permit_id: string | null
+          project_address: string | null
+          project_name: string | null
+          request_type: string
+          status: string
+          subcontractor_id: string | null
+          tenant_id: string
+          updated_at: string
+        }
+        Insert: {
+          additional_insured?: boolean
+          attached_file_name?: string | null
+          attached_file_path?: string | null
+          created_at?: string
+          created_by?: string | null
+          details?: string | null
+          holder_address?: string | null
+          holder_name?: string | null
+          id?: string
+          permit_id?: string | null
+          project_address?: string | null
+          project_name?: string | null
+          request_type: string
+          status?: string
+          subcontractor_id?: string | null
+          tenant_id: string
+          updated_at?: string
+        }
+        Update: {
+          additional_insured?: boolean
+          attached_file_name?: string | null
+          attached_file_path?: string | null
+          created_at?: string
+          created_by?: string | null
+          details?: string | null
+          holder_address?: string | null
+          holder_name?: string | null
+          id?: string
+          permit_id?: string | null
+          project_address?: string | null
+          project_name?: string | null
+          request_type?: string
+          status?: string
+          subcontractor_id?: string | null
+          tenant_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "insurance_requests_permit_id_fkey"
+            columns: ["permit_id"]
+            isOneToOne: false
+            referencedRelation: "permits"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "insurance_requests_subcontractor_id_fkey"
+            columns: ["subcontractor_id"]
+            isOneToOne: false
+            referencedRelation: "subcontractors"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "insurance_requests_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      legal_document_versions: {
+        Row: {
+          change_notes: string | null
+          created_at: string
+          created_by: string | null
+          file_name: string | null
+          file_path: string
+          id: string
+          legal_document_id: string
+          version_label: string
+        }
+        Insert: {
+          change_notes?: string | null
+          created_at?: string
+          created_by?: string | null
+          file_name?: string | null
+          file_path: string
+          id?: string
+          legal_document_id: string
+          version_label: string
+        }
+        Update: {
+          change_notes?: string | null
+          created_at?: string
+          created_by?: string | null
+          file_name?: string | null
+          file_path?: string
+          id?: string
+          legal_document_id?: string
+          version_label?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "legal_document_versions_legal_document_id_fkey"
+            columns: ["legal_document_id"]
+            isOneToOne: false
+            referencedRelation: "legal_documents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      legal_documents: {
+        Row: {
+          created_at: string
+          current_version: string
+          gc_name: string | null
+          id: string
+          name: string
+          notes: string | null
+          signed_at: string | null
+          status: string
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          current_version?: string
+          gc_name?: string | null
+          id?: string
+          name: string
+          notes?: string | null
+          signed_at?: string | null
+          status?: string
+          type: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          current_version?: string
+          gc_name?: string | null
+          id?: string
+          name?: string
+          notes?: string | null
+          signed_at?: string | null
+          status?: string
+          type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       lien_notices: {
         Row: {
           contractor_name: string | null
@@ -1522,6 +1749,78 @@ export type Database = {
           },
         ]
       }
+      notary_requests: {
+        Row: {
+          completed_at: string | null
+          confirmation_number: string | null
+          created_at: string
+          created_by: string | null
+          doc_id: string | null
+          document_name: string
+          failure_reason: string | null
+          id: string
+          notarized_filename: string | null
+          notes: string | null
+          permit_id: string
+          provider: string | null
+          session_at: string | null
+          status: string
+          tenant_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          completed_at?: string | null
+          confirmation_number?: string | null
+          created_at?: string
+          created_by?: string | null
+          doc_id?: string | null
+          document_name: string
+          failure_reason?: string | null
+          id?: string
+          notarized_filename?: string | null
+          notes?: string | null
+          permit_id: string
+          provider?: string | null
+          session_at?: string | null
+          status?: string
+          tenant_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          completed_at?: string | null
+          confirmation_number?: string | null
+          created_at?: string
+          created_by?: string | null
+          doc_id?: string | null
+          document_name?: string
+          failure_reason?: string | null
+          id?: string
+          notarized_filename?: string | null
+          notes?: string | null
+          permit_id?: string
+          provider?: string | null
+          session_at?: string | null
+          status?: string
+          tenant_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notary_requests_permit_id_fkey"
+            columns: ["permit_id"]
+            isOneToOne: false
+            referencedRelation: "permits"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notary_requests_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notification_prefs: {
         Row: {
           created_at: string
@@ -1606,78 +1905,6 @@ export type Database = {
         }
         Relationships: []
       }
-      notary_requests: {
-        Row: {
-          id: string
-          permit_id: string
-          tenant_id: string | null
-          document_name: string
-          doc_id: string | null
-          status: string
-          notes: string | null
-          created_by: string | null
-          created_at: string
-          completed_at: string | null
-          notarized_filename: string | null
-          session_at: string | null
-          provider: string | null
-          confirmation_number: string | null
-          failure_reason: string | null
-          updated_at: string
-        }
-        Insert: {
-          id?: string
-          permit_id: string
-          tenant_id?: string | null
-          document_name: string
-          doc_id?: string | null
-          status?: string
-          notes?: string | null
-          created_by?: string | null
-          created_at?: string
-          completed_at?: string | null
-          notarized_filename?: string | null
-          session_at?: string | null
-          provider?: string | null
-          confirmation_number?: string | null
-          failure_reason?: string | null
-          updated_at?: string
-        }
-        Update: {
-          id?: string
-          permit_id?: string
-          tenant_id?: string | null
-          document_name?: string
-          doc_id?: string | null
-          status?: string
-          notes?: string | null
-          created_by?: string | null
-          created_at?: string
-          completed_at?: string | null
-          notarized_filename?: string | null
-          session_at?: string | null
-          provider?: string | null
-          confirmation_number?: string | null
-          failure_reason?: string | null
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "notary_requests_permit_id_fkey"
-            columns: ["permit_id"]
-            isOneToOne: false
-            referencedRelation: "permits"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "notary_requests_tenant_id_fkey"
-            columns: ["tenant_id"]
-            isOneToOne: false
-            referencedRelation: "tenants"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       nto_filings: {
         Row: {
           contractor_address: string
@@ -1758,6 +1985,7 @@ export type Database = {
           inspector_name: string | null
           notes: string | null
           permit_id: string
+          preferred_time: string | null
           requested_date: string | null
           result: string | null
           scheduled_date: string | null
@@ -1772,6 +2000,7 @@ export type Database = {
           inspector_name?: string | null
           notes?: string | null
           permit_id: string
+          preferred_time?: string | null
           requested_date?: string | null
           result?: string | null
           scheduled_date?: string | null
@@ -1786,6 +2015,7 @@ export type Database = {
           inspector_name?: string | null
           notes?: string | null
           permit_id?: string
+          preferred_time?: string | null
           requested_date?: string | null
           result?: string | null
           scheduled_date?: string | null
@@ -2035,6 +2265,56 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "permits_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      portal_login_documents: {
+        Row: {
+          created_at: string
+          doc_label: string
+          expiration_date: string | null
+          file_name: string | null
+          file_path: string
+          id: string
+          municipality: string
+          municipality_slug: string
+          tenant_id: string | null
+          uploaded_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          doc_label: string
+          expiration_date?: string | null
+          file_name?: string | null
+          file_path: string
+          id?: string
+          municipality: string
+          municipality_slug: string
+          tenant_id?: string | null
+          uploaded_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          doc_label?: string
+          expiration_date?: string | null
+          file_name?: string | null
+          file_path?: string
+          id?: string
+          municipality?: string
+          municipality_slug?: string
+          tenant_id?: string | null
+          uploaded_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "portal_login_documents_tenant_id_fkey"
             columns: ["tenant_id"]
             isOneToOne: false
             referencedRelation: "tenants"

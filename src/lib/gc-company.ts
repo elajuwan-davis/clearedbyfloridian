@@ -1,8 +1,9 @@
 // GC Company Profile — license & insurance tracking.
-// LocalStorage-backed store used by /portal/company (GC-facing) and
-// /admin/gc-compliance (staff dashboard).
+// Backed by public.gc_company_profiles (one row per tenant).
+// Used by /portal/company (GC-facing) and /admin/gc-compliance (staff).
 
-import { listGCClients } from "@/lib/gc-clients";
+import { supabase } from "@/integrations/supabase/client";
+import { verifyDbprLicense, type DbprResult } from "@/lib/dbpr-api";
 
 export type DbprStatus = "active" | "inactive" | "expired";
 
@@ -21,6 +22,8 @@ export type InsurancePolicy = {
   coverageAmountCents: number;
   expiration: string; // yyyy-mm-dd
   certificateFileName?: string | null;
+  /** Storage path in company-compliance-docs bucket (signed URL retrieval). */
+  certificateFilePath?: string | null;
 };
 
 export type BondInfo = {
@@ -31,7 +34,7 @@ export type BondInfo = {
 };
 
 export type GcCompanyProfile = {
-  id: string; // matches GCClient id where applicable
+  id: string; // tenant_id (stable one-row-per-tenant key)
   legalName: string;
   dba: string;
   entityType: string; // e.g. "Florida LLC", "Florida Corporation"
@@ -43,9 +46,102 @@ export type GcCompanyProfile = {
   updatedAt: string;
 };
 
-const KEY = "cleared.gcCompanyProfiles.v1";
-const CURRENT_KEY = "cleared.gcCompanyProfiles.currentId";
-const EVENT = "gc-company:changed";
+export const GC_COMPANY_EVT = "gc-company:changed";
+
+function emptyQualifier(): Qualifier {
+  return {
+    name: "",
+    licenseNumber: "",
+    licenseType: "Certified General Contractor (CGC)",
+    expiration: "",
+    dbprStatus: "inactive",
+    verified: false,
+  };
+}
+
+function emptyPolicy(): InsurancePolicy {
+  return {
+    carrier: "",
+    policyNumber: "",
+    coverageAmountCents: 0,
+    expiration: "",
+    certificateFileName: null,
+    certificateFilePath: null,
+  };
+}
+
+export function emptyGcCompanyProfile(tenantId: string, legalName = ""): GcCompanyProfile {
+  return {
+    id: tenantId,
+    legalName,
+    dba: "",
+    entityType: "Florida Limited Liability Company (LLC)",
+    primaryQualifier: emptyQualifier(),
+    secondaryQualifier: null,
+    generalLiability: emptyPolicy(),
+    workersComp: emptyPolicy(),
+    bond: null,
+    updatedAt: new Date().toISOString(),
+  };
+}
+
+function asQualifier(raw: unknown): Qualifier {
+  const q = (raw ?? {}) as Partial<Qualifier>;
+  return {
+    name: q.name ?? "",
+    licenseNumber: q.licenseNumber ?? "",
+    licenseType: q.licenseType ?? "Certified General Contractor (CGC)",
+    expiration: q.expiration ?? "",
+    dbprStatus: (q.dbprStatus as DbprStatus) ?? "inactive",
+    verified: Boolean(q.verified),
+  };
+}
+
+function asPolicy(raw: unknown): InsurancePolicy {
+  const p = (raw ?? {}) as Partial<InsurancePolicy>;
+  return {
+    carrier: p.carrier ?? "",
+    policyNumber: p.policyNumber ?? "",
+    coverageAmountCents: Number(p.coverageAmountCents ?? 0),
+    expiration: p.expiration ?? "",
+    certificateFileName: p.certificateFileName ?? null,
+    certificateFilePath: p.certificateFilePath ?? null,
+  };
+}
+
+function asBond(raw: unknown): BondInfo | null {
+  if (!raw || typeof raw !== "object") return null;
+  const b = raw as Partial<BondInfo>;
+  return {
+    surety: b.surety ?? "",
+    bondNumber: b.bondNumber ?? "",
+    amountCents: Number(b.amountCents ?? 0),
+    expiration: b.expiration ?? "",
+  };
+}
+
+function mapRow(row: any): GcCompanyProfile {
+  return {
+    id: row.tenant_id as string,
+    legalName: (row.legal_name as string) ?? "",
+    dba: (row.dba as string) ?? "",
+    entityType: (row.entity_type as string) ?? "",
+    primaryQualifier: asQualifier(row.primary_qualifier),
+    secondaryQualifier: row.secondary_qualifier
+      ? asQualifier(row.secondary_qualifier)
+      : null,
+    generalLiability: asPolicy(row.general_liability),
+    workersComp: asPolicy(row.workers_comp),
+    bond: asBond(row.bond),
+    updatedAt: (row.updated_at as string) ?? new Date().toISOString(),
+  };
+}
+
+function notifyChanged() {
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(new CustomEvent(GC_COMPANY_EVT));
+  }
+}
 
 function daysUntil(dateStr: string | null | undefined): number {
   if (!dateStr) return -Infinity;
@@ -54,121 +150,129 @@ function daysUntil(dateStr: string | null | undefined): number {
   return Math.floor((d.getTime() - Date.now()) / 86400000);
 }
 
-function isoInDays(days: number): string {
-  const d = new Date();
-  d.setDate(d.getDate() + days);
-  return d.toISOString().slice(0, 10);
+export async function listGcCompanyProfiles(): Promise<GcCompanyProfile[]> {
+  const { data, error } = await supabase
+    .from("gc_company_profiles")
+    .select("*")
+    .order("legal_name", { ascending: true });
+  if (error) throw error;
+  return (data ?? []).map(mapRow);
 }
 
-function seedFor(id: string, firmName: string, licenseNumber: string, kind: "clean" | "expiring" | "expired"): GcCompanyProfile {
-  const licenseExp =
-    kind === "expired" ? isoInDays(-14) : kind === "expiring" ? isoInDays(38) : isoInDays(420);
-  const glExp = kind === "expiring" ? isoInDays(45) : isoInDays(310);
-  const wcExp = kind === "expired" ? isoInDays(-5) : isoInDays(280);
+export async function getGcCompanyProfile(tenantId: string): Promise<GcCompanyProfile | null> {
+  const { data, error } = await supabase
+    .from("gc_company_profiles")
+    .select("*")
+    .eq("tenant_id", tenantId)
+    .maybeSingle();
+  if (error) throw error;
+  return data ? mapRow(data) : null;
+}
 
+/** Load profile for the current tenant; returns an empty scaffold if none exists yet. */
+export async function getCurrentGcCompanyProfile(
+  tenantId: string,
+  tenantName?: string | null,
+): Promise<GcCompanyProfile> {
+  const existing = await getGcCompanyProfile(tenantId);
+  if (existing) return existing;
+  return emptyGcCompanyProfile(tenantId, tenantName ?? "");
+}
+
+export async function saveGcCompanyProfile(profile: GcCompanyProfile): Promise<GcCompanyProfile> {
+  const tenantId = profile.id;
+  if (!tenantId || !/^[a-f0-9-]{36}$/i.test(tenantId)) {
+    throw new Error("A valid tenant id is required to save the company profile.");
+  }
+
+  const payload = {
+    tenant_id: tenantId,
+    legal_name: profile.legalName,
+    dba: profile.dba,
+    entity_type: profile.entityType,
+    primary_qualifier: profile.primaryQualifier,
+    secondary_qualifier: profile.secondaryQualifier ?? null,
+    general_liability: profile.generalLiability,
+    workers_comp: profile.workersComp,
+    bond: profile.bond ?? null,
+    updated_at: new Date().toISOString(),
+  };
+
+  const { data, error } = await supabase
+    .from("gc_company_profiles")
+    .upsert(payload, { onConflict: "tenant_id" })
+    .select("*")
+    .single();
+  if (error) throw error;
+
+  // Keep tenants.name / license_number loosely in sync for onboarding surfaces.
+  try {
+    await supabase
+      .from("tenants")
+      .update({
+        name: profile.legalName || undefined,
+        license_number: profile.primaryQualifier.licenseNumber || null,
+        primary_coi_path: profile.generalLiability.certificateFilePath ?? null,
+        primary_license_path: null,
+      })
+      .eq("id", tenantId);
+  } catch {
+    /* best-effort */
+  }
+
+  notifyChanged();
+  return mapRow(data);
+}
+
+/** Alias kept for existing call sites — same as saveGcCompanyProfile. */
+export async function saveCurrentGcCompanyProfile(
+  profile: GcCompanyProfile,
+): Promise<GcCompanyProfile> {
+  return saveGcCompanyProfile(profile);
+}
+
+function mapDbprToQualifierStatus(status: DbprResult["status"]): DbprStatus {
+  if (status === "active") return "active";
+  if (status === "expired") return "expired";
+  return "inactive";
+}
+
+/** Run live DBPR verification against a qualifier and return the updated qualifier. */
+export async function autoValidateQualifier(qualifier: Qualifier): Promise<Qualifier> {
+  const ln = qualifier.licenseNumber.trim();
+  if (!ln) {
+    return { ...qualifier, verified: false, dbprStatus: "inactive" };
+  }
+  const result = await verifyDbprLicense(ln);
+  const dbprStatus = mapDbprToQualifierStatus(result.status);
+  const verified = result.status === "active";
   return {
-    id,
-    legalName: firmName,
-    dba: firmName.replace(/ Group| LLC| Inc\.?/gi, "").trim(),
-    entityType: "Florida Limited Liability Company (LLC)",
-    primaryQualifier: {
-      name: "Marcus Coastline",
-      licenseNumber,
-      licenseType: "Certified General Contractor (CGC)",
-      expiration: licenseExp,
-      dbprStatus: kind === "expired" ? "expired" : "active",
-      verified: kind !== "expired",
-    },
-    secondaryQualifier: null,
-    generalLiability: {
-      carrier: "Florida Builders Mutual Insurance",
-      policyNumber: `GL-${licenseNumber}-24`,
-      coverageAmountCents: 200_000_00,
-      expiration: glExp,
-      certificateFileName: "coi-general-liability-2024.pdf",
-    },
-    workersComp: {
-      carrier: "SouthGuard Casualty Co.",
-      policyNumber: `WC-${licenseNumber}-24`,
-      coverageAmountCents: 500_000_00,
-      expiration: wcExp,
-      certificateFileName: "coi-workers-comp-2024.pdf",
-    },
-    bond: {
-      surety: "Gulfstream Surety & Bond",
-      bondNumber: `BND-${licenseNumber}`,
-      amountCents: 25_000_00,
-      expiration: isoInDays(365),
-    },
-    updatedAt: new Date().toISOString(),
+    ...qualifier,
+    dbprStatus,
+    verified,
+    name: result.holder_name?.trim() || qualifier.name,
+    licenseType: result.license_type?.trim() || qualifier.licenseType,
+    expiration: result.expiration || qualifier.expiration,
   };
 }
 
-function seedProfiles(): GcCompanyProfile[] {
-  const clients = listGCClients();
-  const kinds: Array<"clean" | "expiring" | "expired"> = ["clean", "expiring", "expired"];
-  if (clients.length === 0) {
-    return [seedFor("gc-coastline", "Coastline Builders Group", "CGC1523401", "clean")];
+/**
+ * Auto-validate primary (and secondary, if present) qualifiers via the same
+ * verifyDbprLicense() path used on the Compliance page, then save.
+ */
+export async function saveCurrentGcCompanyProfileWithDbpr(
+  profile: GcCompanyProfile,
+): Promise<GcCompanyProfile> {
+  const primaryQualifier = await autoValidateQualifier(profile.primaryQualifier);
+  let secondaryQualifier = profile.secondaryQualifier ?? null;
+  if (secondaryQualifier?.licenseNumber?.trim()) {
+    secondaryQualifier = await autoValidateQualifier(secondaryQualifier);
   }
-  return clients.map((c, i) =>
-    seedFor(c.id, c.firmName, c.licenseNumber || `CGC15${23400 + i}`, kinds[i % kinds.length]),
-  );
-}
-
-function read(): GcCompanyProfile[] {
-  if (typeof window === "undefined") return seedProfiles();
-  try {
-    const raw = window.localStorage.getItem(KEY);
-    if (!raw) {
-      const seeded = seedProfiles();
-      window.localStorage.setItem(KEY, JSON.stringify(seeded));
-      return seeded;
-    }
-    return JSON.parse(raw) as GcCompanyProfile[];
-  } catch {
-    return seedProfiles();
-  }
-}
-
-function write(list: GcCompanyProfile[]) {
-  if (typeof window === "undefined") return;
-  window.localStorage.setItem(KEY, JSON.stringify(list));
-  window.dispatchEvent(new CustomEvent(EVENT));
-}
-
-export function listGcCompanyProfiles(): GcCompanyProfile[] {
-  return read();
-}
-
-export function getGcCompanyProfile(id: string): GcCompanyProfile | null {
-  return read().find((p) => p.id === id) ?? null;
-}
-
-export function saveGcCompanyProfile(profile: GcCompanyProfile) {
-  const list = read();
-  const idx = list.findIndex((p) => p.id === profile.id);
-  const merged = { ...profile, updatedAt: new Date().toISOString() };
-  if (idx >= 0) list[idx] = merged;
-  else list.push(merged);
-  write(list);
-}
-
-// The "current" GC user's profile — falls back to the first seeded profile.
-export function getCurrentGcCompanyProfile(): GcCompanyProfile {
-  const list = read();
-  if (typeof window !== "undefined") {
-    const currentId = window.localStorage.getItem(CURRENT_KEY);
-    const found = currentId ? list.find((p) => p.id === currentId) : null;
-    if (found) return found;
-  }
-  return list[0] ?? seedFor("gc-coastline", "Coastline Builders Group", "CGC1523401", "clean");
-}
-
-export function saveCurrentGcCompanyProfile(profile: GcCompanyProfile) {
-  if (typeof window !== "undefined") {
-    window.localStorage.setItem(CURRENT_KEY, profile.id);
-  }
-  saveGcCompanyProfile(profile);
+  return saveGcCompanyProfile({
+    ...profile,
+    primaryQualifier,
+    secondaryQualifier,
+  });
 }
 
 export type ComplianceFlag = { level: "warn" | "blocked"; label: string };
@@ -181,9 +285,15 @@ export function complianceFlags(profile: GcCompanyProfile): ComplianceFlag[] {
       flags.push({ level: "blocked", label: `${label} expired` });
       return;
     }
+    // Skip blank dates so an unsaved / empty profile does not look "expired".
+    if (!expiration?.trim()) return;
     const days = daysUntil(expiration);
     if (days < 0) flags.push({ level: "blocked", label: `${label} expired` });
-    else if (days <= 60) flags.push({ level: "warn", label: `${label} expires in ${days} day${days === 1 ? "" : "s"}` });
+    else if (days <= 60)
+      flags.push({
+        level: "warn",
+        label: `${label} expires in ${days} day${days === 1 ? "" : "s"}`,
+      });
   }
 
   checkExpiration(
@@ -215,5 +325,9 @@ export function canSubmitNewPermits(profile: GcCompanyProfile): { ok: boolean; m
 }
 
 export function formatCents(cents: number): string {
-  return (cents / 100).toLocaleString("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
+  return (cents / 100).toLocaleString("en-US", {
+    style: "currency",
+    currency: "USD",
+    maximumFractionDigits: 0,
+  });
 }

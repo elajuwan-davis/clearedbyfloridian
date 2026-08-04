@@ -4,8 +4,8 @@ import { CalendarPlus, Loader2 } from "lucide-react";
 import {
   listInspections,
   createInspection,
-  updateInspection,
   deleteInspection,
+  markInspectionResult,
   INSPECTION_TYPES,
   labelFor,
   currentInspectionStage,
@@ -50,8 +50,21 @@ export function InspectionsPanel({ permitId, tenantId, permitStatus }: { permitI
   }
 
   async function markResult(id: string, result: "passed" | "failed") {
-    const row = await updateInspection(id, { result } as any);
-    setRows((prev) => prev.map((r) => (r.id === id ? row : r)));
+    const current = rows.find((r) => r.id === id);
+    if (!current) return;
+    try {
+      const row = await markInspectionResult({
+        id,
+        result,
+        permit_id: permitId,
+        inspection_type: current.inspection_type,
+        notes: current.notes,
+      });
+      setRows((prev) => prev.map((r) => (r.id === id ? row : r)));
+      toast.success(result === "passed" ? "Marked passed" : "Marked failed");
+    } catch (err: any) {
+      toast.error(err?.message ?? "Failed to update");
+    }
   }
 
   async function onDelete(id: string) {

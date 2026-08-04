@@ -1,11 +1,19 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
 import { PortalShell } from "@/components/portal-shell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ArrowLeft, Eye, EyeOff, Search, Upload, FileText, Check } from "lucide-react";
+import { ArrowLeft, Eye, EyeOff, Search, Upload, FileText, Check, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { MUNICIPALITIES as SHARED_MUNICIPALITIES } from "@/lib/municipalities";
+import { savePortalLogin } from "@/lib/portal-logins.functions";
+import {
+  createPortalLoginDocUploadUrlFn,
+  insertPortalLoginDocumentFn,
+} from "@/lib/portal-login-docs";
+import { useSession } from "@/lib/use-session";
 
 export const Route = createFileRoute("/building-dept-logins/submit")({
   head: () => ({
@@ -17,7 +25,10 @@ export const Route = createFileRoute("/building-dept-logins/submit")({
   component: SubmitLoginPage,
 });
 
-import { MUNICIPALITIES as SHARED_MUNICIPALITIES } from "@/lib/municipalities";
+function slugifyCity(name: string): string {
+  return name.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+}
+
 const MUNICIPALITIES = SHARED_MUNICIPALITIES.map((m) => m.name);
 
 const REGISTRATIONS = [
@@ -28,19 +39,29 @@ const REGISTRATIONS = [
   "Specialty Trade Registration",
 ];
 
-type DocSlot = { key: string; label: string; required: boolean; file?: File | null };
+type DocSlot = {
+  key: string;
+  label: string;
+  required: boolean;
+  file?: File | null;
+  expiration?: string;
+};
 
 const DEFAULT_DOCS: DocSlot[] = [
-  { key: "coi", label: "COI — Certificate of Insurance", required: true },
-  { key: "wc", label: "WC — Workers Compensation", required: true },
-  { key: "occ", label: "Occupational License", required: true },
-  { key: "btr", label: "BTR — Business Tax Receipt", required: true },
-  { key: "qdl", label: "Qualifier Driver's License", required: true },
+  { key: "coi", label: "COI — Certificate of Insurance", required: true, expiration: "" },
+  { key: "wc", label: "WC — Workers Compensation", required: true, expiration: "" },
+  { key: "occ", label: "Occupational License", required: true, expiration: "" },
+  { key: "btr", label: "BTR — Business Tax Receipt", required: true, expiration: "" },
+  { key: "qdl", label: "Qualifier Driver's License", required: true, expiration: "" },
 ];
 
 function SubmitLoginPage() {
   const navigate = useNavigate();
-  const [company] = useState("Coastline Builders Group");
+  const session = useSession();
+  const saveFn = useServerFn(savePortalLogin);
+  const createUpload = useServerFn(createPortalLoginDocUploadUrlFn);
+  const insertDoc = useServerFn(insertPortalLoginDocumentFn);
+
   const [muniQuery, setMuniQuery] = useState("");
   const [muni, setMuni] = useState("");
   const [muniOpen, setMuniOpen] = useState(false);
@@ -54,6 +75,11 @@ function SubmitLoginPage() {
   const [extras, setExtras] = useState<DocSlot[]>([]);
   const [submitting, setSubmitting] = useState(false);
 
+  const muniMeta = useMemo(
+    () => SHARED_MUNICIPALITIES.find((m) => m.name === muni) ?? null,
+    [muni],
+  );
+
   const muniFiltered = useMemo(() => {
     const q = muniQuery.toLowerCase().trim();
     if (!q) return MUNICIPALITIES.slice(0, 12);
@@ -63,30 +89,88 @@ function SubmitLoginPage() {
   function setDocFile(key: string, list: DocSlot[], setList: (n: DocSlot[]) => void, file: File | null) {
     setList(list.map((d) => (d.key === key ? { ...d, file } : d)));
   }
+  function setDocExp(key: string, list: DocSlot[], setList: (n: DocSlot[]) => void, expiration: string) {
+    setList(list.map((d) => (d.key === key ? { ...d, expiration } : d)));
+  }
   function addExtra() {
-    setExtras((e) => [...e, { key: `extra-${e.length}-${Math.random().toString(36).slice(2, 6)}`, label: "Additional document", required: false }]);
+    setExtras((e) => [
+      ...e,
+      {
+        key: `extra-${e.length}-${Math.random().toString(36).slice(2, 6)}`,
+        label: "Additional document",
+        required: false,
+        expiration: "",
+      },
+    ]);
   }
 
-  const requiredOk = docs.every((d) => !d.required || !!d.file);
+  const allDocs = [...docs, ...extras];
+  const requiredOk = docs.every((d) => !d.required || (!!d.file && !!d.expiration?.trim()));
   const canSubmit =
     muni.trim().length > 0 &&
     registration.trim().length > 0 &&
     username.trim().length > 0 &&
     password.trim().length > 0 &&
-    requiredOk;
+    requiredOk &&
+    !!session.userId;
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!canSubmit) {
       toast.error("Please complete all required fields and upload required documents.");
       return;
     }
     setSubmitting(true);
-    setTimeout(() => {
-      setSubmitting(false);
+    const slug = slugifyCity(muni);
+    try {
+      // 1) Encrypt + store credentials (never plaintext in DB).
+      await saveFn({
+        data: {
+          municipality_slug: slug,
+          city_name: muni.trim(),
+          username: username.trim(),
+          password: password.trim(),
+          notes: null,
+          portal_url: muniMeta?.url ?? null,
+          registration: registration.trim(),
+          e_plan: ePlan,
+          derm,
+          tenant_id: session.effectiveTenantId,
+        },
+      });
+
+      // 2) Upload each attached document; abort on any upload failure.
+      for (const d of allDocs) {
+        if (!d.file) continue;
+        const signed = await createUpload({
+          data: { municipalitySlug: slug, filename: d.file.name },
+        });
+        const put = await fetch(signed.signedUrl, {
+          method: "PUT",
+          headers: { "Content-Type": d.file.type || "application/pdf" },
+          body: d.file,
+        });
+        if (!put.ok) throw new Error(`Upload failed for ${d.label} (${put.status})`);
+        await insertDoc({
+          data: {
+            municipality_slug: slug,
+            municipality: muni.trim(),
+            doc_label: d.label,
+            file_path: signed.path,
+            file_name: d.file.name,
+            expiration_date: d.expiration?.trim() || null,
+            tenant_id: session.effectiveTenantId,
+          },
+        });
+      }
+
       toast.success(`Login submitted for ${muni}.`);
       navigate({ to: "/building-dept-logins" });
-    }, 800);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Submit failed");
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   return (
@@ -103,16 +187,19 @@ function SubmitLoginPage() {
           <div className="eyebrow text-obsidian/50">Credentials Vault</div>
           <h1 className="display-serif mt-3 text-4xl text-obsidian">Submit New Login</h1>
           <p className="mt-2 text-sm text-obsidian/60">
-            Cleard encrypts credentials at rest. Required documents are scanned for expiration dates.
+            Cleard encrypts credentials at rest. Required documents are stored with expiration dates.
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="mt-8 space-y-8">
-          {/* Company / muni / reg */}
+        <form onSubmit={(e) => void handleSubmit(e)} className="mt-8 space-y-8">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
             <div>
-              <Label className="eyebrow text-obsidian/55">Company Name</Label>
-              <Input value={company} readOnly className="mt-2 rounded-[3px] bg-paper-warm/60" />
+              <Label className="eyebrow text-obsidian/55">Company / Account</Label>
+              <Input
+                value={session.tenantName || session.email || "Signed-in account"}
+                readOnly
+                className="mt-2 rounded-[3px] bg-paper-warm/60"
+              />
             </div>
             <div className="relative">
               <Label className="eyebrow text-obsidian/55">Municipality <span className="text-oxblood">*</span></Label>
@@ -163,6 +250,7 @@ function SubmitLoginPage() {
                 onChange={(e) => setUsername(e.target.value)}
                 placeholder="portal username or email"
                 className="mt-2 rounded-[3px] font-mono"
+                autoComplete="off"
               />
             </div>
             <div>
@@ -174,6 +262,7 @@ function SubmitLoginPage() {
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
                   className="flex-1 min-w-0 bg-transparent px-3 py-2 text-sm text-obsidian focus:outline-none font-mono"
+                  autoComplete="new-password"
                 />
                 <button
                   type="button"
@@ -187,7 +276,6 @@ function SubmitLoginPage() {
             </div>
           </div>
 
-          {/* Features */}
           <div>
             <Label className="eyebrow text-obsidian/55">Portal Features</Label>
             <div className="mt-3 flex flex-wrap gap-3">
@@ -196,17 +284,20 @@ function SubmitLoginPage() {
             </div>
           </div>
 
-          {/* Required Documents */}
           <div>
             <div className="eyebrow text-obsidian/55 mb-3">Required Documents</div>
             <div className="border border-obsidian/15 bg-white divide-y divide-obsidian/5">
               {docs.map((d) => (
-                <DocRow key={d.key} doc={d} onFile={(f) => setDocFile(d.key, docs, setDocs, f)} />
+                <DocRow
+                  key={d.key}
+                  doc={d}
+                  onFile={(f) => setDocFile(d.key, docs, setDocs, f)}
+                  onExpiration={(v) => setDocExp(d.key, docs, setDocs, v)}
+                />
               ))}
             </div>
           </div>
 
-          {/* Additional */}
           <div>
             <div className="flex items-center justify-between mb-3">
               <div className="eyebrow text-obsidian/55">Additional Documents</div>
@@ -231,6 +322,7 @@ function SubmitLoginPage() {
                     editable
                     onLabel={(label) => setExtras((e) => e.map((x) => (x.key === d.key ? { ...x, label } : x)))}
                     onFile={(f) => setDocFile(d.key, extras, setExtras, f)}
+                    onExpiration={(v) => setDocExp(d.key, extras, setExtras, v)}
                   />
                 ))}
               </div>
@@ -241,7 +333,8 @@ function SubmitLoginPage() {
             <Button asChild variant="outline" className="rounded-[3px]">
               <Link to="/building-dept-logins">Cancel</Link>
             </Button>
-            <Button type="submit" variant="dark" disabled={!canSubmit || submitting} className="rounded-[3px]">
+            <Button type="submit" variant="dark" disabled={!canSubmit || submitting} className="rounded-[3px] gap-2">
+              {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
               {submitting ? "Submitting…" : "Submit Login"}
             </Button>
           </div>
@@ -278,17 +371,18 @@ function Toggle({ on, onChange, label }: { on: boolean; onChange: (v: boolean) =
 }
 
 function DocRow({
-  doc, editable, onFile, onLabel,
+  doc, editable, onFile, onLabel, onExpiration,
 }: {
   doc: DocSlot;
   editable?: boolean;
   onFile: (file: File | null) => void;
   onLabel?: (label: string) => void;
+  onExpiration: (v: string) => void;
 }) {
   return (
     <div className="flex flex-wrap items-center gap-3 px-4 py-3">
       <FileText className="h-4 w-4 text-obsidian/40 shrink-0" />
-      <div className="flex-1 min-w-0">
+      <div className="flex-1 min-w-0 space-y-1.5">
         {editable && onLabel ? (
           <input
             value={doc.label}
@@ -302,10 +396,20 @@ function DocRow({
           </div>
         )}
         {doc.file && (
-          <div className="mt-0.5 font-mono text-[10px] text-obsidian/50 truncate">
+          <div className="font-mono text-[10px] text-obsidian/50 truncate">
             {doc.file.name} · {(doc.file.size / 1024).toFixed(0)} KB
           </div>
         )}
+        <div className="flex items-center gap-2">
+          <label className="font-mono text-[10px] uppercase tracking-[0.12em] text-obsidian/45">Expires</label>
+          <input
+            type="date"
+            required={doc.required}
+            value={doc.expiration ?? ""}
+            onChange={(e) => onExpiration(e.target.value)}
+            className="border border-obsidian/15 bg-white px-2 py-1 text-xs rounded-[3px]"
+          />
+        </div>
       </div>
       <label className="cursor-pointer inline-flex items-center gap-1.5 border border-obsidian/20 bg-paper-warm px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.12em] text-obsidian/70 hover:text-obsidian rounded-[3px]">
         <Upload className="h-3 w-3" />
