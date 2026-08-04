@@ -34,7 +34,10 @@ import {
 
 type Props = {
   permit: PermitRow;
-  /** Wired to Agent 5's municipality-submit action once that lands. */
+  /**
+   * Optional shortcut to the municipality submission card below the gate. Submitting is
+   * that card's job — it drafts and waits for staff approval — so this only scrolls.
+   */
   onSubmitToMunicipality?: () => void;
 };
 
@@ -160,7 +163,9 @@ export function PreSubmissionGate({ permit, onSubmitToMunicipality }: Props) {
           onClick={() =>
             onSubmitToMunicipality
               ? onSubmitToMunicipality()
-              : toast.message("Municipality submission lands with Agent 5")
+              : document
+                  .getElementById("municipality-submission")
+                  ?.scrollIntoView({ behavior: "smooth" })
           }
         >
           <Send className="h-4 w-4 mr-2" /> Submit to Municipality

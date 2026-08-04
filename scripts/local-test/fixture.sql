@@ -21,8 +21,13 @@ CREATE TABLE IF NOT EXISTS auth.users (
   email text UNIQUE
 );
 
+-- PostgREST >= 11 sets request.jwt.claims (whole JSON); older versions set
+-- request.jwt.claim.sub. Read either so the rig works on both.
 CREATE OR REPLACE FUNCTION auth.uid() RETURNS uuid LANGUAGE sql STABLE AS $$
-  SELECT NULLIF(current_setting('request.jwt.claim.sub', true), '')::uuid;
+  SELECT COALESCE(
+    NULLIF(current_setting('request.jwt.claim.sub', true), ''),
+    NULLIF(current_setting('request.jwt.claims', true)::json ->> 'sub', '')
+  )::uuid;
 $$;
 
 -- vault: real Supabase exposes vault.decrypted_secrets(name, decrypted_secret)

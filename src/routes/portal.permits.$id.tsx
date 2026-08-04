@@ -17,6 +17,7 @@ import { SubmittalPackageSection } from "@/components/submittal-package-section"
 import { AdminPermitReviewActions } from "@/components/admin-permit-review-actions";
 import { ServiceFeeInvoicePanel } from "@/components/service-fee-invoice-panel";
 import { PreSubmissionGate } from "@/components/pre-submission-gate";
+import { MunicipalitySubmissionGate } from "@/components/municipality-submission-gate";
 import type { DispatchResult } from "@/lib/dispatch";
 
 
@@ -621,6 +622,12 @@ function PermitDetailPage() {
       <section id="pre-submission" className="mt-10">
         <div className="eyebrow text-obsidian/50 mb-3">Pre-Submission</div>
         <PreSubmissionGate permit={row} />
+        <div className="mt-4">
+          <MunicipalitySubmissionGate
+            permitId={row.id}
+            preSubmissionPassed={(row as any).pre_submission_status === "pass"}
+          />
+        </div>
       </section>
 
       <div className="mt-6">

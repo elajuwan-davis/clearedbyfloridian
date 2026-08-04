@@ -1,0 +1,413 @@
+// Agent 5 — Municipality Submission. Pilot: City of Plantation (Accela Citizen Access).
+//
+// Two actions, and the split between them IS the approval gate:
+//
+//   action 'draft'   — staff clicked "Submit to Municipality". Re-runs Agent 4's
+//                      pre-submission-check, resolves the target municipality, builds a
+//                      draft of exactly what will be filed, and stops. Nothing leaves
+//                      Cleard. Staff are notified that an approval is waiting.
+//   action 'execute' — invoked ONLY by the pg_net release trigger, which only fires when
+//                      approve_municipality_submission() moved the row to 'approved'.
+//                      Email-intake targets are filed here (through the existing
+//                      email_outbox dispatcher); portal targets are handed to the
+//                      Playwright worker, which can only claim approved rows.
+//
+// The function never approves anything itself and refuses to execute a row that is not
+// already approved by a staff member, so a bug in the UI cannot file a permit.
+
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.3";
+import {
+  draftDocuments,
+  emailDraft,
+  portalFields,
+  resolveTargetFor,
+  type PermitRow,
+  type Target,
+} from "../_shared/submission-draft.ts";
+
+const SUPABASE_URL = Deno.env.get("SUPABASE_URL") ?? "";
+const SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
+const FUNCTIONS_BASE = (
+  Deno.env.get("SUPABASE_FUNCTIONS_URL") ?? `${SUPABASE_URL}/functions/v1`
+).replace(/\/$/, "");
+const APP_BASE_URL = (
+  Deno.env.get("APP_BASE_URL") ?? "https://clearedbyfloridian.lovable.app"
+).replace(/\/$/, "");
+const FIRM_EMAIL = Deno.env.get("CLEARD_FIRM_EMAIL") ?? "info@cleard.com";
+const cors = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+};
+
+const json = (body: unknown, status = 200) =>
+  new Response(JSON.stringify(body), {
+    status,
+    headers: { "Content-Type": "application/json", ...cors },
+  });
+
+type SupabaseAdmin = ReturnType<typeof createClient>;
+
+// select('*'): the columns the agents add arrive across several migrations, and a draft
+// should not fail because one of them has not been applied yet.
+async function loadPermit(admin: SupabaseAdmin, permitId: string): Promise<PermitRow | null> {
+  const { data, error } = await admin.from("permits").select("*").eq("id", permitId).maybeSingle();
+  if (error) throw error;
+  return (data as PermitRow) ?? null;
+}
+
+/** Re-runs Agent 4's gate. A draft is never built from a stale verdict. */
+async function runPreSubmissionCheck(permitId: string) {
+  const res = await fetch(`${FUNCTIONS_BASE}/pre-submission-check`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${SERVICE_KEY}`,
+    },
+    body: JSON.stringify({ permit_id: permitId }),
+  });
+  const body = (await res.json().catch(() => ({}))) as {
+    status?: string;
+    report?: { blocking_reasons?: string[] };
+    error?: string;
+  };
+  if (!res.ok) {
+    throw new Error(`pre-submission-check failed (${res.status}): ${body.error ?? "unknown"}`);
+  }
+  return body;
+}
+
+async function notifyStaff(admin: SupabaseAdmin, permitId: string, title: string, body: string) {
+  const { data: admins } = await admin.from("user_roles").select("user_id").eq("role", "admin");
+  const recipients = (admins ?? []) as Array<{ user_id: string }>;
+  if (recipients.length === 0) {
+    console.warn(`no admin recipients for notification: ${title}`);
+    return 0;
+  }
+  const { error } = await admin.from("notifications").insert(
+    recipients.map((r) => ({
+      user_id: r.user_id,
+      kind: "municipality_submission",
+      title,
+      body,
+      permit_id: permitId,
+    })),
+  );
+  if (error) throw error;
+  return recipients.length;
+}
+
+// --- action: draft ---------------------------------------------------------
+
+async function handleDraft(
+  admin: SupabaseAdmin,
+  body: { permit_id?: string; municipality_slug?: string; created_by?: string },
+) {
+  const permitId = body.permit_id;
+  if (!permitId) return json({ error: "permit_id required" }, 400);
+
+  const permit = await loadPermit(admin, permitId);
+  if (!permit) return json({ error: "permit not found" }, 404);
+
+  const { data: targetRows, error: targetErr } = await admin
+    .from("municipality_submission_targets")
+    .select("*")
+    .order("slug");
+  if (targetErr) throw targetErr;
+  const { target, error: targetError } = resolveTargetFor(
+    permit,
+    (targetRows ?? []) as Target[],
+    body.municipality_slug,
+  );
+  if (!target) return json({ error: targetError }, 422);
+
+  const check = await runPreSubmissionCheck(permitId);
+  if (check.status !== "pass") {
+    return json(
+      {
+        error: "pre-submission checks are not passing — nothing was drafted",
+        blocking_reasons: check.report?.blocking_reasons ?? [],
+        report: check.report,
+      },
+      409,
+    );
+  }
+
+  const documents = draftDocuments(permit);
+  if (documents.length === 0) {
+    return json({ error: "no documents to file — the generated bundle is missing" }, 409);
+  }
+
+  const draft = {
+    built_at: new Date().toISOString(),
+    municipality: {
+      slug: target.slug,
+      city_name: target.city_name,
+      channel: target.channel,
+      driver: target.driver,
+      portal_url: target.portal_url,
+      intake_email: target.intake_email,
+      intake_cc: target.intake_cc ?? [],
+    },
+    permit: {
+      id: permit.id,
+      project_name: permit.project_name,
+      job_address: permit.job_address,
+      permit_type: permit.permit_type,
+      owner_name: permit.owner_name,
+      contractor_company: permit.contractor_company,
+      license_number: permit.license_number,
+      construction_value_cents: permit.construction_value_cents,
+      work_description: permit.scope_concise || permit.description,
+    },
+    documents,
+    portal_fields: target.channel === "portal" ? portalFields(permit, target, FIRM_EMAIL) : null,
+    email: target.channel === "email" ? emailDraft(permit, target, documents, FIRM_EMAIL) : null,
+  };
+
+  const { data: inserted, error: insErr } = await admin
+    .from("municipality_submissions")
+    .insert({
+      tenant_id: permit.tenant_id,
+      permit_id: permit.id,
+      municipality_slug: target.slug,
+      channel: target.channel,
+      status: "draft_pending_approval",
+      draft,
+      pre_submission_report: check.report ?? null,
+      created_by: body.created_by ?? null,
+    })
+    .select("*")
+    .single();
+  if (insErr) {
+    // The partial unique index means "there is already a live submission for this permit".
+    if ((insErr as { code?: string }).code === "23505") {
+      const { data: existing } = await admin
+        .from("municipality_submissions")
+        .select("*")
+        .eq("permit_id", permit.id)
+        .in("status", ["draft_pending_approval", "approved", "submitting", "submitted"])
+        .maybeSingle();
+      return json(
+        {
+          error: "this permit already has a live submission",
+          submission: existing ?? null,
+        },
+        409,
+      );
+    }
+    throw insErr;
+  }
+  const submission = inserted as { id: string };
+
+  await admin.from("municipality_submission_events").insert({
+    submission_id: submission.id,
+    event_type: "drafted",
+    actor_label: "Cleard automation",
+    detail: { documents: documents.length, channel: target.channel },
+  });
+
+  const notified = await notifyStaff(
+    admin,
+    permit.id,
+    `Approval needed — file ${permit.project_name ?? permit.job_address ?? "permit"} with ${target.city_name}`,
+    `${documents.length} document(s) are ready to file via ${
+      target.channel === "portal" ? target.portal_url : target.intake_email
+    }. Nothing is submitted until a staff member approves: ${APP_BASE_URL}/portal/permits/${permit.id}`,
+  );
+
+  await admin.from("activity_events").insert({
+    tenant_id: permit.tenant_id,
+    permit_id: permit.id,
+    event_type: "municipality_submission_drafted",
+    actor_label: "Cleard automation",
+    summary: `Drafted ${target.city_name} submission — awaiting staff approval`,
+    details: { submission_id: submission.id, channel: target.channel, notified },
+  });
+
+  return json({ submission: inserted, requires_approval: true });
+}
+
+// --- action: execute (post-approval only) ----------------------------------
+
+async function handleExecute(admin: SupabaseAdmin, body: { submission_id?: string }) {
+  const id = body.submission_id;
+  if (!id) return json({ error: "submission_id required" }, 400);
+
+  const { data, error } = await admin
+    .from("municipality_submissions")
+    .select("*")
+    .eq("id", id)
+    .maybeSingle();
+  if (error) throw error;
+  if (!data) return json({ error: "submission not found" }, 404);
+
+  const sub = data as {
+    id: string;
+    permit_id: string;
+    tenant_id: string | null;
+    channel: "portal" | "email";
+    status: string;
+    approved_by: string | null;
+    draft: {
+      email?: { to?: string; cc?: string[]; subject?: string; body_text?: string } | null;
+      documents?: Array<{ label: string; path: string }>;
+      municipality?: { city_name?: string; portal_url?: string };
+    };
+  };
+
+  // The gate, enforced again at execution time: no approval, no filing.
+  if (sub.status !== "approved" || !sub.approved_by) {
+    return json(
+      {
+        error: "submission is not approved — refusing to file",
+        status: sub.status,
+        approved: Boolean(sub.approved_by),
+      },
+      409,
+    );
+  }
+
+  if (sub.channel === "portal") {
+    // Playwright needs a browser, which an edge function does not have. The approved row
+    // stays claimable by the portal worker, which is the only thing that can file it.
+    await admin.from("municipality_submission_events").insert({
+      submission_id: sub.id,
+      event_type: "queued_for_portal_worker",
+      actor_label: "Cleard automation",
+      detail: { portal_url: sub.draft?.municipality?.portal_url ?? null },
+    });
+    return json({ ok: true, queued_for: "portal_worker", submission_id: sub.id });
+  }
+
+  const email = sub.draft?.email;
+  if (!email?.to) {
+    await markFailed(admin, sub.id, "email target has no intake address in the draft");
+    return json({ error: "email target has no intake address" }, 422);
+  }
+
+  const { data: outbox, error: obErr } = await admin
+    .from("email_outbox")
+    .insert({
+      kind: "generic",
+      to_email: email.to,
+      cc_emails: email.cc ?? [],
+      subject: email.subject ?? "Permit application",
+      body_text: email.body_text ?? "",
+      attachments: (sub.draft?.documents ?? []).map((d) => ({
+        label: d.label,
+        path: d.path,
+      })),
+      status: "queued",
+      tenant_id: sub.tenant_id,
+    })
+    .select("id")
+    .single();
+  if (obErr) {
+    await markFailed(admin, sub.id, `email_outbox insert failed: ${obErr.message}`);
+    throw obErr;
+  }
+
+  const now = new Date().toISOString();
+  const { error: upErr } = await admin
+    .from("municipality_submissions")
+    .update({
+      status: "submitted",
+      submitted_at: now,
+      email_outbox_id: (outbox as { id: string }).id,
+      attempts: 1,
+    })
+    .eq("id", sub.id);
+  if (upErr) throw upErr;
+
+  await admin.from("municipality_submission_events").insert({
+    submission_id: sub.id,
+    event_type: "submitted_by_email",
+    actor_label: "Cleard automation",
+    detail: { to: email.to, outbox_id: (outbox as { id: string }).id },
+  });
+
+  await admin.from("permits").update({ status: "submitted" }).eq("id", sub.permit_id);
+
+  await admin.from("activity_events").insert({
+    tenant_id: sub.tenant_id,
+    permit_id: sub.permit_id,
+    event_type: "municipality_submitted",
+    actor_label: "Cleard automation",
+    summary: `Filed with ${sub.draft?.municipality?.city_name ?? "the building department"} by email intake`,
+    details: { submission_id: sub.id, to: email.to },
+  });
+
+  await notifyStaff(
+    admin,
+    sub.permit_id,
+    `Filed with ${sub.draft?.municipality?.city_name ?? "building department"}`,
+    `The approved package was sent to ${email.to}. A confirmation number is recorded when the department replies.`,
+  );
+
+  return json({ ok: true, submitted: true, channel: "email", submission_id: sub.id });
+}
+
+async function markFailed(admin: SupabaseAdmin, id: string, reason: string) {
+  await admin
+    .from("municipality_submissions")
+    .update({ status: "failed", last_error: reason })
+    .eq("id", id);
+  await admin.from("municipality_submission_events").insert({
+    submission_id: id,
+    event_type: "failed",
+    actor_label: "Cleard automation",
+    detail: { reason },
+  });
+}
+
+// --- action: status (what the UI polls) ------------------------------------
+
+async function handleStatus(admin: SupabaseAdmin, body: { permit_id?: string }) {
+  if (!body.permit_id) return json({ error: "permit_id required" }, 400);
+  const { data, error } = await admin
+    .from("municipality_submissions")
+    .select("*")
+    .eq("permit_id", body.permit_id)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (error) throw error;
+  return json({ submission: data ?? null });
+}
+
+Deno.serve(async (req) => {
+  if (req.method === "OPTIONS") return new Response("ok", { headers: cors });
+  if (req.method !== "POST") return json({ error: "method not allowed" }, 405);
+  if (!SUPABASE_URL || !SERVICE_KEY) return json({ error: "Supabase not configured" }, 503);
+
+  const admin = createClient(SUPABASE_URL, SERVICE_KEY, { auth: { persistSession: false } });
+
+  try {
+    const body = (await req.json().catch(() => ({}))) as {
+      action?: string;
+      permit_id?: string;
+      submission_id?: string;
+      municipality_slug?: string;
+      created_by?: string;
+    };
+    switch (body.action ?? "draft") {
+      case "draft":
+        return await handleDraft(admin, body);
+      case "execute":
+        return await handleExecute(admin, body);
+      case "status":
+        return await handleStatus(admin, body);
+      default:
+        return json({ error: `unknown action '${body.action}'` }, 400);
+    }
+  } catch (err) {
+    console.error("municipality-submit failed", err);
+    const message =
+      err instanceof Error
+        ? err.message
+        : typeof err === "object" && err !== null && "message" in err
+          ? String((err as { message: unknown }).message)
+          : String(err);
+    return json({ error: message }, 500);
+  }
+});
