@@ -1758,6 +1758,7 @@ export type Database = {
           inspector_name: string | null
           notes: string | null
           permit_id: string
+          preferred_time: string | null
           requested_date: string | null
           result: string | null
           scheduled_date: string | null
@@ -1772,6 +1773,7 @@ export type Database = {
           inspector_name?: string | null
           notes?: string | null
           permit_id: string
+          preferred_time?: string | null
           requested_date?: string | null
           result?: string | null
           scheduled_date?: string | null
@@ -1786,6 +1788,7 @@ export type Database = {
           inspector_name?: string | null
           notes?: string | null
           permit_id?: string
+          preferred_time?: string | null
           requested_date?: string | null
           result?: string | null
           scheduled_date?: string | null
