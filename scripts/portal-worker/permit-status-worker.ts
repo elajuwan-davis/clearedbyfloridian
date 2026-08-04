@@ -96,6 +96,17 @@ async function readRecord(
   return { statusText, pageText, correctionText };
 }
 
+/** Storage-path-safe form of a portal label or filename. */
+function slugForPath(value: string): string {
+  return (
+    value
+      .toLowerCase()
+      .replace(/[^a-z0-9.]+/g, "-")
+      .replace(/^-+|-+$/g, "")
+      .slice(0, 60) || "correction"
+  );
+}
+
 /** Downloads a correction/review letter when the record page links one. */
 async function downloadCorrection(
   admin: SupabaseClient,
@@ -117,10 +128,12 @@ async function downloadCorrection(
     const stream = await download.createReadStream();
     const chunks: Buffer[] = [];
     for await (const chunk of stream) chunks.push(Buffer.from(chunk));
-    const name = download.suggestedFilename() || `correction-${Date.now()}.pdf`;
+    const name = download.suggestedFilename() || "correction.pdf";
+    // Deterministic path: the dedupe index is keyed on document_path, so a clock-stamped
+    // name would let the same letter be recorded again on a later poll.
     documentPath = await uploadBytes(
       admin,
-      `permits/${poll.permit_id}/corrections/${Date.now()}-${name}`,
+      `permits/${poll.permit_id}/corrections/${slugForPath(label)}-${slugForPath(name)}`,
       Buffer.concat(chunks),
       name.toLowerCase().endsWith(".pdf") ? "application/pdf" : "application/octet-stream",
     );
@@ -133,28 +146,34 @@ async function downloadCorrection(
 }
 
 async function runPoll(admin: SupabaseClient, poll: Poll) {
-  const { data: sub } = await admin
-    .from("municipality_submissions")
-    .select("draft, confirmation_number, tenant_id")
-    .eq("id", poll.submission_id)
-    .maybeSingle();
-
-  const portalUrl = (sub?.draft as { municipality?: { portal_url?: string } } | null)?.municipality
-    ?.portal_url;
-  const recordNumber = poll.confirmation_number ?? sub?.confirmation_number ?? null;
-
-  if (!portalUrl) throw new Error("submission draft has no portal_url");
-  if (!recordNumber) {
-    // Without a record number there is nothing to look up, and guessing would read
-    // somebody else's permit.
-    throw new Error("submission has no confirmation number to look up");
-  }
-
-  const creds = await portalCredentials(admin, poll.permit_id, poll.municipality_slug);
-  const browser = await chromium.launch({ headless: !process.env.HEADFUL });
-  const context = await browser.newContext({ acceptDownloads: true });
-  const page = await context.newPage();
+  // Everything after the claim runs inside the try: a poll left at 'checking' is permanent,
+  // because the one-open-poll index then blocks every future enqueue for that submission.
+  let browser: Awaited<ReturnType<typeof chromium.launch>> | null = null;
+  let context: Awaited<ReturnType<NonNullable<typeof browser>["newContext"]>> | null = null;
+  let page: Page | null = null;
   try {
+    const { data: sub } = await admin
+      .from("municipality_submissions")
+      .select("draft, confirmation_number, tenant_id")
+      .eq("id", poll.submission_id)
+      .maybeSingle();
+
+    const portalUrl = (sub?.draft as { municipality?: { portal_url?: string } } | null)
+      ?.municipality?.portal_url;
+    const recordNumber = poll.confirmation_number ?? sub?.confirmation_number ?? null;
+
+    if (!portalUrl) throw new Error("submission draft has no portal_url");
+    if (!recordNumber) {
+      // Without a record number there is nothing to look up, and guessing would read
+      // somebody else's permit.
+      throw new Error("submission has no confirmation number to look up");
+    }
+
+    const creds = await portalCredentials(admin, poll.permit_id, poll.municipality_slug);
+    browser = await chromium.launch({ headless: !process.env.HEADFUL });
+    context = await browser.newContext({ acceptDownloads: true });
+    page = await context.newPage();
+
     await acaLogin(page, portalUrl, creds.username, creds.password);
     const { statusText, correctionText } = await readRecord(page, portalUrl, recordNumber);
     if (!statusText) throw new Error("could not read a status from the record page");
@@ -200,8 +219,8 @@ async function runPoll(admin: SupabaseClient, poll: Poll) {
     );
     console.error(`poll ${poll.id} failed: ${message}`);
   } finally {
-    await context.close();
-    await browser.close();
+    if (context) await context.close().catch(() => {});
+    if (browser) await browser.close().catch(() => {});
   }
 }
 
@@ -218,7 +237,12 @@ async function main() {
     });
     if (poll) {
       console.log(`claimed poll ${poll.id} (permit ${poll.permit_id})`);
-      await runPoll(admin, poll);
+      // One bad permit must not take the poller down with it.
+      try {
+        await runPoll(admin, poll);
+      } catch (err) {
+        console.error(`poll ${poll.id} cycle failed: ${err instanceof Error ? err.message : err}`);
+      }
       continue;
     }
     if (ONCE) {

@@ -176,11 +176,50 @@ BEGIN
     SELECT 1 FROM pg_policies WHERE schemaname = 'public'
       AND tablename = 'correction_notices' AND policyname = 'cn_staff_upload'
   ) THEN
+    -- A staff upload may only be filed against the permit's own tenant and must start
+    -- as a new, unparsed notice: the row is Agent 7's trigger, so the client does not
+    -- get to choose its tenant or its state.
     CREATE POLICY "cn_staff_upload" ON public.correction_notices
       FOR INSERT TO authenticated
-      WITH CHECK (public.is_admin() AND source = 'staff_upload');
+      WITH CHECK (
+        public.is_admin()
+        AND source = 'staff_upload'
+        AND status = 'new'
+        AND tenant_id IS NOT DISTINCT FROM
+            (SELECT p.tenant_id FROM public.permits p WHERE p.id = permit_id)
+      );
   END IF;
 END $$;
+
+-- Belt and braces for the same rule: whatever a client sends, the notice is stamped with
+-- the permit's tenant and the uploading account.
+CREATE OR REPLACE FUNCTION public.tg_correction_notices_stamp()
+RETURNS trigger
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+BEGIN
+  SELECT p.tenant_id INTO NEW.tenant_id FROM public.permits p WHERE p.id = NEW.permit_id;
+
+  IF NEW.source = 'staff_upload' THEN
+    NEW.status := 'new';
+    BEGIN
+      NEW.detected_by := COALESCE(auth.uid()::text, NEW.detected_by);
+    EXCEPTION WHEN others THEN
+      -- No request context (service role or SQL console): keep whatever was supplied.
+      NULL;
+    END;
+  END IF;
+
+  RETURN NEW;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS trg_correction_notices_stamp ON public.correction_notices;
+CREATE TRIGGER trg_correction_notices_stamp
+  BEFORE INSERT ON public.correction_notices
+  FOR EACH ROW EXECUTE FUNCTION public.tg_correction_notices_stamp();
 
 -- public.tg_touch_updated_at() already exists (it maintains updated_at on permits and
 -- friends); reused rather than redefined.
@@ -236,6 +275,16 @@ AS $$
 DECLARE
   v_enqueued integer := 0;
 BEGIN
+  -- A worker that died mid-check leaves a row at 'checking'. The one-open-poll index
+  -- would then block this submission from ever being enqueued again, so reclaim those
+  -- first: a check that has not reported in an hour is not running any more.
+  UPDATE public.permit_status_polls
+     SET status = 'failed',
+         last_error = COALESCE(last_error, 'status check did not report back — worker stopped mid-check'),
+         checked_at = now()
+   WHERE status = 'checking'
+     AND COALESCE(claimed_at, created_at) < now() - interval '1 hour';
+
   INSERT INTO public.permit_status_polls
     (submission_id, permit_id, municipality_slug, confirmation_number)
   SELECT s.id, s.permit_id, s.municipality_slug, s.confirmation_number
@@ -337,6 +386,7 @@ DECLARE
   v_permit_status text;
   v_mapped text;
   v_changed boolean := false;
+  v_moved boolean := false;
   v_correction_id uuid;
   v_city text;
 BEGIN
@@ -397,6 +447,7 @@ BEGIN
             _portal_status_raw, 'portal_poll', jsonb_build_object('poll_id', _poll_id));
 
     UPDATE public.permits SET status = v_mapped WHERE id = v_poll.permit_id;
+    v_moved := true;
 
     INSERT INTO public.activity_events
       (tenant_id, permit_id, event_type, actor_label, summary, details)
@@ -415,8 +466,14 @@ BEGIN
            WHEN v_mapped IS NULL THEN
              format('The portal now reads "%s", which Cleard does not map to a pipeline status yet — review it manually.',
                     _portal_status_raw)
-           ELSE format('Permit moved from %s to %s (portal: "%s").',
-                       COALESCE(v_permit_status, 'unknown'), v_mapped, _portal_status_raw)
+           WHEN v_moved THEN
+             format('Permit moved from %s to %s (portal: "%s").',
+                    COALESCE(v_permit_status, 'unknown'), v_mapped, _portal_status_raw)
+           ELSE
+             -- New portal wording for a stage the permit is already in: say so, rather
+             -- than claiming a move from a status to itself.
+             format('The portal wording changed to "%s". The permit stays at %s.',
+                    _portal_status_raw, COALESCE(v_permit_status, v_mapped))
          END,
          v_poll.permit_id
     FROM public.user_roles ur
@@ -482,6 +539,26 @@ GRANT EXECUTE ON FUNCTION public.fail_permit_status_check(uuid, text) TO service
 -- 9. Daily digest: what moved, what is stuck.
 -- ---------------------------------------------------------------------------
 
+-- The digest is SECURITY DEFINER (it reads tables whose RLS would otherwise hide the
+-- poller's own bookkeeping), so it has to apply the tenant rule itself: staff and the
+-- internal digest job see everything, a GC sees only its own permits.
+CREATE OR REPLACE FUNCTION public.status_digest_visible(_permit_id uuid)
+RETURNS boolean
+LANGUAGE sql
+STABLE
+SET search_path = public
+AS $$
+  -- current_user is the function owner inside a SECURITY DEFINER body, so the caller has
+  -- to be read from the request itself: no JWT at all means cron or the service key
+  -- calling in directly, which is the digest job.
+  SELECT COALESCE(
+           NULLIF(current_setting('request.jwt.claims', true), '')::jsonb->>'role',
+           'internal'
+         ) IN ('internal', 'service_role')
+         OR public.is_admin()
+         OR public.permit_in_current_tenant(_permit_id);
+$$;
+
 CREATE OR REPLACE FUNCTION public.permit_status_digest(_since interval DEFAULT interval '1 day')
 RETURNS TABLE (
   bucket text,
@@ -504,6 +581,7 @@ AS $$
     FROM public.permit_status_history h
     LEFT JOIN public.municipality_submissions s ON s.id = h.submission_id
    WHERE h.created_at > now() - _since
+     AND public.status_digest_visible(h.permit_id)
 
   UNION ALL
 
@@ -518,6 +596,7 @@ AS $$
    WHERE s.status = 'submitted'
      AND COALESCE(p.status, '') NOT IN ('permit_issued', 'cancelled')
      AND COALESCE(s.portal_status_changed_at, s.submitted_at) < now() - interval '7 days'
+     AND public.status_digest_visible(s.permit_id)
 
   UNION ALL
 
@@ -527,11 +606,13 @@ AS $$
     FROM public.permit_status_polls pl
    WHERE pl.status = 'failed'
      AND pl.checked_at > now() - _since
+     AND public.status_digest_visible(pl.permit_id)
 
   ORDER BY 1, 6 DESC NULLS LAST;
 $$;
 
 GRANT EXECUTE ON FUNCTION public.permit_status_digest(interval) TO authenticated, service_role;
+GRANT EXECUTE ON FUNCTION public.status_digest_visible(uuid) TO authenticated, service_role;
 
 CREATE OR REPLACE FUNCTION public.send_permit_status_digest()
 RETURNS integer
