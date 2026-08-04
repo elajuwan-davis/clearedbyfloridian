@@ -4321,6 +4321,10 @@ export type Database = {
       }
     }
     Functions: {
+      __tmp_replace_and_verify_edge_key: {
+        Args: { _value: string }
+        Returns: boolean
+      }
       apply_permit_status_check: {
         Args: {
           _correction?: Json
