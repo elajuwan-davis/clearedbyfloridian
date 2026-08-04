@@ -10,7 +10,8 @@
     "preview": "vite preview",
     "lint": "eslint .",
     "format": "prettier --write .",
-    "portal-worker": "tsx scripts/portal-worker/municipality-submit-worker.ts"
+    "portal-worker": "tsx scripts/portal-worker/municipality-submit-worker.ts",
+    "status-worker": "tsx scripts/portal-worker/permit-status-worker.ts"
   },
   "dependencies": {
     "@fontsource/cormorant-garamond": "^5.2.11",

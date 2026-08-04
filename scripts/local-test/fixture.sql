@@ -63,6 +63,35 @@ BEGIN
 END;
 $$;
 
+-- pg_cron stub: cron.job plus schedule/unschedule, so a migration's schedules apply
+-- unchanged locally and can be asserted the same way `select * from cron.job` is used
+-- against the live database.
+CREATE SCHEMA IF NOT EXISTS cron;
+CREATE TABLE IF NOT EXISTS cron.job (
+  jobid bigserial PRIMARY KEY,
+  jobname text UNIQUE,
+  schedule text NOT NULL,
+  command text NOT NULL,
+  active boolean NOT NULL DEFAULT true
+);
+CREATE OR REPLACE FUNCTION cron.schedule(job_name text, schedule text, command text)
+RETURNS bigint LANGUAGE plpgsql AS $$
+DECLARE new_id bigint;
+BEGIN
+  INSERT INTO cron.job (jobname, schedule, command) VALUES (job_name, schedule, command)
+  ON CONFLICT (jobname) DO UPDATE SET schedule = EXCLUDED.schedule, command = EXCLUDED.command
+  RETURNING jobid INTO new_id;
+  RETURN new_id;
+END;
+$$;
+CREATE OR REPLACE FUNCTION cron.unschedule(job_name text)
+RETURNS boolean LANGUAGE plpgsql AS $$
+BEGIN
+  DELETE FROM cron.job WHERE jobname = job_name;
+  RETURN true;
+END;
+$$;
+
 DO $$ BEGIN
   CREATE TYPE public.app_role AS ENUM ('admin', 'gc_owner', 'gc_member', 'subcontractor');
 EXCEPTION WHEN duplicate_object THEN NULL; END $$;

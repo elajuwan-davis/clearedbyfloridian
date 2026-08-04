@@ -224,3 +224,53 @@ credentials, uploads all three documents, and records `26BLD-004512` from the re
 `last_error` instead of an invented one. Wrong stored credentials → `failed`, approval
 retained, staff notified, nothing filed. The email channel (seeded `davie` target) queues
 into `email_outbox` with three attachments only after approval.
+
+## Agent 6 — status polling (check_permit_status + the status worker)
+
+`fixture.sql` stubs `cron.schedule/unschedule` into a `cron.job` table, so the migration's
+schedules apply unchanged locally and can be asserted exactly the way the live jobs are
+(`select * from cron.job`). pg_cron itself is not installable in the plain postgres image.
+
+```bash
+sed -e '/CREATE EXTENSION IF NOT EXISTS pg_net/d' \
+    -e "/IF NOT EXISTS (SELECT 1 FROM pg_extension WHERE extname = 'pg_cron')/,+2d" \
+    supabase/migrations/20260806120000_permit_status_polling.sql \
+  | docker exec -i cleard-pg psql -v ON_ERROR_STOP=1 -U postgres
+docker exec -i cleard-pg psql -v ON_ERROR_STOP=1 -U postgres < scripts/local-test/seed-agent6.sql
+docker exec -i cleard-pg psql -U postgres -c "notify pgrst, 'reload schema';"
+
+deno test supabase/functions/_shared/portal-status_test.ts   # status/correction parsing
+
+docker exec cleard-pg psql -U postgres \
+  -c "select jobname, schedule, command from cron.job;" \
+  -c "select public.check_permit_status();" \
+  -c "select id, status from public.permit_status_polls;"
+
+# the poller itself, against fake-aca's record pages
+ACA_RECORD_STATUS="Corrections Required" ACA_CORRECTIONS=1 \
+  deno run --allow-net --allow-env scripts/local-test/fake-aca.ts     # :54340
+SUPABASE_URL=http://localhost:54331 SUPABASE_SERVICE_ROLE_KEY="$SERVICE_JWT" \
+APP_USER_CONNECTION_KEY_SECRET="$KEY" npm run status-worker -- --once
+```
+
+Observed locally, in this order:
+
+- `cron.job` holds `check-permit-status` (`0 */4 * * *`) and `permit-status-daily-digest`
+  (`0 12 * * *`).
+- `check_permit_status()` enqueues one poll for the filed permit and **zero** on the next
+  call (nothing is checked twice within the interval, and a wedged poll cannot pile up).
+- Worker run against `Corrections Required` + a linked letter: permit → `corrections_required`,
+  `permit_status_history` row, staff notification, the letter downloaded into
+  `permits/<id>/corrections/…pdf`, and one `correction_notices` row (Agent 7's trigger).
+- Re-polling the same status: `{"changed": false}` — no duplicate notice, history row or
+  notification.
+- Worker run against `Issued`: permit → `permit_issued`, and `check_permit_status()` then
+  enqueues nothing (terminal states stop being polled).
+- Unknown status text (`Zoning Escalation Tier 2`): permit untouched, staff notified that
+  it is unmapped — the status is never guessed.
+- Record not found (`26BLD-999999`): poll `failed` with the reason, permit untouched, staff
+  notified; the next scheduled run retries.
+- `permit_status_digest()` returns `moved`, `stuck` (filed, unchanged >7 days) and
+  `check_failing` rows; `send_permit_status_digest()` notifies staff once a day.
+- `authenticated` is refused on `claim_permit_status_poll` and `apply_permit_status_check`,
+  and can only insert a `correction_notices` row as staff with `source='staff_upload'`.

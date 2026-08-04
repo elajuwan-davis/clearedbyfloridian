@@ -51,6 +51,10 @@ export type MunicipalitySubmission = {
   submitted_at: string | null;
   confirmation_number: string | null;
   portal_receipt_path: string | null;
+  // Written by Agent 6's status poller.
+  portal_status: string | null;
+  portal_status_raw: string | null;
+  portal_status_checked_at: string | null;
   last_error: string | null;
   attempts: number;
   created_at: string;
