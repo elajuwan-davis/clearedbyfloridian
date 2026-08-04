@@ -55,6 +55,20 @@ DECLARE
   service_key text;
   request_id bigint;
 BEGIN
+  -- Same allow-list as Agent 1's declaration: the service_role key travels in this request,
+  -- so the target cannot be free-form and no path characters can reach the URL.
+  IF fn_name IS NULL OR fn_name NOT IN (
+    'intake-validator',
+    'document-generation',
+    'scope-draft',
+    'pre-submission-check',
+    'municipality-submit',
+    'corrections-parser',
+    'signwell-send'
+  ) THEN
+    RAISE EXCEPTION 'dispatch_edge_function: % is not a dispatchable Cleard function', fn_name;
+  END IF;
+
   service_key := public.edge_functions_service_role_key();
   IF service_key IS NULL THEN
     RAISE WARNING 'dispatch_edge_function(%): no service_role key in vault, skipping', fn_name;
@@ -74,6 +88,11 @@ BEGIN
   RETURN request_id;
 END;
 $$;
+
+-- Trigger plumbing only: no client role may read the vault key or dispatch with it.
+REVOKE ALL ON FUNCTION public.edge_functions_service_role_key() FROM PUBLIC, anon, authenticated;
+REVOKE ALL ON FUNCTION public.edge_functions_base_url() FROM PUBLIC, anon, authenticated;
+REVOKE ALL ON FUNCTION public.dispatch_edge_function(text, jsonb) FROM PUBLIC, anon, authenticated;
 
 -- ---------------------------------------------------------------------------
 -- 1. Pilot municipality configuration
