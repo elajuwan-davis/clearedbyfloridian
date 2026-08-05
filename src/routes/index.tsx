@@ -435,9 +435,9 @@ function Features() {
 function FeatureVisual({ kind }: { kind: "pipeline" | "compliance" | "municipalities" | "docs" }) {
   if (kind === "pipeline") {
     const items = [
-      { s: "Submitted", tone: "blue" as const },
-      { s: "In Review", tone: "gold" as const },
-      { s: "Approved", tone: "green" as const },
+      { s: "Submitted", tone: "blue" as const, n: 418 },
+      { s: "In Review", tone: "gold" as const, n: 604 },
+      { s: "Approved", tone: "green" as const, n: 872 },
     ];
     return (
       <div className="md-card p-6">
@@ -446,7 +446,8 @@ function FeatureVisual({ kind }: { kind: "pipeline" | "compliance" | "municipali
           {items.map((it) => (
             <div key={it.s} className="flex items-center justify-between px-4 py-3 rounded-md"
               style={{ background: "color-mix(in oklab, #0A0E17 55%, transparent)" }}>
-              <div className="text-sm" style={{ color: "var(--md-text)" }}>Permit · CLR-{Math.floor(Math.random() * 900 + 100)}</div>
+              <div className="text-sm" style={{ color: "var(--md-text)" }}>Permit · CLR-{it.n}</div>
+
               <StatusPill tone={it.tone}>{it.s}</StatusPill>
             </div>
           ))}
