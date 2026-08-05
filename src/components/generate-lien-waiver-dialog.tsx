@@ -72,7 +72,7 @@ export function GenerateLienWaiverDialog({ sub, projectId, propertyAddress, onCl
       projectId,
       "System",
       `${routed ? "Lien waiver sent via SignWell" : "Lien waiver generated"}: ${WAIVER_TYPE_LABEL[waiverType]} — ${sub.companyName} — $${amountNum.toLocaleString()}`
-    );
+    ).catch(() => {});
     void waiver;
     setBusy(false);
     onDone?.();

@@ -3165,6 +3165,48 @@ export type Database = {
           },
         ]
       }
+      project_notes: {
+        Row: {
+          author: string
+          created_at: string
+          id: string
+          note: string
+          permit_id: string
+          tenant_id: string | null
+        }
+        Insert: {
+          author: string
+          created_at?: string
+          id?: string
+          note: string
+          permit_id: string
+          tenant_id?: string | null
+        }
+        Update: {
+          author?: string
+          created_at?: string
+          id?: string
+          note?: string
+          permit_id?: string
+          tenant_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_notes_permit_id_fkey"
+            columns: ["permit_id"]
+            isOneToOne: false
+            referencedRelation: "permits"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_notes_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           address: string | null

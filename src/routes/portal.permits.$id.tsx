@@ -20,6 +20,7 @@ import { PreSubmissionGate } from "@/components/pre-submission-gate";
 import { MunicipalitySubmissionGate } from "@/components/municipality-submission-gate";
 import { CorrectionReviewGate } from "@/components/correction-review-gate";
 import { ProjectAuditTab } from "@/components/project-audit-tab";
+import { PermitNotesPanel } from "@/components/permit-notes-panel";
 import type { DispatchResult } from "@/lib/dispatch";
 
 
@@ -396,7 +397,8 @@ function PermitDetailPage() {
 
       <AdminPermitReviewActions permit={row} onUpdated={(r) => { setRow(r); setEdit(r); }} />
 
-      <div className="mt-6">
+      <div className="mt-6 space-y-6">
+        <PermitNotesPanel permitId={row.id} />
         <ProjectAuditTab permitId={row.id} />
       </div>
 

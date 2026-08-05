@@ -169,7 +169,7 @@ export function triggerNotification(
     projectId,
     "System (Client Notifications)",
     `Auto-notification sent to ${owner.email}: ${KIND_LABEL[kind]}`,
-  );
+  ).catch(() => {});
   return entry;
 }
 
