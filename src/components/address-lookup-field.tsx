@@ -30,9 +30,10 @@ type Props = {
 const norm = (s: string) => s.toLowerCase().replace(/[^a-z]/g, "");
 
 export function AddressLookupField({ value, onChange, onResolved, className, required, id }: Props) {
+  const [googleDead, setGoogleDead] = useState(false);
   const provider = activeProvider();
 
-  if (provider === "google") {
+  if (provider === "google" && !googleDead) {
     return (
       <AddressAutocomplete
         id={id}
@@ -40,6 +41,7 @@ export function AddressLookupField({ value, onChange, onResolved, className, req
         className={className}
         value={value}
         onChange={onChange}
+        onUnavailable={() => setGoogleDead(true)}
         onResolved={(g: GoogleResolved) => {
           // Google's locality is only a candidate — an unincorporated CDP also
           // returns one. Validate against our incorporated-municipality list.
