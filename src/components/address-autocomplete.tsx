@@ -43,7 +43,7 @@ type Props = {
 
 // Project-level Google Maps browser key only. No Lovable-managed connector key.
 const MAPS_KEY: string | undefined =
-  (import.meta.env as Record<string, string | undefined>).VITE_GOOGLE_MAPS_API_KEY || "AIzaSyBROKEN_TEST_KEY_123";
+  (import.meta.env as Record<string, string | undefined>).VITE_GOOGLE_MAPS_API_KEY;
 
 // Rough bounding box for the state of Florida — used as locationRestriction so
 // suggestions never leak out to Georgia / Alabama / the Bahamas.
