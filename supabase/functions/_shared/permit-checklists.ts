@@ -1,5 +1,6 @@
-// A vendored copy of this file lives at supabase/functions/_shared/permit-checklists.ts for the edge
-// runtime (Agent 2's document-generation). Changes here do not propagate — copy them.
+// Vendored copy of src/lib/permit-checklists.ts for the Deno edge runtime — NOT the live source.
+// The app bundle keeps using src/lib/permit-checklists.ts; a fix there does not reach the edge
+// functions until it is copied here as well. Currently byte-identical to it.
 // Municipality + Permit Type → required document checklist.
 // Falls back to DEFAULT_CHECKLIST when no specific match is seeded.
 

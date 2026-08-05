@@ -17,6 +17,7 @@
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.3";
 import { CallerAuthError, requireStaffCaller, type Caller } from "../_shared/caller-auth.ts";
+import { errorMessage } from "../_shared/errors.ts";
 import {
   draftDocuments,
   emailDraft,
@@ -256,6 +257,7 @@ async function handleExecute(admin: SupabaseAdmin, body: { submission_id?: strin
     status: string;
     approved_by: string | null;
     draft: {
+      test_only?: boolean;
       email?: { to?: string; cc?: string[]; subject?: string; body_text?: string } | null;
       documents?: Array<{ label: string; path: string }>;
       municipality?: { city_name?: string; portal_url?: string };
@@ -272,6 +274,26 @@ async function handleExecute(admin: SupabaseAdmin, body: { submission_id?: strin
       },
       409,
     );
+  }
+
+  // A rehearsal row proves the gate and the trigger chain without a filing: it stops here,
+  // before the portal queue and before anything reaches email_outbox. claim_municipality_
+  // submission() skips it too, so the worker never sees it either.
+  if (sub.draft?.test_only === true) {
+    await admin.from("municipality_submission_events").insert({
+      submission_id: sub.id,
+      event_type: "test_only_no_action",
+      actor_label: "Cleard automation",
+      detail: { channel: sub.channel, filed: false },
+    });
+    await admin
+      .from("municipality_submissions")
+      .update({
+        status: "failed",
+        last_error: "draft.test_only is true — rehearsal row, nothing was filed",
+      })
+      .eq("id", sub.id);
+    return json({ ok: true, test_only: true, filed: false, submission_id: sub.id });
   }
 
   if (sub.channel === "portal") {
@@ -414,12 +436,6 @@ Deno.serve(async (req) => {
   } catch (err) {
     if (err instanceof CallerAuthError) return json({ error: err.message }, err.status);
     console.error("municipality-submit failed", err);
-    const message =
-      err instanceof Error
-        ? err.message
-        : typeof err === "object" && err !== null && "message" in err
-          ? String((err as { message: unknown }).message)
-          : String(err);
-    return json({ error: message }, 500);
+    return json({ error: errorMessage(err) }, 500);
   }
 });

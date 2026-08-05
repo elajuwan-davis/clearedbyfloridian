@@ -4,6 +4,11 @@
 // complexity and responsible party are closed sets, item text must come back non-empty, and
 // an acknowledgment letter with no items behind it is rejected — so a vague or hallucinated
 // response fails loudly instead of being posted to staff as if it were a real plan.
+//
+// The closed sets below are mirrored — not imported — by src/lib/corrections.ts, because the
+// browser bundle cannot import from an edge function. Adding a category, complexity or party
+// here does not propagate: change both files, or the UI will render a value it has no label
+// for while validation happily accepts it.
 
 export const CATEGORIES = [
   "documentation",

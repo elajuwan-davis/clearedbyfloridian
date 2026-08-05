@@ -51,6 +51,7 @@ type Submission = {
   approved_by: string | null;
   attempts: number;
   draft: {
+    test_only?: boolean;
     municipality?: { city_name?: string; portal_url?: string; driver?: string };
     permit?: Record<string, unknown>;
     documents?: Array<{ label: string; path: string; role: string }>;
@@ -199,6 +200,23 @@ async function runJob(admin: SupabaseClient, sub: Submission) {
   try {
     if (!sub.approved_by) {
       throw new Error(`submission ${sub.id} has no approver — refusing to file`);
+    }
+    // claim_municipality_submission() already skips test rows; this repeats the check
+    // against a database where that migration has not been applied yet, so a rehearsal
+    // row can never reach a real portal.
+    if (sub.draft?.test_only === true) {
+      await admin
+        .from("municipality_submissions")
+        .update({
+          status: "failed",
+          claimed_at: null,
+          claimed_by: null,
+          last_error: "draft.test_only is true — rehearsal row, nothing was filed",
+        })
+        .eq("id", sub.id);
+      await logEvent(admin, sub.id, "test_only_no_action", { stage: "worker_claim" });
+      console.log(`[test-only] ${sub.id} is a rehearsal row; no browser was opened`);
+      return;
     }
     const portalUrl = sub.draft?.municipality?.portal_url;
     const fields = sub.draft?.portal_fields ?? {};
