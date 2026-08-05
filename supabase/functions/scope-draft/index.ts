@@ -9,15 +9,13 @@
 // scope_* columns.
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.3";
+import { aiConfigured, chat, envFromDeno } from "../_shared/ai.ts";
 import { errorMessage } from "../_shared/errors.ts";
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL") ?? "";
 const SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
-const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY") ?? "";
-// AI_GATEWAY_URL exists so the local harness can point at a stub gateway; in
-// production it is unset and the Lovable gateway is used.
-const AI_URL =
-  Deno.env.get("AI_GATEWAY_URL") ?? "https://ai.gateway.lovable.dev/v1/chat/completions";
+// Provider (Anthropic direct vs Lovable's gateway) is resolved per call in _shared/ai.ts;
+// AI_GATEWAY_URL still exists so the local harness can point at a stub gateway.
 const MODEL = Deno.env.get("SCOPE_DRAFT_MODEL") ?? "anthropic/claude-sonnet-5";
 
 const cors = {
@@ -119,27 +117,18 @@ function parseDraft(content: string): Draft {
 }
 
 async function draftScope(src: Source): Promise<Draft> {
-  if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY not configured");
-  const resp = await fetch(AI_URL, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${LOVABLE_API_KEY}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
+  if (!aiConfigured()) throw new Error("no AI provider configured — cannot draft a scope");
+  const { text } = await chat(
+    {
       model: MODEL,
+      system: SYSTEM_PROMPT,
+      user: userPrompt(src),
       temperature: 0.2,
-      messages: [
-        { role: "system", content: SYSTEM_PROMPT },
-        { role: "user", content: userPrompt(src) },
-      ],
-    }),
-  });
-  if (!resp.ok) throw new Error(`AI gateway ${resp.status}: ${await resp.text()}`);
-  const json = await resp.json();
-  const content = json?.choices?.[0]?.message?.content;
-  if (typeof content !== "string") throw new Error("AI gateway returned no content");
-  return parseDraft(content);
+      maxTokens: 2048,
+    },
+    envFromDeno(),
+  );
+  return parseDraft(text);
 }
 
 Deno.serve(async (req) => {

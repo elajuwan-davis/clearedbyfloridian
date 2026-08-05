@@ -21,16 +21,15 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.3";
 import { PDFDocument } from "https://esm.sh/pdf-lib@1.17.1";
 import { CallerAuthError, requireStaffCaller } from "../_shared/caller-auth.ts";
+import { aiConfigured, chat, envFromDeno } from "../_shared/ai.ts";
 import { errorMessage } from "../_shared/errors.ts";
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL") ?? "";
 const SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
-const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY") ?? "";
 const APP_BASE_URL = (
   Deno.env.get("APP_BASE_URL") ?? "https://clearedbyfloridian.lovable.app"
 ).replace(/\/$/, "");
-const AI_URL =
-  Deno.env.get("AI_GATEWAY_URL") ?? "https://ai.gateway.lovable.dev/v1/chat/completions";
+// Provider (Anthropic direct vs Lovable's gateway) is resolved per call in _shared/ai.ts.
 const PLAN_REVIEW_MODEL = Deno.env.get("PLAN_REVIEW_MODEL") ?? "anthropic/claude-haiku-4-5";
 const BUCKET = "permit-files";
 const SIGNWELL_CONFIGURED = Boolean(Deno.env.get("SIGNWELL_API_KEY"));
@@ -219,9 +218,7 @@ const isPlanDoc = (d: PermitDoc) =>
 type StorageReader = {
   storage: {
     from: (bucket: string) => {
-      download: (
-        path: string,
-      ) => Promise<{ data: Blob | null; error: { message: string } | null }>;
+      download: (path: string) => Promise<{ data: Blob | null; error: { message: string } | null }>;
     };
   };
 };
@@ -307,32 +304,24 @@ async function checkPlansFormat(admin: StorageReader, permit: PermitRow): Promis
   };
 }
 
+// Advisory only: the sheet-size pass/fail is deterministic, so any model trouble here is
+// swallowed rather than blocking a submittal.
 async function planAdvisory(inspected: Array<Record<string, unknown>>): Promise<string | null> {
-  if (!LOVABLE_API_KEY) return null;
+  if (!aiConfigured()) return null;
   try {
-    const resp = await fetch(AI_URL, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
+    const { text } = await chat(
+      {
         model: PLAN_REVIEW_MODEL,
-        messages: [
-          {
-            role: "system",
-            content:
-              "You review plan-set metadata for a Florida permit submittal. Reply with at most two sentences noting anything a plans examiner would reject on format grounds (single-sheet sets, mixed sheet sizes, suspiciously small files). Never state a verdict — the pass/fail decision is made elsewhere. If nothing stands out, reply exactly: none.",
-          },
-          { role: "user", content: JSON.stringify(inspected) },
-        ],
-      }),
-    });
-    if (!resp.ok) return null;
-    const body = (await resp.json()) as { choices?: Array<{ message?: { content?: string } }> };
-    const text = (body.choices?.[0]?.message?.content ?? "").trim();
-    return !text || /^none\.?$/i.test(text) ? null : text;
-  } catch {
+        system:
+          "You review plan-set metadata for a Florida permit submittal. Reply with at most two sentences noting anything a plans examiner would reject on format grounds (single-sheet sets, mixed sheet sizes, suspiciously small files). Never state a verdict — the pass/fail decision is made elsewhere. If nothing stands out, reply exactly: none.",
+        user: JSON.stringify(inspected),
+        maxTokens: 256,
+      },
+      envFromDeno(),
+    );
+    return /^none\.?$/i.test(text) ? null : text;
+  } catch (err) {
+    console.error(`plan advisory failed: ${errorMessage(err)}`);
     return null;
   }
 }
