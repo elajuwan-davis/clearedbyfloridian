@@ -84,7 +84,8 @@ Deno.test("Anthropic call uses x-api-key, the version header and the messages sh
   // The vendor prefix the gateway wants is not part of Anthropic's own model ids.
   assertEquals(body.model, "claude-sonnet-5");
   assertEquals(body.max_tokens, 1024);
-  assertEquals(body.temperature, 0.2);
+  // Current Anthropic models reject the parameter outright, so it is never forwarded.
+  assertEquals(body.temperature, undefined);
   assertEquals(body.system, "sys");
   assertEquals(body.messages, [{ role: "user", content: "usr" }]);
 
@@ -101,7 +102,13 @@ Deno.test("Lovable call keeps the OpenAI-shaped body and the vendor-prefixed mod
     ),
   );
   const result = await chat(
-    { model: "anthropic/claude-sonnet-5", system: "sys", user: "usr", maxTokens: 1024 },
+    {
+      model: "anthropic/claude-sonnet-5",
+      system: "sys",
+      user: "usr",
+      maxTokens: 1024,
+      temperature: 0.2,
+    },
     { ...LOVABLE_ENV, AI_GATEWAY_URL: "http://localhost:8788/v1" },
     f,
   );
@@ -112,6 +119,7 @@ Deno.test("Lovable call keeps the OpenAI-shaped body and the vendor-prefixed mod
   const body = JSON.parse(calls[0].init.body as string);
   assertEquals(body.model, "anthropic/claude-sonnet-5");
   assertEquals(body.max_tokens, undefined);
+  assertEquals(body.temperature, 0.2);
   assertEquals(body.messages, [
     { role: "system", content: "sys" },
     { role: "user", content: "usr" },

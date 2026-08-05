@@ -35,6 +35,11 @@ export type ChatRequest = {
   user: string;
   /** Anthropic requires this; the gateway ignores it. */
   maxTokens: number;
+  /**
+   * Gateway models only. Anthropic rejects it outright on current models
+   * (`400 invalid_request_error: \`temperature\` is deprecated for this model`), so it is not
+   * forwarded there — sampling for those is whatever the model defaults to.
+   */
   temperature?: number;
 };
 
@@ -134,7 +139,6 @@ async function anthropicChat(
       max_tokens: req.maxTokens,
       system: req.system,
       messages: [{ role: "user", content: req.user }],
-      ...(req.temperature === undefined ? {} : { temperature: req.temperature }),
     }),
   });
 
