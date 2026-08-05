@@ -2067,6 +2067,51 @@ export type Database = {
           },
         ]
       }
+      municipalities: {
+        Row: {
+          county: string
+          created_at: string
+          department: string | null
+          id: string
+          is_custom: boolean
+          name: string
+          portal_url: string | null
+          quirks: string | null
+          readiness_score: number | null
+          submittal_method: string | null
+          turnaround_notes: string | null
+          updated_at: string
+        }
+        Insert: {
+          county: string
+          created_at?: string
+          department?: string | null
+          id?: string
+          is_custom?: boolean
+          name: string
+          portal_url?: string | null
+          quirks?: string | null
+          readiness_score?: number | null
+          submittal_method?: string | null
+          turnaround_notes?: string | null
+          updated_at?: string
+        }
+        Update: {
+          county?: string
+          created_at?: string
+          department?: string | null
+          id?: string
+          is_custom?: boolean
+          name?: string
+          portal_url?: string | null
+          quirks?: string | null
+          readiness_score?: number | null
+          submittal_method?: string | null
+          turnaround_notes?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       municipality_registrations: {
         Row: {
           county: string | null

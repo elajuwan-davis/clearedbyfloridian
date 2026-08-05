@@ -20,7 +20,7 @@ import {
   subscribeMunicipalities, FL_COUNTIES, PORTAL_PLATFORMS,
   type CustomMunicipality, type PortalPlatform,
 } from "@/lib/municipalities-store";
-import { MUNICIPALITIES } from "@/lib/municipalities";
+import { loadMunicipalities, type Municipality } from "@/lib/municipalities";
 import { savePortalLogin, deletePortalLogin, listPortalLoginFlags } from "@/lib/portal-logins.functions";
 
 function slugifyCity(name: string): string {
@@ -54,6 +54,7 @@ export const Route = createFileRoute("/portal/building-dept")({
 function BuildingDeptPage() {
   const internal = isInternalUser();
   const [custom, setCustom] = useState<CustomMunicipality[]>([]);
+  const [directory, setDirectory] = useState<Municipality[]>([]);
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -122,8 +123,13 @@ function BuildingDeptPage() {
   }
 
   useEffect(() => {
-    setCustom(listMunicipalities());
-    return subscribeMunicipalities(() => setCustom(listMunicipalities()));
+    const refresh = () => { void listMunicipalities().then(setCustom); };
+    refresh();
+    void loadMunicipalities().then(setDirectory);
+    return subscribeMunicipalities(() => {
+      refresh();
+      void loadMunicipalities().then(setDirectory);
+    });
   }, []);
 
   const customRows = useMemo(() => {
@@ -135,11 +141,11 @@ function BuildingDeptPage() {
   }, [custom, query]);
 
   const statewideRows = useMemo(() => {
-    const rows = MUNICIPALITIES.map((m) => ({ city: m.name, portalUrl: m.url }));
+    const rows = directory.map((m) => ({ city: m.name, portalUrl: m.url }));
     const q = query.trim().toLowerCase();
     if (!q) return rows;
     return rows.filter((r) => r.city.toLowerCase().includes(q));
-  }, [query]);
+  }, [query, directory]);
 
   function openAdd() {
     setEditingId(null);
@@ -166,9 +172,11 @@ function BuildingDeptPage() {
   }
   function save() {
     if (!form.municipality_name.trim() || !form.portal_url.trim()) return;
-    if (editingId) updateMunicipality(editingId, form);
-    else addMunicipality(form);
-    setOpen(false);
+    void (async () => {
+      if (editingId) await updateMunicipality(editingId, form);
+      else await addMunicipality(form);
+      setOpen(false);
+    })();
   }
 
   return (
@@ -222,7 +230,7 @@ function BuildingDeptPage() {
                   rec={m}
                   internal={internal}
                   onEdit={() => openEdit(m)}
-                  onDelete={() => { if (confirm(`Delete ${m.municipality_name}?`)) deleteMunicipality(m.id); }}
+                  onDelete={() => { if (confirm(`Delete ${m.municipality_name}?`)) void deleteMunicipality(m.id); }}
                 />
               ))}
             </div>
