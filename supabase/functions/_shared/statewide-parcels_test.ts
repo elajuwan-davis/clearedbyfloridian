@@ -1,5 +1,6 @@
 import { assertEquals } from "https://deno.land/std@0.224.0/assert/mod.ts";
 import {
+  addressMatchScore,
   isBlankFeature,
   lookupStatewideParcel,
   statewideQueryUrl,
@@ -106,10 +107,88 @@ Deno.test("the query sends geometry as JSON with an explicit spatial reference",
 
 Deno.test("a parcel is returned when the service answers", async () => {
   const f = stubFetch([ok({ features: [{ attributes: HOBE_SOUND }] })]);
-  const { parcel, error } = await lookupStatewideParcel(-80.137, 27.0709, { fetchImpl: f.impl });
+  const { parcel, match, error } = await lookupStatewideParcel(-80.137, 27.0709, {
+    fetchImpl: f.impl,
+  });
   assertEquals(error, null);
+  assertEquals(match, "point_in_polygon");
   assertEquals(parcel?.parcel_id, "34-38-42-025-000-00150-0");
   assertEquals(f.count(), 1);
+});
+
+Deno.test("address scoring: same street written differently still matches", () => {
+  assertEquals(addressMatchScore("1062 SW 32nd St., Palm City, FL 34990", "1062  SW 32ND ST"), 3);
+  assertEquals(addressMatchScore("8820 SE Bahama Cir, Hobe Sound", "8820 SE BAHAMA CIRCLE"), 3);
+});
+
+Deno.test("address scoring: a neighbour or a different street does not match", () => {
+  assertEquals(addressMatchScore("8820 SE Bahama Cir", "8824 SE BAHAMA CIR"), 0);
+  assertEquals(addressMatchScore("1100 Ponce De Leon Cir", "1100 ROYAL PALM BLVD"), 0);
+  assertEquals(addressMatchScore("8820 SE Bahama Cir", null), 0);
+});
+
+Deno.test("address scoring: a unit on one side only is a weaker match", () => {
+  assertEquals(addressMatchScore("111 SE 1st Ave", "111 SE 1ST AVE 316"), 2);
+});
+
+Deno.test("a centreline geocode falls back to the parcel with that address", async () => {
+  // What the live service does for 8820 SE Bahama Cir: the point lands in the road, the
+  // buffered query returns the block.
+  const neighbours = [
+    {
+      attributes: { ...HOBE_SOUND, PARCEL_ID: "nbr-1", PHY_ADDR1: "8824 SE BAHAMA CIR" },
+      centroid: { x: -80.13637, y: 27.06974 },
+    },
+    { attributes: HOBE_SOUND, centroid: { x: -80.13618, y: 27.06968 } },
+  ];
+  const f = stubFetch([ok({ features: [] }), ok({ features: neighbours })]);
+  const { parcel, match, ambiguous_candidates } = await lookupStatewideParcel(-80.1362, 27.0699, {
+    fetchImpl: f.impl,
+    address: "8820 SE Bahama Cir, Hobe Sound, FL 33455",
+  });
+  assertEquals(match, "nearby_address_match");
+  assertEquals(parcel?.parcel_id, "34-38-42-025-000-00150-0");
+  assertEquals(ambiguous_candidates, 0);
+  assertEquals(f.count(), 2);
+});
+
+Deno.test("no nearby parcel carries the address, so nothing is reported", async () => {
+  const f = stubFetch([
+    ok({ features: [] }),
+    ok({
+      features: [
+        { attributes: { ...HOBE_SOUND, PARCEL_ID: "nbr-1", PHY_ADDR1: "8824 SE BAHAMA CIR" } },
+      ],
+    }),
+  ]);
+  const { parcel, match } = await lookupStatewideParcel(-80.1362, 27.0699, {
+    fetchImpl: f.impl,
+    address: "8820 SE Bahama Cir",
+  });
+  assertEquals(parcel, null);
+  assertEquals(match, null);
+});
+
+Deno.test("without an address the buffered stage is not attempted", async () => {
+  const f = stubFetch([ok({ features: [] })]);
+  const { parcel, match } = await lookupStatewideParcel(-80.1362, 27.0699, { fetchImpl: f.impl });
+  assertEquals(parcel, null);
+  assertEquals(match, null);
+  assertEquals(f.count(), 1);
+});
+
+Deno.test("a condo stack is reported as ambiguous rather than silently picked", async () => {
+  const unit = (n: string) => ({
+    attributes: { ...HOBE_SOUND, PARCEL_ID: `unit-${n}`, PHY_ADDR1: `111 SE 1ST AVE ${n}` },
+    centroid: { x: -80.0718, y: 26.459 },
+  });
+  const f = stubFetch([ok({ features: [] }), ok({ features: [unit("316"), unit("507")] })]);
+  const { parcel, ambiguous_candidates } = await lookupStatewideParcel(-80.0719, 26.4596, {
+    fetchImpl: f.impl,
+    address: "111 SE 1st Ave, Delray Beach, FL 33444",
+  });
+  assertEquals(parcel?.parcel_id, "unit-316");
+  assertEquals(ambiguous_candidates, 1);
 });
 
 Deno.test("a sliver stacked on the real parcel does not win", async () => {
@@ -145,8 +224,10 @@ Deno.test(
 
 Deno.test("open water — a genuine no-parcel answer is not an error", async () => {
   const f = stubFetch([ok({ features: [] })]);
-  const { parcel, error } = await lookupStatewideParcel(-80.0, 27.0, { fetchImpl: f.impl });
+  const { parcel, error } = await lookupStatewideParcel(-80.0, 27.0, {
+    fetchImpl: f.impl,
+    address: "nowhere",
+  });
   assertEquals(parcel, null);
   assertEquals(error, null);
-  assertEquals(f.count(), 1);
 });

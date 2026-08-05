@@ -136,10 +136,10 @@ Deno.serve(async (req: Request) => {
 
     // PAPA had no parcel at that point. That used to be the end of it; the statewide layer
     // gets a turn before the answer is "unavailable".
-    return await answerFromStatewide(supabase, { permitId, lat, lon, match, papa });
+    return await answerFromStatewide(supabase, { permitId, lat, lon, match, papa, address });
   }
 
-  return await answerFromStatewide(supabase, { permitId, lat, lon, match, papa: null });
+  return await answerFromStatewide(supabase, { permitId, lat, lon, match, papa: null, address });
 });
 
 function serviceClient(url: string, key: string) {
@@ -158,14 +158,23 @@ async function answerFromStatewide(
     lon: number;
     match: unknown;
     papa: unknown;
+    address: string;
   },
 ) {
-  const { parcel, raw, error } = await lookupStatewideParcel(ctx.lon, ctx.lat);
+  const {
+    parcel,
+    match: matchKind,
+    ambiguous_candidates: ambiguous,
+    raw,
+    error,
+  } = await lookupStatewideParcel(ctx.lon, ctx.lat, { address: ctx.address });
 
   const rawResponse = {
     geocode: ctx.match,
     ...(ctx.papa === null ? {} : { papa: ctx.papa }),
     statewide: raw,
+    statewide_match: matchKind,
+    ...(ambiguous ? { statewide_ambiguous_candidates: ambiguous } : {}),
     ...(error === null ? {} : { statewide_error: error }),
   };
 
