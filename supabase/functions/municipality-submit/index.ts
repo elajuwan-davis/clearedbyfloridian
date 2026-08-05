@@ -107,10 +107,14 @@ async function notifyStaff(admin: SupabaseAdmin, permitId: string, title: string
 async function handleDraft(
   admin: SupabaseAdmin,
   caller: Caller,
-  body: { permit_id?: string; municipality_slug?: string },
+  body: { permit_id?: string; municipality_slug?: string; test_only?: boolean },
 ) {
   const permitId = body.permit_id;
   if (!permitId) return json({ error: "permit_id required" }, 400);
+  // A rehearsal: the row travels the whole approval path and can never be filed (handleExecute
+  // stops it, claim_municipality_submission() will not claim it, and a trigger refuses to let
+  // it reach 'submitting'/'submitted' or take a confirmation number).
+  const testOnly = body.test_only === true;
 
   const permit = await loadPermit(admin, permitId);
   if (!permit) return json({ error: "permit not found" }, 404);
@@ -128,7 +132,10 @@ async function handleDraft(
   if (!target) return json({ error: targetError }, 422);
 
   const check = await runPreSubmissionCheck(permitId);
-  if (check.status !== "pass") {
+  // The pre-submission gate exists to stop an incomplete package reaching a building
+  // department. A rehearsal reaches no one, and requiring a permit to be genuinely
+  // file-ready would mean the gate could only ever be exercised on a real job.
+  if (!testOnly && check.status !== "pass") {
     return json(
       {
         error: "pre-submission checks are not passing — nothing was drafted",
@@ -140,12 +147,13 @@ async function handleDraft(
   }
 
   const documents = draftDocuments(permit);
-  if (documents.length === 0) {
+  if (!testOnly && documents.length === 0) {
     return json({ error: "no documents to file — the generated bundle is missing" }, 409);
   }
 
   const draft = {
     built_at: new Date().toISOString(),
+    ...(testOnly ? { test_only: true } : {}),
     municipality: {
       slug: target.slug,
       city_name: target.city_name,
@@ -211,16 +219,25 @@ async function handleDraft(
     submission_id: submission.id,
     event_type: "drafted",
     actor_label: "Cleard automation",
-    detail: { documents: documents.length, channel: target.channel },
+    detail: {
+      documents: documents.length,
+      channel: target.channel,
+      test_only: testOnly,
+      pre_submission_status: check.status,
+    },
   });
 
   const notified = await notifyStaff(
     admin,
     permit.id,
-    `Approval needed — file ${permit.project_name ?? permit.job_address ?? "permit"} with ${target.city_name}`,
+    `${testOnly ? "Rehearsal (nothing will be filed) — " : ""}Approval needed — file ${permit.project_name ?? permit.job_address ?? "permit"} with ${target.city_name}`,
     `${documents.length} document(s) are ready to file via ${
       target.channel === "portal" ? target.portal_url : target.intake_email
-    }. Nothing is submitted until a staff member approves: ${APP_BASE_URL}/portal/permits/${permit.id}`,
+    }. Nothing is submitted until a staff member approves: ${APP_BASE_URL}/portal/permits/${permit.id}${
+      testOnly
+        ? "\n\nThis is a test_only rehearsal row: approving it exercises the gate and files nothing."
+        : ""
+    }`,
   );
 
   await admin.from("activity_events").insert({
@@ -228,11 +245,18 @@ async function handleDraft(
     permit_id: permit.id,
     event_type: "municipality_submission_drafted",
     actor_label: "Cleard automation",
-    summary: `Drafted ${target.city_name} submission — awaiting staff approval`,
-    details: { submission_id: submission.id, channel: target.channel, notified },
+    summary: `Drafted ${target.city_name} submission — awaiting staff approval${
+      testOnly ? " (rehearsal, nothing will be filed)" : ""
+    }`,
+    details: {
+      submission_id: submission.id,
+      channel: target.channel,
+      notified,
+      test_only: testOnly,
+    },
   });
 
-  return json({ submission: inserted, requires_approval: true });
+  return json({ submission: inserted, requires_approval: true, test_only: testOnly });
 }
 
 // --- action: execute (post-approval only) ----------------------------------
@@ -422,6 +446,7 @@ Deno.serve(async (req) => {
       permit_id?: string;
       submission_id?: string;
       municipality_slug?: string;
+      test_only?: boolean;
     };
     switch (body.action ?? "draft") {
       case "draft":
