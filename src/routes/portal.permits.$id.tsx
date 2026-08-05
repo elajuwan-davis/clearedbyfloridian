@@ -21,6 +21,8 @@ import { MunicipalitySubmissionGate } from "@/components/municipality-submission
 import { CorrectionReviewGate } from "@/components/correction-review-gate";
 import { ProjectAuditTab } from "@/components/project-audit-tab";
 import { PermitNotesPanel } from "@/components/permit-notes-panel";
+import { ProjectInternalOps } from "@/components/project-internal-ops";
+import { isInternalUser } from "@/lib/is-internal-user";
 import type { DispatchResult } from "@/lib/dispatch";
 
 
@@ -398,6 +400,9 @@ function PermitDetailPage() {
       <AdminPermitReviewActions permit={row} onUpdated={(r) => { setRow(r); setEdit(r); }} />
 
       <div className="mt-6 space-y-6">
+        {isInternalUser() && (
+          <ProjectInternalOps permitId={row.id} label={row.project_name} />
+        )}
         <PermitNotesPanel permitId={row.id} />
         <ProjectAuditTab permitId={row.id} />
       </div>

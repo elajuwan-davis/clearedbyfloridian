@@ -3537,6 +3537,82 @@ export type Database = {
         }
         Relationships: []
       }
+      staff_assignments: {
+        Row: {
+          assignee_email: string | null
+          created_at: string
+          escalated: boolean
+          escalated_at: string | null
+          id: string
+          permit_id: string
+          priority: string
+          updated_at: string
+        }
+        Insert: {
+          assignee_email?: string | null
+          created_at?: string
+          escalated?: boolean
+          escalated_at?: string | null
+          id?: string
+          permit_id: string
+          priority?: string
+          updated_at?: string
+        }
+        Update: {
+          assignee_email?: string | null
+          created_at?: string
+          escalated?: boolean
+          escalated_at?: string | null
+          id?: string
+          permit_id?: string
+          priority?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "staff_assignments_permit_id_fkey"
+            columns: ["permit_id"]
+            isOneToOne: true
+            referencedRelation: "permits"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      staff_notes: {
+        Row: {
+          author: string
+          created_at: string
+          id: string
+          is_internal: boolean
+          note: string
+          permit_id: string
+        }
+        Insert: {
+          author: string
+          created_at?: string
+          id?: string
+          is_internal?: boolean
+          note: string
+          permit_id: string
+        }
+        Update: {
+          author?: string
+          created_at?: string
+          id?: string
+          is_internal?: boolean
+          note?: string
+          permit_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "staff_notes_permit_id_fkey"
+            columns: ["permit_id"]
+            isOneToOne: false
+            referencedRelation: "permits"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       sub_accounts: {
         Row: {
           created_at: string

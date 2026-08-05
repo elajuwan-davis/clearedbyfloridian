@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { PortalShell } from "@/components/portal-shell";
 import { ChevronDown, Search, AlertTriangle, Plus, FileText, RefreshCw, Flag } from "lucide-react";
 import { isInternalUser } from "@/lib/is-internal-user";
-import { isEscalatedByName } from "@/lib/staff-ops";
+import { listEscalatedPermitIds } from "@/lib/staff-ops";
 import { listPermits, updatePermit, permitCompleteness, type PermitRow, type PermitStatus } from "@/lib/permits-api";
 import { syncAllPermits, getLastRun, formatRelative } from "@/lib/permit-sync";
 import { getVendor, isVendorManaged } from "@/lib/project-vendors";
@@ -52,6 +52,7 @@ export function MyPermitsPage() {
   const [management, setManagement] = useState<"all" | "cleared" | "vendor">("all");
 
   const [updatingId, setUpdatingId] = useState<string | null>(null);
+  const [escalatedIds, setEscalatedIds] = useState<Set<string>>(new Set());
   const [open, setOpen] = useState<Record<GroupKey, boolean>>({
     intake: true, preparing: true, submitted: true, on_hold: true, outsourced: true, issued: true, cancelled: false,
   });
@@ -94,7 +95,18 @@ export function MyPermitsPage() {
     }
   }
 
-  useEffect(() => { refresh(); setLastSync(getLastRun()); }, []);
+  useEffect(() => {
+    refresh();
+    setLastSync(getLastRun());
+  }, []);
+
+  useEffect(() => {
+    if (!internal) return;
+    listEscalatedPermitIds().then(setEscalatedIds);
+    const on = () => { void listEscalatedPermitIds().then(setEscalatedIds); };
+    window.addEventListener("staff-ops:changed", on);
+    return () => window.removeEventListener("staff-ops:changed", on);
+  }, [internal]);
 
   const filtered = useMemo(() => {
     const q = query.toLowerCase().trim();
@@ -211,7 +223,7 @@ export function MyPermitsPage() {
                                 <span className="shrink-0 font-mono text-[9px] uppercase tracking-[0.1em] text-obsidian/70 border border-obsidian/15 px-1.5 py-0.5 rounded-[2px]">
                                   {STATUS_LABEL[p.status]}
                                 </span>
-                                {internal && isEscalatedByName(p.project_name) && (
+                                {internal && escalatedIds.has(p.id) && (
                                   <span className="shrink-0 inline-flex items-center gap-1 border border-red-500/50 bg-red-50 px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-[0.1em] text-red-800 rounded-[2px]" title="Escalated">
                                     <Flag className="h-2.5 w-2.5" /> Escalated
                                   </span>
