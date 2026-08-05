@@ -161,9 +161,16 @@ const STREET_TYPES = new Set([
   "PATH",
 ]);
 
+const DIRECTIONS = new Set(["N", "S", "E", "W", "NE", "NW", "SE", "SW"]);
+
 /** The street line only — everything the geocoder was given after the number and before the
- *  city, normalised so "1062 SW 32nd St." and "1062  SW 32ND ST" compare equal. */
-export function addressTokens(address: string): { number: string | null; words: string[] } {
+ *  city, normalised so "1062 SW 32nd St." and "1062  SW 32ND ST" compare equal. The
+ *  directional is kept apart because N and S of the same street are different streets. */
+export function addressTokens(address: string): {
+  number: string | null;
+  direction: string | null;
+  words: string[];
+} {
   const line = address.split(",")[0] ?? "";
   const words = line
     .toUpperCase()
@@ -171,12 +178,18 @@ export function addressTokens(address: string): { number: string | null; words: 
     .split(/\s+/)
     .filter(Boolean);
   const number = words.length > 0 && /^\d+$/.test(words[0]) ? words[0] : null;
-  const rest = (number ? words.slice(1) : words).filter((w) => !STREET_TYPES.has(w));
-  return { number, words: rest };
+  const rest = number ? words.slice(1) : words;
+  return {
+    number,
+    direction: rest.find((w) => DIRECTIONS.has(w)) ?? null,
+    words: rest.filter((w) => !STREET_TYPES.has(w) && !DIRECTIONS.has(w)),
+  };
 }
 
 /** 3 = the site address is the address asked about, unit and all.
  *  2 = same house number and street, different or missing unit.
+ *  1 = same number and street name but one side names a direction and the other does not —
+ *      only safe to use when nothing else nearby answers to the address.
  *  0 = a different property; a neighbour's parcel is worse than no answer. */
 export function addressMatchScore(requested: string, siteAddress: string | null): number {
   if (!siteAddress) return 0;
@@ -187,6 +200,7 @@ export function addressMatchScore(requested: string, siteAddress: string | null)
   const streetMatches =
     shared.length > 0 && shared.length >= Math.min(a.words.length, b.words.length);
   if (!streetMatches) return 0;
+  if (a.direction !== b.direction) return a.direction && b.direction ? 0 : 1;
   return a.words.length === b.words.length ? 3 : 2;
 }
 
@@ -284,7 +298,17 @@ export async function lookupStatewideParcel(
     // Overlapping polygons happen (a right-of-way sliver on top of the real parcel); take the
     // first feature that is an actual parcel rather than the first feature.
     const hit = parcelsFrom(point.body)[0];
-    if (hit) return { parcel: hit.parcel, match: "point_in_polygon", raw: point.body, error: null };
+    // Landing inside a polygon is not proof it is the right polygon: the geocoder can place
+    // "1 Harbour Isle Dr W" inside number 18. Where the address is known, the polygon has to
+    // own up to it — unless the parcel reports no site address to be checked against.
+    const trusted =
+      hit &&
+      (!opts.address ||
+        hit.parcel.site_address === null ||
+        addressMatchScore(opts.address, hit.parcel.site_address) >= 2);
+    if (trusted) {
+      return { parcel: hit.parcel, match: "point_in_polygon", raw: point.body, error: null };
+    }
   }
 
   // The Census geocoder interpolates along the street centreline, so a perfectly good address
@@ -308,8 +332,24 @@ export async function lookupStatewideParcel(
         ? metresBetween(lon, lat, c.centroid.x, c.centroid.y)
         : Number.MAX_SAFE_INTEGER,
     }))
-    .filter((c) => c.score >= 2)
+    .filter((c) => c.score >= 1)
     .sort((a, b) => b.score - a.score || a.metres - b.metres);
+
+  // "100 2nd St" sits between 100 N 2ND ST and 100 S 2ND ST, and distance to a centroid is not
+  // evidence of which one was meant. A direction may only be guessed where there is nothing to
+  // guess between.
+  const undirected = scored[0]?.score === 1;
+  const rivals = undirected
+    ? scored.filter((c) => c.parcel.parcel_id !== scored[0].parcel.parcel_id).length
+    : 0;
+  if (undirected && rivals > 0) {
+    return {
+      parcel: null,
+      match: null,
+      raw: { point: point.body, nearby: near.body },
+      error: null,
+    };
+  }
 
   if (scored.length === 0) {
     return {
