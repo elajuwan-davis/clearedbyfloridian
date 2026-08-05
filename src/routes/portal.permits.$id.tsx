@@ -19,6 +19,7 @@ import { ServiceFeeInvoicePanel } from "@/components/service-fee-invoice-panel";
 import { PreSubmissionGate } from "@/components/pre-submission-gate";
 import { MunicipalitySubmissionGate } from "@/components/municipality-submission-gate";
 import { CorrectionReviewGate } from "@/components/correction-review-gate";
+import { ProjectAuditTab } from "@/components/project-audit-tab";
 import type { DispatchResult } from "@/lib/dispatch";
 
 
@@ -394,6 +395,10 @@ function PermitDetailPage() {
       </div>
 
       <AdminPermitReviewActions permit={row} onUpdated={(r) => { setRow(r); setEdit(r); }} />
+
+      <div className="mt-6">
+        <ProjectAuditTab permitId={row.id} />
+      </div>
 
       {/* Completeness panel */}
       <div className="mt-6 bg-white border border-obsidian/10 rounded-[3px] p-6">
