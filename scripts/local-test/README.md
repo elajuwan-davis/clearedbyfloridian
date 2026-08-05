@@ -312,6 +312,12 @@ Observed locally, in this order:
 
 ## Agent 7 — corrections-parser + the approval gate
 
+Model calls go through `supabase/functions/_shared/ai.ts`, which picks a provider from the
+environment: `ANTHROPIC_API_KEY` (or `AI_PROVIDER=anthropic`) talks to Anthropic's
+`/v1/messages` directly, anything else keeps the OpenAI-shaped gateway. Setting
+`LOVABLE_API_KEY` + `AI_GATEWAY_URL` as below therefore still reaches the stub, and
+`ANTHROPIC_BASE_URL` can point a local stub at the Anthropic path if that shape needs exercising.
+
 No `LOVABLE_API_KEY` locally, so `stub-ai-gateway.ts` stands in for the model. It is not a
 model: it reads the letter out of the prompt and answers with a plan quoting that letter's own
 numbered comments — which is what the real system prompt demands — so the rig can show that

@@ -26,12 +26,11 @@ import {
   type CorrectionPlan,
   type LetterContext,
 } from "../_shared/correction-parse.ts";
+import { aiConfigured, chat, envFromDeno } from "../_shared/ai.ts";
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL") ?? "";
 const SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
-const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY") ?? "";
-const AI_URL =
-  Deno.env.get("AI_GATEWAY_URL") ?? "https://ai.gateway.lovable.dev/v1/chat/completions";
+// Provider (Anthropic direct vs Lovable's gateway) is resolved per call in _shared/ai.ts.
 const MODEL = Deno.env.get("CORRECTIONS_MODEL") ?? "claude-sonnet-5";
 const STORAGE_BUCKET = Deno.env.get("PERMIT_FILES_BUCKET") ?? "permit-files";
 const APP_BASE_URL = (
@@ -106,7 +105,10 @@ async function letterText(admin: SupabaseAdmin, notice: NoticeRow): Promise<stri
     if (error) throw new Error(`could not download ${notice.document_path}: ${error.message}`);
     const bytes = new Uint8Array(await data.arrayBuffer());
     const extracted = await pdfText(bytes);
-    const combined = [inline, extracted].filter((s) => s && s.trim()).join("\n\n").trim();
+    const combined = [inline, extracted]
+      .filter((s) => s && s.trim())
+      .join("\n\n")
+      .trim();
     if (combined.length >= 80) return combined;
     throw new Error(
       `no readable text in ${notice.document_path} — the notice is probably a scan; ` +
@@ -118,36 +120,19 @@ async function letterText(admin: SupabaseAdmin, notice: NoticeRow): Promise<stri
   throw new Error("correction notice has neither text nor a stored document");
 }
 
-async function draftWithModel(ctx: LetterContext): Promise<{ plan: CorrectionPlan; model: string }> {
-  if (!LOVABLE_API_KEY) {
-    throw new Error("LOVABLE_API_KEY is not configured — cannot draft a correction plan");
+async function draftWithModel(
+  ctx: LetterContext,
+): Promise<{ plan: CorrectionPlan; model: string }> {
+  if (!aiConfigured()) {
+    throw new Error("no AI provider is configured — cannot draft a correction plan");
   }
-  const resp = await fetch(AI_URL, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${LOVABLE_API_KEY}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      model: MODEL,
-      messages: [
-        { role: "system", content: SYSTEM_PROMPT },
-        { role: "user", content: userPrompt(ctx) },
-      ],
-    }),
-  });
-  if (!resp.ok) {
-    throw new Error(`AI gateway returned ${resp.status}: ${(await resp.text()).slice(0, 300)}`);
-  }
-  const body = (await resp.json()) as {
-    model?: string;
-    choices?: Array<{ message?: { content?: string } }>;
-  };
-  const content = body.choices?.[0]?.message?.content ?? "";
-  if (!content.trim()) throw new Error("AI gateway returned an empty response");
+  const { text, model } = await chat(
+    { model: MODEL, system: SYSTEM_PROMPT, user: userPrompt(ctx), maxTokens: 4096 },
+    envFromDeno(),
+  );
   // Throws on anything vague or out-of-vocabulary rather than posting a half plan for
   // approval.
-  return { plan: parsePlan(content), model: body.model ?? MODEL };
+  return { plan: parsePlan(text), model };
 }
 
 // --- action: parse ---------------------------------------------------------
@@ -419,7 +404,11 @@ async function handleSend(admin: SupabaseAdmin, body: { plan_id?: string }) {
 
   await admin
     .from("correction_plans")
-    .update({ status: "sent", sent_at: new Date().toISOString(), outbox_id: (outbox as { id: string }).id })
+    .update({
+      status: "sent",
+      sent_at: new Date().toISOString(),
+      outbox_id: (outbox as { id: string }).id,
+    })
     .eq("id", row.id);
 
   await admin.from("correction_plan_events").insert({
@@ -442,7 +431,10 @@ async function handleSend(admin: SupabaseAdmin, body: { plan_id?: string }) {
 }
 
 async function markFailed(admin: SupabaseAdmin, id: string, reason: string) {
-  await admin.from("correction_plans").update({ status: "failed", last_error: reason }).eq("id", id);
+  await admin
+    .from("correction_plans")
+    .update({ status: "failed", last_error: reason })
+    .eq("id", id);
   await admin.from("correction_plan_events").insert({
     plan_id: id,
     event_type: "failed",

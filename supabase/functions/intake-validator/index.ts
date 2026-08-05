@@ -16,15 +16,15 @@
 //   5. PAA signed and on file               → paa_signatures
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.3";
+import { aiConfigured, chat, envFromDeno } from "../_shared/ai.ts";
 import { errorMessage } from "../_shared/errors.ts";
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
-const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
 const APP_BASE_URL = (
   Deno.env.get("APP_BASE_URL") ?? "https://clearedbyfloridian.lovable.app"
 ).replace(/\/$/, "");
-const AI_URL = "https://ai.gateway.lovable.dev/v1/chat/completions";
+// Provider (Anthropic direct vs Lovable's gateway) is resolved per call in _shared/ai.ts.
 const SUMMARY_MODEL = Deno.env.get("INTAKE_VALIDATOR_MODEL") ?? "anthropic/claude-sonnet-5";
 
 const REQUIRED_COVERAGE = ["general_liability", "workers_comp"] as const;
@@ -525,7 +525,7 @@ async function composeSummary(
   permit: PermitRow,
 ): Promise<{ summary: string; model: string | null }> {
   const deterministic = fallbackSummary(status, checks, permit);
-  if (!LOVABLE_API_KEY) return { summary: deterministic, model: null };
+  if (!aiConfigured()) return { summary: deterministic, model: null };
 
   const system = [
     "You write intake validation summaries for Cléared, a Florida private-provider permitting firm.",
@@ -547,31 +547,16 @@ async function composeSummary(
     checks: checks.map((c) => ({ label: c.label, severity: c.severity, detail: c.detail })),
   });
 
+  // The summary is decoration on a decision already made deterministically, so a model failure
+  // downgrades to the deterministic wording instead of failing the validation.
   try {
-    const resp = await fetch(AI_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
-      },
-      body: JSON.stringify({
-        model: SUMMARY_MODEL,
-        messages: [
-          { role: "system", content: system },
-          { role: "user", content: user },
-        ],
-      }),
-    });
-    if (!resp.ok) {
-      console.error(`AI Gateway ${resp.status}: ${(await resp.text()).slice(0, 300)}`);
-      return { summary: deterministic, model: null };
-    }
-    const json = await resp.json();
-    const text = json?.choices?.[0]?.message?.content;
-    if (typeof text !== "string" || !text.trim()) return { summary: deterministic, model: null };
-    return { summary: text.trim(), model: SUMMARY_MODEL };
+    const { text, model } = await chat(
+      { model: SUMMARY_MODEL, system, user, maxTokens: 512 },
+      envFromDeno(),
+    );
+    return { summary: text, model };
   } catch (err) {
-    console.error("AI summary failed", err);
+    console.error(`AI summary failed: ${errorMessage(err)}`);
     return { summary: deterministic, model: null };
   }
 }
