@@ -1,7 +1,14 @@
-// Palm Beach County Property Appraiser (PAPA) parcel lookup.
-// Caches results in dispatch_results. Returns null fields for non-Palm Beach counties.
+// Parcel lookup for any Florida county.
+//
+// Palm Beach keeps its own Property Appraiser (PAPA) service as the preferred source — it is
+// the county's live system rather than a once-a-year rollup. Everywhere else (and when PAPA
+// has no parcel at the point) the Department of Revenue statewide cadastral layer answers, so
+// the five Treasure Coast cities are no longer "unavailable" by construction.
+//
+// Caches results in dispatch_results.
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.3";
+import { lookupStatewideParcel } from "../_shared/statewide-parcels.ts";
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
@@ -39,28 +46,17 @@ Deno.serve(async (req: Request) => {
     return textResponse("Supabase not configured", 500);
   }
 
-  const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
-    auth: { persistSession: false, autoRefreshToken: false },
-  });
+  const supabase = serviceClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
   if (!county || !address) {
     return textResponse("Missing county or address", 400);
   }
 
-  const normalizedCounty = county.replace(/\s+/g, " ").trim();
-
-  if (normalizedCounty !== "palm beach") {
-    const { data } = await supabase
-      .from("dispatch_results")
-      .insert({
-        permit_id: permitId,
-        parcel_source: "unavailable",
-      })
-      .select()
-      .single();
-
-    return jsonResponse(data);
-  }
+  const normalizedCounty = county
+    .replace(/\s*county\s*$/i, "")
+    .replace(/\s+/g, " ")
+    .trim();
+  const isPalmBeach = normalizedCounty === "palm beach";
 
   const geoUrl =
     `https://geocoding.geo.census.gov/geocoder/locations/onelineaddress?` +
@@ -103,31 +99,85 @@ Deno.serve(async (req: Request) => {
     return jsonResponse(cached[0]);
   }
 
-  const papaUrl =
-    `https://gis.pbcgov.org/arcgis/rest/services/Parcels/PARCEL_INFO/MapServer/4/query?` +
-    `f=json&geometry=${lon},${lat}&geometryType=esriGeometryPoint&inSR=4326` +
-    `&spatialRel=esriSpatialRelWithin&outFields=PARID,OWNER_NAME1,SITE_ADDR_STR` +
-    `&returnGeometry=false`;
+  if (isPalmBeach) {
+    const papaUrl =
+      `https://gis.pbcgov.org/arcgis/rest/services/Parcels/PARCEL_INFO/MapServer/4/query?` +
+      `f=json&geometry=${lon},${lat}&geometryType=esriGeometryPoint&inSR=4326` +
+      `&spatialRel=esriSpatialRelWithin&outFields=PARID,OWNER_NAME1,SITE_ADDR_STR` +
+      `&returnGeometry=false`;
 
-  const papaRes = await fetch(papaUrl);
-  if (!papaRes.ok) {
-    return textResponse("PAPA service failed", 502);
+    const papaRes = await fetch(papaUrl);
+    if (!papaRes.ok) {
+      return textResponse("PAPA service failed", 502);
+    }
+    const papa = await papaRes.json();
+
+    const attrs = papa.features?.[0]?.attributes ?? {};
+    const parcelId = attrs.PARID ? String(attrs.PARID) : null;
+    const ownerName = attrs.OWNER_NAME1 ? String(attrs.OWNER_NAME1) : null;
+
+    if (parcelId) {
+      const { data } = await supabase
+        .from("dispatch_results")
+        .insert({
+          permit_id: permitId,
+          latitude: lat,
+          longitude: lon,
+          parcel_id: parcelId,
+          owner_name: ownerName,
+          parcel_source: "papa",
+          raw_response: { geocode: match, papa },
+        })
+        .select()
+        .single();
+
+      return jsonResponse(data);
+    }
+
+    // PAPA had no parcel at that point. That used to be the end of it; the statewide layer
+    // gets a turn before the answer is "unavailable".
+    return await answerFromStatewide(supabase, { permitId, lat, lon, match, papa });
   }
-  const papa = await papaRes.json();
 
-  const attrs = papa.features?.[0]?.attributes ?? {};
-  const parcelId = attrs.PARID ? String(attrs.PARID) : null;
-  const ownerName = attrs.OWNER_NAME1 ? String(attrs.OWNER_NAME1) : null;
+  return await answerFromStatewide(supabase, { permitId, lat, lon, match, papa: null });
+});
 
-  if (!parcelId) {
+function serviceClient(url: string, key: string) {
+  return createClient(url, key, {
+    auth: { persistSession: false, autoRefreshToken: false },
+  });
+}
+
+type Supabase = ReturnType<typeof serviceClient>;
+
+async function answerFromStatewide(
+  supabase: Supabase,
+  ctx: {
+    permitId: string | null;
+    lat: number;
+    lon: number;
+    match: unknown;
+    papa: unknown;
+  },
+) {
+  const { parcel, raw, error } = await lookupStatewideParcel(ctx.lon, ctx.lat);
+
+  const rawResponse = {
+    geocode: ctx.match,
+    ...(ctx.papa === null ? {} : { papa: ctx.papa }),
+    statewide: raw,
+    ...(error === null ? {} : { statewide_error: error }),
+  };
+
+  if (!parcel) {
     const { data } = await supabase
       .from("dispatch_results")
       .insert({
-        permit_id: permitId,
-        latitude: lat,
-        longitude: lon,
+        permit_id: ctx.permitId,
+        latitude: ctx.lat,
+        longitude: ctx.lon,
         parcel_source: "unavailable",
-        raw_response: { geocode: match, papa },
+        raw_response: rawResponse,
       })
       .select()
       .single();
@@ -138,16 +188,22 @@ Deno.serve(async (req: Request) => {
   const { data } = await supabase
     .from("dispatch_results")
     .insert({
-      permit_id: permitId,
-      latitude: lat,
-      longitude: lon,
-      parcel_id: parcelId,
-      owner_name: ownerName,
-      parcel_source: "papa",
-      raw_response: { geocode: match, papa },
+      permit_id: ctx.permitId,
+      latitude: ctx.lat,
+      longitude: ctx.lon,
+      parcel_id: parcel.parcel_id,
+      owner_name: parcel.owner_name,
+      year_built: parcel.year_built,
+      assessed_value: parcel.assessed_value,
+      living_area_sqft: parcel.living_area_sqft,
+      legal_description: parcel.legal_description,
+      // Named for the roll it came from, so a stale valuation is visible rather than implied.
+      parcel_source: "fdor_statewide",
+      assessment_year: parcel.assessment_year,
+      raw_response: rawResponse,
     })
     .select()
     .single();
 
   return jsonResponse(data);
-});
+}
