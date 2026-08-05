@@ -1,3 +1,5 @@
+// A vendored copy of this file lives at supabase/functions/_shared/nto-pdf.ts for the edge
+// runtime (Agent 2's document-generation). Changes here do not propagate — copy them.
 import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
 import type { NtoRow } from "@/lib/nto-api";
 

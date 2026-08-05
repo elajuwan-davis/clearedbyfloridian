@@ -15,6 +15,7 @@
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.3";
 import { CallerAuthError, requireStaffCaller, type Caller } from "../_shared/caller-auth.ts";
+import { errorMessage } from "../_shared/errors.ts";
 import { pdfText } from "../_shared/pdf-text.ts";
 import {
   SYSTEM_PROMPT,
@@ -219,7 +220,7 @@ async function handleParse(admin: SupabaseAdmin, body: { notice_id?: string }) {
   try {
     text = await letterText(admin, notice);
   } catch (err) {
-    const reason = err instanceof Error ? err.message : String(err);
+    const reason = errorMessage(err);
     await admin.from("correction_notices").update({ status: "new" }).eq("id", notice.id);
     await notifyStaff(
       admin,
@@ -244,7 +245,7 @@ async function handleParse(admin: SupabaseAdmin, body: { notice_id?: string }) {
   try {
     ({ plan, model } = await draftWithModel(ctx));
   } catch (err) {
-    const reason = err instanceof Error ? err.message : String(err);
+    const reason = errorMessage(err);
     await admin.from("correction_notices").update({ status: "new" }).eq("id", notice.id);
     await notifyStaff(
       admin,
@@ -498,7 +499,6 @@ Deno.serve(async (req) => {
   } catch (err) {
     if (err instanceof CallerAuthError) return json({ error: err.message }, err.status);
     console.error("corrections-parser failed", err);
-    const message = err instanceof Error ? err.message : String(err);
-    return json({ error: message }, 500);
+    return json({ error: errorMessage(err) }, 500);
   }
 });

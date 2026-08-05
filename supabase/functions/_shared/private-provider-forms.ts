@@ -1,3 +1,6 @@
+// Vendored copy of src/lib/private-provider-forms.ts for the Deno edge runtime — NOT the live source.
+// The app bundle keeps using src/lib/private-provider-forms.ts; a fix there does not reach the edge
+// functions until it is copied here as well. Currently byte-identical to it.
 // PDF generation for the two private-provider forms.
 // Generates clean pre-filled PDFs from scratch using pdf-lib.
 // (When the official PDF templates are re-uploaded, swap to overlay mode.)

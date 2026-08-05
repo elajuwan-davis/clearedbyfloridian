@@ -1,3 +1,6 @@
+// Vendored copy of src/lib/floridian-firm.ts for the Deno edge runtime — NOT the live source.
+// The app bundle keeps using src/lib/floridian-firm.ts; a fix there does not reach the edge
+// functions until it is copied here as well. Currently byte-identical to it.
 // Cleard firm data used to pre-fill official forms.
 export const FLORIDIAN_FIRM = {
   firmName: "Cleard",

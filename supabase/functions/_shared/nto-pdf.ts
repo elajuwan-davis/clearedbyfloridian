@@ -1,3 +1,7 @@
+// Vendored copy of src/lib/nto-pdf.ts for the Deno edge runtime — NOT the live source.
+// The app bundle keeps using src/lib/nto-pdf.ts; a fix there does not reach the edge
+// functions until it is copied here as well. This copy also declares NtoRow locally,
+// because src/lib/nto-api.ts cannot be imported here.
 import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
 // Vendored for the Deno edge runtime: the app's src/ tree is not part of the
 // function bundle, so the row shape is declared locally instead of imported.

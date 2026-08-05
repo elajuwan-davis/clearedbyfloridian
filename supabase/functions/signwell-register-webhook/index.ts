@@ -15,6 +15,7 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.3";
 import { createWebhook, listWebhooks, SignWellError } from "../_shared/signwell.ts";
 import { CallerAuthError, requireStaffCaller } from "../_shared/caller-auth.ts";
+import { errorMessage } from "../_shared/errors.ts";
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL") ?? "";
 const SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
@@ -65,6 +66,6 @@ Deno.serve(async (req) => {
       return json({ error: err.message, signwell_status: err.status }, 502);
     }
     console.error("signwell-register-webhook failed", err);
-    return json({ error: String(err) }, 500);
+    return json({ error: errorMessage(err) }, 500);
   }
 });

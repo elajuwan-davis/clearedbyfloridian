@@ -1,3 +1,5 @@
+// A vendored copy of this file lives at supabase/functions/_shared/floridian-firm.ts for the edge
+// runtime (Agent 2's document-generation). Changes here do not propagate — copy them.
 // Cleard firm data used to pre-fill official forms.
 export const FLORIDIAN_FIRM = {
   firmName: "Cleard",
