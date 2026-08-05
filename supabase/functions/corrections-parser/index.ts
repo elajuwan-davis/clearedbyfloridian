@@ -244,10 +244,12 @@ async function handleParse(admin: SupabaseAdmin, body: { notice_id?: string }) {
   const totals = planTotals(plan);
   const numbered = countNumberedComments(text);
 
+  // The permit-specific address wins: it is the reviewer who actually issued this letter,
+  // where the municipality's intake_email is a general department inbox.
   const ackTo =
+    (permit.correction_reply_email as string | null) ??
     target?.intake_email ??
     submission?.draft?.municipality?.intake_email ??
-    (permit.correction_reply_email as string) ??
     null;
 
   const { data: inserted, error: insErr } = await admin
