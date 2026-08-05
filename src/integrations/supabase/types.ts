@@ -632,6 +632,7 @@ export type Database = {
       dispatch_results: {
         Row: {
           assessed_value: number | null
+          assessment_year: number | null
           base_flood_elev: number | null
           fetched_at: string | null
           flood_zone: string | null
@@ -639,6 +640,7 @@ export type Database = {
           in_sfha: boolean | null
           latitude: number | null
           legal_description: string | null
+          living_area_sqft: number | null
           longitude: number | null
           owner_name: string | null
           parcel_id: string | null
@@ -649,6 +651,7 @@ export type Database = {
         }
         Insert: {
           assessed_value?: number | null
+          assessment_year?: number | null
           base_flood_elev?: number | null
           fetched_at?: string | null
           flood_zone?: string | null
@@ -656,6 +659,7 @@ export type Database = {
           in_sfha?: boolean | null
           latitude?: number | null
           legal_description?: string | null
+          living_area_sqft?: number | null
           longitude?: number | null
           owner_name?: string | null
           parcel_id?: string | null
@@ -666,6 +670,7 @@ export type Database = {
         }
         Update: {
           assessed_value?: number | null
+          assessment_year?: number | null
           base_flood_elev?: number | null
           fetched_at?: string | null
           flood_zone?: string | null
@@ -673,6 +678,7 @@ export type Database = {
           in_sfha?: boolean | null
           latitude?: number | null
           legal_description?: string | null
+          living_area_sqft?: number | null
           longitude?: number | null
           owner_name?: string | null
           parcel_id?: string | null
