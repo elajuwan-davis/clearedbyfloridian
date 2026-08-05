@@ -138,6 +138,64 @@ Deno.test("address scoring: north and south of the same street are different str
   assertEquals(addressMatchScore("100 2nd St", "100 S 2ND ST"), 1);
 });
 
+Deno.test("address scoring: a hyphenated range names an end, not a property", () => {
+  // The duplex may be one parcel or two, so an end of the range is provisional either way.
+  assertEquals(addressMatchScore("301-303 N 2nd St", "301 N 2ND ST"), 1);
+  assertEquals(addressMatchScore("301-303 N 2nd St", "303 N 2ND ST"), 1);
+  assertEquals(addressMatchScore("301-303 N 2nd St", "305 N 2ND ST"), 0);
+  // The geocoder resolves "1-3" to number 3; number 18 is nobody's idea of either.
+  assertEquals(addressMatchScore("1-3 Harbour Isle Dr W", "18 HARBOUR ISLE DR W 104"), 0);
+  assertEquals(addressMatchScore("1-3 Harbour Isle Dr W", "3 HARBOUR ISLE DR W"), 1);
+  // A parcel recorded as the range answers to either half.
+  assertEquals(addressMatchScore("303 N 2nd St", "301-303 N 2ND ST"), 1);
+});
+
+Deno.test("a duplex range is refused when both halves are separate parcels", async () => {
+  const half = (n: string) => ({
+    attributes: { ...HOBE_SOUND, PARCEL_ID: `p-${n}`, PHY_ADDR1: `${n} N 2ND ST` },
+    centroid: { x: -80.3231, y: 27.4468 },
+  });
+  const f = stubFetch([ok({ features: [] }), ok({ features: [half("301"), half("303")] })]);
+  const { parcel } = await lookupStatewideParcel(-80.3231, 27.4468, {
+    fetchImpl: f.impl,
+    address: "301-303 N 2nd St, Fort Pierce, FL",
+  });
+  assertEquals(parcel, null);
+});
+
+Deno.test("a duplex range resolves when the whole range is one parcel", async () => {
+  const whole = {
+    attributes: { ...HOBE_SOUND, PARCEL_ID: "p-301", PHY_ADDR1: "301 N 2ND ST" },
+    centroid: { x: -80.3231, y: 27.4468 },
+  };
+  const f = stubFetch([ok({ features: [] }), ok({ features: [whole] })]);
+  const { parcel, match } = await lookupStatewideParcel(-80.3231, 27.4468, {
+    fetchImpl: f.impl,
+    address: "301-303 N 2nd St, Fort Pierce, FL",
+  });
+  assertEquals(match, "nearby_address_match");
+  assertEquals(parcel?.parcel_id, "p-301");
+});
+
+Deno.test("a range is never taken from the polygon it happens to land in", async () => {
+  // Point-in-polygon proves a coordinate, and the coordinate is one end of the range at best.
+  const inside = { attributes: { ...HOBE_SOUND, PARCEL_ID: "p-301", PHY_ADDR1: "301 N 2ND ST" } };
+  const f = stubFetch([
+    ok({ features: [inside] }),
+    ok({
+      features: [
+        { attributes: { ...HOBE_SOUND, PARCEL_ID: "p-303", PHY_ADDR1: "303 N 2ND ST" } },
+        inside,
+      ],
+    }),
+  ]);
+  const { parcel } = await lookupStatewideParcel(-80.3231, 27.4468, {
+    fetchImpl: f.impl,
+    address: "301-303 N 2nd St",
+  });
+  assertEquals(parcel, null);
+});
+
 Deno.test("landing inside the wrong polygon is not a match", async () => {
   // The live failure: the geocoder puts 1 Harbour Isle Dr W inside number 18.
   const wrong = {

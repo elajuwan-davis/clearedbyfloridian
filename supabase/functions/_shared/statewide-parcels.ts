@@ -165,42 +165,56 @@ const DIRECTIONS = new Set(["N", "S", "E", "W", "NE", "NW", "SE", "SW"]);
 
 /** The street line only — everything the geocoder was given after the number and before the
  *  city, normalised so "1062 SW 32nd St." and "1062  SW 32ND ST" compare equal. The
- *  directional is kept apart because N and S of the same street are different streets. */
+ *  directional is kept apart because N and S of the same street are different streets, and a
+ *  duplex written "301-303 N 2nd St" keeps both of its house numbers. */
 export function addressTokens(address: string): {
-  number: string | null;
+  /** Every house number the address names: one, or both ends of a hyphenated range. */
+  numbers: string[];
   direction: string | null;
   words: string[];
 } {
-  const line = address.split(",")[0] ?? "";
-  const words = line
-    .toUpperCase()
+  const line = (address.split(",")[0] ?? "").toUpperCase();
+  const range = line.match(/^\s*(\d+)\s*-\s*(\d+)(?=\s|$)/);
+  const rest = (range ? line.slice(range[0].length) : line)
     .replace(/[^A-Z0-9 ]+/g, " ")
     .split(/\s+/)
     .filter(Boolean);
-  const number = words.length > 0 && /^\d+$/.test(words[0]) ? words[0] : null;
-  const rest = number ? words.slice(1) : words;
+
+  let numbers: string[] = [];
+  let words = rest;
+  if (range) {
+    numbers = [range[1], range[2]];
+  } else if (rest.length > 0 && /^\d+$/.test(rest[0])) {
+    numbers = [rest[0]];
+    words = rest.slice(1);
+  }
+
   return {
-    number,
-    direction: rest.find((w) => DIRECTIONS.has(w)) ?? null,
-    words: rest.filter((w) => !STREET_TYPES.has(w) && !DIRECTIONS.has(w)),
+    numbers,
+    direction: words.find((w) => DIRECTIONS.has(w)) ?? null,
+    words: words.filter((w) => !STREET_TYPES.has(w) && !DIRECTIONS.has(w)),
   };
 }
 
 /** 3 = the site address is the address asked about, unit and all.
  *  2 = same house number and street, different or missing unit.
- *  1 = same number and street name but one side names a direction and the other does not —
- *      only safe to use when nothing else nearby answers to the address.
+ *  1 = provisional: the street and one house number line up, but something was left to
+ *      inference — a direction one side does not name, or which end of "301-303" is meant.
+ *      Only usable when no other parcel nearby answers to the address as well.
  *  0 = a different property; a neighbour's parcel is worse than no answer. */
 export function addressMatchScore(requested: string, siteAddress: string | null): number {
   if (!siteAddress) return 0;
   const a = addressTokens(requested);
   const b = addressTokens(siteAddress);
-  if (!a.number || a.number !== b.number) return 0;
+  if (a.numbers.length === 0 || !a.numbers.some((n) => b.numbers.includes(n))) return 0;
   const shared = a.words.filter((w) => b.words.includes(w));
   const streetMatches =
     shared.length > 0 && shared.length >= Math.min(a.words.length, b.words.length);
   if (!streetMatches) return 0;
   if (a.direction !== b.direction) return a.direction && b.direction ? 0 : 1;
+  // "1-3" and "301-303" are a range over what may be one parcel or two; naming an end of it is
+  // not the same as naming the property.
+  if (a.numbers.length > 1 || b.numbers.length > 1) return 1;
   return a.words.length === b.words.length ? 3 : 2;
 }
 
@@ -335,14 +349,14 @@ export async function lookupStatewideParcel(
     .filter((c) => c.score >= 1)
     .sort((a, b) => b.score - a.score || a.metres - b.metres);
 
-  // "100 2nd St" sits between 100 N 2ND ST and 100 S 2ND ST, and distance to a centroid is not
-  // evidence of which one was meant. A direction may only be guessed where there is nothing to
-  // guess between.
-  const undirected = scored[0]?.score === 1;
-  const rivals = undirected
+  // "100 2nd St" sits between 100 N 2ND ST and 100 S 2ND ST, and "301-303 N 2nd St" may be one
+  // parcel or two; distance to a centroid is not evidence of which was meant. A provisional
+  // match may only be taken where there is nothing to choose between.
+  const provisional = scored[0]?.score === 1;
+  const rivals = provisional
     ? scored.filter((c) => c.parcel.parcel_id !== scored[0].parcel.parcel_id).length
     : 0;
-  if (undirected && rivals > 0) {
+  if (provisional && rivals > 0) {
     return {
       parcel: null,
       match: null,
