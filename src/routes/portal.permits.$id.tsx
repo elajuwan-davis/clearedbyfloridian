@@ -533,6 +533,11 @@ function PermitDetailPage() {
           </div>
           <div><label className={labelCls("poc_email")}>POC Email {flag("poc_email")}{fieldDelBtn("poc_email")}</label><input className={inputCls("poc_email")} value={e.poc_email ?? ""} onChange={(ev) => set("poc_email", ev.target.value)} /></div>
           <div><label className={labelCls("license_number")}>License # {flag("license_number")}{fieldDelBtn("license_number")}</label><input className={inputCls("license_number")} value={e.license_number ?? ""} onChange={(ev) => set("license_number", ev.target.value)} /></div>
+          <div>
+            <label className={labelCls("correction_reply_email")}>Correction Reply Email {flag("correction_reply_email")}{fieldDelBtn("correction_reply_email")}</label>
+            <input type="email" className={inputCls("correction_reply_email")} value={e.correction_reply_email ?? ""} onChange={(ev) => set("correction_reply_email", ev.target.value)} />
+            <p className="mt-1 font-mono text-[10px] text-obsidian/50">Reviewer who issues correction letters on this job. Used ahead of the municipality's general intake address; a correction acknowledgment cannot be approved unless one of those two is set, and Plantation currently has no intake address.</p>
+          </div>
           <div className="pt-2 border-t border-obsidian/10">
             <label className={labelCls("owner_name")}>Owner Name {flag("owner_name")}{fieldDelBtn("owner_name")}</label><input className={inputCls("owner_name")} value={e.owner_name ?? ""} onChange={(ev) => set("owner_name", ev.target.value)} />
           </div>

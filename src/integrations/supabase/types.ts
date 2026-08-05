@@ -2881,6 +2881,7 @@ export type Database = {
           construction_value_cents: number | null
           contractor_company: string | null
           contractor_qualifier: string | null
+          correction_reply_email: string | null
           county: string | null
           created_at: string
           created_by: string | null
@@ -2941,6 +2942,7 @@ export type Database = {
           construction_value_cents?: number | null
           contractor_company?: string | null
           contractor_qualifier?: string | null
+          correction_reply_email?: string | null
           county?: string | null
           created_at?: string
           created_by?: string | null
@@ -3001,6 +3003,7 @@ export type Database = {
           construction_value_cents?: number | null
           contractor_company?: string | null
           contractor_qualifier?: string | null
+          correction_reply_email?: string | null
           county?: string | null
           created_at?: string
           created_by?: string | null
