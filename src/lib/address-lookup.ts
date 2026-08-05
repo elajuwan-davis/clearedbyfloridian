@@ -37,9 +37,8 @@ export type AddressProvider = "google" | "census";
 
 const env = import.meta.env as Record<string, string | undefined>;
 
-/** The Google browser key, if the workspace has one configured. */
-export const GOOGLE_MAPS_KEY: string | undefined =
-  env.VITE_LOVABLE_CONNECTOR_GOOGLE_MAPS_BROWSER_KEY || env.VITE_GOOGLE_MAPS_API_KEY;
+/** The Google browser key, if the project has one configured. */
+export const GOOGLE_MAPS_KEY: string | undefined = env.VITE_GOOGLE_MAPS_API_KEY;
 
 /**
  * Which provider the UI should use right now.

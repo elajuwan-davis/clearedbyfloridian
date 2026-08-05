@@ -4,10 +4,10 @@ import { MapPin, Loader2 } from "lucide-react";
 /**
  * Florida-restricted Google Places (New) address autocomplete.
  *
- * Uses the Maps JS API loaded with the Lovable-managed Google Maps browser
- * key (or a project-level VITE_GOOGLE_MAPS_API_KEY fallback). If no key is
- * configured the component silently degrades to a plain text input so the
- * intake form is never blocked.
+ * Uses the Maps JS API loaded with a project-level VITE_GOOGLE_MAPS_API_KEY.
+ * If no key is configured, or the script/API fails for any reason, the
+ * component reports itself unavailable via onUnavailable so the parent can
+ * render the Census lookup UI instead. It never renders a bare input.
  */
 export type ResolvedAddress = {
   /** Formatted street line (number + street) — safe to store in "address". */
@@ -33,16 +33,17 @@ type Props = {
   placeholder?: string;
   required?: boolean;
   id?: string;
+  /**
+   * Called when Google autocomplete cannot work (missing key, script load
+   * failure, invalid key / referrer / billing, or a failed suggestion call).
+   * The parent must swap in the Census lookup UI — never a bare input.
+   */
+  onUnavailable?: () => void;
 };
 
-// Prefer the Lovable-managed connector key; fall back to a project secret if
-// the workspace hasn't linked the connector yet.
+// Project-level Google Maps browser key only. No Lovable-managed connector key.
 const MAPS_KEY: string | undefined =
-  (import.meta.env as Record<string, string | undefined>).VITE_LOVABLE_CONNECTOR_GOOGLE_MAPS_BROWSER_KEY ||
   (import.meta.env as Record<string, string | undefined>).VITE_GOOGLE_MAPS_API_KEY;
-
-const TRACKING_ID: string | undefined =
-  (import.meta.env as Record<string, string | undefined>).VITE_LOVABLE_CONNECTOR_GOOGLE_MAPS_TRACKING_ID;
 
 // Rough bounding box for the state of Florida — used as locationRestriction so
 // suggestions never leak out to Georgia / Alabama / the Bahamas.
@@ -55,15 +56,40 @@ const FLORIDA_BOUNDS = {
 type GoogleNS = any;
 
 let mapsLoader: Promise<GoogleNS> | null = null;
+
+/** Set by Google when the key is invalid / referrer-blocked / unbilled. */
+let authFailed = false;
+const authFailureListeners = new Set<() => void>();
+export function onGoogleMapsAuthFailure(cb: () => void): () => void {
+  if (authFailed) { cb(); return () => {}; }
+  authFailureListeners.add(cb);
+  return () => authFailureListeners.delete(cb);
+}
+function installAuthFailureHook() {
+  if (typeof window === "undefined") return;
+  const w = window as unknown as Record<string, unknown>;
+  if (w.__clearedGmAuthHook) return;
+  w.__clearedGmAuthHook = true;
+  w.gm_authFailure = () => {
+    authFailed = true;
+    authFailureListeners.forEach((cb) => cb());
+    authFailureListeners.clear();
+  };
+}
+
 function loadMapsJs(): Promise<GoogleNS> {
   if (typeof window === "undefined") return Promise.reject(new Error("no window"));
+  if (authFailed) return Promise.reject(new Error("auth-failure"));
   const w = window as unknown as { google?: GoogleNS };
   if (w.google?.maps) return Promise.resolve(w.google);
   if (mapsLoader) return mapsLoader;
   if (!MAPS_KEY) return Promise.reject(new Error("no-key"));
+  installAuthFailureHook();
   mapsLoader = new Promise((resolve, reject) => {
-    const cbName = `__lovableMapsInit_${Math.random().toString(36).slice(2)}`;
+    const cbName = `__clearedMapsInit_${Math.random().toString(36).slice(2)}`;
+    const timer = setTimeout(() => reject(new Error("maps-load-timeout")), 10000);
     (window as unknown as Record<string, unknown>)[cbName] = () => {
+      clearTimeout(timer);
       const g = (window as unknown as { google?: GoogleNS }).google;
       if (g?.maps) resolve(g);
       else reject(new Error("maps-not-ready"));
@@ -77,10 +103,9 @@ function loadMapsJs(): Promise<GoogleNS> {
       libraries: "places",
       callback: cbName,
     });
-    if (TRACKING_ID) params.set("channel", TRACKING_ID);
     s.src = `https://maps.googleapis.com/maps/api/js?${params.toString()}`;
     s.async = true;
-    s.onerror = () => reject(new Error("script-load-failed"));
+    s.onerror = () => { clearTimeout(timer); reject(new Error("script-load-failed")); };
     document.head.appendChild(s);
   });
   return mapsLoader;
@@ -103,6 +128,7 @@ export function AddressAutocomplete({
   placeholder,
   required,
   id,
+  onUnavailable,
 }: Props) {
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [open, setOpen] = useState(false);
@@ -113,18 +139,37 @@ export function AddressAutocomplete({
   const sessionTokenRef = useRef<unknown>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const unavailableRef = useRef(onUnavailable);
+  unavailableRef.current = onUnavailable;
+
+  const giveUp = useRef(() => {
+    setSupported(false);
+    unavailableRef.current?.();
+  }).current;
 
   useEffect(() => {
-    if (!MAPS_KEY) { setSupported(false); return; }
+    if (!MAPS_KEY) { giveUp(); return; }
+    // Google reports an invalid key / blocked referrer / billing problem
+    // asynchronously through gm_authFailure — treat it as unavailable.
+    const off = onGoogleMapsAuthFailure(giveUp);
     loadMapsJs()
       .then(async (g) => {
         const lib = await g.maps.importLibrary("places");
-        placesLibRef.current = lib;
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        sessionTokenRef.current = new (lib as any).AutocompleteSessionToken();
+        const anyLib = lib as any;
+        // Probe once up front so an invalid key / blocked referrer / disabled
+        // API / quota problem surfaces before the user types a single letter.
+        await anyLib.AutocompleteSuggestion.fetchAutocompleteSuggestions({
+          input: "Miami",
+          includedRegionCodes: ["us"],
+          locationRestriction: FLORIDA_BOUNDS,
+        });
+        placesLibRef.current = lib;
+        sessionTokenRef.current = new anyLib.AutocompleteSessionToken();
       })
-      .catch(() => setSupported(false));
-  }, []);
+      .catch(giveUp);
+    return off;
+  }, [giveUp]);
 
   useEffect(() => {
     function onDocClick(e: MouseEvent) {
@@ -173,7 +218,10 @@ export function AddressAutocomplete({
         setActiveIdx(0);
         setOpen(list.length > 0);
       } catch {
+        // A rejected Places call means the key/API isn't usable — hand over to
+        // the Census lookup rather than leaving a silent, dead input.
         setSuggestions([]);
+        giveUp();
       } finally {
         setLoading(false);
       }
@@ -236,18 +284,9 @@ export function AddressAutocomplete({
     }
   }
 
-  if (!supported) {
-    return (
-      <input
-        id={inputId}
-        required={required}
-        className={className}
-        placeholder={placeholder ?? "Street address"}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-      />
-    );
-  }
+  // Never render a bare input: the parent swaps in the Census lookup UI when
+  // this component reports itself unavailable.
+  if (!supported) return null;
 
   return (
     <div ref={containerRef} className="relative">
