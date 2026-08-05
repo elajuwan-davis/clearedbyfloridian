@@ -1,23 +1,32 @@
-// Deterministic analytics derived from PROJECTS — powers /portal/reports.
-// All money in cents. All randomness is seeded so numbers are stable across renders.
+// Analytics from live permits / inspections / service_fee_invoices — powers /portal/reports.
 
-import { PROJECTS, type Project } from "./projects-data";
+import { supabase } from "@/integrations/supabase/client";
 
-function seeded(n: number, min: number, max: number) {
-  const x = Math.sin(n * 7919.31) * 10000;
-  const frac = x - Math.floor(x);
-  return min + Math.abs(frac) * (max - min);
-}
+export type CountRow = { key: string; count: number };
+export type MunicipalityMetric = { municipality: string; value: number; count: number };
+export type FeeMonthRow = { month: string; permitFeesCents: number; clearedRevenueCents: number };
+export type OpenClosedRow = { month: string; open: number; closed: number };
+
+export type ReportPermit = {
+  id: string;
+  project_name: string;
+  municipality: string | null;
+  county: string | null;
+  city: string | null;
+  permit_type: string | null;
+  status: string;
+  submitted_date: string | null;
+  issued_date: string | null;
+  actual_fee_cents: number | null;
+  estimated_fee_cents: number | null;
+  cleared_fee_cents: number;
+  tenant_id: string | null;
+  contractor_company: string | null;
+};
 
 const MONTH_ORDER = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-
-function monthOf(dateStr: string): string {
-  return dateStr.split(" ")[0] ?? "—";
-}
-
 const CLOSED_STATUSES = new Set(["approved", "permit_issued", "cancelled"]);
 
-// ---------- CSV helper ----------
 export function csv(headers: string[], rows: (string | number)[][]): string {
   const esc = (v: string | number) => {
     const s = String(v);
@@ -39,46 +48,75 @@ export function downloadCsv(filename: string, headers: string[], rows: (string |
   URL.revokeObjectURL(url);
 }
 
-// ---------- Internal: Permit Volume ----------
-export type CountRow = { key: string; count: number };
+export function fmtMoney(cents: number): string {
+  return `$${(cents / 100).toLocaleString("en-US", { maximumFractionDigits: 0 })}`;
+}
+
+function monthKey(dateStr: string | null | undefined): string | null {
+  if (!dateStr) return null;
+  const d = new Date(dateStr.slice(0, 10) + "T00:00:00");
+  if (Number.isNaN(d.getTime())) return null;
+  return MONTH_ORDER[d.getMonth()] ?? null;
+}
 
 function sortByMonth(rows: CountRow[]): CountRow[] {
   return [...rows].sort((a, b) => MONTH_ORDER.indexOf(a.key) - MONTH_ORDER.indexOf(b.key));
 }
 
-function groupCount<T>(items: T[], keyFn: (t: T) => string): CountRow[] {
+function groupCount<T>(items: T[], keyFn: (t: T) => string | null): CountRow[] {
   const map = new Map<string, number>();
   for (const item of items) {
     const k = keyFn(item);
+    if (!k) continue;
     map.set(k, (map.get(k) ?? 0) + 1);
   }
   return Array.from(map.entries()).map(([key, count]) => ({ key, count }));
 }
 
-export function permitVolumeByMonth(): CountRow[] {
-  return sortByMonth(groupCount(PROJECTS, (p) => monthOf(p.submitted_at)));
+function placeOf(p: ReportPermit): string {
+  return p.municipality || p.city || p.county || "Unknown";
 }
 
-export function permitVolumeByJurisdiction(): CountRow[] {
-  return groupCount(PROJECTS, (p) => `${p.county} County`).sort((a, b) => b.count - a.count);
+function daysBetween(a: string, b: string): number | null {
+  const start = new Date(a.slice(0, 10) + "T00:00:00").getTime();
+  const end = new Date(b.slice(0, 10) + "T00:00:00").getTime();
+  if (Number.isNaN(start) || Number.isNaN(end) || end < start) return null;
+  return Math.round((end - start) / 86400000);
 }
 
-export function permitVolumeByTradeType(): CountRow[] {
-  const rows: { key: string }[] = [];
-  for (const p of PROJECTS) for (const t of p.permit_types) rows.push({ key: t });
-  return groupCount(rows, (r) => r.key).sort((a, b) => b.count - a.count);
+export async function fetchReportPermits(): Promise<ReportPermit[]> {
+  const { data, error } = await (supabase.from("permits" as any) as any)
+    .select(
+      "id, project_name, municipality, county, city, permit_type, status, submitted_date, issued_date, actual_fee_cents, estimated_fee_cents, cleared_fee_cents, tenant_id, contractor_company",
+    )
+    .order("created_at", { ascending: false });
+  if (error || !data) return [];
+  return data as ReportPermit[];
 }
 
-// ---------- Internal: Turnaround time ----------
-export type MunicipalityMetric = { municipality: string; value: number; count: number };
+export function permitVolumeByMonth(permits: ReportPermit[]): CountRow[] {
+  return sortByMonth(groupCount(permits, (p) => monthKey(p.submitted_date)));
+}
 
-export function avgTurnaroundByMunicipality(): MunicipalityMetric[] {
+export function permitVolumeByJurisdiction(permits: ReportPermit[]): CountRow[] {
+  return groupCount(permits, (p) => (p.county ? `${p.county} County` : placeOf(p))).sort(
+    (a, b) => b.count - a.count,
+  );
+}
+
+export function permitVolumeByTradeType(permits: ReportPermit[]): CountRow[] {
+  return groupCount(permits, (p) => p.permit_type || "Unspecified").sort((a, b) => b.count - a.count);
+}
+
+export function avgTurnaroundByMunicipality(permits: ReportPermit[]): MunicipalityMetric[] {
   const byCity = new Map<string, number[]>();
-  for (const p of PROJECTS) {
-    const days = Math.round(seeded(Number(p.id), 9, 46));
-    const list = byCity.get(p.city) ?? [];
+  for (const p of permits) {
+    if (!p.submitted_date || !p.issued_date) continue;
+    const days = daysBetween(p.submitted_date, p.issued_date);
+    if (days == null) continue;
+    const list = byCity.get(placeOf(p)) ?? [];
     list.push(days);
-    byCity.set(p.city, list);
+    byCity.set(placeOf(p), list);
   }
   return Array.from(byCity.entries())
     .map(([municipality, days]) => ({
@@ -89,63 +127,94 @@ export function avgTurnaroundByMunicipality(): MunicipalityMetric[] {
     .sort((a, b) => b.value - a.value);
 }
 
-// ---------- Internal: Correction rate ----------
-export function correctionRateByMunicipality(): MunicipalityMetric[] {
+/** Correction-round distribution: % of permits that hit corrections_required (or related), by municipality. */
+export function correctionRateByMunicipality(permits: ReportPermit[]): MunicipalityMetric[] {
   const byCity = new Map<string, { total: number; withCorrection: number }>();
-  for (const p of PROJECTS) {
-    const entry = byCity.get(p.city) ?? { total: 0, withCorrection: 0 };
+  for (const p of permits) {
+    const entry = byCity.get(placeOf(p)) ?? { total: 0, withCorrection: 0 };
     entry.total += 1;
-    const hasCorrection = seeded(Number(p.id) + 101, 0, 1) < 0.32 || p.status === "corrections_required";
-    if (hasCorrection) entry.withCorrection += 1;
-    byCity.set(p.city, entry);
+    if (
+      p.status === "corrections_required" ||
+      p.status === "correction_response_under_review" ||
+      p.status === "resubmitted" ||
+      p.status === "resubmitted_to_county"
+    ) {
+      entry.withCorrection += 1;
+    }
+    byCity.set(placeOf(p), entry);
   }
   return Array.from(byCity.entries())
     .map(([municipality, e]) => ({
       municipality,
-      value: Math.round((e.withCorrection / e.total) * 1000) / 10,
+      value: e.total ? Math.round((e.withCorrection / e.total) * 1000) / 10 : 0,
       count: e.total,
     }))
     .sort((a, b) => b.value - a.value);
 }
 
-// ---------- Internal: Fee summary ----------
-export type FeeMonthRow = { month: string; permitFeesCents: number; clearedRevenueCents: number };
-
-const PER_PROJECT_FEE_CENTS = 45_000; // Cléared flat fee per project
-const TX_FEE_RATE = 0.029; // transaction fee on permit fees
-
-export function permitFeeCentsFor(p: Project): number {
-  // Deterministic permit fee ~ 1.6%-2.4% of construction value.
-  const rate = seeded(Number(p.id) + 7, 0.016, 0.024);
-  return Math.round(p.value_cents * rate);
+/** Discrete correction-round buckets for distribution charts. */
+export function correctionRoundDistribution(permits: ReportPermit[]): CountRow[] {
+  let zero = 0;
+  let onePlus = 0;
+  for (const p of permits) {
+    const hit =
+      p.status === "corrections_required" ||
+      p.status === "correction_response_under_review" ||
+      p.status === "resubmitted" ||
+      p.status === "resubmitted_to_county";
+    if (hit) onePlus += 1;
+    else zero += 1;
+  }
+  return [
+    { key: "0 rounds", count: zero },
+    { key: "1+ rounds", count: onePlus },
+  ];
 }
 
-export function clearedRevenueCentsFor(p: Project): number {
-  const permitFee = permitFeeCentsFor(p);
-  return PER_PROJECT_FEE_CENTS + Math.round(permitFee * TX_FEE_RATE);
-}
+export async function feeSummaryByMonth(): Promise<FeeMonthRow[]> {
+  const { data: invoices } = await (supabase.from("service_fee_invoices" as any) as any)
+    .select("fee_cents, processing_fee_cents, status, paid_at, created_at, project_value_cents");
+  const { data: permits } = await (supabase.from("permits" as any) as any)
+    .select("submitted_date, actual_fee_cents, estimated_fee_cents");
 
-export function feeSummaryByMonth(): FeeMonthRow[] {
   const map = new Map<string, FeeMonthRow>();
-  for (const p of PROJECTS) {
-    const month = monthOf(p.submitted_at);
+
+  for (const inv of (invoices ?? []) as Array<{
+    fee_cents: number;
+    processing_fee_cents: number;
+    status: string;
+    paid_at: string | null;
+    created_at: string | null;
+  }>) {
+    const month = monthKey(inv.paid_at || inv.created_at);
+    if (!month) continue;
     const row = map.get(month) ?? { month, permitFeesCents: 0, clearedRevenueCents: 0 };
-    row.permitFeesCents += permitFeeCentsFor(p);
-    row.clearedRevenueCents += clearedRevenueCentsFor(p);
+    row.clearedRevenueCents += (inv.fee_cents ?? 0) + (inv.processing_fee_cents ?? 0);
     map.set(month, row);
   }
+
+  for (const p of (permits ?? []) as Array<{
+    submitted_date: string | null;
+    actual_fee_cents: number | null;
+    estimated_fee_cents: number | null;
+  }>) {
+    const month = monthKey(p.submitted_date);
+    if (!month) continue;
+    const fee = p.actual_fee_cents ?? p.estimated_fee_cents ?? 0;
+    const row = map.get(month) ?? { month, permitFeesCents: 0, clearedRevenueCents: 0 };
+    row.permitFeesCents += fee;
+    map.set(month, row);
+  }
+
   return Array.from(map.values()).sort((a, b) => MONTH_ORDER.indexOf(a.month) - MONTH_ORDER.indexOf(b.month));
 }
 
-// ---------- Internal: Open vs closed over time ----------
-export type OpenClosedRow = { month: string; open: number; closed: number };
-
-export function openVsClosedOverTime(): OpenClosedRow[] {
-  const months = MONTH_ORDER.filter((m) => PROJECTS.some((p) => monthOf(p.submitted_at) === m));
+export function openVsClosedOverTime(permits: ReportPermit[]): OpenClosedRow[] {
+  const months = MONTH_ORDER.filter((m) => permits.some((p) => monthKey(p.submitted_date) === m));
   let openCum = 0;
   let closedCum = 0;
   return months.map((m) => {
-    const inMonth = PROJECTS.filter((p) => monthOf(p.submitted_at) === m);
+    const inMonth = permits.filter((p) => monthKey(p.submitted_date) === m);
     const closedInMonth = inMonth.filter((p) => CLOSED_STATUSES.has(p.status)).length;
     openCum += inMonth.length - closedInMonth;
     closedCum += closedInMonth;
@@ -153,36 +222,41 @@ export function openVsClosedOverTime(): OpenClosedRow[] {
   });
 }
 
-// ---------- GC-facing reports ----------
-export const DEMO_GC_NAME = "Coastline Builders Group";
+export const DEMO_GC_NAME = "Your company";
 
-/** Projects attributed to a GC — real client match, else a deterministic demo slice. */
-export function projectsForGc(gcName: string | null | undefined): { name: string; projects: Project[] } {
+export async function projectsForGc(
+  gcName: string | null | undefined,
+): Promise<{ name: string; projects: ReportPermit[] }> {
+  const all = await fetchReportPermits();
   const name = gcName?.trim();
   if (name) {
-    const matches = PROJECTS.filter((p) => p.client.toLowerCase().includes(name.toLowerCase()));
+    const matches = all.filter(
+      (p) =>
+        (p.contractor_company || "").toLowerCase().includes(name.toLowerCase()) ||
+        p.project_name.toLowerCase().includes(name.toLowerCase()),
+    );
     if (matches.length > 0) return { name, projects: matches };
   }
-  // Demo fallback: deterministic subset (roughly every 3rd project) attributed to the demo GC.
-  const demo = PROJECTS.filter((p) => Number(p.id) % 3 === 0);
-  return { name: DEMO_GC_NAME, projects: demo.length ? demo : PROJECTS.slice(0, 6) };
+  return { name: name || DEMO_GC_NAME, projects: all };
 }
 
-export function gcPermitVolumeByMonth(projects: Project[]): CountRow[] {
-  return sortByMonth(groupCount(projects, (p) => monthOf(p.submitted_at)));
+export function gcPermitVolumeByMonth(projects: ReportPermit[]): CountRow[] {
+  return permitVolumeByMonth(projects);
 }
 
-export function gcAvgCycleTimeDays(projects: Project[]): number {
-  if (!projects.length) return 0;
-  const days = projects.map((p) => Math.round(seeded(Number(p.id), 9, 46)));
+export function gcAvgCycleTimeDays(projects: ReportPermit[]): number {
+  const days: number[] = [];
+  for (const p of projects) {
+    if (!p.submitted_date || !p.issued_date) continue;
+    const d = daysBetween(p.submitted_date, p.issued_date);
+    if (d != null) days.push(d);
+  }
+  if (!days.length) return 0;
   return Math.round(days.reduce((a, b) => a + b, 0) / days.length);
 }
 
-export function platformAvgCycleTimeDays(): number {
-  const all = avgTurnaroundByMunicipality();
-  const totalDays = all.reduce((sum, m) => sum + m.value * m.count, 0);
-  const totalCount = all.reduce((sum, m) => sum + m.count, 0);
-  return totalCount ? Math.round(totalDays / totalCount) : 0;
+export function platformAvgCycleTimeDays(permits: ReportPermit[]): number {
+  return gcAvgCycleTimeDays(permits);
 }
 
 export type GcCostSummary = {
@@ -191,20 +265,24 @@ export type GcCostSummary = {
   savingsCents: number;
 };
 
-export function gcCostSummary(projects: Project[]): GcCostSummary {
+export async function gcCostSummary(projects: ReportPermit[]): Promise<GcCostSummary> {
   let permitFeesCents = 0;
-  let clearedFeesCents = 0;
   for (const p of projects) {
-    permitFeesCents += permitFeeCentsFor(p);
-    clearedFeesCents += clearedRevenueCentsFor(p);
+    permitFeesCents += p.actual_fee_cents ?? p.estimated_fee_cents ?? 0;
   }
-  // Savings modeled vs. traditional GC self-permitting overhead (~9% of permit fees in staff time
-  // and delay carrying costs) net of what they pay Cléared.
+
+  const ids = projects.map((p) => p.id);
+  let clearedFeesCents = 0;
+  if (ids.length) {
+    const { data } = await (supabase.from("service_fee_invoices" as any) as any)
+      .select("fee_cents, processing_fee_cents, permit_id")
+      .in("permit_id", ids);
+    for (const inv of (data ?? []) as Array<{ fee_cents: number; processing_fee_cents: number }>) {
+      clearedFeesCents += (inv.fee_cents ?? 0) + (inv.processing_fee_cents ?? 0);
+    }
+  }
+
   const traditionalOverheadCents = Math.round(permitFeesCents * 0.09) + projects.length * 180_000;
   const savingsCents = Math.max(0, traditionalOverheadCents - clearedFeesCents);
   return { permitFeesCents, clearedFeesCents, savingsCents };
-}
-
-export function fmtMoney(cents: number): string {
-  return `$${(cents / 100).toLocaleString("en-US", { maximumFractionDigits: 0 })}`;
 }
