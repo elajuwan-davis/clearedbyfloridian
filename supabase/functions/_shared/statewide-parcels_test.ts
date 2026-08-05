@@ -131,6 +131,74 @@ Deno.test("address scoring: a unit on one side only is a weaker match", () => {
   assertEquals(addressMatchScore("111 SE 1st Ave", "111 SE 1ST AVE 316"), 2);
 });
 
+Deno.test("address scoring: north and south of the same street are different streets", () => {
+  assertEquals(addressMatchScore("100 N 2nd St", "100 S 2ND ST"), 0);
+  assertEquals(addressMatchScore("824 S 2nd St", "824 N 2ND ST"), 0);
+  // Asked without a direction, so which one it is has not been established.
+  assertEquals(addressMatchScore("100 2nd St", "100 S 2ND ST"), 1);
+});
+
+Deno.test("landing inside the wrong polygon is not a match", async () => {
+  // The live failure: the geocoder puts 1 Harbour Isle Dr W inside number 18.
+  const wrong = {
+    attributes: { ...HOBE_SOUND, PARCEL_ID: "wrong", PHY_ADDR1: "18 HARBOUR ISLE DR W 104" },
+  };
+  const f = stubFetch([ok({ features: [wrong] }), ok({ features: [wrong] })]);
+  const { parcel, match } = await lookupStatewideParcel(-80.31, 27.44, {
+    fetchImpl: f.impl,
+    address: "1 Harbour Isle Dr W, Fort Pierce, FL",
+  });
+  assertEquals(parcel, null);
+  assertEquals(match, null);
+});
+
+Deno.test("a polygon hit with no site address is still trusted", async () => {
+  const f = stubFetch([ok({ features: [{ attributes: { ...HOBE_SOUND, PHY_ADDR1: " " } }] })]);
+  const { parcel, match } = await lookupStatewideParcel(-80.137, 27.0709, {
+    fetchImpl: f.impl,
+    address: "8820 SE Bahama Cir",
+  });
+  assertEquals(match, "point_in_polygon");
+  assertEquals(parcel?.parcel_id, "34-38-42-025-000-00150-0");
+});
+
+Deno.test("an omitted direction is refused when both sides of the street answer", async () => {
+  const side = (dir: string, owner: string, x: number) => ({
+    attributes: {
+      ...HOBE_SOUND,
+      PARCEL_ID: `${dir}-100`,
+      PHY_ADDR1: `100 ${dir} 2ND ST`,
+      OWN_NAME: owner,
+    },
+    centroid: { x, y: 27.445 },
+  });
+  const f = stubFetch([
+    ok({ features: [] }),
+    ok({
+      features: [side("N", "RFMD INVESTMENTS LLC", -80.3231), side("S", "GALLERIA", -80.3233)],
+    }),
+  ]);
+  const { parcel } = await lookupStatewideParcel(-80.3232, 27.445, {
+    fetchImpl: f.impl,
+    address: "100 2nd St, Fort Pierce, FL",
+  });
+  assertEquals(parcel, null);
+});
+
+Deno.test("an omitted direction is accepted when only one street answers", async () => {
+  const only = {
+    attributes: { ...HOBE_SOUND, PARCEL_ID: "n-100", PHY_ADDR1: "100 N 2ND ST" },
+    centroid: { x: -80.3231, y: 27.445 },
+  };
+  const f = stubFetch([ok({ features: [] }), ok({ features: [only] })]);
+  const { parcel, match } = await lookupStatewideParcel(-80.3232, 27.445, {
+    fetchImpl: f.impl,
+    address: "100 2nd St, Fort Pierce, FL",
+  });
+  assertEquals(match, "nearby_address_match");
+  assertEquals(parcel?.parcel_id, "n-100");
+});
+
 Deno.test("a centreline geocode falls back to the parcel with that address", async () => {
   // What the live service does for 8820 SE Bahama Cir: the point lands in the road, the
   // buffered query returns the block.

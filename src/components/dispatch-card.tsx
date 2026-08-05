@@ -86,7 +86,9 @@ export function DispatchCard({
           </div>
           <div className="text-xs text-obsidian/60">
             Assessed {fmtMoney(data.parcel.assessed_value_cents)}
-            {data.parcel.assessment_year ? ` · ${data.parcel.assessment_year} roll` : ""}
+            {data.parcel.assessed_value_cents != null && data.parcel.assessment_year
+              ? ` · ${data.parcel.assessment_year} roll`
+              : ""}
           </div>
           {data.parcel.owner_name && (
             <div className="text-xs text-obsidian/70">Owner: {data.parcel.owner_name}</div>

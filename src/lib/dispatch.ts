@@ -49,10 +49,10 @@ export type DispatchResult = {
   permit_history: DispatchPriorPermit[];
 };
 
-const env = import.meta as any;
+// Vite only substitutes `import.meta.env.X` written out in full — reading it through an alias
+// leaves it undefined in the browser, which silently demoted every dispatch to mock data.
 const SUPABASE_URL =
-  env?.env?.VITE_SUPABASE_URL ??
-  env?.env?.SUPABASE_URL ??
+  import.meta.env.VITE_SUPABASE_URL ??
   (typeof process !== "undefined" ? process.env.SUPABASE_URL : undefined);
 
 /** Cheap deterministic hash so mock output stays stable per address. */
