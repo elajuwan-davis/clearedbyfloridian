@@ -2067,51 +2067,6 @@ export type Database = {
           },
         ]
       }
-      municipalities: {
-        Row: {
-          county: string
-          created_at: string
-          department: string | null
-          id: string
-          is_custom: boolean
-          name: string
-          portal_url: string | null
-          quirks: string | null
-          readiness_score: number | null
-          submittal_method: string | null
-          turnaround_notes: string | null
-          updated_at: string
-        }
-        Insert: {
-          county: string
-          created_at?: string
-          department?: string | null
-          id?: string
-          is_custom?: boolean
-          name: string
-          portal_url?: string | null
-          quirks?: string | null
-          readiness_score?: number | null
-          submittal_method?: string | null
-          turnaround_notes?: string | null
-          updated_at?: string
-        }
-        Update: {
-          county?: string
-          created_at?: string
-          department?: string | null
-          id?: string
-          is_custom?: boolean
-          name?: string
-          portal_url?: string | null
-          quirks?: string | null
-          readiness_score?: number | null
-          submittal_method?: string | null
-          turnaround_notes?: string | null
-          updated_at?: string
-        }
-        Relationships: []
-      }
       municipality_registrations: {
         Row: {
           county: string | null
@@ -3209,48 +3164,6 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "prior_permits_tenant_id_fkey"
-            columns: ["tenant_id"]
-            isOneToOne: false
-            referencedRelation: "tenants"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      project_notes: {
-        Row: {
-          author: string
-          created_at: string
-          id: string
-          note: string
-          permit_id: string
-          tenant_id: string | null
-        }
-        Insert: {
-          author: string
-          created_at?: string
-          id?: string
-          note: string
-          permit_id: string
-          tenant_id?: string | null
-        }
-        Update: {
-          author?: string
-          created_at?: string
-          id?: string
-          note?: string
-          permit_id?: string
-          tenant_id?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "project_notes_permit_id_fkey"
-            columns: ["permit_id"]
-            isOneToOne: false
-            referencedRelation: "permits"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "project_notes_tenant_id_fkey"
             columns: ["tenant_id"]
             isOneToOne: false
             referencedRelation: "tenants"
