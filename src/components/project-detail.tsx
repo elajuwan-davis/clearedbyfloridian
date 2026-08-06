@@ -250,7 +250,7 @@ export function ProjectDetail({ project }: { project: Project }) {
           <TabsContent value="activity" className="mt-6">
             <p className="text-sm text-obsidian/50">Activity for live permits is on the permit detail page.</p>
           </TabsContent>
-          {internal && <TabsContent value="internal" className="mt-6"><ProjectInternalOps project={project} /></TabsContent>}
+          {internal && <TabsContent value="internal" className="mt-6"><ProjectInternalOps permitId={project.id} label={project.name} /></TabsContent>}
         </Tabs>
       </div>
     </PortalShell>
@@ -1007,7 +1007,7 @@ function NotesTab({ project }: { project: Project }) {
   const [body, setBody] = useState("");
 
   useEffect(() => {
-    const refresh = () => setNotes(listNotes(project.id));
+    const refresh = () => { void listNotes(project.id).then(setNotes); };
     refresh();
     window.addEventListener("project-notes:changed", refresh);
     return () => window.removeEventListener("project-notes:changed", refresh);
