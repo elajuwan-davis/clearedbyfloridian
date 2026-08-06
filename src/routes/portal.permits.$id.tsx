@@ -693,21 +693,22 @@ function PermitDetailPage() {
 
       <SubmittalPackageSection row={row} onChange={(r) => { setRow(r); setEdit(r); }} />
 
-      {/* Pre-submission completeness gate */}
-      <section id="pre-submission" className="mt-10">
+      {tab === "submission" && (
+      <section id="pre-submission" className="mt-3">
         <div className="p-eyebrow mb-2">Pre-Submission</div>
         <PreSubmissionGate permit={row} onVerdict={setPresubStatus} />
-        <div className="mt-4">
+        <div className="mt-3">
           <MunicipalitySubmissionGate
             permitId={row.id}
             preSubmissionPassed={presubStatus === "pass"}
           />
         </div>
         {/* Agent 7: renders itself only once a correction notice has been parsed. */}
-        <div className="mt-4">
+        <div className="mt-3">
           <CorrectionReviewGate permitId={row.id} />
         </div>
       </section>
+      )}
 
       {tab === "money" && (
       <div className="mt-3">
