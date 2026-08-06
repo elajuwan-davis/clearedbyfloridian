@@ -11,8 +11,11 @@ export type StaffMember = {
   email: string;
 };
 
-/** Mutable cache filled by listStaffAdmins() for sync helpers (getStaffByEmail, etc.). */
+/** Cache filled by listStaffAdmins() for sync helpers (getStaffByEmail, etc.). Prefer the returned list. */
 export let CLEARED_STAFF: StaffMember[] = [];
+
+/** Coalesce concurrent listStaffAdmins() mounts onto one fetch (avoids last-write-wins on CLEARED_STAFF). */
+let staffAdminsInFlight: Promise<StaffMember[]> | null = null;
 
 type ProfileLite = {
   id: string;
@@ -71,38 +74,46 @@ function profileToStaff(p: ProfileLite): StaffMember {
 
 /** Live admins from user_roles + profiles. Requires an admin session (RLS). */
 export async function listStaffAdmins(): Promise<StaffMember[]> {
-  const { data: roles, error: rolesErr } = await (supabase.from("user_roles" as any) as any)
-    .select("user_id")
-    .eq("role", "admin");
-  if (rolesErr) throw new Error(rolesErr.message);
-  const ids = [...new Set(((roles ?? []) as Array<{ user_id: string }>).map((r) => r.user_id).filter(Boolean))];
-  if (ids.length === 0) {
-    CLEARED_STAFF = [];
-    return [];
-  }
+  if (staffAdminsInFlight) return staffAdminsInFlight;
 
-  const { data: profiles, error: profErr } = await (supabase.from("profiles" as any) as any)
-    .select("id, email, display_name, full_name, job_title")
-    .in("id", ids);
+  staffAdminsInFlight = (async () => {
+    const { data: roles, error: rolesErr } = await (supabase.from("user_roles" as any) as any)
+      .select("user_id")
+      .eq("role", "admin");
+    if (rolesErr) throw new Error(rolesErr.message);
+    const ids = [...new Set(((roles ?? []) as Array<{ user_id: string }>).map((r) => r.user_id).filter(Boolean))];
+    if (ids.length === 0) {
+      CLEARED_STAFF = [];
+      return [];
+    }
 
-  let profileRows = (profiles ?? []) as ProfileLite[];
-  if (profErr) {
-    // Column may not exist until 20260811120000_profiles_job_title.sql is applied.
-    const missingTitle = /job_title/i.test(profErr.message);
-    if (!missingTitle) throw new Error(profErr.message);
-    const { data: fallback, error: fallbackErr } = await (supabase.from("profiles" as any) as any)
-      .select("id, email, display_name, full_name")
+    const { data: profiles, error: profErr } = await (supabase.from("profiles" as any) as any)
+      .select("id, email, display_name, full_name, job_title")
       .in("id", ids);
-    if (fallbackErr) throw new Error(fallbackErr.message);
-    profileRows = ((fallback ?? []) as ProfileLite[]).map((p) => ({ ...p, job_title: null }));
-  }
 
-  const staff = filterStaffAdmins(profileRows.map(profileToStaff));
-  CLEARED_STAFF = staff;
-  if (typeof window !== "undefined") {
-    window.dispatchEvent(new CustomEvent("staff-ops:staff-loaded"));
-  }
-  return staff;
+    let profileRows = (profiles ?? []) as ProfileLite[];
+    if (profErr) {
+      // Column may not exist until 20260811120000_profiles_job_title.sql is applied.
+      const missingTitle = /job_title/i.test(profErr.message);
+      if (!missingTitle) throw new Error(profErr.message);
+      const { data: fallback, error: fallbackErr } = await (supabase.from("profiles" as any) as any)
+        .select("id, email, display_name, full_name")
+        .in("id", ids);
+      if (fallbackErr) throw new Error(fallbackErr.message);
+      profileRows = ((fallback ?? []) as ProfileLite[]).map((p) => ({ ...p, job_title: null }));
+    }
+
+    const staff = filterStaffAdmins(profileRows.map(profileToStaff));
+    CLEARED_STAFF = staff;
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new CustomEvent("staff-ops:staff-loaded"));
+    }
+    return staff;
+  })().finally(() => {
+    staffAdminsInFlight = null;
+  });
+
+  return staffAdminsInFlight;
 }
 
 export type Priority = "normal" | "high" | "urgent";
