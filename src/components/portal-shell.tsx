@@ -185,8 +185,6 @@ function SidebarNav({
     closeTimer.current = setTimeout(() => setOpenKey(null), 120);
   }
 
-  const openSection = allSections.find((s) => s.key === openKey) ?? null;
-
   return (
     <div
       className="relative flex h-full min-h-0 flex-col"
@@ -215,7 +213,12 @@ function SidebarNav({
         )}
       </Link>
 
-      <nav className={cn("p-noscroll min-h-0 flex-1 overflow-y-auto", isRail ? "px-2 py-1" : "px-1.5 pb-2")}>
+      <nav
+        className={cn(
+          "p-noscroll min-h-0 flex-1",
+          isRail ? "overflow-visible px-2 py-1" : "overflow-y-auto px-1.5 pb-2",
+        )}
+      >
         {allSections.map((group) => {
           const items = group.items ?? [{ to: group.to as string, label: group.label }];
           const groupActive = sectionActive(pathname, group);
@@ -405,7 +408,16 @@ function SidebarNav({
 }
 
 
+const InPortalShell = createContext(false);
+
 export function PortalShell({ children }: { children: ReactNode }) {
+  // Some pages wrap themselves in <PortalShell> while the /portal route layout
+  // also does — render the chrome only once.
+  if (useContext(InPortalShell)) return <>{children}</>;
+  return <PortalShellInner>{children}</PortalShellInner>;
+}
+
+function PortalShellInner({ children }: { children: ReactNode }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
