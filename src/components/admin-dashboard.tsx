@@ -216,3 +216,482 @@ export function AdminDashboard() {
       .sort((a, b) => b.permits - a.permits || a.name.localeCompare(b.name));
   }, [members, permits, userName, userEmail, tenantName]);
 
+
+  const me = useMyIdentity();
+  const [greeting, setGreeting] = useState(() => greetingForNow());
+  useEffect(() => {
+    const id = setInterval(() => setGreeting(greetingForNow()), 60_000);
+    return () => clearInterval(id);
+  }, []);
+
+  const today = new Date().toLocaleDateString("en-US", {
+    weekday: "long",
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+
+  // Status tabs mirror the filter — same data, one visual language.
+  const statusTabs = useMemo(() => {
+    const counts = new Map<string, number>();
+    permits.forEach((p) => counts.set(p.status, (counts.get(p.status) ?? 0) + 1));
+    return (Object.keys(statusMeta) as Status[])
+      .filter((s) => (counts.get(s) ?? 0) > 0)
+      .map((s) => ({ status: s, label: statusMeta[s].label, count: counts.get(s) ?? 0 }));
+  }, [permits]);
+
+  const donut = useMemo(() => {
+    const buckets: Array<{ name: string; value: number; color: string }> = [
+      { name: "Pre-check", value: permits.filter((p) => ["submitted", "in_review", "pending"].includes(p.status)).length, color: "#F59E0B" },
+      { name: "En route", value: permits.filter((p) => ["inspection_scheduled", "permit_issued"].includes(p.status)).length, color: "#3B82F6" },
+      { name: "Corrections", value: correctionsCount, color: "#A78BFA" },
+      { name: "On hold", value: permits.filter((p) => p.status === "on_hold").length, color: "#EF4444" },
+      { name: "Cleared", value: permits.filter((p) => ["approved", "inspection_complete", "resubmitted", "resubmitted_to_county", "correction_response_under_review"].includes(p.status)).length, color: "#22C55E" },
+    ];
+    return buckets.filter((b) => b.value > 0);
+  }, [permits, correctionsCount]);
+
+  // Recent activity is a presentation of the rows already loaded above.
+  const recent = useMemo(() => {
+    const events = [
+      ...permits.slice(0, 12).map((p) => ({
+        at: p.created_at,
+        title: p.project_name,
+        detail: `Permit filed · ${statusMeta[p.status as Status]?.label ?? p.status.replace(/_/g, " ")}`,
+        tone: "info" as const,
+      })),
+      ...tenants.slice(0, 6).map((t) => ({
+        at: t.created_at,
+        title: t.name,
+        detail: "Client company added",
+        tone: "success" as const,
+      })),
+    ];
+    return events
+      .filter((e) => e.at)
+      .sort((a, b) => new Date(b.at).getTime() - new Date(a.at).getTime())
+      .slice(0, 6);
+  }, [permits, tenants]);
+
+  const totalValueCents = permits.reduce((s, p) => s + Number(p.construction_value_cents ?? 0), 0);
+  const countiesActive = new Set(permits.map((p) => p.county).filter(Boolean)).size;
+  const onTime = permits.length
+    ? Math.round(
+        (permits.filter((p) => p.status !== "corrections_required" && p.status !== "on_hold").length /
+          permits.length) *
+          100,
+      )
+    : 0;
+
+  return (
+    <PortalShell>
+      <div className="mx-auto max-w-[1500px]">
+        <PageHeader
+          crumbs={[{ label: "Cleard Operations" }, { label: "Dashboard" }]}
+          title={<>{greeting}{me.firstName ? `, ${me.firstName}` : ""}.</>}
+          description="Here's what's happening across every client permit today."
+          actions={
+            <>
+              <span className="hidden items-center gap-1.5 text-[12px] text-muted-foreground sm:inline-flex">
+                <CalendarDays className="h-3.5 w-3.5" strokeWidth={1.75} />
+                {today}
+              </span>
+              <Link to="/portal/permits/new" className="p-btn p-btn-primary">
+                <Plus className="h-3.5 w-3.5" strokeWidth={2} />
+                New permit
+              </Link>
+            </>
+          }
+        />
+
+        {/* Executive summary */}
+        <div className="grid grid-cols-2 gap-3 lg:grid-cols-5">
+          <StatTile
+            label="Permits in review"
+            value={activeCount}
+            context={`${permits.length} total on file`}
+            icon={<FolderOpen className="h-3.5 w-3.5" strokeWidth={1.75} />}
+            tone="info"
+          />
+          <StatTile
+            label="Corrections pending"
+            value={correctionsCount}
+            context="Awaiting client action"
+            icon={<AlertTriangle className="h-3.5 w-3.5" strokeWidth={1.75} />}
+            tone="warning"
+          />
+          <StatTile
+            label="Permits issued"
+            value={issuedCount}
+            context={`${onTime}% on time`}
+            icon={<Stamp className="h-3.5 w-3.5" strokeWidth={1.75} />}
+            tone="success"
+          />
+          <StatTile
+            label="Unread conversations"
+            value={adminUnread}
+            context={`${openThreads} open threads`}
+            icon={<MessageSquare className="h-3.5 w-3.5" strokeWidth={1.75} />}
+            tone="purple"
+            to="/messages"
+          />
+          <StatTile
+            label="Outstanding fees"
+            value={fmtMoneyWhole(outstandingFeesCents)}
+            context="Invoiced + overdue"
+            icon={<DollarSign className="h-3.5 w-3.5" strokeWidth={1.75} />}
+            tone="danger"
+          />
+        </div>
+
+        <div className="mt-3 grid grid-cols-2 gap-3 lg:grid-cols-4">
+          <StatTile label="Client companies" value={tenants.length} context={`${tenants.filter((t) => t.status === "active").length} active`} icon={<Building2 className="h-3.5 w-3.5" strokeWidth={1.75} />} />
+          <StatTile label="User accounts" value={members.length} context="Across all clients" icon={<Users className="h-3.5 w-3.5" strokeWidth={1.75} />} />
+          <StatTile label="Open invites" value={invites.open} context={`${invites.accepted} accepted`} icon={<Mail className="h-3.5 w-3.5" strokeWidth={1.75} />} to="/admin/invites" />
+          <StatTile label="Access requests" value={accessRequests.pending} context={`${accessRequests.total} all time`} icon={<UserPlus className="h-3.5 w-3.5" strokeWidth={1.75} />} tone="warning" to="/admin/access-requests" />
+        </div>
+
+        {/* Queue + critical panel */}
+        <div className="mt-4 grid grid-cols-1 gap-3 xl:grid-cols-[minmax(0,1fr)_320px]">
+          <Surface padded={false} flat className="min-w-0">
+            <SectionHeader
+              title="Active permits"
+              meta={`${filtered.length} of ${permits.length}`}
+              action={
+                <Link to="/portal/permits" className="text-muted-foreground transition-colors hover:text-foreground">
+                  View all
+                </Link>
+              }
+            />
+
+            {/* One filter bar — search, status tabs, county, client */}
+            <div className="flex flex-wrap items-center gap-2 border-b px-4 pb-3" style={{ borderColor: "var(--p-border)" }}>
+              <div className="relative min-w-[200px] flex-1">
+                <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
+                <input
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder="Search permits, projects, clients, addresses…"
+                  className="h-8 w-full border pl-8 pr-3 text-[13px] outline-none focus:border-white/15"
+                />
+              </div>
+              <Select value={countyFilter} onValueChange={(v) => setCountyFilter(v as typeof countyFilter)}>
+                <SelectTrigger className="h-8 w-[150px] rounded-[10px] text-[12px]"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All counties</SelectItem>
+                  {COUNTIES.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+                </SelectContent>
+              </Select>
+              <Select value={clientFilter} onValueChange={setClientFilter}>
+                <SelectTrigger className="h-8 w-[170px] rounded-[10px] text-[12px]"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All clients</SelectItem>
+                  {tenants.map((t) => <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="p-noscroll flex items-center gap-1 overflow-x-auto px-4 py-2.5">
+              <TabChip active={statusFilter === "all"} onClick={() => setStatusFilter("all")} label="All" count={permits.length} />
+              {statusTabs.map((t) => (
+                <TabChip
+                  key={t.status}
+                  active={statusFilter === t.status}
+                  onClick={() => setStatusFilter(t.status)}
+                  label={t.label}
+                  count={t.count}
+                />
+              ))}
+            </div>
+
+            {loading ? (
+              <LoadingRow label="Loading permits" />
+            ) : filtered.length === 0 ? (
+              <EmptyState title="No permits match these filters" description="Clear the search or pick a different status to widen the queue." />
+            ) : (
+              <div className="overflow-auto" style={{ maxHeight: 520 }}>
+                <table className="p-table">
+                  <thead>
+                    <tr>
+                      <th>Project</th>
+                      <th>County</th>
+                      <th>Status</th>
+                      <th className="text-right">Value</th>
+                      <th className="text-right">Age</th>
+                      <th>Client</th>
+                      <th className="text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filtered.map((r) => {
+                      const meta = statusMeta[r.status as Status] ?? { label: r.status.replace(/_/g, " "), tone: "neutral" as const };
+                      return (
+                        <tr key={r.id}>
+                          <td>
+                            <div className="font-medium">{r.project_name}</div>
+                            <div className="mt-0.5 text-[12px] text-muted-foreground">{r.job_address}</div>
+                          </td>
+                          <td className="text-muted-foreground">{r.county ?? r.municipality ?? "—"}</td>
+                          <td><StatusChip tone={meta.tone}>{meta.label}</StatusChip></td>
+                          <td className="text-right tabular-nums">{fmtMoneyWhole(Number(r.construction_value_cents ?? 0))}</td>
+                          <td className="text-right tabular-nums text-muted-foreground">{daysSince(r.submitted_date ?? r.created_at)}d</td>
+                          <td className="text-muted-foreground">{tenantName.get(r.tenant_id ?? "") ?? "—"}</td>
+                          <td className="text-right">
+                            <Link
+                              to="/portal/permits/$id"
+                              params={{ id: r.id }}
+                              className="p-btn p-btn-ghost h-7 px-2 text-[12px]"
+                            >
+                              Open <ArrowUpRight className="h-3 w-3" strokeWidth={2} />
+                            </Link>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </Surface>
+
+          <div className="flex min-w-0 flex-col gap-3">
+            <Surface padded={false} flat>
+              <SectionHeader title="Quick actions" />
+              <div className="flex flex-col gap-1 px-3 pb-3">
+                <QuickAction to="/admin/review-queue" icon={<ListChecks className="h-3.5 w-3.5" strokeWidth={1.75} />} label="Review queue" badge={correctionsCount || undefined} />
+                <QuickAction to="/portal/permits/new" icon={<Plus className="h-3.5 w-3.5" strokeWidth={1.75} />} label="Add new permit" />
+                <QuickAction to="/admin/gc-clients" icon={<Building2 className="h-3.5 w-3.5" strokeWidth={1.75} />} label="Client companies" />
+                <QuickAction to="/messages" icon={<Send className="h-3.5 w-3.5" strokeWidth={1.75} />} label="Send message" badge={adminUnread || undefined} />
+              </div>
+            </Surface>
+
+            <Surface padded={false} flat>
+              <SectionHeader
+                title="Recent activity"
+                action={<Link to="/admin/activity" className="text-muted-foreground transition-colors hover:text-foreground">View all</Link>}
+              />
+              {recent.length === 0 ? (
+                <EmptyState title="Nothing yet" description="Activity appears as permits and clients are added." icon={<Activity className="h-4 w-4" strokeWidth={1.75} />} />
+              ) : (
+                <ul className="flex flex-col gap-3 px-4 pb-4">
+                  {recent.map((e, i) => (
+                    <li key={`${e.title}-${i}`} className="flex min-w-0 items-start gap-2.5">
+                      <span
+                        className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full"
+                        style={{ backgroundColor: e.tone === "success" ? "#22C55E" : "#3B82F6" }}
+                      />
+                      <div className="min-w-0 flex-1">
+                        <div className="truncate text-[13px] font-medium">{e.title}</div>
+                        <div className="truncate text-[12px] text-muted-foreground">{e.detail}</div>
+                      </div>
+                      <span className="shrink-0 text-[11px] text-muted-foreground">{fmtDate(e.at)}</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </Surface>
+          </div>
+        </div>
+
+        {/* Analytics + rollups */}
+        <div className="mt-3 grid grid-cols-1 gap-3 xl:grid-cols-3">
+          <Surface padded={false} flat className="min-w-0">
+            <SectionHeader
+              title="Client companies"
+              action={<Link to="/admin/gc-clients" className="text-muted-foreground transition-colors hover:text-foreground">View all</Link>}
+            />
+            {clientRows.length === 0 ? (
+              <EmptyState title="No client companies yet" />
+            ) : (
+              <div className="overflow-auto" style={{ maxHeight: 300 }}>
+                <table className="p-table">
+                  <thead>
+                    <tr>
+                      <th>Company</th>
+                      <th className="text-right">Permits</th>
+                      <th className="text-right">Active</th>
+                      <th className="text-right">Value</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {clientRows.map((c) => (
+                      <tr key={c.id}>
+                        <td className="max-w-[180px] truncate">{c.name}</td>
+                        <td className="text-right tabular-nums text-muted-foreground">{c.permits}</td>
+                        <td className="text-right tabular-nums text-muted-foreground">{c.active}</td>
+                        <td className="text-right tabular-nums">{fmtMoneyWhole(c.value)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </Surface>
+
+          <Surface padded={false} flat className="min-w-0">
+            <SectionHeader title="Today's snapshot" />
+            <div className="grid grid-cols-2 gap-2 px-4 pb-4">
+              <Snapshot value={String(activeCount)} label="Active permits" context={`${permits.length} on file`} />
+              <Snapshot value={String(issuedCount)} label="Issued" context="All time" />
+              <Snapshot value={fmtMoneyWhole(totalValueCents)} label="Portfolio value" context="Construction value" />
+              <Snapshot value={String(countiesActive)} label="Counties active" context="Palm Beach + Treasure Coast" />
+              <div className="col-span-2 p-inset p-3">
+                <div className="flex items-center justify-between text-[12px]">
+                  <span className="text-muted-foreground">On-time completion</span>
+                  <span className="font-medium tabular-nums">{onTime}%</span>
+                </div>
+                <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-white/[0.07]">
+                  <div className="h-full rounded-full" style={{ width: `${onTime}%`, backgroundColor: "#22C55E" }} />
+                </div>
+              </div>
+            </div>
+          </Surface>
+
+          <Surface padded={false} flat className="min-w-0">
+            <SectionHeader title="Permit status overview" meta={`${permits.length} total`} />
+            <div className="flex items-center gap-4 px-4 pb-4">
+              <div className="relative h-[140px] w-[140px] shrink-0">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={donut.length ? donut : [{ name: "None", value: 1, color: "#1A2436" }]}
+                      dataKey="value"
+                      innerRadius={48}
+                      outerRadius={66}
+                      paddingAngle={2}
+                      stroke="none"
+                    >
+                      {(donut.length ? donut : [{ name: "None", value: 1, color: "#1A2436" }]).map((d) => (
+                        <Cell key={d.name} fill={d.color} />
+                      ))}
+                    </Pie>
+                  </PieChart>
+                </ResponsiveContainer>
+                <div className="pointer-events-none absolute inset-0 grid place-items-center">
+                  <div className="text-center">
+                    <div className="text-[22px] font-semibold leading-none tabular-nums">{permits.length}</div>
+                    <div className="mt-0.5 text-[11px] text-muted-foreground">Total</div>
+                  </div>
+                </div>
+              </div>
+              <ul className="min-w-0 flex-1 space-y-2">
+                {donut.map((d) => (
+                  <li key={d.name} className="flex min-w-0 items-center gap-2 text-[12px]">
+                    <span className="h-2 w-2 shrink-0 rounded-full" style={{ backgroundColor: d.color }} />
+                    <span className="min-w-0 flex-1 truncate text-muted-foreground">{d.name}</span>
+                    <span className="tabular-nums">{d.value}</span>
+                    <span className="w-9 text-right tabular-nums text-muted-foreground">
+                      {permits.length ? Math.round((d.value / permits.length) * 100) : 0}%
+                    </span>
+                  </li>
+                ))}
+                {donut.length === 0 && <li className="text-[12px] text-muted-foreground">No permits yet.</li>}
+              </ul>
+            </div>
+          </Surface>
+        </div>
+
+        {/* Accounts */}
+        <Surface padded={false} flat className="mt-3">
+          <SectionHeader title="User accounts" meta={`${accountRows.length} across all clients`} />
+          {accountRows.length === 0 ? (
+            <EmptyState title="No accounts yet" />
+          ) : (
+            <div className="overflow-auto" style={{ maxHeight: 340 }}>
+              <table className="p-table">
+                <thead>
+                  <tr>
+                    <th>Account</th>
+                    <th>Client</th>
+                    <th>Role</th>
+                    <th>Joined</th>
+                    <th className="text-right">Permits</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {accountRows.map((a) => (
+                    <tr key={a.user_id}>
+                      <td>
+                        <div className="font-medium">{a.name}</div>
+                        {a.email && <div className="mt-0.5 text-[12px] text-muted-foreground">{a.email}</div>}
+                      </td>
+                      <td className="text-muted-foreground">{a.client}</td>
+                      <td><StatusChip tone="neutral">{a.role.replace(/_/g, " ")}</StatusChip></td>
+                      <td className="text-muted-foreground">{fmtDate(a.joined)}</td>
+                      <td className="text-right tabular-nums">{a.permits}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </Surface>
+      </div>
+    </PortalShell>
+  );
+}
+
+/* ─────────── local presentation helpers ─────────── */
+
+function TabChip({
+  active,
+  onClick,
+  label,
+  count,
+}: {
+  active: boolean;
+  onClick: () => void;
+  label: string;
+  count: number;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="inline-flex h-7 shrink-0 items-center gap-1.5 rounded-lg px-2.5 text-[12px] transition-colors"
+      style={{
+        backgroundColor: active ? "rgba(255,255,255,0.08)" : "transparent",
+        color: active ? "var(--p-text)" : "var(--p-text-2)",
+        fontWeight: active ? 600 : 400,
+      }}
+    >
+      {label}
+      <span className="tabular-nums opacity-60">{count}</span>
+    </button>
+  );
+}
+
+function QuickAction({
+  to,
+  icon,
+  label,
+  badge,
+}: {
+  to: string;
+  icon: React.ReactNode;
+  label: string;
+  badge?: number;
+}) {
+  return (
+    <Link
+      to={to as never}
+      className="flex items-center gap-2.5 rounded-[10px] px-2.5 py-2 text-[13px] transition-colors hover:bg-white/[0.05]"
+    >
+      <span className="grid h-6 w-6 shrink-0 place-items-center rounded-lg bg-white/[0.06] text-muted-foreground">
+        {icon}
+      </span>
+      <span className="min-w-0 flex-1 truncate">{label}</span>
+      {badge ? <span className="p-chip p-chip-info">{badge}</span> : null}
+    </Link>
+  );
+}
+
+function Snapshot({ value, label, context }: { value: string; label: string; context?: string }) {
+  return (
+    <div className="p-inset p-3">
+      <div className="text-[18px] font-semibold leading-none tabular-nums">{value}</div>
+      <div className="mt-1.5 truncate text-[12px]">{label}</div>
+      {context && <div className="truncate text-[11px] text-muted-foreground">{context}</div>}
+    </div>
+  );
+}
