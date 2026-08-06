@@ -1,7 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { PortalShell } from "@/components/portal-shell";
-import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
@@ -9,28 +8,40 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
 import {
   FolderOpen,
   AlertTriangle,
   Stamp,
   DollarSign,
-  Filter,
   ArrowUpRight,
   Users,
   Building2,
   MessageSquare,
   Search,
-  Loader2,
   Mail,
   UserPlus,
+  Plus,
+  ListChecks,
+  Send,
+  Activity,
+  CalendarDays,
 } from "lucide-react";
+import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
 import { supabase } from "@/integrations/supabase/client";
-import { projectStatusMeta, toneClass, type ProjectStatus as Status } from "@/lib/status-badges";
-
+import { projectStatusMeta, type ProjectStatus as Status } from "@/lib/status-badges";
+import { useMyIdentity, greetingForNow } from "@/lib/profile-api";
+import {
+  PageHeader,
+  Surface,
+  SectionHeader,
+  StatTile,
+  StatusChip,
+  EmptyState,
+  LoadingRow,
+} from "@/components/ui-kit";
 
 const statusMeta = projectStatusMeta;
+
 
 const COUNTIES = ["Palm Beach", "Martin", "St. Lucie", "Indian River", "Broward", "Miami-Dade"] as const;
 
@@ -204,339 +215,482 @@ export function AdminDashboard() {
       .sort((a, b) => b.permits - a.permits || a.name.localeCompare(b.name));
   }, [members, permits, userName, userEmail, tenantName]);
 
+
+  const me = useMyIdentity();
+  const [greeting, setGreeting] = useState(() => greetingForNow());
+  useEffect(() => {
+    const id = setInterval(() => setGreeting(greetingForNow()), 60_000);
+    return () => clearInterval(id);
+  }, []);
+
+  const today = new Date().toLocaleDateString("en-US", {
+    weekday: "long",
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+
+  // Status tabs mirror the filter — same data, one visual language.
+  const statusTabs = useMemo(() => {
+    const counts = new Map<string, number>();
+    permits.forEach((p) => counts.set(p.status, (counts.get(p.status) ?? 0) + 1));
+    return (Object.keys(statusMeta) as Status[])
+      .filter((s) => (counts.get(s) ?? 0) > 0)
+      .map((s) => ({ status: s, label: statusMeta[s].label, count: counts.get(s) ?? 0 }));
+  }, [permits]);
+
+  const donut = useMemo(() => {
+    const buckets: Array<{ name: string; value: number; color: string }> = [
+      { name: "Pre-check", value: permits.filter((p) => ["submitted", "in_review", "pending"].includes(p.status)).length, color: "#F59E0B" },
+      { name: "En route", value: permits.filter((p) => ["inspection_scheduled", "permit_issued"].includes(p.status)).length, color: "#3B82F6" },
+      { name: "Corrections", value: correctionsCount, color: "#A78BFA" },
+      { name: "On hold", value: permits.filter((p) => p.status === "on_hold").length, color: "#EF4444" },
+      { name: "Cleared", value: permits.filter((p) => ["approved", "inspection_complete", "resubmitted", "resubmitted_to_county", "correction_response_under_review"].includes(p.status)).length, color: "#22C55E" },
+    ];
+    return buckets.filter((b) => b.value > 0);
+  }, [permits, correctionsCount]);
+
+  // Recent activity is a presentation of the rows already loaded above.
+  const recent = useMemo(() => {
+    const events = [
+      ...permits.slice(0, 12).map((p) => ({
+        at: p.created_at,
+        title: p.project_name,
+        detail: `Permit filed · ${statusMeta[p.status as Status]?.label ?? p.status.replace(/_/g, " ")}`,
+        tone: "info" as const,
+      })),
+      ...tenants.slice(0, 6).map((t) => ({
+        at: t.created_at,
+        title: t.name,
+        detail: "Client company added",
+        tone: "success" as const,
+      })),
+    ];
+    return events
+      .filter((e) => e.at)
+      .sort((a, b) => new Date(b.at).getTime() - new Date(a.at).getTime())
+      .slice(0, 6);
+  }, [permits, tenants]);
+
+  const totalValueCents = permits.reduce((s, p) => s + Number(p.construction_value_cents ?? 0), 0);
+  const countiesActive = new Set(permits.map((p) => p.county).filter(Boolean)).size;
+  const onTime = permits.length
+    ? Math.round(
+        (permits.filter((p) => p.status !== "corrections_required" && p.status !== "on_hold").length /
+          permits.length) *
+          100,
+      )
+    : 0;
+
   return (
     <PortalShell>
-      <div className="mx-auto max-w-7xl">
-        {/* Header */}
-        <div className="border-b border-obsidian/10 pb-8">
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="eyebrow text-obsidian/50">Cleard Operations</span>
-            <span className="border border-oxblood/30 bg-oxblood/10 px-1.5 py-0.5 font-mono text-[9px] font-medium uppercase tracking-[0.12em] text-oxblood">
-              Admin · Staff Only
-            </span>
-          </div>
-          <div className="mt-3 grid grid-cols-[minmax(0,1fr)_auto] items-end gap-4 sm:flex sm:flex-wrap sm:justify-between">
-            <h1
-              className="text-4xl sm:text-5xl font-bold tracking-tight"
-              style={{
-                fontFamily: "'Space Grotesk', 'Inter', system-ui, sans-serif",
-                color: "#0F1E2E",
-                letterSpacing: "-0.02em",
-              }}
-            >
-              Operations Desk
-            </h1>
-            <div className="flex shrink-0 flex-wrap gap-2">
-              <Button asChild variant="outline" className="rounded-[3px]">
-                <Link to="/admin/review-queue">Review queue</Link>
-              </Button>
-              <Button asChild variant="outline" className="rounded-[3px]">
-                <Link to="/admin/contractors">Contractor registry</Link>
-              </Button>
-            </div>
-          </div>
-          <p className="mt-2 max-w-2xl text-sm text-obsidian/60">
-            Live portfolio across Palm Beach and the Treasure Coast — every client account, permit
-            and invoiced fee, straight from the database.
-          </p>
+      <div className="mx-auto max-w-[1500px]">
+        <PageHeader
+          crumbs={[{ label: "Cleard Operations" }, { label: "Dashboard" }]}
+          title={<>{greeting}{me.firstName ? `, ${me.firstName}` : ""}.</>}
+          description="Here's what's happening across every client permit today."
+          actions={
+            <>
+              <span className="hidden items-center gap-1.5 text-[12px] text-muted-foreground sm:inline-flex">
+                <CalendarDays className="h-3.5 w-3.5" strokeWidth={1.75} />
+                {today}
+              </span>
+              <Link to="/portal/permits/new" className="p-btn p-btn-primary">
+                <Plus className="h-3.5 w-3.5" strokeWidth={2} />
+                New permit
+              </Link>
+            </>
+          }
+        />
+
+        {/* Executive summary */}
+        <div className="grid grid-cols-2 gap-3 lg:grid-cols-5">
+          <StatTile
+            label="Permits in review"
+            value={activeCount}
+            context={`${permits.length} total on file`}
+            icon={<FolderOpen className="h-3.5 w-3.5" strokeWidth={1.75} />}
+            tone="info"
+          />
+          <StatTile
+            label="Corrections pending"
+            value={correctionsCount}
+            context="Awaiting client action"
+            icon={<AlertTriangle className="h-3.5 w-3.5" strokeWidth={1.75} />}
+            tone="warning"
+          />
+          <StatTile
+            label="Permits issued"
+            value={issuedCount}
+            context={`${onTime}% on time`}
+            icon={<Stamp className="h-3.5 w-3.5" strokeWidth={1.75} />}
+            tone="success"
+          />
+          <StatTile
+            label="Unread conversations"
+            value={adminUnread}
+            context={`${openThreads} open threads`}
+            icon={<MessageSquare className="h-3.5 w-3.5" strokeWidth={1.75} />}
+            tone="purple"
+            to="/messages"
+          />
+          <StatTile
+            label="Outstanding fees"
+            value={fmtMoneyWhole(outstandingFeesCents)}
+            context="Invoiced + overdue"
+            icon={<DollarSign className="h-3.5 w-3.5" strokeWidth={1.75} />}
+            tone="danger"
+          />
         </div>
 
-        {/* Stat cards */}
-        <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <StatCard label="Active Permits" value={String(activeCount)} sublabel={`${permits.length} total on file`} icon={<FolderOpen className="h-4 w-4" />} />
-          <StatCard label="Corrections Pending" value={String(correctionsCount)} icon={<AlertTriangle className="h-4 w-4" />} accent="warn" />
-          <StatCard label="Permits Issued" value={String(issuedCount)} icon={<Stamp className="h-4 w-4" />} accent="sky" />
-          <StatCard label="Outstanding Fees" value={fmtMoneyWhole(outstandingFeesCents)} sublabel="Invoiced + overdue" icon={<DollarSign className="h-4 w-4" />} mono />
+        <div className="mt-3 grid grid-cols-2 gap-3 lg:grid-cols-4">
+          <StatTile label="Client companies" value={tenants.length} context={`${tenants.filter((t) => t.status === "active").length} active`} icon={<Building2 className="h-3.5 w-3.5" strokeWidth={1.75} />} />
+          <StatTile label="User accounts" value={members.length} context="Across all clients" icon={<Users className="h-3.5 w-3.5" strokeWidth={1.75} />} />
+          <StatTile label="Open invites" value={invites.open} context={`${invites.accepted} accepted`} icon={<Mail className="h-3.5 w-3.5" strokeWidth={1.75} />} to="/admin/invites" />
+          <StatTile label="Access requests" value={accessRequests.pending} context={`${accessRequests.total} all time`} icon={<UserPlus className="h-3.5 w-3.5" strokeWidth={1.75} />} tone="warning" to="/admin/access-requests" />
         </div>
 
-        <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          <StatCard label="Client Companies" value={String(tenants.length)} sublabel={`${tenants.filter((t) => t.status === "active").length} active`} icon={<Building2 className="h-4 w-4" />} />
-          <StatCard label="User Accounts" value={String(members.length)} sublabel="Across all clients" icon={<Users className="h-4 w-4" />} />
-          <StatCard label="Open Conversations" value={String(openThreads)} sublabel={`${adminUnread} unread for staff`} icon={<MessageSquare className="h-4 w-4" />} />
-          <StatCard label="Open Invites" value={String(invites.open)} sublabel={`${invites.accepted} accepted`} icon={<Mail className="h-4 w-4" />} />
-          <StatCard label="Access Requests" value={String(accessRequests.pending)} sublabel={`${accessRequests.total} all time`} icon={<UserPlus className="h-4 w-4" />} accent="warn" />
-          <StatCard label="Approved Permits" value={String(permits.filter((r) => r.status === "approved" || r.status === "permit_issued").length)} sublabel="Approved or issued" icon={<Stamp className="h-4 w-4" />} accent="sky" />
-        </div>
-
-
-        {/* Filters */}
-        <div className="mt-10 flex flex-wrap items-end gap-4 border-b border-obsidian/10 pb-5">
-          <div className="inline-flex items-center gap-2 font-mono text-[10px] font-medium uppercase tracking-[0.14em] text-obsidian/55">
-            <Filter className="h-3.5 w-3.5" />
-            Filter Queue
-          </div>
-          <div className="relative min-w-[220px] flex-1">
-            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-obsidian/40" />
-            <Input
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search project, permit no. or client…"
-              className="h-10 rounded-[3px] border-obsidian/15 bg-white pl-9"
+        {/* Queue + critical panel */}
+        <div className="mt-4 grid grid-cols-1 gap-3 xl:grid-cols-[minmax(0,1fr)_320px]">
+          <Surface padded={false} flat className="min-w-0">
+            <SectionHeader
+              title="Active permits"
+              meta={`${filtered.length} of ${permits.length}`}
+              action={
+                <Link to="/portal/permits" className="text-muted-foreground transition-colors hover:text-foreground">
+                  View all
+                </Link>
+              }
             />
-          </div>
-          <div className="min-w-[180px]">
-            <Label className="mb-1.5 block font-mono text-[10px] font-medium uppercase tracking-[0.14em] text-obsidian/65">Status</Label>
-            <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v as typeof statusFilter)}>
-              <SelectTrigger className="rounded-[3px] border-obsidian/15 bg-white"><SelectValue /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All statuses</SelectItem>
-                {(Object.keys(statusMeta) as Status[]).map((s) => (
-                  <SelectItem key={s} value={s}>{statusMeta[s].label}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="min-w-[170px]">
-            <Label className="mb-1.5 block font-mono text-[10px] font-medium uppercase tracking-[0.14em] text-obsidian/65">County</Label>
-            <Select value={countyFilter} onValueChange={(v) => setCountyFilter(v as typeof countyFilter)}>
-              <SelectTrigger className="rounded-[3px] border-obsidian/15 bg-white"><SelectValue /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All counties</SelectItem>
-                {COUNTIES.map((c) => (
-                  <SelectItem key={c} value={c}>{c}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="min-w-[190px]">
-            <Label className="mb-1.5 block font-mono text-[10px] font-medium uppercase tracking-[0.14em] text-obsidian/65">Client</Label>
-            <Select value={clientFilter} onValueChange={setClientFilter}>
-              <SelectTrigger className="rounded-[3px] border-obsidian/15 bg-white"><SelectValue /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All clients</SelectItem>
-                {tenants.map((t) => (
-                  <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="ml-auto font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/45">
-            {filtered.length} of {permits.length} permits
+
+            {/* One filter bar — search, status tabs, county, client */}
+            <div className="flex flex-wrap items-center gap-2 border-b px-4 pb-3" style={{ borderColor: "var(--p-border)" }}>
+              <div className="relative min-w-[200px] flex-1">
+                <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
+                <input
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder="Search permits, projects, clients, addresses…"
+                  className="h-8 w-full border pl-8 pr-3 text-[13px] outline-none focus:border-white/15"
+                />
+              </div>
+              <Select value={countyFilter} onValueChange={(v) => setCountyFilter(v as typeof countyFilter)}>
+                <SelectTrigger className="h-8 w-[150px] rounded-[10px] text-[12px]"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All counties</SelectItem>
+                  {COUNTIES.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+                </SelectContent>
+              </Select>
+              <Select value={clientFilter} onValueChange={setClientFilter}>
+                <SelectTrigger className="h-8 w-[170px] rounded-[10px] text-[12px]"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All clients</SelectItem>
+                  {tenants.map((t) => <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="p-noscroll flex items-center gap-1 overflow-x-auto px-4 py-2.5">
+              <TabChip active={statusFilter === "all"} onClick={() => setStatusFilter("all")} label="All" count={permits.length} />
+              {statusTabs.map((t) => (
+                <TabChip
+                  key={t.status}
+                  active={statusFilter === t.status}
+                  onClick={() => setStatusFilter(t.status)}
+                  label={t.label}
+                  count={t.count}
+                />
+              ))}
+            </div>
+
+            {loading ? (
+              <LoadingRow label="Loading permits" />
+            ) : filtered.length === 0 ? (
+              <EmptyState title="No permits match these filters" description="Clear the search or pick a different status to widen the queue." />
+            ) : (
+              <div className="overflow-auto" style={{ maxHeight: 520 }}>
+                <table className="p-table">
+                  <thead>
+                    <tr>
+                      <th>Project</th>
+                      <th>County</th>
+                      <th>Status</th>
+                      <th className="text-right">Value</th>
+                      <th className="text-right">Age</th>
+                      <th>Client</th>
+                      <th className="text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filtered.map((r) => {
+                      const meta = statusMeta[r.status as Status] ?? { label: r.status.replace(/_/g, " "), tone: "neutral" as const };
+                      return (
+                        <tr key={r.id}>
+                          <td>
+                            <div className="font-medium">{r.project_name}</div>
+                            <div className="mt-0.5 text-[12px] text-muted-foreground">{r.job_address}</div>
+                          </td>
+                          <td className="text-muted-foreground">{r.county ?? r.municipality ?? "—"}</td>
+                          <td><StatusChip tone={meta.tone}>{meta.label}</StatusChip></td>
+                          <td className="text-right tabular-nums">{fmtMoneyWhole(Number(r.construction_value_cents ?? 0))}</td>
+                          <td className="text-right tabular-nums text-muted-foreground">{daysSince(r.submitted_date ?? r.created_at)}d</td>
+                          <td className="text-muted-foreground">{tenantName.get(r.tenant_id ?? "") ?? "—"}</td>
+                          <td className="text-right">
+                            <Link
+                              to="/portal/permits/$id"
+                              params={{ id: r.id }}
+                              className="p-btn p-btn-ghost h-7 px-2 text-[12px]"
+                            >
+                              Open <ArrowUpRight className="h-3 w-3" strokeWidth={2} />
+                            </Link>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </Surface>
+
+          <div className="flex min-w-0 flex-col gap-3">
+            <Surface padded={false} flat>
+              <SectionHeader title="Quick actions" />
+              <div className="flex flex-col gap-1 px-3 pb-3">
+                <QuickAction to="/admin/review-queue" icon={<ListChecks className="h-3.5 w-3.5" strokeWidth={1.75} />} label="Review queue" badge={correctionsCount || undefined} />
+                <QuickAction to="/portal/permits/new" icon={<Plus className="h-3.5 w-3.5" strokeWidth={1.75} />} label="Add new permit" />
+                <QuickAction to="/admin/gc-clients" icon={<Building2 className="h-3.5 w-3.5" strokeWidth={1.75} />} label="Client companies" />
+                <QuickAction to="/messages" icon={<Send className="h-3.5 w-3.5" strokeWidth={1.75} />} label="Send message" badge={adminUnread || undefined} />
+              </div>
+            </Surface>
+
+            <Surface padded={false} flat>
+              <SectionHeader
+                title="Recent activity"
+                action={<Link to="/admin/activity" className="text-muted-foreground transition-colors hover:text-foreground">View all</Link>}
+              />
+              {recent.length === 0 ? (
+                <EmptyState title="Nothing yet" description="Activity appears as permits and clients are added." icon={<Activity className="h-4 w-4" strokeWidth={1.75} />} />
+              ) : (
+                <ul className="flex flex-col gap-3 px-4 pb-4">
+                  {recent.map((e, i) => (
+                    <li key={`${e.title}-${i}`} className="flex min-w-0 items-start gap-2.5">
+                      <span
+                        className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full"
+                        style={{ backgroundColor: e.tone === "success" ? "#22C55E" : "#3B82F6" }}
+                      />
+                      <div className="min-w-0 flex-1">
+                        <div className="truncate text-[13px] font-medium">{e.title}</div>
+                        <div className="truncate text-[12px] text-muted-foreground">{e.detail}</div>
+                      </div>
+                      <span className="shrink-0 text-[11px] text-muted-foreground">{fmtDate(e.at)}</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </Surface>
           </div>
         </div>
 
-        {/* Permit queue */}
-        <div className="mt-6 overflow-hidden border border-obsidian/15 bg-white">
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead style={{ backgroundColor: "#0C1B2B" }}>
-                <tr>
-                  <Th>Project</Th>
-                  <Th>County</Th>
-                  <Th align="right">Value</Th>
-                  <Th>Status</Th>
-                  <Th>Client</Th>
-                  <Th>Age</Th>
-                  <Th align="right"> </Th>
-                </tr>
-              </thead>
-              <tbody>
-                {loading ? (
-                  <tr>
-                    <td colSpan={7} className="px-6 py-16 text-center text-sm text-obsidian/55">
-                      <Loader2 className="mx-auto h-4 w-4 animate-spin" />
-                    </td>
-                  </tr>
-                ) : filtered.length === 0 ? (
-                  <tr>
-                    <td colSpan={7} className="px-6 py-16 text-center text-sm text-obsidian/55">
-                      No permits match these filters.
-                    </td>
-                  </tr>
-                ) : (
-                  filtered.map((r) => {
-                    const meta = statusMeta[r.status as Status] ?? { label: r.status.replace(/_/g, " "), tone: "neutral" as const };
-                    return (
-                      <tr key={r.id} className="border-b border-obsidian/5 transition-colors hover:bg-paper-warm/50">
-                        <td className="px-6 py-4">
-                          <div className="font-medium text-obsidian">{r.project_name}</div>
-                          <div className="mt-0.5 text-xs text-obsidian/55">{r.job_address}</div>
-                          <div className="mt-1 font-mono text-[10px] uppercase tracking-[0.12em] text-obsidian/40">
-                            {r.permit_number ?? "—"} · filed {fmtDate(r.submitted_date ?? r.created_at)}
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 text-obsidian/75">{r.county ?? r.municipality ?? "—"}</td>
-                        <td className="px-6 py-4 text-right font-mono tabular-nums text-obsidian">
-                          {fmtMoneyWhole(Number(r.construction_value_cents ?? 0))}
-                        </td>
-                        <td className="px-6 py-4">
-                          <span className={`inline-flex items-center border px-2 py-0.5 font-mono text-[10px] font-medium uppercase tracking-[0.1em] ${toneClass[meta.tone]}`}>
-                            {meta.label}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 text-obsidian/80">
-                          {tenantName.get(r.tenant_id ?? "") ?? "—"}
-                          <div className="mt-0.5 font-mono text-[10px] uppercase tracking-[0.12em] text-obsidian/40">
-                            {userName.get(r.created_by ?? "") || "—"}
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 font-mono text-xs tabular-nums text-obsidian/65">
-                          {daysSince(r.submitted_date ?? r.created_at)}d
-                        </td>
-                        <td className="px-6 py-4 text-right">
-                          <Link
-                            to="/portal/permits/$id"
-                            params={{ id: r.id }}
-                            className="inline-flex items-center gap-1 font-mono text-[10px] font-medium uppercase tracking-[0.14em] text-sky transition-opacity hover:opacity-70"
-                          >
-                            Open <ArrowUpRight className="h-3 w-3" />
-                          </Link>
-                        </td>
+        {/* Analytics + rollups */}
+        <div className="mt-3 grid grid-cols-1 gap-3 xl:grid-cols-3">
+          <Surface padded={false} flat className="min-w-0">
+            <SectionHeader
+              title="Client companies"
+              action={<Link to="/admin/gc-clients" className="text-muted-foreground transition-colors hover:text-foreground">View all</Link>}
+            />
+            {clientRows.length === 0 ? (
+              <EmptyState title="No client companies yet" />
+            ) : (
+              <div className="overflow-auto" style={{ maxHeight: 300 }}>
+                <table className="p-table">
+                  <thead>
+                    <tr>
+                      <th>Company</th>
+                      <th className="text-right">Permits</th>
+                      <th className="text-right">Active</th>
+                      <th className="text-right">Value</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {clientRows.map((c) => (
+                      <tr key={c.id}>
+                        <td className="max-w-[180px] truncate">{c.name}</td>
+                        <td className="text-right tabular-nums text-muted-foreground">{c.permits}</td>
+                        <td className="text-right tabular-nums text-muted-foreground">{c.active}</td>
+                        <td className="text-right tabular-nums">{fmtMoneyWhole(c.value)}</td>
                       </tr>
-                    );
-                  })
-                )}
-              </tbody>
-            </table>
-          </div>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </Surface>
+
+          <Surface padded={false} flat className="min-w-0">
+            <SectionHeader title="Today's snapshot" />
+            <div className="grid grid-cols-2 gap-2 px-4 pb-4">
+              <Snapshot value={String(activeCount)} label="Active permits" context={`${permits.length} on file`} />
+              <Snapshot value={String(issuedCount)} label="Issued" context="All time" />
+              <Snapshot value={fmtMoneyWhole(totalValueCents)} label="Portfolio value" context="Construction value" />
+              <Snapshot value={String(countiesActive)} label="Counties active" context="Palm Beach + Treasure Coast" />
+              <div className="col-span-2 p-inset p-3">
+                <div className="flex items-center justify-between text-[12px]">
+                  <span className="text-muted-foreground">On-time completion</span>
+                  <span className="font-medium tabular-nums">{onTime}%</span>
+                </div>
+                <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-white/[0.07]">
+                  <div className="h-full rounded-full" style={{ width: `${onTime}%`, backgroundColor: "#22C55E" }} />
+                </div>
+              </div>
+            </div>
+          </Surface>
+
+          <Surface padded={false} flat className="min-w-0">
+            <SectionHeader title="Permit status overview" meta={`${permits.length} total`} />
+            <div className="flex items-center gap-4 px-4 pb-4">
+              <div className="relative h-[140px] w-[140px] shrink-0">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={donut.length ? donut : [{ name: "None", value: 1, color: "#1A2436" }]}
+                      dataKey="value"
+                      innerRadius={48}
+                      outerRadius={66}
+                      paddingAngle={2}
+                      stroke="none"
+                    >
+                      {(donut.length ? donut : [{ name: "None", value: 1, color: "#1A2436" }]).map((d) => (
+                        <Cell key={d.name} fill={d.color} />
+                      ))}
+                    </Pie>
+                  </PieChart>
+                </ResponsiveContainer>
+                <div className="pointer-events-none absolute inset-0 grid place-items-center">
+                  <div className="text-center">
+                    <div className="text-[22px] font-semibold leading-none tabular-nums">{permits.length}</div>
+                    <div className="mt-0.5 text-[11px] text-muted-foreground">Total</div>
+                  </div>
+                </div>
+              </div>
+              <ul className="min-w-0 flex-1 space-y-2">
+                {donut.map((d) => (
+                  <li key={d.name} className="flex min-w-0 items-center gap-2 text-[12px]">
+                    <span className="h-2 w-2 shrink-0 rounded-full" style={{ backgroundColor: d.color }} />
+                    <span className="min-w-0 flex-1 truncate text-muted-foreground">{d.name}</span>
+                    <span className="tabular-nums">{d.value}</span>
+                    <span className="w-9 text-right tabular-nums text-muted-foreground">
+                      {permits.length ? Math.round((d.value / permits.length) * 100) : 0}%
+                    </span>
+                  </li>
+                ))}
+                {donut.length === 0 && <li className="text-[12px] text-muted-foreground">No permits yet.</li>}
+              </ul>
+            </div>
+          </Surface>
         </div>
 
-        {/* Clients + accounts */}
-        <div className="mt-12 grid grid-cols-1 gap-6 xl:grid-cols-2">
-          <section className="border border-obsidian/15 bg-white">
-            <header className="border-b border-obsidian/10 px-5 py-4">
-              <div className="eyebrow text-obsidian/50">Client Companies</div>
-              <h2 className="mt-1 text-2xl font-bold tracking-tight" style={{ fontFamily: "'Space Grotesk', sans-serif", color: "#0F1E2E" }}>By permit volume</h2>
-            </header>
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead className="bg-paper-warm/60">
+        {/* Accounts */}
+        <Surface padded={false} flat className="mt-3">
+          <SectionHeader title="User accounts" meta={`${accountRows.length} across all clients`} />
+          {accountRows.length === 0 ? (
+            <EmptyState title="No accounts yet" />
+          ) : (
+            <div className="overflow-auto" style={{ maxHeight: 340 }}>
+              <table className="p-table">
+                <thead>
                   <tr>
-                    <Th light>Client</Th>
-                    <Th light align="right">Accounts</Th>
-                    <Th light align="right">Permits</Th>
-                    <Th light align="right">Active</Th>
-                    <Th light align="right">Value</Th>
+                    <th>Account</th>
+                    <th>Client</th>
+                    <th>Role</th>
+                    <th>Joined</th>
+                    <th className="text-right">Permits</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {clientRows.length === 0 ? (
-                    <tr><td colSpan={5} className="px-5 py-10 text-center text-sm text-obsidian/50">No client companies yet.</td></tr>
-                  ) : clientRows.map((c) => (
-                    <tr key={c.id} className="border-b border-obsidian/5">
-                      <td className="px-5 py-3">
-                        <div className="text-obsidian">{c.name}</div>
-                        <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-obsidian/40">
-                          {c.status} · joined {fmtDate(c.created_at)}
-                        </div>
+                  {accountRows.map((a) => (
+                    <tr key={a.user_id}>
+                      <td>
+                        <div className="font-medium">{a.name}</div>
+                        {a.email && <div className="mt-0.5 text-[12px] text-muted-foreground">{a.email}</div>}
                       </td>
-                      <td className="px-5 py-3 text-right font-mono tabular-nums text-obsidian/80">{c.accounts}</td>
-                      <td className="px-5 py-3 text-right font-mono tabular-nums text-obsidian/80">{c.permits}</td>
-                      <td className="px-5 py-3 text-right font-mono tabular-nums text-obsidian/80">{c.active}</td>
-                      <td className="px-5 py-3 text-right font-mono tabular-nums text-obsidian/80">{fmtMoneyWhole(c.value)}</td>
+                      <td className="text-muted-foreground">{a.client}</td>
+                      <td><StatusChip tone="neutral">{a.role.replace(/_/g, " ")}</StatusChip></td>
+                      <td className="text-muted-foreground">{fmtDate(a.joined)}</td>
+                      <td className="text-right tabular-nums">{a.permits}</td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
-          </section>
-
-          <section className="border border-obsidian/15 bg-white">
-            <header className="border-b border-obsidian/10 px-5 py-4">
-              <div className="eyebrow text-obsidian/50">User Accounts</div>
-              <h2 className="mt-1 text-2xl font-bold tracking-tight" style={{ fontFamily: "'Space Grotesk', sans-serif", color: "#0F1E2E" }}>Permits added by user</h2>
-            </header>
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead className="bg-paper-warm/60">
-                  <tr>
-                    <Th light>Account</Th>
-                    <Th light>Client</Th>
-                    <Th light>Role</Th>
-                    <Th light align="right">Permits</Th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {accountRows.length === 0 ? (
-                    <tr><td colSpan={4} className="px-5 py-10 text-center text-sm text-obsidian/50">No accounts yet.</td></tr>
-                  ) : accountRows.map((a) => (
-                    <tr key={a.user_id} className="border-b border-obsidian/5">
-                      <td className="px-5 py-3">
-                        <div className="text-obsidian">{a.name}</div>
-                        {a.email && (
-                          <div className="font-mono text-[10px] lowercase tracking-[0.04em] text-obsidian/55">
-                            {a.email}
-                          </div>
-                        )}
-                        <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-obsidian/40">
-                          joined {fmtDate(a.joined)}
-                        </div>
-                      </td>
-                      <td className="px-5 py-3 text-obsidian/75">{a.client}</td>
-                      <td className="px-5 py-3 font-mono text-[10px] uppercase tracking-[0.12em] text-obsidian/60">
-                        {a.role.replace(/_/g, " ")}
-                      </td>
-                      <td className="px-5 py-3 text-right font-mono tabular-nums text-obsidian/80">{a.permits}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </section>
-        </div>
+          )}
+        </Surface>
       </div>
     </PortalShell>
   );
 }
 
-/* ─────────── building blocks ─────────── */
-function StatCard({
-  label, value, sublabel, icon, accent, mono,
-}: {
-  label: string;
-  value: string;
-  sublabel?: string;
-  icon: React.ReactNode;
-  accent?: "sky" | "warn";
-  mono?: boolean;
-}) {
-  const accentColor =
-    accent === "sky" ? "#1B84D4" : accent === "warn" ? "#E8861A" : "#0F1E2E";
+/* ─────────── local presentation helpers ─────────── */
 
+function TabChip({
+  active,
+  onClick,
+  label,
+  count,
+}: {
+  active: boolean;
+  onClick: () => void;
+  label: string;
+  count: number;
+}) {
   return (
-    <div
-      className="relative overflow-hidden p-5 rounded-lg border bg-white"
-      style={{ borderColor: "#E2E8F0", borderLeft: `3px solid ${accentColor}` }}
+    <button
+      type="button"
+      onClick={onClick}
+      className="inline-flex h-7 shrink-0 items-center gap-1.5 rounded-lg px-2.5 text-[12px] transition-colors"
+      style={{
+        backgroundColor: active ? "rgba(255,255,255,0.08)" : "transparent",
+        color: active ? "var(--p-text)" : "var(--p-text-2)",
+        fontWeight: active ? 600 : 400,
+      }}
     >
-      <div className="flex items-center gap-2" style={{ color: "#7890A4" }}>
-        <span>{icon}</span>
-        <span className="font-mono text-[10px] font-medium uppercase tracking-[0.14em]">{label}</span>
-      </div>
-      <div
-        className={`mt-4 font-bold ${mono ? "font-mono text-3xl tabular-nums" : "text-4xl"}`}
-        style={{
-          color: accentColor,
-          fontFamily: "'Space Grotesk', 'Inter', system-ui, sans-serif",
-        }}
-      >
-        {value}
-      </div>
-      {sublabel && (
-        <div className="mt-1 font-mono text-[10px] uppercase tracking-[0.12em]" style={{ color: "#A0B4C8" }}>
-          {sublabel}
-        </div>
-      )}
-    </div>
+      {label}
+      <span className="tabular-nums opacity-60">{count}</span>
+    </button>
   );
 }
 
-function Th({
-  children,
-  align = "left",
-  light,
+function QuickAction({
+  to,
+  icon,
+  label,
+  badge,
 }: {
-  children: React.ReactNode;
-  align?: "left" | "right";
-  light?: boolean;
+  to: string;
+  icon: React.ReactNode;
+  label: string;
+  badge?: number;
 }) {
   return (
-    <th
-      className={`px-5 py-3 font-mono text-[10px] font-medium uppercase tracking-[0.14em] ${
-        light ? "text-obsidian/55" : "text-paper/60"
-      }`}
-      style={{ textAlign: align }}
+    <Link
+      to={to as never}
+      className="flex items-center gap-2.5 rounded-[10px] px-2.5 py-2 text-[13px] transition-colors hover:bg-white/[0.05]"
     >
-      {children}
-    </th>
+      <span className="grid h-6 w-6 shrink-0 place-items-center rounded-lg bg-white/[0.06] text-muted-foreground">
+        {icon}
+      </span>
+      <span className="min-w-0 flex-1 truncate">{label}</span>
+      {badge ? <span className="p-chip p-chip-info">{badge}</span> : null}
+    </Link>
+  );
+}
+
+function Snapshot({ value, label, context }: { value: string; label: string; context?: string }) {
+  return (
+    <div className="p-inset p-3">
+      <div className="text-[18px] font-semibold leading-none tabular-nums">{value}</div>
+      <div className="mt-1.5 truncate text-[12px]">{label}</div>
+      {context && <div className="truncate text-[11px] text-muted-foreground">{context}</div>}
+    </div>
   );
 }
