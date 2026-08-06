@@ -114,6 +114,70 @@ function useNavSections(role: AppRole | null, isAdmin: boolean) {
   return allSections;
 }
 
+/**
+ * Rail flyout panel. Renders as a fixed card anchored to the hovered icon but
+ * clamped so it never runs past the bottom of the window — tall menus (Admin)
+ * shift upward instead of disappearing under the viewport edge.
+ */
+function RailFlyout({
+  label,
+  children,
+  onMouseEnter,
+  onMouseLeave,
+}: {
+  label: string;
+  children: ReactNode;
+  onMouseEnter?: () => void;
+  onMouseLeave?: () => void;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [pos, setPos] = useState<{ top: number; left: number } | null>(null);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const place = () => {
+      const anchor = el.parentElement?.getBoundingClientRect();
+      if (!anchor) return;
+      const h = el.offsetHeight;
+      const margin = 8;
+      const top = Math.max(margin, Math.min(anchor.top - 6, window.innerHeight - h - margin));
+      setPos({ top, left: anchor.right + 6 });
+    };
+    place();
+    window.addEventListener("resize", place);
+    window.addEventListener("scroll", place, true);
+    return () => {
+      window.removeEventListener("resize", place);
+      window.removeEventListener("scroll", place, true);
+    };
+  }, [children]);
+
+  return (
+    <div
+      ref={ref}
+      className="fixed z-50 w-[212px] rounded-xl py-2"
+      style={{
+        top: pos?.top ?? 0,
+        left: pos?.left ?? 62,
+        maxHeight: "calc(100vh - 16px)",
+        visibility: pos ? "visible" : "hidden",
+        backgroundColor: "var(--rail-bg)",
+        border: "1px solid var(--p-border)",
+        boxShadow: "0 16px 40px rgba(0,0,0,0.45)",
+      }}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+    >
+      <div className="px-3 pb-1.5 text-[12px] font-semibold" style={{ color: "var(--rail-fg)" }}>
+        {label}
+      </div>
+      <ul className="p-noscroll max-h-[calc(100vh-64px)] overflow-y-auto px-1.5">{children}</ul>
+    </div>
+  );
+}
+
+
 function NavLinkRow({
   to,
   label,
@@ -264,42 +328,30 @@ function SidebarNav({
                   </button>
                 )}
 
-                {/* Flyout — content-sized card anchored to this icon (HubSpot style) */}
+                {/* Flyout — content-sized card, clamped inside the viewport (HubSpot style) */}
                 {openKey === group.key && flyoutItems.length > 0 && (
-                  <div
-                    className="absolute left-[calc(100%+6px)] top-[-6px] z-50 w-[212px] rounded-xl py-2"
-                    style={{
-                      backgroundColor: "var(--rail-bg)",
-                      border: "1px solid var(--p-border)",
-                      boxShadow: "0 16px 40px rgba(0,0,0,0.45)",
-                    }}
+                  <RailFlyout
+                    label={group.label}
                     onMouseEnter={() => openGroup(group.key)}
                     onMouseLeave={scheduleClose}
                   >
-                    <div
-                      className="px-3 pb-1.5 text-[12px] font-semibold"
-                      style={{ color: "var(--rail-fg)" }}
-                    >
-                      {group.label}
-                    </div>
-                    <ul className="p-noscroll max-h-[70vh] overflow-y-auto px-1.5">
-                      {flyoutItems.map((item, i) => (
-                        <li key={`${item.to}-${i}`}>
-                          <NavLinkRow
-                            to={item.to}
-                            label={item.label}
-                            active={isItemActive(pathname, item.to)}
-                            alerted={item.alertKey ? alertKeys.has(item.alertKey) : false}
-                            onNavigate={() => {
-                              setOpenKey(null);
-                              onNavigate?.();
-                            }}
-                          />
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
+                    {flyoutItems.map((item, i) => (
+                      <li key={`${item.to}-${i}`}>
+                        <NavLinkRow
+                          to={item.to}
+                          label={item.label}
+                          active={isItemActive(pathname, item.to)}
+                          alerted={item.alertKey ? alertKeys.has(item.alertKey) : false}
+                          onNavigate={() => {
+                            setOpenKey(null);
+                            onNavigate?.();
+                          }}
+                        />
+                      </li>
+                    ))}
+                  </RailFlyout>
                 )}
+
               </div>
             );
           }
