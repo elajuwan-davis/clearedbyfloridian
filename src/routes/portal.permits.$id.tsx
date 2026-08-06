@@ -895,17 +895,18 @@ function PermitDetailPage() {
         </div>
       )}
 
-      {/* CO Checklist */}
-      <section id="co-checklist" className="mt-10">
-        <div className="p-eyebrow mb-2">Certificate of Occupancy</div>
-        <CoChecklistPanel permitId={row.id} projectName={row.project_name} tenantId={row.tenant_id ?? null} />
-      </section>
-
-      {/* Lien Releases */}
-      <section id="lien-releases" className="mt-10">
-        <div className="p-eyebrow mb-2">Lien Releases</div>
-        <LienReleasesPanel permit={row} />
-      </section>
+      {tab === "compliance" && (
+      <div className="mt-3 grid min-w-0 gap-3 xl:grid-cols-2">
+        <section id="co-checklist" className="min-w-0">
+          <div className="p-eyebrow mb-2">Certificate of Occupancy</div>
+          <CoChecklistPanel permitId={row.id} projectName={row.project_name} tenantId={row.tenant_id ?? null} />
+        </section>
+        <section id="lien-releases" className="min-w-0">
+          <div className="p-eyebrow mb-2">Lien Releases</div>
+          <LienReleasesPanel permit={row} />
+        </section>
+      </div>
+      )}
 
       {tab === "overview" && (
       <div className="mt-3 grid min-w-0 gap-3 xl:grid-cols-2">
