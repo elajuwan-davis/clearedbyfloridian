@@ -610,6 +610,8 @@ function PermitDetailPage() {
           <div><label className={labelCls("owner_entity")}>Owner Entity {fieldDelBtn("owner_entity")}</label><input className={inputCls("owner_entity")} value={e.owner_entity ?? ""} onChange={(ev) => set("owner_entity", ev.target.value)} /></div>
         </div>
       </fieldset>
+      )}
+
 
 
 
