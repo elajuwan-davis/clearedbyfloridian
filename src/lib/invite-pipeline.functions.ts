@@ -2,19 +2,7 @@
 // tenant_members → permits into one row per prospect.
 
 import { createServerFn } from "@tanstack/react-start";
-import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-
-async function assertAdmin(userId: string) {
-  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-  const { data, error } = await supabaseAdmin
-    .from("user_roles" as any)
-    .select("role")
-    .eq("user_id", userId)
-    .eq("role", "admin")
-    .maybeSingle();
-  if (error) throw new Error(error.message);
-  if (!data) throw new Error("Forbidden — admin only");
-}
+import { requireReliableSupabaseAuth } from "@/lib/reliable-supabase-auth";
 
 export type InvitePipelineRow = {
   request_id: string;
@@ -36,25 +24,37 @@ export type InvitePipelineRow = {
 };
 
 export const listInvitePipelineFn = createServerFn({ method: "GET" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireReliableSupabaseAuth])
   .handler(async ({ context }): Promise<InvitePipelineRow[]> => {
-    await assertAdmin(context.userId);
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const db = supabaseAdmin as any;
+    const db = context.supabase as any;
 
-    const [reqRes, tenantRes, inviteRes, memberRes, permitRes, usersRes] = await Promise.all([
+    const { data: adminRole, error: roleError } = await db
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", context.userId)
+      .eq("role", "admin")
+      .maybeSingle();
+    if (roleError) throw new Error(roleError.message);
+    if (!adminRole) throw new Error("Forbidden — admin only");
+
+    const [reqRes, tenantRes, inviteRes, memberRes, permitRes, profileRes] = await Promise.all([
       db.from("access_requests").select("id, name, email, company, status, created_at, approved_tenant_id"),
       db.from("tenants").select("id, name"),
       db.from("tenant_invites").select("id, tenant_id, created_by, created_at, uses, revoked_at"),
       db.from("tenant_members").select("user_id, tenant_id, created_at"),
       db.from("permits").select("id, project_name, permit_number, created_by, tenant_id, created_at"),
-      supabaseAdmin.auth.admin.listUsers({ page: 1, perPage: 1000 }),
+      db.from("profiles").select("id, email, full_name, display_name, created_at"),
     ]);
+
+    const failed = [reqRes, tenantRes, inviteRes, memberRes, permitRes, profileRes].find(
+      (result) => result.error,
+    );
+    if (failed?.error) throw new Error(failed.error.message);
 
     const tenants = new Map<string, string>(
       (tenantRes.data ?? []).map((t: any) => [t.id, t.name as string]),
     );
-    const users = usersRes?.data?.users ?? [];
+    const users = profileRes.data ?? [];
     const userById = new Map<string, any>(users.map((u: any) => [u.id, u]));
     const userByEmail = new Map<string, any>(
       users.map((u: any) => [String(u.email ?? "").toLowerCase(), u]),
@@ -90,7 +90,7 @@ export const listInvitePipelineFn = createServerFn({ method: "GET" })
       if (!id) return null;
       const u = userById.get(id);
       if (!u) return null;
-      return (u.user_metadata?.full_name as string) || (u.email as string) || null;
+      return u.full_name || u.display_name || u.email || null;
     };
 
     const rows: InvitePipelineRow[] = (reqRes.data ?? []).map((r: any) => {
