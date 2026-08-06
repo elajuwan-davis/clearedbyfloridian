@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
 
 import { PortalShell } from "@/components/portal-shell";
+import { BackendReconnecting } from "@/components/backend-reconnecting";
+import { isMissingBackendEnvError } from "@/lib/env-error";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/admin/activity")({
@@ -68,7 +70,11 @@ function ActivityPage() {
             <Loader2 className="h-4 w-4 animate-spin" /> Loading activity…
           </div>
         ) : error ? (
-          <div className="mt-8 rounded-[3px] border border-red-200 bg-red-50 p-4 text-sm text-red-900">{error}</div>
+          isMissingBackendEnvError(error) ? (
+            <BackendReconnecting />
+          ) : (
+            <div className="mt-8 rounded-[3px] border border-red-200 bg-red-50 p-4 text-sm text-red-900">{error}</div>
+          )
         ) : rows.length === 0 ? (
           <div className="mt-8 rounded-[3px] border border-border p-8 text-center text-sm text-muted-foreground">
             No activity recorded yet.
