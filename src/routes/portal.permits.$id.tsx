@@ -692,6 +692,8 @@ function PermitDetailPage() {
       </div>
 
       <SubmittalPackageSection row={row} onChange={(r) => { setRow(r); setEdit(r); }} />
+      </>
+      )}
 
       {tab === "submission" && (
       <section id="pre-submission" className="mt-3">
