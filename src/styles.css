@@ -139,6 +139,308 @@
 }
 
 
+/* =========================================================
+   CLEARD DESIGN SYSTEM v1.0 — PORTAL SCOPE (.portal-ui)
+   Dark, calm, Linear/Ramp-grade operating surface. Token-only:
+   every portal page inherits these without touching its logic.
+   ========================================================= */
+.portal-ui {
+  /* Surfaces */
+  --p-bg:        #0B1220;
+  --p-card:      #111827;
+  --p-card-2:    #1A2436;
+  --p-border:    rgba(255, 255, 255, 0.07);
+  --p-border-2:  rgba(255, 255, 255, 0.12);
+  --p-text:      #F9FAFB;
+  --p-text-2:    #9CA3AF;
+  --p-text-3:    #6B7280;
+
+  /* Semantics — the only colors allowed */
+  --p-success:   #22C55E;
+  --p-warning:   #F59E0B;
+  --p-danger:    #EF4444;
+  --p-info:      #3B82F6;
+  --p-accent:    #60A5FA;
+  --p-purple:    #A78BFA;
+
+  /* Map the app's semantic tokens onto the portal palette */
+  --background:         var(--p-bg);
+  --foreground:         var(--p-text);
+  --card:               var(--p-card);
+  --card-foreground:    var(--p-text);
+  --popover:            var(--p-card);
+  --popover-foreground: var(--p-text);
+  --primary:            var(--p-info);
+  --primary-foreground: #FFFFFF;
+  --secondary:          var(--p-card-2);
+  --secondary-foreground: var(--p-text);
+  --muted:              var(--p-card-2);
+  --muted-foreground:   var(--p-text-2);
+  --accent:             var(--p-accent);
+  --accent-foreground:  #0B1220;
+  --destructive:        var(--p-danger);
+  --destructive-foreground: #FFFFFF;
+  --border:             var(--p-border);
+  --input:              var(--p-card-2);
+  --ring:               var(--p-info);
+
+  /* Legacy aliases used across portal pages */
+  --sky:          var(--p-info);
+  --green:        var(--p-success);
+  --green-d:      #16A34A;
+  --amber:        var(--p-warning);
+  --ink:          var(--p-text);
+  --rule:         var(--p-border);
+  --obsidian:     #1F2937;
+  --obsidian-deep:#111827;
+  --paper:        var(--p-text);
+  --paper-warm:   var(--p-card-2);
+  --paper-deep:   var(--p-card-2);
+  --sand:         var(--p-card-2);
+  --oxblood:      var(--p-danger);
+  --rail-bg:      #0A101C;
+  --rail-fg:      var(--p-text);
+
+  background-color: var(--p-bg);
+  color: var(--p-text);
+  font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* One typography system — Inter everywhere inside the portal */
+.portal-ui h1,
+.portal-ui h2,
+.portal-ui h3,
+.portal-ui h4,
+.portal-ui h5,
+.portal-ui h6 {
+  font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
+  letter-spacing: -0.02em;
+  font-weight: 600;
+  color: var(--p-text);
+}
+
+/* Retire light-mode assumptions from pages built before the system.
+   Presentation only — no markup or behaviour changes required. */
+.portal-ui .bg-white,
+.portal-ui .bg-paper,
+.portal-ui .bg-card {
+  background-color: var(--p-card) !important;
+}
+.portal-ui .bg-paper-warm,
+.portal-ui .bg-paper-deep,
+.portal-ui .bg-secondary,
+.portal-ui .bg-muted {
+  background-color: var(--p-card-2) !important;
+}
+.portal-ui .text-obsidian,
+.portal-ui .text-ink,
+.portal-ui .text-foreground {
+  color: var(--p-text) !important;
+}
+.portal-ui [class*="text-obsidian/"],
+.portal-ui [class*="text-ink/"] {
+  color: var(--p-text-2) !important;
+}
+.portal-ui [class*="border-obsidian"],
+.portal-ui .hairline,
+.portal-ui [class*="border-ink"] {
+  border-color: var(--p-border) !important;
+}
+.portal-ui [style*="#0F1E2E"],
+.portal-ui [style*="#0C1B2B"] {
+  color: var(--p-text) !important;
+}
+
+/* Cards — floating surfaces, not boxes */
+.portal-ui .p-surface {
+  background-color: var(--p-card);
+  border: 1px solid var(--p-border);
+  border-radius: 16px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+}
+.portal-ui .p-surface-flat {
+  background-color: var(--p-card);
+  border: 1px solid var(--p-border);
+  border-radius: 16px;
+}
+.portal-ui .p-inset {
+  background-color: var(--p-card-2);
+  border: 1px solid var(--p-border);
+  border-radius: 12px;
+}
+
+/* Tables — horizontal separators only, compact rows */
+.portal-ui .p-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 13px;
+}
+.portal-ui .p-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background-color: var(--p-card-2);
+  color: var(--p-text-3);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-align: left;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--p-border);
+  white-space: nowrap;
+}
+.portal-ui .p-table tbody td {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--p-border);
+  color: var(--p-text);
+  vertical-align: middle;
+}
+.portal-ui .p-table tbody tr {
+  transition: background-color 180ms ease;
+}
+.portal-ui .p-table tbody tr:hover {
+  background-color: rgba(255, 255, 255, 0.03);
+}
+.portal-ui .p-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+/* Status chips — one shape, semantic color only */
+.portal-ui .p-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 22px;
+  padding: 0 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  border: 1px solid transparent;
+}
+.portal-ui .p-chip-success { color: #4ADE80; background: rgba(34, 197, 94, 0.12);  border-color: rgba(34, 197, 94, 0.24); }
+.portal-ui .p-chip-info    { color: #7DB3FB; background: rgba(59, 130, 246, 0.12); border-color: rgba(59, 130, 246, 0.24); }
+.portal-ui .p-chip-warning { color: #FBBF24; background: rgba(245, 158, 11, 0.12); border-color: rgba(245, 158, 11, 0.24); }
+.portal-ui .p-chip-danger  { color: #F87171; background: rgba(239, 68, 68, 0.12);  border-color: rgba(239, 68, 68, 0.24); }
+.portal-ui .p-chip-purple  { color: #C4B5FD; background: rgba(167, 139, 250, 0.12);border-color: rgba(167, 139, 250, 0.24); }
+.portal-ui .p-chip-neutral { color: var(--p-text-2); background: rgba(255,255,255,0.06); border-color: var(--p-border); }
+
+/* Inputs & buttons — one height scale, one radius */
+.portal-ui input,
+.portal-ui textarea,
+.portal-ui select {
+  background-color: var(--p-card-2);
+  border-color: var(--p-border);
+  color: var(--p-text);
+  border-radius: 10px;
+}
+.portal-ui input::placeholder,
+.portal-ui textarea::placeholder {
+  color: var(--p-text-3);
+}
+.portal-ui .p-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 34px;
+  padding: 0 12px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+  transition: background-color 180ms ease, border-color 180ms ease, color 180ms ease;
+}
+.portal-ui .p-btn-primary { background: var(--p-info); color: #fff; }
+.portal-ui .p-btn-primary:hover { background: #2F73DB; }
+.portal-ui .p-btn-ghost { background: transparent; color: var(--p-text-2); border: 1px solid var(--p-border); }
+.portal-ui .p-btn-ghost:hover { color: var(--p-text); background: rgba(255,255,255,0.04); border-color: var(--p-border-2); }
+.portal-ui .p-btn-danger { background: var(--p-danger); color: #fff; }
+
+/* Metadata / eyebrow — same everywhere, no random letter spacing */
+.portal-ui .p-eyebrow {
+  font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--p-text-3);
+}
+.portal-ui .label-eyebrow {
+  font-family: "Inter", ui-sans-serif, system-ui, sans-serif !important;
+  font-size: 11px !important;
+  letter-spacing: 0.08em !important;
+  color: var(--p-text-3) !important;
+}
+
+/* Scrollbars — 4px, rounded, invisible until hover (HubSpot/Linear) */
+.portal-ui * {
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+}
+.portal-ui *:hover {
+  scrollbar-color: rgba(255, 255, 255, 0.18) transparent;
+}
+.portal-ui ::-webkit-scrollbar { width: 4px; height: 4px; }
+.portal-ui ::-webkit-scrollbar-track { background: transparent; }
+.portal-ui ::-webkit-scrollbar-thumb { background: transparent; border-radius: 999px; }
+.portal-ui :hover::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.16); }
+.portal-ui ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.28); }
+.p-noscroll { scrollbar-width: none; }
+.p-noscroll::-webkit-scrollbar { width: 0; height: 0; }
+
+/* Sidebar — hover expands, single active treatment */
+.p-nav-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 34px;
+  margin: 0 8px;
+  padding: 0 10px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 400;
+  color: rgba(249, 250, 251, 0.62);
+  white-space: nowrap;
+  transition: background-color 180ms ease, color 180ms ease;
+}
+.p-nav-item:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+  color: #F9FAFB;
+}
+.p-nav-item[data-active="true"] {
+  background-color: rgba(255, 255, 255, 0.07);
+  color: #F9FAFB;
+  font-weight: 600;
+}
+.p-nav-item[data-active="true"]::before {
+  content: "";
+  position: absolute;
+  left: -8px;
+  top: 6px;
+  bottom: 6px;
+  width: 2px;
+  border-radius: 999px;
+  background: #60A5FA;
+}
+.p-nav-group {
+  padding: 14px 18px 6px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(249, 250, 251, 0.32);
+  white-space: nowrap;
+}
+
+
+
+
 @layer base {
   * {
     border-color: var(--color-border);
