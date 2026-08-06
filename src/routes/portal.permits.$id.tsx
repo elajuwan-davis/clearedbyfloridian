@@ -785,6 +785,8 @@ function PermitDetailPage() {
       <div className="mt-6 text-[11px] font-mono text-obsidian/45">
         Created {new Date(row.created_at).toLocaleString()} · Updated {new Date(row.updated_at).toLocaleString()}
       </div>
+      </>
+      )}
 
       {exportOpen && (
         <div className="fixed inset-0 z-50 flex flex-col bg-obsidian/70">
