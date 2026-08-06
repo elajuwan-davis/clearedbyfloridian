@@ -1,7 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { PortalShell } from "@/components/portal-shell";
-import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
@@ -9,28 +8,41 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
 import {
   FolderOpen,
   AlertTriangle,
   Stamp,
   DollarSign,
-  Filter,
   ArrowUpRight,
   Users,
   Building2,
   MessageSquare,
   Search,
-  Loader2,
   Mail,
   UserPlus,
+  Plus,
+  ListChecks,
+  Send,
+  Activity,
+  CalendarDays,
 } from "lucide-react";
+import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
 import { supabase } from "@/integrations/supabase/client";
-import { projectStatusMeta, toneClass, type ProjectStatus as Status } from "@/lib/status-badges";
-
+import { projectStatusMeta, type ProjectStatus as Status } from "@/lib/status-badges";
+import { useMyIdentity, greetingForNow } from "@/lib/profile-api";
+import {
+  PageHeader,
+  Surface,
+  SectionHeader,
+  StatTile,
+  StatusChip,
+  TableShell,
+  EmptyState,
+  LoadingRow,
+} from "@/components/ui-kit";
 
 const statusMeta = projectStatusMeta;
+
 
 const COUNTIES = ["Palm Beach", "Martin", "St. Lucie", "Indian River", "Broward", "Miami-Dade"] as const;
 
