@@ -50,6 +50,17 @@ const STATUSES: PermitStatus[] = [
   "submitted", "in_review", "corrections_required", "approved", "permit_issued", "on_hold", "outsourced_permitting", "cancelled",
 ];
 
+type TabKey = "overview" | "details" | "documents" | "submission" | "compliance" | "money" | "share";
+const TABS: Array<{ key: TabKey; label: string }> = [
+  { key: "overview", label: "Overview" },
+  { key: "details", label: "Details" },
+  { key: "documents", label: "Documents" },
+  { key: "submission", label: "Submission" },
+  { key: "compliance", label: "Compliance" },
+  { key: "money", label: "Fees & Invoices" },
+  { key: "share", label: "Sharing" },
+];
+
 function PermitDetailPage() {
   const { id } = Route.useParams();
   const navigate = useNavigate();
@@ -69,6 +80,7 @@ function PermitDetailPage() {
   // Live verdict from the pre-submission gate; the permit row's copy is only the seed, and
   // goes stale the moment staff re-run the check.
   const [presubStatus, setPresubStatus] = useState<string | null>(null);
+  const [tab, setTab] = useState<TabKey>("overview");
   
 
 
@@ -393,75 +405,124 @@ function PermitDetailPage() {
     >
       <AdminPermitReviewActions permit={row} onUpdated={(r) => { setRow(r); setEdit(r); }} />
 
-      <div className="mt-4 space-y-4">
-        {isInternalUser() && (
-          <ProjectInternalOps permitId={row.id} label={row.project_name} />
-        )}
-        <PermitNotesPanel permitId={row.id} />
-        <ProjectAuditTab permitId={row.id} />
+      {/* Tab bar — keeps the whole record one screen tall */}
+      <div className="mt-3 flex items-center gap-1 overflow-x-auto border-b border-obsidian/10 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        {TABS.map((t) => (
+          <button
+            key={t.key}
+            type="button"
+            onClick={() => setTab(t.key)}
+            className={`shrink-0 border-b-2 px-3 py-1.5 text-[12.5px] font-medium transition-colors ${
+              tab === t.key
+                ? "border-obsidian text-obsidian"
+                : "border-transparent text-obsidian/55 hover:text-obsidian"
+            }`}
+          >
+            {t.label}
+          </button>
+        ))}
       </div>
 
-      {/* Completeness panel */}
-      <div className="mt-6 p-plate p-4">
-        <div className="flex flex-wrap items-center gap-4 justify-between">
-          <div>
-            <div className="p-eyebrow">Permit Completeness</div>
-            <div className="mt-1 text-sm text-obsidian/70">
-              <span className="font-medium text-obsidian">{c.done}/{c.total}</span> items complete — {c.percent}%
+      {tab === "overview" && (
+        <div className="mt-3 space-y-3">
+          {/* Compact completeness strip */}
+          <div className="p-plate flex flex-wrap items-center gap-x-5 gap-y-2 px-3 py-2.5">
+            <div className="flex min-w-[200px] flex-1 items-center gap-2.5">
+              <span className="shrink-0 text-[12.5px] font-medium text-obsidian">
+                {c.done}/{c.total} complete
+              </span>
+              <div className="h-1.5 min-w-0 flex-1 overflow-hidden rounded-full bg-obsidian/10">
+                <div className="h-full transition-all" style={{ width: `${c.percent}%`, background: barColor }} />
+              </div>
+              <span className="shrink-0 text-[12px] tabular-nums text-obsidian/60">{c.percent}%</span>
+            </div>
+            <div className="flex flex-wrap items-center gap-2.5 font-mono text-[11px] uppercase tracking-[0.12em] text-obsidian/60">
+              <span>Fields <span className="font-medium tabular-nums text-obsidian">{c.fieldsDone}/{c.fieldsTotal}</span></span>
+              <span>Docs <span className="font-medium tabular-nums text-obsidian">{c.docsDone}/{c.docsTotal}</span></span>
+              {c.missingFields.length > 0 && (
+                <button
+                  type="button"
+                  onClick={() => setTab("details")}
+                  className="inline-flex items-center gap-1 rounded-[3px] bg-red-50 px-1.5 py-0.5 text-red-700"
+                >
+                  <AlertTriangle className="h-3 w-3" /> {c.missingFields.length} fields
+                </button>
+              )}
+              {c.missingDocs.length > 0 && (
+                <button
+                  type="button"
+                  onClick={() => setTab("documents")}
+                  className="inline-flex items-center gap-1 rounded-[3px] bg-amber-50 px-1.5 py-0.5 text-amber-800"
+                >
+                  <FileText className="h-3 w-3" /> {c.missingDocs.length} docs
+                </button>
+              )}
             </div>
           </div>
-          <div className="flex gap-4 text-[11px] font-mono uppercase tracking-[0.12em] text-obsidian/60">
-            <span>Fields: <span className="text-obsidian font-medium tabular-nums">{c.fieldsDone}/{c.fieldsTotal}</span></span>
-            <span>Docs: <span className="text-obsidian font-medium tabular-nums">{c.docsDone}/{c.docsTotal}</span></span>
+
+          {(c.missingFields.length > 0 || c.missingDocs.length > 0) && (
+            <details className="p-plate px-3 py-2">
+              <summary className="cursor-pointer text-[12.5px] font-medium text-obsidian/80">
+                Outstanding items ({c.missingFields.length + c.missingDocs.length})
+              </summary>
+              <div className="mt-2 grid gap-3 md:grid-cols-2">
+                {c.missingFields.length > 0 && (
+                  <div>
+                    <div className="flex items-center gap-1.5 text-[12px] font-medium text-red-800">
+                      <AlertTriangle className="h-3.5 w-3.5" /> Missing fields
+                    </div>
+                    <ul className="mt-1 space-y-0.5 text-[12px] text-obsidian/70">
+                      {c.missingFields.map((f) => <li key={f.key}>• {f.label}</li>)}
+                    </ul>
+                  </div>
+                )}
+                {c.missingDocs.length > 0 && (
+                  <div>
+                    <div className="flex items-center gap-1.5 text-[12px] font-medium text-amber-900">
+                      <FileText className="h-3.5 w-3.5" /> Missing documents
+                    </div>
+                    <ul className="mt-1 space-y-0.5 text-[12px] text-obsidian/70">
+                      {c.missingDocs.map((d) => (
+                        <li key={d.key} className="flex items-center justify-between gap-2">
+                          <span>
+                            • {d.label}
+                            {d.required && <span className="ml-1.5 font-mono text-[10px] uppercase text-red-700">Required</span>}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setTab("documents");
+                              setTimeout(() => {
+                                document.getElementById(`doc-${d.key}`)?.scrollIntoView({ behavior: "smooth", block: "center" });
+                              }, 60);
+                            }}
+                            className="font-mono text-[10px] uppercase tracking-[0.14em] text-amber-800 hover:underline"
+                          >
+                            Upload →
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            </details>
+          )}
+
+          <div className="grid min-w-0 gap-3 xl:grid-cols-2">
+            <div className="min-w-0 space-y-3">
+              {isInternalUser() && <ProjectInternalOps permitId={row.id} label={row.project_name} />}
+              <PermitNotesPanel permitId={row.id} />
+            </div>
+            <div className="min-w-0">
+              <ProjectAuditTab permitId={row.id} />
+            </div>
           </div>
         </div>
-        <div className="mt-4 h-2 bg-obsidian/10 rounded-full overflow-hidden">
-          <div className="h-full transition-all" style={{ width: `${c.percent}%`, background: barColor }} />
-        </div>
+      )}
 
-        {(c.missingFields.length > 0 || c.missingDocs.length > 0) && (
-          <div className="mt-5 grid gap-4 md:grid-cols-2">
-            {c.missingFields.length > 0 && (
-              <div className="border border-red-500/30 bg-red-50 rounded-[3px] p-4">
-                <div className="flex items-center gap-2 text-sm font-medium text-red-800">
-                  <AlertTriangle className="h-4 w-4" /> {c.missingFields.length} missing field{c.missingFields.length === 1 ? "" : "s"}
-                </div>
-                <ul className="mt-2 text-[12px] text-red-900/80 space-y-1">
-                  {c.missingFields.map((f) => (
-                    <li key={f.key}>• {f.label}</li>
-                  ))}
-                </ul>
-              </div>
-            )}
-            {c.missingDocs.length > 0 && (
-              <div className="border border-amber-500/40 bg-amber-50 rounded-[3px] p-4">
-                <div className="flex items-center gap-2 text-sm font-medium text-amber-900">
-                  <FileText className="h-4 w-4" /> {c.missingDocs.length} missing document{c.missingDocs.length === 1 ? "" : "s"}
-                </div>
-                <ul className="mt-2 text-[12px] text-amber-900/80 space-y-1">
-                  {c.missingDocs.map((d) => (
-                    <li key={d.key} className="flex items-center justify-between gap-2">
-                      <span>• {d.label}{d.required && <span className="ml-1.5 text-[10px] font-mono uppercase text-red-700">Required</span>}</span>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          const el = document.getElementById(`doc-${d.key}`);
-                          if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
-                        }}
-                        className="font-mono text-[10px] uppercase tracking-[0.14em] text-amber-800 hover:underline"
-                      >
-                        Upload →
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-          </div>
-        )}
-      </div>
-
-      <fieldset disabled={!editing} className="mt-6 grid gap-6 md:grid-cols-2 disabled:opacity-90">
+      {tab === "details" && (
+      <fieldset disabled={!editing} className="mt-3 grid gap-3 md:grid-cols-2 disabled:opacity-90">
         <div className="p-plate p-4 space-y-4">
           <div className="p-eyebrow">Project</div>
           <div><label className={labelCls("project_name")}>Project Name {flag("project_name")}{fieldDelBtn("project_name")}</label><input className={inputCls("project_name")} value={e.project_name ?? ""} onChange={(ev) => set("project_name", ev.target.value)} /></div>
@@ -550,10 +611,15 @@ function PermitDetailPage() {
           <div><label className={labelCls("owner_entity")}>Owner Entity {fieldDelBtn("owner_entity")}</label><input className={inputCls("owner_entity")} value={e.owner_entity ?? ""} onChange={(ev) => set("owner_entity", ev.target.value)} /></div>
         </div>
       </fieldset>
+      )}
 
 
 
-      <div className="mt-6 p-plate p-4">
+
+      {tab === "documents" && (
+      <>
+      <div className="mt-3 p-plate p-4">
+
         <div className="flex items-center justify-between mb-2 gap-3 flex-wrap">
           <div className="p-eyebrow">Documents</div>
           <div className="flex items-center gap-3">
@@ -632,24 +698,28 @@ function PermitDetailPage() {
       </div>
 
       <SubmittalPackageSection row={row} onChange={(r) => { setRow(r); setEdit(r); }} />
+      </>
+      )}
 
-      {/* Pre-submission completeness gate */}
-      <section id="pre-submission" className="mt-10">
+      {tab === "submission" && (
+      <section id="pre-submission" className="mt-3">
         <div className="p-eyebrow mb-2">Pre-Submission</div>
         <PreSubmissionGate permit={row} onVerdict={setPresubStatus} />
-        <div className="mt-4">
+        <div className="mt-3">
           <MunicipalitySubmissionGate
             permitId={row.id}
             preSubmissionPassed={presubStatus === "pass"}
           />
         </div>
         {/* Agent 7: renders itself only once a correction notice has been parsed. */}
-        <div className="mt-4">
+        <div className="mt-3">
           <CorrectionReviewGate permitId={row.id} />
         </div>
       </section>
+      )}
 
-      <div className="mt-6">
+      {tab === "money" && (
+      <div className="mt-3">
         <ServiceFeeInvoicePanel
           permitId={row.id}
           projectAddress={row.job_address ?? row.project_name ?? ""}
@@ -657,9 +727,12 @@ function PermitDetailPage() {
           permitStatus={row.status}
         />
       </div>
+      )}
 
 
 
+      {tab === "details" && (
+      <>
       {row.subs && row.subs.length > 0 && (
         <div className="mt-6 p-plate p-4">
           <div className="flex items-baseline justify-between mb-4 gap-3 flex-wrap">
@@ -725,6 +798,8 @@ function PermitDetailPage() {
       <div className="mt-6 text-[11px] font-mono text-obsidian/45">
         Created {new Date(row.created_at).toLocaleString()} · Updated {new Date(row.updated_at).toLocaleString()}
       </div>
+      </>
+      )}
 
       {exportOpen && (
         <div className="fixed inset-0 z-50 flex flex-col bg-obsidian/70">
@@ -835,42 +910,47 @@ function PermitDetailPage() {
         </div>
       )}
 
-      {/* CO Checklist */}
-      <section id="co-checklist" className="mt-10">
-        <div className="p-eyebrow mb-2">Certificate of Occupancy</div>
-        <CoChecklistPanel permitId={row.id} projectName={row.project_name} tenantId={row.tenant_id ?? null} />
-      </section>
+      {tab === "compliance" && (
+      <div className="mt-3 grid min-w-0 gap-3 xl:grid-cols-2">
+        <section id="co-checklist" className="min-w-0">
+          <div className="p-eyebrow mb-2">Certificate of Occupancy</div>
+          <CoChecklistPanel permitId={row.id} projectName={row.project_name} tenantId={row.tenant_id ?? null} />
+        </section>
+        <section id="lien-releases" className="min-w-0">
+          <div className="p-eyebrow mb-2">Lien Releases</div>
+          <LienReleasesPanel permit={row} />
+        </section>
+      </div>
+      )}
 
-      {/* Lien Releases */}
-      <section id="lien-releases" className="mt-10">
-        <div className="p-eyebrow mb-2">Lien Releases</div>
-        <LienReleasesPanel permit={row} />
-      </section>
+      {tab === "overview" && (
+      <div className="mt-3 grid min-w-0 gap-3 xl:grid-cols-2">
+        <section id="victoria-alerts" className="min-w-0">
+          <div className="p-eyebrow mb-2">Victoria Alerts</div>
+          <PermitAlertsInline permitId={row.id} />
+        </section>
+        <section className="min-w-0">
+          <ExpirationBanner
+            permitId={row.id}
+            expirationDate={(row as any).expiration_date ?? null}
+            extensionRequestedAt={(row as any).extension_requested_at ?? null}
+            onChange={() => getPermit(row.id).then((r) => r && setRow(r))}
+          />
+        </section>
+      </div>
+      )}
 
-      {/* Victoria Alerts (this permit) */}
-      <section id="victoria-alerts" className="mt-10 mb-4">
-        <div className="p-eyebrow mb-2">Victoria Alerts</div>
-        <PermitAlertsInline permitId={row.id} />
-      </section>
-
-      {/* Expiration Banner */}
-      <section className="mt-6">
-        <ExpirationBanner
-          permitId={row.id}
-          expirationDate={(row as any).expiration_date ?? null}
-          extensionRequestedAt={(row as any).extension_requested_at ?? null}
-          onChange={() => getPermit(row.id).then((r) => r && setRow(r))}
-        />
-      </section>
-
-      {/* Inspections */}
-      <section id="inspections" className="mt-10">
+      {tab === "compliance" && (
+      <section id="inspections" className="mt-3">
         <div className="p-eyebrow mb-2">Inspections</div>
         <InspectionsPanel permitId={row.id} tenantId={row.tenant_id ?? null} permitStatus={row.status} />
       </section>
+      )}
 
+      {tab === "submission" && (
+      <>
       {/* Resubmittal Workflow */}
-      <section id="resubmittal" className="mt-10">
+      <section id="resubmittal" className="mt-4">
         <div className="p-eyebrow mb-2">Resubmittal Workflow</div>
         <ResubmittalPanel
           permitId={row.id}
@@ -879,9 +959,13 @@ function PermitDetailPage() {
           onResubmitted={() => getPermit(row.id).then((r) => r && setRow(r))}
         />
       </section>
+      </>
+      )}
 
+      {tab === "money" && (
+      <>
       {/* Permit Fees */}
-      <section id="fees" className="mt-10">
+      <section id="fees" className="mt-3">
         <div className="p-eyebrow mb-2">Permit Fees</div>
         <PermitFeesPanel
           permitId={row.id}
@@ -892,9 +976,13 @@ function PermitDetailPage() {
           onChanged={() => getPermit(row.id).then((r) => r && setRow(r))}
         />
       </section>
+      </>
+      )}
 
+      {tab === "share" && (
+      <>
       {/* Homeowner Share */}
-      <section id="homeowner-share" className="mt-10 mb-10">
+      <section id="homeowner-share" className="mt-3 mb-4">
         <div className="p-eyebrow mb-2">Homeowner Status</div>
         <HomeownerShareDialog
           permitId={row.id}
@@ -902,7 +990,11 @@ function PermitDetailPage() {
           onToken={() => getPermit(row.id).then((r) => r && setRow(r))}
         />
       </section>
+      </>
+      )}
 
+      {tab === "details" && (
+      <>
       {(() => {
         const ip = (row.intake_payload ?? {}) as Record<string, unknown>;
         const d = ip.dispatch as DispatchResult | undefined;
@@ -937,6 +1029,8 @@ function PermitDetailPage() {
           </section>
         );
       })()}
+      </>
+      )}
     </PageShell>
   );
 }
