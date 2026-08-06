@@ -114,6 +114,70 @@ function useNavSections(role: AppRole | null, isAdmin: boolean) {
   return allSections;
 }
 
+/**
+ * Rail flyout panel. Renders as a fixed card anchored to the hovered icon but
+ * clamped so it never runs past the bottom of the window — tall menus (Admin)
+ * shift upward instead of disappearing under the viewport edge.
+ */
+function RailFlyout({
+  label,
+  children,
+  onMouseEnter,
+  onMouseLeave,
+}: {
+  label: string;
+  children: ReactNode;
+  onMouseEnter?: () => void;
+  onMouseLeave?: () => void;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [pos, setPos] = useState<{ top: number; left: number } | null>(null);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const place = () => {
+      const anchor = el.parentElement?.getBoundingClientRect();
+      if (!anchor) return;
+      const h = el.offsetHeight;
+      const margin = 8;
+      const top = Math.max(margin, Math.min(anchor.top - 6, window.innerHeight - h - margin));
+      setPos({ top, left: anchor.right + 6 });
+    };
+    place();
+    window.addEventListener("resize", place);
+    window.addEventListener("scroll", place, true);
+    return () => {
+      window.removeEventListener("resize", place);
+      window.removeEventListener("scroll", place, true);
+    };
+  }, [children]);
+
+  return (
+    <div
+      ref={ref}
+      className="fixed z-50 w-[212px] rounded-xl py-2"
+      style={{
+        top: pos?.top ?? 0,
+        left: pos?.left ?? 62,
+        maxHeight: "calc(100vh - 16px)",
+        visibility: pos ? "visible" : "hidden",
+        backgroundColor: "var(--rail-bg)",
+        border: "1px solid var(--p-border)",
+        boxShadow: "0 16px 40px rgba(0,0,0,0.45)",
+      }}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+    >
+      <div className="px-3 pb-1.5 text-[12px] font-semibold" style={{ color: "var(--rail-fg)" }}>
+        {label}
+      </div>
+      <ul className="p-noscroll max-h-[calc(100vh-64px)] overflow-y-auto px-1.5">{children}</ul>
+    </div>
+  );
+}
+
+
 function NavLinkRow({
   to,
   label,
