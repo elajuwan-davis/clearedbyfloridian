@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { Input } from "@/components/ui/input";
 import { Search, FileText, ClipboardCheck, ArrowRight, ExternalLink } from "lucide-react";
+import { PageShell, SearchInput } from "@/components/ui-kit";
 import { PORTAL_GUIDES, PORTAL_GUIDE_CATEGORIES } from "@/lib/portal-guides-data";
 import {
   Accordion,
@@ -84,97 +84,54 @@ function PortalGuidesIndex() {
   }, [guides]);
 
   return (
-    <>
-      <div className="-mx-4 sm:-mx-6 md:-mx-8 -mt-6 md:-mt-10">
-        {/* Obsidian header */}
-        <section
-          className="px-4 sm:px-6 md:px-10 py-14 md:py-20 text-paper"
-          style={{ backgroundColor: "var(--obsidian)" }}
-        >
-          <div className="mx-auto max-w-6xl">
-            <div
-              className="font-mono text-[10px] uppercase tracking-[0.22em]"
-              style={{ color: "var(--sky)" }}
-            >
-              Reference / Florida Permit Library
-            </div>
-            <h1 className="display-serif mt-4 text-4xl md:text-5xl leading-tight">
-              Project Guides &amp; Building Specs
-            </h1>
-
-            <p
-              className="mt-3 text-lg md:text-xl"
-              style={{ color: "color-mix(in oklab, var(--paper) 75%, transparent)" }}
-            >
-              Know what to submit. Know what we'll inspect.
-            </p>
-            <p
-              className="mt-2 max-w-2xl text-sm md:text-base leading-relaxed"
-              style={{ color: "color-mix(in oklab, var(--paper) 60%, transparent)" }}
-            >
-              A printable reference for every project type Cleard permits. Find your
-              project below.
-            </p>
-
-            <div className="mt-8 max-w-xl relative">
-              <Search
-                className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4"
-                strokeWidth={1.5}
-                style={{ color: "color-mix(in oklab, var(--paper) 50%, transparent)" }}
-              />
-              <Input
-                value={q}
-                onChange={(e) => setQ(e.target.value)}
-                placeholder="Search project types…"
-                className="rounded-[3px] h-12 pl-11 bg-white/10 border-white/20 text-paper placeholder:text-paper/50 focus-visible:border-white/40"
-              />
-            </div>
-          </div>
-        </section>
-
+    <PageShell
+      crumbs={[{ label: "Resources" }, { label: "Guides" }]}
+      title="Project Guides & Building Specs"
+      meta="Know what to submit. Know what we'll inspect."
+      toolbar={
+        <div className="p-inset min-w-0 flex-1 sm:max-w-sm">
+          <SearchInput value={q} onChange={setQ} placeholder="Search project types" />
+        </div>
+      }
+    >
+      <div>
         {/* Cards */}
-        <section className="px-4 sm:px-6 md:px-10 py-12 md:py-16">
-          <div className="mx-auto max-w-6xl">
+        <section>
+          <div>
             {grouped.map(([category, list]) => (
-              <div key={category} className="mb-12 last:mb-0">
-                <div className="flex items-baseline gap-3 mb-6">
-                  <span
-                    className="font-mono text-[10px] uppercase tracking-[0.22em]"
-                    style={{ color: "color-mix(in oklab, var(--obsidian) 55%, transparent)" }}
-                  >
-                    Category
+              <div key={category} className="mb-6 last:mb-0">
+                <div className="mb-2 flex items-baseline gap-2 px-1">
+                  <h2 className="text-[12.5px] font-semibold tracking-[-0.01em]">{category}</h2>
+                  <span className="text-[11.5px] tabular-nums text-muted-foreground">
+                    {list.length}
                   </span>
-                  <h2 className="display-serif text-2xl text-obsidian">{category}</h2>
                 </div>
-                <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                   {list.map((g) => (
                     <Link
                       key={g.slug}
                       to="/portal/guides/$slug"
                       params={{ slug: g.slug }}
-                      className="group flex flex-col bg-white border border-obsidian/12 rounded-[3px] p-6 hover:border-obsidian/40 transition-colors"
+                      className="p-plate p-hover-plate group flex min-w-0 flex-col px-3 py-2.5"
                     >
-                      <div
-                        className="font-mono text-[9px] uppercase tracking-[0.22em] mb-3"
-                        style={{ color: "var(--sky-ink, #2b6a86)" }}
-                      >
+                      <div className="text-[11px] font-medium uppercase tracking-[0.06em] text-muted-foreground">
                         {g.category}
                       </div>
-                      <h3 className="display-serif text-xl leading-tight text-obsidian flex-1">
+                      <h3 className="mt-1 flex-1 text-[13px] font-medium leading-snug">
                         {g.title}
                       </h3>
-                      <div className="mt-5 pt-4 border-t border-obsidian/10 flex items-center gap-4 font-mono text-[10px] uppercase tracking-[0.18em] text-obsidian/60">
-                        <span className="inline-flex items-center gap-1.5">
-                          <FileText className="h-3.5 w-3.5" strokeWidth={1.5} />
-                          Docs {g.docCount}
+                      <div className="mt-2 flex items-center gap-3 text-[11.5px] text-muted-foreground">
+                        <span className="inline-flex items-center gap-1">
+                          <FileText className="h-3 w-3" strokeWidth={1.75} />
+                          {g.docCount} docs
                         </span>
-                        <span className="inline-flex items-center gap-1.5">
-                          <ClipboardCheck className="h-3.5 w-3.5" strokeWidth={1.5} />
-                          Insp {g.inspectionCount}
+                        <span className="inline-flex items-center gap-1">
+                          <ClipboardCheck className="h-3 w-3" strokeWidth={1.75} />
+                          {g.inspectionCount} insp
                         </span>
-                      </div>
-                      <div className="mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-obsidian group-hover:gap-2.5 transition-all">
-                        View <ArrowRight className="h-4 w-4" strokeWidth={1.75} />
+                        <span className="ml-auto inline-flex items-center gap-1 text-foreground">
+                          View <ArrowRight className="h-3 w-3" strokeWidth={1.75} />
+                        </span>
                       </div>
                     </Link>
                   ))}
@@ -182,7 +139,7 @@ function PortalGuidesIndex() {
               </div>
             ))}
             {guides.length === 0 && (
-              <div className="text-center py-16 font-mono text-[11px] uppercase tracking-[0.14em] text-obsidian/50">
+              <div className="py-12 text-center text-[12px] text-muted-foreground">
                 No guides match your search
               </div>
             )}
@@ -190,42 +147,39 @@ function PortalGuidesIndex() {
         </section>
 
         {/* Building Specs by Trade */}
-        <section className="px-4 sm:px-6 md:px-10 pb-16 md:pb-24">
-          <div className="mx-auto max-w-6xl">
-            <div className="flex items-baseline gap-3 mb-6">
-              <span
-                className="font-mono text-[10px] uppercase tracking-[0.22em]"
-                style={{ color: "color-mix(in oklab, var(--obsidian) 55%, transparent)" }}
-              >
-                Reference
-              </span>
-              <h2 className="display-serif text-2xl text-obsidian">Building Specs by Trade</h2>
+        <section className="mt-6">
+          <div>
+            <div className="mb-2 px-1">
+              <h2 className="text-[12.5px] font-semibold tracking-[-0.01em]">
+                Building Specs by Trade
+              </h2>
+              <p className="mt-0.5 max-w-2xl text-[11.5px] text-muted-foreground">
+                Manufacturer specification sheets organized by permit trade. Open a section to view
+                or download the PDFs.
+              </p>
             </div>
-            <p className="text-sm text-obsidian/70 max-w-2xl mb-6">
-              Manufacturer specification sheets organized by permit trade. Open a section to view or download the PDFs.
-            </p>
 
-            <Accordion type="multiple" className="bg-white border border-obsidian/12 rounded-[3px] divide-y divide-obsidian/10">
+            <Accordion type="multiple" className="p-plate divide-y divide-white/[0.06]">
               {TRADE_ORDER.map((trade) => {
                 const list = SPECS_BY_TRADE[trade];
                 return (
-                  <AccordionItem key={trade} value={trade} className="border-none px-5">
-                    <AccordionTrigger className="hover:no-underline py-4">
-                      <div className="flex items-baseline gap-3">
-                        <span className="display-serif text-lg text-obsidian">{trade}</span>
-                        <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-obsidian/50">
+                  <AccordionItem key={trade} value={trade} className="border-none px-3">
+                    <AccordionTrigger className="py-2.5 hover:no-underline">
+                      <div className="flex items-baseline gap-2">
+                        <span className="text-[12.5px] font-semibold tracking-[-0.01em]">{trade}</span>
+                        <span className="text-[11.5px] tabular-nums text-muted-foreground">
                           {list.length} {list.length === 1 ? "spec" : "specs"}
                         </span>
                       </div>
                     </AccordionTrigger>
-                    <AccordionContent className="pb-5">
+                    <AccordionContent className="pb-3">
                       {TRADE_DESCRIPTIONS[trade] && (
-                        <div className="mb-4 rounded-[3px] border border-obsidian/12 bg-paper/60 px-4 py-3 text-sm text-obsidian/75">
+                        <div className="p-surface-flat mb-2 px-3 py-2 text-[12px] text-muted-foreground">
                           {TRADE_DESCRIPTIONS[trade]}
                         </div>
                       )}
                       {trade === "Pool / Spa Construction" && list.length > 0 && (
-                        <div className="mb-4 rounded-[3px] border border-obsidian/12 bg-paper/60 px-4 py-3 text-sm text-obsidian/75">
+                        <div className="p-surface-flat mb-2 px-3 py-2 text-[12px] text-muted-foreground">
                           These manufacturer specification sheets are commonly required for pool construction permit submittals. Include relevant specs with your submittal package.
                         </div>
                       )}
@@ -235,21 +189,19 @@ function PortalGuidesIndex() {
                             {STRUCTURAL_PLACEHOLDERS.map((label) => (
                               <div
                                 key={label}
-                                className="flex items-start gap-3 border border-dashed border-obsidian/15 rounded-[3px] p-4 bg-paper/40"
+                                className="p-surface-flat flex items-start gap-2 px-3 py-2.5"
                               >
-                                <div className="rounded-[3px] border border-obsidian/15 bg-paper p-1.5 shrink-0">
-                                  <FileText className="h-4 w-4 text-obsidian/40" strokeWidth={1.5} />
-                                </div>
-                                <div className="font-mono text-[11px] uppercase tracking-[0.14em] text-obsidian/55 leading-relaxed">
+                                <FileText className="mt-0.5 h-3.5 w-3.5 shrink-0 text-muted-foreground" strokeWidth={1.75} />
+                                <div className="text-[12px] leading-relaxed text-muted-foreground">
                                   {label}
                                 </div>
                               </div>
                             ))}
                           </div>
                         ) : (
-                          <div className="border border-dashed border-obsidian/15 rounded-[3px] p-6 text-center">
-                            <FileText className="mx-auto h-5 w-5 text-obsidian/40" strokeWidth={1.5} />
-                            <div className="mt-2 font-mono text-[11px] uppercase tracking-[0.14em] text-obsidian/50">
+                          <div className="p-surface-flat p-6 text-center">
+                            <FileText className="mx-auto h-4 w-4 text-muted-foreground" strokeWidth={1.75} />
+                            <div className="mt-2 text-[12px] text-muted-foreground">
                               {trade === "Electrical" && "Electrical spec sheets coming soon"}
                               {trade === "Plumbing" && "Plumbing spec sheets coming soon"}
                               {trade === "Pool / Spa Construction" && "No specs uploaded yet"}
@@ -258,24 +210,22 @@ function PortalGuidesIndex() {
                         )
                       ) : (
 
-                        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                        <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
                           {list.map((s) => (
                             <a
                               key={s.url}
                               href={s.url}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="group flex items-start gap-3 border border-obsidian/12 rounded-[3px] p-4 hover:border-obsidian/40 transition-colors bg-white"
+                              className="p-plate p-hover-plate group flex items-start gap-2 px-3 py-2.5"
                             >
-                              <div className="rounded-[3px] border border-obsidian/15 bg-paper p-1.5 shrink-0">
-                                <FileText className="h-4 w-4 text-obsidian/70" strokeWidth={1.5} />
-                              </div>
-                              <div className="flex-1 min-w-0">
-                                <div className="text-sm text-obsidian leading-snug">{s.title}</div>
-                                <div className="mt-0.5 font-mono text-[9px] uppercase tracking-[0.2em] text-obsidian/45">
-                                  Manufacturer Spec Sheet
+                              <FileText className="mt-0.5 h-3.5 w-3.5 shrink-0 text-muted-foreground" strokeWidth={1.75} />
+                              <div className="min-w-0 flex-1">
+                                <div className="text-[12.5px] leading-snug">{s.title}</div>
+                                <div className="mt-0.5 text-[11px] uppercase tracking-[0.06em] text-muted-foreground">
+                                  Manufacturer spec sheet
                                 </div>
-                                <div className="mt-2 inline-flex items-center gap-1 font-mono text-[10px] uppercase tracking-[0.18em] text-obsidian/70 group-hover:text-obsidian">
+                                <div className="mt-1.5 inline-flex items-center gap-1 text-[11.5px] text-muted-foreground group-hover:text-foreground">
                                   Open <ExternalLink className="h-3 w-3" strokeWidth={1.75} />
                                 </div>
                               </div>
@@ -293,6 +243,6 @@ function PortalGuidesIndex() {
         </section>
 
       </div>
-    </>
+    </PageShell>
   );
 }

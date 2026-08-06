@@ -416,10 +416,10 @@ function BundleManagementPage() {
           const tradeDocs = docs.filter((d) => trade.doc_keys.length === 0 || trade.doc_keys.includes(d.key));
           const uploadedCount = tradeDocs.filter((d) => d.status === "uploaded").length;
           const chipStyle: Record<TradeCardState, string> = {
-            no_sub: "border-obsidian/20 bg-obsidian/[0.04] text-obsidian/60",
-            invited: "border-amber-500/40 bg-amber-50 text-amber-800",
-            active: "border-sky-500/40 bg-sky-50 text-sky-800",
-            signed: "border-emerald-600/40 bg-emerald-50 text-emerald-800",
+            no_sub: "p-chip p-chip-neutral",
+            invited: "p-chip p-chip-warning",
+            active: "p-chip p-chip-info",
+            signed: "p-chip p-chip-success",
           };
           const chipLabel: Record<TradeCardState, string> = {
             no_sub: "No Sub Assigned",
@@ -443,7 +443,7 @@ function BundleManagementPage() {
                   <div>
                     <div className="flex items-center gap-2">
                       <div className="font-mono text-[11px] uppercase tracking-[0.16em] text-obsidian">{trade.label}</div>
-                      <span className={`inline-flex items-center border rounded-[3px] px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-[0.14em] ${chipStyle[cardState]}`}>
+                      <span className={chipStyle[cardState]}>
                         {chipLabel[cardState]}
                       </span>
                     </div>

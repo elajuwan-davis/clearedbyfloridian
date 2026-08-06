@@ -51,10 +51,10 @@ type SubRow = {
 };
 
 const STATUS_META: Record<CoiStatus, { label: string; className: string }> = {
-  active: { label: "Active", className: "border-emerald-600/30 bg-emerald-50 text-emerald-800" },
-  expiring: { label: "Expiring Soon", className: "border-amber-500/40 bg-amber-50 text-amber-800" },
-  expired: { label: "Expired", className: "border-red-500/40 bg-red-50 text-red-700" },
-  missing: { label: "Missing", className: "border-obsidian/15 bg-obsidian/[0.06] text-obsidian/60" },
+  active: { label: "Active", className: "p-chip p-chip-success" },
+  expiring: { label: "Expiring Soon", className: "p-chip p-chip-warning" },
+  expired: { label: "Expired", className: "p-chip p-chip-danger" },
+  missing: { label: "Missing", className: "p-chip p-chip-neutral" },
 };
 
 // Mock roster — replaced by live data when the compliance API is wired.
@@ -108,7 +108,7 @@ function StatusPill({ status }: { status: CoiStatus }) {
   const m = STATUS_META[status];
   return (
     <span
-      className={`inline-flex items-center rounded-[3px] border px-2 py-1 font-mono text-[10px] uppercase tracking-[0.14em] ${m.className}`}
+      className={m.className}
     >
       {m.label}
     </span>

@@ -22,12 +22,12 @@ export const Route = createFileRoute("/portal/hoa-submittals/")({
 });
 
 const STATUS_BADGE: Record<HoaStatus, string> = {
-  draft: "bg-obsidian/5 text-obsidian/70 border-obsidian/15",
-  submitted_to_hoa: "bg-sky-50 text-sky-700 border-sky-200",
-  pending_arc_meeting: "bg-yellow-50 text-yellow-800 border-yellow-200",
-  approved: "bg-emerald-50 text-emerald-700 border-emerald-200",
-  conditionally_approved: "bg-amber-50 text-amber-800 border-amber-200",
-  denied: "bg-red-50 text-red-700 border-red-200",
+  draft: "p-chip p-chip-neutral",
+  submitted_to_hoa: "p-chip p-chip-info",
+  pending_arc_meeting: "p-chip p-chip-warning",
+  approved: "p-chip p-chip-success",
+  conditionally_approved: "p-chip p-chip-warning",
+  denied: "p-chip p-chip-danger",
 };
 
 function HoaSubmittalsIndex() {
@@ -99,7 +99,7 @@ function HoaSubmittalsIndex() {
                       {r.project_type ? HOA_PROJECT_TYPE_LABELS[r.project_type] : "—"}
                     </td>
                     <td className="px-4 py-3">
-                      <span className={`inline-flex items-center px-2 py-0.5 text-xs border rounded-[3px] ${STATUS_BADGE[r.status]}`}>
+                      <span className={STATUS_BADGE[r.status]}>
                         {HOA_STATUS_LABELS[r.status]}
                       </span>
                     </td>
