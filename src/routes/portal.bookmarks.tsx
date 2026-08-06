@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { BookmarkX, Bookmark as BookmarkIcon, ArrowRight } from "lucide-react";
 import { useBookmarks, removeBookmark, notifyBookmarksChanged } from "@/lib/bookmarks-api";
+import { PageShell, EmptyState, LoadingRow } from "@/components/ui-kit";
 
 export const Route = createFileRoute("/portal/bookmarks")({
   head: () => ({
@@ -26,78 +27,49 @@ function BookmarksPage() {
   }
 
   return (
-    <div className="mx-auto max-w-5xl">
-        <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
-          Quick access
+    <PageShell
+      title="Bookmarks"
+      meta={loading ? undefined : `${bookmarks.length} pinned`}
+    >
+      {loading ? (
+        <LoadingRow label="Loading bookmarks" />
+      ) : bookmarks.length === 0 ? (
+        <div className="p-plate">
+          <EmptyState
+            icon={<BookmarkIcon className="h-4 w-4" strokeWidth={1.75} />}
+            title="No bookmarks yet"
+            description="Open a page you use often and tap the bookmark icon in the top bar to pin it here."
+          />
         </div>
-        <h1 className="display-serif mt-2 text-4xl" style={{ color: "var(--obsidian)" }}>
-          Bookmarks
-        </h1>
-        <p className="mt-3 max-w-2xl text-[15px]" style={{ color: "color-mix(in oklab, var(--obsidian) 65%, transparent)" }}>
-          Pin any page with the bookmark icon in the header, then jump straight back to it from here.
-        </p>
-
-        {loading ? (
-          <div className="mt-10 font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
-            Loading bookmarks…
-          </div>
-        ) : bookmarks.length === 0 ? (
-          <div
-            className="mt-10 border p-10 text-center"
-            style={{ borderColor: "color-mix(in oklab, var(--obsidian) 12%, transparent)", borderRadius: "3px" }}
-          >
-            <BookmarkIcon
-              className="mx-auto h-6 w-6"
-              strokeWidth={1.5}
-              style={{ color: "color-mix(in oklab, var(--obsidian) 40%, transparent)" }}
-            />
-            <div className="mt-4 text-[15px]" style={{ color: "var(--obsidian)" }}>
-              No bookmarks yet
-            </div>
-            <div className="mt-1 text-[13px]" style={{ color: "color-mix(in oklab, var(--obsidian) 55%, transparent)" }}>
-              Open a page you use often and tap the bookmark icon in the top bar.
-            </div>
-          </div>
-        ) : (
-          <div className="mt-10 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {bookmarks.map((b) => (
-              <div
-                key={b.id}
-                className="group relative border bg-white p-5 transition-colors hover:border-[color-mix(in_oklab,var(--obsidian)_35%,transparent)]"
-                style={{ borderColor: "color-mix(in oklab, var(--obsidian) 12%, transparent)", borderRadius: "3px" }}
-              >
-                <Link to={b.path as never} className="block pr-8">
-                  <div
-                    className="font-mono text-[9px] uppercase tracking-[0.2em]"
-                    style={{ color: "color-mix(in oklab, var(--obsidian) 45%, transparent)" }}
-                  >
-                    {b.path}
-                  </div>
-                  <div
-                    className="mt-2 flex items-center gap-2 text-[16px]"
-                    style={{ color: "var(--obsidian)", fontFamily: "var(--font-subline)" }}
-                  >
-                    {b.label}
-                    <ArrowRight className="h-3.5 w-3.5 opacity-0 transition-opacity group-hover:opacity-70" strokeWidth={1.5} />
-                  </div>
-                </Link>
-                <button
-                  type="button"
-                  onClick={() => drop(b.path)}
-                  title="Remove bookmark"
-                  className="absolute right-3 top-3 grid h-8 w-8 place-items-center rounded-[3px] hover:bg-secondary"
-                >
-                  <BookmarkX
-                    className="h-4 w-4"
-                    strokeWidth={1.5}
-                    style={{ color: "color-mix(in oklab, var(--obsidian) 55%, transparent)" }}
+      ) : (
+        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-3">
+          {bookmarks.map((b) => (
+            <div key={b.id} className="p-plate p-hover-plate group relative px-3 py-2.5">
+              <Link to={b.path as never} className="block pr-8">
+                <div className="truncate text-[10.5px] uppercase tracking-[0.07em] text-muted-foreground/70">
+                  {b.path}
+                </div>
+                <div className="mt-1 flex items-center gap-1.5 text-[13.5px] font-medium">
+                  <span className="min-w-0 truncate">{b.label}</span>
+                  <ArrowRight
+                    className="h-3.5 w-3.5 shrink-0 opacity-0 transition-opacity group-hover:opacity-60"
+                    strokeWidth={1.75}
                   />
-                  <span className="sr-only">Remove bookmark</span>
-                </button>
-              </div>
-            ))}
-          </div>
-        )}
-    </div>
+                </div>
+              </Link>
+              <button
+                type="button"
+                onClick={() => drop(b.path)}
+                title="Remove bookmark"
+                className="absolute right-2 top-2 grid h-7 w-7 place-items-center rounded-lg text-muted-foreground hover:bg-white/5 hover:text-foreground"
+              >
+                <BookmarkX className="h-3.5 w-3.5" strokeWidth={1.75} />
+                <span className="sr-only">Remove bookmark</span>
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+    </PageShell>
   );
 }
