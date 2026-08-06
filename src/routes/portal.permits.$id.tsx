@@ -80,6 +80,7 @@ function PermitDetailPage() {
   // Live verdict from the pre-submission gate; the permit row's copy is only the seed, and
   // goes stale the moment staff re-run the check.
   const [presubStatus, setPresubStatus] = useState<string | null>(null);
+  const [tab, setTab] = useState<TabKey>("overview");
   
 
 
