@@ -923,11 +923,12 @@ function PermitDetailPage() {
         />
       </section>
 
-      {/* Inspections */}
-      <section id="inspections" className="mt-10">
+      {tab === "compliance" && (
+      <section id="inspections" className="mt-3">
         <div className="p-eyebrow mb-2">Inspections</div>
         <InspectionsPanel permitId={row.id} tenantId={row.tenant_id ?? null} permitStatus={row.status} />
       </section>
+      )}
 
       {tab === "submission" && (
       <>
