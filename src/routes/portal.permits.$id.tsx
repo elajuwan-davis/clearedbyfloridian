@@ -709,7 +709,8 @@ function PermitDetailPage() {
         </div>
       </section>
 
-      <div className="mt-6">
+      {tab === "money" && (
+      <div className="mt-3">
         <ServiceFeeInvoicePanel
           permitId={row.id}
           projectAddress={row.job_address ?? row.project_name ?? ""}
@@ -717,6 +718,7 @@ function PermitDetailPage() {
           permitStatus={row.status}
         />
       </div>
+      )}
 
 
 
