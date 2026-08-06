@@ -414,7 +414,11 @@ export function PortalShell({ children }: { children: ReactNode }) {
   // Some pages wrap themselves in <PortalShell> while the /portal route layout
   // also does — render the chrome only once.
   if (useContext(InPortalShell)) return <>{children}</>;
-  return <PortalShellInner>{children}</PortalShellInner>;
+  return (
+    <InPortalShell.Provider value={true}>
+      <PortalShellInner>{children}</PortalShellInner>
+    </InPortalShell.Provider>
+  );
 }
 
 function PortalShellInner({ children }: { children: ReactNode }) {
