@@ -370,7 +370,7 @@ export function PortalShell({ children }: { children: ReactNode }) {
   return (
     <div className="portal-ui dark min-h-screen overflow-x-hidden bg-background">
       {/* Sidebar — 68px, expands to 248px on hover (overlay, no layout shift) */}
-      <aside className="group/rail fixed inset-y-0 left-0 z-40 hidden w-[68px] overflow-hidden transition-[width] duration-200 ease-out hover:w-[248px] hover:shadow-[0_8px_30px_rgba(0,0,0,0.45)] lg:block">
+      <aside className="group/rail fixed inset-y-0 left-0 z-40 hidden w-[68px] overflow-hidden transition-[width] duration-200 ease-out hover:w-[240px] hover:shadow-[0_8px_30px_rgba(0,0,0,0.45)] lg:block">
         <SidebarNav
           pathname={pathname}
           alertKeys={alertKeys}
@@ -503,7 +503,7 @@ export function PortalShell({ children }: { children: ReactNode }) {
           </div>
         </header>
 
-        <main className="min-h-[calc(100vh-3rem)] min-w-0 overflow-x-hidden px-4 pb-24 pt-5 sm:px-6 lg:px-8 md:pb-8">
+        <main className="min-h-[calc(100vh-3rem)] min-w-0 overflow-x-hidden pb-20 md:pb-0">
           {children}
         </main>
 

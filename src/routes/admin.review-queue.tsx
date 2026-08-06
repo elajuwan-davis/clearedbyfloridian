@@ -1,14 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { Loader2 } from "lucide-react";
 
 import { PortalShell } from "@/components/portal-shell";
 import { BackendReconnecting } from "@/components/backend-reconnecting";
 import { isMissingBackendEnvError } from "@/lib/env-error";
 import { listReviewQueueFn, type ReviewQueueRow } from "@/lib/review-queue.functions";
 import { isVendorManaged } from "@/lib/project-vendors";
-
+import { PageShell, TableShell, EmptyState } from "@/components/ui-kit";
 
 export const Route = createFileRoute("/admin/review-queue")({
   head: () => ({
@@ -65,85 +64,77 @@ function ReviewQueuePage() {
 
   return (
     <PortalShell>
-      <div className="mx-auto w-full max-w-7xl px-4 py-8">
-        <div className="label-eyebrow text-obsidian/50">Admin</div>
-        <h1 className="display-serif mt-2 text-4xl leading-tight text-obsidian">Review Queue</h1>
-        <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
-          Client self-submitted permits still in draft. Staff review each submission here before accepting it.
-        </p>
-
+      <PageShell
+        crumbs={[{ label: "Admin" }]}
+        title="Review Queue"
+        meta={loading ? "Loading…" : `${rows.length} awaiting review`}
+      >
         {loading ? (
-          <div className="mt-10 flex items-center gap-2 text-sm text-muted-foreground">
-            <Loader2 className="h-4 w-4 animate-spin" /> Loading queue…
-          </div>
+          <div className="px-1 py-6 text-[12.5px] text-muted-foreground">Loading queue…</div>
         ) : error ? (
           isMissingBackendEnvError(error) ? (
             <BackendReconnecting />
           ) : (
-            <div className="mt-8 rounded-[3px] border border-red-200 bg-red-50 p-4 text-sm text-red-900">{error}</div>
+            <div className="p-plate p-4 text-[12.5px] text-[var(--p-danger)]">{error}</div>
           )
         ) : rows.length === 0 ? (
-          <div className="mt-8 rounded-[3px] border border-border p-8 text-center text-sm text-muted-foreground">
-            Nothing awaiting review.
-          </div>
+          <EmptyState title="Nothing awaiting review" description="Client self-submitted permits will appear here." />
         ) : (
-          <div className="mt-6 overflow-x-auto rounded-[3px] border border-border">
-            <table className="w-full min-w-[820px] text-sm">
-              <thead>
-                <tr className="border-b border-border bg-muted/40 text-left font-mono text-[10px] uppercase tracking-[0.14em] text-muted-foreground">
-                  <th className="px-4 py-3">Project</th>
-                  <th className="px-4 py-3">Jurisdiction</th>
-                  <th className="px-4 py-3">Type</th>
-                  <th className="px-4 py-3">Submitted by</th>
-                  <th className="px-4 py-3">Submitted</th>
-                  <th className="px-4 py-3 text-right">Action</th>
+          <TableShell>
+            <thead>
+              <tr>
+                <th>Project</th>
+                <th>Jurisdiction</th>
+                <th>Type</th>
+                <th>Submitted by</th>
+                <th>Submitted</th>
+                <th className="w-[1%]" />
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((r) => (
+                <tr key={r.id}>
+                  <td className="min-w-0">
+                    <Link
+                      to="/portal/permits/$id"
+                      params={{ id: r.id }}
+                      className="truncate text-[12.5px] font-medium text-foreground hover:underline"
+                    >
+                      {r.project_name}
+                    </Link>
+                    {r.job_address ? (
+                      <div className="truncate text-[11.5px] text-muted-foreground">{r.job_address}</div>
+                    ) : null}
+                    {r.contractor_company ? (
+                      <div className="truncate text-[11.5px] text-muted-foreground">{r.contractor_company}</div>
+                    ) : null}
+                  </td>
+                  <td className="text-[12.5px] text-muted-foreground">{r.municipality ?? r.city ?? "—"}</td>
+                  <td className="text-[12.5px] text-muted-foreground">{r.permit_type ?? "—"}</td>
+                  <td>
+                    <div className="text-[12.5px]">{r.submitted_by ?? "—"}</div>
+                    {r.tenant_name ? (
+                      <div className="text-[11px] text-muted-foreground">{r.tenant_name}</div>
+                    ) : null}
+                  </td>
+                  <td className="whitespace-nowrap text-[11.5px] tabular-nums text-muted-foreground">
+                    {fmt(r.created_at)}
+                  </td>
+                  <td className="text-right">
+                    <Link
+                      to="/portal/permits/$id"
+                      params={{ id: r.id }}
+                      className="p-btn p-btn-ghost p-btn-sm"
+                    >
+                      Review
+                    </Link>
+                  </td>
                 </tr>
-              </thead>
-              <tbody>
-                {rows.map((r) => (
-                  <tr key={r.id} className="border-b border-border/60 align-top">
-                    <td className="px-4 py-3">
-                      <Link
-                        to="/portal/permits/$id"
-                        params={{ id: r.id }}
-                        className="font-medium underline underline-offset-4"
-                      >
-                        {r.project_name}
-                      </Link>
-                      {r.job_address ? (
-                        <div className="text-xs text-muted-foreground">{r.job_address}</div>
-                      ) : null}
-                      {r.contractor_company ? (
-                        <div className="text-xs text-muted-foreground">{r.contractor_company}</div>
-                      ) : null}
-                    </td>
-                    <td className="px-4 py-3">{r.municipality ?? r.city ?? "—"}</td>
-                    <td className="px-4 py-3">{r.permit_type ?? "—"}</td>
-                    <td className="px-4 py-3">
-                      <div>{r.submitted_by ?? "—"}</div>
-                      {r.tenant_name ? (
-                        <div className="font-mono text-[10px] uppercase tracking-wide text-muted-foreground">
-                          {r.tenant_name}
-                        </div>
-                      ) : null}
-                    </td>
-                    <td className="px-4 py-3 whitespace-nowrap">{fmt(r.created_at)}</td>
-                    <td className="px-4 py-3 text-right">
-                      <Link
-                        to="/portal/permits/$id"
-                        params={{ id: r.id }}
-                        className="font-mono text-[10px] uppercase tracking-[0.14em] underline underline-offset-4"
-                      >
-                        Review
-                      </Link>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+              ))}
+            </tbody>
+          </TableShell>
         )}
-      </div>
+      </PageShell>
     </PortalShell>
   );
 }

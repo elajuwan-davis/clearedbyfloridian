@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
-import { BellRing, Check, CheckCheck, Filter, Loader2 } from "lucide-react";
+import { Check, CheckCheck, Loader2 } from "lucide-react";
 import {
   listAlerts,
   acknowledgeAlert,
@@ -10,6 +10,15 @@ import {
   ALERT_KIND_LABEL,
   type VictoriaAlert,
 } from "@/lib/victoria-alerts";
+import {
+  PageShell,
+  Panel,
+  Segmented,
+  StatusChip,
+  EmptyState,
+  TableShell,
+  type MetricTone,
+} from "@/components/ui-kit";
 
 export const Route = createFileRoute("/portal/alerts")({
   head: () => ({
@@ -20,6 +29,12 @@ export const Route = createFileRoute("/portal/alerts")({
   }),
   component: AlertsPage,
 });
+
+const severityTone: Record<string, MetricTone> = {
+  critical: "danger",
+  warning: "warning",
+  success: "success",
+};
 
 function AlertsPage() {
   const [alerts, setAlerts] = useState<VictoriaAlert[]>([]);
@@ -76,82 +91,108 @@ function AlertsPage() {
     } catch (e: any) { toast.error(e?.message ?? "Could not mark all read"); }
   }
 
+  const unreadCount = alerts.filter((a) => !a.acknowledged_at).length;
+
   return (
-    <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
-      <div className="flex flex-wrap items-end justify-between gap-4 border-b border-obsidian/10 pb-6">
-        <div>
-          <div className="eyebrow text-obsidian/50 flex items-center gap-2"><BellRing className="w-3 h-3" /> Victoria</div>
-          <h1 className="display-serif text-3xl mt-1">Alerts</h1>
-          <p className="mt-1 text-sm text-obsidian/60">Proactive notices from Victoria across every active permit.</p>
-        </div>
-        <button
-          onClick={onAckAll}
-          className="inline-flex items-center gap-2 rounded-[3px] border border-obsidian/20 bg-white px-3 py-2 text-[11px] font-mono uppercase tracking-[0.12em] text-obsidian hover:bg-obsidian/5"
-        >
-          <CheckCheck className="w-3.5 h-3.5" /> Mark all read
+    <PageShell
+      crumbs={[{ label: "Workspace" }, { label: "Alerts" }]}
+      title="Alerts"
+      meta={loading ? "Loading…" : `${alerts.length} total · ${unreadCount} unread`}
+      actions={
+        <button onClick={onAckAll} className="p-btn p-btn-ghost">
+          <CheckCheck className="h-3.5 w-3.5" strokeWidth={1.75} /> Mark all read
         </button>
-      </div>
-
-      <div className="mt-4 flex flex-wrap gap-2 items-center">
-        <div className="inline-flex items-center gap-2 text-[11px] font-mono uppercase tracking-[0.12em] text-obsidian/50">
-          <Filter className="w-3 h-3" /> Filters
-        </div>
-        <select value={kind} onChange={(e) => setKind(e.target.value)} className="rounded-[3px] border border-obsidian/20 bg-white px-2 py-1 text-xs">
-          <option value="all">All types</option>
-          {kinds.map((k) => <option key={k} value={k}>{ALERT_KIND_LABEL[k] ?? k}</option>)}
-        </select>
-        <select value={status} onChange={(e) => setStatus(e.target.value as any)} className="rounded-[3px] border border-obsidian/20 bg-white px-2 py-1 text-xs">
-          <option value="all">All</option>
-          <option value="unread">Unread</option>
-          <option value="read">Read</option>
-        </select>
-        <select value={range} onChange={(e) => setRange(e.target.value as any)} className="rounded-[3px] border border-obsidian/20 bg-white px-2 py-1 text-xs">
-          <option value="7d">Last 7 days</option>
-          <option value="30d">Last 30 days</option>
-          <option value="all">All time</option>
-        </select>
-      </div>
-
-      <div className="mt-6 space-y-3">
-        {loading && <div className="text-sm text-obsidian/50 p-6">Loading…</div>}
-        {!loading && filtered.length === 0 && (
-          <div className="bg-white border border-obsidian/10 rounded-[3px] p-10 text-center text-obsidian/50 text-sm">
-            No alerts match these filters.
-          </div>
-        )}
-        {filtered.map((a) => {
-          const b = severityBadge(a.severity);
-          return (
-            <div key={a.id} className={`rounded-[3px] border p-4 ${a.acknowledged_at ? "bg-white border-obsidian/10 opacity-70" : b.className}`}>
-              <div className="flex items-start gap-3">
-                <div className={`mt-1.5 w-2 h-2 rounded-full ${b.dot}`} />
-                <div className="min-w-0 flex-1">
-                  <div className="flex flex-wrap items-baseline gap-2">
-                    <div className="text-sm font-medium text-obsidian">{a.title}</div>
-                    <div className="text-[10px] font-mono uppercase tracking-[0.14em] text-obsidian/50">
-                      {ALERT_KIND_LABEL[a.kind] ?? a.kind} · {new Date(a.created_at).toLocaleString()}
+      }
+      toolbar={
+        <>
+          <select
+            value={kind}
+            onChange={(e) => setKind(e.target.value)}
+            className="h-8 rounded-md border border-[var(--p-border)] bg-transparent px-2 text-[12px] text-foreground outline-none"
+          >
+            <option value="all">All types</option>
+            {kinds.map((k) => <option key={k} value={k}>{ALERT_KIND_LABEL[k] ?? k}</option>)}
+          </select>
+          <Segmented
+            value={status}
+            onChange={setStatus}
+            options={[
+              { value: "all", label: "All" },
+              { value: "unread", label: "Unread" },
+              { value: "read", label: "Read" },
+            ]}
+          />
+          <Segmented
+            value={range}
+            onChange={setRange}
+            options={[
+              { value: "7d", label: "7d" },
+              { value: "30d", label: "30d" },
+              { value: "all", label: "All time" },
+            ]}
+          />
+          <span className="ml-auto hidden text-[11.5px] text-muted-foreground sm:inline">
+            {filtered.length} shown
+          </span>
+        </>
+      }
+    >
+      {loading ? (
+        <div className="px-1 py-6 text-[12.5px] text-muted-foreground">Loading…</div>
+      ) : filtered.length === 0 ? (
+        <Panel padded={false}>
+          <EmptyState title="No alerts" description="No alerts match these filters." />
+        </Panel>
+      ) : (
+        <TableShell>
+          <thead>
+            <tr>
+              <th className="w-[1%]">Severity</th>
+              <th>Alert</th>
+              <th className="w-[160px]">Type</th>
+              <th className="w-[160px]">Created</th>
+              <th className="w-[1%]" />
+            </tr>
+          </thead>
+          <tbody>
+            {filtered.map((a) => {
+              const tone = severityTone[a.severity] ?? "neutral";
+              return (
+                <tr key={a.id} className={a.acknowledged_at ? "opacity-60" : undefined}>
+                  <td>
+                    <StatusChip tone={tone}>{a.severity}</StatusChip>
+                  </td>
+                  <td className="min-w-0">
+                    <div className="truncate text-[12.5px] font-medium">{a.title}</div>
+                    {a.body && (
+                      <div className="mt-0.5 truncate text-[11.5px] text-muted-foreground">{a.body}</div>
+                    )}
+                  </td>
+                  <td className="text-[11.5px] text-muted-foreground">{ALERT_KIND_LABEL[a.kind] ?? a.kind}</td>
+                  <td className="text-[11.5px] tabular-nums text-muted-foreground">
+                    {new Date(a.created_at).toLocaleString()}
+                  </td>
+                  <td>
+                    <div className="flex items-center justify-end gap-2">
+                      {a.action_url && (
+                        <Link to={a.action_url} className="p-btn p-btn-quiet p-btn-sm">
+                          View
+                        </Link>
+                      )}
+                      {!a.acknowledged_at && (
+                        <button disabled={busy === a.id} onClick={() => onAck(a.id)} className="p-btn p-btn-ghost p-btn-sm">
+                          {busy === a.id ? <Loader2 className="h-3 w-3 animate-spin" /> : <Check className="h-3 w-3" />}
+                          Mark read
+                        </button>
+                      )}
                     </div>
-                  </div>
-                  {a.body && <div className="mt-1 text-sm text-obsidian/70">{a.body}</div>}
-                  <div className="mt-2 flex items-center gap-3">
-                    {a.action_url && (
-                      <Link to={a.action_url} className="text-[11px] font-mono uppercase tracking-[0.14em] text-obsidian underline underline-offset-4">
-                        View
-                      </Link>
-                    )}
-                    {!a.acknowledged_at && (
-                      <button disabled={busy === a.id} onClick={() => onAck(a.id)}
-                        className="inline-flex items-center gap-1 text-[11px] font-mono uppercase tracking-[0.14em] text-obsidian/70 hover:text-obsidian">
-                        {busy === a.id ? <Loader2 className="w-3 h-3 animate-spin" /> : <Check className="w-3 h-3" />} Mark read
-                      </button>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-    </div>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </TableShell>
+      )}
+    </PageShell>
   );
 }

@@ -9,7 +9,6 @@ import {
   CheckCircle2,
   XCircle,
 } from "lucide-react";
-import { PortalShell } from "@/components/portal-shell";
 import { PermitPicker } from "@/components/permit-picker";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -30,6 +29,7 @@ import {
   type PermitInspection,
   type InspectionType,
 } from "@/lib/inspections-api";
+import { PageShell, Panel, StatusChip, EmptyState, type MetricTone } from "@/components/ui-kit";
 
 export const Route = createFileRoute("/portal/inspections")({
   head: () => ({
@@ -42,28 +42,17 @@ export const Route = createFileRoute("/portal/inspections")({
   component: InspectionsPage,
 });
 
+const resultTone: Record<string, MetricTone> = {
+  passed: "success",
+  failed: "danger",
+  cancelled: "neutral",
+  reinspect: "warning",
+};
+
 function ResultBadge({ result }: { result: string | null }) {
-  const cls =
-    result === "passed"
-      ? "bg-emerald-50 border-emerald-500/40 text-emerald-800"
-      : result === "failed"
-        ? "bg-red-50 border-red-500/40 text-red-800"
-        : result === "cancelled"
-          ? "bg-neutral-100 border-neutral-300 text-neutral-600"
-          : result === "reinspect"
-            ? "bg-amber-50 border-amber-500/40 text-amber-900"
-            : "bg-sky-50 border-sky-500/40 text-sky-800";
-  const label =
-    result === "pending" || !result
-      ? "Scheduled"
-      : result.charAt(0).toUpperCase() + result.slice(1);
-  return (
-    <span
-      className={`inline-flex items-center rounded-[3px] border px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.12em] ${cls}`}
-    >
-      {label}
-    </span>
-  );
+  const tone = resultTone[result ?? ""] ?? "info";
+  const label = result === "pending" || !result ? "Scheduled" : result.charAt(0).toUpperCase() + result.slice(1);
+  return <StatusChip tone={tone}>{label}</StatusChip>;
 }
 
 function InspectionsPage() {
@@ -106,31 +95,21 @@ function InspectionsPage() {
   }, [rows]);
 
   return (
-    <PortalShell>
-      <div className="mx-auto max-w-6xl space-y-8 px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
-        <div className="flex items-end justify-between flex-wrap gap-4">
-          <div>
-            <div className="label-eyebrow">Inspections</div>
-            <h1 className="mt-4 font-display text-4xl tracking-tight">Schedule &amp; history</h1>
-            <p className="mt-2 text-sm text-obsidian/60">
-              Request inspections on live permits and review pass/fail reports.
-            </p>
-          </div>
-          <Button
-            size="sm"
-            className="rounded-[3px] inline-flex items-center gap-2"
-            onClick={() => setPickerOpen(true)}
-          >
-            <Plus className="h-4 w-4" /> Request inspection
-          </Button>
-        </div>
-
+    <>
+      <PageShell
+        crumbs={[{ label: "Workspace" }, { label: "Inspections" }]}
+        title="Inspections"
+        meta={loading ? "Loading…" : `${upcoming.length} upcoming · ${past.length} past`}
+        actions={
+          <button className="p-btn p-btn-primary" onClick={() => setPickerOpen(true)}>
+            <Plus className="h-3.5 w-3.5" strokeWidth={2} /> Request inspection
+          </button>
+        }
+      >
         {loading ? (
-          <div className="flex items-center gap-2 text-sm text-obsidian/50">
-            <Loader2 className="h-4 w-4 animate-spin" /> Loading inspections…
-          </div>
+          <div className="px-1 py-6 text-[12.5px] text-muted-foreground">Loading inspections…</div>
         ) : (
-          <>
+          <div className="space-y-4">
             <InspectionGroup
               title="Upcoming"
               empty="No upcoming inspections."
@@ -147,9 +126,9 @@ function InspectionsPage() {
               onViewReport={setReportFor}
               onUpdateStatus={setStatusFor}
             />
-          </>
+          </div>
         )}
-      </div>
+      </PageShell>
 
       {pickerOpen && (
         <PermitPicker
@@ -189,7 +168,7 @@ function InspectionsPage() {
           }}
         />
       )}
-    </PortalShell>
+    </>
   );
 }
 
@@ -209,85 +188,66 @@ function InspectionGroup({
   onUpdateStatus: (i: PermitInspection) => void;
 }) {
   return (
-    <section>
-      <div className="label-eyebrow mb-3">{title}</div>
-      <div className="border hairline divide-y rounded-[3px] bg-white">
-        {rows.length === 0 ? (
-          <div className="p-8 text-center text-sm text-obsidian/50 italic">{empty}</div>
-        ) : (
-          rows.map((i) => {
+    <Panel title={title} meta={rows.length} padded={rows.length === 0}>
+      {rows.length === 0 ? (
+        <EmptyState title={empty} />
+      ) : (
+        <div className="p-divide -mx-3">
+          {rows.map((i) => {
             const dateStr = i.scheduled_date || i.requested_date;
             const d = dateStr ? new Date(dateStr + "T12:00:00") : null;
             return (
-              <div key={i.id} className="p-6 grid md:grid-cols-12 gap-4 items-center">
-                <div className="md:col-span-2">
+              <div key={i.id} className="flex flex-wrap items-center gap-4 px-3 py-2.5">
+                <div className="w-[92px] shrink-0">
                   {d ? (
                     <>
-                      <div className="font-display text-2xl tracking-tight">
-                        {d.toLocaleDateString("en-US", { day: "numeric" })}
+                      <div className="text-[12.5px] font-semibold tabular-nums">
+                        {d.toLocaleDateString("en-US", { month: "short", day: "numeric" })}
                       </div>
-                      <div className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground">
-                        {d.toLocaleDateString("en-US", { month: "short", year: "numeric" })}
+                      <div className="text-[11px] text-muted-foreground">
+                        {d.toLocaleDateString("en-US", { year: "numeric" })}
+                        {i.preferred_time ? ` · ${labelForTime(i.preferred_time)}` : ""}
                       </div>
-                      {i.preferred_time && (
-                        <div className="mt-1 font-mono text-xs text-accent">
-                          {labelForTime(i.preferred_time)}
-                        </div>
-                      )}
                     </>
                   ) : (
-                    <div className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground">
-                      Unscheduled
-                    </div>
+                    <div className="text-[11px] text-muted-foreground">Unscheduled</div>
                   )}
                 </div>
-                <div className="md:col-span-6">
-                  <div className="font-medium">{labelFor(i.inspection_type)}</div>
-                  <div className="text-xs text-muted-foreground mt-1">
+                <div className="min-w-0 flex-1">
+                  <div className="truncate text-[12.5px] font-medium">{labelFor(i.inspection_type)}</div>
+                  <div className="mt-0.5 truncate text-[11.5px] text-muted-foreground">
                     {i.job_address || i.project_name || "—"}
                   </div>
                   {i.project_name && (
                     <Link
                       to="/portal/permits/$id"
                       params={{ id: i.permit_id }}
-                      className="mt-1 inline-block text-xs text-sky-700 hover:underline"
+                      className="mt-0.5 inline-block truncate text-[11.5px] text-[var(--p-info)] hover:underline"
                     >
                       {i.project_name}
                       {i.permit_number ? ` · ${i.permit_number}` : ""}
                     </Link>
                   )}
                 </div>
-                <div className="md:col-span-4 md:text-right space-y-2">
-                  <ResultBadge result={i.result} />
-                  <div className="flex flex-wrap md:justify-end gap-2">
-                    {hasReport(i) && (
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        className="font-mono text-[11px] inline-flex items-center gap-1"
-                        onClick={() => onViewReport(i)}
-                      >
-                        View report <ArrowRight className="h-3 w-3" />
-                      </Button>
-                    )}
-                    {isAdmin && i.result === "pending" && (
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="font-mono text-[11px] rounded-[3px]"
-                        onClick={() => onUpdateStatus(i)}
-                      >
-                        Update status
-                      </Button>
-                    )}
-                  </div>
+                <ResultBadge result={i.result} />
+                <div className="flex shrink-0 items-center gap-2">
+                  {hasReport(i) && (
+                    <button className="p-btn p-btn-ghost p-btn-sm" onClick={() => onViewReport(i)}>
+                      View report <ArrowRight className="h-3 w-3" />
+                    </button>
+                  )}
+                  {isAdmin && i.result === "pending" && (
+                    <button className="p-btn p-btn-quiet p-btn-sm" onClick={() => onUpdateStatus(i)}>
+                      Update status
+                    </button>
+                  )}
                 </div>
               </div>
             );
-          })
-        )}
-      </div>
-    </section>
+          })}
+        </div>
+      )}
+    </Panel>
   );
 }
 

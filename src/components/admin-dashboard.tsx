@@ -31,7 +31,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { projectStatusMeta, type ProjectStatus as Status } from "@/lib/status-badges";
 import { useMyIdentity, greetingForNow } from "@/lib/profile-api";
 import {
-  PageHeader,
+  PageShell,
   Surface,
   SectionHeader,
   StatTile,
@@ -284,11 +284,9 @@ export function AdminDashboard() {
 
   return (
     <PortalShell>
-      <div className="mx-auto max-w-[1500px]">
-        <PageHeader
+      <PageShell
           crumbs={[{ label: "Cleard Operations" }, { label: "Dashboard" }]}
           title={<>{greeting}{me.firstName ? `, ${me.firstName}` : ""}.</>}
-          description="Here's what's happening across every client permit today."
           actions={
             <>
               <span className="hidden items-center gap-1.5 text-[12px] text-muted-foreground sm:inline-flex">
@@ -301,8 +299,7 @@ export function AdminDashboard() {
               </Link>
             </>
           }
-        />
-
+      >
         {/* Executive summary */}
         <div className="grid grid-cols-2 gap-3 lg:grid-cols-5">
           <StatTile
@@ -625,7 +622,7 @@ export function AdminDashboard() {
             </div>
           )}
         </Surface>
-      </div>
+      </PageShell>
     </PortalShell>
   );
 }

@@ -19,6 +19,8 @@ import {
 } from "@/components/ui/dialog";
 import { CheckCircle2, XCircle, Loader2, Copy, Check } from "lucide-react";
 import { toast } from "sonner";
+import { PageShell, TableShell, EmptyState, StatusChip } from "@/components/ui-kit";
+import type { MetricTone } from "@/components/ui-kit";
 
 export const Route = createFileRoute("/admin/access-requests")({
   head: () => ({
@@ -42,6 +44,13 @@ type AccessRequest = {
   approved_tenant_id: string | null;
   service_areas?: string[];
   created_at: string;
+};
+
+const statusTone: Record<string, MetricTone> = {
+  approved: "success",
+  rejected: "danger",
+  new: "neutral",
+  pending: "warning",
 };
 
 function AccessRequestsPage() {
@@ -134,93 +143,61 @@ function AccessRequestsPage() {
 
   return (
     <PortalShell>
-      <div className="max-w-6xl mx-auto space-y-6">
-        <div>
-          <div className="label-eyebrow">Admin</div>
-          <h1 className="display-serif text-4xl leading-tight mt-2">Access Requests</h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            Approve GC applications to create their tenant and send an invite.
-          </p>
-        </div>
-
+      <PageShell
+        crumbs={[{ label: "Admin" }]}
+        title="Access Requests"
+        meta={loading ? "Loading…" : `${rows.length} requests`}
+      >
         {loading ? (
-          <div className="font-mono text-[11px] tracking-[0.15em] uppercase text-muted-foreground">
-            Loading…
-          </div>
+          <div className="px-1 py-6 text-[12.5px] text-muted-foreground">Loading…</div>
         ) : rows.length === 0 ? (
-          <div className="border rounded-[3px] p-8 text-center text-sm text-muted-foreground">
-            No access requests yet.
-          </div>
+          <EmptyState title="No access requests yet" />
         ) : (
-          <div className="border rounded-[3px] overflow-hidden">
-            <table className="w-full text-sm">
-              <thead className="bg-secondary/50">
-                <tr className="text-left">
-                  <th className="px-4 py-3 font-medium">Company / Contact</th>
-                  <th className="px-4 py-3 font-medium">Email · Phone</th>
-                  <th className="px-4 py-3 font-medium">License</th>
-                  <th className="px-4 py-3 font-medium">Status</th>
-                  <th className="px-4 py-3"></th>
+          <TableShell>
+            <thead>
+              <tr>
+                <th>Company / Contact</th>
+                <th>Email · Phone</th>
+                <th>License</th>
+                <th>Status</th>
+                <th className="w-[1%]" />
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((r) => (
+                <tr key={r.id}>
+                  <td className="min-w-0">
+                    <div className="truncate text-[12.5px] font-medium">{r.company ?? "—"}</div>
+                    <div className="truncate text-[11.5px] text-muted-foreground">{r.name}</div>
+                  </td>
+                  <td className="min-w-0">
+                    <div className="truncate text-[12.5px]">{r.email}</div>
+                    <div className="text-[11.5px] text-muted-foreground">{r.phone ?? "—"}</div>
+                  </td>
+                  <td className="text-[12.5px] tabular-nums text-muted-foreground">{r.license_number ?? "—"}</td>
+                  <td>
+                    <StatusChip tone={statusTone[r.status] ?? "neutral"}>{r.status}</StatusChip>
+                  </td>
+                  <td className="text-right">
+                    {r.status === "new" || r.status === "pending" ? (
+                      <div className="flex justify-end gap-2">
+                        <button type="button" onClick={() => confirmReject(r)} className="p-btn p-btn-ghost p-btn-sm">
+                          <XCircle className="h-3.5 w-3.5" /> Reject
+                        </button>
+                        <button type="button" onClick={() => openApprove(r)} className="p-btn p-btn-primary p-btn-sm">
+                          <CheckCircle2 className="h-3.5 w-3.5" /> Approve
+                        </button>
+                      </div>
+                    ) : (
+                      <span className="text-[11.5px] text-muted-foreground">—</span>
+                    )}
+                  </td>
                 </tr>
-              </thead>
-              <tbody>
-                {rows.map((r) => (
-                  <tr key={r.id} className="border-t">
-                    <td className="px-4 py-3">
-                      <div className="font-medium">{r.company ?? "—"}</div>
-                      <div className="text-xs text-muted-foreground">{r.name}</div>
-                    </td>
-                    <td className="px-4 py-3">
-                      <div>{r.email}</div>
-                      <div className="text-xs text-muted-foreground">{r.phone ?? "—"}</div>
-                    </td>
-                    <td className="px-4 py-3 font-mono text-xs">{r.license_number ?? "—"}</td>
-                    <td className="px-4 py-3">
-                      <span
-                        className="inline-block px-2 py-0.5 text-[10px] font-mono uppercase tracking-wider rounded-[2px]"
-                        style={{
-                          backgroundColor:
-                            r.status === "approved"
-                              ? "color-mix(in oklab, green 15%, transparent)"
-                              : r.status === "rejected"
-                                ? "color-mix(in oklab, red 15%, transparent)"
-                                : "color-mix(in oklab, var(--obsidian) 8%, transparent)",
-                        }}
-                      >
-                        {r.status}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-right">
-                      {r.status === "new" || r.status === "pending" ? (
-                        <div className="flex justify-end gap-2">
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => confirmReject(r)}
-                            className="rounded-[3px] h-8 gap-1"
-                          >
-                            <XCircle className="h-3.5 w-3.5" /> Reject
-                          </Button>
-                          <Button
-                            size="sm"
-                            onClick={() => openApprove(r)}
-                            className="rounded-[3px] h-8 gap-1"
-                            style={{ backgroundColor: "var(--obsidian)", color: "var(--paper)" }}
-                          >
-                            <CheckCircle2 className="h-3.5 w-3.5" /> Approve
-                          </Button>
-                        </div>
-                      ) : (
-                        <span className="text-xs text-muted-foreground">—</span>
-                      )}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+              ))}
+            </tbody>
+          </TableShell>
         )}
-      </div>
+      </PageShell>
 
       <Dialog
         open={!!approving}

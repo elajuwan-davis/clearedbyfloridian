@@ -1,12 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import {
-  ChevronLeft,
-  ChevronRight,
-  CalendarDays,
-  List,
-  ArrowUpDown,
-} from "lucide-react";
+import { ChevronLeft, ChevronRight, ArrowUpDown } from "lucide-react";
 import {
   listDeadlines,
   DEADLINE_KIND_META,
@@ -14,6 +8,8 @@ import {
   type Deadline,
   type DeadlineKind,
 } from "@/lib/deadlines";
+import { PageShell, Panel, Split, Segmented, TableShell, EmptyState } from "@/components/ui-kit";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/portal/calendar")({
   head: () => ({
@@ -93,8 +89,7 @@ function CalendarPage() {
   }
 
   const sortedList = useMemo(() => {
-    const today = new Date(new Date().toDateString());
-    const upcoming = [...filtered].filter((d) => new Date(`${d.date}T00:00:00`) >= today || true);
+    const upcoming = [...filtered];
     upcoming.sort((a, b) => {
       let cmp = 0;
       if (sortKey === "date") cmp = a.date.localeCompare(b.date);
@@ -105,51 +100,103 @@ function CalendarPage() {
     return upcoming;
   }, [filtered, sortKey, sortDir]);
 
+  const upNext = useMemo(() => {
+    const today = new Date(new Date().toDateString());
+    return [...filtered]
+      .filter((d) => new Date(`${d.date}T00:00:00`) >= today)
+      .sort((a, b) => a.date.localeCompare(b.date))
+      .slice(0, 10);
+  }, [filtered]);
+
+  const monthStart = startOfMonth(cursor);
+  const projectCount = new Set(deadlines.map((d) => d.projectId)).size;
+
   return (
-    <div className="space-y-8 max-w-6xl">
-      <div className="flex items-end justify-between flex-wrap gap-4">
-        <div>
-          <div className="label-eyebrow font-mono text-[10px] uppercase tracking-[0.22em] text-obsidian/50">
-            Calendar
-          </div>
-          <h1 className="mt-3 font-display text-4xl tracking-tight text-obsidian">Deadlines</h1>
-          <p className="mt-2 text-sm text-obsidian/60 max-w-xl">
-            Permit expirations, inspections, correction responses, fees, and NTBO filings across
-            {" "}
-            {new Set(deadlines.map((d) => d.projectId)).size} project(s).
-          </p>
-        </div>
-
-        <div className="inline-flex rounded-sm border hairline p-1 bg-paper-warm">
+    <PageShell
+      title={monthStart.toLocaleDateString("en-US", { month: "long", year: "numeric" })}
+      meta={`${projectCount} project${projectCount === 1 ? "" : "s"} · ${filtered.length} deadline${filtered.length === 1 ? "" : "s"}`}
+      actions={
+        <div className="flex items-center gap-1">
           <button
             type="button"
-            onClick={() => setView("calendar")}
-            className={`inline-flex min-h-11 items-center gap-2 rounded-[2px] px-3 py-2 text-xs font-mono uppercase tracking-wide transition-colors ${
-              view === "calendar" ? "bg-obsidian text-white" : "text-obsidian/60 hover:text-obsidian"
-            }`}
+            aria-label="Previous month"
+            onClick={() => setCursor(new Date(cursor.getFullYear(), cursor.getMonth() - 1, 1))}
+            className="p-btn p-btn-ghost p-btn-sm"
           >
-            <CalendarDays className="h-3.5 w-3.5" /> Calendar
+            <ChevronLeft className="h-3.5 w-3.5" />
           </button>
           <button
             type="button"
-            onClick={() => setView("list")}
-            className={`inline-flex min-h-11 items-center gap-2 rounded-[2px] px-3 py-2 text-xs font-mono uppercase tracking-wide transition-colors ${
-              view === "list" ? "bg-obsidian text-white" : "text-obsidian/60 hover:text-obsidian"
-            }`}
+            onClick={() => setCursor(startOfMonth(new Date()))}
+            className="p-btn p-btn-ghost p-btn-sm"
           >
-            <List className="h-3.5 w-3.5" /> List
+            Today
+          </button>
+          <button
+            type="button"
+            aria-label="Next month"
+            onClick={() => setCursor(new Date(cursor.getFullYear(), cursor.getMonth() + 1, 1))}
+            className="p-btn p-btn-ghost p-btn-sm"
+          >
+            <ChevronRight className="h-3.5 w-3.5" />
           </button>
         </div>
-      </div>
-
-      <KindLegend activeKinds={activeKinds} onToggle={toggleKind} />
-
-      {view === "calendar" ? (
-        <MonthGrid cursor={cursor} setCursor={setCursor} deadlines={filtered} />
-      ) : (
-        <ListView list={sortedList} sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
-      )}
-    </div>
+      }
+      toolbar={
+        <div className="flex min-w-0 flex-1 flex-wrap items-center justify-between gap-2">
+          <Segmented
+            value={view}
+            onChange={setView}
+            options={[
+              { value: "calendar", label: "Calendar" },
+              { value: "list", label: "List" },
+            ]}
+          />
+          <KindLegend activeKinds={activeKinds} onToggle={toggleKind} />
+        </div>
+      }
+    >
+      <Split
+        asideWidth={320}
+        main={
+          view === "calendar" ? (
+            <MonthGrid cursor={cursor} setCursor={setCursor} deadlines={filtered} />
+          ) : (
+            <ListView list={sortedList} sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
+          )
+        }
+        aside={
+          <Panel title="Up next" bodyClassName="px-0 pb-0">
+            {upNext.length === 0 ? (
+              <EmptyState title="Nothing on the horizon" description="No upcoming deadlines match your filters." />
+            ) : (
+              <ul className="p-divide">
+                {upNext.map((d) => {
+                  const meta = DEADLINE_KIND_META[d.kind];
+                  const colors = DEADLINE_COLOR_CLASSES[meta.color];
+                  return (
+                    <li key={d.id}>
+                      <Link
+                        to="/portal/permits/$id"
+                        params={{ id: d.projectId }}
+                        search={{ tab: d.tab } as never}
+                        className="flex items-start gap-2.5 px-3 py-2.5 hover:bg-[var(--p-card-2)]"
+                      >
+                        <span className={cn("mt-1 h-1.5 w-1.5 shrink-0 rounded-full", colors.dot)} />
+                        <div className="min-w-0 flex-1">
+                          <div className="truncate text-[12.5px] font-medium">{d.projectName}</div>
+                          <div className="truncate text-[11px] text-muted-foreground">{meta.label} · {fmtISODate(d.date)}</div>
+                        </div>
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+          </Panel>
+        }
+      />
+    </PageShell>
   );
 }
 
@@ -161,7 +208,7 @@ function KindLegend({
   onToggle: (k: DeadlineKind) => void;
 }) {
   return (
-    <div className="flex flex-wrap items-center gap-2">
+    <div className="flex flex-wrap items-center gap-1.5">
       {ALL_KINDS.map((k) => {
         const meta = DEADLINE_KIND_META[k];
         const colors = DEADLINE_COLOR_CLASSES[meta.color];
@@ -171,11 +218,13 @@ function KindLegend({
             key={k}
             type="button"
             onClick={() => onToggle(k)}
-            className={`inline-flex min-h-11 items-center gap-2 rounded-sm border px-3 py-2 text-xs font-mono uppercase tracking-wide transition-opacity ${colors.badge} ${
-              active ? "opacity-100" : "opacity-35"
-            }`}
+            className={cn(
+              "inline-flex h-6 items-center gap-1.5 rounded-md px-2 text-[11px] font-medium transition-opacity",
+              colors.badge,
+              active ? "opacity-100" : "opacity-35",
+            )}
           >
-            <span className={`h-2 w-2 rounded-full ${colors.dot}`} />
+            <span className={cn("h-1.5 w-1.5 rounded-full", colors.dot)} />
             {meta.label}
           </button>
         );
@@ -186,7 +235,6 @@ function KindLegend({
 
 function MonthGrid({
   cursor,
-  setCursor,
   deadlines,
 }: {
   cursor: Date;
@@ -213,66 +261,54 @@ function MonthGrid({
   for (let i = 0; i < 42; i++) {
     cells.push(new Date(gridStart.getFullYear(), gridStart.getMonth(), gridStart.getDate() + i));
   }
+  const weeks = cells.length / 7;
 
   return (
-    <div className="border hairline rounded-sm overflow-hidden bg-white">
-      <div className="flex items-center justify-between border-b hairline px-4 py-3">
-        <button
-          type="button"
-          aria-label="Previous month"
-          onClick={() => setCursor(new Date(cursor.getFullYear(), cursor.getMonth() - 1, 1))}
-          className="inline-flex h-11 w-11 items-center justify-center rounded-sm text-obsidian/60 hover:bg-paper-warm hover:text-obsidian"
-        >
-          <ChevronLeft className="h-4 w-4" />
-        </button>
-        <div className="font-display text-lg tracking-tight text-obsidian">
-          {monthStart.toLocaleDateString("en-US", { month: "long", year: "numeric" })}
-        </div>
-        <button
-          type="button"
-          aria-label="Next month"
-          onClick={() => setCursor(new Date(cursor.getFullYear(), cursor.getMonth() + 1, 1))}
-          className="inline-flex h-11 w-11 items-center justify-center rounded-sm text-obsidian/60 hover:bg-paper-warm hover:text-obsidian"
-        >
-          <ChevronRight className="h-4 w-4" />
-        </button>
-      </div>
-
-      <div className="grid grid-cols-7 border-b hairline bg-paper-warm">
+    <div className="p-plate flex min-h-[calc(100vh-160px)] flex-col overflow-hidden">
+      <div className="grid grid-cols-7" style={{ borderBottom: "1px solid var(--p-border)" }}>
         {WEEKDAY_LABELS.map((w) => (
-          <div key={w} className="px-1 py-2 text-center font-mono text-[10px] uppercase tracking-wide text-obsidian/50">
-            {w[0]}
-            <span className="hidden sm:inline">{w.slice(1)}</span>
+          <div key={w} className="px-2 py-2 text-center text-[10.5px] font-medium uppercase tracking-[0.07em] text-muted-foreground">
+            <span className="sm:hidden">{w[0]}</span>
+            <span className="hidden sm:inline">{w}</span>
           </div>
         ))}
       </div>
 
-      <div className="grid grid-cols-7">
+      <div className="grid flex-1 grid-cols-7" style={{ gridTemplateRows: `repeat(${weeks}, minmax(0, 1fr))` }}>
         {cells.map((day, idx) => {
           const inMonth = day.getMonth() === monthStart.getMonth();
           const iso = day.toISOString().slice(0, 10);
           const items = byDate.get(iso) ?? [];
           const isToday = isSameDay(day, today);
-          const maxVisible = 2;
+          const maxVisible = 3;
           const visible = items.slice(0, maxVisible);
           const overflow = items.length - visible.length;
           const dayExpanded = expandedDay === iso;
+          const col = idx % 7;
+          const row = Math.floor(idx / 7);
 
           return (
             <div
               key={idx}
-              className={`min-h-[84px] sm:min-h-[104px] border-b border-r hairline p-1 sm:p-1.5 ${
-                inMonth ? "bg-white" : "bg-paper-warm/50"
-              }`}
+              className={cn(
+                "group min-h-[92px] p-1.5",
+                !inMonth && "bg-[var(--p-card-2)]/40",
+                col < 6 && "border-r",
+                row < weeks - 1 && "border-b",
+              )}
+              style={{ borderColor: "var(--p-border)" }}
             >
-              <div
-                className={`inline-flex h-6 w-6 items-center justify-center rounded-full font-mono text-[11px] ${
-                  isToday ? "bg-obsidian text-white" : inMonth ? "text-obsidian/70" : "text-obsidian/30"
-                }`}
-              >
-                {day.getDate()}
+              <div className="flex items-center justify-between">
+                <span
+                  className={cn(
+                    "inline-flex h-5 w-5 items-center justify-center rounded-full text-[11px] tabular-nums",
+                    isToday ? "bg-[var(--p-info)] text-white font-semibold" : inMonth ? "text-foreground/80" : "text-muted-foreground/50",
+                  )}
+                >
+                  {day.getDate()}
+                </span>
               </div>
-              <div className="mt-1 space-y-1">
+              <div className="mt-1 space-y-0.5">
                 {(dayExpanded ? items : visible).map((d) => (
                   <DeadlineChip key={d.id} deadline={d} />
                 ))}
@@ -280,7 +316,7 @@ function MonthGrid({
                   <button
                     type="button"
                     onClick={() => setExpandedDay(iso)}
-                    className="min-h-[24px] w-full rounded-[2px] px-1 text-left font-mono text-[10px] uppercase tracking-wide text-obsidian/50 hover:text-obsidian"
+                    className="w-full rounded px-1 text-left text-[10.5px] font-medium text-muted-foreground hover:text-foreground"
                   >
                     +{overflow} more
                   </button>
@@ -289,7 +325,7 @@ function MonthGrid({
                   <button
                     type="button"
                     onClick={() => setExpandedDay(null)}
-                    className="min-h-[24px] w-full rounded-[2px] px-1 text-left font-mono text-[10px] uppercase tracking-wide text-obsidian/50 hover:text-obsidian"
+                    className="w-full rounded px-1 text-left text-[10.5px] font-medium text-muted-foreground hover:text-foreground"
                   >
                     Show less
                   </button>
@@ -312,9 +348,12 @@ function DeadlineChip({ deadline }: { deadline: Deadline }) {
       params={{ id: deadline.projectId }}
       search={{ tab: deadline.tab } as never}
       title={`${deadline.projectName} — ${deadline.description}`}
-      className={`flex min-h-[24px] items-center gap-1 truncate rounded-[2px] border px-1 py-0.5 text-[10px] font-mono leading-tight ${colors.chip}`}
+      className={cn(
+        "flex h-[19px] items-center gap-1 truncate rounded px-1.5 text-[10.5px] font-medium leading-none transition-opacity hover:opacity-80",
+        colors.chip,
+      )}
     >
-      <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${colors.dot}`} />
+      <span className={cn("h-1.5 w-1.5 shrink-0 rounded-full", colors.dot)} />
       <span className="truncate">{deadline.projectName}</span>
     </Link>
   );
@@ -332,57 +371,53 @@ function ListView({
   onSort: (key: "date" | "type" | "project") => void;
 }) {
   return (
-    <div className="border hairline rounded-sm overflow-x-auto bg-white">
-      <table className="w-full min-w-[640px] text-sm">
-        <thead>
-          <tr className="border-b hairline bg-paper-warm text-left">
-            <SortableHeader label="Date" active={sortKey === "date"} dir={sortDir} onClick={() => onSort("date")} />
-            <SortableHeader label="Type" active={sortKey === "type"} dir={sortDir} onClick={() => onSort("type")} />
-            <SortableHeader label="Project" active={sortKey === "project"} dir={sortDir} onClick={() => onSort("project")} />
-            <th className="px-4 py-3 font-mono text-[10px] uppercase tracking-wide text-obsidian/50">Description</th>
-            <th className="px-4 py-3 font-mono text-[10px] uppercase tracking-wide text-obsidian/50">Assigned</th>
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-[var(--rule)]">
-          {list.map((d) => {
-            const meta = DEADLINE_KIND_META[d.kind];
-            const colors = DEADLINE_COLOR_CLASSES[meta.color];
-            return (
-              <tr key={d.id} className="hover:bg-paper-warm/60">
-                <td className="px-4 py-3 align-top font-mono text-xs tabular-nums text-obsidian/80 whitespace-nowrap">
-                  {fmtISODate(d.date)}
-                </td>
-                <td className="px-4 py-3 align-top whitespace-nowrap">
-                  <span className={`inline-flex items-center gap-1.5 rounded-full border px-2 py-1 text-[10px] font-mono uppercase tracking-wide ${colors.badge}`}>
-                    <span className={`h-1.5 w-1.5 rounded-full ${colors.dot}`} />
-                    {meta.label}
-                  </span>
-                </td>
-                <td className="px-4 py-3 align-top">
-                  <Link
-                    to="/portal/permits/$id"
-                    params={{ id: d.projectId }}
-                    search={{ tab: d.tab } as never}
-                    className="min-h-11 inline-flex items-center font-medium text-obsidian hover:text-sky hover:underline"
-                  >
-                    {d.projectName}
-                  </Link>
-                </td>
-                <td className="px-4 py-3 align-top text-obsidian/70">{d.description}</td>
-                <td className="px-4 py-3 align-top whitespace-nowrap text-obsidian/70">{d.assignedStaff}</td>
-              </tr>
-            );
-          })}
-          {list.length === 0 && (
-            <tr>
-              <td colSpan={5} className="px-4 py-10 text-center text-sm text-obsidian/50">
-                No deadlines match the selected filters.
+    <TableShell maxHeight="calc(100vh - 160px)">
+      <thead>
+        <tr>
+          <SortableHeader label="Date" active={sortKey === "date"} dir={sortDir} onClick={() => onSort("date")} />
+          <SortableHeader label="Type" active={sortKey === "type"} dir={sortDir} onClick={() => onSort("type")} />
+          <SortableHeader label="Project" active={sortKey === "project"} dir={sortDir} onClick={() => onSort("project")} />
+          <th>Description</th>
+          <th>Assigned</th>
+        </tr>
+      </thead>
+      <tbody>
+        {list.map((d) => {
+          const meta = DEADLINE_KIND_META[d.kind];
+          const colors = DEADLINE_COLOR_CLASSES[meta.color];
+          return (
+            <tr key={d.id}>
+              <td className="whitespace-nowrap tabular-nums">{fmtISODate(d.date)}</td>
+              <td className="whitespace-nowrap">
+                <span className={cn("inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[10.5px] font-medium", colors.badge)}>
+                  <span className={cn("h-1.5 w-1.5 rounded-full", colors.dot)} />
+                  {meta.label}
+                </span>
               </td>
+              <td>
+                <Link
+                  to="/portal/permits/$id"
+                  params={{ id: d.projectId }}
+                  search={{ tab: d.tab } as never}
+                  className="font-medium hover:underline"
+                >
+                  {d.projectName}
+                </Link>
+              </td>
+              <td className="text-muted-foreground">{d.description}</td>
+              <td className="whitespace-nowrap text-muted-foreground">{d.assignedStaff}</td>
             </tr>
-          )}
-        </tbody>
-      </table>
-    </div>
+          );
+        })}
+        {list.length === 0 && (
+          <tr>
+            <td colSpan={5}>
+              <EmptyState title="No deadlines match the selected filters." />
+            </td>
+          </tr>
+        )}
+      </tbody>
+    </TableShell>
   );
 }
 
@@ -398,16 +433,14 @@ function SortableHeader({
   onClick: () => void;
 }) {
   return (
-    <th className="px-4 py-3">
+    <th>
       <button
         type="button"
         onClick={onClick}
-        className={`inline-flex min-h-11 items-center gap-1 font-mono text-[10px] uppercase tracking-wide ${
-          active ? "text-obsidian" : "text-obsidian/50"
-        } hover:text-obsidian`}
+        className={cn("inline-flex items-center gap-1", active ? "text-foreground" : "text-muted-foreground")}
       >
         {label}
-        <ArrowUpDown className={`h-3 w-3 ${active ? "opacity-100" : "opacity-40"}`} />
+        <ArrowUpDown className={cn("h-3 w-3", active ? "opacity-100" : "opacity-40")} />
         {active && <span className="sr-only">{dir === "asc" ? "ascending" : "descending"}</span>}
       </button>
     </th>

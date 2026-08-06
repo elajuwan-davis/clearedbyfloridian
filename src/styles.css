@@ -252,91 +252,120 @@
   color: var(--p-text) !important;
 }
 
-/* Cards — floating surfaces, not boxes */
+/* ---------------------------------------------------------
+   SURFACES — contrast + spacing, not boxes. Borders are the
+   exception, never the default.
+   --------------------------------------------------------- */
 .portal-ui .p-surface {
   background-color: var(--p-card);
   border: 1px solid var(--p-border);
-  border-radius: 16px;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+  border-radius: 10px;
 }
 .portal-ui .p-surface-flat {
   background-color: var(--p-card);
-  border: 1px solid var(--p-border);
-  border-radius: 16px;
+  border: 1px solid transparent;
+  border-radius: 10px;
 }
 .portal-ui .p-inset {
   background-color: var(--p-card-2);
-  border: 1px solid var(--p-border);
-  border-radius: 12px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+}
+/* Bare surface: contrast only. Preferred for tiles and list containers. */
+.portal-ui .p-plate {
+  background-color: var(--p-card);
+  border-radius: 10px;
+}
+.portal-ui .p-hover-plate {
+  transition: background-color 140ms ease;
+}
+.portal-ui .p-hover-plate:hover {
+  background-color: var(--p-card-2);
+}
+.portal-ui .p-divide > * + * {
+  border-top: 1px solid var(--p-border);
 }
 
-/* Tables — horizontal separators only, compact rows */
+/* ---------------------------------------------------------
+   TABLES — 34px rows, sticky head, separators only
+   --------------------------------------------------------- */
 .portal-ui .p-table {
   width: 100%;
   border-collapse: separate;
   border-spacing: 0;
-  font-size: 13px;
+  font-size: 12.5px;
 }
 .portal-ui .p-table thead th {
   position: sticky;
   top: 0;
   z-index: 1;
-  background-color: var(--p-card-2);
+  background-color: var(--p-card);
   color: var(--p-text-3);
-  font-size: 11px;
+  font-size: 10.5px;
   font-weight: 500;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.07em;
   text-transform: uppercase;
   text-align: left;
-  padding: 10px 16px;
+  height: 30px;
+  padding: 0 12px;
   border-bottom: 1px solid var(--p-border);
   white-space: nowrap;
 }
 .portal-ui .p-table tbody td {
-  padding: 12px 16px;
+  height: 36px;
+  padding: 6px 12px;
   border-bottom: 1px solid var(--p-border);
   color: var(--p-text);
   vertical-align: middle;
 }
 .portal-ui .p-table tbody tr {
-  transition: background-color 180ms ease;
+  transition: background-color 140ms ease;
 }
 .portal-ui .p-table tbody tr:hover {
-  background-color: rgba(255, 255, 255, 0.03);
+  background-color: rgba(255, 255, 255, 0.028);
 }
 .portal-ui .p-table tbody tr:last-child td {
   border-bottom: 0;
 }
 
-/* Status chips — one shape, semantic color only */
+/* ---------------------------------------------------------
+   STATUS CHIPS — one shape, semantic color only, borderless
+   --------------------------------------------------------- */
 .portal-ui .p-chip {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  height: 22px;
-  padding: 0 10px;
-  border-radius: 999px;
-  font-size: 11px;
+  gap: 5px;
+  height: 19px;
+  padding: 0 7px;
+  border-radius: 5px;
+  font-size: 10.5px;
   font-weight: 500;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.01em;
   white-space: nowrap;
-  border: 1px solid transparent;
+  border: 0;
 }
-.portal-ui .p-chip-success { color: #4ADE80; background: rgba(34, 197, 94, 0.12);  border-color: rgba(34, 197, 94, 0.24); }
-.portal-ui .p-chip-info    { color: #7DB3FB; background: rgba(59, 130, 246, 0.12); border-color: rgba(59, 130, 246, 0.24); }
-.portal-ui .p-chip-warning { color: #FBBF24; background: rgba(245, 158, 11, 0.12); border-color: rgba(245, 158, 11, 0.24); }
-.portal-ui .p-chip-danger  { color: #F87171; background: rgba(239, 68, 68, 0.12);  border-color: rgba(239, 68, 68, 0.24); }
-.portal-ui .p-chip-purple  { color: #C4B5FD; background: rgba(167, 139, 250, 0.12);border-color: rgba(167, 139, 250, 0.24); }
-.portal-ui .p-chip-neutral { color: var(--p-text-2); background: rgba(255,255,255,0.06); border-color: var(--p-border); }
+.portal-ui .p-chip-success { color: #4ADE80; background: rgba(34, 197, 94, 0.13); }
+.portal-ui .p-chip-info    { color: #7DB3FB; background: rgba(59, 130, 246, 0.13); }
+.portal-ui .p-chip-warning { color: #FBBF24; background: rgba(245, 158, 11, 0.13); }
+.portal-ui .p-chip-danger  { color: #F87171; background: rgba(239, 68, 68, 0.13); }
+.portal-ui .p-chip-purple  { color: #C4B5FD; background: rgba(167, 139, 250, 0.13); }
+.portal-ui .p-chip-neutral { color: var(--p-text-2); background: rgba(255,255,255,0.055); }
 
-/* Inputs & buttons — one height scale, one radius */
+/* ---------------------------------------------------------
+   CONTROLS — 30px default height, 8px radius, one scale
+   --------------------------------------------------------- */
 .portal-ui input,
 .portal-ui textarea,
 .portal-ui select {
   background-color: var(--p-card-2);
   border-color: var(--p-border);
   color: var(--p-text);
-  border-radius: 10px;
+  border-radius: 8px;
+  font-size: 13px;
+}
+.portal-ui input:not([type="checkbox"]):not([type="radio"]),
+.portal-ui select {
+  height: 30px;
 }
 .portal-ui input::placeholder,
 .portal-ui textarea::placeholder {
@@ -346,36 +375,72 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  height: 34px;
-  padding: 0 12px;
-  border-radius: 10px;
-  font-size: 13px;
+  gap: 6px;
+  height: 30px;
+  padding: 0 10px;
+  border-radius: 8px;
+  font-size: 12.5px;
   font-weight: 500;
   white-space: nowrap;
-  transition: background-color 180ms ease, border-color 180ms ease, color 180ms ease;
+  transition: background-color 140ms ease, border-color 140ms ease, color 140ms ease;
 }
+.portal-ui .p-btn-sm { height: 26px; padding: 0 8px; font-size: 12px; }
 .portal-ui .p-btn-primary { background: var(--p-info); color: #fff; }
 .portal-ui .p-btn-primary:hover { background: #2F73DB; }
 .portal-ui .p-btn-ghost { background: transparent; color: var(--p-text-2); border: 1px solid var(--p-border); }
 .portal-ui .p-btn-ghost:hover { color: var(--p-text); background: rgba(255,255,255,0.04); border-color: var(--p-border-2); }
+.portal-ui .p-btn-quiet { background: transparent; color: var(--p-text-2); }
+.portal-ui .p-btn-quiet:hover { color: var(--p-text); background: rgba(255,255,255,0.05); }
 .portal-ui .p-btn-danger { background: var(--p-danger); color: #fff; }
+
+/* Segmented control — replaces stacked filter rows */
+.portal-ui .p-seg {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 2px;
+  border-radius: 8px;
+  background: var(--p-card-2);
+}
+.portal-ui .p-seg > button,
+.portal-ui .p-seg > a {
+  display: inline-flex;
+  align-items: center;
+  height: 24px;
+  padding: 0 9px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--p-text-2);
+  white-space: nowrap;
+  text-decoration: none;
+  transition: background-color 140ms ease, color 140ms ease;
+}
+.portal-ui .p-seg > button:hover,
+.portal-ui .p-seg > a:hover { color: var(--p-text); }
+.portal-ui .p-seg > button[data-active="true"],
+.portal-ui .p-seg > a[data-active="true"] {
+  background: rgba(255, 255, 255, 0.09);
+  color: var(--p-text);
+}
 
 /* Metadata / eyebrow — same everywhere, no random letter spacing */
 .portal-ui .p-eyebrow {
   font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
-  font-size: 11px;
+  font-size: 10.5px;
   font-weight: 500;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--p-text-3);
 }
-.portal-ui .label-eyebrow {
+.portal-ui .label-eyebrow,
+.portal-ui .eyebrow {
   font-family: "Inter", ui-sans-serif, system-ui, sans-serif !important;
-  font-size: 11px !important;
+  font-size: 10.5px !important;
   letter-spacing: 0.08em !important;
   color: var(--p-text-3) !important;
 }
+
 
 /* Scrollbars — 4px, rounded, invisible until hover (HubSpot/Linear) */
 .portal-ui * {
@@ -438,6 +503,86 @@
   white-space: nowrap;
 }
 
+/* =========================================================
+   DENSITY LAYER — retires pre-system spacing/typography.
+   Presentation only: no markup, data, or behaviour changes.
+   Pages built before the design system inherit compact
+   rhythm (8pt), one type scale, and full widescreen width.
+   ========================================================= */
+
+/* Kill editorial serif + oversized display inside the portal */
+.portal-ui .display-serif,
+.portal-ui .wordmark,
+.portal-ui .font-display {
+  font-family: "Inter", ui-sans-serif, system-ui, sans-serif !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.02em !important;
+  font-feature-settings: normal !important;
+}
+.portal-ui .display-serif { font-size: 20px !important; line-height: 1.2 !important; }
+.portal-ui h1 { font-size: 20px; line-height: 1.2; }
+.portal-ui h2 { font-size: 14px; line-height: 1.3; }
+.portal-ui h3 { font-size: 13px; line-height: 1.3; }
+.portal-ui .display-serif em,
+.portal-ui .display-serif .italic { font-style: normal; font-weight: 600; }
+
+/* Widescreen: stop centering enterprise data in a narrow column */
+.portal-ui .max-w-2xl,
+.portal-ui .max-w-3xl,
+.portal-ui .max-w-4xl,
+.portal-ui .max-w-5xl,
+.portal-ui .max-w-6xl,
+.portal-ui .max-w-7xl {
+  max-width: 1600px;
+}
+.portal-ui p.max-w-2xl,
+.portal-ui p.max-w-3xl { max-width: 68ch; }
+
+/* Vertical compaction — recalculated on an 8pt rhythm */
+.portal-ui .py-24 { padding-top: 24px !important; padding-bottom: 24px !important; }
+.portal-ui .py-20 { padding-top: 20px !important; padding-bottom: 20px !important; }
+.portal-ui .py-16 { padding-top: 20px !important; padding-bottom: 20px !important; }
+.portal-ui .py-14,
+.portal-ui .py-12 { padding-top: 16px !important; padding-bottom: 16px !important; }
+.portal-ui .py-10 { padding-top: 16px !important; padding-bottom: 16px !important; }
+.portal-ui .py-8  { padding-top: 16px !important; padding-bottom: 16px !important; }
+.portal-ui .pt-12, .portal-ui .pt-16, .portal-ui .pt-20, .portal-ui .pt-24 { padding-top: 16px !important; }
+.portal-ui .pb-12, .portal-ui .pb-16, .portal-ui .pb-20, .portal-ui .pb-24 { padding-bottom: 16px !important; }
+.portal-ui .mt-12, .portal-ui .mt-16, .portal-ui .mt-20, .portal-ui .mt-24 { margin-top: 20px !important; }
+.portal-ui .mb-12, .portal-ui .mb-16, .portal-ui .mb-20 { margin-bottom: 20px !important; }
+.portal-ui .mt-10 { margin-top: 16px !important; }
+.portal-ui .mt-8 { margin-top: 16px !important; }
+.portal-ui .space-y-12 > * + *,
+.portal-ui .space-y-10 > * + * { margin-top: 20px !important; }
+.portal-ui .space-y-8 > * + * { margin-top: 16px !important; }
+.portal-ui .space-y-6 > * + * { margin-top: 14px !important; }
+.portal-ui .gap-8 { gap: 16px !important; }
+.portal-ui .gap-6 { gap: 14px !important; }
+
+/* Padding inside legacy boxes */
+.portal-ui .p-8, .portal-ui .p-7 { padding: 16px !important; }
+.portal-ui .p-6 { padding: 14px !important; }
+
+/* Legacy radius → one radius */
+.portal-ui .rounded-\[3px\],
+.portal-ui .rounded-sm,
+.portal-ui .rounded-md,
+.portal-ui .rounded-xl,
+.portal-ui .rounded-2xl,
+.portal-ui .rounded-3xl { border-radius: 10px !important; }
+
+/* Legacy monospace metadata → quiet Inter captions */
+.portal-ui .font-mono:not(pre):not(code) {
+  font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
+  letter-spacing: 0.04em;
+}
+
+/* Borders are the exception. Legacy hairline boxes become surfaces. */
+.portal-ui .border.hairline,
+.portal-ui .border-obsidian\/10,
+.portal-ui .border-obsidian\/20 {
+  border-color: var(--p-border) !important;
+}
 
 
 

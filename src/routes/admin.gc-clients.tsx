@@ -1,7 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState, type FormEvent } from "react";
 import { PortalShell } from "@/components/portal-shell";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { PROJECTS } from "@/lib/projects-data";
@@ -13,6 +12,7 @@ import {
   type GCClient,
 } from "@/lib/gc-clients";
 import { Trash2, UserPlus } from "lucide-react";
+import { PageShell, Panel, EmptyState } from "@/components/ui-kit";
 
 export const Route = createFileRoute("/admin/gc-clients")({
   head: () => ({
@@ -60,80 +60,72 @@ function GCClientsAdmin() {
 
   return (
     <PortalShell>
-    <div className="mx-auto w-full max-w-5xl px-4 py-8 space-y-10">
-      <header>
-        <div className="label-eyebrow text-obsidian/50">Admin</div>
-        <h1 className="display-serif mt-2 text-4xl leading-tight text-obsidian">GC Clients</h1>
-        <p className="text-sm text-muted-foreground mt-2">
-          External general contractor accounts. GC clients see only their assigned projects — never internal notes,
-          costs, or other clients' work.
-        </p>
-      </header>
+      <PageShell
+        crumbs={[{ label: "Admin" }]}
+        title="GC Clients"
+        meta={`${clients.length} accounts`}
+      >
+        <div className="grid min-w-0 gap-4 xl:grid-cols-[360px_minmax(0,1fr)]">
+          <Panel
+            title="Add GC client"
+            action={<UserPlus className="h-3.5 w-3.5 text-muted-foreground" strokeWidth={1.75} />}
+          >
+            <form onSubmit={submit} className="grid grid-cols-1 gap-3">
+              <Field label="Firm name" value={form.firmName} onChange={(v) => setForm({ ...form, firmName: v })} required />
+              <Field label="Contact name" value={form.contactName} onChange={(v) => setForm({ ...form, contactName: v })} />
+              <Field label="Email" type="email" value={form.email} onChange={(v) => setForm({ ...form, email: v })} required />
+              <Field label="Phone" value={form.phone} onChange={(v) => setForm({ ...form, phone: v })} />
+              <Field label="License #" value={form.licenseNumber} onChange={(v) => setForm({ ...form, licenseNumber: v })} />
+              <button type="submit" className="p-btn p-btn-primary mt-1">
+                Create GC client
+              </button>
+            </form>
+          </Panel>
 
-
-      <section className="border hairline p-6 rounded-[3px]">
-        <div className="flex items-center gap-2 mb-4">
-          <UserPlus className="h-4 w-4" style={{ color: "var(--obsidian)" }} />
-          <h2 className="font-subline uppercase text-xs tracking-[0.15em]">Add GC Client</h2>
+          <div className="min-w-0 space-y-3">
+            {clients.length === 0 ? (
+              <Panel padded={false}>
+                <EmptyState title="No GC clients yet" />
+              </Panel>
+            ) : (
+              clients.map((c) => (
+                <Panel
+                  key={c.id}
+                  title={c.firmName}
+                  meta={`${c.contactName} · ${c.email} · ${c.phone || "—"} · License ${c.licenseNumber || "—"}`}
+                  action={
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (confirm("Delete this GC client?")) deleteGCClient(c.id);
+                      }}
+                      className="p-btn p-btn-quiet p-btn-sm"
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </button>
+                  }
+                >
+                  <div className="text-[10.5px] uppercase tracking-[0.07em] text-muted-foreground/70">
+                    Assigned projects ({c.projectIds.length})
+                  </div>
+                  <div className="p-inset mt-1.5 grid max-h-56 grid-cols-1 gap-1.5 overflow-auto p-2.5 md:grid-cols-2">
+                    {PROJECTS.map((p) => (
+                      <label key={p.id} className="flex items-center gap-2 text-[12.5px]">
+                        <input
+                          type="checkbox"
+                          checked={c.projectIds.includes(p.id)}
+                          onChange={() => toggleProject(c.id, p.id)}
+                        />
+                        <span className="truncate">{p.name}</span>
+                      </label>
+                    ))}
+                  </div>
+                </Panel>
+              ))
+            )}
+          </div>
         </div>
-        <form onSubmit={submit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Field label="Firm name" value={form.firmName} onChange={(v) => setForm({ ...form, firmName: v })} required />
-          <Field label="Contact name" value={form.contactName} onChange={(v) => setForm({ ...form, contactName: v })} />
-          <Field label="Email" type="email" value={form.email} onChange={(v) => setForm({ ...form, email: v })} required />
-          <Field label="Phone" value={form.phone} onChange={(v) => setForm({ ...form, phone: v })} />
-          <Field label="License #" value={form.licenseNumber} onChange={(v) => setForm({ ...form, licenseNumber: v })} />
-          <div className="md:col-span-2">
-            <Button type="submit" style={{ backgroundColor: "var(--obsidian)", color: "var(--paper)" }} className="rounded-[3px]">
-              Create GC Client
-            </Button>
-          </div>
-        </form>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="font-subline uppercase text-xs tracking-[0.15em]">GC Clients ({clients.length})</h2>
-        {clients.map((c) => (
-          <div key={c.id} className="border hairline p-5 rounded-[3px] space-y-3">
-            <div className="flex items-start justify-between">
-              <div>
-                <div className="display-serif text-xl">{c.firmName}</div>
-                <div className="text-sm text-muted-foreground">
-                  {c.contactName} · {c.email} · {c.phone || "—"}
-                </div>
-                <div className="text-xs font-mono mt-1">License {c.licenseNumber || "—"}</div>
-              </div>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => {
-                  if (confirm("Delete this GC client?")) deleteGCClient(c.id);
-                }}
-              >
-                <Trash2 className="h-4 w-4" />
-              </Button>
-            </div>
-            <div>
-              <div className="label-eyebrow mb-2">Assigned projects ({c.projectIds.length})</div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-2 max-h-56 overflow-auto border hairline p-2 rounded-[3px]">
-                {PROJECTS.map((p) => (
-                  <label key={p.id} className="flex items-center gap-2 text-sm">
-                    <input
-                      type="checkbox"
-                      checked={c.projectIds.includes(p.id)}
-                      onChange={() => toggleProject(c.id, p.id)}
-                    />
-                    <span className="truncate">{p.name}</span>
-                  </label>
-                ))}
-              </div>
-            </div>
-          </div>
-        ))}
-        {clients.length === 0 && (
-          <div className="text-sm text-muted-foreground italic">No GC clients yet.</div>
-        )}
-      </section>
-    </div>
+      </PageShell>
     </PortalShell>
   );
 }
@@ -152,14 +144,14 @@ function Field({
   required?: boolean;
 }) {
   return (
-    <div className="space-y-1.5">
-      <Label className="font-subline text-[11px] tracking-[0.15em] uppercase text-muted-foreground">{label}</Label>
+    <div className="space-y-1">
+      <Label className="text-[10.5px] uppercase tracking-[0.07em] text-muted-foreground/70">{label}</Label>
       <Input
         type={type}
         value={value}
         onChange={(e) => onChange(e.target.value)}
         required={required}
-        className="rounded-[3px] h-10"
+        className="rounded-lg"
       />
     </div>
   );

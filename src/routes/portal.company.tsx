@@ -24,6 +24,7 @@ import { CompanyComplianceBanner } from "@/components/company-compliance-banner"
 import { useSession } from "@/lib/use-session";
 import { BadgeCheck, ShieldQuestion, Upload, Plus, X, Loader2, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
+import { PageShell, Split, Panel, KV, StatusChip } from "@/components/ui-kit";
 
 export const Route = createFileRoute("/portal/company")({
   head: () => ({
@@ -42,42 +43,19 @@ export const Route = createFileRoute("/portal/company")({
 });
 
 function DbprBadge({ status, verified }: { status: DbprStatus; verified: boolean }) {
-  const color =
-    status === "active"
-      ? "bg-emerald-100 text-emerald-700"
-      : status === "expired"
-        ? "bg-red-100 text-red-700"
-        : "bg-obsidian/10 text-obsidian/60";
+  const tone = status === "active" ? "success" : status === "expired" ? "danger" : "neutral";
   return (
-    <div className="flex items-center gap-2 flex-wrap">
-      <span
-        className={`font-mono text-[10px] uppercase tracking-[0.14em] px-2 py-1 rounded-[3px] ${color}`}
-      >
-        DBPR: {status}
-      </span>
+    <div className="flex flex-wrap items-center gap-1.5">
+      <StatusChip tone={tone}>DBPR: {status}</StatusChip>
       {verified ? (
-        <span className="inline-flex items-center gap-1 font-mono text-[10px] uppercase tracking-[0.14em] px-2 py-1 rounded-[3px] bg-sky-100 text-sky-700">
+        <StatusChip tone="info">
           <BadgeCheck className="h-3 w-3" /> Verified
-        </span>
+        </StatusChip>
       ) : (
-        <span className="inline-flex items-center gap-1 font-mono text-[10px] uppercase tracking-[0.14em] px-2 py-1 rounded-[3px] bg-amber-100 text-amber-800">
+        <StatusChip tone="warning">
           <ShieldQuestion className="h-3 w-3" /> Unverified
-        </span>
+        </StatusChip>
       )}
-    </div>
-  );
-}
-
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
-  return (
-    <div className="border border-obsidian/10 bg-white rounded-[3px] p-5 sm:p-6 space-y-4">
-      <h2
-        className="font-space text-lg text-obsidian"
-        style={{ fontFamily: "'Space Grotesk', sans-serif" }}
-      >
-        {title}
-      </h2>
-      {children}
     </div>
   );
 }
@@ -90,7 +68,7 @@ function QualifierFields({
   onChange: (q: Qualifier) => void;
 }) {
   return (
-    <div className="grid sm:grid-cols-2 gap-4">
+    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
       <div>
         <Label>Qualifier Name</Label>
         <Input
@@ -125,7 +103,7 @@ function QualifierFields({
       <div>
         <Label>DBPR Status</Label>
         <select
-          className="w-full h-11 border border-obsidian/20 rounded-[3px] px-3 text-sm bg-white"
+          className="w-full"
           value={qualifier.dbprStatus}
           onChange={(e) =>
             onChange({ ...qualifier, dbprStatus: e.target.value as DbprStatus })
@@ -136,7 +114,7 @@ function QualifierFields({
           <option value="expired">Expired</option>
         </select>
       </div>
-      <div className="flex items-end pb-2">
+      <div className="flex items-end pb-0.5">
         <DbprBadge status={qualifier.dbprStatus} verified={qualifier.verified} />
       </div>
     </div>
@@ -201,7 +179,7 @@ function InsuranceFields({
   }
 
   return (
-    <div className="grid sm:grid-cols-2 gap-4">
+    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
       <div>
         <Label>Carrier</Label>
         <Input
@@ -237,14 +215,14 @@ function InsuranceFields({
           onChange={(e) => onChange({ ...policy, expiration: e.target.value })}
         />
       </div>
-      <div className="sm:col-span-2">
+      <div className="sm:col-span-2 lg:col-span-3">
         <Label>Certificate of Insurance</Label>
-        <div className="flex items-center gap-3 mt-1 flex-wrap">
-          <label className="inline-flex items-center gap-2 min-h-[44px] px-3 border border-obsidian/20 rounded-[3px] text-sm cursor-pointer hover:bg-obsidian/5">
+        <div className="mt-1 flex flex-wrap items-center gap-3">
+          <label className="p-btn p-btn-ghost cursor-pointer">
             {uploading ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
+              <Loader2 className="h-3.5 w-3.5 animate-spin" />
             ) : (
-              <Upload className="h-4 w-4" />
+              <Upload className="h-3.5 w-3.5" />
             )}
             Upload
             <input
@@ -255,7 +233,7 @@ function InsuranceFields({
               onChange={(e) => void onFile(e.target.files?.[0])}
             />
           </label>
-          <span className="text-xs text-obsidian/60 truncate">
+          <span className="truncate text-[12px] text-muted-foreground">
             {policy.certificateFileName || "No file uploaded"}
           </span>
           {policy.certificateFilePath && (
@@ -263,7 +241,7 @@ function InsuranceFields({
               type="button"
               onClick={() => void openDoc()}
               disabled={opening}
-              className="inline-flex items-center gap-1 text-xs text-sky-700 hover:underline min-h-[44px]"
+              className="p-btn p-btn-quiet p-btn-sm"
             >
               {opening ? (
                 <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -314,9 +292,11 @@ function CompanyProfilePage() {
   if (session.loading || loading) {
     return (
       <PortalShell>
-        <div className="mx-auto max-w-4xl px-4 py-16 text-sm text-obsidian/50 flex items-center gap-2">
-          <Loader2 className="h-4 w-4 animate-spin" /> Loading company profile…
-        </div>
+        <PageShell title="Company Profile">
+          <div className="flex items-center gap-2 px-1 py-10 text-[12.5px] text-muted-foreground">
+            <Loader2 className="h-4 w-4 animate-spin" /> Loading company profile…
+          </div>
+        </PageShell>
       </PortalShell>
     );
   }
@@ -324,9 +304,11 @@ function CompanyProfilePage() {
   if (!session.effectiveTenantId) {
     return (
       <PortalShell>
-        <div className="mx-auto max-w-4xl px-4 py-16 text-sm text-obsidian/60">
-          No tenant assigned to this account yet.
-        </div>
+        <PageShell title="Company Profile">
+          <div className="px-1 py-10 text-[12.5px] text-muted-foreground">
+            No tenant assigned to this account yet.
+          </div>
+        </PageShell>
       </PortalShell>
     );
   }
@@ -377,179 +359,188 @@ function CompanyProfilePage() {
 
   return (
     <PortalShell>
-      <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
-        <header className="mb-6">
-          <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-obsidian/50 mb-2">
-            Company Profile
-          </div>
-          <h1 className="display-serif text-4xl text-obsidian">{profile.legalName || "Company Profile"}</h1>
-          <p className="text-obsidian/60 mt-2 text-sm max-w-2xl">
-            Keep your license, qualifiers, insurance, and bond information current. This drives
-            compliance checks across every permit submission.
-          </p>
-        </header>
-
-        {flags.length > 0 && <CompanyComplianceBanner profile={profile} />}
-
-        <div className="space-y-6">
-          <Section title="Company">
-            <div className="grid sm:grid-cols-2 gap-4">
-              <div>
-                <Label>Legal Name</Label>
-                <Input
-                  value={profile.legalName}
-                  onChange={(e) => update({ legalName: e.target.value })}
-                />
-              </div>
-              <div>
-                <Label>DBA</Label>
-                <Input value={profile.dba} onChange={(e) => update({ dba: e.target.value })} />
-              </div>
-              <div className="sm:col-span-2">
-                <Label>Entity Type</Label>
-                <Input
-                  value={profile.entityType}
-                  onChange={(e) => update({ entityType: e.target.value })}
-                />
-              </div>
-            </div>
-          </Section>
-
-          <Section title="Primary Qualifier">
-            <p className="text-xs text-obsidian/50 -mt-2">
-              Auto-validate on save — live DBPR license check
-            </p>
-            <QualifierFields
-              qualifier={profile.primaryQualifier}
-              onChange={(q) => update({ primaryQualifier: q })}
-            />
-          </Section>
-
-          <Section title="Secondary Qualifier">
-            {profile.secondaryQualifier ? (
-              <>
-                <div className="flex justify-end">
-                  <button
-                    onClick={() => update({ secondaryQualifier: null })}
-                    className="inline-flex items-center gap-1 text-xs text-obsidian/50 hover:text-red-600 min-h-[44px]"
-                  >
-                    <X className="h-3.5 w-3.5" /> Remove
-                  </button>
+      <PageShell
+        crumbs={[{ label: "Workspace" }, { label: "Company Profile" }]}
+        title={profile.legalName || "Company Profile"}
+        meta="License, qualifiers, insurance and bond information"
+        actions={
+          <Button onClick={() => void save()} disabled={saving}>
+            {saving ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+            Save Company Profile
+          </Button>
+        }
+      >
+        <Split
+          asideWidth={300}
+          main={
+            <div className="space-y-4">
+              <Panel title="Company">
+                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                  <div>
+                    <Label>Legal Name</Label>
+                    <Input
+                      value={profile.legalName}
+                      onChange={(e) => update({ legalName: e.target.value })}
+                    />
+                  </div>
+                  <div>
+                    <Label>DBA</Label>
+                    <Input value={profile.dba} onChange={(e) => update({ dba: e.target.value })} />
+                  </div>
+                  <div>
+                    <Label>Entity Type</Label>
+                    <Input
+                      value={profile.entityType}
+                      onChange={(e) => update({ entityType: e.target.value })}
+                    />
+                  </div>
                 </div>
+              </Panel>
+
+              <Panel title="Primary Qualifier" meta="Auto-validate on save — live DBPR license check">
                 <QualifierFields
-                  qualifier={profile.secondaryQualifier}
-                  onChange={(q) => update({ secondaryQualifier: q })}
+                  qualifier={profile.primaryQualifier}
+                  onChange={(q) => update({ primaryQualifier: q })}
                 />
-              </>
-            ) : (
-              <button
-                onClick={addSecondaryQualifier}
-                className="inline-flex items-center gap-2 min-h-[44px] px-3 font-mono text-[10px] uppercase tracking-[0.14em] border border-obsidian/20 rounded-[3px] hover:bg-obsidian/5"
+              </Panel>
+
+              <Panel
+                title="Secondary Qualifier"
+                action={
+                  profile.secondaryQualifier ? (
+                    <button
+                      onClick={() => update({ secondaryQualifier: null })}
+                      className="inline-flex items-center gap-1 text-[11.5px] text-muted-foreground hover:text-[var(--p-danger)]"
+                    >
+                      <X className="h-3.5 w-3.5" /> Remove
+                    </button>
+                  ) : undefined
+                }
               >
-                <Plus className="h-3.5 w-3.5" /> Add Secondary Qualifier
-              </button>
-            )}
-          </Section>
-
-          <Section title="General Liability Insurance">
-            <InsuranceFields
-              policy={profile.generalLiability}
-              onChange={(p) => update({ generalLiability: p })}
-              tenantId={tenantId}
-              kind="gl"
-            />
-            <div className="text-xs text-obsidian/50">
-              Coverage on file: {formatCents(profile.generalLiability.coverageAmountCents)}
-            </div>
-          </Section>
-
-          <Section title="Workers Compensation Insurance">
-            <InsuranceFields
-              policy={profile.workersComp}
-              onChange={(p) => update({ workersComp: p })}
-              tenantId={tenantId}
-              kind="wc"
-            />
-            <div className="text-xs text-obsidian/50">
-              Coverage on file: {formatCents(profile.workersComp.coverageAmountCents)}
-            </div>
-          </Section>
-
-          <Section title="Surety Bond">
-            {profile.bond ? (
-              <>
-                <div className="flex justify-end">
-                  <button
-                    onClick={() => update({ bond: null })}
-                    className="inline-flex items-center gap-1 text-xs text-obsidian/50 hover:text-red-600 min-h-[44px]"
-                  >
-                    <X className="h-3.5 w-3.5" /> Remove
+                {profile.secondaryQualifier ? (
+                  <QualifierFields
+                    qualifier={profile.secondaryQualifier}
+                    onChange={(q) => update({ secondaryQualifier: q })}
+                  />
+                ) : (
+                  <button onClick={addSecondaryQualifier} className="p-btn p-btn-ghost">
+                    <Plus className="h-3.5 w-3.5" /> Add Secondary Qualifier
                   </button>
-                </div>
-                <div className="grid sm:grid-cols-2 gap-4">
-                  <div>
-                    <Label>Surety</Label>
-                    <Input
-                      value={profile.bond.surety}
-                      onChange={(e) =>
-                        update({ bond: { ...profile.bond!, surety: e.target.value } })
-                      }
-                    />
-                  </div>
-                  <div>
-                    <Label>Bond Number</Label>
-                    <Input
-                      value={profile.bond.bondNumber}
-                      onChange={(e) =>
-                        update({ bond: { ...profile.bond!, bondNumber: e.target.value } })
-                      }
-                    />
-                  </div>
-                  <div>
-                    <Label>Bond Amount</Label>
-                    <Input
-                      type="number"
-                      value={profile.bond.amountCents / 100}
-                      onChange={(e) =>
-                        update({
-                          bond: {
-                            ...profile.bond!,
-                            amountCents: Math.round(Number(e.target.value || 0) * 100),
-                          },
-                        })
-                      }
-                    />
-                  </div>
-                  <div>
-                    <Label>Expiration Date</Label>
-                    <Input
-                      type="date"
-                      value={profile.bond.expiration}
-                      onChange={(e) =>
-                        update({ bond: { ...profile.bond!, expiration: e.target.value } })
-                      }
-                    />
-                  </div>
-                </div>
-              </>
-            ) : (
-              <button
-                onClick={addBond}
-                className="inline-flex items-center gap-2 min-h-[44px] px-3 font-mono text-[10px] uppercase tracking-[0.14em] border border-obsidian/20 rounded-[3px] hover:bg-obsidian/5"
-              >
-                <Plus className="h-3.5 w-3.5" /> Add Bond Information
-              </button>
-            )}
-          </Section>
+                )}
+              </Panel>
 
-          <div className="flex justify-end">
-            <Button onClick={() => void save()} className="min-h-[44px]" disabled={saving}>
-              {saving ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
-              Save Company Profile
-            </Button>
-          </div>
-        </div>
-      </div>
+              <Panel
+                title="General Liability Insurance"
+                meta={`Coverage on file: ${formatCents(profile.generalLiability.coverageAmountCents)}`}
+              >
+                <InsuranceFields
+                  policy={profile.generalLiability}
+                  onChange={(p) => update({ generalLiability: p })}
+                  tenantId={tenantId}
+                  kind="gl"
+                />
+              </Panel>
+
+              <Panel
+                title="Workers Compensation Insurance"
+                meta={`Coverage on file: ${formatCents(profile.workersComp.coverageAmountCents)}`}
+              >
+                <InsuranceFields
+                  policy={profile.workersComp}
+                  onChange={(p) => update({ workersComp: p })}
+                  tenantId={tenantId}
+                  kind="wc"
+                />
+              </Panel>
+
+              <Panel
+                title="Surety Bond"
+                action={
+                  profile.bond ? (
+                    <button
+                      onClick={() => update({ bond: null })}
+                      className="inline-flex items-center gap-1 text-[11.5px] text-muted-foreground hover:text-[var(--p-danger)]"
+                    >
+                      <X className="h-3.5 w-3.5" /> Remove
+                    </button>
+                  ) : undefined
+                }
+              >
+                {profile.bond ? (
+                  <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                    <div>
+                      <Label>Surety</Label>
+                      <Input
+                        value={profile.bond.surety}
+                        onChange={(e) =>
+                          update({ bond: { ...profile.bond!, surety: e.target.value } })
+                        }
+                      />
+                    </div>
+                    <div>
+                      <Label>Bond Number</Label>
+                      <Input
+                        value={profile.bond.bondNumber}
+                        onChange={(e) =>
+                          update({ bond: { ...profile.bond!, bondNumber: e.target.value } })
+                        }
+                      />
+                    </div>
+                    <div>
+                      <Label>Bond Amount</Label>
+                      <Input
+                        type="number"
+                        value={profile.bond.amountCents / 100}
+                        onChange={(e) =>
+                          update({
+                            bond: {
+                              ...profile.bond!,
+                              amountCents: Math.round(Number(e.target.value || 0) * 100),
+                            },
+                          })
+                        }
+                      />
+                    </div>
+                    <div>
+                      <Label>Expiration Date</Label>
+                      <Input
+                        type="date"
+                        value={profile.bond.expiration}
+                        onChange={(e) =>
+                          update({ bond: { ...profile.bond!, expiration: e.target.value } })
+                        }
+                      />
+                    </div>
+                  </div>
+                ) : (
+                  <button onClick={addBond} className="p-btn p-btn-ghost">
+                    <Plus className="h-3.5 w-3.5" /> Add Bond Information
+                  </button>
+                )}
+              </Panel>
+            </div>
+          }
+          aside={
+            <>
+              {flags.length > 0 && <CompanyComplianceBanner profile={profile} />}
+              <Panel title="Summary">
+                <div className="grid grid-cols-2 gap-3">
+                  <KV label="Entity Type">{profile.entityType || "—"}</KV>
+                  <KV label="DBA">{profile.dba || "—"}</KV>
+                  <KV label="Primary License">{profile.primaryQualifier.licenseNumber || "—"}</KV>
+                  <KV label="Qualifier Status">
+                    <StatusChip tone={profile.primaryQualifier.dbprStatus === "active" ? "success" : "danger"}>
+                      {profile.primaryQualifier.dbprStatus}
+                    </StatusChip>
+                  </KV>
+                  <KV label="GL Coverage">{formatCents(profile.generalLiability.coverageAmountCents)}</KV>
+                  <KV label="WC Coverage">{formatCents(profile.workersComp.coverageAmountCents)}</KV>
+                </div>
+              </Panel>
+            </>
+          }
+        />
+      </PageShell>
     </PortalShell>
   );
 }
