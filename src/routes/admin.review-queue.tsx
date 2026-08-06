@@ -4,6 +4,8 @@ import { useServerFn } from "@tanstack/react-start";
 import { Loader2 } from "lucide-react";
 
 import { PortalShell } from "@/components/portal-shell";
+import { BackendReconnecting } from "@/components/backend-reconnecting";
+import { isMissingBackendEnvError } from "@/lib/env-error";
 import { listReviewQueueFn, type ReviewQueueRow } from "@/lib/review-queue.functions";
 import { isVendorManaged } from "@/lib/project-vendors";
 
@@ -75,7 +77,11 @@ function ReviewQueuePage() {
             <Loader2 className="h-4 w-4 animate-spin" /> Loading queue…
           </div>
         ) : error ? (
-          <div className="mt-8 rounded-[3px] border border-red-200 bg-red-50 p-4 text-sm text-red-900">{error}</div>
+          isMissingBackendEnvError(error) ? (
+            <BackendReconnecting />
+          ) : (
+            <div className="mt-8 rounded-[3px] border border-red-200 bg-red-50 p-4 text-sm text-red-900">{error}</div>
+          )
         ) : rows.length === 0 ? (
           <div className="mt-8 rounded-[3px] border border-border p-8 text-center text-sm text-muted-foreground">
             Nothing awaiting review.
