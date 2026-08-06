@@ -3183,6 +3183,7 @@ export type Database = {
           id: string
           id_document_type: string | null
           id_document_url: string | null
+          job_title: string | null
           language: string
           notification_emails: string[]
           phone: string | null
@@ -3200,6 +3201,7 @@ export type Database = {
           id: string
           id_document_type?: string | null
           id_document_url?: string | null
+          job_title?: string | null
           language?: string
           notification_emails?: string[]
           phone?: string | null
@@ -3217,6 +3219,7 @@ export type Database = {
           id?: string
           id_document_type?: string | null
           id_document_url?: string | null
+          job_title?: string | null
           language?: string
           notification_emails?: string[]
           phone?: string | null

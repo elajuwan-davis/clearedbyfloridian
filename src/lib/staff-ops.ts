@@ -1,22 +1,120 @@
-// Staff assignment / internal ops — Supabase-backed (staff_assignments).
+// Staff assignment / internal ops — Supabase-backed (staff_assignments) + live admin roster.
 import { supabase } from "@/integrations/supabase/client";
 import { logAudit } from "./audit-log";
+import { nameFromEmail } from "@/lib/profile-api";
 
 export type StaffMember = {
   id: string;
   name: string;
+  /** profiles.job_title — empty string when unset (never invent a title). */
   role: string;
   email: string;
 };
 
-export const CLEARED_STAFF: StaffMember[] = [
-  { id: "elajuwan", name: "Elajuwan Wallace", role: "Senior Permit Runner", email: "elajuwan@floridianinc.com" },
-  { id: "eman", name: "Eman Youssef", role: "Permit Expediter", email: "eman@floridianinc.com" },
-  { id: "jose", name: "Jose Ramirez", role: "Plan Review Coordinator", email: "jose@floridianinc.com" },
-  { id: "paul", name: "Paul Sifford", role: "Operations Manager", email: "paul@floridianinc.com" },
-  { id: "briana", name: "Briana Torres", role: "Permit Expediter", email: "briana@floridianinc.com" },
-  { id: "marcus", name: "Marcus Odom", role: "Inspections Coordinator", email: "marcus@floridianinc.com" },
-];
+/** Cache filled by listStaffAdmins() for sync helpers (getStaffByEmail, etc.). Prefer the returned list. */
+export let CLEARED_STAFF: StaffMember[] = [];
+
+/** Coalesce concurrent listStaffAdmins() mounts onto one fetch (avoids last-write-wins on CLEARED_STAFF). */
+let staffAdminsInFlight: Promise<StaffMember[]> | null = null;
+
+type ProfileLite = {
+  id: string;
+  email: string | null;
+  display_name: string | null;
+  full_name: string | null;
+  job_title: string | null;
+};
+
+function emailLocalPart(email: string): string {
+  return (email.split("@")[0] ?? "").toLowerCase();
+}
+
+function emailDomain(email: string): string {
+  return (email.split("@")[1] ?? "").toLowerCase();
+}
+
+function preferClearedDuplicate(a: StaffMember, b: StaffMember): StaffMember {
+  const aCleared = emailDomain(a.email) === "cleared.com";
+  const bCleared = emailDomain(b.email) === "cleared.com";
+  if (aCleared && !bCleared) return a;
+  if (bCleared && !aCleared) return b;
+  return a;
+}
+
+/** Drop @test.invalid and collapse same-local-part duplicates (prefer @cleared.com). */
+export function filterStaffAdmins(rows: StaffMember[]): StaffMember[] {
+  const usable = rows.filter((s) => {
+    const email = (s.email || "").toLowerCase();
+    if (!email || !email.includes("@")) return false;
+    if (email.endsWith("@test.invalid")) return false;
+    return true;
+  });
+
+  const byLocal = new Map<string, StaffMember>();
+  for (const s of usable) {
+    const local = emailLocalPart(s.email);
+    const existing = byLocal.get(local);
+    if (!existing) {
+      byLocal.set(local, s);
+      continue;
+    }
+    byLocal.set(local, preferClearedDuplicate(existing, s));
+  }
+
+  return [...byLocal.values()].sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: "base" }));
+}
+
+function profileToStaff(p: ProfileLite): StaffMember {
+  const email = (p.email ?? "").trim();
+  const name =
+    (p.display_name || p.full_name || nameFromEmail(email || null) || "Staff").trim() || "Staff";
+  const role = (p.job_title ?? "").trim();
+  return { id: p.id, name, role, email };
+}
+
+/** Live admins from user_roles + profiles. Requires an admin session (RLS). */
+export async function listStaffAdmins(): Promise<StaffMember[]> {
+  if (staffAdminsInFlight) return staffAdminsInFlight;
+
+  staffAdminsInFlight = (async () => {
+    const { data: roles, error: rolesErr } = await (supabase.from("user_roles" as any) as any)
+      .select("user_id")
+      .eq("role", "admin");
+    if (rolesErr) throw new Error(rolesErr.message);
+    const ids = [...new Set(((roles ?? []) as Array<{ user_id: string }>).map((r) => r.user_id).filter(Boolean))];
+    if (ids.length === 0) {
+      CLEARED_STAFF = [];
+      return [];
+    }
+
+    const { data: profiles, error: profErr } = await (supabase.from("profiles" as any) as any)
+      .select("id, email, display_name, full_name, job_title")
+      .in("id", ids);
+
+    let profileRows = (profiles ?? []) as ProfileLite[];
+    if (profErr) {
+      // Column may not exist until 20260811120000_profiles_job_title.sql is applied.
+      const missingTitle = /job_title/i.test(profErr.message);
+      if (!missingTitle) throw new Error(profErr.message);
+      const { data: fallback, error: fallbackErr } = await (supabase.from("profiles" as any) as any)
+        .select("id, email, display_name, full_name")
+        .in("id", ids);
+      if (fallbackErr) throw new Error(fallbackErr.message);
+      profileRows = ((fallback ?? []) as ProfileLite[]).map((p) => ({ ...p, job_title: null }));
+    }
+
+    const staff = filterStaffAdmins(profileRows.map(profileToStaff));
+    CLEARED_STAFF = staff;
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new CustomEvent("staff-ops:staff-loaded"));
+    }
+    return staff;
+  })().finally(() => {
+    staffAdminsInFlight = null;
+  });
+
+  return staffAdminsInFlight;
+}
 
 export type Priority = "normal" | "high" | "urgent";
 

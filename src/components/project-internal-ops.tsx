@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import {
-  CLEARED_STAFF,
+  listStaffAdmins,
   emptyOps,
   getOps,
   setAssignee,
@@ -17,6 +17,7 @@ import {
   getStaffByEmail,
   type Priority,
   type ProjectOps,
+  type StaffMember,
 } from "@/lib/staff-ops";
 import { addStaffNote, listStaffNotes, type StaffNote } from "@/lib/staff-notes";
 
@@ -35,6 +36,7 @@ export function ProjectInternalOps({
   label: string;
 }) {
   const [ops, setOpsState] = useState<ProjectOps>(() => emptyOps(permitId));
+  const [staff, setStaff] = useState<StaffMember[]>([]);
   const [notes, setNotes] = useState<StaffNote[]>([]);
   const [body, setBody] = useState("");
   const [loading, setLoading] = useState(true);
@@ -50,9 +52,17 @@ export function ProjectInternalOps({
       const list = await listStaffNotes(permitId);
       if (!cancelled) setNotes(list);
     }
+    async function refreshStaff() {
+      try {
+        const rows = await listStaffAdmins();
+        if (!cancelled) setStaff(rows);
+      } catch {
+        if (!cancelled) setStaff([]);
+      }
+    }
 
     setLoading(true);
-    Promise.all([refreshOps(), refreshNotes()]).finally(() => {
+    Promise.all([refreshOps(), refreshNotes(), refreshStaff()]).finally(() => {
       if (!cancelled) setLoading(false);
     });
 
@@ -67,7 +77,9 @@ export function ProjectInternalOps({
     };
   }, [permitId]);
 
-  const assignee = getStaffByEmail(ops.assigneeEmail);
+  const assignee = getStaffByEmail(ops.assigneeEmail) ?? staff.find(
+    (s) => s.email.toLowerCase() === (ops.assigneeEmail ?? "").toLowerCase(),
+  );
 
   async function postNote() {
     if (!body.trim()) return;
@@ -104,9 +116,9 @@ export function ProjectInternalOps({
                 <SelectValue placeholder="Unassigned" />
               </SelectTrigger>
               <SelectContent>
-                {CLEARED_STAFF.map((s) => (
+                {staff.map((s) => (
                   <SelectItem key={s.id} value={s.email}>
-                    {s.name} · {s.role}
+                    {s.role ? `${s.name} · ${s.role}` : s.name}
                   </SelectItem>
                 ))}
               </SelectContent>

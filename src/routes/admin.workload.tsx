@@ -1,9 +1,10 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { Fragment, useCallback, useEffect, useState } from "react";
-import { ChevronDown, Flag, AlertTriangle } from "lucide-react";
+import { ChevronDown, Flag, AlertTriangle, Loader2 } from "lucide-react";
 
 import { PortalShell } from "@/components/portal-shell";
-import { CLEARED_STAFF, getAllOps, type ProjectOps } from "@/lib/staff-ops";
+import { useSession } from "@/lib/use-session";
+import { listStaffAdmins, getAllOps, type ProjectOps, type StaffMember } from "@/lib/staff-ops";
 import { supabase } from "@/integrations/supabase/client";
 import { projectStatusMeta, toneClass, type ProjectStatus } from "@/lib/status-badges";
 
@@ -43,59 +44,76 @@ type WorkloadItem = {
 };
 
 type StaffRow = {
-  staff: (typeof CLEARED_STAFF)[number];
+  staff: StaffMember;
   open: WorkloadItem[];
   escalated: WorkloadItem[];
   all: WorkloadItem[];
 };
 
 function WorkloadPage() {
+  const navigate = useNavigate();
+  const session = useSession();
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
   const [rows, setRows] = useState<StaffRow[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
-    const ops = await getAllOps();
-    const permitIds = [...new Set(ops.map((o) => o.permitId))];
-    const permitMap = new Map<string, PermitSnap>();
+    setError(null);
+    try {
+      const [staff, ops] = await Promise.all([listStaffAdmins(), getAllOps()]);
+      const permitIds = [...new Set(ops.map((o) => o.permitId))];
+      const permitMap = new Map<string, PermitSnap>();
 
-    if (permitIds.length > 0) {
-      const { data } = await supabase
-        .from("permits")
-        .select("id, project_name, city, municipality, job_address, status")
-        .in("id", permitIds);
-      for (const p of (data ?? []) as PermitSnap[]) {
-        permitMap.set(p.id, p);
+      if (permitIds.length > 0) {
+        const { data } = await supabase
+          .from("permits")
+          .select("id, project_name, city, municipality, job_address, status")
+          .in("id", permitIds);
+        for (const p of (data ?? []) as PermitSnap[]) {
+          permitMap.set(p.id, p);
+        }
       }
+
+      const items: WorkloadItem[] = ops
+        .map((o) => {
+          const permit = permitMap.get(o.permitId);
+          return permit ? { ops: o, permit } : null;
+        })
+        .filter((x): x is WorkloadItem => !!x);
+
+      setRows(
+        staff.map((member) => {
+          const mine = items.filter(
+            (i) => i.ops.assigneeEmail?.toLowerCase() === member.email.toLowerCase(),
+          );
+          const open = mine.filter((i) => OPEN_STATUSES.has(i.permit.status));
+          const escalated = mine.filter((i) => i.ops.escalated);
+          return { staff: member, open, escalated, all: mine };
+        }),
+      );
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to load workload");
+      setRows([]);
+    } finally {
+      setLoading(false);
     }
-
-    const items: WorkloadItem[] = ops
-      .map((o) => {
-        const permit = permitMap.get(o.permitId);
-        return permit ? { ops: o, permit } : null;
-      })
-      .filter((x): x is WorkloadItem => !!x);
-
-    setRows(
-      CLEARED_STAFF.map((staff) => {
-        const mine = items.filter(
-          (i) => i.ops.assigneeEmail?.toLowerCase() === staff.email.toLowerCase(),
-        );
-        const open = mine.filter((i) => OPEN_STATUSES.has(i.permit.status));
-        const escalated = mine.filter((i) => i.ops.escalated);
-        return { staff, open, escalated, all: mine };
-      }),
-    );
-    setLoading(false);
   }, []);
 
   useEffect(() => {
-    load();
+    if (session.loading) return;
+    if (!session.isAdmin) {
+      navigate({ to: "/portal/permits" });
+      return;
+    }
+    void load();
     const refresh = () => { void load(); };
     window.addEventListener("staff-ops:changed", refresh);
     return () => window.removeEventListener("staff-ops:changed", refresh);
-  }, [load]);
+  }, [load, navigate, session.loading, session.isAdmin]);
+
+  if (session.loading || !session.isAdmin) return null;
 
   return (
     <PortalShell>
@@ -103,11 +121,19 @@ function WorkloadPage() {
         <div className="label-eyebrow text-obsidian/50">Admin · Internal Ops</div>
         <h1 className="display-serif mt-2 text-4xl leading-tight text-obsidian">Staff Workload</h1>
         <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
-          Open assignment load from staff_assignments, grouped by assignee. An amber or red indicator flags staff carrying 15 or more open jobs.
+          Open assignment load from staff_assignments, grouped by real admin accounts. An amber or red indicator flags staff carrying 15 or more open jobs.
         </p>
 
+        {error && (
+          <p className="mt-6 rounded-[3px] border border-red-500/40 bg-red-50 px-4 py-3 text-sm text-red-800">
+            Could not load workload: {error}
+          </p>
+        )}
+
         {loading ? (
-          <p className="mt-8 text-sm text-obsidian/50">Loading assignments…</p>
+          <p className="mt-8 inline-flex items-center gap-2 text-sm text-obsidian/50">
+            <Loader2 className="h-4 w-4 animate-spin" /> Loading admin roster…
+          </p>
         ) : (
           <div className="mt-8 overflow-x-auto rounded-[3px] border border-border">
             <table className="w-full min-w-[720px] border-collapse text-sm">
@@ -121,85 +147,100 @@ function WorkloadPage() {
                 </tr>
               </thead>
               <tbody>
-                {rows.map(({ staff, open, escalated, all }) => {
-                  const overloaded = open.length >= 15;
-                  const heavy = open.length >= 10 && open.length < 15;
-                  const isOpen = !!expanded[staff.id];
-                  return (
-                    <Fragment key={staff.id}>
-                      <tr className="border-b border-border last:border-0">
-                        <td className="px-4 py-3 font-medium text-obsidian">{staff.name}</td>
-                        <td className="px-4 py-3 text-obsidian/70">{staff.role}</td>
-                        <td className="px-4 py-3">
-                          <span className={`inline-flex items-center gap-1.5 rounded-[3px] border px-2 py-1 font-mono text-[11px] tabular-nums ${
-                            overloaded ? "border-red-500/50 bg-red-50 text-red-800"
-                            : heavy ? "border-amber-500/50 bg-amber-50 text-amber-800"
-                            : "border-obsidian/15 bg-white text-obsidian/70"
-                          }`}>
-                            {overloaded && <AlertTriangle className="h-3 w-3" />}
-                            {open.length}
-                          </span>
-                        </td>
-                        <td className="px-4 py-3">
-                          {escalated.length > 0 ? (
-                            <span className="inline-flex items-center gap-1.5 rounded-[3px] border border-red-500/40 bg-red-50 px-2 py-1 font-mono text-[11px] tabular-nums text-red-800">
-                              <Flag className="h-3 w-3" /> {escalated.length}
+                {rows.length === 0 ? (
+                  <tr>
+                    <td colSpan={5} className="px-4 py-10 text-center text-obsidian/50">
+                      No admin accounts found.
+                    </td>
+                  </tr>
+                ) : (
+                  rows.map(({ staff, open, escalated, all }) => {
+                    const overloaded = open.length >= 15;
+                    const heavy = open.length >= 10 && open.length < 15;
+                    const isOpen = !!expanded[staff.id];
+                    return (
+                      <Fragment key={staff.id}>
+                        <tr className="border-b border-border last:border-0">
+                          <td className="px-4 py-3 font-medium text-obsidian">
+                            <div>{staff.name}</div>
+                            <div className="mt-0.5 font-mono text-[10px] font-normal normal-case tracking-normal text-obsidian/45">
+                              {staff.email}
+                            </div>
+                          </td>
+                          <td className="px-4 py-3 text-obsidian/70">
+                            {staff.role ? staff.role : <span className="text-obsidian/35">—</span>}
+                          </td>
+                          <td className="px-4 py-3">
+                            <span className={`inline-flex items-center gap-1.5 rounded-[3px] border px-2 py-1 font-mono text-[11px] tabular-nums ${
+                              overloaded ? "border-red-500/50 bg-red-50 text-red-800"
+                              : heavy ? "border-amber-500/50 bg-amber-50 text-amber-800"
+                              : "border-obsidian/15 bg-white text-obsidian/70"
+                            }`}>
+                              {overloaded && <AlertTriangle className="h-3 w-3" />}
+                              {open.length}
                             </span>
-                          ) : (
-                            <span className="text-obsidian/40">0</span>
-                          )}
-                        </td>
-                        <td className="px-4 py-3 text-right">
-                          <button
-                            type="button"
-                            onClick={() => setExpanded((e) => ({ ...e, [staff.id]: !e[staff.id] }))}
-                            className="inline-flex min-h-[44px] items-center gap-1 rounded-[3px] px-2 font-mono text-[10px] uppercase tracking-[0.12em] text-obsidian/60 hover:text-obsidian"
-                          >
-                            <ChevronDown className={`h-4 w-4 transition-transform ${isOpen ? "rotate-180" : ""}`} />
-                            {all.length} total
-                          </button>
-                        </td>
-                      </tr>
-                      {isOpen && (
-                        <tr className="border-b border-border bg-paper-warm/40">
-                          <td colSpan={5} className="px-4 py-3">
-                            {all.length === 0 ? (
-                              <p className="text-sm text-obsidian/50">No permits assigned.</p>
+                          </td>
+                          <td className="px-4 py-3">
+                            {escalated.length > 0 ? (
+                              <span className="inline-flex items-center gap-1.5 rounded-[3px] border border-red-500/40 bg-red-50 px-2 py-1 font-mono text-[11px] tabular-nums text-red-800">
+                                <Flag className="h-3 w-3" /> {escalated.length}
+                              </span>
                             ) : (
-                              <ul className="space-y-2">
-                                {all.map(({ ops, permit }) => {
-                                  const status = permit.status as ProjectStatus;
-                                  const meta = projectStatusMeta[status] ?? {
-                                    label: permit.status,
-                                    tone: "neutral" as const,
-                                  };
-                                  const place = permit.municipality || permit.city || permit.job_address;
-                                  return (
-                                    <li key={permit.id} className="flex flex-wrap items-center justify-between gap-2 border-b border-obsidian/10 pb-2 last:border-0 last:pb-0">
-                                      <Link to="/portal/permits/$id" params={{ id: permit.id }} className="text-sm text-obsidian hover:underline">
-                                        {permit.project_name} · {place}
-                                      </Link>
-                                      <div className="flex items-center gap-2">
-                                        {ops.escalated && (
-                                          <span className="inline-flex items-center gap-1 rounded-[3px] border border-red-500/40 bg-red-50 px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.1em] text-red-800">
-                                            <Flag className="h-2.5 w-2.5" /> Escalated
-                                          </span>
-                                        )}
-                                        <span className={`inline-flex items-center rounded-[3px] border px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.1em] ${toneClass[meta.tone]}`}>
-                                          {meta.label}
-                                        </span>
-                                      </div>
-                                    </li>
-                                  );
-                                })}
-                              </ul>
+                              <span className="text-obsidian/40">0</span>
                             )}
                           </td>
+                          <td className="px-4 py-3 text-right">
+                            <button
+                              type="button"
+                              onClick={() => setExpanded((e) => ({ ...e, [staff.id]: !e[staff.id] }))}
+                              className="inline-flex min-h-[44px] items-center gap-1 rounded-[3px] px-2 font-mono text-[10px] uppercase tracking-[0.12em] text-obsidian/60 hover:text-obsidian"
+                            >
+                              <ChevronDown className={`h-4 w-4 transition-transform ${isOpen ? "rotate-180" : ""}`} />
+                              {all.length} total
+                            </button>
+                          </td>
                         </tr>
-                      )}
-                    </Fragment>
-                  );
-                })}
+                        {isOpen && (
+                          <tr className="border-b border-border bg-paper-warm/40">
+                            <td colSpan={5} className="px-4 py-3">
+                              {all.length === 0 ? (
+                                <p className="text-sm text-obsidian/50">No permits assigned.</p>
+                              ) : (
+                                <ul className="space-y-2">
+                                  {all.map(({ ops, permit }) => {
+                                    const status = permit.status as ProjectStatus;
+                                    const meta = projectStatusMeta[status] ?? {
+                                      label: permit.status,
+                                      tone: "neutral" as const,
+                                    };
+                                    const place = permit.municipality || permit.city || permit.job_address;
+                                    return (
+                                      <li key={permit.id} className="flex flex-wrap items-center justify-between gap-2 border-b border-obsidian/10 pb-2 last:border-0 last:pb-0">
+                                        <Link to="/portal/permits/$id" params={{ id: permit.id }} className="text-sm text-obsidian hover:underline">
+                                          {permit.project_name} · {place}
+                                        </Link>
+                                        <div className="flex items-center gap-2">
+                                          {ops.escalated && (
+                                            <span className="inline-flex items-center gap-1 rounded-[3px] border border-red-500/40 bg-red-50 px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.1em] text-red-800">
+                                              <Flag className="h-2.5 w-2.5" /> Escalated
+                                            </span>
+                                          )}
+                                          <span className={`inline-flex items-center rounded-[3px] border px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.1em] ${toneClass[meta.tone]}`}>
+                                            {meta.label}
+                                          </span>
+                                        </div>
+                                      </li>
+                                    );
+                                  })}
+                                </ul>
+                              )}
+                            </td>
+                          </tr>
+                        )}
+                      </Fragment>
+                    );
+                  })
+                )}
               </tbody>
             </table>
           </div>
