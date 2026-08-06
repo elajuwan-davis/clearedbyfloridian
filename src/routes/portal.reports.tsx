@@ -2,9 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { getMyWeeklyReportFn, type WeeklyReport } from "@/lib/weekly-reports.functions";
-import { PortalShell } from "@/components/portal-shell";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
+import { PageShell, SectionHeader, TableShell } from "@/components/ui-kit";
 import { isInternalUser } from "@/lib/is-internal-user";
 import {
   BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend,
@@ -40,32 +39,26 @@ function ReportsPage() {
   useEffect(() => setInternal(isInternalUser()), []);
 
   return (
-    <PortalShell>
-      <div className="mb-8">
-        <div className="label-eyebrow mb-3">Reporting &amp; Analytics</div>
-        <h1
-          className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight leading-[1.05]"
-          style={{ fontFamily: "'Space Grotesk','Inter',system-ui,sans-serif", color: "#0F1E2E", letterSpacing: "-0.02em" }}
-        >
-          Reports
-        </h1>
-        <p className="mt-2 text-sm text-obsidian/60 max-w-2xl">
-          Track permit throughput, turnaround, and cost performance across your projects
-          {internal ? " and the full Cléared platform." : "."}
-        </p>
-      </div>
-
+    <PageShell
+      crumbs={[{ label: "Workspace" }, { label: "Reports" }]}
+      title="Reports"
+      meta={
+        internal
+          ? "Throughput, turnaround and cost across your projects and the platform"
+          : "Throughput, turnaround and cost across your projects"
+      }
+    >
       <Tabs defaultValue="gc" className="w-full">
-        <TabsList className="mb-6 h-auto flex-wrap gap-1 bg-secondary/60 p-1">
-          <TabsTrigger value="gc" className="min-h-11 px-4 font-subline text-xs tracking-wide uppercase">
+        <TabsList className="mb-3 h-auto flex-wrap gap-1 bg-white/[0.04] p-1">
+          <TabsTrigger value="gc" className="h-7 px-3 text-[12px]">
             My Reports
           </TabsTrigger>
           {internal && (
-            <TabsTrigger value="internal" className="min-h-11 px-4 font-subline text-xs tracking-wide uppercase">
+            <TabsTrigger value="internal" className="h-7 px-3 text-[12px]">
               Cléared Internal
             </TabsTrigger>
           )}
-          <TabsTrigger value="weekly" className="min-h-11 px-4 font-subline text-xs tracking-wide uppercase">
+          <TabsTrigger value="weekly" className="h-7 px-3 text-[12px]">
             Weekly Digest
           </TabsTrigger>
         </TabsList>
@@ -84,7 +77,7 @@ function ReportsPage() {
           <WeeklyDigest />
         </TabsContent>
       </Tabs>
-    </PortalShell>
+    </PageShell>
   );
 }
 
@@ -95,23 +88,30 @@ function ReportsPage() {
 function StatCard({
   label, value, icon: Icon, accent, sub,
 }: { label: string; value: string; icon: typeof FolderOpen; accent?: boolean; sub?: string }) {
-  const accentColor = accent ? COLORS.sky : COLORS.obsidian;
   return (
-    <div
-      className="relative overflow-hidden p-5 rounded-lg border bg-white transition-shadow hover:shadow-md"
-      style={{ borderColor: "#E2E8F0", borderLeft: `3px solid ${accentColor}` }}
-    >
-      <div className="flex items-center gap-2" style={{ color: "#7890A4" }}>
-        <Icon className="h-4 w-4" strokeWidth={1.5} />
-        <span className="font-mono text-[10px] font-medium uppercase tracking-[0.14em]">{label}</span>
+    <div className="p-plate p-hover-plate flex min-w-0 flex-col gap-1.5 px-3 py-2.5">
+      <div className="flex min-w-0 items-center gap-2">
+        <span
+          className={`grid h-5 w-5 shrink-0 place-items-center rounded-md ${
+            accent ? "bg-[#3B82F6]/12 text-[#7DB3FB]" : "bg-white/[0.06] text-muted-foreground"
+          }`}
+        >
+          <Icon className="h-3 w-3" strokeWidth={1.75} />
+        </span>
+        <span className="min-w-0 flex-1 truncate text-[11px] font-medium uppercase tracking-[0.06em] text-muted-foreground">
+          {label}
+        </span>
       </div>
-      <div
-        className="mt-4 text-3xl font-bold tabular-nums"
-        style={{ color: accentColor, fontFamily: "'Space Grotesk','Inter',system-ui,sans-serif" }}
-      >
-        {value}
+      <div className="min-w-0">
+        <div
+          className={`truncate text-[20px] font-semibold leading-none tracking-[-0.03em] ${
+            accent ? "text-[#7DB3FB]" : "text-foreground"
+          }`}
+        >
+          {value}
+        </div>
+        {sub && <div className="mt-1 truncate text-[11.5px] text-muted-foreground">{sub}</div>}
       </div>
-      {sub && <div className="mt-1 text-xs text-obsidian/50">{sub}</div>}
     </div>
   );
 }
@@ -120,37 +120,29 @@ function ReportSection({
   title, description, onExport, children,
 }: { title: string; description?: string; onExport: () => void; children: React.ReactNode }) {
   return (
-    <section className="border hairline bg-white rounded-[3px] p-5 mb-6">
-      <div className="flex flex-wrap items-start justify-between gap-3 mb-4">
-        <div>
-          <h2 className="text-base font-semibold text-obsidian" style={{ fontFamily: "'Space Grotesk',sans-serif" }}>
-            {title}
-          </h2>
-          {description && <p className="mt-1 text-xs text-obsidian/55 max-w-xl">{description}</p>}
-        </div>
-        <Button
-          type="button"
-          variant="outline"
-          onClick={onExport}
-          className="h-11 min-h-11 px-4 rounded-[3px] font-subline text-xs tracking-wide gap-2 shrink-0"
-        >
-          <Download className="h-3.5 w-3.5" strokeWidth={1.75} />
-          Export CSV
-        </Button>
-      </div>
-      {children}
+    <section className="p-plate mb-3 min-w-0 overflow-hidden">
+      <SectionHeader
+        title={title}
+        meta={description}
+        action={
+          <button type="button" onClick={onExport} className="p-btn p-btn-ghost p-btn-sm">
+            <Download className="h-3 w-3" strokeWidth={1.75} /> CSV
+          </button>
+        }
+      />
+      <div className="px-3 pb-3">{children}</div>
     </section>
   );
 }
 
 function BarRow({ data, dataKey = "count", color = COLORS.sky }: { data: CountRow[]; dataKey?: string; color?: string }) {
   return (
-    <div className="h-72 w-full">
+    <div className="h-52 w-full">
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={data} margin={{ top: 8, right: 8, left: -16, bottom: 8 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" />
-          <XAxis dataKey="key" tick={{ fontSize: 11 }} interval={0} angle={-20} textAnchor="end" height={50} />
-          <YAxis tick={{ fontSize: 11 }} allowDecimals={false} />
+          <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.07)" />
+          <XAxis dataKey="key" tick={{ fontSize: 10, fill: "rgba(255,255,255,0.55)" }} interval={0} angle={-20} textAnchor="end" height={50} />
+          <YAxis tick={{ fontSize: 10, fill: "rgba(255,255,255,0.55)" }} allowDecimals={false} />
           <Tooltip />
           <Bar dataKey={dataKey} fill={color} radius={[3, 3, 0, 0]} />
         </BarChart>
@@ -161,27 +153,27 @@ function BarRow({ data, dataKey = "count", color = COLORS.sky }: { data: CountRo
 
 function SimpleTable({ headers, rows }: { headers: string[]; rows: (string | number)[][] }) {
   return (
-    <div className="overflow-x-auto mt-4 border hairline rounded-[3px]">
-      <table className="w-full text-sm min-w-[420px]">
+    <div className="mt-2">
+      <TableShell maxHeight={260}>
         <thead>
-          <tr className="border-b hairline bg-secondary/40">
+          <tr>
             {headers.map((h) => (
-              <th key={h} className="text-left font-mono text-[10px] uppercase tracking-[0.12em] text-obsidian/60 px-3 py-2.5">
-                {h}
-              </th>
+              <th key={h}>{h}</th>
             ))}
           </tr>
         </thead>
         <tbody>
           {rows.map((r, i) => (
-            <tr key={i} className="border-b hairline last:border-0">
+            <tr key={i}>
               {r.map((cell, j) => (
-                <td key={j} className="px-3 py-2.5 text-obsidian tabular-nums">{cell}</td>
+                <td key={j} className="tabular-nums">
+                  {cell}
+                </td>
               ))}
             </tr>
           ))}
         </tbody>
-      </table>
+      </TableShell>
     </div>
   );
 }
@@ -228,11 +220,11 @@ function InternalReports() {
     ? Math.round((correctionRate.reduce((s, r) => s + r.value, 0) / correctionRate.length) * 10) / 10
     : 0;
 
-  if (loading) return <div className="py-10 text-obsidian/60">Loading reports…</div>;
+  if (loading) return <div className="py-10 text-[12px] text-muted-foreground">Loading reports…</div>;
 
   return (
     <div>
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-8">
+      <div className="mb-3 grid grid-cols-2 gap-2 lg:grid-cols-4">
         <StatCard label="Total Permits" value={String(totalPermits)} icon={FolderOpen} />
         <StatCard label="Avg Correction Rate" value={`${avgCorrectionRate}%`} icon={ShieldAlert} accent />
         <StatCard label="Permit Fees Collected" value={fmtMoney(totalFees)} icon={DollarSign} />
@@ -250,7 +242,7 @@ function InternalReports() {
           )
         }
       >
-        <div className="flex flex-wrap gap-2 mb-4">
+        <div className="mb-2 flex flex-wrap gap-1.5">
           {([
             ["month", "By Month"],
             ["jurisdiction", "By Jurisdiction"],
@@ -260,12 +252,7 @@ function InternalReports() {
               key={val}
               type="button"
               onClick={() => setGrouping(val)}
-              className="min-h-11 px-3.5 rounded-[3px] border font-subline text-xs uppercase tracking-wide transition-colors"
-              style={
-                grouping === val
-                  ? { backgroundColor: COLORS.obsidian, color: "#fff", borderColor: COLORS.obsidian }
-                  : { backgroundColor: "transparent", color: COLORS.obsidian, borderColor: "#E2E8F0" }
-              }
+              className={`p-btn p-btn-sm ${grouping === val ? "p-btn-primary" : "p-btn-ghost"}`}
             >
               {label}
             </button>
@@ -317,12 +304,12 @@ function InternalReports() {
           )
         }
       >
-        <div className="h-72 w-full">
+        <div className="h-52 w-full">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={fees} margin={{ top: 8, right: 8, left: -16, bottom: 8 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" />
-              <XAxis dataKey="month" tick={{ fontSize: 11 }} />
-              <YAxis tick={{ fontSize: 11 }} tickFormatter={(v) => `$${Math.round(v / 100000) / 10}k`} />
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.07)" />
+              <XAxis dataKey="month" tick={{ fontSize: 10, fill: "rgba(255,255,255,0.55)" }} />
+              <YAxis tick={{ fontSize: 10, fill: "rgba(255,255,255,0.55)" }} tickFormatter={(v) => `$${Math.round(v / 100000) / 10}k`} />
               <Tooltip formatter={(v: number) => fmtMoney(v)} />
               <Legend />
               <Bar dataKey="permitFeesCents" name="Permit Fees" fill={COLORS.sky} radius={[3, 3, 0, 0]} />
@@ -343,12 +330,12 @@ function InternalReports() {
           downloadCsv("open-vs-closed.csv", ["Month", "Open", "Closed"], openClosed.map((r) => [r.month, r.open, r.closed]))
         }
       >
-        <div className="h-72 w-full">
+        <div className="h-52 w-full">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={openClosed} margin={{ top: 8, right: 8, left: -16, bottom: 8 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" />
-              <XAxis dataKey="month" tick={{ fontSize: 11 }} />
-              <YAxis tick={{ fontSize: 11 }} allowDecimals={false} />
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.07)" />
+              <XAxis dataKey="month" tick={{ fontSize: 10, fill: "rgba(255,255,255,0.55)" }} />
+              <YAxis tick={{ fontSize: 10, fill: "rgba(255,255,255,0.55)" }} allowDecimals={false} />
               <Tooltip />
               <Legend />
               <Line type="monotone" dataKey="open" name="Open" stroke={COLORS.amber} strokeWidth={2} dot={{ r: 3 }} />
@@ -364,12 +351,12 @@ function InternalReports() {
 
 function MunicipalityBarChart({ data, suffix, color }: { data: MunicipalityMetric[]; suffix: string; color: string }) {
   return (
-    <div className="h-72 w-full">
+    <div className="h-52 w-full">
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={data} margin={{ top: 8, right: 8, left: -16, bottom: 8 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" />
-          <XAxis dataKey="municipality" tick={{ fontSize: 11 }} interval={0} angle={-20} textAnchor="end" height={55} />
-          <YAxis tick={{ fontSize: 11 }} />
+          <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.07)" />
+          <XAxis dataKey="municipality" tick={{ fontSize: 10, fill: "rgba(255,255,255,0.55)" }} interval={0} angle={-20} textAnchor="end" height={55} />
+          <YAxis tick={{ fontSize: 10, fill: "rgba(255,255,255,0.55)" }} />
           <Tooltip formatter={(v: number) => `${v}${suffix}`} />
           <Bar dataKey="value" fill={color} radius={[3, 3, 0, 0]} />
         </BarChart>
@@ -413,16 +400,15 @@ function GcReports() {
     { key: "Cléared Platform Avg", value: platformCycle },
   ];
 
-  if (loading) return <div className="py-10 text-obsidian/60">Loading reports…</div>;
+  if (loading) return <div className="py-10 text-[12px] text-muted-foreground">Loading reports…</div>;
 
   return (
     <div>
-      <div className="mb-6 flex items-center gap-2 text-obsidian/60">
-        <Building2 className="h-4 w-4" strokeWidth={1.75} />
-        <span className="font-mono text-[10px] uppercase tracking-[0.14em]">Showing data for {name}</span>
+      <div className="mb-3 flex items-center gap-1.5 text-[11.5px] text-muted-foreground">
+        <Building2 className="h-3 w-3" strokeWidth={1.75} /> Showing data for {name}
       </div>
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-8">
+      <div className="mb-3 grid grid-cols-2 gap-2 lg:grid-cols-4">
         <StatCard label="Total Permits" value={String(projects.length)} icon={FolderOpen} />
         <StatCard label="Avg Cycle Time" value={`${gcCycle}d`} icon={Clock} accent sub={`Platform avg: ${platformCycle}d`} />
         <StatCard label="Permit Fees Paid" value={fmtMoney(cost.permitFeesCents)} icon={DollarSign} />
@@ -443,12 +429,12 @@ function GcReports() {
         description="Your average submission-to-issuance time compared to the anonymized Cléared platform average."
         onExport={() => downloadCsv("gc-cycle-time.csv", ["Group", "Avg Days"], cycleData.map((r) => [r.key, r.value]))}
       >
-        <div className="h-72 w-full">
+        <div className="h-52 w-full">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={cycleData} margin={{ top: 8, right: 8, left: -16, bottom: 8 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" />
-              <XAxis dataKey="key" tick={{ fontSize: 11 }} />
-              <YAxis tick={{ fontSize: 11 }} />
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.07)" />
+              <XAxis dataKey="key" tick={{ fontSize: 10, fill: "rgba(255,255,255,0.55)" }} />
+              <YAxis tick={{ fontSize: 10, fill: "rgba(255,255,255,0.55)" }} />
               <Tooltip formatter={(v: number) => `${v} days`} />
               <Bar dataKey="value" fill={COLORS.sky} radius={[3, 3, 0, 0]} />
             </BarChart>
@@ -501,15 +487,15 @@ function WeeklyDigest() {
       .finally(() => setLoading(false));
   }, [fetchReport]);
 
-  if (loading) return <div className="py-10 text-obsidian/60">Loading report…</div>;
-  if (!report) return <div className="py-10 text-obsidian/60">No team data yet.</div>;
+  if (loading) return <div className="py-10 text-[12px] text-muted-foreground">Loading report…</div>;
+  if (!report) return <div className="py-10 text-[12px] text-muted-foreground">No team data yet.</div>;
 
   const today = new Date().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
 
   return (
-    <div className="space-y-6">
-      <p className="text-sm text-obsidian/60 flex items-center gap-2">
-        <Calendar className="h-3.5 w-3.5" /> Week of {today} — mailed every Monday to your team.
+    <div className="space-y-3">
+      <p className="flex items-center gap-1.5 text-[11.5px] text-muted-foreground">
+        <Calendar className="h-3 w-3" /> Week of {today} — mailed every Monday to your team.
       </p>
 
       <DigestCard
@@ -518,12 +504,12 @@ function WeeklyDigest() {
         count={report.active_permits.length}
         empty="No active permits."
       >
-        <ul className="divide-y hairline">
+        <ul className="divide-y divide-white/[0.06]">
           {report.active_permits.map((p) => (
-            <li key={p.id} className="py-2 flex items-center gap-3 text-sm">
-              <span className="flex-1 text-obsidian truncate">{p.project_name}</span>
-              <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-obsidian/60">{p.permit_number ?? "—"}</span>
-              <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-obsidian/80">{p.status}</span>
+            <li key={p.id} className="flex items-center gap-3 py-1.5 text-[12.5px]">
+              <span className="min-w-0 flex-1 truncate">{p.project_name}</span>
+              <span className="shrink-0 text-[11.5px] text-muted-foreground">{p.permit_number ?? "—"}</span>
+              <span className="shrink-0 text-[11.5px]">{p.status}</span>
             </li>
           ))}
         </ul>
@@ -535,11 +521,11 @@ function WeeklyDigest() {
         count={report.compliance_flags.length}
         empty="All subcontractor docs are current."
       >
-        <ul className="divide-y hairline">
+        <ul className="divide-y divide-white/[0.06]">
           {report.compliance_flags.map((f, i) => (
-            <li key={i} className="py-2 flex items-center gap-3 text-sm">
-              <span className="flex-1 text-obsidian truncate">{f.subcontractor}</span>
-              <span className="text-oxblood font-mono text-[10px] uppercase tracking-[0.12em]">{f.issue}</span>
+            <li key={i} className="flex items-center gap-3 py-1.5 text-[12.5px]">
+              <span className="min-w-0 flex-1 truncate">{f.subcontractor}</span>
+              <span className="shrink-0 text-[11.5px] text-[#F87171]">{f.issue}</span>
             </li>
           ))}
         </ul>
@@ -551,11 +537,11 @@ function WeeklyDigest() {
         count={report.hoa_status.length}
         empty="No open HOA submittals."
       >
-        <ul className="divide-y hairline">
+        <ul className="divide-y divide-white/[0.06]">
           {report.hoa_status.map((h) => (
-            <li key={h.id} className="py-2 flex items-center gap-3 text-sm">
-              <span className="flex-1 text-obsidian truncate">{h.community ?? "—"}</span>
-              <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-obsidian/80">{h.status}</span>
+            <li key={h.id} className="flex items-center gap-3 py-1.5 text-[12.5px]">
+              <span className="min-w-0 flex-1 truncate">{h.community ?? "—"}</span>
+              <span className="shrink-0 text-[11.5px]">{h.status}</span>
             </li>
           ))}
         </ul>
@@ -567,11 +553,11 @@ function WeeklyDigest() {
         count={report.corrections.length}
         empty="No new corrections logged."
       >
-        <ul className="divide-y hairline">
+        <ul className="divide-y divide-white/[0.06]">
           {report.corrections.map((c, i) => (
-            <li key={i} className="py-2 text-sm">
-              <div className="text-obsidian">{c.correction_text}</div>
-              <div className="mt-0.5 text-[11px] font-mono uppercase tracking-[0.12em] text-obsidian/50">
+            <li key={i} className="py-1.5 text-[12.5px]">
+              <div>{c.correction_text}</div>
+              <div className="mt-0.5 text-[11.5px] text-muted-foreground">
                 {c.municipality_name ?? "—"}
               </div>
             </li>
@@ -592,15 +578,23 @@ function DigestCard({
   children: React.ReactNode;
 }) {
   return (
-    <section className="border hairline bg-white rounded-[3px] p-5">
-      <div className="flex items-baseline justify-between gap-3 mb-3">
-        <div className="flex items-center gap-2 text-obsidian">
-          {icon}
-          <h2 className="text-sm font-semibold">{title}</h2>
-        </div>
-        <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/50">{count}</span>
+    <section className="p-plate min-w-0 overflow-hidden">
+      <SectionHeader
+        title={
+          <span className="inline-flex items-center gap-1.5">
+            {icon}
+            {title}
+          </span>
+        }
+        meta={String(count)}
+      />
+      <div className="px-3 pb-3">
+        {count === 0 ? (
+          <p className="text-[12px] text-muted-foreground">{empty}</p>
+        ) : (
+          children
+        )}
       </div>
-      {count === 0 ? <p className="text-sm text-obsidian/50 italic">{empty}</p> : children}
     </section>
   );
 }

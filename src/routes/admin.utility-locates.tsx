@@ -21,6 +21,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { PROJECTS, fullAddress } from "@/lib/projects-data";
+import { StatusChip, type MetricTone } from "@/components/ui-kit";
 import { MapPin, Plus } from "lucide-react";
 import { toast } from "sonner";
 
@@ -41,11 +42,11 @@ export const Route = createFileRoute("/admin/utility-locates")({
 
 type LocateStatus = "submitted" | "cleared" | "action_required" | "expired";
 
-const STATUS_META: Record<LocateStatus, { label: string; className: string }> = {
-  submitted: { label: "Submitted", className: "border-sky-600/30 bg-sky-50 text-sky-800" },
-  cleared: { label: "Cleared", className: "border-emerald-600/30 bg-emerald-50 text-emerald-800" },
-  action_required: { label: "Action Required", className: "border-red-500/40 bg-red-50 text-red-700" },
-  expired: { label: "Expired", className: "border-obsidian/15 bg-obsidian/[0.06] text-obsidian/60" },
+const STATUS_META: Record<LocateStatus, { label: string; tone: MetricTone }> = {
+  submitted: { label: "Submitted", tone: "info" },
+  cleared: { label: "Cleared", tone: "success" },
+  action_required: { label: "Action Required", tone: "danger" },
+  expired: { label: "Expired", tone: "neutral" },
 };
 
 const EXCAVATION_TYPES = [
@@ -126,11 +127,7 @@ function minDigDate(): string {
 
 function StatusPill({ status }: { status: LocateStatus }) {
   const m = STATUS_META[status];
-  return (
-    <span className={`inline-flex items-center rounded-[3px] border px-2 py-1 font-mono text-[10px] uppercase tracking-[0.14em] ${m.className}`}>
-      {m.label}
-    </span>
-  );
+  return <StatusChip tone={m.tone}>{m.label}</StatusChip>;
 }
 
 function UtilityLocatesPage() {

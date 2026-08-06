@@ -2,8 +2,8 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { PortalShell } from "@/components/portal-shell";
-import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { PageShell, Panel, SearchInput, StatusChip } from "@/components/ui-kit";
 import { MunicipalityContactsTab } from "@/components/municipal-contacts";
 import { MUNICIPALITIES } from "@/lib/municipalities";
 import {
@@ -111,42 +111,40 @@ function BuildingDeptLoginsPage() {
 
   return (
     <PortalShell>
-      <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
-        <div className="flex flex-wrap items-end justify-between gap-4 border-b border-obsidian/10 pb-8">
-          <div>
-            <div className="eyebrow text-obsidian/50">Credentials Vault</div>
-            <h1 className="display-serif mt-3 text-4xl sm:text-5xl text-obsidian">Building Dept Logins</h1>
-            <p className="mt-2 text-sm text-obsidian/60">
-              Encrypted portal credentials, contractor registrations, and document expirations.
-            </p>
-          </div>
-          <Button asChild variant="dark" className="rounded-[3px] gap-2">
-            <Link to="/building-dept-logins/submit">
-              <Plus className="h-4 w-4" /> Submit New Login
-            </Link>
-          </Button>
-        </div>
-
-        <div className="mt-6 relative max-w-md">
-          <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-obsidian/40" />
-          <input
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search municipalities…"
-            className="block w-full border border-obsidian/15 bg-white pl-9 pr-3 py-2 text-sm text-obsidian placeholder:text-obsidian/40 focus:border-obsidian/40 focus:outline-none rounded-[3px]"
-          />
-        </div>
-
-        <div className="mt-8 border border-obsidian/15 bg-white">
+      <PageShell
+        crumbs={[{ label: "Workspace" }, { label: "Building Dept Logins" }]}
+        title="Building Dept Logins"
+        meta={
+          loading
+            ? "Loading vault…"
+            : `${rows.length} jurisdictions · encrypted credentials & document expirations`
+        }
+        actions={
+          <Link to="/building-dept-logins/submit" className="p-btn p-btn-primary">
+            <Plus className="h-3.5 w-3.5" strokeWidth={2} /> Submit login
+          </Link>
+        }
+        toolbar={
+          <>
+            <div className="p-inset min-w-0 flex-1 sm:max-w-sm">
+              <SearchInput value={query} onChange={setQuery} placeholder="Search municipality, county, registration" />
+            </div>
+            <span className="ml-auto hidden text-[11.5px] text-muted-foreground sm:inline">
+              {filtered.length} shown
+            </span>
+          </>
+        }
+      >
+        <Panel padded={false}>
           {loading && (
-            <div className="px-5 py-10 text-center text-sm text-obsidian/50 inline-flex w-full items-center justify-center gap-2">
-              <Loader2 className="h-4 w-4 animate-spin" /> Loading vault…
+            <div className="inline-flex w-full items-center justify-center gap-2 px-3 py-10 text-center text-[12px] text-muted-foreground">
+              <Loader2 className="h-3.5 w-3.5 animate-spin" /> Loading vault…
             </div>
           )}
           {!loading && filtered.length === 0 && (
-            <div className="px-5 py-10 text-center text-sm text-obsidian/50">
+            <div className="px-3 py-10 text-center text-[12px] text-muted-foreground">
               No portal logins saved yet.{" "}
-              <Link to="/building-dept-logins/submit" className="text-sky underline underline-offset-2">
+              <Link to="/building-dept-logins/submit" className="underline underline-offset-2">
                 Submit a new login
               </Link>
               .
@@ -156,42 +154,40 @@ function BuildingDeptLoginsPage() {
             const isOpen = open === l.municipality_slug;
             const expiredCount = l.docs.filter((d) => isDocExpired(d.expiration_date)).length;
             return (
-              <div key={l.municipality_slug} className="border-b border-obsidian/10 last:border-0">
+              <div key={l.municipality_slug} className="border-b border-white/[0.06] last:border-0">
                 <button
                   type="button"
                   onClick={() => setOpen(isOpen ? null : l.municipality_slug)}
-                  className="w-full flex flex-wrap items-center gap-3 px-5 py-4 text-left hover:bg-paper-warm/50 transition-colors"
+                  className="flex w-full flex-wrap items-center gap-2.5 px-3 py-2.5 text-left transition-colors hover:bg-white/[0.03]"
                 >
-                  <ChevronDown className={`h-4 w-4 text-obsidian/40 transition-transform shrink-0 ${isOpen ? "rotate-180" : ""}`} />
+                  <ChevronDown className={`h-3.5 w-3.5 shrink-0 text-muted-foreground transition-transform ${isOpen ? "rotate-180" : ""}`} />
                   <div className="min-w-0 flex-1">
-                    <div className="text-sm font-medium text-obsidian truncate">{l.city_name}</div>
-                    <div className="text-xs text-obsidian/55 truncate">
+                    <div className="truncate text-[13px] font-medium">{l.city_name}</div>
+                    <div className="truncate text-[11.5px] text-muted-foreground">
                       {l.county === "—" ? "Jurisdiction" : `${l.county} County`}
                     </div>
                   </div>
                   {expiredCount > 0 && (
-                    <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-oxblood border border-oxblood/30 bg-oxblood/10 px-2 py-0.5 rounded-[2px]">
-                      {expiredCount} expired
-                    </span>
+                    <StatusChip tone="danger">{expiredCount} expired</StatusChip>
                   )}
                   <StatusBadge status={l.status} />
                 </button>
 
                 {isOpen && (
-                  <div className="px-5 sm:px-12 pb-6 pt-1 space-y-6">
+                  <div className="space-y-4 px-3 pb-4 pt-1 sm:px-9">
                     <Tabs defaultValue="credentials">
-                      <TabsList className="rounded-[3px] bg-paper-warm p-1">
-                        <TabsTrigger value="credentials" className="rounded-[3px] font-mono text-[10px] uppercase tracking-[0.12em]">
+                      <TabsList className="h-auto gap-1 bg-white/[0.04] p-1">
+                        <TabsTrigger value="credentials" className="h-7 px-3 text-[12px]">
                           Credentials
                         </TabsTrigger>
-                        <TabsTrigger value="contacts" className="rounded-[3px] font-mono text-[10px] uppercase tracking-[0.12em]">
+                        <TabsTrigger value="contacts" className="h-7 px-3 text-[12px]">
                           Contacts
                         </TabsTrigger>
                       </TabsList>
-                      <TabsContent value="contacts" className="mt-5">
+                      <TabsContent value="contacts" className="mt-3">
                         <MunicipalityContactsTab muni={l.city_name} />
                       </TabsContent>
-                      <TabsContent value="credentials" className="mt-5 space-y-6">
+                      <TabsContent value="credentials" className="mt-3 space-y-4">
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
                           <Field label="Portal">
                             {l.resolvedPortalUrl ? (
@@ -199,17 +195,17 @@ function BuildingDeptLoginsPage() {
                                 href={l.resolvedPortalUrl}
                                 target="_blank"
                                 rel="noreferrer"
-                                className="inline-flex items-center gap-1.5 text-sm text-sky hover:opacity-70"
+                                className="inline-flex items-center gap-1.5 text-[12.5px] text-[#7DB3FB] hover:opacity-80"
                               >
                                 {l.resolvedPortalUrl.replace(/^https?:\/\//, "")}
                                 <ExternalLink className="h-3 w-3" />
                               </a>
                             ) : (
-                              <div className="text-sm text-obsidian/50">—</div>
+                              <div className="text-[12.5px] text-muted-foreground">—</div>
                             )}
                           </Field>
                           <Field label="Registration">
-                            <div className="text-sm text-obsidian">{l.registration || "—"}</div>
+                            <div className="text-[12.5px]">{l.registration || "—"}</div>
                           </Field>
 
                           <Field label="Username">
@@ -228,24 +224,23 @@ function BuildingDeptLoginsPage() {
                         </div>
 
                         <div>
-                          <div className="eyebrow text-obsidian/55 mb-3">Documents on file</div>
+                          <div className="mb-1.5 text-[11px] font-medium uppercase tracking-[0.06em] text-muted-foreground">Documents on file</div>
                           {l.docs.length === 0 ? (
-                            <div className="border border-dashed border-obsidian/15 px-4 py-6 text-center text-xs text-obsidian/45 rounded-[3px]">
+                            <div className="p-surface-flat px-4 py-6 text-center text-[12px] text-muted-foreground">
                               No documents uploaded for this municipality yet.
                             </div>
                           ) : (
-                            <ul className="border border-obsidian/10 divide-y divide-obsidian/5">
+                            <ul className="p-surface-flat divide-y divide-white/[0.06]">
                               {l.docs.map((d) => {
                                 const expired = isDocExpired(d.expiration_date);
                                 return (
                                   <li key={d.id} className="flex items-center gap-3 px-4 py-3">
-                                    <FileText className="h-4 w-4 text-obsidian/40 shrink-0" />
+                                    <FileText className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
                                     <div className="flex-1 min-w-0">
-                                      <div className="text-sm text-obsidian truncate">{d.doc_label}</div>
+                                      <div className="truncate text-[12.5px]">{d.doc_label}</div>
                                     </div>
                                     <div
-                                      className="font-mono text-[11px] tabular-nums"
-                                      style={{ color: expired ? "var(--accent)" : "var(--obsidian)" }}
+                                      className={`text-[11.5px] tabular-nums ${expired ? "text-[#F87171]" : "text-muted-foreground"}`}
                                     >
                                       {expired ? "Expired " : "Exp. "}{fmtDate(d.expiration_date)}
                                     </div>
@@ -263,29 +258,24 @@ function BuildingDeptLoginsPage() {
               </div>
             );
           })}
-        </div>
-      </div>
+        </Panel>
+      </PageShell>
     </PortalShell>
   );
 }
 
 function StatusBadge({ status }: { status: "active" | "needs_updated" }) {
-  const cls =
-    status === "active"
-      ? "bg-emerald-600/10 text-emerald-700 border-emerald-600/30"
-      : "bg-amber-500/10 text-amber-700 border-amber-600/30";
-  const label = status === "active" ? "Active" : "Needs Updated";
-  return (
-    <span className={`inline-flex items-center border px-2 py-0.5 font-mono text-[10px] font-medium uppercase tracking-[0.12em] rounded-[2px] ${cls}`}>
-      {label}
-    </span>
+  return status === "active" ? (
+    <StatusChip tone="success">Active</StatusChip>
+  ) : (
+    <StatusChip tone="warning">Needs updated</StatusChip>
   );
 }
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div>
-      <div className="eyebrow text-obsidian/45 mb-1.5">{label}</div>
+      <div className="mb-1 text-[11px] font-medium uppercase tracking-[0.06em] text-muted-foreground">{label}</div>
       {children}
     </div>
   );
@@ -303,10 +293,10 @@ function CopyButton({ value }: { value: string }) {
           setTimeout(() => setDone(false), 1500);
         } catch { /* */ }
       }}
-      className="p-1.5 text-obsidian/40 hover:text-obsidian transition-colors"
+      className="p-1.5 text-muted-foreground transition-colors hover:text-foreground"
       aria-label="Copy"
     >
-      {done ? <Check className="h-3.5 w-3.5 text-emerald-700" /> : <Copy className="h-3.5 w-3.5" />}
+      {done ? <Check className="h-3.5 w-3.5 text-[#4ADE80]" /> : <Copy className="h-3.5 w-3.5" />}
     </button>
   );
 }
@@ -349,13 +339,13 @@ function RevealedSecretField({
       : value;
 
   return (
-    <div className="flex items-center gap-1 border border-obsidian/10 bg-paper-warm/50 px-3 py-1.5 rounded-[3px]">
-      <span className="flex-1 min-w-0 truncate text-sm text-obsidian font-mono tabular-nums">{display}</span>
+    <div className="p-inset flex items-center gap-1 px-2 py-1">
+      <span className="min-w-0 flex-1 truncate text-[12.5px] tabular-nums">{display}</span>
       <button
         type="button"
         onClick={() => void doReveal()}
         disabled={loading}
-        className="p-1.5 text-obsidian/40 hover:text-obsidian transition-colors"
+        className="p-1.5 text-muted-foreground transition-colors hover:text-foreground"
         aria-label={value && shown ? "Hide" : "Reveal"}
       >
         {loading ? (
@@ -392,7 +382,7 @@ function ViewDocButton({ path }: { path: string }) {
       type="button"
       onClick={() => void open()}
       disabled={opening}
-      className="font-mono text-[10px] uppercase tracking-[0.12em] text-sky hover:opacity-70 inline-flex items-center gap-1"
+      className="inline-flex items-center gap-1 text-[11.5px] text-[#7DB3FB] hover:opacity-80"
     >
       {opening ? <Loader2 className="h-3 w-3 animate-spin" /> : null}
       View
@@ -407,7 +397,7 @@ function FeatureTag({ on, label }: { on: boolean; label: string }) {
       style={
         on
           ? { color: "var(--sky)", borderColor: "color-mix(in oklab, var(--sky) 35%, transparent)", backgroundColor: "color-mix(in oklab, var(--sky) 8%, transparent)" }
-          : { color: "color-mix(in oklab, var(--obsidian) 45%, transparent)", borderColor: "color-mix(in oklab, var(--obsidian) 15%, transparent)" }
+          : { color: "var(--p-text-2)", borderColor: "var(--p-border)" }
       }
     >
       {on && <Check className="h-3 w-3" />}
