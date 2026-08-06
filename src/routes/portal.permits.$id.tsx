@@ -907,21 +907,22 @@ function PermitDetailPage() {
         <LienReleasesPanel permit={row} />
       </section>
 
-      {/* Victoria Alerts (this permit) */}
-      <section id="victoria-alerts" className="mt-10 mb-4">
-        <div className="p-eyebrow mb-2">Victoria Alerts</div>
-        <PermitAlertsInline permitId={row.id} />
-      </section>
-
-      {/* Expiration Banner */}
-      <section className="mt-6">
-        <ExpirationBanner
-          permitId={row.id}
-          expirationDate={(row as any).expiration_date ?? null}
-          extensionRequestedAt={(row as any).extension_requested_at ?? null}
-          onChange={() => getPermit(row.id).then((r) => r && setRow(r))}
-        />
-      </section>
+      {tab === "overview" && (
+      <div className="mt-3 grid min-w-0 gap-3 xl:grid-cols-2">
+        <section id="victoria-alerts" className="min-w-0">
+          <div className="p-eyebrow mb-2">Victoria Alerts</div>
+          <PermitAlertsInline permitId={row.id} />
+        </section>
+        <section className="min-w-0">
+          <ExpirationBanner
+            permitId={row.id}
+            expirationDate={(row as any).expiration_date ?? null}
+            extensionRequestedAt={(row as any).extension_requested_at ?? null}
+            onChange={() => getPermit(row.id).then((r) => r && setRow(r))}
+          />
+        </section>
+      </div>
+      )}
 
       {tab === "compliance" && (
       <section id="inspections" className="mt-3">
