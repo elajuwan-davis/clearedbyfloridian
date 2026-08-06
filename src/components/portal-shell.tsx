@@ -350,13 +350,14 @@ export function PortalShell({ children }: { children: ReactNode }) {
 
   if (authState !== "authed") {
     return (
-      <div className="min-h-screen grid place-items-center bg-background">
-        <div className="font-mono text-[11px] tracking-[0.15em] uppercase text-muted-foreground">
+      <div className="portal-ui dark grid min-h-screen place-items-center bg-background">
+        <div className="text-[13px] text-muted-foreground">
           {authState === "checking" ? "Verifying session…" : "Redirecting to sign in…"}
         </div>
       </div>
     );
   }
+
 
   // Admin-only area: non-staff never see staff tooling, even by typing a URL.
   // (Data itself is already blocked server-side by RLS + admin assertions.)
