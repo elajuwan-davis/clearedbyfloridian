@@ -613,7 +613,10 @@ function PermitDetailPage() {
 
 
 
-      <div className="mt-6 p-plate p-4">
+      {tab === "documents" && (
+      <>
+      <div className="mt-3 p-plate p-4">
+
         <div className="flex items-center justify-between mb-2 gap-3 flex-wrap">
           <div className="p-eyebrow">Documents</div>
           <div className="flex items-center gap-3">
