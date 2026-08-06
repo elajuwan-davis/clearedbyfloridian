@@ -243,10 +243,11 @@ function SidebarNav({
                 )}
               </span>
             );
+            const flyoutItems = group.items ?? [];
             return (
               <div
                 key={group.key}
-                className="flex justify-center py-[1px]"
+                className="relative flex justify-center py-[1px]"
                 onMouseEnter={() => openGroup(group.key)}
                 onFocus={() => openGroup(group.key)}
               >
@@ -258,6 +259,43 @@ function SidebarNav({
                   <button type="button" title={group.label} aria-label={group.label}>
                     {body}
                   </button>
+                )}
+
+                {/* Flyout — content-sized card anchored to this icon (HubSpot style) */}
+                {openKey === group.key && flyoutItems.length > 0 && (
+                  <div
+                    className="absolute left-[calc(100%+6px)] top-[-6px] z-50 w-[212px] rounded-xl py-2"
+                    style={{
+                      backgroundColor: "var(--rail-bg)",
+                      border: "1px solid var(--p-border)",
+                      boxShadow: "0 16px 40px rgba(0,0,0,0.45)",
+                    }}
+                    onMouseEnter={() => openGroup(group.key)}
+                    onMouseLeave={scheduleClose}
+                  >
+                    <div
+                      className="px-3 pb-1.5 text-[12px] font-semibold"
+                      style={{ color: "var(--rail-fg)" }}
+                    >
+                      {group.label}
+                    </div>
+                    <ul className="p-noscroll max-h-[70vh] overflow-y-auto px-1.5">
+                      {flyoutItems.map((item, i) => (
+                        <li key={`${item.to}-${i}`}>
+                          <NavLinkRow
+                            to={item.to}
+                            label={item.label}
+                            active={isItemActive(pathname, item.to)}
+                            alerted={item.alertKey ? alertKeys.has(item.alertKey) : false}
+                            onNavigate={() => {
+                              setOpenKey(null);
+                              onNavigate?.();
+                            }}
+                          />
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
                 )}
               </div>
             );
