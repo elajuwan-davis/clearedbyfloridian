@@ -953,8 +953,10 @@ function PermitDetailPage() {
         />
       </section>
 
+      {tab === "share" && (
+      <>
       {/* Homeowner Share */}
-      <section id="homeowner-share" className="mt-10 mb-10">
+      <section id="homeowner-share" className="mt-3 mb-4">
         <div className="p-eyebrow mb-2">Homeowner Status</div>
         <HomeownerShareDialog
           permitId={row.id}
@@ -962,6 +964,8 @@ function PermitDetailPage() {
           onToken={() => getPermit(row.id).then((r) => r && setRow(r))}
         />
       </section>
+      </>
+      )}
 
       {tab === "details" && (
       <>
