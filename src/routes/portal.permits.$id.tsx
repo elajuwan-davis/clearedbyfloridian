@@ -963,6 +963,8 @@ function PermitDetailPage() {
         />
       </section>
 
+      {tab === "details" && (
+      <>
       {(() => {
         const ip = (row.intake_payload ?? {}) as Record<string, unknown>;
         const d = ip.dispatch as DispatchResult | undefined;
