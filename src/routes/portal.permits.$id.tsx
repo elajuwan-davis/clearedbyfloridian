@@ -940,8 +940,10 @@ function PermitDetailPage() {
         />
       </section>
 
+      {tab === "money" && (
+      <>
       {/* Permit Fees */}
-      <section id="fees" className="mt-10">
+      <section id="fees" className="mt-3">
         <div className="p-eyebrow mb-2">Permit Fees</div>
         <PermitFeesPanel
           permitId={row.id}
@@ -952,6 +954,8 @@ function PermitDetailPage() {
           onChanged={() => getPermit(row.id).then((r) => r && setRow(r))}
         />
       </section>
+      </>
+      )}
 
       {tab === "share" && (
       <>
