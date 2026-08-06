@@ -720,6 +720,8 @@ function PermitDetailPage() {
 
 
 
+      {tab === "details" && (
+      <>
       {row.subs && row.subs.length > 0 && (
         <div className="mt-6 p-plate p-4">
           <div className="flex items-baseline justify-between mb-4 gap-3 flex-wrap">
