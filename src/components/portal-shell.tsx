@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
-import { ChevronDown, ChevronRight, LogOut, Menu, X, Building2, Check, ShieldCheck, Sun, Moon, FileText, MessageSquare, Calendar, Bell } from "lucide-react";
+import { ChevronDown, ChevronRight, ChevronLeft, LogOut, Menu, X, Building2, Check, ShieldCheck, Sun, Moon, FileText, MessageSquare, Calendar, Bell } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
 import { cn } from "@/lib/utils";
 
@@ -402,7 +402,28 @@ export function PortalShell({ children }: { children: ReactNode }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
+  const [railExpanded, setRailExpanded] = useState(false);
   const [authState, setAuthState] = useState<"checking" | "authed" | "anon">("checking");
+
+  // Restore the pinned/collapsed nav preference (HubSpot-style expand toggle).
+  useEffect(() => {
+    try {
+      setRailExpanded(localStorage.getItem("cleard-nav-expanded") === "1");
+    } catch {
+      /* storage unavailable */
+    }
+  }, []);
+  function toggleRail() {
+    setRailExpanded((v) => {
+      const next = !v;
+      try {
+        localStorage.setItem("cleard-nav-expanded", next ? "1" : "0");
+      } catch {
+        /* storage unavailable */
+      }
+      return next;
+    });
+  }
   const signingOutRef = useRef(false);
   const session = useSession();
   const me = useMyIdentity();
@@ -495,7 +516,7 @@ export function PortalShell({ children }: { children: ReactNode }) {
         />
       </aside>
 
-      <div style={{ paddingLeft: undefined }} className={railExpanded ? "lg:pl-[240px]" : "lg:pl-[56px]"}>
+      <div className={railExpanded ? "lg:pl-[240px]" : "lg:pl-[56px]"}>
         <header
           className="sticky top-0 z-30 flex h-12 items-center gap-2 border-b px-3 sm:px-4 lg:px-6"
           style={{ backgroundColor: "var(--p-bg)", borderColor: "var(--p-border)" }}
