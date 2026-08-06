@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
 import { ChevronDown, ChevronRight, ChevronLeft, LogOut, Menu, X, Building2, Check, ShieldCheck, Sun, Moon, FileText, MessageSquare, Calendar, Bell } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
@@ -185,8 +185,6 @@ function SidebarNav({
     closeTimer.current = setTimeout(() => setOpenKey(null), 120);
   }
 
-  const openSection = allSections.find((s) => s.key === openKey) ?? null;
-
   return (
     <div
       className="relative flex h-full min-h-0 flex-col"
@@ -215,7 +213,12 @@ function SidebarNav({
         )}
       </Link>
 
-      <nav className={cn("p-noscroll min-h-0 flex-1 overflow-y-auto", isRail ? "px-2 py-1" : "px-1.5 pb-2")}>
+      <nav
+        className={cn(
+          "p-noscroll min-h-0 flex-1",
+          isRail ? "overflow-visible px-2 py-1" : "overflow-y-auto px-1.5 pb-2",
+        )}
+      >
         {allSections.map((group) => {
           const items = group.items ?? [{ to: group.to as string, label: group.label }];
           const groupActive = sectionActive(pathname, group);
@@ -243,10 +246,11 @@ function SidebarNav({
                 )}
               </span>
             );
+            const flyoutItems = group.items ?? [];
             return (
               <div
                 key={group.key}
-                className="flex justify-center py-[1px]"
+                className="relative flex justify-center py-[1px]"
                 onMouseEnter={() => openGroup(group.key)}
                 onFocus={() => openGroup(group.key)}
               >
@@ -258,6 +262,43 @@ function SidebarNav({
                   <button type="button" title={group.label} aria-label={group.label}>
                     {body}
                   </button>
+                )}
+
+                {/* Flyout — content-sized card anchored to this icon (HubSpot style) */}
+                {openKey === group.key && flyoutItems.length > 0 && (
+                  <div
+                    className="absolute left-[calc(100%+6px)] top-[-6px] z-50 w-[212px] rounded-xl py-2"
+                    style={{
+                      backgroundColor: "var(--rail-bg)",
+                      border: "1px solid var(--p-border)",
+                      boxShadow: "0 16px 40px rgba(0,0,0,0.45)",
+                    }}
+                    onMouseEnter={() => openGroup(group.key)}
+                    onMouseLeave={scheduleClose}
+                  >
+                    <div
+                      className="px-3 pb-1.5 text-[12px] font-semibold"
+                      style={{ color: "var(--rail-fg)" }}
+                    >
+                      {group.label}
+                    </div>
+                    <ul className="p-noscroll max-h-[70vh] overflow-y-auto px-1.5">
+                      {flyoutItems.map((item, i) => (
+                        <li key={`${item.to}-${i}`}>
+                          <NavLinkRow
+                            to={item.to}
+                            label={item.label}
+                            active={isItemActive(pathname, item.to)}
+                            alerted={item.alertKey ? alertKeys.has(item.alertKey) : false}
+                            onNavigate={() => {
+                              setOpenKey(null);
+                              onNavigate?.();
+                            }}
+                          />
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
                 )}
               </div>
             );
@@ -294,39 +335,8 @@ function SidebarNav({
         })}
       </nav>
 
-      {/* Flyout panel — sits beside the rail, HubSpot style. */}
-      {isRail && openSection && (openSection.items?.length ?? 0) > 0 && (
-        <div
-          className="absolute left-full top-0 z-50 h-full w-[236px] overflow-hidden"
-          style={{
-            backgroundColor: "var(--rail-bg)",
-            borderRight: "1px solid var(--p-border)",
-            boxShadow: "18px 0 40px rgba(0,0,0,0.35)",
-          }}
-          onMouseEnter={() => openGroup(openSection.key)}
-          onMouseLeave={scheduleClose}
-        >
-          <div className="flex h-12 items-center px-4 text-[13px] font-semibold" style={{ color: "var(--rail-fg)" }}>
-            {openSection.label}
-          </div>
-          <ul className="p-noscroll max-h-[calc(100%-3rem)] overflow-y-auto px-1.5 pb-3">
-            {(openSection.items ?? []).map((item, i) => (
-              <li key={`${item.to}-${i}`}>
-                <NavLinkRow
-                  to={item.to}
-                  label={item.label}
-                  active={isItemActive(pathname, item.to)}
-                  alerted={item.alertKey ? alertKeys.has(item.alertKey) : false}
-                  onNavigate={() => {
-                    setOpenKey(null);
-                    onNavigate?.();
-                  }}
-                />
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
+
+
 
       <div
         className={cn("shrink-0 py-2", isRail ? "px-2" : "px-3")}
@@ -398,7 +408,20 @@ function SidebarNav({
 }
 
 
+const InPortalShell = createContext(false);
+
 export function PortalShell({ children }: { children: ReactNode }) {
+  // Some pages wrap themselves in <PortalShell> while the /portal route layout
+  // also does — render the chrome only once.
+  if (useContext(InPortalShell)) return <>{children}</>;
+  return (
+    <InPortalShell.Provider value={true}>
+      <PortalShellInner>{children}</PortalShellInner>
+    </InPortalShell.Provider>
+  );
+}
+
+function PortalShellInner({ children }: { children: ReactNode }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
