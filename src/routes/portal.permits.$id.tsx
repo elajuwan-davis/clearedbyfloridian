@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate, notFound } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { ArrowLeft, Trash2, Save, AlertTriangle, FileText, Pencil, X, Lock, Plus, Search, Loader2, Eye, EyeOff, Download, Share2, RotateCcw, Cloud, Package, Scale } from "lucide-react";
+import { Trash2, Save, AlertTriangle, FileText, Pencil, X, Lock, Plus, Search, Loader2, Eye, EyeOff, Download, Share2, RotateCcw, Cloud, Package, Scale } from "lucide-react";
 import { NtoSection } from "@/components/nto-section";
 import { getBundle } from "@/lib/bundle";
 import { CoChecklistPanel } from "@/components/co-checklist-panel";
@@ -24,6 +24,7 @@ import { PermitNotesPanel } from "@/components/permit-notes-panel";
 import { ProjectInternalOps } from "@/components/project-internal-ops";
 import { isInternalUser } from "@/lib/is-internal-user";
 import type { DispatchResult } from "@/lib/dispatch";
+import { PageShell, Panel } from "@/components/ui-kit";
 
 
 import { getPermit, updatePermit, deletePermit, permitCompleteness, getEffectiveDocs, getHiddenFieldKeys, withHiddenFieldKeys, ensureSubTokens, type PermitRow, type PermitStatus, type PermitDoc, type PermitSub } from "@/lib/permits-api";
@@ -292,8 +293,8 @@ function PermitDetailPage() {
     }
   }
 
-  if (loading) return <div className="mx-auto max-w-5xl px-6 py-12 text-obsidian/60">Loading…</div>;
-  if (!row) return <div className="mx-auto max-w-5xl px-6 py-12 text-obsidian/60">Permit not found.</div>;
+  if (loading) return <div className="px-6 py-12 text-muted-foreground">Loading…</div>;
+  if (!row) return <div className="px-6 py-12 text-muted-foreground">Permit not found.</div>;
 
   const c = permitCompleteness(row);
   const missingFieldKeys = new Set(c.missingFields.map((f) => f.key));
@@ -320,86 +321,79 @@ function PermitDetailPage() {
   const docs = getEffectiveDocs(row);
 
 
-  return (
-    <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
-      <Link to="/my-permits" className="inline-flex items-center gap-1.5 text-[12px] font-mono uppercase tracking-[0.14em] text-obsidian/60 hover:text-obsidian">
-        <ArrowLeft className="h-3.5 w-3.5" /> Back to My Permits
-      </Link>
+  const lastEditedAt = (() => {
+    const ip = (row.intake_payload ?? {}) as Record<string, unknown>;
+    return typeof ip.last_edited_at === "string" ? ip.last_edited_at : null;
+  })();
 
-      <div className="mt-4 flex flex-wrap items-end justify-between gap-4 border-b border-obsidian/10 pb-6">
-        <div>
-          <div className="eyebrow text-obsidian/50">Permit</div>
-          <h1 className="display-serif mt-2 text-4xl text-obsidian">{row.project_name}</h1>
-          <div className="mt-2 text-sm text-obsidian/60">{row.job_address}</div>
-          {(() => {
-            const ip = (row.intake_payload ?? {}) as Record<string, unknown>;
-            const le = typeof ip.last_edited_at === "string" ? ip.last_edited_at : null;
-            if (!le) return null;
-            return (
-              <div className="mt-1 font-mono text-[10px] uppercase tracking-[0.14em] text-amber-700">
-                Last edited {new Date(le).toLocaleString()}
-              </div>
-            );
-          })()}
-        </div>
-        <div className="flex items-center gap-2">
+  return (
+    <PageShell
+      crumbs={[{ label: "My Permits", to: "/my-permits" }, { label: row.project_name }]}
+      title={row.project_name}
+      meta={
+        <>
+          {row.job_address}
+          {lastEditedAt && <span className="text-[var(--p-warning)]"> · Last edited {new Date(lastEditedAt).toLocaleString()}</span>}
+        </>
+      }
+      actions={
+        <div className="flex flex-wrap items-center gap-2">
           {!editing ? (
             <>
               {getBundle(row)?.enabled && (
                 <Link
                   to="/portal/permits/$id/bundle"
                   params={{ id: row.id }}
-                  className="inline-flex items-center gap-2 border border-obsidian/20 bg-obsidian/[0.03] px-3 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian rounded-[3px] hover:bg-obsidian/[0.06]"
+                  className="p-btn p-btn-ghost"
                 >
                   <Package className="h-3.5 w-3.5" /> Bundle
                 </Link>
               )}
-              <span className="inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/50">
+              <span className="inline-flex items-center gap-1.5 text-[11px] text-muted-foreground">
                 <Lock className="h-3 w-3" /> Read only
               </span>
-              <button onClick={openExport} className="inline-flex items-center gap-2 border border-obsidian/20 bg-white px-3 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian rounded-[3px] hover:bg-obsidian/5">
+              <button onClick={openExport} className="p-btn p-btn-ghost">
                 <Download className="h-3.5 w-3.5" /> Export
               </button>
-              <Link to="/portal/bid-review" className="inline-flex items-center gap-2 border border-obsidian/20 bg-white px-3 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian rounded-[3px] hover:bg-obsidian/5">
+              <Link to="/portal/bid-review" className="p-btn p-btn-ghost">
                 <Scale className="h-3.5 w-3.5" /> Bid Review
               </Link>
               <Link
                 to="/portal/permits/new"
                 search={{ edit: row.id }}
-                className="inline-flex items-center gap-2 border border-obsidian/20 bg-white px-3 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian rounded-[3px] hover:bg-obsidian/5"
+                className="p-btn p-btn-ghost"
               >
                 <Pencil className="h-3.5 w-3.5" /> Edit Submission
               </Link>
-              <button onClick={() => setEditing(true)} className="inline-flex items-center gap-2 bg-obsidian px-4 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-paper rounded-[3px]">
+              <button onClick={() => setEditing(true)} className="p-btn p-btn-primary">
                 <Pencil className="h-3.5 w-3.5" /> Quick Edit
               </button>
-              <button onClick={remove} className="inline-flex items-center gap-2 border border-red-600/30 text-red-700 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.14em] rounded-[3px] hover:bg-red-50">
+              <button onClick={remove} className="p-btn p-btn-danger">
                 <Trash2 className="h-3.5 w-3.5" /> Delete
               </button>
             </>
           ) : (
             <>
-              <button onClick={openExport} className="inline-flex items-center gap-2 border border-obsidian/20 bg-white px-3 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian rounded-[3px] hover:bg-obsidian/5">
+              <button onClick={openExport} className="p-btn p-btn-ghost">
                 <Download className="h-3.5 w-3.5" /> Export
               </button>
-              <button onClick={cancelEdit} disabled={saving} className="inline-flex items-center gap-2 border border-obsidian/20 bg-white px-3 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian rounded-[3px] disabled:opacity-60">
+              <button onClick={cancelEdit} disabled={saving} className="p-btn p-btn-ghost disabled:opacity-60">
                 <X className="h-3.5 w-3.5" /> Cancel
               </button>
-              <button onClick={save} disabled={saving} className="inline-flex items-center gap-2 bg-obsidian px-4 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-paper rounded-[3px] disabled:opacity-60">
+              <button onClick={save} disabled={saving} className="p-btn p-btn-primary disabled:opacity-60">
                 <Save className="h-3.5 w-3.5" /> {saving ? "Saving…" : "Save"}
               </button>
-              <button onClick={remove} className="inline-flex items-center gap-2 border border-red-600/30 text-red-700 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.14em] rounded-[3px] hover:bg-red-50">
+              <button onClick={remove} className="p-btn p-btn-danger">
                 <Trash2 className="h-3.5 w-3.5" /> Delete
               </button>
             </>
           )}
         </div>
-
-      </div>
-
+      }
+    >
       <AdminPermitReviewActions permit={row} onUpdated={(r) => { setRow(r); setEdit(r); }} />
 
-      <div className="mt-6 space-y-6">
+      <div className="mt-4 space-y-4">
         {isInternalUser() && (
           <ProjectInternalOps permitId={row.id} label={row.project_name} />
         )}
@@ -408,10 +402,10 @@ function PermitDetailPage() {
       </div>
 
       {/* Completeness panel */}
-      <div className="mt-6 bg-white border border-obsidian/10 rounded-[3px] p-6">
+      <div className="mt-6 p-plate p-4">
         <div className="flex flex-wrap items-center gap-4 justify-between">
           <div>
-            <div className="text-[11px] font-mono uppercase tracking-[0.18em] text-obsidian/75">Permit Completeness</div>
+            <div className="p-eyebrow">Permit Completeness</div>
             <div className="mt-1 text-sm text-obsidian/70">
               <span className="font-medium text-obsidian">{c.done}/{c.total}</span> items complete — {c.percent}%
             </div>
@@ -468,8 +462,8 @@ function PermitDetailPage() {
       </div>
 
       <fieldset disabled={!editing} className="mt-6 grid gap-6 md:grid-cols-2 disabled:opacity-90">
-        <div className="bg-white border border-obsidian/10 rounded-[3px] p-6 space-y-4">
-          <div className="text-[11px] font-mono uppercase tracking-[0.18em] text-obsidian/75">Project</div>
+        <div className="p-plate p-4 space-y-4">
+          <div className="p-eyebrow">Project</div>
           <div><label className={labelCls("project_name")}>Project Name {flag("project_name")}{fieldDelBtn("project_name")}</label><input className={inputCls("project_name")} value={e.project_name ?? ""} onChange={(ev) => set("project_name", ev.target.value)} /></div>
           <div><label className={labelCls("job_address")}>Address {flag("job_address")}{fieldDelBtn("job_address")}</label><input className={inputCls("job_address")} value={e.job_address ?? ""} onChange={(ev) => set("job_address", ev.target.value)} /></div>
           <div className="grid grid-cols-2 gap-3">
@@ -534,8 +528,8 @@ function PermitDetailPage() {
           <div><label className={labelCls("description")}>Description {flag("description")}{fieldDelBtn("description")}</label><textarea rows={3} className={inputCls("description")} value={e.description ?? ""} onChange={(ev) => set("description", ev.target.value)} /></div>
         </div>
 
-        <div className="bg-white border border-obsidian/10 rounded-[3px] p-6 space-y-4">
-          <div className="text-[11px] font-mono uppercase tracking-[0.18em] text-obsidian/75">Contractor & Owner</div>
+        <div className="p-plate p-4 space-y-4">
+          <div className="p-eyebrow">Contractor & Owner</div>
           <div><label className={labelCls("contractor_company")}>Contractor Company {flag("contractor_company")}{fieldDelBtn("contractor_company")}</label><input className={inputCls("contractor_company")} value={e.contractor_company ?? ""} onChange={(ev) => set("contractor_company", ev.target.value)} /></div>
           <div><label className={labelCls("contractor_qualifier")}>Qualifier {flag("contractor_qualifier")}{fieldDelBtn("contractor_qualifier")}</label><input className={inputCls("contractor_qualifier")} value={e.contractor_qualifier ?? ""} onChange={(ev) => set("contractor_qualifier", ev.target.value)} /></div>
           <div><label className={labelCls("company_address")}>Company Address {flag("company_address")}{fieldDelBtn("company_address")}</label><input className={inputCls("company_address")} value={e.company_address ?? ""} onChange={(ev) => set("company_address", ev.target.value)} /></div>
@@ -559,9 +553,9 @@ function PermitDetailPage() {
 
 
 
-      <div className="mt-6 bg-white border border-obsidian/10 rounded-[3px] p-6">
+      <div className="mt-6 p-plate p-4">
         <div className="flex items-center justify-between mb-2 gap-3 flex-wrap">
-          <div className="text-[11px] font-mono uppercase tracking-[0.18em] text-obsidian/75">Documents</div>
+          <div className="p-eyebrow">Documents</div>
           <div className="flex items-center gap-3">
             {docs.some((d) => d.status === "not_applicable") && (
               <button
@@ -641,7 +635,7 @@ function PermitDetailPage() {
 
       {/* Pre-submission completeness gate */}
       <section id="pre-submission" className="mt-10">
-        <div className="eyebrow text-obsidian/50 mb-3">Pre-Submission</div>
+        <div className="p-eyebrow mb-2">Pre-Submission</div>
         <PreSubmissionGate permit={row} onVerdict={setPresubStatus} />
         <div className="mt-4">
           <MunicipalitySubmissionGate
@@ -667,9 +661,9 @@ function PermitDetailPage() {
 
 
       {row.subs && row.subs.length > 0 && (
-        <div className="mt-6 bg-white border border-obsidian/10 rounded-[3px] p-6">
+        <div className="mt-6 p-plate p-4">
           <div className="flex items-baseline justify-between mb-4 gap-3 flex-wrap">
-            <div className="text-[11px] font-mono uppercase tracking-[0.18em] text-obsidian/75">Subcontractors on this Permit</div>
+            <div className="p-eyebrow">Subcontractors on this Permit</div>
             <div className="text-[10px] font-mono text-obsidian/45">Confirm a sub to grant them read-only project-doc access.</div>
           </div>
           <ul className="divide-y divide-obsidian/10">
@@ -811,7 +805,7 @@ function PermitDetailPage() {
                   className="w-full h-full bg-white"
                 >
                   <div className="h-full flex items-center justify-center p-6">
-                    <div className="max-w-md text-center bg-white border border-obsidian/10 rounded-[3px] p-6">
+                    <div className="max-w-md text-center p-plate p-4">
                       <div className="text-sm text-obsidian mb-3">
                         Your browser blocked the inline PDF preview. Open it in a new tab or download the file.
                       </div>
@@ -843,19 +837,19 @@ function PermitDetailPage() {
 
       {/* CO Checklist */}
       <section id="co-checklist" className="mt-10">
-        <div className="eyebrow text-obsidian/50 mb-3">Certificate of Occupancy</div>
+        <div className="p-eyebrow mb-2">Certificate of Occupancy</div>
         <CoChecklistPanel permitId={row.id} projectName={row.project_name} tenantId={row.tenant_id ?? null} />
       </section>
 
       {/* Lien Releases */}
       <section id="lien-releases" className="mt-10">
-        <div className="eyebrow text-obsidian/50 mb-3">Lien Releases</div>
+        <div className="p-eyebrow mb-2">Lien Releases</div>
         <LienReleasesPanel permit={row} />
       </section>
 
       {/* Victoria Alerts (this permit) */}
       <section id="victoria-alerts" className="mt-10 mb-4">
-        <div className="eyebrow text-obsidian/50 mb-3">Victoria Alerts</div>
+        <div className="p-eyebrow mb-2">Victoria Alerts</div>
         <PermitAlertsInline permitId={row.id} />
       </section>
 
@@ -871,13 +865,13 @@ function PermitDetailPage() {
 
       {/* Inspections */}
       <section id="inspections" className="mt-10">
-        <div className="eyebrow text-obsidian/50 mb-3">Inspections</div>
+        <div className="p-eyebrow mb-2">Inspections</div>
         <InspectionsPanel permitId={row.id} tenantId={row.tenant_id ?? null} permitStatus={row.status} />
       </section>
 
       {/* Resubmittal Workflow */}
       <section id="resubmittal" className="mt-10">
-        <div className="eyebrow text-obsidian/50 mb-3">Resubmittal Workflow</div>
+        <div className="p-eyebrow mb-2">Resubmittal Workflow</div>
         <ResubmittalPanel
           permitId={row.id}
           tenantId={row.tenant_id ?? null}
@@ -888,7 +882,7 @@ function PermitDetailPage() {
 
       {/* Permit Fees */}
       <section id="fees" className="mt-10">
-        <div className="eyebrow text-obsidian/50 mb-3">Permit Fees</div>
+        <div className="p-eyebrow mb-2">Permit Fees</div>
         <PermitFeesPanel
           permitId={row.id}
           estimatedCents={(row as any).estimated_fee_cents ?? null}
@@ -901,7 +895,7 @@ function PermitDetailPage() {
 
       {/* Homeowner Share */}
       <section id="homeowner-share" className="mt-10 mb-10">
-        <div className="eyebrow text-obsidian/50 mb-3">Homeowner Status</div>
+        <div className="p-eyebrow mb-2">Homeowner Status</div>
         <HomeownerShareDialog
           permitId={row.id}
           existingToken={(row as any).homeowner_share_token ?? null}
@@ -915,7 +909,7 @@ function PermitDetailPage() {
         if (!d) return null;
         return (
           <section id="dispatch" className="mt-10 mb-10">
-            <div className="eyebrow text-obsidian/50 mb-3">Dispatch — Property Intelligence</div>
+            <div className="p-eyebrow mb-2">Dispatch — Property Intelligence</div>
             <DispatchCard data={d} />
           </section>
         );
@@ -943,7 +937,7 @@ function PermitDetailPage() {
           </section>
         );
       })()}
-    </div>
+    </PageShell>
   );
 }
 

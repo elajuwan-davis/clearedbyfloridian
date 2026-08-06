@@ -26,7 +26,7 @@ import { useExpirationAlerts } from "@/hooks/use-expiration-alerts";
 
 import { projectStatusMeta as statusMeta } from "@/lib/status-badges";
 import {
-  PageHeader,
+  PageShell,
   Surface,
   SectionHeader,
   StatTile,
@@ -126,11 +126,9 @@ export function BuilderDashboard() {
 
   return (
     <PortalShell>
-      <div className="mx-auto max-w-[1500px]">
-        <PageHeader
+      <PageShell
           crumbs={[{ label: "Workspace" }, { label: "Dashboard" }]}
           title={<>{greeting}{me.firstName ? `, ${me.firstName}` : ""}.</>}
-          description="Every permit, correction and inspection across your active projects."
           actions={
             <>
               <span className="hidden items-center gap-1.5 text-[12px] text-muted-foreground sm:inline-flex">
@@ -143,8 +141,7 @@ export function BuilderDashboard() {
               </Link>
             </>
           }
-        />
-
+      >
         {/* Banners */}
         {(needsVerification || needsLpoa) && (
           <div className="mb-3 space-y-2">
@@ -367,7 +364,7 @@ export function BuilderDashboard() {
             <Snapshot value={fmtMoney(portfolioCents)} label="Portfolio value" context="Construction value" />
           </div>
         </Surface>
-      </div>
+      </PageShell>
     </PortalShell>
   );
 }

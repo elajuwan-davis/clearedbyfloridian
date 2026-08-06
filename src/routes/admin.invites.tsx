@@ -5,7 +5,8 @@ import { PortalShell } from "@/components/portal-shell";
 import { BackendReconnecting } from "@/components/backend-reconnecting";
 import { isMissingBackendEnvError } from "@/lib/env-error";
 import { listInvitePipelineFn, type InvitePipelineRow } from "@/lib/invite-pipeline.functions";
-import { Loader2 } from "lucide-react";
+import { PageShell, TableShell, EmptyState, StatusChip } from "@/components/ui-kit";
+import type { MetricTone } from "@/components/ui-kit";
 
 export const Route = createFileRoute("/admin/invites")({
   head: () => ({
@@ -29,11 +30,11 @@ function fmt(d: string | null) {
   return dt.toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "numeric" });
 }
 
-const inviteBadge: Record<string, string> = {
-  not_invited: "bg-muted text-muted-foreground",
-  pending: "bg-amber-100 text-amber-900",
-  accepted: "bg-emerald-100 text-emerald-900",
-  revoked: "bg-red-100 text-red-900",
+const inviteTone: Record<string, MetricTone> = {
+  not_invited: "neutral",
+  pending: "warning",
+  accepted: "success",
+  revoked: "danger",
 };
 
 const inviteLabel: Record<string, string> = {
@@ -69,119 +70,102 @@ function InvitePipelinePage() {
 
   return (
     <PortalShell>
-      <div className="mx-auto w-full max-w-7xl px-4 py-8">
-        <div className="label-eyebrow text-obsidian/50">Admin</div>
-        <h1 className="display-serif mt-2 text-4xl leading-tight text-obsidian">Invite Pipeline</h1>
-        <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
-          One row per prospect — access request, invite, account creation, and permits created since signup.
-          Sorted by most recent activity.
-        </p>
-
+      <PageShell
+        crumbs={[{ label: "Admin" }]}
+        title="Invite Pipeline"
+        meta={loading ? "Loading…" : `${rows.length} prospects · sorted by recent activity`}
+      >
         {loading ? (
-          <div className="mt-10 flex items-center gap-2 text-sm text-muted-foreground">
-            <Loader2 className="h-4 w-4 animate-spin" /> Loading pipeline…
-          </div>
+          <div className="px-1 py-6 text-[12.5px] text-muted-foreground">Loading pipeline…</div>
         ) : error ? (
           isMissingBackendEnvError(error) ? (
             <BackendReconnecting />
           ) : (
-            <div className="mt-8 rounded-[3px] border border-red-200 bg-red-50 p-4 text-sm text-red-900">{error}</div>
+            <div className="p-plate p-4 text-[12.5px] text-[var(--p-danger)]">{error}</div>
           )
         ) : rows.length === 0 ? (
-          <div className="mt-8 rounded-[3px] border border-border p-8 text-center text-sm text-muted-foreground">
-            No access requests yet.
-          </div>
+          <EmptyState title="No access requests yet" />
         ) : (
-          <div className="mt-6 overflow-x-auto rounded-[3px] border border-border">
-            <table className="w-full min-w-[880px] text-sm">
-              <thead>
-                <tr className="border-b border-border bg-muted/40 text-left font-mono text-[10px] uppercase tracking-[0.14em] text-muted-foreground">
-                  <th className="px-4 py-3">Name / Email</th>
-                  <th className="px-4 py-3">Requested</th>
-                  <th className="px-4 py-3">Invited by</th>
-                  <th className="px-4 py-3">Invited</th>
-                  <th className="px-4 py-3">Invite</th>
-                  <th className="px-4 py-3">Signup</th>
-                  <th className="px-4 py-3 text-right">Permits</th>
-                </tr>
-              </thead>
-              <tbody>
-                {rows.map((r) => (
-                  <Fragment key={r.request_id}>
-                    <tr className="border-b border-border/60 align-top">
-                      <td className="px-4 py-3">
-                        <div className="font-medium">{r.name}</div>
-                        <div className="text-xs text-muted-foreground">{r.email}</div>
-                        {r.company ? <div className="text-xs text-muted-foreground">{r.company}</div> : null}
-                        {r.tenant_name ? (
-                          <div className="mt-1 font-mono text-[10px] uppercase tracking-wide text-muted-foreground">
-                            {r.tenant_name}
-                          </div>
-                        ) : null}
-                      </td>
-                      <td className="px-4 py-3 whitespace-nowrap">{fmt(r.requested_at)}</td>
-                      <td className="px-4 py-3">{r.invited_by ?? "—"}</td>
-                      <td className="px-4 py-3 whitespace-nowrap">{fmt(r.invited_at)}</td>
-                      <td className="px-4 py-3">
-                        <span className={`inline-block rounded-[3px] px-2 py-0.5 text-[11px] ${inviteBadge[r.invite_status]}`}>
-                          {inviteLabel[r.invite_status]}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3">
-                        {r.signup_status === "account_created" ? (
-                          <>
-                            <span className="inline-block rounded-[3px] bg-emerald-100 px-2 py-0.5 text-[11px] text-emerald-900">
-                              Account created
-                            </span>
-                            <div className="mt-1 text-xs text-muted-foreground">{fmt(r.signed_up_at)}</div>
-                          </>
-                        ) : (
-                          <span className="inline-block rounded-[3px] bg-muted px-2 py-0.5 text-[11px] text-muted-foreground">
-                            No account
-                          </span>
-                        )}
-                      </td>
-                      <td className="px-4 py-3 text-right">
-                        {r.permit_count > 0 ? (
-                          <button
-                            type="button"
-                            className="font-medium underline underline-offset-4"
-                            onClick={() => setOpen(open === r.request_id ? null : r.request_id)}
-                          >
-                            {r.permit_count}
-                          </button>
-                        ) : (
-                          <span className="text-muted-foreground">0</span>
-                        )}
+          <TableShell>
+            <thead>
+              <tr>
+                <th>Name / Email</th>
+                <th>Requested</th>
+                <th>Invited by</th>
+                <th>Invited</th>
+                <th>Invite</th>
+                <th>Signup</th>
+                <th className="text-right">Permits</th>
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((r) => (
+                <Fragment key={r.request_id}>
+                  <tr>
+                    <td className="min-w-0">
+                      <div className="truncate text-[12.5px] font-medium">{r.name}</div>
+                      <div className="truncate text-[11.5px] text-muted-foreground">{r.email}</div>
+                      {r.company ? <div className="truncate text-[11.5px] text-muted-foreground">{r.company}</div> : null}
+                      {r.tenant_name ? (
+                        <div className="mt-0.5 text-[11px] text-muted-foreground">{r.tenant_name}</div>
+                      ) : null}
+                    </td>
+                    <td className="whitespace-nowrap text-[11.5px] tabular-nums text-muted-foreground">{fmt(r.requested_at)}</td>
+                    <td className="text-[12.5px] text-muted-foreground">{r.invited_by ?? "—"}</td>
+                    <td className="whitespace-nowrap text-[11.5px] tabular-nums text-muted-foreground">{fmt(r.invited_at)}</td>
+                    <td>
+                      <StatusChip tone={inviteTone[r.invite_status]}>{inviteLabel[r.invite_status]}</StatusChip>
+                    </td>
+                    <td>
+                      {r.signup_status === "account_created" ? (
+                        <>
+                          <StatusChip tone="success">Account created</StatusChip>
+                          <div className="mt-1 text-[11px] text-muted-foreground">{fmt(r.signed_up_at)}</div>
+                        </>
+                      ) : (
+                        <StatusChip tone="neutral">No account</StatusChip>
+                      )}
+                    </td>
+                    <td className="text-right">
+                      {r.permit_count > 0 ? (
+                        <button
+                          type="button"
+                          className="text-[12.5px] font-medium tabular-nums hover:underline"
+                          onClick={() => setOpen(open === r.request_id ? null : r.request_id)}
+                        >
+                          {r.permit_count}
+                        </button>
+                      ) : (
+                        <span className="text-[12.5px] text-muted-foreground">0</span>
+                      )}
+                    </td>
+                  </tr>
+                  {open === r.request_id && r.permits.length > 0 ? (
+                    <tr>
+                      <td colSpan={7} className="bg-[var(--p-card-2)]">
+                        <ul className="space-y-1 py-1">
+                          {r.permits.map((p) => (
+                            <li key={p.id} className="text-[11.5px]">
+                              <Link
+                                to="/portal/permits/$id"
+                                params={{ id: p.id }}
+                                className="hover:underline"
+                              >
+                                {p.label}
+                              </Link>
+                              <span className="ml-2 text-muted-foreground">{fmt(p.created_at)}</span>
+                            </li>
+                          ))}
+                        </ul>
                       </td>
                     </tr>
-                    {open === r.request_id && r.permits.length > 0 ? (
-                      <tr className="border-b border-border/60 bg-muted/20">
-                        <td colSpan={7} className="px-4 py-3">
-                          <ul className="space-y-1">
-                            {r.permits.map((p) => (
-                              <li key={p.id} className="text-xs">
-                                <Link
-                                  to="/portal/permits/$id"
-                                  params={{ id: p.id }}
-                                  className="underline underline-offset-4"
-                                >
-                                  {p.label}
-                                </Link>
-                                <span className="ml-2 text-muted-foreground">{fmt(p.created_at)}</span>
-                              </li>
-                            ))}
-                          </ul>
-                        </td>
-                      </tr>
-                    ) : null}
-                  </Fragment>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                  ) : null}
+                </Fragment>
+              ))}
+            </tbody>
+          </TableShell>
         )}
-      </div>
+      </PageShell>
     </PortalShell>
   );
 }

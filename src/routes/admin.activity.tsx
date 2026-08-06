@@ -1,11 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Loader2 } from "lucide-react";
 
 import { PortalShell } from "@/components/portal-shell";
 import { BackendReconnecting } from "@/components/backend-reconnecting";
 import { isMissingBackendEnvError } from "@/lib/env-error";
 import { supabase } from "@/integrations/supabase/client";
+import { PageShell, EmptyState } from "@/components/ui-kit";
 
 export const Route = createFileRoute("/admin/activity")({
   head: () => ({
@@ -58,47 +58,40 @@ function ActivityPage() {
 
   return (
     <PortalShell>
-      <div className="mx-auto w-full max-w-5xl px-4 py-8">
-        <div className="label-eyebrow text-obsidian/50">Admin</div>
-        <h1 className="display-serif mt-2 text-4xl leading-tight text-obsidian">Activity Log</h1>
-        <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
-          Staff actions on permit submissions — acceptances, corrections and related events.
-        </p>
-
+      <PageShell
+        crumbs={[{ label: "Admin" }]}
+        title="Activity Log"
+        meta={loading ? "Loading…" : `${rows.length} events`}
+        width="narrow"
+      >
         {loading ? (
-          <div className="mt-10 flex items-center gap-2 text-sm text-muted-foreground">
-            <Loader2 className="h-4 w-4 animate-spin" /> Loading activity…
-          </div>
+          <div className="px-1 py-6 text-[12.5px] text-muted-foreground">Loading activity…</div>
         ) : error ? (
           isMissingBackendEnvError(error) ? (
             <BackendReconnecting />
           ) : (
-            <div className="mt-8 rounded-[3px] border border-red-200 bg-red-50 p-4 text-sm text-red-900">{error}</div>
+            <div className="p-plate p-4 text-[12.5px] text-[var(--p-danger)]">{error}</div>
           )
         ) : rows.length === 0 ? (
-          <div className="mt-8 rounded-[3px] border border-border p-8 text-center text-sm text-muted-foreground">
-            No activity recorded yet.
-          </div>
+          <EmptyState title="No activity recorded yet" />
         ) : (
-          <ul className="mt-6 divide-y divide-border rounded-[3px] border border-border">
+          <ul className="p-plate p-divide overflow-hidden">
             {rows.map((r) => (
-              <li key={r.id} className="px-4 py-3">
+              <li key={r.id} className="px-3 py-2.5">
                 <div className="flex flex-wrap items-baseline justify-between gap-2">
-                  <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian">
-                    {label(r.event_type)}
-                  </span>
-                  <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-muted-foreground">
+                  <span className="text-[12.5px] font-medium capitalize">{label(r.event_type)}</span>
+                  <span className="text-[11px] tabular-nums text-muted-foreground">
                     {new Date(r.created_at).toLocaleString()}
                   </span>
                 </div>
-                {r.summary && <div className="mt-1 text-sm text-obsidian/80">{r.summary}</div>}
+                {r.summary && <div className="mt-0.5 text-[12.5px] text-foreground/80">{r.summary}</div>}
                 {typeof r.details?.message === "string" && (
-                  <div className="mt-1 text-sm text-red-900/80">“{r.details.message as string}”</div>
+                  <div className="mt-0.5 text-[12.5px] text-[var(--p-danger)]">“{r.details.message as string}”</div>
                 )}
-                <div className="mt-1 flex flex-wrap gap-3 text-xs text-muted-foreground">
+                <div className="mt-1 flex flex-wrap gap-3 text-[11px] text-muted-foreground">
                   <span>{r.actor_label ?? "Staff"}</span>
                   {r.permit_id && (
-                    <Link to="/portal/permits/$id" params={{ id: r.permit_id }} className="underline underline-offset-4">
+                    <Link to="/portal/permits/$id" params={{ id: r.permit_id }} className="hover:underline">
                       View permit
                     </Link>
                   )}
@@ -107,7 +100,7 @@ function ActivityPage() {
             ))}
           </ul>
         )}
-      </div>
+      </PageShell>
     </PortalShell>
   );
 }

@@ -1,24 +1,23 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useRouterState } from "@tanstack/react-router";
 
 const TABS = [
   { to: "/admin/protection", label: "Protection" },
   { to: "/admin/utility-locates", label: "Utility Locates" },
 ] as const;
 
-/** Subsection tab bar shared by the Admin operations subsections. */
+/**
+ * Subsection tab bar shared by the Admin operations subsections. Compact
+ * segmented control designed to live in a PageShell toolbar row.
+ */
 export function AdminSubTabs() {
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
   return (
-    <nav className="mb-8 flex flex-wrap gap-2 border-b border-obsidian/10 pb-3">
+    <div className="p-seg" role="tablist">
       {TABS.map((t) => (
-        <Link
-          key={t.to}
-          to={t.to}
-          className="rounded-[3px] border border-transparent px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.16em] text-obsidian/55 hover:bg-obsidian/[0.05]"
-          activeProps={{ className: "border-obsidian/15 bg-obsidian text-white hover:bg-obsidian" }}
-        >
+        <Link key={t.to} to={t.to} role="tab" data-active={pathname.startsWith(t.to)}>
           {t.label}
         </Link>
       ))}
-    </nav>
+    </div>
   );
 }

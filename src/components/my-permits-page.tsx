@@ -7,6 +7,15 @@ import { listEscalatedPermitIds } from "@/lib/staff-ops";
 import { listPermits, updatePermit, permitCompleteness, type PermitRow, type PermitStatus } from "@/lib/permits-api";
 import { syncAllPermits, getLastRun, formatRelative } from "@/lib/permit-sync";
 import { getVendor, isVendorManaged } from "@/lib/project-vendors";
+import {
+  PageShell,
+  Panel,
+  SearchInput,
+  Segmented,
+  StatusChip,
+  EmptyState,
+  type MetricTone,
+} from "@/components/ui-kit";
 
 
 type GroupKey = "intake" | "preparing" | "submitted" | "on_hold" | "outsourced" | "issued" | "cancelled";
@@ -126,158 +135,195 @@ export function MyPermitsPage() {
     [filtered],
   );
 
+  const counts = useMemo(
+    () => ({
+      total: filtered.length,
+      active: filtered.filter((p) => !["permit_issued", "cancelled"].includes(p.status)).length,
+      issued: filtered.filter((p) => p.status === "permit_issued").length,
+      blocked: filtered.filter((p) => ["on_hold", "corrections_required"].includes(p.status)).length,
+    }),
+    [filtered],
+  );
+
   return (
     <PortalShell>
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
-        <div className="flex flex-wrap items-end justify-between gap-4 border-b border-obsidian/10 pb-8">
-          <div>
-            <div className="eyebrow text-obsidian/50">FL Statute 553.791 · Pipeline</div>
-            <h1 className="display-serif mt-3 text-4xl sm:text-5xl text-obsidian">My Permits</h1>
-            <p className="mt-2 text-[12px] text-obsidian/55">{loading ? "Loading…" : `${permits.length} permit${permits.length === 1 ? "" : "s"} on file`}</p>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="hidden sm:flex flex-col items-end mr-1">
-              <span className="font-mono text-[9px] uppercase tracking-[0.14em] text-obsidian/45">Last sync</span>
-              <span className="font-mono text-[10px] tabular-nums text-obsidian/70">{syncMsg ?? formatRelative(lastSync)}</span>
+      <PageShell
+        crumbs={[{ label: "Workspace" }, { label: "Permits" }]}
+        title="Permits"
+        meta={
+          loading
+            ? "Loading…"
+            : `${permits.length} on file · ${counts.active} active · ${counts.blocked} blocked`
+        }
+        actions={
+          <>
+            <span className="hidden text-[11.5px] text-muted-foreground lg:inline">
+              {syncMsg ?? `Synced ${formatRelative(lastSync)}`}
+            </span>
+            <button onClick={handleSync} disabled={syncing} className="p-btn p-btn-ghost">
+              <RefreshCw className={`h-3.5 w-3.5 ${syncing ? "animate-spin" : ""}`} strokeWidth={1.75} />
+              {syncing ? "Syncing" : "Sync"}
+            </button>
+            <Link to="/portal/permits/new" className="p-btn p-btn-primary">
+              <Plus className="h-3.5 w-3.5" strokeWidth={2} /> New permit
+            </Link>
+          </>
+        }
+        toolbar={
+          <>
+            <div className="p-inset min-w-0 flex-1 sm:max-w-sm">
+              <SearchInput value={query} onChange={setQuery} placeholder="Search project, address, county" />
             </div>
-            <button onClick={handleSync} disabled={syncing} className="inline-flex items-center gap-2 border border-obsidian/20 bg-white px-3 py-2 font-mono text-[10px] uppercase tracking-[0.12em] text-obsidian hover:bg-paper-warm rounded-[3px] disabled:opacity-60">
-              <RefreshCw className={`h-3.5 w-3.5 ${syncing ? "animate-spin" : ""}`} /> {syncing ? "Syncing…" : "Sync Permits"}
-            </button>
-            <Link to="/portal/permits/new" className="inline-flex items-center gap-2 bg-obsidian px-4 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-paper hover:bg-obsidian/90 rounded-[3px]">
-              <Plus className="h-3.5 w-3.5" /> Add New Permit
-            </Link>
-          </div>
-        </div>
-
-        <div className="mt-6 relative max-w-md">
-          <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-obsidian/40" />
-          <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search by project, address, county…" className="block w-full border border-obsidian/15 bg-white pl-9 pr-3 py-2 text-sm text-obsidian placeholder:text-obsidian/40 focus:border-obsidian/40 focus:outline-none rounded-[3px]" />
-        </div>
-
-        {/* Management filter — separate Cléared work from vendor record copies. */}
-        <div className="mt-4 inline-flex overflow-hidden rounded-[3px] border border-obsidian/20">
-          {([
-            { key: "cleared", label: "Cléared Managed" },
-            { key: "vendor", label: "Vendor Managed" },
-            { key: "all", label: "All" },
-          ] as const).map((opt) => (
-            <button
-              key={opt.key}
-              type="button"
-              onClick={() => setManagement(opt.key)}
-              className={`px-3 py-2 font-mono text-[10px] uppercase tracking-[0.12em] border-r border-obsidian/15 last:border-r-0 ${
-                management === opt.key ? "bg-obsidian text-paper" : "bg-white text-obsidian/65 hover:bg-paper-warm"
-              }`}
-            >
-              {opt.label}
-            </button>
-          ))}
-        </div>
-
-
-
-        {permits.length === 0 && !loading && (
-          <div className="mt-10 border border-dashed border-obsidian/20 rounded-[3px] p-12 text-center">
-            <FileText className="h-8 w-8 mx-auto text-obsidian/30" strokeWidth={1.5} />
-            <p className="mt-3 text-sm text-obsidian/60">No permits yet. Create your first one.</p>
-            <Link to="/portal/permits/new" className="mt-4 inline-flex items-center gap-2 bg-obsidian px-4 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-paper rounded-[3px]">
-              <Plus className="h-3.5 w-3.5" /> Add New Permit
-            </Link>
-          </div>
-        )}
-
-        <div className="mt-8 space-y-4">
-          {grouped.map((g) => (
-            <div key={g.key} className="bg-white border border-obsidian/10" style={{ borderLeftWidth: "3px", borderLeftColor: g.borderColor }}>
-              <button type="button" onClick={() => setOpen((o) => ({ ...o, [g.key]: !o[g.key] }))} className="w-full flex items-center gap-3 px-5 py-4 text-left hover:bg-paper-warm/50">
-                <ChevronDown className={`h-4 w-4 text-obsidian/40 transition-transform ${open[g.key] ? "rotate-180" : ""}`} />
-                <span className="font-subline text-sm font-bold uppercase tracking-[0.14em] text-obsidian">{g.label}</span>
-                <span className="ml-auto font-mono text-[11px] tabular-nums text-obsidian/55 border border-obsidian/15 px-2 py-0.5 rounded-[2px]">{g.items.length}</span>
-              </button>
-              {open[g.key] && (
-                <div className="border-t border-obsidian/10 p-4">
-                  {g.items.length === 0 ? (
-                    <div className="px-1 py-6 text-center text-sm text-obsidian/45">No permits in this stage.</div>
+            <Segmented
+              value={management}
+              onChange={setManagement}
+              options={[
+                { value: "all", label: "All" },
+                { value: "cleared", label: "Cléared" },
+                { value: "vendor", label: "Vendor" },
+              ]}
+            />
+            <span className="ml-auto hidden text-[11.5px] text-muted-foreground sm:inline">
+              {counts.total} shown
+            </span>
+          </>
+        }
+      >
+        {permits.length === 0 && !loading ? (
+          <Panel padded={false}>
+            <EmptyState
+              icon={<FileText className="h-4 w-4" strokeWidth={1.75} />}
+              title="No permits yet"
+              description="Create your first permit to start the statutory clock."
+              action={
+                <Link to="/portal/permits/new" className="p-btn p-btn-primary">
+                  <Plus className="h-3.5 w-3.5" strokeWidth={2} /> New permit
+                </Link>
+              }
+            />
+          </Panel>
+        ) : (
+          <div className="space-y-3">
+            {grouped.map((g) => (
+              <section key={g.key} className="min-w-0">
+                <button
+                  type="button"
+                  onClick={() => setOpen((o) => ({ ...o, [g.key]: !o[g.key] }))}
+                  className="flex w-full items-center gap-2 px-1 py-1.5 text-left"
+                >
+                  <ChevronDown
+                    className={`h-3.5 w-3.5 text-muted-foreground transition-transform ${open[g.key] ? "" : "-rotate-90"}`}
+                    strokeWidth={2}
+                  />
+                  <span className="text-[12.5px] font-semibold tracking-[-0.01em]">{g.label}</span>
+                  <span className="text-[11.5px] tabular-nums text-muted-foreground">
+                    {g.items.length}
+                  </span>
+                </button>
+                {open[g.key] &&
+                  (g.items.length === 0 ? (
+                    <div className="px-1 py-2 text-[11.5px] text-muted-foreground">Empty stage.</div>
                   ) : (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
                       {g.items.map((p) => {
                         const c = permitCompleteness(p);
-                        const issued = p.status === "permit_issued";
                         const vendor = getVendor(p.project_name);
-                        const barColor = c.percent === 100 ? "#16a34a" : c.percent >= 60 ? "#153157" : c.percent >= 30 ? "#d97706" : "#dc2626";
+                        const tone: MetricTone =
+                          p.status === "permit_issued" || p.status === "approved"
+                            ? "success"
+                            : p.status === "on_hold" || p.status === "corrections_required"
+                              ? "warning"
+                              : p.status === "cancelled"
+                                ? "danger"
+                                : "info";
+                        const barColor =
+                          c.percent === 100 ? "#22C55E" : c.percent >= 60 ? "#3B82F6" : c.percent >= 30 ? "#F59E0B" : "#EF4444";
                         return (
-                          <div key={p.id} className={`group relative flex flex-col border bg-white transition-colors rounded-[3px] ${vendor ? "border-slate-300 hover:border-slate-400 bg-slate-50/60" : "border-obsidian/10 hover:border-obsidian/30"}`}>
-                            <Link to="/portal/permits/$id" params={{ id: p.id }} className="flex-1 p-4">
-                              <div className="flex items-start justify-between gap-2">
+                          <div
+                            key={p.id}
+                            className="p-plate p-hover-plate group flex min-w-0 flex-col overflow-hidden"
+                          >
+                            <Link
+                              to="/portal/permits/$id"
+                              params={{ id: p.id }}
+                              className="min-w-0 flex-1 px-3 pb-2 pt-2.5"
+                            >
+                              <div className="flex min-w-0 items-start gap-2">
                                 <div className="min-w-0 flex-1">
-                                  <div className="text-sm font-medium text-obsidian truncate">{p.project_name}</div>
-                                  {vendor && (
-                                    <div className="mt-1 inline-flex items-center border border-slate-400/60 bg-slate-200/70 px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-[0.1em] text-slate-700 rounded-[2px]" title={`Managed by ${vendor} — record copy only`}>
-                                      Vendor Managed · {vendor}
-                                    </div>
-                                  )}
-                                  <div className="mt-0.5 text-xs text-obsidian/55 truncate">{p.job_address}</div>
+                                  <div className="truncate text-[13px] font-medium leading-tight">
+                                    {p.project_name}
+                                  </div>
+                                  <div className="mt-0.5 truncate text-[11.5px] text-muted-foreground">
+                                    {p.job_address}
+                                  </div>
                                 </div>
-
-
-                                <span className="shrink-0 font-mono text-[9px] uppercase tracking-[0.1em] text-obsidian/70 border border-obsidian/15 px-1.5 py-0.5 rounded-[2px]">
-                                  {STATUS_LABEL[p.status]}
-                                </span>
-                                {internal && escalatedIds.has(p.id) && (
-                                  <span className="shrink-0 inline-flex items-center gap-1 border border-red-500/50 bg-red-50 px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-[0.1em] text-red-800 rounded-[2px]" title="Escalated">
-                                    <Flag className="h-2.5 w-2.5" /> Escalated
-                                  </span>
-                                )}
+                                <StatusChip tone={tone}>{STATUS_LABEL[p.status]}</StatusChip>
                               </div>
 
-                              <div className="mt-3 flex flex-wrap items-center gap-1.5">
-                                {p.permit_type && (
-                                  <span className={`inline-flex items-center px-1.5 py-0.5 text-[9px] font-mono uppercase tracking-[0.1em] rounded-[2px] text-white ${issued ? "bg-[#16a34a]" : "bg-[#dc2626]"}`}>
-                                    {p.permit_type}
-                                  </span>
-                                )}
+                              {/* Grouped metadata — one quiet line, no badge pile */}
+                              <div className="mt-2 flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1 text-[11px] text-muted-foreground">
+                                {p.permit_type && <span className="truncate">{p.permit_type}</span>}
                                 {p.municipality && (
-                                  <span className="inline-flex items-center border border-obsidian/15 bg-paper-warm px-1.5 py-0.5 text-[9px] font-mono uppercase tracking-[0.1em] text-obsidian/70 rounded-[2px]">
-                                    {p.municipality}
-                                  </span>
+                                  <>
+                                    <span className="opacity-40">·</span>
+                                    <span className="truncate">{p.municipality}</span>
+                                  </>
                                 )}
-                                {!vendor && c.missingFields.length > 0 && (
-                                  <span className="inline-flex items-center gap-1 border border-red-500/40 bg-red-50 px-1.5 py-0.5 text-[9px] font-mono uppercase tracking-[0.1em] text-red-700 rounded-[2px]">
-                                    <AlertTriangle className="h-2.5 w-2.5" /> {c.missingFields.length}
-                                  </span>
+                                {vendor && (
+                                  <>
+                                    <span className="opacity-40">·</span>
+                                    <span className="truncate" title={`Managed by ${vendor} — record copy only`}>
+                                      {vendor}
+                                    </span>
+                                  </>
                                 )}
-                                {!vendor && c.missingDocs.length > 0 && (
-                                  <span className="inline-flex items-center gap-1 border border-amber-500/40 bg-amber-50 px-1.5 py-0.5 text-[9px] font-mono uppercase tracking-[0.1em] text-amber-700 rounded-[2px]">
-                                    <FileText className="h-2.5 w-2.5" /> {c.missingDocs.length}
-                                  </span>
-                                )}
-
-                              </div>
-
-                              <div className="mt-4 flex items-center gap-2">
-                                <div className="flex-1 h-1.5 bg-obsidian/10 rounded-full overflow-hidden">
-                                  <div className="h-full transition-all" style={{ width: `${c.percent}%`, background: barColor }} />
-                                </div>
-                                <span className="font-mono text-[10px] tabular-nums text-obsidian/60 shrink-0">
-                                  {c.percent}%
+                                <span className="ml-auto shrink-0 tabular-nums">
+                                  {new Date(p.updated_at).toLocaleDateString()}
                                 </span>
                               </div>
 
-                              <div className="mt-3 flex items-center justify-between font-mono text-[9px] tabular-nums text-obsidian/45">
-                                <span>{c.done}/{c.total} complete</span>
-                                <span>{new Date(p.updated_at).toLocaleDateString()}</span>
-                              </div>
+                              {(internal && escalatedIds.has(p.id)) ||
+                              (!vendor && (c.missingFields.length > 0 || c.missingDocs.length > 0)) ? (
+                                <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
+                                  {internal && escalatedIds.has(p.id) && (
+                                    <StatusChip tone="danger">
+                                      <Flag className="h-2.5 w-2.5" /> Escalated
+                                    </StatusChip>
+                                  )}
+                                  {!vendor && c.missingFields.length > 0 && (
+                                    <StatusChip tone="danger">
+                                      <AlertTriangle className="h-2.5 w-2.5" /> {c.missingFields.length}
+                                    </StatusChip>
+                                  )}
+                                  {!vendor && c.missingDocs.length > 0 && (
+                                    <StatusChip tone="warning">
+                                      <FileText className="h-2.5 w-2.5" /> {c.missingDocs.length}
+                                    </StatusChip>
+                                  )}
+                                </div>
+                              ) : null}
                             </Link>
-                            <div className="border-t border-obsidian/10 px-4 py-2">
+
+                            {/* Slim footer: progress + status control, revealed on hover */}
+                            <div className="flex items-center gap-2 px-3 pb-2.5">
+                              <div className="h-1 min-w-0 flex-1 overflow-hidden rounded-full bg-white/[0.08]">
+                                <div className="h-full" style={{ width: `${c.percent}%`, background: barColor }} />
+                              </div>
+                              <span className="shrink-0 text-[11px] tabular-nums text-muted-foreground">
+                                {c.done}/{c.total}
+                              </span>
                               <select
                                 value={p.status}
                                 disabled={updatingId === p.id}
                                 onChange={(e) => changeStatus(p.id, e.target.value as PermitStatus)}
                                 title="Change status"
-                                className="w-full font-mono text-[10px] uppercase tracking-[0.1em] text-obsidian bg-white border border-obsidian/20 px-2 py-1 rounded-[2px] hover:bg-paper-warm focus:outline-none focus:border-obsidian/50 disabled:opacity-50"
+                                aria-label="Change status"
+                                className="w-[26px] shrink-0 border-0 bg-transparent px-0 text-[11px] text-muted-foreground opacity-0 transition-opacity focus:opacity-100 group-hover:opacity-100 disabled:opacity-40"
                               >
                                 {STATUS_OPTIONS.map((s) => (
-                                  <option key={s.value} value={s.value}>Move to: {s.label}</option>
+                                  <option key={s.value} value={s.value}>
+                                    {s.label}
+                                  </option>
                                 ))}
                               </select>
                             </div>
@@ -285,13 +331,13 @@ export function MyPermitsPage() {
                         );
                       })}
                     </div>
-                  )}
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
-      </div>
+                  ))}
+              </section>
+            ))}
+          </div>
+        )}
+      </PageShell>
     </PortalShell>
   );
 }
+

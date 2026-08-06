@@ -2,8 +2,9 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { PortalShell } from "@/components/portal-shell";
 import { Button } from "@/components/ui/button";
-import { ChevronDown, Eye, EyeOff, FileText } from "lucide-react";
+import { Eye, EyeOff, FileText } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { PageShell, TableShell, EmptyState, StatusChip, StatTile } from "@/components/ui-kit";
 
 export const Route = createFileRoute("/invoices")({
   head: () => ({
@@ -27,11 +28,10 @@ type Invoice = {
 
 const INVOICES: Invoice[] = [];
 
-
-const statusTone: Record<InvStatus, { label: string; cls: string }> = {
-  paid: { label: "Paid", cls: "bg-emerald-600/10 text-emerald-700 border-emerald-600/30" },
-  pending: { label: "Pending", cls: "bg-amber-500/10 text-amber-700 border-amber-600/30" },
-  overdue: { label: "Overdue", cls: "bg-oxblood/10 text-oxblood border-oxblood/30" },
+const statusTone: Record<InvStatus, "success" | "warning" | "danger"> = {
+  paid: "success",
+  pending: "warning",
+  overdue: "danger",
 };
 
 const fmt = (cents: number) =>
@@ -73,134 +73,77 @@ function InvoicesPage() {
 
   return (
     <PortalShell>
-      <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
-        {/* Header */}
-        <div className="flex flex-wrap items-end justify-between gap-4 border-b border-obsidian/10 pb-8">
-          <div>
-            <div className="eyebrow text-obsidian/50">Billing</div>
-            <h1 className="display-serif mt-3 text-4xl sm:text-5xl text-obsidian">Invoices</h1>
-            <p className="mt-2 text-sm text-obsidian/60">
-              Permitting and admin fees, invoiced at submittal under FL 553.791.
-            </p>
-          </div>
-          <button
-            type="button"
-            onClick={() => setShow((s) => !s)}
-            className="inline-flex items-center gap-2 border border-obsidian/20 bg-paper-warm px-3 py-2 font-mono text-[10px] uppercase tracking-[0.12em] text-obsidian/70 hover:text-obsidian rounded-[3px]"
-          >
+      <PageShell
+        crumbs={[{ label: "Billing" }, { label: "Invoices" }]}
+        title="Invoices"
+        meta="Permitting and admin fees, invoiced at submittal under FL 553.791."
+        actions={
+          <button type="button" onClick={() => setShow((s) => !s)} className="p-btn p-btn-ghost">
             {show ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
             {show ? "Hide amounts" : "Show amounts"}
           </button>
+        }
+      >
+        <div className="mb-4 grid grid-cols-1 gap-2 sm:grid-cols-3">
+          <StatTile label="Total Amount" value={show ? fmt(stats.total) : "•••••••"} />
+          <StatTile label="Pending" value={show ? fmt(stats.pending) : "•••••••"} tone="warning" />
+          <StatTile label="Overdue" value={show ? fmt(stats.overdue) : "•••••••"} tone="danger" />
         </div>
 
-        {/* Stat cards */}
-        <div className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-3">
-          <StatCard label="Total Amount" value={fmt(stats.total)} show={show} />
-          <StatCard label="Pending" value={fmt(stats.pending)} show={show} tone="amber" />
-          <StatCard label="Overdue" value={fmt(stats.overdue)} show={show} tone="oxblood" />
-        </div>
-
-        {/* Accordion list */}
         {invoices.length === 0 ? (
-          <div className="mt-10 border border-dashed border-obsidian/20 rounded-[3px] p-12 text-center">
-            <FileText className="h-8 w-8 mx-auto text-obsidian/30" strokeWidth={1.5} />
-            <p className="mt-3 text-sm text-obsidian/70">No invoices on file.</p>
-            <p className="mt-1 text-xs text-obsidian/50">Invoices will appear here as they are issued.</p>
-          </div>
+          <EmptyState
+            icon={<FileText className="h-4 w-4" strokeWidth={1.75} />}
+            title="No invoices on file."
+            description="Invoices will appear here as they are issued."
+          />
         ) : (
-          <div className="mt-10 border border-obsidian/15 bg-white">
-            {invoices.map((inv) => {
-              const isOpen = open === inv.number;
-              const t = statusTone[inv.status];
-              return (
-                <div key={inv.number} className="border-b border-obsidian/10 last:border-0">
-                  <button
-                    type="button"
-                    onClick={() => setOpen(isOpen ? null : inv.number)}
-                    className="w-full flex flex-wrap items-center gap-3 px-5 py-4 text-left hover:bg-paper-warm/50 transition-colors"
-                  >
-                    <ChevronDown
-                      className={`h-4 w-4 text-obsidian/40 transition-transform shrink-0 ${isOpen ? "rotate-180" : ""}`}
-                    />
-                    <span className="font-mono text-[12px] tabular-nums text-obsidian">
-                      {inv.number}
-                    </span>
-                    <span className={`inline-flex items-center border px-2 py-0.5 font-mono text-[9px] font-medium uppercase tracking-[0.12em] rounded-[2px] ${t.cls}`}>
-                      {t.label}
-                    </span>
-                    <span className="text-sm text-obsidian/70 truncate flex-1 min-w-0">{inv.address}</span>
-                    <span className="font-mono text-sm tabular-nums text-obsidian ml-auto">
-                      {show ? fmt(inv.amount_cents) : "••••••"}
-                    </span>
-                  </button>
-                  {isOpen && (
-                    <div className="px-12 pb-5 pt-1 space-y-3">
-                      <p className="text-sm text-obsidian/75">
-                        {inv.description} — {inv.address}
-                      </p>
-                      <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-obsidian/45">
-                        Issued {inv.issued}
-                      </p>
-                      <Button
-                        variant={inv.status === "paid" ? "outline" : "dark"}
-                        className="w-full rounded-[3px] gap-2"
-                        disabled={inv.status === "paid"}
-                      >
-                        <FileText className="h-4 w-4" />
-                        {inv.status === "paid" ? "Paid — view receipt" : inv.status === "overdue" ? "Pay now (overdue)" : "Pay invoice"}
-                      </Button>
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
+          <TableShell>
+            <thead>
+              <tr>
+                <th>Invoice</th>
+                <th>Status</th>
+                <th>Address</th>
+                <th className="text-right">Amount</th>
+                <th className="w-[1%]" />
+              </tr>
+            </thead>
+            <tbody>
+              {invoices.map((inv) => {
+                const isOpen = open === inv.number;
+                return (
+                  <>
+                    <tr key={inv.number} className="cursor-pointer" onClick={() => setOpen(isOpen ? null : inv.number)}>
+                      <td className="font-medium">{inv.number}</td>
+                      <td><StatusChip tone={statusTone[inv.status]}>{inv.status}</StatusChip></td>
+                      <td className="max-w-[280px] truncate text-muted-foreground">{inv.address}</td>
+                      <td className="text-right tabular-nums">{show ? fmt(inv.amount_cents) : "••••••"}</td>
+                      <td className="text-right text-muted-foreground">{isOpen ? "▲" : "▼"}</td>
+                    </tr>
+                    {isOpen && (
+                      <tr key={`${inv.number}-detail`}>
+                        <td colSpan={5} className="bg-[var(--p-card-2)]">
+                          <div className="space-y-2 px-1 py-2">
+                            <p className="text-[12.5px]">{inv.description} — {inv.address}</p>
+                            <p className="text-[11px] text-muted-foreground">Issued {inv.issued}</p>
+                            <Button
+                              variant={inv.status === "paid" ? "outline" : "default"}
+                              className="gap-2"
+                              disabled={inv.status === "paid"}
+                            >
+                              <FileText className="h-4 w-4" />
+                              {inv.status === "paid" ? "Paid — view receipt" : inv.status === "overdue" ? "Pay now (overdue)" : "Pay invoice"}
+                            </Button>
+                          </div>
+                        </td>
+                      </tr>
+                    )}
+                  </>
+                );
+              })}
+            </tbody>
+          </TableShell>
         )}
-
-      </div>
+      </PageShell>
     </PortalShell>
-  );
-}
-
-function StatCard({
-  label, value, show, tone,
-}: {
-  label: string;
-  value: string;
-  show: boolean;
-  tone?: "amber" | "oxblood";
-}) {
-  return (
-    <div
-      className="p-5 border rounded-[3px]"
-      style={{
-        backgroundColor: "var(--obsidian)",
-        color: "var(--paper)",
-        borderColor: tone === "oxblood"
-          ? "color-mix(in oklab, var(--accent) 40%, transparent)"
-          : tone === "amber"
-          ? "oklch(0.7 0.12 75 / 0.4)"
-          : "color-mix(in oklab, var(--paper) 8%, transparent)",
-      }}
-    >
-      <div
-        className="font-mono text-[10px] uppercase tracking-[0.18em] mb-3"
-        style={{ color: "color-mix(in oklab, var(--paper) 60%, transparent)" }}
-      >
-        {label}
-      </div>
-      <div
-        className="font-display text-3xl tabular-nums"
-        style={{
-          color: tone === "oxblood"
-            ? "var(--accent)"
-            : tone === "amber"
-            ? "oklch(0.85 0.13 75)"
-            : "var(--paper)",
-        }}
-      >
-        {show ? value : "•••••••"}
-      </div>
-    </div>
   );
 }
