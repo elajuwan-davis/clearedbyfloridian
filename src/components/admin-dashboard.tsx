@@ -36,7 +36,6 @@ import {
   SectionHeader,
   StatTile,
   StatusChip,
-  TableShell,
   EmptyState,
   LoadingRow,
 } from "@/components/ui-kit";
