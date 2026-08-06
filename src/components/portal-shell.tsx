@@ -83,39 +83,19 @@ function sectionAlerted(section: NavSection, alertKeys: Set<AlertKey>) {
 }
 
 /**
- * Sidebar — Cleard Design System v1.0.
- * 68px collapsed, 248px on hover. Grouped sections, hidden scrollbars,
- * one active treatment (lighter background + left accent + bold text).
- * Navigation model is unchanged: every section and link is the same.
+ * Sidebar — HubSpot model.
+ *
+ * `rail`      → 56px icon rail. Hovering a group icon opens a flyout panel
+ *               beside the rail listing that group's links. No scrollbars.
+ * `expanded`  → 240px pinned nav with inline labels (toggle at the bottom).
+ * `drawer`    → mobile sheet, always expanded.
+ *
+ * Navigation model is unchanged: same sections, same links, same order.
  */
-function SidebarNav({
-  pathname,
-  alertKeys,
-  role,
-  isAdmin,
-  displayName,
-  email,
-  initials,
-  expanded,
-  onNavigate,
-  onSignOut,
-}: {
-  pathname: string;
-  alertKeys: Set<AlertKey>;
-  role: AppRole | null;
-  isAdmin: boolean;
-  displayName: string;
-  email: string | null;
-  initials: string;
-  /** Always-expanded (mobile drawer); desktop expands on hover instead. */
-  expanded?: boolean;
-  onNavigate?: () => void;
-  onSignOut: () => void;
-}) {
+function useNavSections(role: AppRole | null, isAdmin: boolean) {
   const { bookmarks } = useBookmarks();
   const sections = sectionsForRole(role, isAdmin);
   const settings = settingsForRole(role);
-
   const allSections: NavSection[] = [
     ...sections.map((s) =>
       s.key === "bookmarks" && bookmarks.length > 0
@@ -131,18 +111,92 @@ function SidebarNav({
     ),
     settings,
   ];
+  return allSections;
+}
 
-  const show = expanded ? "opacity-100" : "opacity-0 group-hover/rail:opacity-100";
+function NavLinkRow({
+  to,
+  label,
+  active,
+  alerted,
+  onNavigate,
+}: {
+  to: string;
+  label: string;
+  active: boolean;
+  alerted?: boolean;
+  onNavigate?: () => void;
+}) {
+  return (
+    <Link
+      to={to as never}
+      onClick={onNavigate}
+      className="p-nav-item"
+      data-active={active ? "true" : "false"}
+    >
+      <span className="min-w-0 flex-1 truncate">{label}</span>
+      {alerted && (
+        <span
+          aria-hidden
+          className="h-1.5 w-1.5 shrink-0 rounded-full"
+          style={{ backgroundColor: "var(--p-danger)" }}
+        />
+      )}
+    </Link>
+  );
+}
+
+function SidebarNav({
+  pathname,
+  alertKeys,
+  role,
+  isAdmin,
+  displayName,
+  email,
+  initials,
+  mode,
+  onToggleExpanded,
+  onNavigate,
+  onSignOut,
+}: {
+  pathname: string;
+  alertKeys: Set<AlertKey>;
+  role: AppRole | null;
+  isAdmin: boolean;
+  displayName: string;
+  email: string | null;
+  initials: string;
+  mode: "rail" | "expanded" | "drawer";
+  onToggleExpanded?: () => void;
+  onNavigate?: () => void;
+  onSignOut: () => void;
+}) {
+  const allSections = useNavSections(role, isAdmin);
+  const [openKey, setOpenKey] = useState<string | null>(null);
+  const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const isRail = mode === "rail";
+
+  function openGroup(key: string) {
+    if (closeTimer.current) clearTimeout(closeTimer.current);
+    setOpenKey(key);
+  }
+  function scheduleClose() {
+    if (closeTimer.current) clearTimeout(closeTimer.current);
+    closeTimer.current = setTimeout(() => setOpenKey(null), 120);
+  }
+
+  const openSection = allSections.find((s) => s.key === openKey) ?? null;
 
   return (
     <div
-      className="flex h-full min-h-0 flex-col"
+      className="relative flex h-full min-h-0 flex-col"
       style={{ backgroundColor: "var(--rail-bg)", borderRight: "1px solid var(--p-border)" }}
+      onMouseLeave={() => isRail && scheduleClose()}
     >
       <Link
         to="/"
         onClick={onNavigate}
-        className="flex h-14 shrink-0 items-center gap-2.5 px-[18px]"
+        className={cn("flex h-12 shrink-0 items-center gap-2.5", isRail ? "justify-center px-0" : "px-3.5")}
         title="Cleard"
       >
         <div
@@ -151,102 +205,134 @@ function SidebarNav({
         >
           C
         </div>
-        <span
-          className={cn(
-            "truncate text-[15px] font-semibold tracking-[-0.01em] transition-opacity duration-150",
-            show,
-          )}
-          style={{ color: "var(--rail-fg)" }}
-        >
-          Cleard
-        </span>
+        {!isRail && (
+          <span
+            className="truncate text-[15px] font-semibold tracking-[-0.01em]"
+            style={{ color: "var(--rail-fg)" }}
+          >
+            Cleard
+          </span>
+        )}
       </Link>
 
-      <nav className="p-noscroll min-h-0 flex-1 overflow-y-auto pb-3">
+      <nav className={cn("p-noscroll min-h-0 flex-1 overflow-y-auto", isRail ? "px-2 py-1" : "px-1.5 pb-2")}>
         {allSections.map((group) => {
           const items = group.items ?? [{ to: group.to as string, label: group.label }];
           const groupActive = sectionActive(pathname, group);
           const groupAlerted = sectionAlerted(group, alertKeys);
           const GroupIcon = group.icon;
-          return (
-            <div key={group.key} className="mb-0.5">
-              {/* Collapsed: the group icon is the visible affordance. Expanded: a label. */}
-              <div className="relative flex h-9 items-center">
-                <span
-                  className={cn(
-                    "absolute left-0 grid h-9 w-[68px] place-items-center transition-opacity duration-150",
-                    expanded ? "opacity-0" : "opacity-100 group-hover/rail:opacity-0",
-                  )}
-                >
-                  <span
-                    className="relative grid h-8 w-8 place-items-center rounded-lg"
-                    style={{
-                      backgroundColor: groupActive ? "rgba(255,255,255,0.08)" : "transparent",
-                      color: groupActive ? "#60A5FA" : "rgba(249,250,251,0.55)",
-                    }}
-                  >
-                    <GroupIcon className="h-[17px] w-[17px]" strokeWidth={1.75} />
-                    {groupAlerted && (
-                      <span
-                        aria-hidden
-                        className="absolute right-0.5 top-0.5 h-1.5 w-1.5 rounded-full"
-                        style={{ backgroundColor: "var(--p-danger)" }}
-                      />
-                    )}
-                  </span>
-                </span>
-                <span
-                  className={cn(
-                    "p-nav-group flex items-center gap-2 transition-opacity duration-150",
-                    show,
-                  )}
-                >
-                  <GroupIcon className="h-3 w-3" strokeWidth={2} />
-                  {group.label}
-                </span>
-              </div>
 
-              <ul
-                className={cn(
-                  "transition-opacity duration-150",
-                  expanded ? "opacity-100" : "pointer-events-none opacity-0 group-hover/rail:pointer-events-auto group-hover/rail:opacity-100",
-                )}
+          if (isRail) {
+            const single = !group.items && group.to;
+            const body = (
+              <span
+                className="relative grid h-9 w-9 place-items-center rounded-lg transition-colors"
+                style={{
+                  backgroundColor:
+                    groupActive || openKey === group.key ? "rgba(255,255,255,0.10)" : "transparent",
+                  color: groupActive ? "#60A5FA" : "rgba(249,250,251,0.62)",
+                }}
               >
-                {items.map((item, i) => {
-                  const itemActive = isItemActive(pathname, item.to);
-                  const alerted =
-                    "alertKey" in item && item.alertKey ? alertKeys.has(item.alertKey) : false;
-                  return (
-                    <li key={`${item.to}-${i}`}>
-                      <Link
-                        to={item.to as never}
-                        onClick={onNavigate}
-                        className="p-nav-item"
-                        data-active={itemActive ? "true" : "false"}
-                      >
-                        <span className="min-w-0 flex-1 truncate">{item.label}</span>
-                        {alerted && (
-                          <span
-                            aria-hidden
-                            className="h-1.5 w-1.5 shrink-0 rounded-full"
-                            style={{ backgroundColor: "var(--p-danger)" }}
-                          />
-                        )}
-                      </Link>
-                    </li>
-                  );
-                })}
+                <GroupIcon className="h-[18px] w-[18px]" strokeWidth={1.75} />
+                {groupAlerted && (
+                  <span
+                    aria-hidden
+                    className="absolute right-1 top-1 h-1.5 w-1.5 rounded-full"
+                    style={{ backgroundColor: "var(--p-danger)" }}
+                  />
+                )}
+              </span>
+            );
+            return (
+              <div
+                key={group.key}
+                className="flex justify-center py-[1px]"
+                onMouseEnter={() => openGroup(group.key)}
+                onFocus={() => openGroup(group.key)}
+              >
+                {single ? (
+                  <Link to={group.to as never} onClick={onNavigate} title={group.label}>
+                    {body}
+                  </Link>
+                ) : (
+                  <button type="button" title={group.label} aria-label={group.label}>
+                    {body}
+                  </button>
+                )}
+              </div>
+            );
+          }
+
+          return (
+            <div key={group.key} className="mb-1">
+              <div className="p-nav-group flex items-center gap-2">
+                <GroupIcon className="h-3 w-3" strokeWidth={2} />
+                {group.label}
+                {groupAlerted && (
+                  <span
+                    aria-hidden
+                    className="h-1.5 w-1.5 rounded-full"
+                    style={{ backgroundColor: "var(--p-danger)" }}
+                  />
+                )}
+              </div>
+              <ul>
+                {items.map((item, i) => (
+                  <li key={`${item.to}-${i}`}>
+                    <NavLinkRow
+                      to={item.to}
+                      label={item.label}
+                      active={isItemActive(pathname, item.to)}
+                      alerted={"alertKey" in item && item.alertKey ? alertKeys.has(item.alertKey) : false}
+                      onNavigate={onNavigate}
+                    />
+                  </li>
+                ))}
               </ul>
             </div>
           );
         })}
       </nav>
 
+      {/* Flyout panel — sits beside the rail, HubSpot style. */}
+      {isRail && openSection && (openSection.items?.length ?? 0) > 0 && (
+        <div
+          className="absolute left-full top-0 z-50 h-full w-[236px] overflow-hidden"
+          style={{
+            backgroundColor: "var(--rail-bg)",
+            borderRight: "1px solid var(--p-border)",
+            boxShadow: "18px 0 40px rgba(0,0,0,0.35)",
+          }}
+          onMouseEnter={() => openGroup(openSection.key)}
+          onMouseLeave={scheduleClose}
+        >
+          <div className="flex h-12 items-center px-4 text-[13px] font-semibold" style={{ color: "var(--rail-fg)" }}>
+            {openSection.label}
+          </div>
+          <ul className="p-noscroll max-h-[calc(100%-3rem)] overflow-y-auto px-1.5 pb-3">
+            {(openSection.items ?? []).map((item, i) => (
+              <li key={`${item.to}-${i}`}>
+                <NavLinkRow
+                  to={item.to}
+                  label={item.label}
+                  active={isItemActive(pathname, item.to)}
+                  alerted={item.alertKey ? alertKeys.has(item.alertKey) : false}
+                  onNavigate={() => {
+                    setOpenKey(null);
+                    onNavigate?.();
+                  }}
+                />
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
       <div
-        className="shrink-0 px-[14px] py-3"
+        className={cn("shrink-0 py-2", isRail ? "px-2" : "px-3")}
         style={{ borderTop: "1px solid var(--p-border)" }}
       >
-        <div className="flex min-w-0 items-center gap-2.5">
+        <div className={cn("flex min-w-0 items-center gap-2.5", isRail && "justify-center")}>
           <Link
             to="/profile"
             onClick={onNavigate}
@@ -256,34 +342,55 @@ function SidebarNav({
           >
             {initials}
           </Link>
-          <div className={cn("min-w-0 flex-1 leading-tight transition-opacity duration-150", show)}>
-            <div className="truncate text-[13px] font-medium" style={{ color: "var(--rail-fg)" }}>
-              {displayName}
-            </div>
-            <div className="truncate text-[11px]" style={{ color: "rgba(249,250,251,0.45)" }}>
-              {roleLabel[role ?? ""] ?? "Client"}
-            </div>
-          </div>
-          <button
-            onClick={onSignOut}
-            title="Sign out"
-            aria-label="Sign out"
-            className={cn(
-              "grid h-8 w-8 shrink-0 place-items-center rounded-lg transition-opacity duration-150 hover:bg-white/5",
-              show,
-            )}
-            style={{ color: "rgba(249,250,251,0.55)" }}
-          >
-            <LogOut className="h-3.5 w-3.5" strokeWidth={1.75} />
-          </button>
+          {!isRail && (
+            <>
+              <div className="min-w-0 flex-1 leading-tight">
+                <div className="truncate text-[13px] font-medium" style={{ color: "var(--rail-fg)" }}>
+                  {displayName}
+                </div>
+                <div className="truncate text-[11px]" style={{ color: "rgba(249,250,251,0.45)" }}>
+                  {roleLabel[role ?? ""] ?? "Client"}
+                </div>
+              </div>
+              <button
+                onClick={onSignOut}
+                title="Sign out"
+                aria-label="Sign out"
+                className="grid h-8 w-8 shrink-0 place-items-center rounded-lg hover:bg-white/5"
+                style={{ color: "rgba(249,250,251,0.55)" }}
+              >
+                <LogOut className="h-3.5 w-3.5" strokeWidth={1.75} />
+              </button>
+            </>
+          )}
         </div>
-        {email && (
-          <div
-            className={cn("mt-1.5 truncate pl-[42px] text-[11px] transition-opacity duration-150", show)}
-            style={{ color: "rgba(249,250,251,0.35)" }}
-          >
+        {!isRail && email && (
+          <div className="mt-1.5 truncate pl-[42px] text-[11px]" style={{ color: "rgba(249,250,251,0.35)" }}>
             {email}
           </div>
+        )}
+
+        {mode !== "drawer" && onToggleExpanded && (
+          <button
+            type="button"
+            onClick={onToggleExpanded}
+            title={isRail ? "Expand navigation" : "Collapse navigation"}
+            aria-label={isRail ? "Expand navigation" : "Collapse navigation"}
+            className={cn(
+              "mt-2 flex h-8 items-center gap-2 rounded-lg text-[12px] hover:bg-white/5",
+              isRail ? "w-full justify-center" : "w-full px-2",
+            )}
+            style={{ color: "rgba(249,250,251,0.6)" }}
+          >
+            {isRail ? (
+              <ChevronRight className="h-4 w-4" strokeWidth={1.75} />
+            ) : (
+              <>
+                <ChevronLeft className="h-4 w-4" strokeWidth={1.75} />
+                Collapse navigation
+              </>
+            )}
+          </button>
         )}
       </div>
     </div>
