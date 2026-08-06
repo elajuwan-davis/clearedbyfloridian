@@ -366,10 +366,10 @@ export function PortalShell({ children }: { children: ReactNode }) {
 
 
   return (
-    <div className="min-h-screen bg-background overflow-x-hidden">
-      {/* Fixed icon rail (desktop) */}
-      <aside className="hidden lg:block fixed inset-y-0 left-0 z-40 w-16">
-        <IconRail
+    <div className="portal-ui dark min-h-screen overflow-x-hidden bg-background">
+      {/* Sidebar — 68px, expands to 248px on hover (overlay, no layout shift) */}
+      <aside className="group/rail fixed inset-y-0 left-0 z-40 hidden w-[68px] overflow-hidden transition-[width] duration-200 ease-out hover:w-[248px] hover:shadow-[0_8px_30px_rgba(0,0,0,0.45)] lg:block">
+        <SidebarNav
           pathname={pathname}
           alertKeys={alertKeys}
           role={session.role}
@@ -381,25 +381,22 @@ export function PortalShell({ children }: { children: ReactNode }) {
         />
       </aside>
 
-      <div className="lg:pl-16">
+      <div className="lg:pl-[68px]">
         <header
-          className="sticky top-0 z-30 h-16 border-b flex items-center gap-3 px-4 sm:px-6 lg:px-8"
-          style={{
-            backgroundColor: "var(--card)",
-            borderColor: "var(--border)",
-          }}
+          className="sticky top-0 z-30 flex h-12 items-center gap-2 border-b px-3 sm:px-4 lg:px-6"
+          style={{ backgroundColor: "var(--p-bg)", borderColor: "var(--p-border)" }}
         >
           {/* Mobile hamburger + wordmark */}
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger
-              className="lg:hidden p-2 rounded-[3px] hover:bg-secondary"
+              className="rounded-lg p-2 hover:bg-white/5 lg:hidden"
               aria-label="Open navigation"
             >
-              {open ? <X className="h-6 w-6" strokeWidth={1.5} /> : <Menu className="h-6 w-6" strokeWidth={1.5} />}
+              {open ? <X className="h-5 w-5" strokeWidth={1.75} /> : <Menu className="h-5 w-5" strokeWidth={1.75} />}
             </SheetTrigger>
-            <SheetContent side="left" className="p-0 w-[300px] border-0">
+            <SheetContent side="left" className="portal-ui dark w-[268px] border-0 p-0">
               <SheetTitle className="sr-only">Portal navigation</SheetTitle>
-              <SidebarBody
+              <SidebarNav
                 pathname={pathname}
                 alertKeys={alertKeys}
                 role={session.role}
@@ -407,6 +404,7 @@ export function PortalShell({ children }: { children: ReactNode }) {
                 displayName={displayName}
                 email={session.email}
                 initials={me.initials}
+                expanded
                 onNavigate={() => setOpen(false)}
                 onSignOut={() => {
                   setOpen(false);
@@ -416,58 +414,66 @@ export function PortalShell({ children }: { children: ReactNode }) {
             </SheetContent>
           </Sheet>
 
-          <Link to="/" className="lg:hidden wordmark text-2xl" style={{ color: "var(--foreground)" }}>
+          <Link to="/" className="text-[15px] font-semibold lg:hidden" style={{ color: "var(--foreground)" }}>
             Cleard
           </Link>
 
-          {session.tenantName && (
-            <div className="hidden md:flex items-center gap-2 min-w-0">
-              <span
-                className="font-mono text-[9px] tracking-[0.22em] uppercase"
-                style={{ color: "var(--muted-foreground)" }}
-              >
-                {session.isAdmin ? "Cleard Admin" : "Client"}
-              </span>
-              <span
-                className="text-[14px] truncate max-w-[260px]"
-                style={{ color: "var(--foreground)", fontFamily: "var(--font-subline)" }}
-                title={session.tenantName}
-              >
-                {session.tenantName}
-              </span>
-            </div>
-          )}
+          {/* Breadcrumb spine — same place on every page */}
+          <div className="hidden min-w-0 items-center gap-1.5 text-[12px] md:flex">
+            <span className="text-muted-foreground">
+              {session.isAdmin ? "Cleard Operations" : "Workspace"}
+            </span>
+            {session.tenantName && (
+              <>
+                <ChevronRight className="h-3 w-3 shrink-0 opacity-40" strokeWidth={1.75} />
+                <span className="max-w-[240px] truncate text-foreground" title={session.tenantName}>
+                  {session.tenantName}
+                </span>
+              </>
+            )}
+          </div>
 
           {session.isAdmin && <AdminTenantSwitcher />}
 
-          <div className="ml-auto flex items-center gap-2">
+          <div className="ml-auto flex items-center gap-1">
+            {session.isAdmin && (
+              <span className="p-chip p-chip-info hidden lg:inline-flex">
+                <ShieldCheck className="h-3 w-3" strokeWidth={2} />
+                {session.impersonatingTenantName ? `Viewing as ${session.impersonatingTenantName}` : "Admin"}
+              </span>
+            )}
+            {session.isAdmin && session.impersonatingTenantName && (
+              <button
+                onClick={() => setImpersonatedTenant(null)}
+                className="p-btn p-btn-ghost h-8 px-2 text-[12px]"
+              >
+                Exit
+              </button>
+            )}
             <ThemeToggle />
             <BookmarkToggle />
             <NotificationBell />
             <div className="hidden sm:block">
               <DropdownMenu>
-                <DropdownMenuTrigger className="flex items-center gap-2 h-10 pl-1 pr-2 rounded-[3px] hover:bg-secondary outline-none">
+                <DropdownMenuTrigger className="flex h-8 items-center gap-1.5 rounded-lg px-1 outline-none hover:bg-white/5">
                   <div
-                    className="h-9 w-9 grid place-items-center font-mono text-[11px]"
-                    style={{ backgroundColor: "var(--obsidian)", color: "white", borderRadius: "3px" }}
+                    className="grid h-7 w-7 place-items-center rounded-lg text-[11px] font-semibold"
+                    style={{ backgroundColor: "#1F2937", color: "white" }}
                   >
                     {me.initials}
                   </div>
-                  <ChevronDown className="h-3 w-3 opacity-60" strokeWidth={1.5} />
+                  <ChevronDown className="h-3 w-3 opacity-50" strokeWidth={1.75} />
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="min-w-[240px] rounded-[3px] p-1">
+                <DropdownMenuContent align="end" className="min-w-[240px] rounded-xl p-1">
                   <DropdownMenuLabel className="px-3 py-2">
-                    <div className="text-[14px]" style={{ color: "var(--foreground)", fontFamily: "var(--font-subline)" }}>
+                    <div className="text-[13px] font-medium" style={{ color: "var(--foreground)" }}>
                       {displayName}
                     </div>
-                    <div
-                      className="font-mono text-[9px] tracking-[0.18em] uppercase mt-0.5"
-                      style={{ color: "var(--muted-foreground)" }}
-                    >
+                    <div className="mt-0.5 text-[11px]" style={{ color: "var(--muted-foreground)" }}>
                       {roleLabel[session.role ?? ""] ?? "Client"}
                     </div>
                     {session.email && (
-                      <div className="mt-1 text-[12px] truncate" style={{ color: "var(--muted-foreground)" }}>
+                      <div className="mt-1 truncate text-[11px]" style={{ color: "var(--muted-foreground)" }}>
                         {session.email}
                       </div>
                     )}
@@ -475,7 +481,7 @@ export function PortalShell({ children }: { children: ReactNode }) {
                   <DropdownMenuSeparator />
                   {(settingsForRole(session.role).items ?? []).map((item, i) => (
                     <DropdownMenuItem key={`${item.to}-${i}`} asChild>
-                      <Link to={item.to as never} className="px-3 py-2 text-[13px] rounded-[2px] cursor-pointer" style={{ color: "var(--foreground)" }}>
+                      <Link to={item.to as never} className="cursor-pointer rounded-lg px-3 py-2 text-[13px]" style={{ color: "var(--foreground)" }}>
                         {item.label}
                       </Link>
                     </DropdownMenuItem>
@@ -483,10 +489,10 @@ export function PortalShell({ children }: { children: ReactNode }) {
                   <DropdownMenuSeparator />
                   <DropdownMenuItem
                     onSelect={() => handleSignOut()}
-                    className="px-3 py-2 text-[13px] rounded-[2px] cursor-pointer flex items-center gap-2"
+                    className="flex cursor-pointer items-center gap-2 rounded-lg px-3 py-2 text-[13px]"
                     style={{ color: "var(--foreground)" }}
                   >
-                    <LogOut className="h-3.5 w-3.5" strokeWidth={1.5} />
+                    <LogOut className="h-3.5 w-3.5" strokeWidth={1.75} />
                     Sign out
                   </DropdownMenuItem>
                 </DropdownMenuContent>
@@ -495,52 +501,13 @@ export function PortalShell({ children }: { children: ReactNode }) {
           </div>
         </header>
 
-        {session.isAdmin && !session.impersonatingTenantName && (
-          <div
-            className="sticky top-16 z-20 flex flex-wrap items-center justify-between gap-3 px-4 sm:px-6 lg:px-8 py-2 text-[12px]"
-            style={{ backgroundColor: "var(--obsidian)", color: "white" }}
-          >
-            <div className="flex items-center gap-2 min-w-0">
-              <ShieldCheck className="h-3.5 w-3.5 shrink-0" strokeWidth={1.5} />
-              <span className="font-mono text-[10px] tracking-[0.18em] uppercase opacity-70">Admin view</span>
-              <span className="truncate opacity-90">
-                {session.email ?? ""} — full access across all clients
-              </span>
-            </div>
-            <Link
-              to="/dashboard"
-              className="font-mono text-[10px] tracking-[0.16em] uppercase underline underline-offset-2 hover:opacity-80"
-            >
-              Admin dashboard
-            </Link>
-          </div>
-        )}
-
-        {session.isAdmin && session.impersonatingTenantName && (
-          <div
-            className="sticky top-16 z-20 flex items-center justify-between gap-3 px-4 sm:px-6 lg:px-8 py-2 text-[12px]"
-            style={{ backgroundColor: "var(--obsidian)", color: "white" }}
-          >
-            <div className="flex items-center gap-2 min-w-0">
-              <Building2 className="h-3.5 w-3.5 shrink-0" strokeWidth={1.5} />
-              <span className="font-mono text-[10px] tracking-[0.18em] uppercase opacity-70">Viewing as</span>
-              <span className="truncate">{session.impersonatingTenantName}</span>
-            </div>
-            <button
-              onClick={() => setImpersonatedTenant(null)}
-              className="font-mono text-[10px] tracking-[0.16em] uppercase underline underline-offset-2 hover:opacity-80"
-            >
-              Exit impersonation
-            </button>
-          </div>
-        )}
-
-        <main className="min-h-[calc(100vh-4rem)] min-w-0 overflow-x-hidden px-4 sm:px-6 lg:px-8 py-6 md:py-10 pb-24 md:pb-10">
+        <main className="min-h-[calc(100vh-3rem)] min-w-0 overflow-x-hidden px-4 pb-24 pt-5 sm:px-6 lg:px-8 md:pb-8">
           {children}
         </main>
 
         <MobileBottomNav pathname={pathname} />
       </div>
+
 
       <InternalOnlyVictoria />
     </div>
