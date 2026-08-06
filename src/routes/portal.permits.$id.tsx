@@ -929,8 +929,10 @@ function PermitDetailPage() {
         <InspectionsPanel permitId={row.id} tenantId={row.tenant_id ?? null} permitStatus={row.status} />
       </section>
 
+      {tab === "submission" && (
+      <>
       {/* Resubmittal Workflow */}
-      <section id="resubmittal" className="mt-10">
+      <section id="resubmittal" className="mt-4">
         <div className="p-eyebrow mb-2">Resubmittal Workflow</div>
         <ResubmittalPanel
           permitId={row.id}
@@ -939,6 +941,8 @@ function PermitDetailPage() {
           onResubmitted={() => getPermit(row.id).then((r) => r && setRow(r))}
         />
       </section>
+      </>
+      )}
 
       {tab === "money" && (
       <>
