@@ -997,6 +997,8 @@ function PermitDetailPage() {
           </section>
         );
       })()}
+      </>
+      )}
     </PageShell>
   );
 }
