@@ -13,6 +13,7 @@
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.3";
 import { createEmbeddedDocument, embeddedUrlFor, SignWellError } from "../_shared/signwell.ts";
+import { errorMessage } from "../_shared/errors.ts";
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL") ?? "";
 const SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
@@ -182,6 +183,6 @@ Deno.serve(async (req) => {
     });
   } catch (err) {
     console.error("signwell-send failed", err);
-    return json({ error: String(err) }, 500);
+    return json({ error: errorMessage(err) }, 500);
   }
 });

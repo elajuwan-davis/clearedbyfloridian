@@ -98,9 +98,10 @@ environment problem; do not mass-reformat unrelated files to "fix" lint.
 - Roster is live: `user_roles` (role=`admin`) ⨝ `profiles` via `listStaffAdmins()` in
   `src/lib/staff-ops.ts`. Excludes `@test.invalid`; when the same email local-part appears on
   both `@cleared.com` and `@floridianinc.com`, keep `@cleared.com` only.
+- Assignments/escalations come from `staff_assignments` (not localStorage) and are grouped by
+  `assignee_email` matching the live admin email.
 - `profiles.job_title` is optional — Role column shows `—` when unset (do not invent titles).
 - Gate with `session.isAdmin`, not `isInternalUser()` (`@floridianinc.com` only) — otherwise
   real `@cleared.com` admins see a blank page while admin nav still links here.
-- Requires migration `supabase/migrations/20260808120000_profiles_job_title.sql` for the column;
-  listing admins works without it if `job_title` is simply absent from select (select will fail
-  until migrated — apply before verifying Role column).
+- Requires migration `supabase/migrations/20260811120000_profiles_job_title.sql` for the column;
+  listing admins falls back if `job_title` is not yet present.

@@ -17,8 +17,9 @@ import {
   permitVolumeByMonth, permitVolumeByJurisdiction, permitVolumeByTradeType,
   avgTurnaroundByMunicipality, correctionRateByMunicipality, feeSummaryByMonth,
   openVsClosedOverTime, projectsForGc, gcPermitVolumeByMonth, gcAvgCycleTimeDays,
-  platformAvgCycleTimeDays, gcCostSummary, fmtMoney, downloadCsv,
-  type CountRow, type MunicipalityMetric,
+  platformAvgCycleTimeDays, gcCostSummary, fmtMoney, downloadCsv, fetchReportPermits,
+  DEMO_GC_NAME,
+  type CountRow, type MunicipalityMetric, type ReportPermit, type GcCostSummary,
 } from "@/lib/reports-data";
 
 export const Route = createFileRoute("/portal/reports")({
@@ -193,14 +194,31 @@ type Grouping = "month" | "jurisdiction" | "trade";
 
 function InternalReports() {
   const [grouping, setGrouping] = useState<Grouping>("month");
+  const [byMonth, setByMonth] = useState<CountRow[]>([]);
+  const [byJurisdiction, setByJurisdiction] = useState<CountRow[]>([]);
+  const [byTrade, setByTrade] = useState<CountRow[]>([]);
+  const [turnaround, setTurnaround] = useState<MunicipalityMetric[]>([]);
+  const [correctionRate, setCorrectionRate] = useState<MunicipalityMetric[]>([]);
+  const [fees, setFees] = useState<Awaited<ReturnType<typeof feeSummaryByMonth>>>([]);
+  const [openClosed, setOpenClosed] = useState<ReturnType<typeof openVsClosedOverTime>>([]);
+  const [loading, setLoading] = useState(true);
 
-  const byMonth = useMemo(() => permitVolumeByMonth(), []);
-  const byJurisdiction = useMemo(() => permitVolumeByJurisdiction(), []);
-  const byTrade = useMemo(() => permitVolumeByTradeType(), []);
-  const turnaround = useMemo(() => avgTurnaroundByMunicipality(), []);
-  const correctionRate = useMemo(() => correctionRateByMunicipality(), []);
-  const fees = useMemo(() => feeSummaryByMonth(), []);
-  const openClosed = useMemo(() => openVsClosedOverTime(), []);
+  useEffect(() => {
+    let alive = true;
+    (async () => {
+      const permits = await fetchReportPermits();
+      if (!alive) return;
+      setByMonth(permitVolumeByMonth(permits));
+      setByJurisdiction(permitVolumeByJurisdiction(permits));
+      setByTrade(permitVolumeByTradeType(permits));
+      setTurnaround(avgTurnaroundByMunicipality(permits));
+      setCorrectionRate(correctionRateByMunicipality(permits));
+      setOpenClosed(openVsClosedOverTime(permits));
+      setFees(await feeSummaryByMonth());
+      setLoading(false);
+    })();
+    return () => { alive = false; };
+  }, []);
 
   const volumeData = grouping === "month" ? byMonth : grouping === "jurisdiction" ? byJurisdiction : byTrade;
   const totalPermits = byMonth.reduce((s, r) => s + r.count, 0);
@@ -209,6 +227,8 @@ function InternalReports() {
   const avgCorrectionRate = correctionRate.length
     ? Math.round((correctionRate.reduce((s, r) => s + r.value, 0) / correctionRate.length) * 10) / 10
     : 0;
+
+  if (loading) return <div className="py-10 text-obsidian/60">Loading reports…</div>;
 
   return (
     <div>
@@ -363,16 +383,37 @@ function MunicipalityBarChart({ data, suffix, color }: { data: MunicipalityMetri
 // ============================================================
 
 function GcReports() {
-  const { name, projects } = useMemo(() => projectsForGc(null), []);
-  const volume = useMemo(() => gcPermitVolumeByMonth(projects), [projects]);
-  const gcCycle = useMemo(() => gcAvgCycleTimeDays(projects), [projects]);
-  const platformCycle = useMemo(() => platformAvgCycleTimeDays(), []);
-  const cost = useMemo(() => gcCostSummary(projects), [projects]);
+  const [name, setName] = useState(DEMO_GC_NAME);
+  const [projects, setProjects] = useState<ReportPermit[]>([]);
+  const [volume, setVolume] = useState<CountRow[]>([]);
+  const [gcCycle, setGcCycle] = useState(0);
+  const [platformCycle, setPlatformCycle] = useState(0);
+  const [cost, setCost] = useState<GcCostSummary>({ permitFeesCents: 0, clearedFeesCents: 0, savingsCents: 0 });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let alive = true;
+    (async () => {
+      const all = await fetchReportPermits();
+      const scoped = await projectsForGc(null);
+      if (!alive) return;
+      setName(scoped.name);
+      setProjects(scoped.projects);
+      setVolume(gcPermitVolumeByMonth(scoped.projects));
+      setGcCycle(gcAvgCycleTimeDays(scoped.projects));
+      setPlatformCycle(platformAvgCycleTimeDays(all));
+      setCost(await gcCostSummary(scoped.projects));
+      setLoading(false);
+    })();
+    return () => { alive = false; };
+  }, []);
 
   const cycleData = [
     { key: name, value: gcCycle },
     { key: "Cléared Platform Avg", value: platformCycle },
   ];
+
+  if (loading) return <div className="py-10 text-obsidian/60">Loading reports…</div>;
 
   return (
     <div>

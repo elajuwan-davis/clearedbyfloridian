@@ -1,49 +1,85 @@
-// Simple localStorage-backed internal notes per project (staff-only surface).
+// GC-visible project notes per permit — tenant-scoped via RLS.
+import { supabase } from "@/integrations/supabase/client";
 
 export type ProjectNote = {
   id: string;
-  projectId: string;
+  permitId: string;
   author: string;
   body: string;
-  createdAt: string; // ISO
+  createdAt: string;
 };
 
-const KEY = "cleared.projectNotes.v1";
+const EVT = "project-notes:changed";
 
-function read(): ProjectNote[] {
-  if (typeof window === "undefined") return [];
-  try {
-    const raw = window.localStorage.getItem(KEY);
-    return raw ? (JSON.parse(raw) as ProjectNote[]) : [];
-  } catch {
-    return [];
-  }
+function notifyChanged() {
+  if (typeof window !== "undefined") window.dispatchEvent(new CustomEvent(EVT));
 }
 
-function write(list: ProjectNote[]) {
-  if (typeof window === "undefined") return;
-  window.localStorage.setItem(KEY, JSON.stringify(list));
-  window.dispatchEvent(new CustomEvent("project-notes:changed"));
-}
+type NoteRow = {
+  id: string;
+  permit_id: string;
+  author: string;
+  note: string;
+  created_at: string;
+};
 
-export function listNotes(projectId: string): ProjectNote[] {
-  return read()
-    .filter((n) => n.projectId === projectId)
-    .sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1));
-}
-
-export function addNote(projectId: string, author: string, body: string): ProjectNote {
-  const note: ProjectNote = {
-    id: Math.random().toString(36).slice(2, 10),
-    projectId,
-    author,
-    body: body.trim(),
-    createdAt: new Date().toISOString(),
+function mapRow(row: NoteRow): ProjectNote {
+  return {
+    id: row.id,
+    permitId: row.permit_id,
+    author: row.author,
+    body: row.note,
+    createdAt: row.created_at,
   };
-  write([note, ...read()]);
-  return note;
 }
 
-export function deleteNote(id: string) {
-  write(read().filter((n) => n.id !== id));
+async function resolveTenantId(permitId: string): Promise<string | null> {
+  const { data } = await (supabase.from("permits" as any) as any)
+    .select("tenant_id")
+    .eq("id", permitId)
+    .maybeSingle();
+  return (data as { tenant_id: string | null } | null)?.tenant_id ?? null;
+}
+
+export async function listNotes(permitId: string): Promise<ProjectNote[]> {
+  const { data, error } = await (supabase.from("project_notes" as any) as any)
+    .select("id, permit_id, author, note, created_at")
+    .eq("permit_id", permitId)
+    .order("created_at", { ascending: false });
+  if (error || !data) return [];
+  return (data as NoteRow[]).map(mapRow);
+}
+
+export async function addNote(
+  permitId: string,
+  author: string,
+  body: string,
+): Promise<ProjectNote | null> {
+  const trimmed = body.trim();
+  if (!trimmed) return null;
+  const tenantId = await resolveTenantId(permitId);
+  const { data, error } = await (supabase.from("project_notes" as any) as any)
+    .insert({
+      permit_id: permitId,
+      tenant_id: tenantId,
+      author,
+      note: trimmed,
+    })
+    .select("id, permit_id, author, note, created_at")
+    .single();
+  if (error || !data) {
+    console.error("[project-notes] insert failed", error?.message);
+    return null;
+  }
+  notifyChanged();
+  return mapRow(data as NoteRow);
+}
+
+export async function deleteNote(id: string): Promise<void> {
+  const { error } = await (supabase.from("project_notes" as any) as any).delete().eq("id", id);
+  if (error) {
+    console.error("[project-notes] delete failed", error.message);
+    return;
+  }
+  notifyChanged();
 }

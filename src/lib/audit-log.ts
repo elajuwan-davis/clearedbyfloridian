@@ -1,5 +1,5 @@
-// Append-only mock audit trail — localStorage-backed, no edit/delete API.
-import { PROJECTS } from "./projects-data";
+// Append-only audit trail backed by public.activity_events.
+import { supabase } from "@/integrations/supabase/client";
 
 export type AuditAction =
   | "project.created"
@@ -22,115 +22,93 @@ export type AuditAction =
   | "user.logout"
   | "staff.assigned"
   | "escalation.set"
-  | "escalation.cleared";
+  | "escalation.cleared"
+  | string;
 
 export type AuditEvent = {
   id: string;
-  ts: string; // ISO
+  ts: string;
   actor: string;
   action: AuditAction;
   projectId?: string;
-  record: string; // human-readable affected record label
+  record: string;
   details?: string;
 };
 
-const KEY = "cleared.auditLog.v1";
-const SEED_FLAG = "cleared.auditLog.seeded.v1";
+const EVT = "audit-log:changed";
 
-function read(): AuditEvent[] {
-  if (typeof window === "undefined") return [];
-  try {
-    const raw = window.localStorage.getItem(KEY);
-    return raw ? (JSON.parse(raw) as AuditEvent[]) : [];
-  } catch {
-    return [];
-  }
+function notifyChanged() {
+  if (typeof window !== "undefined") window.dispatchEvent(new CustomEvent(EVT));
 }
 
-function write(list: AuditEvent[]) {
-  if (typeof window === "undefined") return;
-  window.localStorage.setItem(KEY, JSON.stringify(list));
-  window.dispatchEvent(new CustomEvent("audit-log:changed"));
+type ActivityRow = {
+  id: string;
+  created_at: string;
+  actor_label: string | null;
+  event_type: string;
+  permit_id: string | null;
+  summary: string | null;
+  details: Record<string, unknown> | null;
+};
+
+function mapRow(row: ActivityRow): AuditEvent {
+  const detailText =
+    typeof row.details?.message === "string"
+      ? row.details.message
+      : typeof row.details?.details === "string"
+        ? row.details.details
+        : undefined;
+  return {
+    id: row.id,
+    ts: row.created_at,
+    actor: row.actor_label || "Unknown",
+    action: row.event_type,
+    projectId: row.permit_id ?? undefined,
+    record: row.summary || row.event_type,
+    details: detailText,
+  };
 }
 
-export function logAudit(
+function isUuid(s: string | undefined): s is string {
+  return !!s && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(s);
+}
+
+export async function logAudit(
   actor: string,
   action: AuditAction,
-  opts: { projectId?: string; record: string; details?: string },
-): AuditEvent {
-  const evt: AuditEvent = {
-    id: Math.random().toString(36).slice(2, 10),
-    ts: new Date().toISOString(),
-    actor,
-    action,
-    projectId: opts.projectId,
-    record: opts.record,
-    details: opts.details,
+  opts: { projectId?: string; record: string; details?: string; tenantId?: string | null },
+): Promise<AuditEvent | null> {
+  const { data: auth } = await supabase.auth.getUser();
+  const insert = {
+    event_type: action,
+    actor_label: actor,
+    actor_id: auth?.user?.id ?? null,
+    permit_id: isUuid(opts.projectId) ? opts.projectId : null,
+    tenant_id: opts.tenantId ?? null,
+    summary: opts.record,
+    details: opts.details ? { details: opts.details } : {},
   };
-  write([evt, ...read()]);
-  return evt;
-}
-
-export function listAudit(): AuditEvent[] {
-  ensureSeeded();
-  return read().sort((a, b) => (a.ts < b.ts ? 1 : -1));
-}
-
-function seededHash(s: string): number {
-  let h = 0;
-  for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0;
-  return Math.abs(h);
-}
-
-const ACTORS = ["Elajuwan Wallace", "Eman Youssef", "Jose Ramirez", "Paul Sifford", "System (Auto-Sync)"];
-const HIST_ACTIONS: AuditAction[] = [
-  "project.created",
-  "document.uploaded",
-  "fee.added",
-  "fee.authorized",
-  "inspection.requested",
-  "message.sent",
-  "permit.submitted",
-];
-
-function ensureSeeded() {
-  if (typeof window === "undefined") return;
-  if (window.localStorage.getItem(SEED_FLAG)) return;
-  const backfill: AuditEvent[] = [];
-  PROJECTS.forEach((p, idx) => {
-    const n = HIST_ACTIONS.length;
-    const count = 2 + (seededHash(p.id) % 3); // 2-4 historical events per project
-    for (let i = 0; i < count; i++) {
-      const action = HIST_ACTIONS[(seededHash(p.id + i) ) % n];
-      const daysAgo = 3 + ((seededHash(p.id + "d" + i)) % 60);
-      const ts = new Date(Date.now() - daysAgo * 86400000 - i * 3600000).toISOString();
-      const actor = ACTORS[(seededHash(p.id + "a" + i)) % ACTORS.length];
-      backfill.push({
-        id: `seed-${p.id}-${i}`,
-        ts,
-        actor,
-        action,
-        projectId: p.id,
-        record: p.name,
-        details: actionDetail(action, p.name),
-      });
-    }
-  });
-  write([...backfill, ...read()]);
-  window.localStorage.setItem(SEED_FLAG, "1");
-}
-
-function actionDetail(action: AuditAction, projectName: string): string {
-  switch (action) {
-    case "project.created": return `Project record opened for ${projectName}`;
-    case "document.uploaded": return "Stamped plans uploaded";
-    case "fee.added": return "Permit fee line item added";
-    case "fee.authorized": return "Fee authorized for payment";
-    case "inspection.requested": return "Inspection requested with municipality";
-    case "message.sent": return "Status update sent to GC";
-    case "permit.submitted": return "Permit application submitted to jurisdiction";
-    default: return "";
+  const { data, error } = await (supabase.from("activity_events" as any) as any)
+    .insert(insert)
+    .select("id, created_at, actor_label, event_type, permit_id, summary, details")
+    .single();
+  if (error || !data) {
+    console.error("[audit] insert failed", error?.message);
+    return null;
   }
+  notifyChanged();
+  return mapRow(data as ActivityRow);
+}
+
+export async function listAudit(opts?: { permitId?: string; limit?: number }): Promise<AuditEvent[]> {
+  let q = (supabase.from("activity_events" as any) as any)
+    .select("id, created_at, actor_label, event_type, permit_id, summary, details")
+    .order("created_at", { ascending: false })
+    .limit(opts?.limit ?? 500);
+  if (opts?.permitId) q = q.eq("permit_id", opts.permitId);
+  const { data, error } = await q;
+  if (error || !data) return [];
+  return (data as ActivityRow[]).map(mapRow);
 }
 
 export function toCsv(events: AuditEvent[]): string {

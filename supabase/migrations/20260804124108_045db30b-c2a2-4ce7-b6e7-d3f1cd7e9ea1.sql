@@ -1,0 +1,1 @@
+DROP FUNCTION IF EXISTS public.__tmp_store_edge_key(text);

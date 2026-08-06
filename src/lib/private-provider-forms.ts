@@ -1,3 +1,5 @@
+// A vendored copy of this file lives at supabase/functions/_shared/private-provider-forms.ts for the edge
+// runtime (Agent 2's document-generation). Changes here do not propagate — copy them.
 // PDF generation for the two private-provider forms.
 // Generates clean pre-filled PDFs from scratch using pdf-lib.
 // (When the official PDF templates are re-uploaded, swap to overlay mode.)

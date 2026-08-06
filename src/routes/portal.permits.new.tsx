@@ -363,8 +363,14 @@ function NewPermitPage() {
             : `City set to ${resolvedMuni} (not in list — please verify)`,
       );
     }
-    // Kick off Dispatch — pre-flight property intelligence.
-    const resolvedAddress = r.streetLine || r.formatted;
+    // Kick off Dispatch — pre-flight property intelligence. Dispatch geocodes what it is
+    // given, and the Census geocoder cannot place a bare street line, so send the whole
+    // address rather than the street line the permit is stored under.
+    const resolvedAddress =
+      r.formatted ||
+      [r.streetLine, r.city, [r.state, r.postalCode].filter(Boolean).join(" ")]
+        .filter(Boolean)
+        .join(", ");
     if (resolvedAddress) {
       const result = await runDispatch({
         address: resolvedAddress,

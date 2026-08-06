@@ -17,6 +17,7 @@
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.3";
 import { CallerAuthError, requireStaffCaller, type Caller } from "../_shared/caller-auth.ts";
+import { errorMessage } from "../_shared/errors.ts";
 import {
   draftDocuments,
   emailDraft,
@@ -106,10 +107,14 @@ async function notifyStaff(admin: SupabaseAdmin, permitId: string, title: string
 async function handleDraft(
   admin: SupabaseAdmin,
   caller: Caller,
-  body: { permit_id?: string; municipality_slug?: string },
+  body: { permit_id?: string; municipality_slug?: string; test_only?: boolean },
 ) {
   const permitId = body.permit_id;
   if (!permitId) return json({ error: "permit_id required" }, 400);
+  // A rehearsal: the row travels the whole approval path and can never be filed (handleExecute
+  // stops it, claim_municipality_submission() will not claim it, and a trigger refuses to let
+  // it reach 'submitting'/'submitted' or take a confirmation number).
+  const testOnly = body.test_only === true;
 
   const permit = await loadPermit(admin, permitId);
   if (!permit) return json({ error: "permit not found" }, 404);
@@ -127,7 +132,10 @@ async function handleDraft(
   if (!target) return json({ error: targetError }, 422);
 
   const check = await runPreSubmissionCheck(permitId);
-  if (check.status !== "pass") {
+  // The pre-submission gate exists to stop an incomplete package reaching a building
+  // department. A rehearsal reaches no one, and requiring a permit to be genuinely
+  // file-ready would mean the gate could only ever be exercised on a real job.
+  if (!testOnly && check.status !== "pass") {
     return json(
       {
         error: "pre-submission checks are not passing — nothing was drafted",
@@ -139,12 +147,13 @@ async function handleDraft(
   }
 
   const documents = draftDocuments(permit);
-  if (documents.length === 0) {
+  if (!testOnly && documents.length === 0) {
     return json({ error: "no documents to file — the generated bundle is missing" }, 409);
   }
 
   const draft = {
     built_at: new Date().toISOString(),
+    ...(testOnly ? { test_only: true } : {}),
     municipality: {
       slug: target.slug,
       city_name: target.city_name,
@@ -210,16 +219,25 @@ async function handleDraft(
     submission_id: submission.id,
     event_type: "drafted",
     actor_label: "Cleard automation",
-    detail: { documents: documents.length, channel: target.channel },
+    detail: {
+      documents: documents.length,
+      channel: target.channel,
+      test_only: testOnly,
+      pre_submission_status: check.status,
+    },
   });
 
   const notified = await notifyStaff(
     admin,
     permit.id,
-    `Approval needed — file ${permit.project_name ?? permit.job_address ?? "permit"} with ${target.city_name}`,
+    `${testOnly ? "Rehearsal (nothing will be filed) — " : ""}Approval needed — file ${permit.project_name ?? permit.job_address ?? "permit"} with ${target.city_name}`,
     `${documents.length} document(s) are ready to file via ${
       target.channel === "portal" ? target.portal_url : target.intake_email
-    }. Nothing is submitted until a staff member approves: ${APP_BASE_URL}/portal/permits/${permit.id}`,
+    }. Nothing is submitted until a staff member approves: ${APP_BASE_URL}/portal/permits/${permit.id}${
+      testOnly
+        ? "\n\nThis is a test_only rehearsal row: approving it exercises the gate and files nothing."
+        : ""
+    }`,
   );
 
   await admin.from("activity_events").insert({
@@ -227,11 +245,18 @@ async function handleDraft(
     permit_id: permit.id,
     event_type: "municipality_submission_drafted",
     actor_label: "Cleard automation",
-    summary: `Drafted ${target.city_name} submission — awaiting staff approval`,
-    details: { submission_id: submission.id, channel: target.channel, notified },
+    summary: `Drafted ${target.city_name} submission — awaiting staff approval${
+      testOnly ? " (rehearsal, nothing will be filed)" : ""
+    }`,
+    details: {
+      submission_id: submission.id,
+      channel: target.channel,
+      notified,
+      test_only: testOnly,
+    },
   });
 
-  return json({ submission: inserted, requires_approval: true });
+  return json({ submission: inserted, requires_approval: true, test_only: testOnly });
 }
 
 // --- action: execute (post-approval only) ----------------------------------
@@ -256,6 +281,7 @@ async function handleExecute(admin: SupabaseAdmin, body: { submission_id?: strin
     status: string;
     approved_by: string | null;
     draft: {
+      test_only?: boolean;
       email?: { to?: string; cc?: string[]; subject?: string; body_text?: string } | null;
       documents?: Array<{ label: string; path: string }>;
       municipality?: { city_name?: string; portal_url?: string };
@@ -272,6 +298,26 @@ async function handleExecute(admin: SupabaseAdmin, body: { submission_id?: strin
       },
       409,
     );
+  }
+
+  // A rehearsal row proves the gate and the trigger chain without a filing: it stops here,
+  // before the portal queue and before anything reaches email_outbox. claim_municipality_
+  // submission() skips it too, so the worker never sees it either.
+  if (sub.draft?.test_only === true) {
+    await admin.from("municipality_submission_events").insert({
+      submission_id: sub.id,
+      event_type: "test_only_no_action",
+      actor_label: "Cleard automation",
+      detail: { channel: sub.channel, filed: false },
+    });
+    await admin
+      .from("municipality_submissions")
+      .update({
+        status: "failed",
+        last_error: "draft.test_only is true — rehearsal row, nothing was filed",
+      })
+      .eq("id", sub.id);
+    return json({ ok: true, test_only: true, filed: false, submission_id: sub.id });
   }
 
   if (sub.channel === "portal") {
@@ -343,7 +389,12 @@ async function handleExecute(admin: SupabaseAdmin, body: { submission_id?: strin
     },
   });
 
-  return json({ ok: true, queued_for: "email_dispatcher", channel: "email", submission_id: sub.id });
+  return json({
+    ok: true,
+    queued_for: "email_dispatcher",
+    channel: "email",
+    submission_id: sub.id,
+  });
 }
 
 async function markFailed(admin: SupabaseAdmin, id: string, reason: string) {
@@ -395,6 +446,7 @@ Deno.serve(async (req) => {
       permit_id?: string;
       submission_id?: string;
       municipality_slug?: string;
+      test_only?: boolean;
     };
     switch (body.action ?? "draft") {
       case "draft":
@@ -409,12 +461,6 @@ Deno.serve(async (req) => {
   } catch (err) {
     if (err instanceof CallerAuthError) return json({ error: err.message }, err.status);
     console.error("municipality-submit failed", err);
-    const message =
-      err instanceof Error
-        ? err.message
-        : typeof err === "object" && err !== null && "message" in err
-          ? String((err as { message: unknown }).message)
-          : String(err);
-    return json({ error: message }, 500);
+    return json({ error: errorMessage(err) }, 500);
   }
 });

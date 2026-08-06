@@ -90,7 +90,7 @@ export function InspectionsSection({
       `Inspection scheduled: ${ins.code} ${ins.name} — ${fmtDate(date)} (${WINDOW_LABEL[window]})${
         municipality ? ` · ${municipality.name}` : ""
       }`
-    );
+    ).catch(() => {});
     setScheduling(null);
   }
 

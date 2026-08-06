@@ -5,14 +5,7 @@
 // data if either call fails (e.g., functions not deployed or upstream APIs
 // unavailable) so the UI always has a stable shape.
 
-export type DispatchFloodZone =
-  | "AE"
-  | "X"
-  | "VE"
-  | "A"
-  | "AO"
-  | "D"
-  | "X (shaded)";
+export type DispatchFloodZone = "AE" | "X" | "VE" | "A" | "AO" | "D" | "X (shaded)";
 
 export type DispatchPriorPermit = {
   permit_number: string;
@@ -48,14 +41,18 @@ export type DispatchResult = {
     year_built: number | null;
     assessed_value_cents: number | null;
     living_area_sqft: number | null;
+    /** Which system answered: 'papa', 'fdor_statewide', 'unavailable', or null for mock. */
+    source?: string | null;
+    /** Tax roll the valuation came from — the statewide source is a roll behind. */
+    assessment_year?: number | null;
   };
   permit_history: DispatchPriorPermit[];
 };
 
-const env = import.meta as any;
+// Vite only substitutes `import.meta.env.X` written out in full — reading it through an alias
+// leaves it undefined in the browser, which silently demoted every dispatch to mock data.
 const SUPABASE_URL =
-  env?.env?.VITE_SUPABASE_URL ??
-  env?.env?.SUPABASE_URL ??
+  import.meta.env.VITE_SUPABASE_URL ??
   (typeof process !== "undefined" ? process.env.SUPABASE_URL : undefined);
 
 /** Cheap deterministic hash so mock output stays stable per address. */
@@ -70,7 +67,11 @@ function hash(s: string): number {
 
 const FLOOD_ZONES: DispatchFloodZone[] = ["X", "X", "X", "AE", "AE", "VE", "X (shaded)"];
 
-function buildMock(input: { address: string; city: string | null; county: string }): DispatchResult {
+function buildMock(input: {
+  address: string;
+  city: string | null;
+  county: string;
+}): DispatchResult {
   const key = `${input.address}|${input.city ?? ""}|${input.county}`.toLowerCase();
   const h = hash(key);
 
@@ -86,11 +87,11 @@ function buildMock(input: { address: string; city: string | null; county: string
   const windSpeed = windBase + ((h >> 5) % 15);
 
   const parcelId = [
-    String((h >> 2) % 90 + 10).padStart(2, "0"),
-    String((h >> 6) % 90 + 10).padStart(2, "0"),
-    String((h >> 10) % 90 + 10).padStart(2, "0"),
-    String((h >> 14) % 90 + 10).padStart(2, "0"),
-    String((h >> 18) % 9000 + 1000),
+    String(((h >> 2) % 90) + 10).padStart(2, "0"),
+    String(((h >> 6) % 90) + 10).padStart(2, "0"),
+    String(((h >> 10) % 90) + 10).padStart(2, "0"),
+    String(((h >> 14) % 90) + 10).padStart(2, "0"),
+    String(((h >> 18) % 9000) + 1000),
   ].join("-");
 
   const yearBuilt = 1965 + ((h >> 7) % 55);
@@ -108,7 +109,7 @@ function buildMock(input: { address: string; city: string | null; county: string
   ];
   for (let i = 0; i < priorCount; i++) {
     const k = kinds[(h + i) % kinds.length];
-    const year = 2018 + (((h >> (i + 2)) % 7));
+    const year = 2018 + ((h >> (i + 2)) % 7);
     permit_history.push({
       permit_number: `B${year}-${String(((h >> (i + 4)) % 90000) + 10000)}`,
       issued_date: `${year}-${String(((h >> (i + 5)) % 12) + 1).padStart(2, "0")}-15`,
@@ -163,12 +164,30 @@ export async function runDispatch(input: {
 
   try {
     const [floodResp, parcelResp] = await Promise.all([
-      fetch(`${base}/functions/v1/dispatch-flood-zone?address=${encodeURIComponent(input.address)}`).catch(() => null),
-      fetch(`${base}/functions/v1/dispatch-parcel?address=${encodeURIComponent(input.address)}&county=${encodeURIComponent(county)}`).catch(() => null),
+      fetch(
+        `${base}/functions/v1/dispatch-flood-zone?address=${encodeURIComponent(input.address)}`,
+      ).catch(() => null),
+      fetch(
+        `${base}/functions/v1/dispatch-parcel?address=${encodeURIComponent(input.address)}&county=${encodeURIComponent(county)}`,
+      ).catch(() => null),
     ]);
 
-    let flood: { flood_zone?: string; in_sfha?: boolean; base_flood_elev?: number | null; fetched_at?: string } | null = null;
-    let parcel: { parcel_id?: string | null; owner_name?: string | null; fetched_at?: string } | null = null;
+    let flood: {
+      flood_zone?: string;
+      in_sfha?: boolean;
+      base_flood_elev?: number | null;
+      fetched_at?: string;
+    } | null = null;
+    let parcel: {
+      parcel_id?: string | null;
+      owner_name?: string | null;
+      year_built?: number | null;
+      assessed_value?: number | string | null;
+      living_area_sqft?: number | null;
+      parcel_source?: string | null;
+      assessment_year?: number | null;
+      fetched_at?: string;
+    } | null = null;
 
     if (floodResp && floodResp.ok) {
       flood = await floodResp.json();
@@ -204,9 +223,13 @@ export async function runDispatch(input: {
       parcel: {
         parcel_id: parcel?.parcel_id ?? null,
         owner_name: parcel?.owner_name ?? null,
-        year_built: null,
-        assessed_value_cents: null,
-        living_area_sqft: null,
+        year_built: parcel?.year_built ?? null,
+        // The appraiser reports whole dollars; the UI counts in cents.
+        assessed_value_cents:
+          parcel?.assessed_value == null ? null : Math.round(Number(parcel.assessed_value) * 100),
+        living_area_sqft: parcel?.living_area_sqft ?? null,
+        source: parcel?.parcel_source ?? null,
+        assessment_year: parcel?.assessment_year ?? null,
       },
     };
   } catch (err) {

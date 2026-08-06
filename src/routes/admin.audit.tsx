@@ -1,11 +1,9 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { createFileRoute } from "@tanstack/react-router";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Download } from "lucide-react";
 
 import { PortalShell } from "@/components/portal-shell";
-import { isInternalUser } from "@/lib/is-internal-user";
-import { listAudit, toCsv, type AuditAction } from "@/lib/audit-log";
-import { PROJECTS } from "@/lib/projects-data";
+import { listAudit, toCsv, type AuditAction, type AuditEvent } from "@/lib/audit-log";
 
 export const Route = createFileRoute("/admin/audit")({
   head: () => ({
@@ -23,25 +21,37 @@ export const Route = createFileRoute("/admin/audit")({
 });
 
 function AuditPage() {
-  const navigate = useNavigate();
-  const [ready, setReady] = useState(false);
-  const [internal, setInternal] = useState(true);
+  const [events, setEvents] = useState<AuditEvent[]>([]);
+  const [loading, setLoading] = useState(true);
   const [projectFilter, setProjectFilter] = useState("all");
   const [userFilter, setUserFilter] = useState("all");
   const [actionFilter, setActionFilter] = useState<"all" | AuditAction>("all");
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
 
-  useEffect(() => {
-    const ok = isInternalUser();
-    setInternal(ok);
-    setReady(true);
-    if (!ok) navigate({ to: "/portal/permits" });
-  }, [navigate]);
+  const load = useCallback(async () => {
+    setLoading(true);
+    const rows = await listAudit({ limit: 1000 });
+    setEvents(rows);
+    setLoading(false);
+  }, []);
 
-  const events = useMemo(() => listAudit(), []);
+  useEffect(() => {
+    load();
+    const on = () => { void load(); };
+    window.addEventListener("audit-log:changed", on);
+    return () => window.removeEventListener("audit-log:changed", on);
+  }, [load]);
+
   const actors = useMemo(() => Array.from(new Set(events.map((e) => e.actor))).sort(), [events]);
   const actions = useMemo(() => Array.from(new Set(events.map((e) => e.action))).sort(), [events]);
+  const projects = useMemo(() => {
+    const map = new Map<string, string>();
+    for (const e of events) {
+      if (e.projectId) map.set(e.projectId, e.record || e.projectId);
+    }
+    return Array.from(map.entries()).sort((a, b) => a[1].localeCompare(b[1]));
+  }, [events]);
 
   const filtered = useMemo(() => {
     return events.filter((e) => {
@@ -65,21 +75,19 @@ function AuditPage() {
     URL.revokeObjectURL(url);
   }
 
-  if (!ready || !internal) return null;
-
   return (
     <PortalShell>
       <div className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
         <div className="label-eyebrow text-obsidian/50">Admin · Internal Ops</div>
         <h1 className="display-serif mt-2 text-4xl leading-tight text-obsidian">Audit Trail</h1>
         <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
-          Read-only, append-only log of activity across all Cléared projects.
+          Read-only, append-only log of activity across all Cléared projects (activity_events).
         </p>
 
         <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-5">
           <select value={projectFilter} onChange={(e) => setProjectFilter(e.target.value)} className="min-h-[44px] rounded-[3px] border border-obsidian/20 bg-white px-3 text-sm">
             <option value="all">All projects</option>
-            {PROJECTS.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
+            {projects.map(([id, label]) => <option key={id} value={id}>{label}</option>)}
           </select>
           <select value={userFilter} onChange={(e) => setUserFilter(e.target.value)} className="min-h-[44px] rounded-[3px] border border-obsidian/20 bg-white px-3 text-sm">
             <option value="all">All users</option>
@@ -87,14 +95,16 @@ function AuditPage() {
           </select>
           <select value={actionFilter} onChange={(e) => setActionFilter(e.target.value as any)} className="min-h-[44px] rounded-[3px] border border-obsidian/20 bg-white px-3 text-sm">
             <option value="all">All actions</option>
-            {actions.map((a) => <option key={a} value={a}>{a.replace(/[._]/g, " ")}</option>)}
+            {actions.map((a) => <option key={a} value={a}>{String(a).replace(/[._]/g, " ")}</option>)}
           </select>
           <input type="date" value={from} onChange={(e) => setFrom(e.target.value)} className="min-h-[44px] rounded-[3px] border border-obsidian/20 bg-white px-3 text-sm" />
           <input type="date" value={to} onChange={(e) => setTo(e.target.value)} className="min-h-[44px] rounded-[3px] border border-obsidian/20 bg-white px-3 text-sm" />
         </div>
 
         <div className="mt-4 flex items-center justify-between">
-          <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/50">{filtered.length} events</span>
+          <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/50">
+            {loading ? "Loading…" : `${filtered.length} events`}
+          </span>
           <button
             type="button"
             onClick={exportCsv}
@@ -115,7 +125,7 @@ function AuditPage() {
               </tr>
             </thead>
             <tbody>
-              {filtered.length === 0 ? (
+              {!loading && filtered.length === 0 ? (
                 <tr><td colSpan={4} className="px-4 py-10 text-center text-obsidian/45">No matching events.</td></tr>
               ) : filtered.slice(0, 500).map((e) => (
                 <tr key={e.id} className="border-b border-border last:border-0 align-top">
@@ -123,7 +133,7 @@ function AuditPage() {
                   <td className="px-4 py-3 text-obsidian/80 whitespace-nowrap">{e.actor}</td>
                   <td className="px-4 py-3">
                     <span className="inline-flex items-center rounded-[3px] border border-obsidian/15 bg-white px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.1em] text-obsidian/70">
-                      {e.action.replace(/[._]/g, " ")}
+                      {String(e.action).replace(/[._]/g, " ")}
                     </span>
                   </td>
                   <td className="px-4 py-3 text-obsidian/80">

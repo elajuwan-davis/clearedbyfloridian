@@ -112,7 +112,7 @@ export async function syncAllPermits(): Promise<SyncResult> {
         p.id,
         "System (Auto-Sync)",
         `Status updated: ${fromLabel} → ${toLabel} (auto-sync ${date})`,
-      );
+      ).catch(() => {});
       triggerForStatusChange(p.id, current, next);
 
     } else {

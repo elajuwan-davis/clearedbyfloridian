@@ -22,9 +22,7 @@ async function deflatedPdf(lines: string[]): Promise<Uint8Array> {
         .pipeThrough(new CompressionStream("deflate")),
     ).arrayBuffer(),
   );
-  const head = new TextEncoder().encode(
-    "%PDF-1.7\n1 0 obj << /Filter /FlateDecode >>\nstream\n",
-  );
+  const head = new TextEncoder().encode("%PDF-1.7\n1 0 obj << /Filter /FlateDecode >>\nstream\n");
   const tail = new TextEncoder().encode("\nendstream\nendobj\n%%EOF");
   const out = new Uint8Array(head.length + compressed.length + tail.length);
   out.set(head, 0);
@@ -50,7 +48,9 @@ Deno.test("inflates a FlateDecode stream", async () => {
 });
 
 Deno.test("a scan with no text layer yields nothing rather than noise", async () => {
-  const scan = new Uint8Array([0x25, 0x50, 0x44, 0x46, 0x2d, 0x31, 0x2e, 0x34, 0x0a, 0xff, 0xd8, 0xff]);
+  const scan = new Uint8Array([
+    0x25, 0x50, 0x44, 0x46, 0x2d, 0x31, 0x2e, 0x34, 0x0a, 0xff, 0xd8, 0xff,
+  ]);
   assertEquals(await pdfText(scan), "");
 });
 
@@ -59,7 +59,8 @@ Deno.test("reads hex strings and keeps the letter's line breaks", () => {
   // by T* / Td. The letter's own numbering has to survive, because it is cross-checked
   // against the number of items the model reports.
   const hex = (s: string) =>
-    "<" + [...new TextEncoder().encode(s)].map((b) => b.toString(16).padStart(2, "0")).join("") +
+    "<" +
+    [...new TextEncoder().encode(s)].map((b) => b.toString(16).padStart(2, "0")).join("") +
     ">";
   const stream = [
     `BT 1 0 0 1 40 752 Tm ${hex("PLAN REVIEW COMMENTS")} Tj T*`,

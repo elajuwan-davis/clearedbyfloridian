@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   ChevronLeft,
   ChevronRight,
@@ -59,7 +59,15 @@ function CalendarPage() {
   const [sortKey, setSortKey] = useState<"date" | "type" | "project">("date");
   const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
 
-  const deadlines = useMemo(() => listDeadlines(), []);
+  const [deadlines, setDeadlines] = useState<Deadline[]>([]);
+
+  useEffect(() => {
+    let alive = true;
+    listDeadlines().then((rows) => {
+      if (alive) setDeadlines(rows);
+    });
+    return () => { alive = false; };
+  }, []);
 
   const filtered = useMemo(
     () => deadlines.filter((d) => activeKinds.has(d.kind)),
@@ -300,7 +308,7 @@ function DeadlineChip({ deadline }: { deadline: Deadline }) {
   const colors = DEADLINE_COLOR_CLASSES[meta.color];
   return (
     <Link
-      to="/portal/projects/$id"
+      to="/portal/permits/$id"
       params={{ id: deadline.projectId }}
       search={{ tab: deadline.tab } as never}
       title={`${deadline.projectName} — ${deadline.description}`}
@@ -352,7 +360,7 @@ function ListView({
                 </td>
                 <td className="px-4 py-3 align-top">
                   <Link
-                    to="/portal/projects/$id"
+                    to="/portal/permits/$id"
                     params={{ id: d.projectId }}
                     search={{ tab: d.tab } as never}
                     className="min-h-11 inline-flex items-center font-medium text-obsidian hover:text-sky hover:underline"

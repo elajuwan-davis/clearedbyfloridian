@@ -84,7 +84,12 @@ export function DispatchCard({
           <div className="text-xs text-obsidian/60">
             Built {data.parcel.year_built ?? "—"} · {data.parcel.living_area_sqft?.toLocaleString() ?? "—"} sqft
           </div>
-          <div className="text-xs text-obsidian/60">Assessed {fmtMoney(data.parcel.assessed_value_cents)}</div>
+          <div className="text-xs text-obsidian/60">
+            Assessed {fmtMoney(data.parcel.assessed_value_cents)}
+            {data.parcel.assessed_value_cents != null && data.parcel.assessment_year
+              ? ` · ${data.parcel.assessment_year} roll`
+              : ""}
+          </div>
           {data.parcel.owner_name && (
             <div className="text-xs text-obsidian/70">Owner: {data.parcel.owner_name}</div>
           )}

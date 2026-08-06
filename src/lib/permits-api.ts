@@ -97,6 +97,9 @@ export type PermitRow = {
   poc: string | null;
   poc_phone: string | null;
   poc_email: string | null;
+  /** Where a correction-notice acknowledgment goes for this permit, ahead of the
+   *  municipality's general intake address. */
+  correction_reply_email: string | null;
   license_number: string | null;
   signer_phone: string | null;
   signer_email: string | null;

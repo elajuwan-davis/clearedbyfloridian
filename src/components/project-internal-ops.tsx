@@ -8,11 +8,18 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import {
-  listStaffAdmins, getOps, setAssignee, setPriority, setEscalated, getStaffById,
-  type Priority, type StaffMember,
+  listStaffAdmins,
+  emptyOps,
+  getOps,
+  setAssignee,
+  setPriority,
+  setEscalated,
+  getStaffByEmail,
+  type Priority,
+  type ProjectOps,
+  type StaffMember,
 } from "@/lib/staff-ops";
 import { addStaffNote, listStaffNotes, type StaffNote } from "@/lib/staff-notes";
-import type { Project } from "@/lib/projects-data";
 
 const PRIORITY_LABEL: Record<Priority, string> = { normal: "Normal", high: "High", urgent: "Urgent" };
 const PRIORITY_TONE: Record<Priority, string> = {
@@ -21,38 +28,67 @@ const PRIORITY_TONE: Record<Priority, string> = {
   urgent: "border-red-500/40 bg-red-50 text-red-800",
 };
 
-export function ProjectInternalOps({ project }: { project: Project }) {
-  const [ops, setOps] = useState(() => getOps(project.id));
+export function ProjectInternalOps({
+  permitId,
+  label,
+}: {
+  permitId: string;
+  label: string;
+}) {
+  const [ops, setOpsState] = useState<ProjectOps>(() => emptyOps(permitId));
   const [staff, setStaff] = useState<StaffMember[]>([]);
   const [notes, setNotes] = useState<StaffNote[]>([]);
   const [body, setBody] = useState("");
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const refresh = () => setOps(getOps(project.id));
-    const refreshNotes = () => setNotes(listStaffNotes(project.id));
-    refresh();
-    refreshNotes();
-    listStaffAdmins()
-      .then((rows) => {
-        setStaff(rows);
-        refresh();
-      })
-      .catch(() => setStaff([]));
-    window.addEventListener("staff-ops:changed", refresh);
-    window.addEventListener("staff-notes:changed", refreshNotes);
+    let cancelled = false;
+
+    async function refreshOps() {
+      const row = await getOps(permitId);
+      if (!cancelled) setOpsState(row ?? emptyOps(permitId));
+    }
+    async function refreshNotes() {
+      const list = await listStaffNotes(permitId);
+      if (!cancelled) setNotes(list);
+    }
+    async function refreshStaff() {
+      try {
+        const rows = await listStaffAdmins();
+        if (!cancelled) setStaff(rows);
+      } catch {
+        if (!cancelled) setStaff([]);
+      }
+    }
+
+    setLoading(true);
+    Promise.all([refreshOps(), refreshNotes(), refreshStaff()]).finally(() => {
+      if (!cancelled) setLoading(false);
+    });
+
+    const onOps = () => { void refreshOps(); };
+    const onNotes = () => { void refreshNotes(); };
+    window.addEventListener("staff-ops:changed", onOps);
+    window.addEventListener("staff-notes:changed", onNotes);
     return () => {
-      window.removeEventListener("staff-ops:changed", refresh);
-      window.removeEventListener("staff-notes:changed", refreshNotes);
+      cancelled = true;
+      window.removeEventListener("staff-ops:changed", onOps);
+      window.removeEventListener("staff-notes:changed", onNotes);
     };
-  }, [project.id]);
+  }, [permitId]);
 
-  if (!ops) return null;
-  const assignee = getStaffById(ops.assigneeId) ?? staff.find((s) => s.id === ops.assigneeId);
+  const assignee = getStaffByEmail(ops.assigneeEmail) ?? staff.find(
+    (s) => s.email.toLowerCase() === (ops.assigneeEmail ?? "").toLowerCase(),
+  );
 
-  function postNote() {
+  async function postNote() {
     if (!body.trim()) return;
     const author = localStorage.getItem("cleared_demo_user") || "Team";
-    addStaffNote(project.id, author, body);
+    const note = await addStaffNote(permitId, author, body);
+    if (!note) {
+      toast.error("Could not save note");
+      return;
+    }
     setBody("");
   }
 
@@ -63,19 +99,25 @@ export function ProjectInternalOps({ project }: { project: Project }) {
           <Lock className="h-3.5 w-3.5 text-obsidian/60" />
           <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/70">Internal Ops — Staff Only</span>
         </div>
-        <div className="grid grid-cols-1 gap-5 p-4 sm:grid-cols-3">
+        <div className={`grid grid-cols-1 gap-5 p-4 sm:grid-cols-3 ${loading ? "opacity-60" : ""}`}>
           <div>
             <div className="label-eyebrow text-obsidian/50">Assigned To</div>
             <Select
-              value={ops.assigneeId}
-              onValueChange={(v) => setAssignee(project.id, v, project.name)}
+              value={ops.assigneeEmail ?? undefined}
+              onValueChange={async (v) => {
+                try {
+                  await setAssignee(permitId, v, label);
+                } catch (e) {
+                  toast.error(e instanceof Error ? e.message : "Could not assign");
+                }
+              }}
             >
               <SelectTrigger className="mt-1.5 h-11 rounded-[3px]">
-                <SelectValue />
+                <SelectValue placeholder="Unassigned" />
               </SelectTrigger>
               <SelectContent>
                 {staff.map((s) => (
-                  <SelectItem key={s.id} value={s.id}>
+                  <SelectItem key={s.id} value={s.email}>
                     {s.role ? `${s.name} · ${s.role}` : s.name}
                   </SelectItem>
                 ))}
@@ -88,7 +130,13 @@ export function ProjectInternalOps({ project }: { project: Project }) {
             <div className="label-eyebrow text-obsidian/50">Priority</div>
             <Select
               value={ops.priority}
-              onValueChange={(v) => setPriority(project.id, v as Priority, project.name)}
+              onValueChange={async (v) => {
+                try {
+                  await setPriority(permitId, v as Priority, label);
+                } catch (e) {
+                  toast.error(e instanceof Error ? e.message : "Could not update priority");
+                }
+              }}
             >
               <SelectTrigger className="mt-1.5 h-11 rounded-[3px]">
                 <SelectValue />
@@ -109,9 +157,13 @@ export function ProjectInternalOps({ project }: { project: Project }) {
             <div className="mt-2 flex min-h-11 items-center gap-3">
               <Switch
                 checked={ops.escalated}
-                onCheckedChange={(checked) => {
-                  setEscalated(project.id, checked, project.name);
-                  if (checked) toast.success("Senior staff notified", { description: `${project.name} flagged as escalated.` });
+                onCheckedChange={async (checked) => {
+                  try {
+                    await setEscalated(permitId, checked, label);
+                    if (checked) toast.success("Senior staff notified", { description: `${label} flagged as escalated.` });
+                  } catch (e) {
+                    toast.error(e instanceof Error ? e.message : "Could not update escalation");
+                  }
                 }}
               />
               {ops.escalated ? (
@@ -139,7 +191,7 @@ export function ProjectInternalOps({ project }: { project: Project }) {
               placeholder="Add an internal note for the ops team…"
               className="min-h-[44px] rounded-[3px]"
             />
-            <Button onClick={postNote} className="h-11 shrink-0 rounded-[3px]" variant="dark">
+            <Button onClick={() => { void postNote(); }} className="h-11 shrink-0 rounded-[3px]" variant="dark">
               <Send className="mr-1.5 h-3.5 w-3.5" /> Post
             </Button>
           </div>

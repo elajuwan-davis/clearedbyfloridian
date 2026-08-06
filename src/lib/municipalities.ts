@@ -1,9 +1,6 @@
-// Single source of truth for municipalities across the platform.
-// Derived from MUNICIPALITY_TREE (used by the Building Departments page).
-// Any component that needs a municipality list — permit intake typeahead,
-// filters, dropdowns, address matching — imports from here.
+// Single source of truth for municipalities — loaded from public.municipalities.
 
-import { MUNICIPALITY_TREE } from "@/lib/municipalities-data";
+import { listMunicipalityRows, type MunicipalityRow } from "@/lib/municipalities-store";
 
 export type Municipality = {
   name: string;
@@ -13,43 +10,66 @@ export type Municipality = {
   region?: string;
   note?: string;
   phone?: string;
+  readiness_score?: number | null;
+  submittal_method?: string | null;
+  turnaround_notes?: string | null;
+  quirks?: string | null;
 };
 
-function buildFlatList(): Municipality[] {
-  const map = new Map<string, Municipality>();
-  for (const region of MUNICIPALITY_TREE) {
-    for (const county of region.counties) {
-      for (const city of county.cities) {
-        const key = city.name.toLowerCase();
-        // Prefer entries that have a portal URL when duplicates share a name
-        const existing = map.get(key);
-        if (existing && existing.url && !city.portalUrl) continue;
-        map.set(key, {
-          name: city.name,
-          url: city.portalUrl,
-          deptName: city.deptName,
-          county: county.name,
-          region: region.name,
-        });
-      }
-    }
-  }
-  return Array.from(map.values()).sort((a, b) => a.name.localeCompare(b.name));
+let cache: Municipality[] = [];
+let loaded = false;
+
+function mapRow(row: MunicipalityRow): Municipality {
+  return {
+    name: row.name,
+    url: row.portal_url ?? undefined,
+    deptName: row.department ?? undefined,
+    county: row.county,
+    readiness_score: row.readiness_score,
+    submittal_method: row.submittal_method,
+    turnaround_notes: row.turnaround_notes,
+    quirks: row.quirks ?? undefined,
+  };
 }
 
-export const MUNICIPALITIES: Municipality[] = buildFlatList();
+export async function loadMunicipalities(): Promise<Municipality[]> {
+  const rows = await listMunicipalityRows();
+  cache = rows.map(mapRow).sort((a, b) => a.name.localeCompare(b.name));
+  loaded = true;
+  return cache;
+}
 
-/** Find the best matching municipality portal URL for a given address string. */
+/** Sync accessor — prefer loadMunicipalities() then read this. */
+export function getMunicipalities(): Municipality[] {
+  return cache;
+}
+
+/** @deprecated Prefer loadMunicipalities(); kept for gradual migration of sync call sites. */
+export const MUNICIPALITIES: Municipality[] = new Proxy([] as Municipality[], {
+  get(_target, prop, receiver) {
+    if (!loaded && prop !== "length" && prop !== Symbol.iterator) {
+      void loadMunicipalities();
+    }
+    const value = Reflect.get(cache, prop, receiver);
+    return typeof value === "function" ? value.bind(cache) : value;
+  },
+  ownKeys() {
+    return Reflect.ownKeys(cache);
+  },
+  getOwnPropertyDescriptor(_t, prop) {
+    return Object.getOwnPropertyDescriptor(cache, prop);
+  },
+});
+
 export function findPortalForAddress(address: string): Municipality | undefined {
   if (!address) return undefined;
+  const list = cache.length ? cache : [];
   const lower = address.toLowerCase();
-  // Prefer longest name match to avoid "Palm Beach" catching "Palm Beach Gardens" etc.
-  const candidates = MUNICIPALITIES
+  const candidates = list
     .filter((m) => lower.includes(m.name.toLowerCase()))
     .sort((a, b) => b.name.length - a.name.length);
   if (candidates[0]) return candidates[0];
 
-  // Common aliases (map to canonical tree names)
   const aliases: Array<[RegExp, string]> = [
     [/\bnorth palm beach\b/, "North Palm Beach"],
     [/\bwest palm beach\b/, "West Palm Beach"],
@@ -63,9 +83,20 @@ export function findPortalForAddress(address: string): Municipality | undefined 
   ];
   for (const [re, name] of aliases) {
     if (re.test(lower)) {
-      const m = MUNICIPALITIES.find((x) => x.name === name);
+      const m = list.find((x) => x.name === name);
       if (m) return m;
     }
   }
   return undefined;
+}
+
+/** Async portal lookup that ensures the directory is loaded. */
+export async function findPortalForAddressAsync(address: string): Promise<Municipality | undefined> {
+  if (!loaded) await loadMunicipalities();
+  return findPortalForAddress(address);
+}
+
+// Eager load in browser so typeaheads have data soon after boot.
+if (typeof window !== "undefined") {
+  void loadMunicipalities();
 }

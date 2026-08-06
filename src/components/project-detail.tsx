@@ -105,7 +105,6 @@ import {
 import { notaryForDoc, notaryBadge, NOTARY_EVT } from "@/lib/notary-requests";
 import { getPortalRole, canRequestNotary } from "@/lib/portal-role";
 import { ProjectInternalOps } from "@/components/project-internal-ops";
-import { ProjectAuditTab } from "@/components/project-audit-tab";
 import { logAudit } from "@/lib/audit-log";
 import { ShieldAlert, History } from "lucide-react";
 
@@ -248,7 +247,9 @@ export function ProjectDetail({ project }: { project: Project }) {
           <TabsContent value="compliance" className="mt-6"><ProjectComplianceTab /></TabsContent>
           <TabsContent value="fees" className="mt-6"><FeesTab project={project} internal={internal} /></TabsContent>
           <TabsContent value="notes" className="mt-6"><NotesTab project={project} /></TabsContent>
-          <TabsContent value="activity" className="mt-6"><ProjectAuditTab project={project} /></TabsContent>
+          <TabsContent value="activity" className="mt-6">
+            <p className="text-sm text-obsidian/50">Activity for live permits is on the permit detail page.</p>
+          </TabsContent>
           {internal && <TabsContent value="internal" className="mt-6"><ProjectInternalOps project={project} /></TabsContent>}
         </Tabs>
       </div>
@@ -741,7 +742,7 @@ function UploadDocDialog({
         uploadedBy: localStorage.getItem("cleared_demo_user") || "Team",
       });
       toast.success(`Uploaded ${file.name}`);
-      logAudit(localStorage.getItem("cleared_demo_user") || "Team", "document.uploaded", { projectId, record: file.name, details: `${type} uploaded` });
+      void logAudit(localStorage.getItem("cleared_demo_user") || "Team", "document.uploaded", { projectId, record: file.name, details: `${type} uploaded` });
       setFile(null);
       onOpenChange(false);
     } catch (e) {
