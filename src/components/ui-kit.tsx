@@ -46,7 +46,7 @@ export function PageShell({
   return (
     <div className={cn("min-w-0", className)}>
       <div
-        className="sticky top-12 z-20 border-b"
+        className="border-b"
         style={{ backgroundColor: "var(--p-bg)", borderColor: "var(--p-border)" }}
       >
         <div
