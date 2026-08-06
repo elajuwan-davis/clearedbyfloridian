@@ -2,19 +2,7 @@
 // are still sitting in draft, awaiting staff acceptance.
 
 import { createServerFn } from "@tanstack/react-start";
-import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-
-async function assertAdmin(userId: string) {
-  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-  const { data, error } = await supabaseAdmin
-    .from("user_roles" as any)
-    .select("role")
-    .eq("user_id", userId)
-    .eq("role", "admin")
-    .maybeSingle();
-  if (error) throw new Error(error.message);
-  if (!data) throw new Error("Forbidden — admin only");
-}
+import { requireReliableSupabaseAuth } from "@/lib/reliable-supabase-auth";
 
 export type ReviewQueueRow = {
   id: string;
@@ -30,11 +18,18 @@ export type ReviewQueueRow = {
 };
 
 export const listReviewQueueFn = createServerFn({ method: "GET" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireReliableSupabaseAuth])
   .handler(async ({ context }): Promise<ReviewQueueRow[]> => {
-    await assertAdmin(context.userId);
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const db = supabaseAdmin as any;
+    const db = context.supabase as any;
+
+    const { data: adminRole, error: roleError } = await db
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", context.userId)
+      .eq("role", "admin")
+      .maybeSingle();
+    if (roleError) throw new Error(roleError.message);
+    if (!adminRole) throw new Error("Forbidden — admin only");
 
     const [permitRes, tenantRes, profileRes] = await Promise.all([
       db
