@@ -475,9 +475,12 @@ export function PortalShell({ children }: { children: ReactNode }) {
 
 
   return (
-    <div className="portal-ui dark min-h-screen overflow-x-hidden bg-background">
-      {/* Sidebar — 68px, expands to 248px on hover (overlay, no layout shift) */}
-      <aside className="group/rail fixed inset-y-0 left-0 z-40 hidden w-[68px] overflow-hidden transition-[width] duration-200 ease-out hover:w-[240px] hover:shadow-[0_8px_30px_rgba(0,0,0,0.45)] lg:block">
+    <div className="portal-ui dark min-h-screen bg-background">
+      {/* Sidebar — 56px icon rail with flyouts, or 240px pinned (HubSpot model) */}
+      <aside
+        className="fixed inset-y-0 left-0 z-40 hidden lg:block"
+        style={{ width: railExpanded ? 240 : 56 }}
+      >
         <SidebarNav
           pathname={pathname}
           alertKeys={alertKeys}
@@ -486,11 +489,13 @@ export function PortalShell({ children }: { children: ReactNode }) {
           displayName={displayName}
           email={session.email}
           initials={me.initials}
+          mode={railExpanded ? "expanded" : "rail"}
+          onToggleExpanded={toggleRail}
           onSignOut={handleSignOut}
         />
       </aside>
 
-      <div className="lg:pl-[68px]">
+      <div style={{ paddingLeft: undefined }} className={railExpanded ? "lg:pl-[240px]" : "lg:pl-[56px]"}>
         <header
           className="sticky top-0 z-30 flex h-12 items-center gap-2 border-b px-3 sm:px-4 lg:px-6"
           style={{ backgroundColor: "var(--p-bg)", borderColor: "var(--p-border)" }}
@@ -513,7 +518,7 @@ export function PortalShell({ children }: { children: ReactNode }) {
                 displayName={displayName}
                 email={session.email}
                 initials={me.initials}
-                expanded
+                mode="drawer"
                 onNavigate={() => setOpen(false)}
                 onSignOut={() => {
                   setOpen(false);
