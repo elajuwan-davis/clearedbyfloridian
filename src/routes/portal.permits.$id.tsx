@@ -50,6 +50,17 @@ const STATUSES: PermitStatus[] = [
   "submitted", "in_review", "corrections_required", "approved", "permit_issued", "on_hold", "outsourced_permitting", "cancelled",
 ];
 
+type TabKey = "overview" | "details" | "documents" | "submission" | "compliance" | "money" | "share";
+const TABS: Array<{ key: TabKey; label: string }> = [
+  { key: "overview", label: "Overview" },
+  { key: "details", label: "Details" },
+  { key: "documents", label: "Documents" },
+  { key: "submission", label: "Submission" },
+  { key: "compliance", label: "Compliance" },
+  { key: "money", label: "Fees & Invoices" },
+  { key: "share", label: "Sharing" },
+];
+
 function PermitDetailPage() {
   const { id } = Route.useParams();
   const navigate = useNavigate();
