@@ -221,9 +221,10 @@ function AskVictoriaPage() {
 
   return (
     <PortalShell>
-      <div className="-mx-4 sm:-mx-6 md:-mx-8 -my-6 md:-my-10 h-[calc(100vh-3.5rem)] flex">
+      <div className="flex h-[calc(100vh-8rem)] min-h-0 overflow-hidden rounded-xl border border-[var(--p-border)]">
         {/* Left rail */}
         <aside className="hidden md:flex w-64 shrink-0 flex-col border-r border-obsidian/10 bg-paper-warm/40">
+
           <div className="p-3 border-b border-obsidian/10">
             <Button onClick={newChat} variant="dark" className="w-full rounded-[3px] gap-2 justify-start">
               <Plus className="h-4 w-4" /> New chat
