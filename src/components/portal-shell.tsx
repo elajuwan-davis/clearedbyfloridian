@@ -296,8 +296,9 @@ function SidebarNav({
                 className="relative grid h-9 w-9 place-items-center rounded-lg transition-colors"
                 style={{
                   backgroundColor:
-                    groupActive || openKey === group.key ? "var(--p-tint-2)" : "transparent",
-                  color: groupActive ? "#60A5FA" : "rgba(249,250,251,0.62)",
+                    groupActive || openKey === group.key ? "var(--rail-item-active-bg)" : "transparent",
+                  color: groupActive ? "var(--rail-icon-active)" : "var(--rail-icon)",
+                  boxShadow: groupActive ? "var(--rail-item-active-shadow)" : undefined,
                 }}
               >
                 <GroupIcon className="h-[18px] w-[18px]" strokeWidth={1.75} />
@@ -410,7 +411,7 @@ function SidebarNav({
                 <div className="truncate text-[13px] font-medium" style={{ color: "var(--rail-fg)" }}>
                   {displayName}
                 </div>
-                <div className="truncate text-[11px]" style={{ color: "rgba(249,250,251,0.45)" }}>
+                <div className="truncate text-[11px]" style={{ color: "var(--rail-muted)" }}>
                   {roleLabel[role ?? ""] ?? "Client"}
                 </div>
               </div>
@@ -418,8 +419,8 @@ function SidebarNav({
                 onClick={onSignOut}
                 title="Sign out"
                 aria-label="Sign out"
-                className="grid h-8 w-8 shrink-0 place-items-center rounded-lg hover:bg-white/5"
-                style={{ color: "rgba(249,250,251,0.55)" }}
+                className="grid h-8 w-8 shrink-0 place-items-center rounded-lg hover:bg-[var(--rail-hover)]"
+                style={{ color: "var(--rail-icon)" }}
               >
                 <LogOut className="h-3.5 w-3.5" strokeWidth={1.75} />
               </button>
@@ -427,7 +428,7 @@ function SidebarNav({
           )}
         </div>
         {!isRail && email && (
-          <div className="mt-1.5 truncate pl-[42px] text-[11px]" style={{ color: "rgba(249,250,251,0.35)" }}>
+          <div className="mt-1.5 truncate pl-[42px] text-[11px]" style={{ color: "var(--rail-muted)" }}>
             {email}
           </div>
         )}
@@ -439,10 +440,10 @@ function SidebarNav({
             title={isRail ? "Expand navigation" : "Collapse navigation"}
             aria-label={isRail ? "Expand navigation" : "Collapse navigation"}
             className={cn(
-              "mt-2 flex h-8 items-center gap-2 rounded-lg text-[12px] hover:bg-white/5",
+              "mt-2 flex h-8 items-center gap-2 rounded-lg text-[12px] hover:bg-[var(--rail-hover)]",
               isRail ? "w-full justify-center" : "w-full px-2",
             )}
-            style={{ color: "rgba(249,250,251,0.6)" }}
+            style={{ color: "var(--rail-icon)" }}
           >
             {isRail ? (
               <ChevronRight className="h-4 w-4" strokeWidth={1.75} />
@@ -599,7 +600,7 @@ function PortalShellInner({ children }: { children: ReactNode }) {
           {/* Mobile hamburger + wordmark */}
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger
-              className="rounded-lg p-2 hover:bg-white/5 lg:hidden"
+              className="rounded-lg p-2 hover:bg-[var(--rail-hover)] lg:hidden"
               aria-label="Open navigation"
             >
               {open ? <X className="h-5 w-5" strokeWidth={1.75} /> : <Menu className="h-5 w-5" strokeWidth={1.75} />}
@@ -665,7 +666,7 @@ function PortalShellInner({ children }: { children: ReactNode }) {
             <NotificationBell />
             <div className="hidden sm:block">
               <DropdownMenu>
-                <DropdownMenuTrigger className="flex h-8 items-center gap-1.5 rounded-lg px-1 outline-none hover:bg-white/5">
+                <DropdownMenuTrigger className="flex h-8 items-center gap-1.5 rounded-lg px-1 outline-none hover:bg-[var(--rail-hover)]">
                   <div
                     className="grid h-7 w-7 place-items-center rounded-lg text-[11px] font-semibold"
                     style={{ backgroundColor: "#1F2937", color: "white" }}
