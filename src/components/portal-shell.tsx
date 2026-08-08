@@ -296,7 +296,7 @@ function SidebarNav({
                 className="relative grid h-9 w-9 place-items-center rounded-lg transition-colors"
                 style={{
                   backgroundColor:
-                    groupActive || openKey === group.key ? "rgba(255,255,255,0.10)" : "transparent",
+                    groupActive || openKey === group.key ? "var(--p-tint-2)" : "transparent",
                   color: groupActive ? "#60A5FA" : "rgba(249,250,251,0.62)",
                 }}
               >
