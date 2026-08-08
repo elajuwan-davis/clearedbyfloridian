@@ -16,14 +16,14 @@ const NAV_LINKS: Array<{ to: string; label: string; soon?: boolean }> = [
 function MarketingNav() {
   const [open, setOpen] = useState(false);
   return (
-    <header className="sticky top-0 z-50 border-b md-hairline"
+    <header className="sticky top-0 z-50"
       style={{ background: "rgba(255,255,255,0.92)", backdropFilter: "blur(10px)" }}>
-      <div className="mx-auto max-w-7xl px-6 lg:px-10 h-16 flex items-center justify-between">
+      <div className="mx-auto max-w-7xl px-6 lg:px-10 h-[68px] flex items-center justify-between gap-6">
         <Link to="/" className="flex items-center gap-2.5 no-underline min-w-0">
           <div
             className="h-7 w-7 rounded-lg flex items-center justify-center text-white font-bold text-sm"
             style={{
-              background: "linear-gradient(135deg, #1B84D4 0%, #12A05C 100%)",
+              background: "#16A34A",
               fontFamily: "'Space Grotesk', sans-serif",
             }}
           >
@@ -40,7 +40,7 @@ function MarketingNav() {
           </span>
         </Link>
 
-        <nav className="hidden md:flex items-center gap-9">
+        <nav className="hidden md:flex flex-1 items-center justify-center gap-8">
           {NAV_LINKS.map((l) =>
             l.soon ? (
               <span key={l.to} className="text-[13px] md-muted cursor-default flex items-center gap-1.5">
@@ -60,12 +60,21 @@ function MarketingNav() {
           )}
         </nav>
 
-        <div className="hidden md:flex items-center gap-3">
-          <Link to="/join" hash="request" className="md-btn-gold-outline">
-            Request Access
+        <div className="hidden md:flex items-center gap-5">
+          <Link
+            to="/login"
+            className="text-[13.5px] font-medium"
+            style={{ color: "#0F1E2E" }}
+          >
+            Sign in
           </Link>
-          <Link to="/portal" className="md-btn-gold">
-            Client Portal
+          <Link
+            to="/join"
+            hash="request"
+            className="inline-flex items-center gap-1.5 rounded-lg px-4 py-2 text-[13.5px] font-semibold text-white"
+            style={{ background: "#16A34A" }}
+          >
+            Get early access <ArrowRight className="h-3.5 w-3.5" />
           </Link>
         </div>
 
@@ -99,11 +108,22 @@ function MarketingNav() {
                 </Link>
               )
             )}
-            <Link to="/join" hash="request" onClick={() => setOpen(false)} className="md-btn-gold-outline w-full">
-              Request Access
+            <Link
+              to="/login"
+              onClick={() => setOpen(false)}
+              className="block text-base font-medium"
+              style={{ color: "#0F1E2E" }}
+            >
+              Sign in
             </Link>
-            <Link to="/portal" onClick={() => setOpen(false)} className="md-btn-gold w-full">
-              Client Portal
+            <Link
+              to="/join"
+              hash="request"
+              onClick={() => setOpen(false)}
+              className="inline-flex w-full items-center justify-center gap-1.5 rounded-lg px-4 py-2.5 text-sm font-semibold text-white"
+              style={{ background: "#16A34A" }}
+            >
+              Get early access <ArrowRight className="h-3.5 w-3.5" />
             </Link>
           </div>
         </div>
@@ -120,7 +140,7 @@ function MarketingFooter() {
           <div className="flex items-center gap-2.5">
             <div
               className="h-7 w-7 rounded-lg flex items-center justify-center text-white font-bold text-sm"
-              style={{ background: "linear-gradient(135deg, #1B84D4 0%, #12A05C 100%)", fontFamily: "'Space Grotesk', sans-serif" }}
+              style={{ background: "#16A34A", fontFamily: "'Space Grotesk', sans-serif" }}
             >
               C
             </div>
