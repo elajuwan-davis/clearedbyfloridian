@@ -200,12 +200,53 @@
   --oxblood:      var(--p-danger);
   --rail-bg:      #0A101C;
   --rail-fg:      var(--p-text);
+  --p-tint:       rgba(255, 255, 255, 0.05);
+  --p-tint-2:     rgba(255, 255, 255, 0.09);
+  --p-row-hover:  rgba(255, 255, 255, 0.028);
+  --p-shadow:     none;
+  --p-topbar:     var(--p-bg);
 
   background-color: var(--p-bg);
   color: var(--p-text);
   font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
 }
+
+/* ── Portal LIGHT mode — active when <html> has no .dark class ──
+   Token-only override: every portal page/component reads these vars. */
+html:not(.dark) .portal-ui {
+  --p-bg:        #FAFAF8;
+  --p-card:      #FFFFFF;
+  --p-card-2:    #F2EEE8;
+  --p-border:    #E2E8F0;
+  --p-border-2:  #CBD5E1;
+  --p-text:      #0F1E2E;
+  --p-text-2:    #3D5166;
+  --p-text-3:    #7890A4;
+
+  --rail-bg:     #FFFFFF;
+  --rail-fg:     #0F1E2E;
+
+  --p-tint:      rgba(15, 30, 46, 0.05);
+  --p-tint-2:    rgba(15, 30, 46, 0.08);
+  --p-row-hover: #F2EEE8;
+  --p-shadow:    0 1px 2px rgba(15, 30, 46, 0.06);
+  --p-topbar:    #FFFFFF;
+
+  --obsidian:      #0F1E2E;
+  --obsidian-deep: #0B1726;
+  --paper:         #FFFFFF;
+}
+html:not(.dark) .portal-ui .p-surface,
+html:not(.dark) .portal-ui .p-plate,
+html:not(.dark) .portal-ui .p-surface-flat {
+  box-shadow: var(--p-shadow);
+}
+html:not(.dark) .portal-ui .p-surface-flat,
+html:not(.dark) .portal-ui .p-plate {
+  border: 1px solid var(--p-border);
+}
+
 
 /* One typography system — Inter everywhere inside the portal */
 .portal-ui h1,
@@ -322,7 +363,7 @@
   transition: background-color 140ms ease;
 }
 .portal-ui .p-table tbody tr:hover {
-  background-color: rgba(255, 255, 255, 0.028);
+  background-color: var(--p-row-hover);
 }
 .portal-ui .p-table tbody tr:last-child td {
   border-bottom: 0;
@@ -349,7 +390,7 @@
 .portal-ui .p-chip-warning { color: #FBBF24; background: rgba(245, 158, 11, 0.13); }
 .portal-ui .p-chip-danger  { color: #F87171; background: rgba(239, 68, 68, 0.13); }
 .portal-ui .p-chip-purple  { color: #C4B5FD; background: rgba(167, 139, 250, 0.13); }
-.portal-ui .p-chip-neutral { color: var(--p-text-2); background: rgba(255,255,255,0.055); }
+.portal-ui .p-chip-neutral { color: var(--p-text-2); background: var(--p-tint); }
 
 /* ---------------------------------------------------------
    CONTROLS — 30px default height, 8px radius, one scale
@@ -388,9 +429,9 @@
 .portal-ui .p-btn-primary { background: var(--p-info); color: #fff; }
 .portal-ui .p-btn-primary:hover { background: #2F73DB; }
 .portal-ui .p-btn-ghost { background: transparent; color: var(--p-text-2); border: 1px solid var(--p-border); }
-.portal-ui .p-btn-ghost:hover { color: var(--p-text); background: rgba(255,255,255,0.04); border-color: var(--p-border-2); }
+.portal-ui .p-btn-ghost:hover { color: var(--p-text); background: var(--p-tint); border-color: var(--p-border-2); }
 .portal-ui .p-btn-quiet { background: transparent; color: var(--p-text-2); }
-.portal-ui .p-btn-quiet:hover { color: var(--p-text); background: rgba(255,255,255,0.05); }
+.portal-ui .p-btn-quiet:hover { color: var(--p-text); background: var(--p-tint); }
 .portal-ui .p-btn-danger { background: var(--p-danger); color: #fff; }
 
 /* Segmented control — replaces stacked filter rows */
@@ -420,7 +461,7 @@
 .portal-ui .p-seg > a:hover { color: var(--p-text); }
 .portal-ui .p-seg > button[data-active="true"],
 .portal-ui .p-seg > a[data-active="true"] {
-  background: rgba(255, 255, 255, 0.09);
+  background: var(--p-tint-2);
   color: var(--p-text);
 }
 
@@ -448,13 +489,13 @@
   scrollbar-color: transparent transparent;
 }
 .portal-ui *:hover {
-  scrollbar-color: rgba(255, 255, 255, 0.18) transparent;
+  scrollbar-color: var(--p-tint-2) transparent;
 }
 .portal-ui ::-webkit-scrollbar { width: 4px; height: 4px; }
 .portal-ui ::-webkit-scrollbar-track { background: transparent; }
 .portal-ui ::-webkit-scrollbar-thumb { background: transparent; border-radius: 999px; }
-.portal-ui :hover::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.16); }
-.portal-ui ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.28); }
+.portal-ui :hover::-webkit-scrollbar-thumb { background: var(--p-tint-2); }
+.portal-ui ::-webkit-scrollbar-thumb:hover { background: var(--p-border-2); }
 .p-noscroll { scrollbar-width: none; }
 .p-noscroll::-webkit-scrollbar { width: 0; height: 0; }
 
@@ -475,11 +516,11 @@
   transition: background-color 180ms ease, color 180ms ease;
 }
 .p-nav-item:hover {
-  background-color: rgba(255, 255, 255, 0.05);
+  background-color: var(--p-tint);
   color: #F9FAFB;
 }
 .p-nav-item[data-active="true"] {
-  background-color: rgba(255, 255, 255, 0.07);
+  background-color: var(--p-tint-2);
   color: #F9FAFB;
   font-weight: 600;
 }

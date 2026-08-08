@@ -296,7 +296,7 @@ function SidebarNav({
                 className="relative grid h-9 w-9 place-items-center rounded-lg transition-colors"
                 style={{
                   backgroundColor:
-                    groupActive || openKey === group.key ? "rgba(255,255,255,0.10)" : "transparent",
+                    groupActive || openKey === group.key ? "var(--p-tint-2)" : "transparent",
                   color: groupActive ? "#60A5FA" : "rgba(249,250,251,0.62)",
                 }}
               >
@@ -594,7 +594,7 @@ function PortalShellInner({ children }: { children: ReactNode }) {
       <div className={railExpanded ? "lg:pl-[240px]" : "lg:pl-[56px]"}>
         <header
           className="sticky top-0 z-30 flex h-12 items-center gap-2 border-b px-3 sm:px-4 lg:px-6"
-          style={{ backgroundColor: "var(--p-bg)", borderColor: "var(--p-border)" }}
+          style={{ backgroundColor: "var(--p-topbar)", borderColor: "var(--p-border)" }}
         >
           {/* Mobile hamburger + wordmark */}
           <Sheet open={open} onOpenChange={setOpen}>

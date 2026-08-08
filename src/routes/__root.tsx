@@ -129,11 +129,11 @@ function RootShell({ children }: { children: ReactNode }) {
     <html lang="en">
       <head>
         <HeadContent />
-        {/* Restore saved theme before first paint; fall back to OS preference */}
+        {/* Restore saved theme before first paint; default to dark */}
         <script
           dangerouslySetInnerHTML={{
             __html:
-              "try{var t=localStorage.getItem('cleard-theme');var d=t==='dark'||(!t&&window.matchMedia('(prefers-color-scheme: dark)').matches);document.documentElement.classList.toggle('dark',d)}catch(e){}",
+              "try{var t=localStorage.getItem('cleard-theme');document.documentElement.classList.toggle('dark',t!=='light')}catch(e){document.documentElement.classList.add('dark')}",
           }}
         />
       </head>
