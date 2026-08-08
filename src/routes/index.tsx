@@ -41,9 +41,7 @@ function HomePage() {
     <MarketingShell>
       <Hero />
       <HowClearedWorks />
-      <VictoriaIntro />
       <TrustStrip />
-      <BuildersCTA />
     </MarketingShell>
   );
 }
@@ -265,73 +263,6 @@ function StatusPill({
   );
 }
 
-/* --------------------------------- VICTORIA ---------------------------------- */
-
-function VictoriaIntro() {
-  return (
-    <section className="mx-auto max-w-7xl px-6 lg:px-10 py-24">
-      <div
-        className="md-card overflow-hidden grid md:grid-cols-12 gap-0"
-        style={{ background: "linear-gradient(135deg, #111827 0%, #153157 100%)" }}
-      >
-        <div className="md:col-span-5 p-10 md:p-14 flex items-center justify-center border-b md:border-b-0 md:border-r md-hairline">
-          <VictoriaMark />
-        </div>
-        <div className="md:col-span-7 p-10 md:p-14">
-          <div className="md-eyebrow">Meet Victoria</div>
-          <h2 className="mt-4 md-serif text-4xl md:text-5xl" style={{ color: "var(--md-text)" }}>
-            Your AI permitting <em className="italic md-gold">assistant.</em><br /> Always on.
-          </h2>
-          <p className="mt-6 md-muted text-lg max-w-lg">
-            Victoria monitors your permits, flags compliance gaps, notifies your
-            subs, and answers questions at every stage — so nothing slips
-            through.
-          </p>
-          <div className="mt-8 flex flex-wrap gap-2">
-            <span className="md-chip">Document OCR Scanning</span>
-            <span className="md-chip">DBPR License Verification</span>
-            <span className="md-chip">Real-Time Status Alerts</span>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function VictoriaMark() {
-  return (
-    <div className="relative w-56 h-56">
-      <div
-        className="absolute inset-0 rounded-full blur-2xl opacity-70"
-        style={{
-          background:
-            "radial-gradient(circle, color-mix(in oklab, #C8A97E 50%, transparent) 0%, transparent 65%)",
-        }}
-      />
-      <svg viewBox="0 0 200 200" className="relative w-full h-full">
-        <defs>
-          <linearGradient id="victoriaGrad" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stopColor="#F4E4C3" />
-            <stop offset="50%" stopColor="#C8A97E" />
-            <stop offset="100%" stopColor="#8B6F47" />
-          </linearGradient>
-        </defs>
-        <circle cx="100" cy="100" r="88" fill="none" stroke="#C8A97E" strokeOpacity="0.25" strokeWidth="1" />
-        <circle cx="100" cy="100" r="70" fill="none" stroke="#C8A97E" strokeOpacity="0.35" strokeWidth="1" />
-        <path
-          d="M 55 55 L 100 150 L 145 55"
-          fill="none"
-          stroke="url(#victoriaGrad)"
-          strokeWidth="3"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-        <circle cx="100" cy="100" r="4" fill="#C8A97E" />
-      </svg>
-    </div>
-  );
-}
-
 /* --------------------------- HOW CLEARD WORKS ----------------------------- */
 
 const WORK_FEATURES = [
@@ -461,47 +392,6 @@ function TrustStrip() {
               <div className="mt-2 text-[11px] uppercase tracking-[0.24em] md-muted">{s.v}</div>
             </div>
           ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-/* -------------------------------- CTA CARD -------------------------------- */
-
-function BuildersCTA() {
-  return (
-    <section className="mx-auto max-w-7xl px-6 lg:px-10 py-24">
-      <div
-        className="md-card p-12 md:p-20 text-center overflow-hidden relative"
-        style={{ background: "linear-gradient(140deg, #111827 0%, #153157 100%)" }}
-      >
-        <div
-          className="absolute inset-0 opacity-40"
-          style={{
-            backgroundImage:
-              "radial-gradient(circle at 50% 0%, color-mix(in oklab, #C8A97E 20%, transparent) 0%, transparent 55%)",
-          }}
-        />
-        <div className="relative">
-          <div className="md-eyebrow justify-center inline-flex items-center gap-2">
-            <Bell className="h-3 w-3" /> Get Started
-          </div>
-          <h2 className="mt-6 md-serif text-4xl md:text-6xl max-w-3xl mx-auto" style={{ color: "var(--md-text)" }}>
-            Built for the GC who <em className="italic md-gold">moves fast.</em>
-          </h2>
-          <p className="mt-6 md-muted text-lg max-w-xl mx-auto">
-            Cleard is invite-only. Request access and our team will reach out
-            within 24 hours.
-          </p>
-          <div className="mt-10">
-            <Link to="/join" hash="request" className="md-btn-primary">
-              Request Access <ArrowRight className="h-4 w-4" />
-            </Link>
-          </div>
-          <p className="mt-4 text-[12px] md-muted">
-            No commitment. No setup fee. Just a faster way to permit.
-          </p>
         </div>
       </div>
     </section>
