@@ -7,7 +7,7 @@ import { Menu, X, ArrowRight } from "lucide-react";
 const NAV_LINKS: Array<{ to: string; label: string; soon?: boolean }> = [
   { to: "/products", label: "Product" },
   { to: "/join", label: "For GCs" },
-  { to: "/pricing", label: "Pricing" },
+  
   { to: "/about", label: "About" },
 ];
 
