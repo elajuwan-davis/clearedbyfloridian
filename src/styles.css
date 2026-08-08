@@ -247,6 +247,38 @@ html:not(.dark) .portal-ui .p-plate {
   border: 1px solid var(--p-border);
 }
 
+/* ── Portal LIGHT mode — icon rail + top bar legibility ── */
+html:not(.dark) .portal-ui,
+html:not(.dark) .portal-ui.dark {
+  --rail-bg: #F4F6F8;
+  --rail-fg: #0F1E2E;
+  --p-topbar: #FFFFFF;
+}
+html:not(.dark) .portal-ui .rail-btn,
+html:not(.dark) .portal-ui .flyout-link {
+  color: #3D5166;
+}
+html:not(.dark) .portal-ui .rail-btn:hover,
+html:not(.dark) .portal-ui .rail-btn:focus-visible,
+html:not(.dark) .portal-ui .rail-btn[data-open="true"],
+html:not(.dark) .portal-ui .flyout-link:hover,
+html:not(.dark) .portal-ui .flyout-link:focus-visible {
+  background-color: #E8EDF2;
+  color: #0F1E2E;
+}
+html:not(.dark) .portal-ui .rail-btn[data-active="true"],
+html:not(.dark) .portal-ui .rail-btn[data-active="true"]:hover,
+html:not(.dark) .portal-ui .rail-btn[data-active="true"][data-open="true"] {
+  background-color: #FFFFFF;
+  color: #0F1E2E;
+  box-shadow: 0 1px 2px rgba(15, 30, 46, 0.12);
+}
+html:not(.dark) .portal-ui .flyout-link[data-active="true"] {
+  background-color: #FFFFFF;
+  color: #0F1E2E;
+  box-shadow: 0 1px 2px rgba(15, 30, 46, 0.1);
+}
+
 
 /* One typography system — Inter everywhere inside the portal */
 .portal-ui h1,
