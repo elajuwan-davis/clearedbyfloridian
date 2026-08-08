@@ -200,6 +200,12 @@
   --oxblood:      var(--p-danger);
   --rail-bg:      #0A101C;
   --rail-fg:      var(--p-text);
+  --rail-icon:              rgba(249, 250, 251, 0.62);
+  --rail-icon-active:       #60A5FA;
+  --rail-muted:             rgba(249, 250, 251, 0.45);
+  --rail-hover:             rgba(255, 255, 255, 0.05);
+  --rail-item-active-bg:    var(--p-tint-2);
+  --rail-item-active-shadow: none;
   --p-tint:       rgba(255, 255, 255, 0.05);
   --p-tint-2:     rgba(255, 255, 255, 0.09);
   --p-row-hover:  rgba(255, 255, 255, 0.028);
@@ -253,6 +259,27 @@ html:not(.dark) .portal-ui.dark {
   --rail-bg: #F4F6F8;
   --rail-fg: #0F1E2E;
   --p-topbar: #FFFFFF;
+  --rail-icon: #3D5166;
+  --rail-icon-active: #0F1E2E;
+  --rail-muted: #7890A4;
+  --rail-hover: #E8EDF2;
+  --rail-item-active-bg: #FFFFFF;
+  --rail-item-active-shadow: 0 1px 2px rgba(15, 30, 46, 0.14);
+}
+html:not(.dark) .portal-ui .p-nav-item {
+  color: #3D5166;
+}
+html:not(.dark) .portal-ui .p-nav-item:hover {
+  background-color: #E8EDF2;
+  color: #0F1E2E;
+}
+html:not(.dark) .portal-ui .p-nav-item[data-active="true"] {
+  background-color: #FFFFFF;
+  color: #0F1E2E;
+  box-shadow: 0 1px 2px rgba(15, 30, 46, 0.12);
+}
+html:not(.dark) .portal-ui .p-nav-group {
+  color: #7890A4;
 }
 html:not(.dark) .portal-ui .rail-btn,
 html:not(.dark) .portal-ui .flyout-link {
