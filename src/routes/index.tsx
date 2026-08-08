@@ -3,7 +3,7 @@ import {
   ArrowRight,
   Sparkles,
   FileCheck,
-  Bell,
+  
   ClipboardList,
   CheckCircle2,
   Zap,
