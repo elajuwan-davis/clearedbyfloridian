@@ -594,7 +594,7 @@ function PortalShellInner({ children }: { children: ReactNode }) {
       <div className={railExpanded ? "lg:pl-[240px]" : "lg:pl-[56px]"}>
         <header
           className="sticky top-0 z-30 flex h-12 items-center gap-2 border-b px-3 sm:px-4 lg:px-6"
-          style={{ backgroundColor: "var(--p-bg)", borderColor: "var(--p-border)" }}
+          style={{ backgroundColor: "var(--p-topbar)", borderColor: "var(--p-border)" }}
         >
           {/* Mobile hamburger + wordmark */}
           <Sheet open={open} onOpenChange={setOpen}>
