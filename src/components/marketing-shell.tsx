@@ -134,45 +134,39 @@ function MarketingNav() {
 
 function MarketingFooter() {
   return (
-    <footer className="md-section-dark mt-24">
-      <div className="mx-auto max-w-7xl px-6 lg:px-10 py-14 grid gap-10 md:grid-cols-3 items-start">
-        <div>
-          <div className="flex items-center gap-2.5">
-            <div
-              className="h-7 w-7 rounded-lg flex items-center justify-center text-white font-bold text-sm"
-              style={{ background: "#16A34A", fontFamily: "'Space Grotesk', sans-serif" }}
-            >
-              C
-            </div>
-            <span className="font-semibold text-[18px]" style={{ fontFamily: "'Space Grotesk', sans-serif", color: "#FFFFFF" }}>
-              Cleard
-            </span>
+    <footer style={{ background: "#FFFFFF", borderTop: "1px solid #E8ECF1" }}>
+      <div className="mx-auto max-w-7xl px-6 lg:px-10 py-8 flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+        <Link to="/" className="flex items-center gap-2.5 no-underline">
+          <div
+            className="h-7 w-7 rounded-lg flex items-center justify-center text-white font-bold text-sm"
+            style={{ background: "#16A34A", fontFamily: "'Space Grotesk', sans-serif" }}
+          >
+            C
           </div>
-          <div className="mt-4 text-[11px] uppercase tracking-[0.15em]" style={{ color: "color-mix(in oklab, #fff 70%, transparent)" }}>Coverage</div>
-          <p className="mt-2 text-sm md-muted leading-relaxed">
-            Statewide coverage across Florida.
-          </p>
-        </div>
-        <div className="flex flex-wrap gap-x-6 gap-y-2 md:justify-center text-sm">
-          <Link to="/products" style={{ color: "#FFFFFF" }}>Products</Link>
-          <Link to="/process" style={{ color: "#FFFFFF" }}>How It Works</Link>
-          
-          <a href="https://floridianinc.com/terms" style={{ color: "#FFFFFF" }}>Terms</a>
-          <a href="https://floridianinc.com/privacy" style={{ color: "#FFFFFF" }}>Privacy</a>
-        </div>
-        <div className="md:text-right text-sm md-muted space-y-1">
-          <div>info@cleard.com</div>
-          <div>(772) 675-3274</div>
-        </div>
-      </div>
-      <div className="border-t md-hairline">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10 py-5 text-[11px] md-muted">
-          © 2026 Cleard Inc. All rights reserved.
+          <span
+            className="font-semibold text-[15px] tracking-[-0.01em]"
+            style={{ fontFamily: "'Space Grotesk', 'Inter', system-ui, sans-serif", color: "#0F1E2E" }}
+          >
+            Cleard
+          </span>
+        </Link>
+
+        <nav className="flex flex-wrap items-center gap-x-6 gap-y-2 text-[13px]" style={{ color: "#7890A4" }}>
+          <Link to="/products" style={{ color: "#7890A4" }}>Product</Link>
+          <Link to="/pricing" style={{ color: "#7890A4" }}>Pricing</Link>
+          <a href="https://floridianinc.com/privacy" style={{ color: "#7890A4" }}>Privacy</a>
+          <a href="https://floridianinc.com/terms" style={{ color: "#7890A4" }}>Terms</a>
+          <Link to="/contact" style={{ color: "#7890A4" }}>Contact</Link>
+        </nav>
+
+        <div className="text-[12px]" style={{ color: "#8A9AAA" }}>
+          © 2026 Cleard Inc.
         </div>
       </div>
     </footer>
   );
 }
+
 
 export function MarketingShell({ children }: { children: ReactNode }) {
   return (
