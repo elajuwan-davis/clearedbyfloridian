@@ -1,5 +1,16 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, Sparkles, FileCheck, ShieldCheck, Bell, Building2, FileSignature, LayoutGrid } from "lucide-react";
+import {
+  ArrowRight,
+  Sparkles,
+  FileCheck,
+  Bell,
+  ClipboardList,
+  CheckCircle2,
+  Zap,
+  BadgeCheck,
+  MapPin,
+  ListChecks,
+} from "lucide-react";
 
 import { MarketingShell } from "@/components/marketing-shell";
 
@@ -29,9 +40,8 @@ function HomePage() {
   return (
     <MarketingShell>
       <Hero />
+      <HowClearedWorks />
       <VictoriaIntro />
-      <HowItWorks />
-      <Features />
       <TrustStrip />
       <BuildersCTA />
     </MarketingShell>
@@ -58,12 +68,12 @@ function Hero() {
         <div
           className="md-in md-in-1 inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-[12px] font-medium tracking-[0.06em] uppercase mb-8"
           style={{
-            background: "color-mix(in oklab, #12A05C 12%, transparent)",
-            color: "#12A05C",
-            border: "1px solid color-mix(in oklab, #12A05C 30%, transparent)",
+            background: "color-mix(in oklab, #16A34A 12%, transparent)",
+            color: "#16A34A",
+            border: "1px solid color-mix(in oklab, #16A34A 30%, transparent)",
           }}
         >
-          <span className="h-1.5 w-1.5 rounded-full bg-[#12A05C] inline-block" />
+          <span className="h-1.5 w-1.5 rounded-full bg-[#16A34A] inline-block" />
           Now in private beta · Florida GCs
         </div>
 
@@ -100,11 +110,11 @@ function Hero() {
             hash="request"
             className="inline-flex items-center gap-2 px-7 py-3.5 rounded-lg text-sm font-semibold text-white transition-all"
             style={{
-              background: "#12A05C",
-              boxShadow: "0 1px 3px color-mix(in oklab, #12A05C 40%, transparent)",
+              background: "#16A34A",
+              boxShadow: "0 1px 3px color-mix(in oklab, #16A34A 40%, transparent)",
             }}
-            onMouseEnter={(e) => (e.currentTarget.style.background = "#0D8049")}
-            onMouseLeave={(e) => (e.currentTarget.style.background = "#12A05C")}
+            onMouseEnter={(e) => (e.currentTarget.style.background = "#15803D")}
+            onMouseLeave={(e) => (e.currentTarget.style.background = "#16A34A")}
           >
             Get early access <ArrowRight className="h-4 w-4" />
           </Link>
@@ -239,7 +249,7 @@ function StatusPill({
 }) {
   const map: Record<string, { bg: string; fg: string }> = {
     blue: { bg: "color-mix(in oklab, #1B84D4 12%, transparent)", fg: "#1268AC" },
-    green: { bg: "color-mix(in oklab, #12A05C 12%, transparent)", fg: "#0D8049" },
+    green: { bg: "color-mix(in oklab, #16A34A 12%, transparent)", fg: "#15803D" },
     amber: { bg: "color-mix(in oklab, #E8861A 14%, transparent)", fg: "#C4720F" },
     slate: { bg: "color-mix(in oklab, #6B8299 12%, transparent)", fg: "#4A6278" },
     gold: { bg: "color-mix(in oklab, #E8861A 14%, transparent)", fg: "#C4720F" },
@@ -322,198 +332,113 @@ function VictoriaMark() {
   );
 }
 
-/* ------------------------------- HOW IT WORKS ----------------------------- */
+/* --------------------------- HOW CLEARD WORKS ----------------------------- */
 
-function HowItWorks() {
-  const steps = [
-    {
-      n: "01",
-      t: "Submit",
-      d: "GC submits permit intake in minutes. Scope, subs, documents — all in one place.",
-    },
-    {
-      n: "02",
-      t: "Victoria Reviews",
-      d: "Victoria scans every document for compliance gaps, flags missing coverage, and verifies licenses before submission.",
-    },
-    {
-      n: "03",
-      t: "We Handle the Rest",
-      d: "Cleard submits to the building department on your behalf. You track status in real time.",
-    },
-  ];
+const WORK_FEATURES = [
+  {
+    icon: ClipboardList,
+    tint: "#EFF6FF",
+    fg: "#2563EB",
+    title: "Smart permit intake",
+    body: "Cleard runs a pre-check before you submit — flood zone, parcel data, wind speed, scope flags. Catch corrections before the reviewer does.",
+  },
+  {
+    icon: CheckCircle2,
+    tint: "#ECFDF5",
+    fg: "#16A34A",
+    title: "Inspection management",
+    body: "Schedule, log, and track every inspection in one view. When something fails, Cleard triggers a correction workflow automatically.",
+  },
+  {
+    icon: Zap,
+    tint: "#FEF9C3",
+    fg: "#CA8A04",
+    title: "Victoria",
+    body: "Your AI permit advisor. Victoria monitors every active permit, alerts you to deadlines, and predicts how long each municipality will take.",
+  },
+  {
+    icon: BadgeCheck,
+    tint: "#FFF1E7",
+    fg: "#EA580C",
+    title: "Sub compliance",
+    body: "Every subcontractor's COI, license, and permit status tracked in one place. Expired COI? Cleard blocks site access automatically.",
+  },
+  {
+    icon: MapPin,
+    tint: "#ECFDF5",
+    fg: "#16A34A",
+    title: "Municipality email parsing",
+    body: "Cleard reads your municipality emails and updates permit status automatically. No more scanning inboxes for correction notices.",
+  },
+  {
+    icon: ListChecks,
+    tint: "#FEF9C3",
+    fg: "#CA8A04",
+    title: "GC portal for owners",
+    body: "Give homeowners a live window into their project's permit status. No calls, no updates to write — it's automatic.",
+  },
+];
+
+function HowClearedWorks() {
   return (
-    <section className="border-y md-hairline">
-      <div className="mx-auto max-w-7xl px-6 lg:px-10 py-24">
-        <div className="md-eyebrow">The Process</div>
-        <h2 className="mt-4 md-serif text-4xl md:text-6xl max-w-3xl" style={{ color: "var(--md-text)" }}>
-          From intake to <em className="italic md-gold">issuance.</em>
+    <section style={{ background: "#FFFFFF" }}>
+      <div className="mx-auto max-w-6xl px-6 lg:px-10 py-24 md:py-28">
+        <div
+          className="text-center text-[11px] font-semibold uppercase tracking-[0.18em]"
+          style={{ color: "#16A34A" }}
+        >
+          How Cleard works
+        </div>
+
+        <h2
+          className="mt-6 max-w-3xl"
+          style={{
+            fontFamily: "'Space Grotesk', 'Inter', system-ui, sans-serif",
+            fontWeight: 700,
+            fontSize: "clamp(2rem, 4.4vw, 3.25rem)",
+            lineHeight: 1.08,
+            letterSpacing: "-0.03em",
+            color: "#0F1E2E",
+          }}
+        >
+          One place for every permit, start to finish.
         </h2>
-        <div className="mt-14 grid md:grid-cols-3 gap-5">
-          {steps.map((s) => (
-            <div key={s.n} className="md-card p-8 h-full">
-              <div className="md-serif text-4xl md-gold">{s.n}</div>
-              <div className="mt-6 text-xl font-medium" style={{ color: "var(--md-text)" }}>{s.t}</div>
-              <p className="mt-3 text-sm md-muted leading-relaxed">{s.d}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
+        <p className="mt-5 max-w-2xl text-base leading-relaxed" style={{ color: "#5B6B7C" }}>
+          From intake through inspection to CO — Cleard tracks every move and tells you what&apos;s
+          next before you have to ask.
+        </p>
 
-/* -------------------------------- FEATURES -------------------------------- */
-
-function Features() {
-  const feats = [
-    {
-      icon: LayoutGrid,
-      label: "Permit Pipeline",
-      title: "Track every active permit from intake to issuance.",
-      body: "Status updates pushed in real time — approved, in review, corrections, issued. No more calling the desk.",
-      visual: "pipeline",
-    },
-    {
-      icon: ShieldCheck,
-      label: "Sub Compliance",
-      title: "Every subcontractor, verified before they step on site.",
-      body: "Victoria automatically verifies insurance, license, and W-9 for every sub. You see green, amber, or red at a glance.",
-      visual: "compliance",
-    },
-    {
-      icon: Building2,
-      label: "Building Department Access",
-      title: "160+ Florida municipalities. One place.",
-      body: "Direct portal links to every jurisdiction we serve. Save your credentials once. We submit for you.",
-      visual: "municipalities",
-    },
-    {
-      icon: FileSignature,
-      label: "Document Generation",
-      title: "NOC, NTBO, and every required form — auto-filled.",
-      body: "Cleard drafts your statutory forms directly from your permit data. Review, sign, done.",
-      visual: "docs",
-    },
-  ];
-  return (
-    <section className="mx-auto max-w-7xl px-6 lg:px-10 py-24">
-      <div className="md-eyebrow">What's Included</div>
-      <h2 className="mt-4 md-serif text-4xl md:text-6xl max-w-3xl" style={{ color: "var(--md-text)" }}>
-        Everything a builder needs. <em className="italic md-gold">Nothing they don't.</em>
-      </h2>
-
-      <div className="mt-16 space-y-24">
-        {feats.map((f, i) => {
-          const Icon = f.icon;
-          const flipped = i % 2 === 1;
-          return (
+        <div className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {WORK_FEATURES.map((f) => (
             <div
-              key={f.label}
-              className={`grid md:grid-cols-12 gap-10 items-center ${flipped ? "md:[&>:first-child]:order-2" : ""}`}
+              key={f.title}
+              className="rounded-xl p-6"
+              style={{
+                background: "#FFFFFF",
+                border: "1px solid #E8ECF1",
+                boxShadow: "0 1px 2px rgba(15,30,46,0.04), 0 8px 24px -16px rgba(15,30,46,0.12)",
+              }}
             >
-              <div className="md:col-span-6">
-                <FeatureVisual kind={f.visual as any} />
+              <div
+                className="flex h-10 w-10 items-center justify-center rounded-[10px]"
+                style={{ background: f.tint, color: f.fg }}
+              >
+                <f.icon className="h-5 w-5" strokeWidth={2} />
               </div>
-              <div className="md:col-span-6">
-                <div className="flex items-center gap-2 md-eyebrow">
-                  <Icon className="h-3.5 w-3.5" /> {f.label}
-                </div>
-                <h3 className="mt-4 md-serif text-3xl md:text-4xl" style={{ color: "var(--md-text)" }}>
-                  {f.title}
-                </h3>
-                <p className="mt-5 md-muted text-base leading-relaxed max-w-lg">{f.body}</p>
-              </div>
+              <h3
+                className="mt-5 text-[17px] font-semibold tracking-[-0.01em]"
+                style={{ color: "#0F1E2E" }}
+              >
+                {f.title}
+              </h3>
+              <p className="mt-2 text-[14px] leading-relaxed" style={{ color: "#5B6B7C" }}>
+                {f.body}
+              </p>
             </div>
-          );
-        })}
+          ))}
+        </div>
       </div>
     </section>
-  );
-}
-
-function FeatureVisual({ kind }: { kind: "pipeline" | "compliance" | "municipalities" | "docs" }) {
-  if (kind === "pipeline") {
-    const items = [
-      { s: "Submitted", tone: "blue" as const, n: 418 },
-      { s: "In Review", tone: "gold" as const, n: 604 },
-      { s: "Approved", tone: "green" as const, n: 872 },
-    ];
-    return (
-      <div className="md-card p-6">
-        <div className="text-[11px] uppercase tracking-[0.24em] md-muted mb-4">Pipeline</div>
-        <div className="space-y-2">
-          {items.map((it) => (
-            <div key={it.s} className="flex items-center justify-between px-4 py-3 rounded-md"
-              style={{ background: "color-mix(in oklab, #0A0E17 55%, transparent)" }}>
-              <div className="text-sm" style={{ color: "var(--md-text)" }}>Permit · CLR-{it.n}</div>
-
-              <StatusPill tone={it.tone}>{it.s}</StatusPill>
-            </div>
-          ))}
-        </div>
-      </div>
-    );
-  }
-  if (kind === "compliance") {
-    const subs = [
-      { c: "Coastline Electric", t: "Electrical", tone: "green" as const, status: "Verified" },
-      { c: "Blue Ridge Plumbing", t: "Plumbing", tone: "amber" as const, status: "COI Expiring" },
-      { c: "Palmetto Pools", t: "Pool / Spa", tone: "green" as const, status: "Verified" },
-      { c: "AAA Gas Co.", t: "Gas", tone: "blue" as const, status: "Pending" },
-    ];
-    return (
-      <div className="md-card p-6">
-        <div className="text-[11px] uppercase tracking-[0.24em] md-muted mb-4">Sub Compliance</div>
-        <div className="space-y-2">
-          {subs.map((s) => (
-            <div key={s.c} className="flex items-center justify-between px-4 py-3 rounded-md"
-              style={{ background: "color-mix(in oklab, #0A0E17 55%, transparent)" }}>
-              <div className="min-w-0">
-                <div className="text-sm truncate" style={{ color: "var(--md-text)" }}>{s.c}</div>
-                <div className="text-[11px] md-muted">{s.t}</div>
-              </div>
-              <StatusPill tone={s.tone}>{s.status}</StatusPill>
-            </div>
-          ))}
-        </div>
-      </div>
-    );
-  }
-  if (kind === "municipalities") {
-    const cities = ["West Palm Beach", "Delray Beach", "Boca Raton", "Jupiter", "Stuart", "Fort Pierce", "Vero Beach", "Palm City", "Hobe Sound"];
-    return (
-      <div className="md-card p-6">
-        <div className="text-[11px] uppercase tracking-[0.24em] md-muted mb-4">Building Departments</div>
-        <div className="grid grid-cols-3 gap-2">
-          {cities.map((c) => (
-            <div key={c} className="px-3 py-2.5 text-[12px] rounded-md text-center"
-              style={{ background: "color-mix(in oklab, #0A0E17 55%, transparent)", color: "var(--md-text)" }}>
-              {c}
-            </div>
-          ))}
-        </div>
-      </div>
-    );
-  }
-  // docs
-  const docs = ["Notice of Commencement", "Notice to Building Official", "Private Provider Affidavit", "Owner Payment Authorization"];
-  return (
-    <div className="md-card p-6">
-      <div className="text-[11px] uppercase tracking-[0.24em] md-muted mb-4">Auto-generated Forms</div>
-      <div className="space-y-2">
-        {docs.map((d) => (
-          <div key={d} className="flex items-center justify-between px-4 py-3 rounded-md"
-            style={{ background: "color-mix(in oklab, #0A0E17 55%, transparent)" }}>
-            <div className="flex items-center gap-3">
-              <FileSignature className="h-4 w-4 md-gold" />
-              <span className="text-sm" style={{ color: "var(--md-text)" }}>{d}</span>
-            </div>
-            <span className="text-[11px] md-gold">Ready</span>
-          </div>
-        ))}
-      </div>
-    </div>
   );
 }
 
