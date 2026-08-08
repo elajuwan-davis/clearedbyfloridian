@@ -5,10 +5,12 @@ import { Menu, X, ArrowRight } from "lucide-react";
 // Pricing and Compare are intentionally NOT linked publicly — the pages stay
 // live at /pricing and /versus for internal use only.
 const NAV_LINKS: Array<{ to: string; label: string; soon?: boolean }> = [
-  { to: "/products", label: "Products" },
-  { to: "/process", label: "How It Works" },
-  { to: "/join", label: "For Builders" },
+  { to: "/products", label: "Product" },
+  { to: "/join", label: "For GCs" },
+  { to: "/pricing", label: "Pricing" },
+  { to: "/about", label: "About" },
 ];
+
 
 
 function MarketingNav() {
