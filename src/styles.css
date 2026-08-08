@@ -200,12 +200,51 @@
   --oxblood:      var(--p-danger);
   --rail-bg:      #0A101C;
   --rail-fg:      var(--p-text);
+  --p-tint:       rgba(255, 255, 255, 0.05);
+  --p-tint-2:     rgba(255, 255, 255, 0.09);
+  --p-row-hover:  rgba(255, 255, 255, 0.028);
+  --p-shadow:     none;
 
   background-color: var(--p-bg);
   color: var(--p-text);
   font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
 }
+
+/* ── Portal LIGHT mode — active when <html> has no .dark class ──
+   Token-only override: every portal page/component reads these vars. */
+html:not(.dark) .portal-ui {
+  --p-bg:        #FAFAF8;
+  --p-card:      #FFFFFF;
+  --p-card-2:    #F2EEE8;
+  --p-border:    #E2E8F0;
+  --p-border-2:  #CBD5E1;
+  --p-text:      #0F1E2E;
+  --p-text-2:    #3D5166;
+  --p-text-3:    #7890A4;
+
+  --rail-bg:     #FFFFFF;
+  --rail-fg:     #0F1E2E;
+
+  --p-tint:      rgba(15, 30, 46, 0.05);
+  --p-tint-2:    rgba(15, 30, 46, 0.08);
+  --p-row-hover: #F2EEE8;
+  --p-shadow:    0 1px 2px rgba(15, 30, 46, 0.06);
+
+  --obsidian:      #0F1E2E;
+  --obsidian-deep: #0B1726;
+  --paper:         #FFFFFF;
+}
+html:not(.dark) .portal-ui .p-surface,
+html:not(.dark) .portal-ui .p-plate,
+html:not(.dark) .portal-ui .p-surface-flat {
+  box-shadow: var(--p-shadow);
+}
+html:not(.dark) .portal-ui .p-surface-flat,
+html:not(.dark) .portal-ui .p-plate {
+  border: 1px solid var(--p-border);
+}
+
 
 /* One typography system — Inter everywhere inside the portal */
 .portal-ui h1,
