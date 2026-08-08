@@ -1,5 +1,20 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, Sparkles, FileCheck, ShieldCheck, Bell, Building2, FileSignature, LayoutGrid } from "lucide-react";
+import {
+  ArrowRight,
+  Sparkles,
+  FileCheck,
+  ShieldCheck,
+  Bell,
+  Building2,
+  FileSignature,
+  LayoutGrid,
+  ClipboardList,
+  CheckCircle2,
+  Zap,
+  BadgeCheck,
+  MapPin,
+  ListChecks,
+} from "lucide-react";
 
 import { MarketingShell } from "@/components/marketing-shell";
 
@@ -29,9 +44,8 @@ function HomePage() {
   return (
     <MarketingShell>
       <Hero />
+      <HowClearedWorks />
       <VictoriaIntro />
-      <HowItWorks />
-      <Features />
       <TrustStrip />
       <BuildersCTA />
     </MarketingShell>
