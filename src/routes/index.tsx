@@ -68,12 +68,12 @@ function Hero() {
         <div
           className="md-in md-in-1 inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-[12px] font-medium tracking-[0.06em] uppercase mb-8"
           style={{
-            background: "color-mix(in oklab, #12A05C 12%, transparent)",
-            color: "#12A05C",
-            border: "1px solid color-mix(in oklab, #12A05C 30%, transparent)",
+            background: "color-mix(in oklab, #16A34A 12%, transparent)",
+            color: "#16A34A",
+            border: "1px solid color-mix(in oklab, #16A34A 30%, transparent)",
           }}
         >
-          <span className="h-1.5 w-1.5 rounded-full bg-[#12A05C] inline-block" />
+          <span className="h-1.5 w-1.5 rounded-full bg-[#16A34A] inline-block" />
           Now in private beta · Florida GCs
         </div>
 
@@ -110,11 +110,11 @@ function Hero() {
             hash="request"
             className="inline-flex items-center gap-2 px-7 py-3.5 rounded-lg text-sm font-semibold text-white transition-all"
             style={{
-              background: "#12A05C",
-              boxShadow: "0 1px 3px color-mix(in oklab, #12A05C 40%, transparent)",
+              background: "#16A34A",
+              boxShadow: "0 1px 3px color-mix(in oklab, #16A34A 40%, transparent)",
             }}
-            onMouseEnter={(e) => (e.currentTarget.style.background = "#0D8049")}
-            onMouseLeave={(e) => (e.currentTarget.style.background = "#12A05C")}
+            onMouseEnter={(e) => (e.currentTarget.style.background = "#15803D")}
+            onMouseLeave={(e) => (e.currentTarget.style.background = "#16A34A")}
           >
             Get early access <ArrowRight className="h-4 w-4" />
           </Link>
@@ -249,7 +249,7 @@ function StatusPill({
 }) {
   const map: Record<string, { bg: string; fg: string }> = {
     blue: { bg: "color-mix(in oklab, #1B84D4 12%, transparent)", fg: "#1268AC" },
-    green: { bg: "color-mix(in oklab, #12A05C 12%, transparent)", fg: "#0D8049" },
+    green: { bg: "color-mix(in oklab, #16A34A 12%, transparent)", fg: "#15803D" },
     amber: { bg: "color-mix(in oklab, #E8861A 14%, transparent)", fg: "#C4720F" },
     slate: { bg: "color-mix(in oklab, #6B8299 12%, transparent)", fg: "#4A6278" },
     gold: { bg: "color-mix(in oklab, #E8861A 14%, transparent)", fg: "#C4720F" },
