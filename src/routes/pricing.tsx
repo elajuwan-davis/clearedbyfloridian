@@ -1,35 +1,56 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Check, Minus, ArrowRight } from "lucide-react";
+import { Check, ArrowRight, Clock } from "lucide-react";
 
 import { MarketingShell } from "@/components/marketing-shell";
 
 export const Route = createFileRoute("/pricing")({
   head: () => ({
     meta: [
-      { title: "Pricing — Cleard Per-Project Permitting for Florida GCs" },
+      { title: "Pricing — Cléared Permitting for Florida Builders" },
       {
         name: "description",
         content:
-          "Three per-project tiers: Foundation $6,500, Builder $8,500, Elite $10,500. Private provider services, permit running, Victoria AI, and fee recovery. Volume discounts at 4+ projects.",
+          "À la carte permitting: single trade permit administration $500, independent inspections $99, single plan review $250. Full-service Foundation, Builder, and Elite packages coming soon.",
       },
-      { property: "og:title", content: "Cleard Pricing — Per Project, No Fluff" },
+      { property: "og:title", content: "Cléared Pricing — Pay Only For What You Need" },
       {
         property: "og:description",
         content:
-          "Foundation $6,500 · Builder $8,500 · Elite $10,500 per project. Volume discounts for 4+ projects per year.",
+          "À la carte permit administration, private provider inspections, and plan review. Full-service packages coming soon.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "robots", content: "noindex" },
     ],
   }),
   component: PricingPage,
 });
 
+type AlaCarte = { name: string; price: string; unit?: string; blurb: string };
+
+const A_LA_CARTE: AlaCarte[] = [
+  {
+    name: "Single Trade Permit Administration",
+    price: "$500",
+    blurb:
+      "Full permit application, submission, monitoring, and issuance for a single trade.",
+  },
+  {
+    name: "Independent Inspection",
+    price: "$99",
+    unit: "/ inspection",
+    blurb:
+      "Licensed private provider inspection for a single milestone. Scheduled and reported through Cléared.",
+  },
+  {
+    name: "Single Plan Review",
+    price: "$250",
+    blurb:
+      "Licensed PE/AE review and stamp for a single trade's plans under F.S. 553.791.",
+  },
+];
+
 type Tier = {
-  id: "foundation" | "builder" | "elite";
   name: string;
-  price: string;
   blurb: string;
   inheritsLabel?: string;
   bullets: string[];
@@ -38,72 +59,37 @@ type Tier = {
 
 const TIERS: Tier[] = [
   {
-    id: "foundation",
     name: "Foundation",
-    price: "$6,500",
     blurb: "Everything required to get a permit filed, tracked, and issued.",
     bullets: [
       "Platform access",
       "Private provider services",
-      "Permit running — filing, tracking, corrections, issuance",
+      "SFR permit administration — filing, tracking, corrections, issuance",
+      "2-day plan review",
+      "Same-day inspections",
     ],
   },
   {
-    id: "builder",
     name: "Builder",
-    price: "$8,500",
     blurb: "Adds intelligence, homeowner visibility, and trade verification.",
     inheritsLabel: "Everything in Foundation, plus:",
     featured: true,
     bullets: [
-      "Victoria AI assistant — 24/7 project Q&A on status, requirements, and timelines",
+      "Victoria AI assistant — 24/7 project Q&A",
       "Homeowner portal access",
-      "License & insurance verification and confirmation",
+      "License & insurance verification",
     ],
   },
   {
-    id: "elite",
     name: "Elite",
-    price: "$10,500",
     blurb: "Adds municipal fee auditing and recovery on every permit.",
     inheritsLabel: "Everything in Builder, plus:",
     bullets: [
       "Permit fee cost check & recovery — we audit every municipal fee, fight overcharges, and split recovered amounts 75/25 in your favor",
+      "Dedicated permit coordinator",
     ],
   },
 ];
-
-type Row = { feature: string; foundation: boolean; builder: boolean; elite: boolean };
-
-const MATRIX: Row[] = [
-  { feature: "Platform access", foundation: true, builder: true, elite: true },
-  { feature: "Private provider services", foundation: true, builder: true, elite: true },
-  { feature: "Permit running (filing, tracking, corrections, issuance)", foundation: true, builder: true, elite: true },
-  { feature: "Victoria AI assistant (24/7 project Q&A)", foundation: false, builder: true, elite: true },
-  { feature: "Homeowner portal access", foundation: false, builder: true, elite: true },
-  { feature: "License & insurance verification", foundation: false, builder: true, elite: true },
-  { feature: "Permit fee cost check & recovery (75/25 split)", foundation: false, builder: false, elite: true },
-];
-
-function Yes() {
-  return (
-    <span
-      className="inline-flex items-center justify-center h-5 w-5 rounded-full"
-      style={{ background: "color-mix(in oklab, var(--green, #12A05C) 18%, transparent)" }}
-      aria-label="Included"
-    >
-      <Check className="h-3 w-3" style={{ color: "var(--green, #12A05C)" }} strokeWidth={3} />
-    </span>
-  );
-}
-
-function No() {
-  return (
-    <span className="inline-flex items-center justify-center h-5 w-5" aria-label="Not included">
-      <Minus className="h-3.5 w-3.5 md-muted" strokeWidth={2} />
-    </span>
-  );
-}
 
 function PricingPage() {
   return (
@@ -127,44 +113,91 @@ function PricingPage() {
             Priced per project. Nothing hidden.
           </h1>
           <p className="mt-7 max-w-2xl text-base sm:text-lg md-muted md-in md-in-3">
-            One fee per project covers private provider services and permit running end to end.
-            Pick the tier that matches how much of the process you want us to own.
+            Start à la carte with the exact service you need today, or move to a
+            full-service package that covers permit administration, plan review,
+            and every inspection.
           </p>
         </div>
       </section>
 
-      {/* Tier cards */}
+      {/* Section 1 — À La Carte */}
       <section className="mx-auto max-w-7xl px-6 lg:px-10 py-20 md:py-24">
-        <div className="grid gap-5 md:grid-cols-3 items-start">
+        <div className="md-eyebrow">À La Carte Services</div>
+        <h2
+          className="mt-4 md-serif text-3xl md:text-4xl"
+          style={{ color: "var(--md-text)" }}
+        >
+          Partial platform access. Pay only for what you need.
+        </h2>
+
+        <div className="mt-10 grid gap-5 md:grid-cols-3 items-stretch">
+          {A_LA_CARTE.map((s) => (
+            <div
+              key={s.name}
+              className="rounded-lg border md-hairline p-7 flex flex-col"
+              style={{ background: "transparent" }}
+            >
+              <div
+                className="text-[13px] uppercase tracking-[0.14em]"
+                style={{ color: "var(--md-text)" }}
+              >
+                {s.name}
+              </div>
+              <div
+                className="mt-5 flex items-baseline gap-1.5"
+                style={{ fontFamily: "'Space Grotesk', sans-serif", color: "var(--md-text)" }}
+              >
+                <span style={{ fontWeight: 800, fontSize: "2.5rem", letterSpacing: "-0.03em" }}>
+                  {s.price}
+                </span>
+                {s.unit && <span className="text-[13px] md-muted">{s.unit}</span>}
+              </div>
+              <p className="mt-4 text-sm md-muted leading-relaxed flex-1">{s.blurb}</p>
+              <Link
+                to="/contact"
+                className="md-btn-ghost mt-7 w-full justify-center"
+              >
+                Request this service <ArrowRight className="h-4 w-4" />
+              </Link>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Section 2 — Full-Service Packages */}
+      <section className="mx-auto max-w-7xl px-6 lg:px-10 pb-20 md:pb-24">
+        <div className="md-eyebrow">Full-Service Packages</div>
+        <h2
+          className="mt-4 md-serif text-3xl md:text-4xl"
+          style={{ color: "var(--md-text)" }}
+        >
+          Full platform access. SFR permit administration, plans review, and all
+          inspections — together.
+        </h2>
+
+        <div className="mt-10 grid gap-5 md:grid-cols-3 items-start">
           {TIERS.map((t) => (
             <div
-              key={t.id}
+              key={t.name}
               className="md-card p-8 flex flex-col h-full relative"
               style={
                 t.featured
-                  ? { borderColor: "var(--brand, #1B84D4)", boxShadow: "0 12px 40px rgba(27,132,212,0.10)" }
+                  ? {
+                      borderColor: "var(--brand, #1B84D4)",
+                      boxShadow: "0 12px 40px rgba(21,49,87,0.12)",
+                    }
                   : undefined
               }
             >
-              {t.featured && (
-                <div
-                  className="absolute -top-3 left-8 px-2.5 py-1 rounded-full text-[10px] uppercase tracking-[0.18em]"
-                  style={{ background: "var(--brand, #1B84D4)", color: "#FFFFFF" }}
-                >
-                  Most popular
-                </div>
-              )}
-              <div className="md-eyebrow">{t.name}</div>
               <div
-                className="mt-4 flex items-baseline gap-1.5"
-                style={{ fontFamily: "'Space Grotesk', sans-serif", color: "var(--md-text)" }}
+                className="absolute -top-3 left-8 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] uppercase tracking-[0.18em]"
+                style={{ background: "#153157", color: "#FFFFFF" }}
               >
-                <span style={{ fontWeight: 800, fontSize: "2.75rem", letterSpacing: "-0.03em" }}>
-                  {t.price}
-                </span>
-                <span className="text-[13px] md-muted">/ project</span>
+                <Clock className="h-3 w-3" /> Coming soon
               </div>
-              <p className="mt-3 text-sm md-muted leading-relaxed">{t.blurb}</p>
+
+              <div className="md-eyebrow mt-2">{t.name}</div>
+              <p className="mt-4 text-sm md-muted leading-relaxed">{t.blurb}</p>
 
               <div className="mt-6 pt-6 border-t md-hairline flex-1">
                 {t.inheritsLabel && (
@@ -174,7 +207,11 @@ function PricingPage() {
                 )}
                 <ul className="space-y-3">
                   {t.bullets.map((b) => (
-                    <li key={b} className="flex items-start gap-2.5 text-sm" style={{ color: "var(--md-text)" }}>
+                    <li
+                      key={b}
+                      className="flex items-start gap-2.5 text-sm"
+                      style={{ color: "var(--md-text)" }}
+                    >
                       <Check
                         className="h-4 w-4 mt-0.5 shrink-0"
                         style={{ color: "var(--green, #12A05C)" }}
@@ -187,148 +224,34 @@ function PricingPage() {
               </div>
 
               <Link
-                to="/join"
-                hash="request"
-                className={t.featured ? "md-btn-primary mt-8 w-full justify-center" : "md-btn-ghost mt-8 w-full justify-center"}
+                to="/contact"
+                className={
+                  t.featured
+                    ? "md-btn-primary mt-8 w-full justify-center"
+                    : "md-btn-ghost mt-8 w-full justify-center"
+                }
               >
-                Get Started <ArrowRight className="h-4 w-4" />
+                Join the waitlist <ArrowRight className="h-4 w-4" />
               </Link>
             </div>
           ))}
         </div>
-      </section>
 
-      {/* Comparison table */}
-      <section className="mx-auto max-w-5xl px-6 lg:px-10 pb-20 md:pb-24">
-        <div className="md-eyebrow">What's included</div>
-
-        <div className="mt-8 hidden md:block overflow-hidden rounded-lg border md-hairline">
-          <table className="w-full border-collapse text-left">
-            <thead>
-              <tr>
-                <th className="px-5 py-4 text-[11px] uppercase tracking-[0.2em] md-muted font-normal">
-                  Feature
-                </th>
-                {["Foundation", "Builder", "Elite"].map((h, i) => (
-                  <th
-                    key={h}
-                    className="px-5 py-4 text-[12px] uppercase tracking-[0.16em] text-center"
-                    style={
-                      i === 1
-                        ? { background: "var(--brand, #1B84D4)", color: "#FFFFFF" }
-                        : { background: "color-mix(in oklab, #6B8299 12%, transparent)", color: "var(--md-text)" }
-                    }
-                  >
-                    {h}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {MATRIX.map((r, i) => (
-                <tr
-                  key={r.feature}
-                  style={{
-                    background: i % 2 === 1 ? "color-mix(in oklab, #6B8299 6%, transparent)" : "transparent",
-                  }}
-                >
-                  <td className="px-5 py-3.5 text-sm" style={{ color: "var(--md-text)" }}>
-                    {r.feature}
-                  </td>
-                  {[r.foundation, r.builder, r.elite].map((v, j) => (
-                    <td key={j} className="px-5 py-3.5">
-                      <div className="flex justify-center">{v ? <Yes /> : <No />}</div>
-                    </td>
-                  ))}
-                </tr>
-              ))}
-              <tr>
-                <td className="px-5 py-4 text-[11px] uppercase tracking-[0.16em] md-muted">
-                  Price per project
-                </td>
-                {TIERS.map((t) => (
-                  <td
-                    key={t.id}
-                    className="px-5 py-4 text-center text-sm"
-                    style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, color: "var(--md-text)" }}
-                  >
-                    {t.price}
-                  </td>
-                ))}
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        {/* Mobile */}
-        <div className="mt-8 md:hidden space-y-2">
-          {MATRIX.map((r) => (
-            <div key={r.feature} className="rounded-lg border md-hairline p-4">
-              <div className="text-sm" style={{ color: "var(--md-text)" }}>{r.feature}</div>
-              <div className="mt-3 grid grid-cols-3 gap-2">
-                {([["Foundation", r.foundation], ["Builder", r.builder], ["Elite", r.elite]] as const).map(
-                  ([label, v]) => (
-                    <div key={label} className="flex flex-col items-center gap-1.5">
-                      <span className="text-[10px] uppercase tracking-[0.14em] md-muted">{label}</span>
-                      {v ? <Yes /> : <No />}
-                    </div>
-                  ),
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Volume discounts */}
-      <section className="mx-auto max-w-7xl px-6 lg:px-10 pb-20 md:pb-24">
-        <div className="md-card p-8 md:p-12">
-          <div className="md-eyebrow">Volume discounts</div>
-          <h2
-            className="mt-4 md-serif text-3xl md:text-4xl"
-            style={{ color: "var(--md-text)" }}
-          >
-            Build more, pay less per project.
-          </h2>
-          <p className="mt-4 max-w-2xl text-sm md-muted leading-relaxed">
-            Discounts apply automatically to every project once your annual volume commitment is set.
-            They stack on any tier.
-          </p>
-          <div className="mt-8 grid gap-5 sm:grid-cols-2">
-            {[
-              { range: "4–8 projects / year", off: "10% off", note: "Applied per project" },
-              { range: "9+ projects / year", off: "15% off", note: "Applied per project" },
-            ].map((d) => (
-              <div key={d.range} className="rounded-lg border md-hairline p-6">
-                <div className="text-[11px] uppercase tracking-[0.16em] md-muted">{d.range}</div>
-                <div
-                  className="mt-3"
-                  style={{
-                    fontFamily: "'Space Grotesk', sans-serif",
-                    fontWeight: 800,
-                    fontSize: "2.25rem",
-                    letterSpacing: "-0.03em",
-                    color: "var(--brand, #1B84D4)",
-                  }}
-                >
-                  {d.off}
-                </div>
-                <div className="mt-1 text-sm md-muted">{d.note}</div>
-              </div>
-            ))}
-          </div>
-        </div>
+        <p className="mt-6 text-[13px] md-muted">
+          Package pricing is being finalized. Join the waitlist and we'll share
+          tier pricing before launch.
+        </p>
       </section>
 
       {/* CTA */}
       <section className="md-section-dark">
         <div className="mx-auto max-w-7xl px-6 lg:px-10 py-20 text-center">
           <h2 className="md-serif text-3xl md:text-5xl" style={{ color: "#FFFFFF" }}>
-            Ready to run your next permit through Cleard?
+            Ready to run your next permit through Cléared?
           </h2>
           <div className="mt-8">
-            <Link to="/join" hash="request" className="md-btn-primary">
-              Get Started <ArrowRight className="h-4 w-4" />
+            <Link to="/contact" className="md-btn-primary">
+              Talk to us <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
         </div>
