@@ -167,6 +167,7 @@ export const adminSection: NavSection = {
     { to: "/admin/workload", label: "Staff Workload" },
     { to: "/admin/gc-compliance", label: "GC Compliance" },
     { to: "/admin/audit", label: "Audit Trail" },
+    { to: "/admin/pricing", label: "Pricing" },
     { to: "/admin/protection", label: "Protection", divider: true },
     { to: "/admin/utility-locates", label: "Utility Locates" },
   ],

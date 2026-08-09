@@ -47,6 +47,7 @@ import { Route as AdminGcClientsRouteImport } from './routes/admin.gc-clients'
 import { Route as AdminGcComplianceRouteImport } from './routes/admin.gc-compliance'
 import { Route as AdminHubspotSimulateRouteImport } from './routes/admin.hubspot-simulate'
 import { Route as AdminInvitesRouteImport } from './routes/admin.invites'
+import { Route as AdminPricingRouteImport } from './routes/admin.pricing'
 import { Route as AdminProtectionRouteImport } from './routes/admin.protection'
 import { Route as AdminReviewQueueRouteImport } from './routes/admin.review-queue'
 import { Route as AdminUtilityLocatesRouteImport } from './routes/admin.utility-locates'
@@ -317,6 +318,11 @@ const AdminHubspotSimulateRoute = AdminHubspotSimulateRouteImport.update({
 const AdminInvitesRoute = AdminInvitesRouteImport.update({
   id: '/admin/invites',
   path: '/admin/invites',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminPricingRoute = AdminPricingRouteImport.update({
+  id: '/admin/pricing',
+  path: '/admin/pricing',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminProtectionRoute = AdminProtectionRouteImport.update({
@@ -775,6 +781,7 @@ export interface FileRoutesByFullPath {
   '/admin/gc-compliance': typeof AdminGcComplianceRoute
   '/admin/hubspot-simulate': typeof AdminHubspotSimulateRoute
   '/admin/invites': typeof AdminInvitesRoute
+  '/admin/pricing': typeof AdminPricingRoute
   '/admin/protection': typeof AdminProtectionRoute
   '/admin/review-queue': typeof AdminReviewQueueRoute
   '/admin/utility-locates': typeof AdminUtilityLocatesRoute
@@ -894,6 +901,7 @@ export interface FileRoutesByTo {
   '/admin/gc-compliance': typeof AdminGcComplianceRoute
   '/admin/hubspot-simulate': typeof AdminHubspotSimulateRoute
   '/admin/invites': typeof AdminInvitesRoute
+  '/admin/pricing': typeof AdminPricingRoute
   '/admin/protection': typeof AdminProtectionRoute
   '/admin/review-queue': typeof AdminReviewQueueRoute
   '/admin/utility-locates': typeof AdminUtilityLocatesRoute
@@ -1014,6 +1022,7 @@ export interface FileRoutesById {
   '/admin/gc-compliance': typeof AdminGcComplianceRoute
   '/admin/hubspot-simulate': typeof AdminHubspotSimulateRoute
   '/admin/invites': typeof AdminInvitesRoute
+  '/admin/pricing': typeof AdminPricingRoute
   '/admin/protection': typeof AdminProtectionRoute
   '/admin/review-queue': typeof AdminReviewQueueRoute
   '/admin/utility-locates': typeof AdminUtilityLocatesRoute
@@ -1137,6 +1146,7 @@ export interface FileRouteTypes {
     | '/admin/gc-compliance'
     | '/admin/hubspot-simulate'
     | '/admin/invites'
+    | '/admin/pricing'
     | '/admin/protection'
     | '/admin/review-queue'
     | '/admin/utility-locates'
@@ -1256,6 +1266,7 @@ export interface FileRouteTypes {
     | '/admin/gc-compliance'
     | '/admin/hubspot-simulate'
     | '/admin/invites'
+    | '/admin/pricing'
     | '/admin/protection'
     | '/admin/review-queue'
     | '/admin/utility-locates'
@@ -1375,6 +1386,7 @@ export interface FileRouteTypes {
     | '/admin/gc-compliance'
     | '/admin/hubspot-simulate'
     | '/admin/invites'
+    | '/admin/pricing'
     | '/admin/protection'
     | '/admin/review-queue'
     | '/admin/utility-locates'
@@ -1497,6 +1509,7 @@ export interface RootRouteChildren {
   AdminGcComplianceRoute: typeof AdminGcComplianceRoute
   AdminHubspotSimulateRoute: typeof AdminHubspotSimulateRoute
   AdminInvitesRoute: typeof AdminInvitesRoute
+  AdminPricingRoute: typeof AdminPricingRoute
   AdminProtectionRoute: typeof AdminProtectionRoute
   AdminReviewQueueRoute: typeof AdminReviewQueueRoute
   AdminUtilityLocatesRoute: typeof AdminUtilityLocatesRoute
@@ -1797,6 +1810,13 @@ declare module '@tanstack/react-router' {
       path: '/admin/invites'
       fullPath: '/admin/invites'
       preLoaderRoute: typeof AdminInvitesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/pricing': {
+      id: '/admin/pricing'
+      path: '/admin/pricing'
+      fullPath: '/admin/pricing'
+      preLoaderRoute: typeof AdminPricingRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/protection': {
@@ -2592,6 +2612,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminGcComplianceRoute: AdminGcComplianceRoute,
   AdminHubspotSimulateRoute: AdminHubspotSimulateRoute,
   AdminInvitesRoute: AdminInvitesRoute,
+  AdminPricingRoute: AdminPricingRoute,
   AdminProtectionRoute: AdminProtectionRoute,
   AdminReviewQueueRoute: AdminReviewQueueRoute,
   AdminUtilityLocatesRoute: AdminUtilityLocatesRoute,
