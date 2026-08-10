@@ -3,6 +3,7 @@ import { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
 import { toast } from "sonner";
 import { ArrowLeft, Upload, X, Link2, Copy, Trash2, Eye, Loader2, Mail } from "lucide-react";
 import { getSub, createSub, updateSubApi, deleteSub, type SubRow, type SubInsert } from "@/lib/subs-api";
+import { subValidationErrors } from "@/lib/sub-validation";
 import { supabase } from "@/integrations/supabase/client";
 import { useServerFn } from "@tanstack/react-start";
 import { inviteSubcontractorFn } from "@/lib/tenants.functions";
@@ -32,6 +33,7 @@ function NewSubcontractorPage() {
   const [form, setForm] = useState<Partial<SubInsert>>({ trade: "Plumbing" });
   const [saved, setSaved] = useState<SubRow | null>(null);
   const [shareUrl, setShareUrl] = useState<string | null>(null);
+  const [errors, setErrors] = useState<string[]>([]);
 
   useEffect(() => {
     if (!id) return;
@@ -60,8 +62,12 @@ function NewSubcontractorPage() {
     // Need a saved record to scope the storage path
     let rec = saved;
     if (!rec) {
-      if (!form.company_name?.trim()) {
-        toast.error("Enter a company name and save first, then upload documents.");
+      // Uploading must not be a way to create a record that skips validation.
+      const problems = subValidationErrors(form);
+      if (problems.length) {
+        setErrors(problems);
+        toast.error("Fill in the required fields and save before uploading documents.");
+        e.target.value = "";
         return;
       }
       try {
@@ -146,7 +152,13 @@ function NewSubcontractorPage() {
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
-    if (!form.company_name?.trim()) return toast.error("Company Name is required");
+    const problems = subValidationErrors(form);
+    if (problems.length) {
+      setErrors(problems);
+      toast.error(problems[0]);
+      return;
+    }
+    setErrors([]);
     try {
       const payload = sanitize(form);
       let rec: SubRow;
@@ -273,7 +285,9 @@ function NewSubcontractorPage() {
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="mt-6 space-y-6 bg-white border border-obsidian/10 rounded-[3px] p-6 sm:p-8">
+      {/* noValidate: the styled list below reports every missing field at once,
+          rather than the browser's one-at-a-time tooltip. */}
+      <form noValidate onSubmit={handleSubmit} className="mt-6 space-y-6 bg-white border border-obsidian/10 rounded-[3px] p-6 sm:p-8">
         <div className="grid gap-5 sm:grid-cols-2">
           <div>
             <label className={labelCls}>Trade</label>
@@ -283,12 +297,12 @@ function NewSubcontractorPage() {
           </div>
           <div><label className={labelCls}>Company Name *</label><input required className={inputCls} value={form.company_name ?? ""} onChange={(e) => set("company_name", e.target.value)} /></div>
           <div><label className={labelCls}>Qualifier Name</label><input className={inputCls} value={form.qualifier_name ?? ""} onChange={(e) => set("qualifier_name", e.target.value)} /></div>
-          <div><label className={labelCls}>License Number</label><input className={inputCls} value={form.license_number ?? ""} onChange={(e) => set("license_number", e.target.value)} /></div>
-          <div><label className={labelCls}>License Expiration</label><input type="date" className={inputCls} value={form.license_expiration ?? ""} onChange={(e) => set("license_expiration", e.target.value || null)} /></div>
+          <div><label className={labelCls}>License Number *</label><input required className={inputCls} value={form.license_number ?? ""} onChange={(e) => set("license_number", e.target.value)} /></div>
+          <div><label className={labelCls}>License Expiration *</label><input type="date" required className={inputCls} value={form.license_expiration ?? ""} onChange={(e) => set("license_expiration", e.target.value || null)} /></div>
           <div className="sm:col-span-2"><FileRow label="License Upload" name={form.license_file_name} keyName="license_file_name" /></div>
           <div><label className={labelCls}>Contact First Name</label><input className={inputCls} value={form.contact_first_name ?? ""} onChange={(e) => set("contact_first_name", e.target.value)} /></div>
           <div><label className={labelCls}>Contact Last Name</label><input className={inputCls} value={form.contact_last_name ?? ""} onChange={(e) => set("contact_last_name", e.target.value)} /></div>
-          <div><label className={labelCls}>Contact Email</label><input type="email" className={inputCls} value={form.email ?? ""} onChange={(e) => set("email", e.target.value)} /></div>
+          <div><label className={labelCls}>Contact Email *</label><input type="email" required className={inputCls} value={form.email ?? ""} onChange={(e) => set("email", e.target.value)} /></div>
           <div><label className={labelCls}>Contact Phone</label><input className={inputCls} value={form.phone ?? ""} onChange={(e) => set("phone", e.target.value)} /></div>
           <div className="sm:col-span-2"><label className={labelCls}>Company Address</label><input className={inputCls} value={form.company_address ?? ""} onChange={(e) => set("company_address", e.target.value)} /></div>
           <div><label className={labelCls}>Insurance Carrier Name</label><input className={inputCls} value={form.insurance_carrier_name ?? ""} onChange={(e) => set("insurance_carrier_name", e.target.value)} /></div>
@@ -297,6 +311,17 @@ function NewSubcontractorPage() {
           <div><label className={labelCls}>COI Expiration</label><input type="date" className={inputCls} value={form.coi_expiration ?? ""} onChange={(e) => set("coi_expiration", e.target.value || null)} /></div>
           <div className="sm:col-span-2"><FileRow label="W-9 Upload" name={form.w9_file_name} keyName="w9_file_name" /></div>
         </div>
+
+        {errors.length > 0 && (
+          <div className="border border-red-300 bg-red-50 rounded-[3px] px-4 py-3 text-[13px] text-red-800">
+            <div className="font-medium">Cannot save — required fields are missing:</div>
+            <ul className="mt-1 list-disc pl-5 text-[12px]">
+              {errors.map((m) => (
+                <li key={m}>{m}</li>
+              ))}
+            </ul>
+          </div>
+        )}
 
         <div className="flex items-center justify-between gap-2 pt-4 border-t border-obsidian/10 flex-wrap">
           <div>

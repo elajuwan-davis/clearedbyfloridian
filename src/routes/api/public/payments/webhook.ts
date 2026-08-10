@@ -5,10 +5,7 @@ import { type StripeEnv, verifyWebhook } from "@/lib/stripe.server";
 let _supabase: ReturnType<typeof createClient> | null = null;
 function getSupabase() {
   if (!_supabase) {
-    _supabase = createClient(
-      process.env.SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!,
-    );
+    _supabase = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!);
   }
   return _supabase;
 }
@@ -19,9 +16,7 @@ async function handleSubscriptionUpsert(sub: any, env: StripeEnv) {
 
   const item = sub.items?.data?.[0];
   const priceId =
-    item?.price?.lookup_key ||
-    item?.price?.metadata?.lovable_external_id ||
-    item?.price?.id;
+    item?.price?.lookup_key || item?.price?.metadata?.lovable_external_id || item?.price?.id;
   const productId = item?.price?.product;
   const periodStart = item?.current_period_start ?? sub.current_period_start;
   const periodEnd = item?.current_period_end ?? sub.current_period_end;
@@ -43,12 +38,8 @@ async function handleSubscriptionUpsert(sub: any, env: StripeEnv) {
       product_id: productId,
       price_id: priceId,
       status: sub.status,
-      current_period_start: periodStart
-        ? new Date(periodStart * 1000).toISOString()
-        : null,
-      current_period_end: periodEnd
-        ? new Date(periodEnd * 1000).toISOString()
-        : null,
+      current_period_start: periodStart ? new Date(periodStart * 1000).toISOString() : null,
+      current_period_end: periodEnd ? new Date(periodEnd * 1000).toISOString() : null,
       cancel_at_period_end: sub.cancel_at_period_end || false,
       environment: env,
       updated_at: new Date().toISOString(),
@@ -65,8 +56,30 @@ async function handleSubscriptionDeleted(sub: any, env: StripeEnv) {
     .eq("environment", env);
 }
 
+/** The only path that grants marketplace access — Stripe has confirmed payment. */
+async function handleMarketplaceUnlock(session: any, env: StripeEnv) {
+  const tenantId = session.metadata?.tenantId;
+  if (!tenantId) return console.error("No tenantId in marketplace_unlock metadata");
+
+  await (getSupabase() as any)
+    .from("marketplace_access")
+    .update({
+      status: "active",
+      stripe_payment_intent_id: session.payment_intent,
+      unlocked_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    })
+    .eq("tenant_id", tenantId)
+    .eq("stripe_checkout_session_id", session.id)
+    .eq("environment", env);
+}
+
 async function handleCheckoutCompleted(session: any, env: StripeEnv) {
   if (session.mode !== "payment") return;
+  if (session.metadata?.kind === "marketplace_unlock") {
+    await handleMarketplaceUnlock(session, env);
+    return;
+  }
   if (session.metadata?.kind !== "service_fee") return;
 
   await (getSupabase() as any)
