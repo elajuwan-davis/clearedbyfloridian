@@ -218,7 +218,7 @@ function LoginPage() {
                   Password
                 </Label>
                 <Link
-                  to="/login"
+                  to="/reset-password"
                   className="font-subline text-[11px] tracking-wide text-muted-foreground hover:text-foreground"
                 >
                   Forgot?
