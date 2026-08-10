@@ -35,6 +35,7 @@ import { Route as ProductsRouteImport } from './routes/products'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as ProjectGuidesRouteImport } from './routes/project-guides'
 import { Route as ProjectsRouteImport } from './routes/projects'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as ServicesRouteImport } from './routes/services'
 import { Route as SubPortalRouteImport } from './routes/sub-portal'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
@@ -258,6 +259,11 @@ const ProjectGuidesRoute = ProjectGuidesRouteImport.update({
 const ProjectsRoute = ProjectsRouteImport.update({
   id: '/projects',
   path: '/projects',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ServicesRoute = ServicesRouteImport.update({
@@ -770,6 +776,7 @@ export interface FileRoutesByFullPath {
   '/profile': typeof ProfileRoute
   '/project-guides': typeof ProjectGuidesRoute
   '/projects': typeof ProjectsRouteWithChildren
+  '/reset-password': typeof ResetPasswordRoute
   '/services': typeof ServicesRoute
   '/sub-portal': typeof SubPortalRouteWithChildren
   '/admin/access-requests': typeof AdminAccessRequestsRoute
@@ -890,6 +897,7 @@ export interface FileRoutesByTo {
   '/profile': typeof ProfileRoute
   '/project-guides': typeof ProjectGuidesRoute
   '/projects': typeof ProjectsRouteWithChildren
+  '/reset-password': typeof ResetPasswordRoute
   '/services': typeof ServicesRoute
   '/sub-portal': typeof SubPortalRouteWithChildren
   '/admin/access-requests': typeof AdminAccessRequestsRoute
@@ -1011,6 +1019,7 @@ export interface FileRoutesById {
   '/profile': typeof ProfileRoute
   '/project-guides': typeof ProjectGuidesRoute
   '/projects': typeof ProjectsRouteWithChildren
+  '/reset-password': typeof ResetPasswordRoute
   '/services': typeof ServicesRoute
   '/sub-portal': typeof SubPortalRouteWithChildren
   '/admin/access-requests': typeof AdminAccessRequestsRoute
@@ -1135,6 +1144,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/project-guides'
     | '/projects'
+    | '/reset-password'
     | '/services'
     | '/sub-portal'
     | '/admin/access-requests'
@@ -1255,6 +1265,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/project-guides'
     | '/projects'
+    | '/reset-password'
     | '/services'
     | '/sub-portal'
     | '/admin/access-requests'
@@ -1375,6 +1386,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/project-guides'
     | '/projects'
+    | '/reset-password'
     | '/services'
     | '/sub-portal'
     | '/admin/access-requests'
@@ -1498,6 +1510,7 @@ export interface RootRouteChildren {
   ProfileRoute: typeof ProfileRoute
   ProjectGuidesRoute: typeof ProjectGuidesRoute
   ProjectsRoute: typeof ProjectsRouteWithChildren
+  ResetPasswordRoute: typeof ResetPasswordRoute
   ServicesRoute: typeof ServicesRoute
   SubPortalRoute: typeof SubPortalRouteWithChildren
   AdminAccessRequestsRoute: typeof AdminAccessRequestsRoute
@@ -1726,6 +1739,13 @@ declare module '@tanstack/react-router' {
       path: '/projects'
       fullPath: '/projects'
       preLoaderRoute: typeof ProjectsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/services': {
@@ -2601,6 +2621,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProfileRoute: ProfileRoute,
   ProjectGuidesRoute: ProjectGuidesRoute,
   ProjectsRoute: ProjectsRouteWithChildren,
+  ResetPasswordRoute: ResetPasswordRoute,
   ServicesRoute: ServicesRoute,
   SubPortalRoute: SubPortalRouteWithChildren,
   AdminAccessRequestsRoute: AdminAccessRequestsRoute,
@@ -2649,13 +2670,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
