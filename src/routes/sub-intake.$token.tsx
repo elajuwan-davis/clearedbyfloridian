@@ -189,7 +189,8 @@ function SubIntakeTokenPage() {
               </p>
             </div>
 
-            <form onSubmit={submit} className="mt-6 space-y-5 bg-white border border-obsidian/10 rounded-[3px] p-6 sm:p-8">
+            {/* noValidate: the styled list reports every missing field at once. */}
+            <form noValidate onSubmit={submit} className="mt-6 space-y-5 bg-white border border-obsidian/10 rounded-[3px] p-6 sm:p-8">
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="sm:col-span-2">
                   <label className={labelCls}>Company Name *</label>

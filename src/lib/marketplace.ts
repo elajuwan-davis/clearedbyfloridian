@@ -108,13 +108,19 @@ export async function listMarketplaceRoster(): Promise<MarketplaceSub[]> {
 
 /** Count only — safe to show a tenant that has not paid. */
 export async function marketplaceRosterCount(trade?: string | null): Promise<number> {
-  const rpc = supabase.rpc as unknown as (
+  // Called as a method: the client is a proxy and loses its binding if `rpc`
+  // is pulled off it first.
+  const call = supabase.rpc.bind(supabase) as unknown as (
     fn: string,
     args: Record<string, unknown>,
   ) => PromiseLike<PgResult<number>>;
-  const { data, error } = await rpc("marketplace_roster_count", { _trade: trade ?? null });
-  if (error) return 0;
-  return typeof data === "number" ? data : 0;
+  try {
+    const { data, error } = await call("marketplace_roster_count", { _trade: trade ?? null });
+    if (error) return 0;
+    return typeof data === "number" ? data : 0;
+  } catch {
+    return 0;
+  }
 }
 
 /** Staff-only: list / unlist one of Cleard's subs on the marketplace. */

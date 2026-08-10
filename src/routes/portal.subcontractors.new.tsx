@@ -285,7 +285,9 @@ function NewSubcontractorPage() {
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="mt-6 space-y-6 bg-white border border-obsidian/10 rounded-[3px] p-6 sm:p-8">
+      {/* noValidate: the styled list below reports every missing field at once,
+          rather than the browser's one-at-a-time tooltip. */}
+      <form noValidate onSubmit={handleSubmit} className="mt-6 space-y-6 bg-white border border-obsidian/10 rounded-[3px] p-6 sm:p-8">
         <div className="grid gap-5 sm:grid-cols-2">
           <div>
             <label className={labelCls}>Trade</label>
