@@ -196,7 +196,18 @@ function LoginPage() {
             </p>
           </div>
 
+          {typeof window !== "undefined" &&
+            new URLSearchParams(window.location.search).has("reset") && (
+              <div
+                className="text-sm px-4 py-3 border mb-5 leading-relaxed"
+                style={{ borderColor: "var(--border)", borderRadius: "3px" }}
+              >
+                Password updated. Sign in with your new password.
+              </div>
+            )}
+
           <form onSubmit={handleSubmit} className="space-y-5">
+
             <div className="space-y-1.5">
               <Label htmlFor="email" className="font-subline text-[11px] tracking-[0.15em] uppercase text-muted-foreground">
                 Email
