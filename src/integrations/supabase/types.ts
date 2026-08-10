@@ -297,6 +297,13 @@ export type Database = {
             foreignKeyName: "coi_records_subcontractor_id_fkey"
             columns: ["subcontractor_id"]
             isOneToOne: false
+            referencedRelation: "marketplace_roster"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "coi_records_subcontractor_id_fkey"
+            columns: ["subcontractor_id"]
+            isOneToOne: false
             referencedRelation: "subcontractors"
             referencedColumns: ["id"]
           },
@@ -1745,6 +1752,13 @@ export type Database = {
             foreignKeyName: "insurance_requests_subcontractor_id_fkey"
             columns: ["subcontractor_id"]
             isOneToOne: false
+            referencedRelation: "marketplace_roster"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "insurance_requests_subcontractor_id_fkey"
+            columns: ["subcontractor_id"]
+            isOneToOne: false
             referencedRelation: "subcontractors"
             referencedColumns: ["id"]
           },
@@ -1963,6 +1977,56 @@ export type Database = {
             columns: ["permit_id"]
             isOneToOne: false
             referencedRelation: "permits"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      marketplace_access: {
+        Row: {
+          amount_cents: number | null
+          created_at: string
+          created_by: string | null
+          environment: string | null
+          id: string
+          status: string
+          stripe_checkout_session_id: string | null
+          stripe_payment_intent_id: string | null
+          tenant_id: string
+          unlocked_at: string | null
+          updated_at: string
+        }
+        Insert: {
+          amount_cents?: number | null
+          created_at?: string
+          created_by?: string | null
+          environment?: string | null
+          id?: string
+          status?: string
+          stripe_checkout_session_id?: string | null
+          stripe_payment_intent_id?: string | null
+          tenant_id: string
+          unlocked_at?: string | null
+          updated_at?: string
+        }
+        Update: {
+          amount_cents?: number | null
+          created_at?: string
+          created_by?: string | null
+          environment?: string | null
+          id?: string
+          status?: string
+          stripe_checkout_session_id?: string | null
+          stripe_payment_intent_id?: string | null
+          tenant_id?: string
+          unlocked_at?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "marketplace_access_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: true
+            referencedRelation: "tenants"
             referencedColumns: ["id"]
           },
         ]
@@ -3583,6 +3647,7 @@ export type Database = {
           license_number: string | null
           license_status: string | null
           license_type: string | null
+          marketplace_listed: boolean
           phone: string | null
           qualifier_name: string | null
           status: string
@@ -3628,6 +3693,7 @@ export type Database = {
           license_number?: string | null
           license_status?: string | null
           license_type?: string | null
+          marketplace_listed?: boolean
           phone?: string | null
           qualifier_name?: string | null
           status?: string
@@ -3673,6 +3739,7 @@ export type Database = {
           license_number?: string | null
           license_status?: string | null
           license_type?: string | null
+          marketplace_listed?: boolean
           phone?: string | null
           qualifier_name?: string | null
           status?: string
@@ -4407,6 +4474,60 @@ export type Database = {
         }
         Relationships: []
       }
+      marketplace_roster: {
+        Row: {
+          coi_expiration: string | null
+          company_address: string | null
+          company_name: string | null
+          email: string | null
+          has_coi: boolean | null
+          has_license: boolean | null
+          has_w9: boolean | null
+          id: string | null
+          insurance_carrier_name: string | null
+          license_expiration: string | null
+          license_number: string | null
+          phone: string | null
+          qualifier_name: string | null
+          status: string | null
+          trade: string | null
+        }
+        Insert: {
+          coi_expiration?: string | null
+          company_address?: string | null
+          company_name?: string | null
+          email?: string | null
+          has_coi?: never
+          has_license?: never
+          has_w9?: never
+          id?: string | null
+          insurance_carrier_name?: string | null
+          license_expiration?: string | null
+          license_number?: string | null
+          phone?: string | null
+          qualifier_name?: string | null
+          status?: string | null
+          trade?: string | null
+        }
+        Update: {
+          coi_expiration?: string | null
+          company_address?: string | null
+          company_name?: string | null
+          email?: string | null
+          has_coi?: never
+          has_license?: never
+          has_w9?: never
+          id?: string | null
+          insurance_carrier_name?: string | null
+          license_expiration?: string | null
+          license_number?: string | null
+          phone?: string | null
+          qualifier_name?: string | null
+          status?: string | null
+          trade?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       apply_permit_status_check: {
@@ -4621,6 +4742,7 @@ export type Database = {
           submitted_date: string
         }[]
       }
+      has_marketplace_access: { Args: never; Returns: boolean }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -4652,6 +4774,7 @@ export type Database = {
       }
       is_admin: { Args: never; Returns: boolean }
       map_portal_status: { Args: { _raw: string }; Returns: string }
+      marketplace_roster_count: { Args: { _trade?: string }; Returns: number }
       move_to_dlq: {
         Args: {
           dlq_name: string
