@@ -136,13 +136,14 @@ function RootShell({ children }: { children: ReactNode }) {
               "try{var t=localStorage.getItem('cleard-theme');document.documentElement.classList.toggle('dark',t!=='light')}catch(e){document.documentElement.classList.add('dark')}",
           }}
         />
-        {/* Supabase recovery links may land on the site root; forward them to the reset page. */}
+        {/* Supabase recovery links may land on the site root; forward them to the reset form. */}
         <script
           dangerouslySetInnerHTML={{
             __html:
-              "try{var h=location.hash||'';if(h.indexOf('type=recovery')>-1&&location.pathname!=='/reset-password'){location.replace('/reset-password'+location.search+h)}}catch(e){}",
+              "try{var h=location.hash||'';var s=location.search||'';var isRec=h.indexOf('type=recovery')>-1||s.indexOf('type=recovery')>-1;if(isRec&&location.pathname!=='/reset-password-confirm'){location.replace('/reset-password-confirm'+s+h)}}catch(e){}",
           }}
         />
+
 
       </head>
       <body>
