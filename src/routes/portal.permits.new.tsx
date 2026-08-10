@@ -12,6 +12,8 @@ import {
   Trash2,
   Sparkles,
   MapPin,
+  Store,
+  ShieldAlert,
 } from "lucide-react";
 import { toast } from "sonner";
 import { CloudUploadButtons } from "@/components/cloud-upload-buttons";
@@ -47,6 +49,21 @@ import { MunicipalityReadinessPanel } from "@/components/municipality-readiness-
 import type { SubmittalDocSnapshot } from "@/lib/submittal-package";
 import type { GcDocKey } from "@/lib/gc-compliance";
 import { draftScope, type ScopeDraft } from "@/lib/scope-draft";
+import {
+  CLEARD_CONTRACTOR_BLANKS,
+  CLEARD_CONTRACTOR_DEFAULTS,
+  isPlaceholderValue,
+} from "@/lib/contractor-defaults";
+import {
+  coverageGaps,
+  listMarketplaceRoster,
+  marketplaceRosterCount,
+  marketplaceUnlocked,
+  type CoverageGap,
+  type MarketplaceSub,
+} from "@/lib/marketplace";
+import { createSubUpdateRequest } from "@/lib/insurance-requests-api";
+import { useSession } from "@/lib/use-session";
 
 export const Route = createFileRoute("/portal/permits/new")({
   validateSearch: (search: Record<string, unknown>): { edit?: string } =>
@@ -101,6 +118,8 @@ type SubIntake = {
   contactEmail: string;
   /** GC clicked "Skip for now" on this specific trade row. */
   skipped: boolean;
+  /** Set when the row was filled from Cleard's paid marketplace roster. */
+  marketplaceSubId: string | null;
 };
 
 const emptySub = (scope: string): SubIntake => ({
@@ -111,10 +130,25 @@ const emptySub = (scope: string): SubIntake => ({
   contactName: "",
   contactEmail: "",
   skipped: false,
+  marketplaceSubId: null,
 });
+
+/** A row the GC has started filling in must be finished, or explicitly skipped. */
+function subRowMissingFields(s: SubIntake): string[] {
+  const touched =
+    s.companyName.trim() || s.licenseNumber.trim() || s.contactName.trim() || s.contactEmail.trim();
+  if (s.skipped || !touched) return [];
+  const missing: string[] = [];
+  if (!s.companyName.trim()) missing.push("Company Name");
+  if (!s.licenseNumber.trim()) missing.push("License #");
+  if (!s.contactName.trim()) missing.push("Contact Name");
+  if (!s.contactEmail.trim()) missing.push("Contact Email");
+  return missing;
+}
 
 function NewPermitPage() {
   const navigate = useNavigate();
+  const session = useSession();
   const { edit: editId } = Route.useSearch();
   const isEditing = !!editId;
   const [savedSubs, setSavedSubs] = useState<SubRow[]>([]);
@@ -134,6 +168,12 @@ function NewPermitPage() {
   const [initialSubmittalKeys, setInitialSubmittalKeys] = useState<GcDocKey[] | undefined>(
     undefined,
   );
+  const [rosterUnlocked, setRosterUnlocked] = useState(false);
+  const [roster, setRoster] = useState<MarketplaceSub[]>([]);
+  const [rosterCount, setRosterCount] = useState(0);
+  const [pickerScope, setPickerScope] = useState<string | null>(null);
+  const [coverageAsked, setCoverageAsked] = useState<string[]>([]);
+  const [showErrors, setShowErrors] = useState(false);
   const [form, setForm] = useState({
     step: 1 as 1 | 2,
     projectName: "",
@@ -153,12 +193,10 @@ function NewPermitPage() {
     engineerLicense: "",
     engineerEmail: "",
     contractorCompany: "",
-    contractorQualifier: "",
-    companyAddress: "",
-    poc: "José Maceda Gutiérrez",
-    pocPhone: "(551) 830-6606",
-    pocEmail: "info@cleard.com",
-    licenseNumber: "",
+    ...CLEARD_CONTRACTOR_DEFAULTS,
+    /** Checked = GC supplies its own qualifier instead of Cleard's defaults. */
+    differentQualifier: false,
+    municipalityRegistered: "" as "" | "yes" | "no",
     ownerName: "",
     ownerEntity: "",
     signerPhone: "",
@@ -176,6 +214,17 @@ function NewPermitPage() {
   useEffect(() => {
     listDesignPros()
       .then(setSavedPros)
+      .catch(() => {});
+  }, []);
+  useEffect(() => {
+    marketplaceRosterCount()
+      .then(setRosterCount)
+      .catch(() => {});
+    marketplaceUnlocked()
+      .then(async (unlocked) => {
+        setRosterUnlocked(unlocked);
+        if (unlocked) setRoster(await listMarketplaceRoster());
+      })
       .catch(() => {});
   }, []);
 
@@ -215,6 +264,8 @@ function NewPermitPage() {
             contactName: match.qualifierName ?? "",
             contactEmail: match.contactEmail ?? "",
             skipped: false,
+            marketplaceSubId:
+              (match as { marketplaceSubId?: string | null }).marketplaceSubId ?? null,
           };
         });
         setForm((f) => ({
@@ -244,6 +295,13 @@ function NewPermitPage() {
           pocPhone: r.poc_phone ?? f.pocPhone,
           pocEmail: r.poc_email ?? f.pocEmail,
           licenseNumber: r.license_number ?? "",
+          differentQualifier: Boolean(ip.different_qualifier),
+          municipalityRegistered:
+            ip.municipality_registered === true
+              ? "yes"
+              : ip.municipality_registered === false
+                ? "no"
+                : "",
           ownerName: r.owner_name ?? "",
           ownerEntity: r.owner_entity ?? "",
           signerPhone: r.signer_phone ?? "",
@@ -272,6 +330,16 @@ function NewPermitPage() {
   }
   function updateDoc(key: string, patch: Partial<DocState>) {
     setForm((f) => ({ ...f, docs: { ...f.docs, [key]: { ...f.docs[key], ...patch } } }));
+  }
+
+  /** Cleard's contractor block is a default, not a lock: this clears it so the
+   *  GC can enter its own qualifier, and restores it when unchecked. */
+  function toggleDifferentQualifier(on: boolean) {
+    setForm((f) => ({
+      ...f,
+      differentQualifier: on,
+      ...(on ? CLEARD_CONTRACTOR_BLANKS : CLEARD_CONTRACTOR_DEFAULTS),
+    }));
   }
 
   /** On-demand scope draft — same edge function the green-transition trigger calls. */
@@ -342,6 +410,56 @@ function NewPermitPage() {
     }));
   }
 
+  /** Insurance/licensing this project needs a sub to carry. */
+  const insuranceRequirements = useMemo(
+    () => ({ coverageNeededThrough: form.submittedDate || null, w9Required: true }),
+    [form.submittedDate],
+  );
+
+  /** Fill a trade row from Cleard's paid roster. */
+  function pickMarketplaceSub(scope: string, sub: MarketplaceSub) {
+    updateSubByScope(scope, {
+      companyName: sub.company_name,
+      licenseNumber: sub.license_number ?? "",
+      contactName: sub.qualifier_name ?? "",
+      contactEmail: sub.email ?? "",
+      marketplaceSubId: sub.id,
+      skipped: false,
+    });
+    setPickerScope(null);
+  }
+
+  function gapsForRow(s: SubIntake): CoverageGap[] {
+    if (!s.marketplaceSubId) return [];
+    const sub = roster.find((r) => r.id === s.marketplaceSubId);
+    if (!sub) return [];
+    return coverageGaps(sub, insuranceRequirements);
+  }
+
+  /** Disclosure follow-up: ask the sub to raise its cover for this project. */
+  async function askForCoverageUpgrade(s: SubIntake, gaps: CoverageGap[]) {
+    const tenantId = session.effectiveTenantId;
+    if (!tenantId || !s.marketplaceSubId) {
+      toast.error("Could not identify your workspace — try again after the page finishes loading.");
+      return;
+    }
+    try {
+      await createSubUpdateRequest({
+        tenantId,
+        subcontractorId: s.marketplaceSubId,
+        details: `Coverage upgrade requested for ${form.projectName || "an upcoming project"}${
+          form.address ? ` at ${form.address}` : ""
+        }. ${s.companyName} does not currently meet this project's requirements: ${gaps
+          .map((g) => g.message)
+          .join("; ")}.`,
+      });
+      setCoverageAsked((prev) => [...prev, s.scope]);
+      toast.success(`Cleard will ask ${s.companyName} to upgrade coverage`);
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Could not send the request");
+    }
+  }
+
   /** Called when the address lookup resolves an address (Google or Census).
    *  Municipality detection lives in @/lib/address-lookup so the provider can
    *  be swapped without touching this form. Incorporated cities resolve to the
@@ -398,6 +516,46 @@ function NewPermitPage() {
   );
 
   const filledSubs = form.subs.filter((s) => s.companyName.trim());
+
+  /** Every required field, checked in one place — nothing is written until
+   *  this comes back empty. Step is carried so the form can jump back to it. */
+  function missingRequired(): { label: string; step: 1 | 2 }[] {
+    const out: { label: string; step: 1 | 2 }[] = [];
+    const need = (ok: boolean, label: string, step: 1 | 2) => {
+      if (!ok) out.push({ label, step });
+    };
+    const email = (v: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim());
+
+    need(!!form.projectName.trim(), "Project Name", 1);
+    need(!!form.address.trim(), "Property Address", 1);
+    need(!!form.municipality.trim(), "Municipality / City", 1);
+    need(Number(form.totalProjectValue) > 0, "Total Project Value", 1);
+    need(form.scopes.length > 0, "Scope of Work", 1);
+    need(!!form.municipalityRegistered, "Registered with this municipality?", 1);
+
+    for (const s of form.subs) {
+      for (const f of subRowMissingFields(s)) out.push({ label: `${s.trade} — ${f}`, step: 1 });
+      if (!s.skipped && s.contactEmail.trim() && !email(s.contactEmail))
+        out.push({ label: `${s.trade} — Contact Email is not a valid email`, step: 1 });
+    }
+
+    need(!!form.contractorCompany.trim(), "Contractor Company Name", 2);
+    need(!!form.contractorQualifier.trim(), "Contractor Qualifier Name", 2);
+    need(!!form.companyAddress.trim(), "Company Address", 2);
+    need(!!form.poc.trim(), "Point of Contact", 2);
+    need(!!form.pocPhone.trim(), "POC Phone", 2);
+    need(email(form.pocEmail), "POC Email", 2);
+    need(!!form.licenseNumber.trim(), "License Number", 2);
+    if (form.signerEmail.trim() && !email(form.signerEmail))
+      out.push({ label: "Signer Email is not a valid email", step: 2 });
+
+    return out;
+  }
+
+  const missingNow = missingRequired();
+  const missingLabels = new Set(missingNow.map((m) => m.label));
+  const invalidCls = (label: string) =>
+    showErrors && missingLabels.has(label) ? " border-red-500 bg-red-50/40" : "";
   const wantBundle = filledSubs.length >= 2;
 
   // True once this permit exists AND has an auto-generated NOC on file.
@@ -486,8 +644,15 @@ function NewPermitPage() {
   }
 
   async function submit() {
-    if (!form.projectName.trim() || !form.address.trim()) {
-      toast.error("Project name and address are required");
+    const missing = missingRequired();
+    if (missing.length) {
+      setShowErrors(true);
+      update("step", missing[0].step);
+      toast.error(
+        `${missing.length} required field${missing.length > 1 ? "s" : ""} still empty: ${missing
+          .map((m) => m.label)
+          .join(", ")}`,
+      );
       return;
     }
 
@@ -553,6 +718,7 @@ function NewPermitPage() {
           accessToken: prior?.accessToken ?? crypto.randomUUID(),
           confirmed: prior?.confirmed ?? false,
           confirmedAt: prior?.confirmedAt,
+          ...(s.marketplaceSubId ? { marketplaceSubId: s.marketplaceSubId } : {}),
         };
       });
 
@@ -572,6 +738,8 @@ function NewPermitPage() {
           email: form.engineerEmail || "",
         },
       };
+      intake_payload.municipality_registered = form.municipalityRegistered === "yes";
+      intake_payload.different_qualifier = form.differentQualifier;
       if (wantBundle) intake_payload.bundle = bundleFromSubs(subs);
       if (isEditing) intake_payload.last_edited_at = new Date().toISOString();
       if (dispatch) {
@@ -706,7 +874,7 @@ function NewPermitPage() {
                 <label className={labelCls}>Project Name *</label>
                 <input
                   required
-                  className={inputCls}
+                  className={inputCls + invalidCls("Project Name")}
                   value={form.projectName}
                   onChange={(e) => update("projectName", e.target.value)}
                 />
@@ -715,7 +883,7 @@ function NewPermitPage() {
                 <label className={labelCls}>Property Address *</label>
                 <AddressLookupField
                   required
-                  className={inputCls}
+                  className={inputCls + invalidCls("Property Address")}
                   value={form.address}
                   onChange={(v) => update("address", v)}
                   onResolved={(r) => handleAddressResolved(r)}
@@ -741,6 +909,35 @@ function NewPermitPage() {
                   placeholder="Type to search or enter freeform…"
                   allowFreeform
                 />
+                {showErrors && missingLabels.has("Municipality / City") && (
+                  <p className="mt-1 text-[11px] text-red-600">Municipality is required.</p>
+                )}
+              </div>
+
+              {/* Registration status with the municipality — captured only, no workflow yet. */}
+              <div className="sm:col-span-2">
+                <label className={labelCls}>
+                  Are you currently registered with this municipality? *
+                </label>
+                <div className="flex items-center gap-2">
+                  {(["yes", "no"] as const).map((v) => (
+                    <button
+                      key={v}
+                      type="button"
+                      onClick={() => update("municipalityRegistered", v)}
+                      className={`px-4 py-1.5 rounded-[3px] text-[12px] border transition-colors ${
+                        form.municipalityRegistered === v
+                          ? "bg-obsidian text-white border-obsidian"
+                          : "bg-white text-obsidian/70 border-obsidian/20 hover:border-obsidian/40"
+                      }`}
+                    >
+                      {v === "yes" ? "Yes" : "No"}
+                    </button>
+                  ))}
+                </div>
+                {showErrors && missingLabels.has("Registered with this municipality?") && (
+                  <p className="mt-1 text-[11px] text-red-600">Please answer Yes or No.</p>
+                )}
               </div>
             </div>
 
@@ -771,7 +968,9 @@ function NewPermitPage() {
                 value={form.totalProjectValue}
                 onChange={(e) => update("totalProjectValue", e.target.value)}
                 placeholder="e.g. 1250000"
-                className="w-full h-11 px-3 rounded-[3px] border border-obsidian/20 bg-white text-sm focus:outline-none focus:border-obsidian"
+                className={`w-full h-11 px-3 rounded-[3px] border border-obsidian/20 bg-white text-sm focus:outline-none focus:border-obsidian${invalidCls(
+                  "Total Project Value",
+                )}`}
               />
               {(() => {
                 const v = Number(form.totalProjectValue || 0);
@@ -869,13 +1068,80 @@ function NewPermitPage() {
                 </div>
               )}
 
+              {/* Scope Narrative — the written description of the work itself.
+                  Distinct from the per-trade sub capture below. */}
+              <div className="pt-4 border-t border-obsidian/10">
+                <div className="flex items-end justify-between gap-3">
+                  <div>
+                    <label className={labelCls}>Scope Narrative</label>
+                    <p className="-mt-1 mb-1.5 text-[12px] text-obsidian/60">
+                      Describe the work itself. This is not where subcontractors go.
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    disabled={scopeDrafting || form.description.trim().length < 12}
+                    onClick={runScopeDraft}
+                    className="mb-1.5 inline-flex items-center gap-1.5 rounded-[3px] border border-obsidian/20 px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/70 transition hover:border-obsidian/40 hover:text-obsidian disabled:opacity-40"
+                  >
+                    <Sparkles className="h-3 w-3" />
+                    {scopeDrafting ? "Drafting…" : "Draft formal scope"}
+                  </button>
+                </div>
+                <textarea
+                  rows={3}
+                  className={inputCls}
+                  value={form.description}
+                  onChange={(e) => update("description", e.target.value)}
+                  placeholder="Describe the work in more detail…"
+                />
+                {scopeDraft && (
+                  <div className="mt-3 space-y-3 rounded-[3px] border border-obsidian/12 bg-obsidian/[0.02] p-4">
+                    <div>
+                      <div className="font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/55">
+                        Application scope (concise)
+                      </div>
+                      <p className="mt-1 text-[13px] leading-relaxed text-obsidian">
+                        {scopeDraft.concise}
+                      </p>
+                    </div>
+                    <div>
+                      <div className="font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/55">
+                        Detailed scope
+                      </div>
+                      <p className="mt-1 whitespace-pre-line text-[13px] leading-relaxed text-obsidian/80">
+                        {scopeDraft.detailed}
+                      </p>
+                    </div>
+                    {scopeDraft.code_sections.length > 0 && (
+                      <div className="font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/55">
+                        Cited: {scopeDraft.code_sections.join(" · ")}
+                      </div>
+                    )}
+                    {scopeDraft.missing_information.length > 0 && (
+                      <div className="border-l-2 border-amber-600/40 bg-amber-50 px-3 py-2 text-[12px] text-amber-900">
+                        Still needed: {scopeDraft.missing_information.join("; ")}
+                      </div>
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => update("description", scopeDraft.detailed)}
+                      className="rounded-[3px] bg-[#153157] px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-white"
+                    >
+                      Use detailed scope
+                    </button>
+                  </div>
+                )}
+              </div>
+
               {/* Inline subcontractor row per selected scope */}
               {form.scopes.length > 0 && (
-                <div className="pt-4 space-y-4">
+                <div className="pt-4 space-y-4 border-t border-obsidian/10">
                   <div className={sectionCls}>Subcontractor per Trade</div>
                   <p className="text-[12px] text-obsidian/60 -mt-2">
-                    One sub per selected scope. Skip any row you'll fill in later — the trade stays
-                    on the permit.
+                    Who is doing each trade — company, licence and contact. The{" "}
+                    <strong>Other</strong> row is for a subcontractor whose trade isn't in the list
+                    above; it is not where you describe the work (that's Scope Narrative).
                   </p>
                   {form.subs.map((s) => {
                     const idx = form.subs.findIndex((x) => x.scope === s.scope);
@@ -930,14 +1196,61 @@ function NewPermitPage() {
                                 </span>
                               )}
                             </div>
-                            <button
-                              type="button"
-                              onClick={() => toggleSubSkip(s.scope)}
-                              className="font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/55 hover:text-obsidian underline underline-offset-2"
-                            >
-                              {s.skipped ? "Add sub info" : "Skip for now"}
-                            </button>
+                            <div className="flex items-center gap-3">
+                              {rosterUnlocked && !s.skipped && (
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    setPickerScope(pickerScope === s.scope ? null : s.scope)
+                                  }
+                                  className="inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-[#153157] hover:text-obsidian underline underline-offset-2"
+                                >
+                                  <Store className="h-3 w-3" />
+                                  {s.marketplaceSubId
+                                    ? "Change marketplace sub"
+                                    : "Use a Cleard sub"}
+                                </button>
+                              )}
+                              <button
+                                type="button"
+                                onClick={() => toggleSubSkip(s.scope)}
+                                className="font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/55 hover:text-obsidian underline underline-offset-2"
+                              >
+                                {s.skipped ? "Add sub info" : "Skip for now"}
+                              </button>
+                            </div>
                           </div>
+
+                          {pickerScope === s.scope && (
+                            <div className="border border-[#153157]/30 rounded-[3px] divide-y divide-obsidian/10">
+                              {roster.length === 0 ? (
+                                <div className="px-3 py-3 text-[12px] text-obsidian/60">
+                                  No subs listed on the marketplace yet.
+                                </div>
+                              ) : (
+                                roster.map((m) => (
+                                  <button
+                                    key={m.id}
+                                    type="button"
+                                    onClick={() => pickMarketplaceSub(s.scope, m)}
+                                    className="flex w-full items-center justify-between gap-3 px-3 py-2 text-left hover:bg-obsidian/[0.03]"
+                                  >
+                                    <span className="text-[13px] text-obsidian">
+                                      {m.company_name}
+                                      <span className="ml-2 text-[11px] text-obsidian/55">
+                                        {m.trade ?? "—"}
+                                      </span>
+                                    </span>
+                                    <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-obsidian/45">
+                                      {coverageGaps(m, insuranceRequirements).length
+                                        ? "Coverage gaps"
+                                        : "Meets requirements"}
+                                    </span>
+                                  </button>
+                                ))
+                              )}
+                            </div>
+                          )}
                           {!s.skipped && (
                             <div className="grid gap-3 sm:grid-cols-2">
                               <div>
@@ -983,6 +1296,74 @@ function NewPermitPage() {
                               </div>
                             </div>
                           )}
+
+                          {!s.skipped &&
+                            s.marketplaceSubId &&
+                            (() => {
+                              const gaps = gapsForRow(s);
+                              if (!gaps.length) return null;
+                              return (
+                                <div className="flex items-start gap-3 border border-amber-300 bg-amber-50 rounded-[3px] px-4 py-3">
+                                  <ShieldAlert className="mt-0.5 h-4 w-4 shrink-0 text-amber-700" />
+                                  <div className="flex-1 text-[13px] text-amber-900">
+                                    <div className="font-medium">
+                                      This subcontractor may not meet all your insurance
+                                      requirements
+                                    </div>
+                                    <ul className="mt-1 list-disc pl-4 text-[12px] text-amber-900/85">
+                                      {gaps.map((g) => (
+                                        <li key={g.field + g.message}>{g.message}</li>
+                                      ))}
+                                    </ul>
+                                    <div className="mt-2 text-[12px] text-amber-900/70">
+                                      You can still proceed with this sub.
+                                    </div>
+                                  </div>
+                                  <button
+                                    type="button"
+                                    disabled={coverageAsked.includes(s.scope)}
+                                    onClick={() => askForCoverageUpgrade(s, gaps)}
+                                    className="shrink-0 rounded-[3px] bg-amber-700 px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-white disabled:opacity-50"
+                                  >
+                                    {coverageAsked.includes(s.scope)
+                                      ? "Request sent"
+                                      : "Ask to upgrade coverage"}
+                                  </button>
+                                </div>
+                              );
+                            })()}
+
+                          {!s.skipped && !s.marketplaceSubId && s.companyName.trim() && (
+                            <div className="flex items-start gap-3 border border-[#153157]/25 bg-[#B6DAEA]/15 rounded-[3px] px-4 py-3">
+                              <Store className="mt-0.5 h-4 w-4 shrink-0 text-[#153157]" />
+                              <div className="flex-1 text-[13px] text-obsidian/85">
+                                <div className="text-obsidian font-medium">
+                                  Cleard has {rosterCount} other qualified contractor
+                                  {rosterCount === 1 ? "" : "s"} that meet your requirements — want
+                                  a bid?
+                                </div>
+                                <div className="mt-0.5 text-[12px] text-obsidian/60">
+                                  {rosterUnlocked
+                                    ? "Compare against your own sub before you commit."
+                                    : "Unlock the Cleard marketplace to see them."}
+                                </div>
+                              </div>
+                              <div className="flex shrink-0 flex-col gap-1.5">
+                                <Link
+                                  to="/portal/bid-review"
+                                  className="inline-flex items-center justify-center bg-obsidian px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-paper hover:bg-obsidian/90 rounded-[3px]"
+                                >
+                                  Request a bid
+                                </Link>
+                                <Link
+                                  to="/portal/subcontractors"
+                                  className="text-center font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/55 hover:text-obsidian"
+                                >
+                                  {rosterUnlocked ? "Browse roster" : "See marketplace"}
+                                </Link>
+                              </div>
+                            </div>
+                          )}
                         </div>
                       </div>
                     );
@@ -999,65 +1380,6 @@ function NewPermitPage() {
                       )}
                     </div>
                   )}
-                </div>
-              )}
-            </div>
-
-            <div>
-              <div className="flex items-end justify-between gap-3">
-                <label className={labelCls}>Scope Narrative</label>
-                <button
-                  type="button"
-                  disabled={scopeDrafting || form.description.trim().length < 12}
-                  onClick={runScopeDraft}
-                  className="mb-1.5 inline-flex items-center gap-1.5 rounded-[3px] border border-obsidian/20 px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/70 transition hover:border-obsidian/40 hover:text-obsidian disabled:opacity-40"
-                >
-                  <Sparkles className="h-3 w-3" />
-                  {scopeDrafting ? "Drafting…" : "Draft formal scope"}
-                </button>
-              </div>
-              <textarea
-                rows={3}
-                className={inputCls}
-                value={form.description}
-                onChange={(e) => update("description", e.target.value)}
-                placeholder="Describe the work in more detail…"
-              />
-              {scopeDraft && (
-                <div className="mt-3 space-y-3 rounded-[3px] border border-obsidian/12 bg-obsidian/[0.02] p-4">
-                  <div>
-                    <div className="font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/55">
-                      Application scope (concise)
-                    </div>
-                    <p className="mt-1 text-[13px] leading-relaxed text-obsidian">
-                      {scopeDraft.concise}
-                    </p>
-                  </div>
-                  <div>
-                    <div className="font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/55">
-                      Detailed scope
-                    </div>
-                    <p className="mt-1 whitespace-pre-line text-[13px] leading-relaxed text-obsidian/80">
-                      {scopeDraft.detailed}
-                    </p>
-                  </div>
-                  {scopeDraft.code_sections.length > 0 && (
-                    <div className="font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/55">
-                      Cited: {scopeDraft.code_sections.join(" · ")}
-                    </div>
-                  )}
-                  {scopeDraft.missing_information.length > 0 && (
-                    <div className="border-l-2 border-amber-600/40 bg-amber-50 px-3 py-2 text-[12px] text-amber-900">
-                      Still needed: {scopeDraft.missing_information.join("; ")}
-                    </div>
-                  )}
-                  <button
-                    type="button"
-                    onClick={() => update("description", scopeDraft.detailed)}
-                    className="rounded-[3px] bg-[#153157] px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-white"
-                  >
-                    Use detailed scope
-                  </button>
                 </div>
               )}
             </div>
@@ -1152,38 +1474,60 @@ function NewPermitPage() {
           <div className="mt-6 space-y-8">
             <div className="bg-white border border-obsidian/10 rounded-[3px] p-6 sm:p-8 space-y-5">
               <div className={sectionCls}>Contractor Information</div>
+              <p className="-mt-3 text-[12px] text-obsidian/60">
+                Pre-filled with Cleard's details. Every field is editable.
+              </p>
               <div className="grid gap-5 sm:grid-cols-2">
                 <div>
                   <label className={labelCls}>Contractor Company Name *</label>
                   <input
                     required
-                    className={inputCls}
+                    className={inputCls + invalidCls("Contractor Company Name")}
                     value={form.contractorCompany}
                     onChange={(e) => update("contractorCompany", e.target.value)}
                   />
+                  <label className="mt-2 flex items-center gap-2 text-[12px] text-obsidian/70">
+                    <input
+                      type="checkbox"
+                      checked={form.differentQualifier}
+                      onChange={(e) => toggleDifferentQualifier(e.target.checked)}
+                    />
+                    Using a different qualifier?
+                  </label>
+                  <p className="mt-1 text-[11px] text-obsidian/45">
+                    {form.differentQualifier
+                      ? "Cleard's defaults cleared — enter the qualifier's own details."
+                      : "Unchecked: Cleard's qualifier details are used."}
+                  </p>
                 </div>
                 <div>
                   <label className={labelCls}>Contractor Qualifier Name *</label>
                   <input
                     required
-                    className={inputCls}
+                    className={inputCls + invalidCls("Contractor Qualifier Name")}
                     value={form.contractorQualifier}
                     onChange={(e) => update("contractorQualifier", e.target.value)}
                   />
                 </div>
                 <div className="sm:col-span-2">
-                  <label className={labelCls}>Company Address</label>
+                  <label className={labelCls}>Company Address *</label>
                   <input
-                    className={inputCls}
+                    required
+                    className={inputCls + invalidCls("Company Address")}
                     value={form.companyAddress}
                     onChange={(e) => update("companyAddress", e.target.value)}
                   />
+                  {isPlaceholderValue("companyAddress", form.companyAddress) && (
+                    <p className="mt-1 text-[11px] text-amber-700">
+                      Placeholder — replace with Cleard's real company address.
+                    </p>
+                  )}
                 </div>
                 <div>
                   <label className={labelCls}>Point of Contact *</label>
                   <input
                     required
-                    className={inputCls}
+                    className={inputCls + invalidCls("Point of Contact")}
                     value={form.poc}
                     onChange={(e) => update("poc", e.target.value)}
                   />
@@ -1192,9 +1536,10 @@ function NewPermitPage() {
                   <label className={labelCls}>POC Phone *</label>
                   <input
                     required
-                    className={inputCls}
+                    className={inputCls + invalidCls("POC Phone")}
                     value={form.pocPhone}
                     onChange={(e) => update("pocPhone", e.target.value)}
+                    placeholder="Not on file — enter a phone number"
                   />
                 </div>
                 <div>
@@ -1202,7 +1547,7 @@ function NewPermitPage() {
                   <input
                     type="email"
                     required
-                    className={inputCls}
+                    className={inputCls + invalidCls("POC Email")}
                     value={form.pocEmail}
                     onChange={(e) => update("pocEmail", e.target.value)}
                   />
@@ -1211,10 +1556,15 @@ function NewPermitPage() {
                   <label className={labelCls}>License Number *</label>
                   <input
                     required
-                    className={inputCls}
+                    className={inputCls + invalidCls("License Number")}
                     value={form.licenseNumber}
                     onChange={(e) => update("licenseNumber", e.target.value)}
                   />
+                  {isPlaceholderValue("licenseNumber", form.licenseNumber) && (
+                    <p className="mt-1 text-[11px] text-amber-700">
+                      Placeholder — replace with the real state license number.
+                    </p>
+                  )}
                 </div>
               </div>
             </div>
@@ -1250,7 +1600,7 @@ function NewPermitPage() {
                   <label className={labelCls}>Signer Email</label>
                   <input
                     type="email"
-                    className={inputCls}
+                    className={inputCls + invalidCls("Signer Email is not a valid email")}
                     value={form.signerEmail}
                     onChange={(e) => update("signerEmail", e.target.value)}
                   />
@@ -1470,6 +1820,19 @@ function NewPermitPage() {
                 />
               </div>
             </div>
+
+            {showErrors && missingNow.length > 0 && (
+              <div className="border border-red-300 bg-red-50 rounded-[3px] px-4 py-3 text-[13px] text-red-800">
+                <div className="font-medium">Cannot submit — required fields are empty:</div>
+                <ul className="mt-1 list-disc pl-5 text-[12px]">
+                  {missingNow.map((m) => (
+                    <li key={m.label}>
+                      {m.label} <span className="text-red-700/60">(step {m.step})</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
 
             <div className="flex flex-wrap items-center justify-between gap-2 pt-2">
               <button

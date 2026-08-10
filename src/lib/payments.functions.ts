@@ -1,11 +1,8 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import {
-  type StripeEnv,
-  createStripeClient,
-  getStripeErrorMessage,
-} from "@/lib/stripe.server";
+import { type StripeEnv, createStripeClient, getStripeErrorMessage } from "@/lib/stripe.server";
 import { calculateCleardFee, getCleardTier } from "@/lib/pricing.ts";
+import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
 type CheckoutResult = { clientSecret: string } | { error: string };
 type PortalResult = { url: string } | { error: string };
@@ -61,11 +58,7 @@ function getTier1PriceId(): string {
  */
 export const createSubscriptionCheckout = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((data: {
-    priceId: string;
-    returnUrl: string;
-    environment: StripeEnv;
-  }) => {
+  .inputValidator((data: { priceId: string; returnUrl: string; environment: StripeEnv }) => {
     if (!/^[a-zA-Z0-9_-]+$/.test(data.priceId)) throw new Error("Invalid priceId");
     return data;
   })
@@ -104,19 +97,21 @@ export const createSubscriptionCheckout = createServerFn({ method: "POST" })
  */
 export const createServiceFeeCheckout = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((data: {
-    permitId: string;
-    projectAddress: string;
-    projectValueUsd: number;
-    returnUrl: string;
-    environment: StripeEnv;
-  }) => {
-    if (!/^[a-f0-9-]{36}$/i.test(data.permitId)) throw new Error("Invalid permitId");
-    if (!data.projectValueUsd || data.projectValueUsd <= 0) {
-      throw new Error("Project value must be greater than zero");
-    }
-    return data;
-  })
+  .inputValidator(
+    (data: {
+      permitId: string;
+      projectAddress: string;
+      projectValueUsd: number;
+      returnUrl: string;
+      environment: StripeEnv;
+    }) => {
+      if (!/^[a-f0-9-]{36}$/i.test(data.permitId)) throw new Error("Invalid permitId");
+      if (!data.projectValueUsd || data.projectValueUsd <= 0) {
+        throw new Error("Project value must be greater than zero");
+      }
+      return data;
+    },
+  )
   .handler(async ({ data, context }): Promise<CheckoutResult> => {
     try {
       const { userId, claims, supabase } = context;
@@ -186,6 +181,83 @@ export const createServiceFeeCheckout = createServerFn({ method: "POST" })
         stripe_checkout_session_id: session.id,
         environment: data.environment,
       } as any);
+
+      return { clientSecret: session.client_secret ?? "" };
+    } catch (error) {
+      return { error: getStripeErrorMessage(error) };
+    }
+  });
+
+/**
+ * Subcontractor Marketplace — one-time unlock of Cleard's own roster.
+ * Access is granted only by the webhook once Stripe confirms payment; this
+ * function just records a pending row and opens the checkout.
+ */
+export const createMarketplaceUnlockCheckout = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: { returnUrl: string; environment: StripeEnv }) => data)
+  .handler(async ({ data, context }): Promise<CheckoutResult> => {
+    try {
+      const { userId, claims, supabase } = context;
+      const email = (claims as any)?.email as string | undefined;
+
+      const priceCents = Number(process.env.MARKETPLACE_UNLOCK_PRICE_CENTS);
+      if (!Number.isFinite(priceCents) || priceCents <= 0) {
+        return { error: "Marketplace pricing is not configured yet" };
+      }
+
+      const { data: member } = await (supabase.from("tenant_members" as any) as any)
+        .select("tenant_id")
+        .eq("user_id", userId)
+        .maybeSingle();
+      const tenantId = (member as any)?.tenant_id as string | undefined;
+      if (!tenantId) return { error: "No workspace found for this account" };
+
+      const { data: existing } = await (supabaseAdmin.from("marketplace_access" as any) as any)
+        .select("status")
+        .eq("tenant_id", tenantId)
+        .maybeSingle();
+      if ((existing as any)?.status === "active") {
+        return { error: "Marketplace access is already unlocked" };
+      }
+
+      const stripe = createStripeClient(data.environment);
+      const customerId = await resolveOrCreateCustomer(stripe, { email, userId });
+
+      const session = await stripe.checkout.sessions.create({
+        line_items: [
+          {
+            price_data: {
+              currency: "usd",
+              product_data: { name: "Cleard Subcontractor Marketplace — one-time access" },
+              unit_amount: Math.round(priceCents),
+            },
+            quantity: 1,
+          },
+        ],
+        mode: "payment",
+        ui_mode: "embedded_page",
+        return_url: data.returnUrl,
+        customer: customerId,
+        payment_intent_data: {
+          description: "Cleard Subcontractor Marketplace access",
+          metadata: { tenantId, userId },
+        },
+        metadata: { tenantId, userId, kind: "marketplace_unlock" },
+      });
+
+      await (supabaseAdmin.from("marketplace_access" as any) as any).upsert(
+        {
+          tenant_id: tenantId,
+          status: "pending",
+          amount_cents: Math.round(priceCents),
+          environment: data.environment,
+          stripe_checkout_session_id: session.id,
+          created_by: userId,
+          updated_at: new Date().toISOString(),
+        },
+        { onConflict: "tenant_id" },
+      );
 
       return { clientSecret: session.client_secret ?? "" };
     } catch (error) {
@@ -301,21 +373,21 @@ type ChargeResult =
  */
 export const chargeServiceFeeWithSavedMethod = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((data: {
-    invoiceId: string;
-    environment: StripeEnv;
-    paymentMethodId?: string;
-  }) => {
-    if (!/^[a-f0-9-]{36}$/i.test(data.invoiceId)) throw new Error("Invalid invoiceId");
-    return data;
-  })
+  .inputValidator(
+    (data: { invoiceId: string; environment: StripeEnv; paymentMethodId?: string }) => {
+      if (!/^[a-f0-9-]{36}$/i.test(data.invoiceId)) throw new Error("Invalid invoiceId");
+      return data;
+    },
+  )
   .handler(async ({ data, context }): Promise<ChargeResult> => {
     try {
       const { userId, claims, supabase } = context;
       const email = (claims as any)?.email as string | undefined;
       const stripe = createStripeClient(data.environment);
 
-      const { data: invoice, error: invErr } = await (supabase.from("service_fee_invoices" as any) as any)
+      const { data: invoice, error: invErr } = await (
+        supabase.from("service_fee_invoices" as any) as any
+      )
         .select("id, permit_id, tenant_id, fee_cents, processing_fee_cents, status, environment")
         .eq("id", data.invoiceId)
         .maybeSingle();
@@ -357,12 +429,11 @@ export const chargeServiceFeeWithSavedMethod = createServerFn({ method: "POST" }
           ? methods.data.find((m) => m.id === data.paymentMethodId)
           : undefined) ?? methods.data[0];
 
-      const methodLabel =
-        pm.card
-          ? `Card ending ${pm.card.last4}`
-          : pm.us_bank_account
-            ? `ACH ending ${pm.us_bank_account.last4}`
-            : pm.type;
+      const methodLabel = pm.card
+        ? `Card ending ${pm.card.last4}`
+        : pm.us_bank_account
+          ? `ACH ending ${pm.us_bank_account.last4}`
+          : pm.type;
 
       const intent = await stripe.paymentIntents.create({
         amount: amountCents,

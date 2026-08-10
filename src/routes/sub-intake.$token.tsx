@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState, type ChangeEvent, type FormEvent } from "
 import { Upload, X, CheckCircle2 } from "lucide-react";
 import { IdUpload, EMPTY_ID_UPLOAD, type IdUploadValue } from "@/components/id-upload";
 import { getSubByTokenFn, submitSubIntakeFn, type PublicSubRecord } from "@/lib/sub-intake.functions";
+import { subValidationErrors } from "@/lib/sub-validation";
 
 
 export const Route = createFileRoute("/sub-intake/$token")({
@@ -25,6 +26,7 @@ function SubIntakeTokenPage() {
   const [submitting, setSubmitting] = useState(false);
   const [idDoc, setIdDoc] = useState<IdUploadValue>(EMPTY_ID_UPLOAD);
   const [idComplete, setIdComplete] = useState(false);
+  const [errors, setErrors] = useState<string[]>([]);
 
 
   useEffect(() => {
@@ -87,6 +89,13 @@ function SubIntakeTokenPage() {
       alert("Please upload a valid government ID before submitting.");
       return;
     }
+    const problems = subValidationErrors({ ...(sub as Record<string, unknown>), ...patch });
+    if (problems.length) {
+      setErrors(problems);
+      alert("Please complete the required fields:\n\n" + problems.join("\n"));
+      return;
+    }
+    setErrors([]);
     setSubmitting(true);
     try {
       for (const key of Object.keys(PATH_KEY) as Array<keyof typeof PATH_KEY>) {
@@ -187,15 +196,15 @@ function SubIntakeTokenPage() {
                   <input required className={inputCls} defaultValue={sub.company_name} onChange={(e) => set("company_name", e.target.value)} />
                 </div>
                 <div>
-                  <label className={labelCls}>Trade</label>
+                  <label className={labelCls}>Trade *</label>
                   <select className={inputCls} defaultValue={sub.trade ?? ""} onChange={(e) => set("trade", e.target.value)}>
                     <option value="">Select…</option>
                     <option>Plumbing</option><option>Electrical</option><option>Gas</option><option>Other</option>
                   </select>
                 </div>
                 <div><label className={labelCls}>Qualifier Name</label><input className={inputCls} defaultValue={sub.qualifier_name ?? ""} onChange={(e) => set("qualifier_name", e.target.value)} /></div>
-                <div><label className={labelCls}>License Number</label><input className={inputCls} defaultValue={sub.license_number ?? ""} onChange={(e) => set("license_number", e.target.value)} /></div>
-                <div><label className={labelCls}>License Expiration</label><input type="date" className={inputCls} defaultValue={sub.license_expiration ?? ""} onChange={(e) => set("license_expiration", e.target.value || null)} /></div>
+                <div><label className={labelCls}>License Number *</label><input required className={inputCls} defaultValue={sub.license_number ?? ""} onChange={(e) => set("license_number", e.target.value)} /></div>
+                <div><label className={labelCls}>License Expiration *</label><input type="date" required className={inputCls} defaultValue={sub.license_expiration ?? ""} onChange={(e) => set("license_expiration", e.target.value || null)} /></div>
                 <div><label className={labelCls}>Contact First Name</label><input className={inputCls} defaultValue={sub.contact_first_name ?? ""} onChange={(e) => set("contact_first_name", e.target.value)} /></div>
                 <div><label className={labelCls}>Contact Last Name</label><input className={inputCls} defaultValue={sub.contact_last_name ?? ""} onChange={(e) => set("contact_last_name", e.target.value)} /></div>
                 <div><label className={labelCls}>Contact Email *</label><input type="email" required className={inputCls} defaultValue={sub.email ?? ""} onChange={(e) => set("email", e.target.value)} /></div>
@@ -222,6 +231,17 @@ function SubIntakeTokenPage() {
                   onCompleteChange={setIdComplete}
                 />
               </div>
+
+              {errors.length > 0 && (
+                <div className="border border-red-300 bg-red-50 rounded-[3px] px-4 py-3 text-[13px] text-red-800">
+                  <div className="font-medium">Cannot submit — required fields are missing:</div>
+                  <ul className="mt-1 list-disc pl-5 text-[12px]">
+                    {errors.map((m) => (
+                      <li key={m}>{m}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
 
               <div className="pt-2 flex items-center justify-end gap-3">
                 {!idComplete && (

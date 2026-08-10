@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Users, Plus, CheckCircle2, AlertTriangle, Link2, Copy, X, Trash2 } from "lucide-react";
 import { listSubs, createSub, deleteSub, subIsComplete, subMissingFields, coiLifecycle, type SubRow } from "@/lib/subs-api";
+import { MarketplacePanel } from "@/components/marketplace-panel";
 
 const coiTone: Record<ReturnType<typeof coiLifecycle>, { label: string; cls: string }> = {
   active: { label: "Active", cls: "bg-emerald-600/10 text-emerald-700 border-emerald-600/30" },
@@ -125,6 +126,8 @@ export function SubcontractorsManager() {
           })}
         </div>
       )}
+
+      <MarketplacePanel />
 
       {shareUrl && (
         <div className="fixed inset-0 z-50 grid place-items-center bg-obsidian/40 p-4" onClick={() => setShareUrl(null)}>

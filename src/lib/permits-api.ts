@@ -38,6 +38,8 @@ export type PermitSub = {
   /** GC/ops-confirmed as on-the-job. Only then does the sub portal open. */
   confirmed?: boolean;
   confirmedAt?: string;
+  /** Set when this trade was filled from Cleard's paid marketplace roster. */
+  marketplaceSubId?: string;
 };
 
 /** Ensure every sub in the array has an accessToken. Returns a new array + a

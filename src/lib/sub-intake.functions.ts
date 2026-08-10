@@ -1,5 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
+import { subValidationErrors } from "@/lib/sub-validation";
 
 const TokenInput = z.object({ token: z.string().uuid() });
 
@@ -142,11 +143,18 @@ export const submitSubIntakeFn = createServerFn({ method: "POST" })
     }
 
     const { data: inviteRow, error: lookupErr } = await table
-      .select("id")
+      .select(
+        "id, company_name, trade, license_number, license_expiration, email, insurance_carrier_email, coi_file_name, coi_expiration",
+      )
       .eq("completion_token", data.token)
       .maybeSingle();
     if (lookupErr) throw new Error(lookupErr.message);
     if (!inviteRow) throw new Error("Invalid or expired intake link");
+
+    // Validate the record as it will be once the patch lands, not the patch alone.
+    const merged = { ...(inviteRow as Record<string, unknown>), ...data.patch };
+    const problems = subValidationErrors(merged);
+    if (problems.length) throw new Error(problems.join("; "));
 
     const patch: Record<string, unknown> = { ...data.patch, status: "complete" };
     const { data: row, error } = await table

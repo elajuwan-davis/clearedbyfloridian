@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 import { loadSubLibrary, upsertSub, type SubRecord as LibSub } from "@/lib/subcontractor-library";
+import { isEmail } from "@/lib/sub-validation";
 
 export const Route = createFileRoute("/forms/subcontractor-intake")({
   head: () => ({ meta: [{ title: "Subcontractor Intake — Cleard" }, { name: "robots", content: "noindex" }] }),
@@ -62,7 +63,11 @@ function SubcontractorIntakePage() {
     if (!form.companyName.trim()) return toast.error("Company name is required");
     if (!form.trade) return toast.error("Select a trade");
     if (!form.licenseNumber.trim()) return toast.error("License number is required");
+    if (!form.email.trim()) return toast.error("Email is required");
+    if (!isEmail(form.email)) return toast.error("Email is not a valid email address");
     if (!form.valuation.trim()) return toast.error("Trade valuation is required");
+    if (!(Number(form.valuation) > 0))
+      return toast.error("Trade valuation must be greater than zero");
 
     upsertSub({
       companyName: form.companyName,
@@ -139,7 +144,7 @@ function SubcontractorIntakePage() {
             <Field label="License Number" required>
               <Input className="rounded-[3px] font-mono" value={form.licenseNumber} onChange={(e) => setForm({ ...form, licenseNumber: e.target.value })} />
             </Field>
-            <Field label="Email">
+            <Field label="Email" required>
               <Input className="rounded-[3px]" type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
             </Field>
             <Field label="Phone">
