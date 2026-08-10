@@ -36,6 +36,7 @@ import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as ProjectGuidesRouteImport } from './routes/project-guides'
 import { Route as ProjectsRouteImport } from './routes/projects'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as ResetPasswordConfirmRouteImport } from './routes/reset-password-confirm'
 import { Route as ServicesRouteImport } from './routes/services'
 import { Route as SubPortalRouteImport } from './routes/sub-portal'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
@@ -264,6 +265,11 @@ const ProjectsRoute = ProjectsRouteImport.update({
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
   path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResetPasswordConfirmRoute = ResetPasswordConfirmRouteImport.update({
+  id: '/reset-password-confirm',
+  path: '/reset-password-confirm',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ServicesRoute = ServicesRouteImport.update({
@@ -777,6 +783,7 @@ export interface FileRoutesByFullPath {
   '/project-guides': typeof ProjectGuidesRoute
   '/projects': typeof ProjectsRouteWithChildren
   '/reset-password': typeof ResetPasswordRoute
+  '/reset-password-confirm': typeof ResetPasswordConfirmRoute
   '/services': typeof ServicesRoute
   '/sub-portal': typeof SubPortalRouteWithChildren
   '/admin/access-requests': typeof AdminAccessRequestsRoute
@@ -898,6 +905,7 @@ export interface FileRoutesByTo {
   '/project-guides': typeof ProjectGuidesRoute
   '/projects': typeof ProjectsRouteWithChildren
   '/reset-password': typeof ResetPasswordRoute
+  '/reset-password-confirm': typeof ResetPasswordConfirmRoute
   '/services': typeof ServicesRoute
   '/sub-portal': typeof SubPortalRouteWithChildren
   '/admin/access-requests': typeof AdminAccessRequestsRoute
@@ -1020,6 +1028,7 @@ export interface FileRoutesById {
   '/project-guides': typeof ProjectGuidesRoute
   '/projects': typeof ProjectsRouteWithChildren
   '/reset-password': typeof ResetPasswordRoute
+  '/reset-password-confirm': typeof ResetPasswordConfirmRoute
   '/services': typeof ServicesRoute
   '/sub-portal': typeof SubPortalRouteWithChildren
   '/admin/access-requests': typeof AdminAccessRequestsRoute
@@ -1145,6 +1154,7 @@ export interface FileRouteTypes {
     | '/project-guides'
     | '/projects'
     | '/reset-password'
+    | '/reset-password-confirm'
     | '/services'
     | '/sub-portal'
     | '/admin/access-requests'
@@ -1266,6 +1276,7 @@ export interface FileRouteTypes {
     | '/project-guides'
     | '/projects'
     | '/reset-password'
+    | '/reset-password-confirm'
     | '/services'
     | '/sub-portal'
     | '/admin/access-requests'
@@ -1387,6 +1398,7 @@ export interface FileRouteTypes {
     | '/project-guides'
     | '/projects'
     | '/reset-password'
+    | '/reset-password-confirm'
     | '/services'
     | '/sub-portal'
     | '/admin/access-requests'
@@ -1511,6 +1523,7 @@ export interface RootRouteChildren {
   ProjectGuidesRoute: typeof ProjectGuidesRoute
   ProjectsRoute: typeof ProjectsRouteWithChildren
   ResetPasswordRoute: typeof ResetPasswordRoute
+  ResetPasswordConfirmRoute: typeof ResetPasswordConfirmRoute
   ServicesRoute: typeof ServicesRoute
   SubPortalRoute: typeof SubPortalRouteWithChildren
   AdminAccessRequestsRoute: typeof AdminAccessRequestsRoute
@@ -1746,6 +1759,13 @@ declare module '@tanstack/react-router' {
       path: '/reset-password'
       fullPath: '/reset-password'
       preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reset-password-confirm': {
+      id: '/reset-password-confirm'
+      path: '/reset-password-confirm'
+      fullPath: '/reset-password-confirm'
+      preLoaderRoute: typeof ResetPasswordConfirmRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/services': {
@@ -2622,6 +2642,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProjectGuidesRoute: ProjectGuidesRoute,
   ProjectsRoute: ProjectsRouteWithChildren,
   ResetPasswordRoute: ResetPasswordRoute,
+  ResetPasswordConfirmRoute: ResetPasswordConfirmRoute,
   ServicesRoute: ServicesRoute,
   SubPortalRoute: SubPortalRouteWithChildren,
   AdminAccessRequestsRoute: AdminAccessRequestsRoute,

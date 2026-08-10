@@ -64,8 +64,9 @@ function ResetPasswordPage() {
     setLoading(true);
     // Intentionally ignore the result: never reveal whether the address matched an account.
     await supabase.auth.resetPasswordForEmail(email.trim().toLowerCase(), {
-      redirectTo: `${window.location.origin}/reset-password`,
+      redirectTo: `${window.location.origin}/reset-password-confirm`,
     });
+
     setLoading(false);
     setSent(true);
   }
