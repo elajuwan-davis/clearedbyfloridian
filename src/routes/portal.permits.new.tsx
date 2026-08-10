@@ -1338,9 +1338,10 @@ function NewPermitPage() {
                               <Store className="mt-0.5 h-4 w-4 shrink-0 text-[#153157]" />
                               <div className="flex-1 text-[13px] text-obsidian/85">
                                 <div className="text-obsidian font-medium">
-                                  Cleard has {rosterCount} other qualified contractor
-                                  {rosterCount === 1 ? "" : "s"} that meet your requirements — want
-                                  a bid?
+                                  {rosterCount === 1
+                                    ? "Cleard has 1 other qualified contractor that meets your requirements"
+                                    : `Cleard has ${rosterCount} other qualified contractors that meet your requirements`}{" "}
+                                  — want a bid?
                                 </div>
                                 <div className="mt-0.5 text-[12px] text-obsidian/60">
                                   {rosterUnlocked

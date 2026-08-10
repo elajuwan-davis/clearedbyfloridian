@@ -92,7 +92,6 @@ function SubIntakeTokenPage() {
     const problems = subValidationErrors({ ...(sub as Record<string, unknown>), ...patch });
     if (problems.length) {
       setErrors(problems);
-      alert("Please complete the required fields:\n\n" + problems.join("\n"));
       return;
     }
     setErrors([]);
