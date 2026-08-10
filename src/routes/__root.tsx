@@ -136,6 +136,14 @@ function RootShell({ children }: { children: ReactNode }) {
               "try{var t=localStorage.getItem('cleard-theme');document.documentElement.classList.toggle('dark',t!=='light')}catch(e){document.documentElement.classList.add('dark')}",
           }}
         />
+        {/* Supabase recovery links may land on the site root; forward them to the reset page. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "try{var h=location.hash||'';if(h.indexOf('type=recovery')>-1&&location.pathname!=='/reset-password'){location.replace('/reset-password'+location.search+h)}}catch(e){}",
+          }}
+        />
+
       </head>
       <body>
         {children}
