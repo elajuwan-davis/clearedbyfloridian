@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -23,6 +23,12 @@ function LoginPage() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [resetNotice, setResetNotice] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    setResetNotice(new URLSearchParams(window.location.search).has("reset"));
+  }, []);
 
   function getSafeNext(fallback: string) {
     if (typeof window === "undefined") return fallback;
@@ -196,7 +202,17 @@ function LoginPage() {
             </p>
           </div>
 
+          {resetNotice && (
+            <div
+              className="text-sm px-4 py-3 border mb-5 leading-relaxed"
+              style={{ borderColor: "var(--border)", borderRadius: "3px" }}
+            >
+              Password updated. Sign in with your new password.
+            </div>
+          )}
+
           <form onSubmit={handleSubmit} className="space-y-5">
+
             <div className="space-y-1.5">
               <Label htmlFor="email" className="font-subline text-[11px] tracking-[0.15em] uppercase text-muted-foreground">
                 Email

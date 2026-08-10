@@ -6,70 +6,87 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ArrowLeft, ArrowRight, Loader2 } from "lucide-react";
 
-export const Route = createFileRoute("/reset-password")({
+export const Route = createFileRoute("/reset-password-confirm")({
   head: () => ({
     meta: [
-      { title: "Reset password — Cleard" },
+      { title: "Set a new password — Cleard" },
       {
         name: "description",
-        content: "Request a password reset link for your Cleard builder portal account.",
+        content: "Choose a new password for your Cleard builder portal account.",
       },
-      { property: "og:title", content: "Reset password — Cleard" },
+      { property: "og:title", content: "Set a new password — Cleard" },
       {
         property: "og:description",
-        content: "Request a password reset link for your Cleard builder portal account.",
+        content: "Choose a new password for your Cleard builder portal account.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "robots", content: "noindex" },
     ],
   }),
-  component: ResetPasswordPage,
+  component: ResetPasswordConfirmPage,
 });
 
-const LABEL_CLASS =
-  "font-subline text-[11px] tracking-[0.15em] uppercase text-muted-foreground";
+const LABEL_CLASS = "font-subline text-[11px] tracking-[0.15em] uppercase text-muted-foreground";
 
-function ResetPasswordPage() {
+type Phase = "checking" | "ready" | "invalid" | "done";
+
+function ResetPasswordConfirmPage() {
   const navigate = useNavigate();
-  // "recovery" once Supabase has established a recovery session from the emailed link.
-  const [mode, setMode] = useState<"request" | "recovery">("request");
-  const [email, setEmail] = useState("");
+  const [phase, setPhase] = useState<Phase>("checking");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [loading, setLoading] = useState(false);
-  const [sent, setSent] = useState(false);
-  const [done, setDone] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    const hash = window.location.hash.slice(1);
-    const search = window.location.search.slice(1);
-    const isRecovery =
-      new URLSearchParams(hash).get("type") === "recovery" ||
-      new URLSearchParams(search).get("type") === "recovery" ||
-      new URLSearchParams(search).has("code");
-    if (isRecovery) setMode("recovery");
+    let cancelled = false;
 
-    const { data } = supabase.auth.onAuthStateChange((event) => {
-      if (event === "PASSWORD_RECOVERY") setMode("recovery");
+    const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
+      if (cancelled) return;
+      if (event === "PASSWORD_RECOVERY" || (event === "SIGNED_IN" && session)) setPhase("ready");
     });
-    return () => data.subscription.unsubscribe();
+
+    (async () => {
+      const hash = new URLSearchParams(window.location.hash.slice(1));
+      const search = new URLSearchParams(window.location.search);
+
+      // Error handed back by Supabase (expired / already used link).
+      if (hash.get("error") || search.get("error")) {
+        if (!cancelled) setPhase("invalid");
+        return;
+      }
+
+      // PKCE style link: ?code=...
+      const code = search.get("code");
+      if (code) {
+        const { error: err } = await supabase.auth.exchangeCodeForSession(code);
+        if (!cancelled) setPhase(err ? "invalid" : "ready");
+        return;
+      }
+
+      // Implicit style link: #access_token=...&type=recovery
+      if (hash.get("access_token") && hash.get("refresh_token")) {
+        const { error: err } = await supabase.auth.setSession({
+          access_token: hash.get("access_token")!,
+          refresh_token: hash.get("refresh_token")!,
+        });
+        if (!cancelled) setPhase(err ? "invalid" : "ready");
+        return;
+      }
+
+      // Otherwise: only allow the form if a session already exists (recovery session).
+      const { data } = await supabase.auth.getSession();
+      if (cancelled) return;
+      setPhase(data.session ? "ready" : "invalid");
+    })();
+
+    return () => {
+      cancelled = true;
+      sub.subscription.unsubscribe();
+    };
   }, []);
-
-  async function handleRequest(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    setError(null);
-    setLoading(true);
-    // Intentionally ignore the result: never reveal whether the address matched an account.
-    await supabase.auth.resetPasswordForEmail(email.trim().toLowerCase(), {
-      redirectTo: `${window.location.origin}/reset-password-confirm`,
-    });
-
-    setLoading(false);
-    setSent(true);
-  }
 
   async function handleUpdate(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -89,8 +106,9 @@ function ResetPasswordPage() {
       setError(err.message);
       return;
     }
-    setDone(true);
-    setTimeout(() => navigate({ to: "/login", replace: true }), 1800);
+    setPhase("done");
+    await supabase.auth.signOut().catch(() => undefined);
+    setTimeout(() => navigate({ to: "/login", search: { reset: 1 } as never, replace: true }), 1500);
   }
 
   return (
@@ -106,12 +124,12 @@ function ResetPasswordPage() {
               color: "var(--foreground)",
             }}
           >
-            {mode === "recovery" ? "Set a new password." : "Reset password."}
+            {phase === "invalid" ? "Link expired." : "Set a new password."}
           </h1>
           <p className="text-sm text-muted-foreground mt-2">
-            {mode === "recovery"
-              ? "Choose a new password for your account."
-              : "Enter your email and we'll send a reset link."}
+            {phase === "invalid"
+              ? "This password reset link is invalid or has expired."
+              : "Choose a new password for your account."}
           </p>
         </div>
 
@@ -129,57 +147,42 @@ function ResetPasswordPage() {
           </div>
         )}
 
-        {mode === "request" ? (
-          sent ? (
+        {phase === "checking" && (
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Loader2 className="h-4 w-4 animate-spin" /> Verifying your reset link…
+          </div>
+        )}
+
+        {phase === "invalid" && (
+          <div className="space-y-5">
             <div
               className="text-sm px-4 py-3 border leading-relaxed"
               style={{ borderColor: "var(--border)", borderRadius: "3px" }}
             >
-              If an account exists for that email, a reset link was sent. The link expires
-              shortly — check your inbox and spam folder.
+              Reset links expire shortly after they're sent and can only be used once. Request a
+              fresh link to continue.
             </div>
-          ) : (
-            <form onSubmit={handleRequest} className="space-y-5">
-              <div className="space-y-1.5">
-                <Label htmlFor="email" className={LABEL_CLASS}>
-                  Email
-                </Label>
-                <Input
-                  id="email"
-                  type="email"
-                  autoComplete="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="rounded-[3px] h-11"
-                />
-              </div>
+            <Link to="/reset-password">
               <Button
-                type="submit"
-                disabled={loading}
                 className="w-full h-11 rounded-[3px] font-subline tracking-wide gap-2"
                 style={{ backgroundColor: "#12A05C", color: "#FFFFFF" }}
               >
-                {loading ? (
-                  <>
-                    <Loader2 className="h-4 w-4 animate-spin" /> Sending
-                  </>
-                ) : (
-                  <>
-                    Send reset link <ArrowRight className="h-4 w-4" strokeWidth={1.5} />
-                  </>
-                )}
+                Request a new link <ArrowRight className="h-4 w-4" strokeWidth={1.5} />
               </Button>
-            </form>
-          )
-        ) : done ? (
+            </Link>
+          </div>
+        )}
+
+        {phase === "done" && (
           <div
             className="text-sm px-4 py-3 border leading-relaxed"
             style={{ borderColor: "var(--border)", borderRadius: "3px" }}
           >
             Password updated. Redirecting you to sign in…
           </div>
-        ) : (
+        )}
+
+        {phase === "ready" && (
           <form onSubmit={handleUpdate} className="space-y-5">
             <div className="space-y-1.5">
               <Label htmlFor="new-password" className={LABEL_CLASS}>
