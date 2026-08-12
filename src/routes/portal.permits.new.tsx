@@ -19,6 +19,7 @@ import { toast } from "sonner";
 import { CloudUploadButtons } from "@/components/cloud-upload-buttons";
 import { ComboboxInput } from "@/components/combobox-input";
 import { AddressLookupField } from "@/components/address-lookup-field";
+import { MultiSelectCombobox } from "@/components/multi-select-combobox";
 import { activeProvider, resolveMunicipality, type ResolvedAddress } from "@/lib/address-lookup";
 import {
   createPermit,
@@ -1019,7 +1020,7 @@ function NewPermitPage() {
                 onToggle={toggleScope}
                 options={SCOPE_OPTIONS as unknown as string[]}
                 placeholder="Type to search scopes…"
-                hint={(s) =>
+                hint={(s: string) =>
                   s === "Structural"
                     ? "Includes pergolas, outdoor kitchens, summer kitchens, shade structures, retaining walls, and hardscape extensions."
                     : undefined
