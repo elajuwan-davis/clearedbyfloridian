@@ -12,10 +12,25 @@ import {
   type NotaryRequest,
 } from "@/lib/notary-requests";
 import { addDoc } from "@/lib/project-documents";
+import { useSession } from "@/lib/use-session";
+import { RemoteNotaryQueuePage } from "@/components/remote-notary-queue";
 
 export const Route = createFileRoute("/portal/notary-queue")({
-  component: NotaryQueuePage,
+  head: () => ({
+    meta: [
+      { title: "Notary Queue — Cleard" },
+      { name: "robots", content: "noindex" },
+    ],
+  }),
+  component: NotaryQueueRoute,
 });
+
+/** Canonical Notary Queue. Admins get the full scheduling queue. */
+function NotaryQueueRoute() {
+  const session = useSession();
+  return session.isAdmin ? <RemoteNotaryQueuePage /> : <NotaryQueuePage />;
+}
+
 
 function NotaryQueuePage() {
   const [reqs, setReqs] = useState<NotaryRequest[]>([]);
