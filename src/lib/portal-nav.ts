@@ -83,7 +83,7 @@ export const navSections: NavSection[] = [
       { to: "/portal/inspections", label: "Inspections" },
       { to: "/portal/hoa-submittals", label: "HOA Submittals" },
       { to: "/portal/bid-review", label: "Bid Review" },
-      { to: "/portal/utility-locates", label: "Utility Locates" },
+      { to: "/portal/utility-locates", label: "Utility Locates & Protection" },
     ],
   },
   {
@@ -150,7 +150,6 @@ export const adminSection: NavSection = {
     { to: "/admin/workload", label: "Staff Workload" },
     { to: "/admin/audit", label: "Audit Trail" },
     { to: "/admin/pricing", label: "Pricing" },
-    { to: "/admin/protection", label: "Protection", divider: true },
   ],
 };
 

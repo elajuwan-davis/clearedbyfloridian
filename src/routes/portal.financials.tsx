@@ -15,6 +15,7 @@ import { listPermits, updatePermit, type PermitRow, type PermitStatus } from "@/
 import { listAllFees, fmtUsd, parseDollarsToCents, type ManualFee } from "@/lib/manual-fees";
 import { BeforeClearedPanel } from "@/components/before-cleared-panel";
 import { SavingsCalculator } from "@/components/savings-calculator";
+import { QuickSavingsEstimate } from "@/components/quick-savings-estimate";
 
 import {
   PageShell,
@@ -80,7 +81,7 @@ function isActive(status: PermitStatus) {
 }
 
 function FinancialsPage() {
-  const [tab, setTab] = useState<"with" | "before" | "savings">("with");
+  const [tab, setTab] = useState<"with" | "before" | "savings" | "quick">("with");
   const [permits, setPermits] = useState<PermitRow[]>([]);
   const [fees, setFees] = useState<ManualFee[]>([]);
   const [loading, setLoading] = useState(true);
@@ -207,7 +208,8 @@ function FinancialsPage() {
           options={[
             { value: "with", label: "Financial Overview" },
             { value: "before", label: "Before Cléared" },
-            { value: "savings", label: "Savings Calculator" },
+            { value: "quick", label: "Quick Estimate" },
+            { value: "savings", label: "Bundle vs. Per-Trade" },
           ]}
         />
       }
@@ -258,7 +260,9 @@ function FinancialsPage() {
         ) : undefined
       }
     >
-      {tab === "savings" ? (
+      {tab === "quick" ? (
+        <QuickSavingsEstimate />
+      ) : tab === "savings" ? (
         <SavingsCalculator />
       ) : tab === "before" ? (
         <BeforeClearedPanel withClearedTotal={totals.combined} />

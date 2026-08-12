@@ -47,16 +47,16 @@ export function AskVictoriaDock() {
         type="button"
         onClick={() => setOpen((v) => !v)}
         aria-label="Ask Victoria"
-        className="fixed right-4 top-2.5 z-[60] flex h-8 items-center gap-1.5 rounded-full px-2.5 shadow-sm transition hover:opacity-90"
+        title="Ask Victoria"
+        className="fixed bottom-5 right-5 z-[60] grid h-11 w-11 place-items-center rounded-full shadow-lg transition hover:opacity-90"
         style={{ backgroundColor: "var(--obsidian)", color: "var(--paper)" }}
       >
-        <Sparkle className="h-3.5 w-3.5" strokeWidth={1.75} />
-        <span className="font-mono text-[10px] uppercase tracking-[0.16em]">Ask Victoria</span>
+        <Sparkle className="h-5 w-5" strokeWidth={1.75} />
       </button>
 
       {open && (
         <div
-          className="fixed right-4 top-14 z-[60] flex h-[520px] max-h-[calc(100vh-5rem)] w-[380px] max-w-[calc(100vw-2rem)] flex-col rounded-xl border shadow-2xl"
+          className="fixed bottom-20 right-5 z-[60] flex h-[520px] max-h-[calc(100vh-7rem)] w-[380px] max-w-[calc(100vw-2rem)] flex-col rounded-xl border shadow-2xl"
           style={{ backgroundColor: "var(--card)", borderColor: "var(--border)" }}
         >
           <header
