@@ -258,8 +258,11 @@ function FinancialsPage() {
         ) : undefined
       }
     >
-      {tab === "before" ? (
+      {tab === "savings" ? (
+        <SavingsCalculator />
+      ) : tab === "before" ? (
         <BeforeClearedPanel withClearedTotal={totals.combined} />
+
       ) : (
         <>
           <MetricRow className="lg:grid-cols-4 xl:grid-cols-4">
