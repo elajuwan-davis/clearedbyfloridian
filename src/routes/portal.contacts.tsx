@@ -213,11 +213,17 @@ function ContactsPage() {
                 <td className="max-w-[200px] truncate text-muted-foreground">{c.company || "—"}</td>
                 <td className="max-w-[220px] truncate">
                   {c.email ? (
-                    <a href={`mailto:${c.email}`} className="inline-flex items-center gap-1.5 hover:underline">
+                    <Link
+                      to="/messages"
+                      search={{ contact: c.id }}
+                      title={`Message ${c.name} in Cleard`}
+                      className="inline-flex items-center gap-1.5 hover:underline"
+                    >
                       <Mail className="h-3 w-3 shrink-0 text-muted-foreground" strokeWidth={1.6} /> {c.email}
-                    </a>
+                    </Link>
                   ) : "—"}
                 </td>
+
                 <td className="whitespace-nowrap">
                   {c.phone ? (
                     <a href={`tel:${c.phone}`} className="inline-flex items-center gap-1.5 hover:underline">
