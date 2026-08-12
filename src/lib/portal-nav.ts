@@ -149,7 +149,7 @@ export const adminSection: NavSection = {
     { to: "/admin/gc-clients", label: "GC Clients" },
     { to: "/admin/workload", label: "Staff Workload" },
     { to: "/admin/audit", label: "Audit Trail" },
-    { to: "/admin/pricing", label: "Pricing" },
+
   ],
 };
 
