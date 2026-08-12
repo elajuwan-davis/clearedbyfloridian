@@ -93,6 +93,7 @@ import { Route as PortalReportsRouteImport } from './routes/portal.reports'
 import { Route as PortalRequestCoiRouteImport } from './routes/portal.request-coi'
 import { Route as PortalRequestSubInsuranceRouteImport } from './routes/portal.request-sub-insurance'
 import { Route as PortalSubmissionsRouteImport } from './routes/portal.submissions'
+import { Route as PortalUtilityLocatesRouteImport } from './routes/portal.utility-locates'
 import { Route as ProjectsIdRouteImport } from './routes/projects.$id'
 import { Route as ProjectsNewRouteImport } from './routes/projects.new'
 import { Route as SubIntakeTokenRouteImport } from './routes/sub-intake.$token'
@@ -556,6 +557,11 @@ const PortalSubmissionsRoute = PortalSubmissionsRouteImport.update({
   path: '/submissions',
   getParentRoute: () => PortalRoute,
 } as any)
+const PortalUtilityLocatesRoute = PortalUtilityLocatesRouteImport.update({
+  id: '/utility-locates',
+  path: '/utility-locates',
+  getParentRoute: () => PortalRoute,
+} as any)
 const ProjectsIdRoute = ProjectsIdRouteImport.update({
   id: '/$id',
   path: '/$id',
@@ -835,6 +841,7 @@ export interface FileRoutesByFullPath {
   '/portal/request-coi': typeof PortalRequestCoiRoute
   '/portal/request-sub-insurance': typeof PortalRequestSubInsuranceRoute
   '/portal/submissions': typeof PortalSubmissionsRouteWithChildren
+  '/portal/utility-locates': typeof PortalUtilityLocatesRoute
   '/projects/$id': typeof ProjectsIdRoute
   '/projects/new': typeof ProjectsNewRoute
   '/sub-intake/$token': typeof SubIntakeTokenRoute
@@ -955,6 +962,7 @@ export interface FileRoutesByTo {
   '/portal/reports': typeof PortalReportsRoute
   '/portal/request-coi': typeof PortalRequestCoiRoute
   '/portal/request-sub-insurance': typeof PortalRequestSubInsuranceRoute
+  '/portal/utility-locates': typeof PortalUtilityLocatesRoute
   '/projects/$id': typeof ProjectsIdRoute
   '/projects/new': typeof ProjectsNewRoute
   '/sub-intake/$token': typeof SubIntakeTokenRoute
@@ -1080,6 +1088,7 @@ export interface FileRoutesById {
   '/portal/request-coi': typeof PortalRequestCoiRoute
   '/portal/request-sub-insurance': typeof PortalRequestSubInsuranceRoute
   '/portal/submissions': typeof PortalSubmissionsRouteWithChildren
+  '/portal/utility-locates': typeof PortalUtilityLocatesRoute
   '/projects/$id': typeof ProjectsIdRoute
   '/projects/new': typeof ProjectsNewRoute
   '/sub-intake/$token': typeof SubIntakeTokenRoute
@@ -1206,6 +1215,7 @@ export interface FileRouteTypes {
     | '/portal/request-coi'
     | '/portal/request-sub-insurance'
     | '/portal/submissions'
+    | '/portal/utility-locates'
     | '/projects/$id'
     | '/projects/new'
     | '/sub-intake/$token'
@@ -1326,6 +1336,7 @@ export interface FileRouteTypes {
     | '/portal/reports'
     | '/portal/request-coi'
     | '/portal/request-sub-insurance'
+    | '/portal/utility-locates'
     | '/projects/$id'
     | '/projects/new'
     | '/sub-intake/$token'
@@ -1450,6 +1461,7 @@ export interface FileRouteTypes {
     | '/portal/request-coi'
     | '/portal/request-sub-insurance'
     | '/portal/submissions'
+    | '/portal/utility-locates'
     | '/projects/$id'
     | '/projects/new'
     | '/sub-intake/$token'
@@ -2160,6 +2172,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PortalSubmissionsRouteImport
       parentRoute: typeof PortalRoute
     }
+    '/portal/utility-locates': {
+      id: '/portal/utility-locates'
+      path: '/utility-locates'
+      fullPath: '/portal/utility-locates'
+      preLoaderRoute: typeof PortalUtilityLocatesRouteImport
+      parentRoute: typeof PortalRoute
+    }
     '/projects/$id': {
       id: '/projects/$id'
       path: '/$id'
@@ -2534,6 +2553,7 @@ interface PortalRouteChildren {
   PortalRequestCoiRoute: typeof PortalRequestCoiRoute
   PortalRequestSubInsuranceRoute: typeof PortalRequestSubInsuranceRoute
   PortalSubmissionsRoute: typeof PortalSubmissionsRouteWithChildren
+  PortalUtilityLocatesRoute: typeof PortalUtilityLocatesRoute
   PortalIndexRoute: typeof PortalIndexRoute
   PortalBlogIdRoute: typeof PortalBlogIdRoute
   PortalBlogNewRoute: typeof PortalBlogNewRoute
@@ -2571,6 +2591,7 @@ const PortalRouteChildren: PortalRouteChildren = {
   PortalRequestCoiRoute: PortalRequestCoiRoute,
   PortalRequestSubInsuranceRoute: PortalRequestSubInsuranceRoute,
   PortalSubmissionsRoute: PortalSubmissionsRouteWithChildren,
+  PortalUtilityLocatesRoute: PortalUtilityLocatesRoute,
   PortalIndexRoute: PortalIndexRoute,
   PortalBlogIdRoute: PortalBlogIdRoute,
   PortalBlogNewRoute: PortalBlogNewRoute,

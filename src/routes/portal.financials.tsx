@@ -14,6 +14,8 @@ import {
 import { listPermits, updatePermit, type PermitRow, type PermitStatus } from "@/lib/permits-api";
 import { listAllFees, fmtUsd, parseDollarsToCents, type ManualFee } from "@/lib/manual-fees";
 import { BeforeClearedPanel } from "@/components/before-cleared-panel";
+import { SavingsCalculator } from "@/components/savings-calculator";
+
 import {
   PageShell,
   MetricRow,
@@ -78,7 +80,7 @@ function isActive(status: PermitStatus) {
 }
 
 function FinancialsPage() {
-  const [tab, setTab] = useState<"with" | "before">("with");
+  const [tab, setTab] = useState<"with" | "before" | "savings">("with");
   const [permits, setPermits] = useState<PermitRow[]>([]);
   const [fees, setFees] = useState<ManualFee[]>([]);
   const [loading, setLoading] = useState(true);
@@ -192,7 +194,7 @@ function FinancialsPage() {
   return (
     <PageShell
       crumbs={[{ label: "Workspace" }, { label: "Finance" }]}
-      title="Financials"
+      title="Savings"
       meta={
         loading
           ? "Loading…"
@@ -203,11 +205,13 @@ function FinancialsPage() {
           value={tab}
           onChange={setTab}
           options={[
-            { value: "with", label: "With Cléared" },
+            { value: "with", label: "Financial Overview" },
             { value: "before", label: "Before Cléared" },
+            { value: "savings", label: "Savings Calculator" },
           ]}
         />
       }
+
       toolbar={
         tab === "with" ? (
           <>
@@ -254,8 +258,11 @@ function FinancialsPage() {
         ) : undefined
       }
     >
-      {tab === "before" ? (
+      {tab === "savings" ? (
+        <SavingsCalculator />
+      ) : tab === "before" ? (
         <BeforeClearedPanel withClearedTotal={totals.combined} />
+
       ) : (
         <>
           <MetricRow className="lg:grid-cols-4 xl:grid-cols-4">

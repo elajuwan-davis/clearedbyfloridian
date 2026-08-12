@@ -19,6 +19,7 @@ import { toast } from "sonner";
 import { CloudUploadButtons } from "@/components/cloud-upload-buttons";
 import { ComboboxInput } from "@/components/combobox-input";
 import { AddressLookupField } from "@/components/address-lookup-field";
+import { MultiSelectCombobox } from "@/components/multi-select-combobox";
 import { activeProvider, resolveMunicipality, type ResolvedAddress } from "@/lib/address-lookup";
 import {
   createPermit,
@@ -1011,34 +1012,23 @@ function NewPermitPage() {
               })()}
             </div>
 
-            {/* Scope multi-select */}
+            {/* Scope multi-select — searchable dropdown with removable chips */}
             <div className="pt-2 space-y-3">
-              <label className={labelCls}>Scope of Work (select all that apply)</label>
-              <div className="flex flex-wrap gap-2">
-                {SCOPE_OPTIONS.map((s) => {
-                  const selected = form.scopes.includes(s);
-                  const helper =
-                    s === "Structural"
-                      ? "Includes pergolas, outdoor kitchens, summer kitchens, shade structures, retaining walls, and hardscape extensions."
-                      : undefined;
-                  return (
-                    <button
-                      key={s}
-                      type="button"
-                      onClick={() => toggleScope(s)}
-                      title={helper}
-                      className={`px-3 py-1.5 rounded-[3px] text-[12px] border transition-colors ${
-                        selected
-                          ? "bg-obsidian text-white border-obsidian"
-                          : "bg-white text-obsidian/70 border-obsidian/20 hover:border-obsidian/40"
-                      }`}
-                    >
-                      {selected && <Check className="inline h-3 w-3 mr-1" />}
-                      {s}
-                    </button>
-                  );
-                })}
-              </div>
+              <label className={labelCls}>Scope of Work (search and select all that apply)</label>
+              <MultiSelectCombobox
+                values={form.scopes}
+                onToggle={toggleScope}
+                options={SCOPE_OPTIONS as unknown as string[]}
+                placeholder="Type to search scopes…"
+                hint={(s: string) =>
+                  s === "Structural"
+                    ? "Includes pergolas, outdoor kitchens, summer kitchens, shade structures, retaining walls, and hardscape extensions."
+                    : undefined
+                }
+              />
+              {showErrors && missingLabels.has("Scope of Work") && (
+                <p className="text-[11px] text-red-600">Select at least one scope.</p>
+              )}
               {form.scopes.includes("Structural") && (
                 <p className="text-[11px] text-obsidian/60 leading-relaxed">
                   <span className="font-mono uppercase tracking-[0.14em] text-obsidian/50">
@@ -1048,25 +1038,7 @@ function NewPermitPage() {
                   and hardscape extensions.
                 </p>
               )}
-              {form.scopes.length > 0 && (
-                <div className="flex flex-wrap gap-1.5 pt-1">
-                  {form.scopes.map((s) => (
-                    <span
-                      key={s}
-                      className="inline-flex items-center gap-1.5 bg-[#153157] text-white px-2.5 py-1 rounded-[3px] text-[11px] font-medium"
-                    >
-                      {s}
-                      <button
-                        type="button"
-                        onClick={() => toggleScope(s)}
-                        className="text-white/70 hover:text-white"
-                      >
-                        <X className="h-3 w-3" />
-                      </button>
-                    </span>
-                  ))}
-                </div>
-              )}
+
 
               {/* Scope Narrative — the written description of the work itself.
                   Distinct from the per-trade sub capture below. */}

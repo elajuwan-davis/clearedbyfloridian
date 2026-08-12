@@ -19,6 +19,31 @@ export type ThreadRow = {
   client_unread: number;
   admin_unread: number;
   created_at: string;
+  recipient_role: string | null;
+  recipient_name: string | null;
+  recipient_email: string | null;
+  recipient_phone: string | null;
+  recipient_contact_id: string | null;
+};
+
+/** Who a thread can be addressed to. Everything stays inside Cleard. */
+export const RECIPIENT_ROLES = [
+  "Cleard Support",
+  "Homeowner",
+  "Subcontractor",
+  "Inspector",
+  "Architect",
+  "Engineer",
+  "Building Official",
+] as const;
+export type RecipientRole = (typeof RECIPIENT_ROLES)[number];
+
+export type ThreadRecipient = {
+  role: RecipientRole;
+  name?: string | null;
+  email?: string | null;
+  phone?: string | null;
+  contactId?: string | null;
 };
 
 export type PostRow = {
@@ -70,6 +95,7 @@ export async function createThread(opts: {
   authorLabel: string;
   isAdmin: boolean;
   permitId?: string | null;
+  recipient?: ThreadRecipient | null;
 }): Promise<ThreadRow> {
   const { userId, email, tenantId } = await ctx();
   if (!userId) throw new Error("Not signed in");
@@ -83,6 +109,11 @@ export async function createThread(opts: {
       last_message_from: opts.isAdmin ? "admin" : "client",
       admin_unread: opts.isAdmin ? 0 : 1,
       client_unread: opts.isAdmin ? 1 : 0,
+      recipient_role: opts.recipient?.role ?? null,
+      recipient_name: opts.recipient?.name ?? null,
+      recipient_email: opts.recipient?.email ?? null,
+      recipient_phone: opts.recipient?.phone ?? null,
+      recipient_contact_id: opts.recipient?.contactId ?? null,
     })
     .select("*")
     .single();

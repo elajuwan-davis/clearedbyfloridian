@@ -79,9 +79,11 @@ export const navSections: NavSection[] = [
     icon: FileText,
     items: [
       { to: "/portal/permits", label: "My Permits", alertKey: "my-permits" },
+      { to: "/portal/guides", label: "Project Guides" },
       { to: "/portal/inspections", label: "Inspections" },
       { to: "/portal/hoa-submittals", label: "HOA Submittals" },
       { to: "/portal/bid-review", label: "Bid Review" },
+      { to: "/portal/utility-locates", label: "Utility Locates" },
     ],
   },
   {
@@ -99,9 +101,8 @@ export const navSections: NavSection[] = [
     label: "Financials",
     icon: DollarSign,
     items: [
-      { to: "/portal/financials", label: "Financial Overview" },
+      { to: "/portal/financials", label: "Savings" },
       { to: "/portal/permit-fees", label: "Permit Fees" },
-      { to: "/fee-calculator", label: "Savings Calculator" },
     ],
   },
   {
@@ -120,9 +121,6 @@ export const navSections: NavSection[] = [
     label: "Resources",
     icon: BookOpen,
     items: [
-      { to: "/portal/guides", label: "Project Guides" },
-      
-      { to: "/ask-victoria", label: "Ask Victoria" },
       { to: "/portal/reports", label: "Reports" },
       { to: "/portal/blog", label: "Blog" },
       { to: "/portal/feature-requests", label: "Feature Requests" },
@@ -130,6 +128,7 @@ export const navSections: NavSection[] = [
     ],
   },
 ];
+
 
 
 export const legalSection: NavSection = {

@@ -27,11 +27,25 @@ import {
   postReply,
   markThreadRead,
   setThreadStatus,
+  RECIPIENT_ROLES,
   type ThreadRow,
   type PostRow,
+  type RecipientRole,
+  type ThreadRecipient,
 } from "@/lib/messages-api";
+import { listContacts, type ContactRow } from "@/lib/contacts-api";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export const Route = createFileRoute("/messages")({
+  validateSearch: (search: Record<string, unknown>) => ({
+    contact: typeof search.contact === "string" ? search.contact : undefined,
+  }),
   head: () => ({
     meta: [
       { title: "Messages — Cleard" },
@@ -73,6 +87,10 @@ function MessagesPage() {
   const [newSubject, setNewSubject] = useState("");
   const [newBody, setNewBody] = useState("");
   const [creating, setCreating] = useState(false);
+  const [contacts, setContacts] = useState<ContactRow[]>([]);
+  const [recipientRole, setRecipientRole] = useState<RecipientRole>("Cleard Support");
+  const [recipientContactId, setRecipientContactId] = useState<string>("");
+  const { contact: contactParam } = Route.useSearch();
 
   const authorLabel = me.displayName || session.email || "You";
   /** Address this account's messages go out under. */
@@ -91,6 +109,34 @@ function MessagesPage() {
   }
 
   useEffect(() => { refreshThreads(true); }, []);
+
+  useEffect(() => {
+    listContacts()
+      .then(setContacts)
+      .catch(() => {/* contacts are optional for messaging */});
+  }, []);
+
+  // Deep link from Contacts: /messages?contact=<id> opens the composer for them.
+  useEffect(() => {
+    if (!contactParam || contacts.length === 0) return;
+    const c = contacts.find((x) => x.id === contactParam);
+    if (!c) return;
+    setRecipientContactId(c.id);
+    setRecipientRole(
+      (RECIPIENT_ROLES.find((r) => r.toLowerCase() === (c.contact_type ?? "").toLowerCase()) ??
+        "Subcontractor") as RecipientRole,
+    );
+    setNewOpen(true);
+  }, [contactParam, contacts]);
+
+  const selectedContact = contacts.find((c) => c.id === recipientContactId) ?? null;
+  const recipient: ThreadRecipient = {
+    role: recipientRole,
+    name: selectedContact?.name ?? null,
+    email: selectedContact?.email ?? null,
+    phone: selectedContact?.phone ?? null,
+    contactId: selectedContact?.id ?? null,
+  };
 
   const active = threads.find((t) => t.id === activeId) ?? null;
 
@@ -147,13 +193,22 @@ function MessagesPage() {
         body: newBody.trim(),
         authorLabel,
         isAdmin,
+        recipient,
       });
       setNewOpen(false);
       setNewSubject("");
       setNewBody("");
+      setRecipientRole("Cleard Support");
+      setRecipientContactId("");
       await refreshThreads();
       setActiveId(t.id);
-      toast.success(isAdmin ? "Thread started" : "Message sent to the Cleard team");
+      toast.success(
+        selectedContact
+          ? `Message sent to ${selectedContact.name}`
+          : isAdmin
+            ? "Thread started"
+            : "Message sent to the Cleard team",
+      );
     } catch (e) {
       toast.error((e as Error).message);
     } finally {
@@ -262,6 +317,11 @@ function MessagesPage() {
                     <div className="mt-0.5 text-[11px] text-muted-foreground">
                       Opened {fmt(active.created_at)}
                       {active.created_by_email ? ` · ${active.created_by_email}` : ""}
+                      {active.recipient_role
+                        ? ` · To ${active.recipient_name ?? active.recipient_role}${
+                            active.recipient_email ? ` <${active.recipient_email}>` : ""
+                          }${active.recipient_name ? ` (${active.recipient_role})` : ""}`
+                        : ""}
                     </div>
                   </div>
                   {isAdmin && (
@@ -356,6 +416,44 @@ function MessagesPage() {
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-3 sm:grid-cols-2">
+            <div>
+              <Label className="mb-1.5 block text-[11px] uppercase tracking-[0.07em] text-muted-foreground">
+                Send to (role)
+              </Label>
+              <Select value={recipientRole} onValueChange={(v) => setRecipientRole(v as RecipientRole)}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {RECIPIENT_ROLES.map((r) => (
+                    <SelectItem key={r} value={r}>{r}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label className="mb-1.5 block text-[11px] uppercase tracking-[0.07em] text-muted-foreground">
+                Person (from Contacts)
+              </Label>
+              <Select
+                value={recipientContactId || "none"}
+                onValueChange={(v) => setRecipientContactId(v === "none" ? "" : v)}
+              >
+                <SelectTrigger><SelectValue placeholder="No specific person" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">No specific person</SelectItem>
+                  {contacts.map((c) => (
+                    <SelectItem key={c.id} value={c.id}>
+                      {c.name}{c.email ? ` · ${c.email}` : ""}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {selectedContact && (
+                <p className="mt-1 text-[11px] text-muted-foreground">
+                  {selectedContact.email ?? "no email on file"}
+                  {selectedContact.phone ? ` · ${selectedContact.phone}` : ""}
+                </p>
+              )}
+            </div>
             <div className="sm:col-span-2">
               <Label className="mb-1.5 block text-[11px] uppercase tracking-[0.07em] text-muted-foreground">
                 Subject

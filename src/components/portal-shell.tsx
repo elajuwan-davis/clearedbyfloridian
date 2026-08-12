@@ -21,6 +21,8 @@ import { AdminOnly } from "@/components/admin-only";
 
 import { useBookmarks } from "@/lib/bookmarks-api";
 import { VictoriaWidget } from "@/components/victoria-widget";
+import { AskVictoriaDock } from "@/components/ask-victoria-dock";
+
 import { useSession, setImpersonatedTenant, type AppRole } from "@/lib/use-session";
 import { useMyIdentity } from "@/lib/profile-api";
 import { listAllTenantsFn } from "@/lib/tenants.functions";
@@ -720,7 +722,9 @@ function PortalShellInner({ children }: { children: ReactNode }) {
       </div>
 
 
+      <AskVictoriaDock />
       <InternalOnlyVictoria />
+
     </div>
   );
 }
