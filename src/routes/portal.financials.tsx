@@ -194,7 +194,7 @@ function FinancialsPage() {
   return (
     <PageShell
       crumbs={[{ label: "Workspace" }, { label: "Finance" }]}
-      title="Financials"
+      title="Savings"
       meta={
         loading
           ? "Loading…"
@@ -205,11 +205,13 @@ function FinancialsPage() {
           value={tab}
           onChange={setTab}
           options={[
-            { value: "with", label: "With Cléared" },
+            { value: "with", label: "Financial Overview" },
             { value: "before", label: "Before Cléared" },
+            { value: "savings", label: "Savings Calculator" },
           ]}
         />
       }
+
       toolbar={
         tab === "with" ? (
           <>
