@@ -344,7 +344,7 @@ export function AdminDashboard() {
           <StatTile label="Client companies" value={tenants.length} context={`${tenants.filter((t) => t.status === "active").length} active`} icon={<Building2 className="h-3.5 w-3.5" strokeWidth={1.75} />} />
           <StatTile label="User accounts" value={members.length} context="Across all clients" icon={<Users className="h-3.5 w-3.5" strokeWidth={1.75} />} />
           <StatTile label="Open invites" value={invites.open} context={`${invites.accepted} accepted`} icon={<Mail className="h-3.5 w-3.5" strokeWidth={1.75} />} to="/admin/invites" />
-          <StatTile label="Access requests" value={accessRequests.pending} context={`${accessRequests.total} all time`} icon={<UserPlus className="h-3.5 w-3.5" strokeWidth={1.75} />} tone="warning" to="/admin/access-requests" />
+          <StatTile label="Access requests" value={accessRequests.pending} context={`${accessRequests.total} all time`} icon={<UserPlus className="h-3.5 w-3.5" strokeWidth={1.75} />} tone="warning" to="/admin/invites" />
         </div>
 
         {/* Queue + critical panel */}
@@ -454,7 +454,7 @@ export function AdminDashboard() {
             <Surface padded={false} flat>
               <SectionHeader title="Quick actions" />
               <div className="flex flex-col gap-1 px-3 pb-3">
-                <QuickAction to="/admin/review-queue" icon={<ListChecks className="h-3.5 w-3.5" strokeWidth={1.75} />} label="Review queue" badge={correctionsCount || undefined} />
+                <QuickAction to="/admin/invites" icon={<ListChecks className="h-3.5 w-3.5" strokeWidth={1.75} />} label="Review queue" badge={correctionsCount || undefined} />
                 <QuickAction to="/portal/permits/new" icon={<Plus className="h-3.5 w-3.5" strokeWidth={1.75} />} label="Add new permit" />
                 <QuickAction to="/admin/gc-clients" icon={<Building2 className="h-3.5 w-3.5" strokeWidth={1.75} />} label="Client companies" />
                 <QuickAction to="/messages" icon={<Send className="h-3.5 w-3.5" strokeWidth={1.75} />} label="Send message" badge={adminUnread || undefined} />
@@ -464,7 +464,7 @@ export function AdminDashboard() {
             <Surface padded={false} flat>
               <SectionHeader
                 title="Recent activity"
-                action={<Link to="/admin/activity" className="text-muted-foreground transition-colors hover:text-foreground">View all</Link>}
+                action={<Link to="/admin/audit" className="text-muted-foreground transition-colors hover:text-foreground">View all</Link>}
               />
               {recent.length === 0 ? (
                 <EmptyState title="Nothing yet" description="Activity appears as permits and clients are added." icon={<Activity className="h-4 w-4" strokeWidth={1.75} />} />
