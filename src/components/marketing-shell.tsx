@@ -154,6 +154,7 @@ function MarketingFooter() {
         <nav className="flex flex-wrap items-center gap-x-6 gap-y-2 text-[13px]" style={{ color: "#7890A4" }}>
           <Link to="/products" style={{ color: "#7890A4" }}>Product</Link>
           <Link to="/pricing" style={{ color: "#7890A4" }}>Pricing</Link>
+
           <a href="https://floridianinc.com/privacy" style={{ color: "#7890A4" }}>Privacy</a>
           <a href="https://floridianinc.com/terms" style={{ color: "#7890A4" }}>Terms</a>
           <Link to="/contact" style={{ color: "#7890A4" }}>Contact</Link>
