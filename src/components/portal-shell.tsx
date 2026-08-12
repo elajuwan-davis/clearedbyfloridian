@@ -720,7 +720,9 @@ function PortalShellInner({ children }: { children: ReactNode }) {
       </div>
 
 
+      <AskVictoriaDock />
       <InternalOnlyVictoria />
+
     </div>
   );
 }
