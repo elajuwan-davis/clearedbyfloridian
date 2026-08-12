@@ -2086,6 +2086,11 @@ export type Database = {
           last_message_at: string
           last_message_from: string
           permit_id: string | null
+          recipient_contact_id: string | null
+          recipient_email: string | null
+          recipient_name: string | null
+          recipient_phone: string | null
+          recipient_role: string | null
           status: string
           subject: string
           tenant_id: string | null
@@ -2101,6 +2106,11 @@ export type Database = {
           last_message_at?: string
           last_message_from?: string
           permit_id?: string | null
+          recipient_contact_id?: string | null
+          recipient_email?: string | null
+          recipient_name?: string | null
+          recipient_phone?: string | null
+          recipient_role?: string | null
           status?: string
           subject: string
           tenant_id?: string | null
@@ -2116,6 +2126,11 @@ export type Database = {
           last_message_at?: string
           last_message_from?: string
           permit_id?: string | null
+          recipient_contact_id?: string | null
+          recipient_email?: string | null
+          recipient_name?: string | null
+          recipient_phone?: string | null
+          recipient_role?: string | null
           status?: string
           subject?: string
           tenant_id?: string | null
@@ -2127,6 +2142,13 @@ export type Database = {
             columns: ["permit_id"]
             isOneToOne: false
             referencedRelation: "permits"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "message_threads_recipient_contact_id_fkey"
+            columns: ["recipient_contact_id"]
+            isOneToOne: false
+            referencedRelation: "contacts"
             referencedColumns: ["id"]
           },
         ]
