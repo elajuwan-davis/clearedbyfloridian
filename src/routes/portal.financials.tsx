@@ -14,6 +14,8 @@ import {
 import { listPermits, updatePermit, type PermitRow, type PermitStatus } from "@/lib/permits-api";
 import { listAllFees, fmtUsd, parseDollarsToCents, type ManualFee } from "@/lib/manual-fees";
 import { BeforeClearedPanel } from "@/components/before-cleared-panel";
+import { SavingsCalculator } from "@/components/savings-calculator";
+
 import {
   PageShell,
   MetricRow,
