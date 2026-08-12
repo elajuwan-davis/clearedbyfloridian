@@ -8,7 +8,6 @@ import {
   DollarSign,
   FolderOpen,
   BookOpen,
-  ClipboardCheck,
 
   ShieldCheck,
   Scale,
@@ -50,13 +49,6 @@ export const bookmarksSection: NavSection = {
   to: "/portal/bookmarks",
 };
 
-export const complianceSection: NavSection = {
-  key: "compliance-top",
-  label: "Compliance",
-  icon: ClipboardCheck,
-  to: "/compliance",
-};
-
 export const calendarSection: NavSection = {
   key: "calendar",
   label: "Calendar",
@@ -80,7 +72,6 @@ export const navSections: NavSection[] = [
   bookmarksSection,
   calendarSection,
   billingSection,
-  complianceSection,
 
   {
     key: "permits",
@@ -99,8 +90,7 @@ export const navSections: NavSection[] = [
     icon: Users,
     items: [
       { to: "/portal/contacts", label: "Contacts" },
-      { to: "/forms/subcontractors", label: "Subcontractors" },
-      { to: "/portal/compliance", label: "Compliance" },
+      { to: "/portal/subcontractors", label: "Subcontractors & Compliance" },
       { to: "/portal/request-coi", label: "Insurance Requests", alertKey: "sub-insurance" },
     ],
   },
@@ -110,9 +100,7 @@ export const navSections: NavSection[] = [
     icon: DollarSign,
     items: [
       { to: "/portal/financials", label: "Financial Overview" },
-      { to: "/portal/billing", label: "Billing & Invoicing" },
       { to: "/portal/permit-fees", label: "Permit Fees" },
-      { to: "/invoices", label: "Invoices" },
       { to: "/fee-calculator", label: "Savings Calculator" },
     ],
   },
@@ -150,7 +138,6 @@ export const legalSection: NavSection = {
   icon: Scale,
   items: [
     { to: "/legal", label: "Document Library" },
-    { to: "/legal/notary-queue", label: "Remote Notary Queue" },
   ],
 };
 
@@ -165,7 +152,6 @@ export const adminSection: NavSection = {
     { to: "/admin/access-requests", label: "Access Requests" },
     { to: "/admin/gc-clients", label: "GC Clients" },
     { to: "/admin/workload", label: "Staff Workload" },
-    { to: "/admin/gc-compliance", label: "GC Compliance" },
     { to: "/admin/audit", label: "Audit Trail" },
     { to: "/admin/pricing", label: "Pricing" },
     { to: "/admin/protection", label: "Protection", divider: true },
@@ -179,12 +165,7 @@ export const settingsSection: NavSection = {
   key: "settings",
   label: "Settings",
   icon: Settings,
-  items: [
-    { to: "/profile", label: "Profile & Notifications" },
-    { to: "/portal/company", label: "Company Profile" },
-    { to: "/portal/contacts", label: "Contacts" },
-    { to: "/portal/bookmarks", label: "Bookmarks" },
-  ],
+  items: [{ to: "/profile", label: "Profile & Notifications" }],
 };
 
 export const subNavSections: NavSection[] = [
@@ -202,10 +183,7 @@ export const subSettingsSection: NavSection = {
   key: "settings",
   label: "Settings",
   icon: Settings,
-  items: [
-    { to: "/profile", label: "Profile" },
-    { to: "/portal/bookmarks", label: "Bookmarks" },
-  ],
+  items: [{ to: "/profile", label: "Profile" }],
 };
 
 export function sectionsForRole(role: AppRole | null, isAdmin: boolean): NavSection[] {

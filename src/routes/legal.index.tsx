@@ -120,7 +120,7 @@ function LegalLibraryPage() {
           </div>
           <div className="flex flex-wrap gap-2">
             <Button asChild variant="outline" size="sm" className="rounded-[3px] gap-1.5">
-              <Link to="/legal/notary-queue"><Stamp className="h-3.5 w-3.5" /> Remote Notary Queue</Link>
+              <Link to="/portal/notary-queue"><Stamp className="h-3.5 w-3.5" /> Remote Notary Queue</Link>
             </Button>
             <Button size="sm" variant="dark" className="rounded-[3px] gap-1.5" onClick={() => setAddOpen(true)}>
               <Plus className="h-3.5 w-3.5" /> Upload Document
