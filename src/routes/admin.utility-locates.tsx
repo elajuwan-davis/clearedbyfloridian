@@ -1,8 +1,8 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
 
-// Merged into /admin/protection (Utility Locates tab).
+// Merged into /portal/utility-locates (Utility Locates tab).
 export const Route = createFileRoute("/admin/utility-locates")({
   beforeLoad: () => {
-    throw redirect({ to: "/admin/protection" });
+    throw redirect({ to: "/portal/utility-locates" });
   },
 });
