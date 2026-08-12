@@ -2,12 +2,11 @@ import { useState, type ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
 import { Menu, X, ArrowRight } from "lucide-react";
 
-// Compare is intentionally NOT linked publicly — the page stays live at /versus
-// for internal use only.
+// Compare and Pricing are intentionally NOT linked publicly — the pages stay
+// live at /versus and /pricing for direct-URL / internal use only.
 const NAV_LINKS: Array<{ to: string; label: string; soon?: boolean }> = [
   { to: "/products", label: "Product" },
   { to: "/join", label: "For GCs" },
-  { to: "/pricing", label: "Pricing" },
   { to: "/about", label: "About" },
 ];
 
@@ -154,7 +153,8 @@ function MarketingFooter() {
 
         <nav className="flex flex-wrap items-center gap-x-6 gap-y-2 text-[13px]" style={{ color: "#7890A4" }}>
           <Link to="/products" style={{ color: "#7890A4" }}>Product</Link>
-          <Link to="/pricing" style={{ color: "#7890A4" }}>Pricing</Link>
+          
+
           <a href="https://floridianinc.com/privacy" style={{ color: "#7890A4" }}>Privacy</a>
           <a href="https://floridianinc.com/terms" style={{ color: "#7890A4" }}>Terms</a>
           <Link to="/contact" style={{ color: "#7890A4" }}>Contact</Link>
