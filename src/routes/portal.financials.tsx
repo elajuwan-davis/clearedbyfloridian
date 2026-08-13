@@ -283,7 +283,7 @@ function FinancialsPage() {
             meta={`${filtered.length} shown · ${fmtUsd(filteredTotals.combined)}`}
             padded={false}
           >
-            <TableShell>
+            <TableShell maxHeight={320}>
               <thead>
                 <tr>
                   <th className="w-8" />
