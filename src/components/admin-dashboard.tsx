@@ -456,7 +456,6 @@ export function AdminDashboard() {
               <div className="flex flex-col gap-1 px-3 pb-3">
                 <QuickAction to="/admin/invites" icon={<ListChecks className="h-3.5 w-3.5" strokeWidth={1.75} />} label="Review queue" badge={correctionsCount || undefined} />
                 <QuickAction to="/portal/permits/new" icon={<Plus className="h-3.5 w-3.5" strokeWidth={1.75} />} label="Add new permit" />
-                <QuickAction to="/admin/gc-clients" icon={<Building2 className="h-3.5 w-3.5" strokeWidth={1.75} />} label="Client companies" />
                 <QuickAction to="/messages" icon={<Send className="h-3.5 w-3.5" strokeWidth={1.75} />} label="Send message" badge={adminUnread || undefined} />
               </div>
             </Surface>
@@ -492,10 +491,7 @@ export function AdminDashboard() {
         {/* Analytics + rollups */}
         <div className="mt-3 grid grid-cols-1 gap-3 xl:grid-cols-3">
           <Surface padded={false} flat className="min-w-0">
-            <SectionHeader
-              title="Client companies"
-              action={<Link to="/admin/gc-clients" className="text-muted-foreground transition-colors hover:text-foreground">View all</Link>}
-            />
+            <SectionHeader title="Client companies" />
             {clientRows.length === 0 ? (
               <EmptyState title="No client companies yet" />
             ) : (

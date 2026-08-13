@@ -49,7 +49,6 @@ const protectedPortalPrefixes = [
   "/fee-calculator",
   "/insurance",
   "/admin",
-  "/projects",
   "/portal",
   "/lpoa-signing",
 ];

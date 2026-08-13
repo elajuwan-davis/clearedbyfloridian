@@ -18,7 +18,6 @@ import { Route as ContactRouteImport } from './routes/contact'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as FeeCalculatorRouteImport } from './routes/fee-calculator'
 import { Route as FormsRouteImport } from './routes/forms'
-import { Route as GcPortalRouteImport } from './routes/gc-portal'
 import { Route as InsuranceRouteImport } from './routes/insurance'
 import { Route as InvoicesRouteImport } from './routes/invoices'
 import { Route as JoinRouteImport } from './routes/join'
@@ -34,7 +33,6 @@ import { Route as ProcessRouteImport } from './routes/process'
 import { Route as ProductsRouteImport } from './routes/products'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as ProjectGuidesRouteImport } from './routes/project-guides'
-import { Route as ProjectsRouteImport } from './routes/projects'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as ResetPasswordConfirmRouteImport } from './routes/reset-password-confirm'
 import { Route as ServicesRouteImport } from './routes/services'
@@ -43,11 +41,8 @@ import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminAccessRequestsRouteImport } from './routes/admin.access-requests'
 import { Route as AdminActivityRouteImport } from './routes/admin.activity'
 import { Route as AdminAuditRouteImport } from './routes/admin.audit'
-import { Route as AdminBuildersRouteImport } from './routes/admin.builders'
 import { Route as AdminFeatureRequestsRouteImport } from './routes/admin.feature-requests'
-import { Route as AdminGcClientsRouteImport } from './routes/admin.gc-clients'
 import { Route as AdminGcComplianceRouteImport } from './routes/admin.gc-compliance'
-import { Route as AdminHubspotSimulateRouteImport } from './routes/admin.hubspot-simulate'
 import { Route as AdminInvitesRouteImport } from './routes/admin.invites'
 import { Route as AdminPricingRouteImport } from './routes/admin.pricing'
 import { Route as AdminProtectionRouteImport } from './routes/admin.protection'
@@ -63,7 +58,6 @@ import { Route as BuildingDeptLoginsSubmitRouteImport } from './routes/building-
 import { Route as FormsIndexRouteImport } from './routes/forms.index'
 import { Route as FormsPaymentAuthorizationRouteImport } from './routes/forms.payment-authorization'
 import { Route as FormsPermitIntakeRouteImport } from './routes/forms.permit-intake'
-import { Route as FormsSubcontractorIntakeRouteImport } from './routes/forms.subcontractor-intake'
 import { Route as FormsSubcontractorsRouteImport } from './routes/forms.subcontractors'
 import { Route as HomeownerTokenRouteImport } from './routes/homeowner.$token'
 import { Route as JoinTokenRouteImport } from './routes/join_.$token'
@@ -88,14 +82,11 @@ import { Route as PortalNotaryQueueRouteImport } from './routes/portal.notary-qu
 import { Route as PortalPermitFeesRouteImport } from './routes/portal.permit-fees'
 import { Route as PortalPermitsRouteImport } from './routes/portal.permits'
 import { Route as PortalProfileRouteImport } from './routes/portal.profile'
-import { Route as PortalProjectsRouteImport } from './routes/portal.projects'
 import { Route as PortalReportsRouteImport } from './routes/portal.reports'
 import { Route as PortalRequestCoiRouteImport } from './routes/portal.request-coi'
 import { Route as PortalRequestSubInsuranceRouteImport } from './routes/portal.request-sub-insurance'
 import { Route as PortalSubmissionsRouteImport } from './routes/portal.submissions'
 import { Route as PortalUtilityLocatesRouteImport } from './routes/portal.utility-locates'
-import { Route as ProjectsIdRouteImport } from './routes/projects.$id'
-import { Route as ProjectsNewRouteImport } from './routes/projects.new'
 import { Route as SubIntakeTokenRouteImport } from './routes/sub-intake.$token'
 import { Route as SubPortalTokenRouteImport } from './routes/sub-portal_.$token'
 import { Route as VersusIndexRouteImport } from './routes/versus.index'
@@ -119,7 +110,6 @@ import { Route as PortalHoaSubmittalsNewRouteImport } from './routes/portal.hoa-
 import { Route as PortalPermitsIndexRouteImport } from './routes/portal.permits.index'
 import { Route as PortalPermitsIdRouteImport } from './routes/portal.permits.$id'
 import { Route as PortalPermitsNewRouteImport } from './routes/portal.permits.new'
-import { Route as PortalProjectsIdRouteImport } from './routes/portal.projects.$id'
 import { Route as PortalSubcontractorsIndexRouteImport } from './routes/portal.subcontractors.index'
 import { Route as PortalSubcontractorsNewRouteImport } from './routes/portal.subcontractors.new'
 import { Route as PortalSubmissionsIndexRouteImport } from './routes/portal.submissions.index'
@@ -176,11 +166,6 @@ const FeeCalculatorRoute = FeeCalculatorRouteImport.update({
 const FormsRoute = FormsRouteImport.update({
   id: '/forms',
   path: '/forms',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const GcPortalRoute = GcPortalRouteImport.update({
-  id: '/gc-portal',
-  path: '/gc-portal',
   getParentRoute: () => rootRouteImport,
 } as any)
 const InsuranceRoute = InsuranceRouteImport.update({
@@ -258,11 +243,6 @@ const ProjectGuidesRoute = ProjectGuidesRouteImport.update({
   path: '/project-guides',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ProjectsRoute = ProjectsRouteImport.update({
-  id: '/projects',
-  path: '/projects',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
   path: '/reset-password',
@@ -303,29 +283,14 @@ const AdminAuditRoute = AdminAuditRouteImport.update({
   path: '/admin/audit',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminBuildersRoute = AdminBuildersRouteImport.update({
-  id: '/admin/builders',
-  path: '/admin/builders',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AdminFeatureRequestsRoute = AdminFeatureRequestsRouteImport.update({
   id: '/admin/feature-requests',
   path: '/admin/feature-requests',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminGcClientsRoute = AdminGcClientsRouteImport.update({
-  id: '/admin/gc-clients',
-  path: '/admin/gc-clients',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AdminGcComplianceRoute = AdminGcComplianceRouteImport.update({
   id: '/admin/gc-compliance',
   path: '/admin/gc-compliance',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminHubspotSimulateRoute = AdminHubspotSimulateRouteImport.update({
-  id: '/admin/hubspot-simulate',
-  path: '/admin/hubspot-simulate',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminInvitesRoute = AdminInvitesRouteImport.update({
@@ -405,12 +370,6 @@ const FormsPermitIntakeRoute = FormsPermitIntakeRouteImport.update({
   path: '/permit-intake',
   getParentRoute: () => FormsRoute,
 } as any)
-const FormsSubcontractorIntakeRoute =
-  FormsSubcontractorIntakeRouteImport.update({
-    id: '/subcontractor-intake',
-    path: '/subcontractor-intake',
-    getParentRoute: () => FormsRoute,
-  } as any)
 const FormsSubcontractorsRoute = FormsSubcontractorsRouteImport.update({
   id: '/subcontractors',
   path: '/subcontractors',
@@ -531,11 +490,6 @@ const PortalProfileRoute = PortalProfileRouteImport.update({
   path: '/profile',
   getParentRoute: () => PortalRoute,
 } as any)
-const PortalProjectsRoute = PortalProjectsRouteImport.update({
-  id: '/projects',
-  path: '/projects',
-  getParentRoute: () => PortalRoute,
-} as any)
 const PortalReportsRoute = PortalReportsRouteImport.update({
   id: '/reports',
   path: '/reports',
@@ -561,16 +515,6 @@ const PortalUtilityLocatesRoute = PortalUtilityLocatesRouteImport.update({
   id: '/utility-locates',
   path: '/utility-locates',
   getParentRoute: () => PortalRoute,
-} as any)
-const ProjectsIdRoute = ProjectsIdRouteImport.update({
-  id: '/$id',
-  path: '/$id',
-  getParentRoute: () => ProjectsRoute,
-} as any)
-const ProjectsNewRoute = ProjectsNewRouteImport.update({
-  id: '/new',
-  path: '/new',
-  getParentRoute: () => ProjectsRoute,
 } as any)
 const SubIntakeTokenRoute = SubIntakeTokenRouteImport.update({
   id: '/sub-intake/$token',
@@ -689,11 +633,6 @@ const PortalPermitsNewRoute = PortalPermitsNewRouteImport.update({
   path: '/new',
   getParentRoute: () => PortalPermitsRoute,
 } as any)
-const PortalProjectsIdRoute = PortalProjectsIdRouteImport.update({
-  id: '/$id',
-  path: '/$id',
-  getParentRoute: () => PortalProjectsRoute,
-} as any)
 const PortalSubcontractorsIndexRoute =
   PortalSubcontractorsIndexRouteImport.update({
     id: '/subcontractors/',
@@ -771,7 +710,6 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof DashboardRoute
   '/fee-calculator': typeof FeeCalculatorRoute
   '/forms': typeof FormsRouteWithChildren
-  '/gc-portal': typeof GcPortalRoute
   '/insurance': typeof InsuranceRoute
   '/invoices': typeof InvoicesRoute
   '/join': typeof JoinRoute
@@ -787,7 +725,6 @@ export interface FileRoutesByFullPath {
   '/products': typeof ProductsRoute
   '/profile': typeof ProfileRoute
   '/project-guides': typeof ProjectGuidesRoute
-  '/projects': typeof ProjectsRouteWithChildren
   '/reset-password': typeof ResetPasswordRoute
   '/reset-password-confirm': typeof ResetPasswordConfirmRoute
   '/services': typeof ServicesRoute
@@ -795,11 +732,8 @@ export interface FileRoutesByFullPath {
   '/admin/access-requests': typeof AdminAccessRequestsRoute
   '/admin/activity': typeof AdminActivityRoute
   '/admin/audit': typeof AdminAuditRoute
-  '/admin/builders': typeof AdminBuildersRoute
   '/admin/feature-requests': typeof AdminFeatureRequestsRoute
-  '/admin/gc-clients': typeof AdminGcClientsRoute
   '/admin/gc-compliance': typeof AdminGcComplianceRoute
-  '/admin/hubspot-simulate': typeof AdminHubspotSimulateRoute
   '/admin/invites': typeof AdminInvitesRoute
   '/admin/pricing': typeof AdminPricingRoute
   '/admin/protection': typeof AdminProtectionRoute
@@ -813,7 +747,6 @@ export interface FileRoutesByFullPath {
   '/building-dept-logins/submit': typeof BuildingDeptLoginsSubmitRoute
   '/forms/payment-authorization': typeof FormsPaymentAuthorizationRoute
   '/forms/permit-intake': typeof FormsPermitIntakeRoute
-  '/forms/subcontractor-intake': typeof FormsSubcontractorIntakeRoute
   '/forms/subcontractors': typeof FormsSubcontractorsRoute
   '/homeowner/$token': typeof HomeownerTokenRoute
   '/join/$token': typeof JoinTokenRoute
@@ -836,14 +769,11 @@ export interface FileRoutesByFullPath {
   '/portal/permit-fees': typeof PortalPermitFeesRoute
   '/portal/permits': typeof PortalPermitsRouteWithChildren
   '/portal/profile': typeof PortalProfileRoute
-  '/portal/projects': typeof PortalProjectsRouteWithChildren
   '/portal/reports': typeof PortalReportsRoute
   '/portal/request-coi': typeof PortalRequestCoiRoute
   '/portal/request-sub-insurance': typeof PortalRequestSubInsuranceRoute
   '/portal/submissions': typeof PortalSubmissionsRouteWithChildren
   '/portal/utility-locates': typeof PortalUtilityLocatesRoute
-  '/projects/$id': typeof ProjectsIdRoute
-  '/projects/new': typeof ProjectsNewRoute
   '/sub-intake/$token': typeof SubIntakeTokenRoute
   '/sub-portal/$token': typeof SubPortalTokenRoute
   '/versus/$slug': typeof VersusSlugRoute
@@ -867,7 +797,6 @@ export interface FileRoutesByFullPath {
   '/portal/hoa-submittals/new': typeof PortalHoaSubmittalsNewRoute
   '/portal/permits/$id': typeof PortalPermitsIdRoute
   '/portal/permits/new': typeof PortalPermitsNewRoute
-  '/portal/projects/$id': typeof PortalProjectsIdRoute
   '/portal/subcontractors/new': typeof PortalSubcontractorsNewRoute
   '/portal/submissions/$id': typeof PortalSubmissionsIdRoute
   '/admin/blog/': typeof AdminBlogIndexRoute
@@ -895,7 +824,6 @@ export interface FileRoutesByTo {
   '/contact': typeof ContactRoute
   '/dashboard': typeof DashboardRoute
   '/fee-calculator': typeof FeeCalculatorRoute
-  '/gc-portal': typeof GcPortalRoute
   '/insurance': typeof InsuranceRoute
   '/invoices': typeof InvoicesRoute
   '/join': typeof JoinRoute
@@ -910,7 +838,6 @@ export interface FileRoutesByTo {
   '/products': typeof ProductsRoute
   '/profile': typeof ProfileRoute
   '/project-guides': typeof ProjectGuidesRoute
-  '/projects': typeof ProjectsRouteWithChildren
   '/reset-password': typeof ResetPasswordRoute
   '/reset-password-confirm': typeof ResetPasswordConfirmRoute
   '/services': typeof ServicesRoute
@@ -918,11 +845,8 @@ export interface FileRoutesByTo {
   '/admin/access-requests': typeof AdminAccessRequestsRoute
   '/admin/activity': typeof AdminActivityRoute
   '/admin/audit': typeof AdminAuditRoute
-  '/admin/builders': typeof AdminBuildersRoute
   '/admin/feature-requests': typeof AdminFeatureRequestsRoute
-  '/admin/gc-clients': typeof AdminGcClientsRoute
   '/admin/gc-compliance': typeof AdminGcComplianceRoute
-  '/admin/hubspot-simulate': typeof AdminHubspotSimulateRoute
   '/admin/invites': typeof AdminInvitesRoute
   '/admin/pricing': typeof AdminPricingRoute
   '/admin/protection': typeof AdminProtectionRoute
@@ -936,7 +860,6 @@ export interface FileRoutesByTo {
   '/building-dept-logins/submit': typeof BuildingDeptLoginsSubmitRoute
   '/forms/payment-authorization': typeof FormsPaymentAuthorizationRoute
   '/forms/permit-intake': typeof FormsPermitIntakeRoute
-  '/forms/subcontractor-intake': typeof FormsSubcontractorIntakeRoute
   '/forms/subcontractors': typeof FormsSubcontractorsRoute
   '/homeowner/$token': typeof HomeownerTokenRoute
   '/join/$token': typeof JoinTokenRoute
@@ -958,13 +881,10 @@ export interface FileRoutesByTo {
   '/portal/notary-queue': typeof PortalNotaryQueueRoute
   '/portal/permit-fees': typeof PortalPermitFeesRoute
   '/portal/profile': typeof PortalProfileRoute
-  '/portal/projects': typeof PortalProjectsRouteWithChildren
   '/portal/reports': typeof PortalReportsRoute
   '/portal/request-coi': typeof PortalRequestCoiRoute
   '/portal/request-sub-insurance': typeof PortalRequestSubInsuranceRoute
   '/portal/utility-locates': typeof PortalUtilityLocatesRoute
-  '/projects/$id': typeof ProjectsIdRoute
-  '/projects/new': typeof ProjectsNewRoute
   '/sub-intake/$token': typeof SubIntakeTokenRoute
   '/sub-portal/$token': typeof SubPortalTokenRoute
   '/versus/$slug': typeof VersusSlugRoute
@@ -988,7 +908,6 @@ export interface FileRoutesByTo {
   '/portal/hoa-submittals/new': typeof PortalHoaSubmittalsNewRoute
   '/portal/permits/$id': typeof PortalPermitsIdRoute
   '/portal/permits/new': typeof PortalPermitsNewRoute
-  '/portal/projects/$id': typeof PortalProjectsIdRoute
   '/portal/subcontractors/new': typeof PortalSubcontractorsNewRoute
   '/portal/submissions/$id': typeof PortalSubmissionsIdRoute
   '/admin/blog': typeof AdminBlogIndexRoute
@@ -1018,7 +937,6 @@ export interface FileRoutesById {
   '/dashboard': typeof DashboardRoute
   '/fee-calculator': typeof FeeCalculatorRoute
   '/forms': typeof FormsRouteWithChildren
-  '/gc-portal': typeof GcPortalRoute
   '/insurance': typeof InsuranceRoute
   '/invoices': typeof InvoicesRoute
   '/join': typeof JoinRoute
@@ -1034,7 +952,6 @@ export interface FileRoutesById {
   '/products': typeof ProductsRoute
   '/profile': typeof ProfileRoute
   '/project-guides': typeof ProjectGuidesRoute
-  '/projects': typeof ProjectsRouteWithChildren
   '/reset-password': typeof ResetPasswordRoute
   '/reset-password-confirm': typeof ResetPasswordConfirmRoute
   '/services': typeof ServicesRoute
@@ -1042,11 +959,8 @@ export interface FileRoutesById {
   '/admin/access-requests': typeof AdminAccessRequestsRoute
   '/admin/activity': typeof AdminActivityRoute
   '/admin/audit': typeof AdminAuditRoute
-  '/admin/builders': typeof AdminBuildersRoute
   '/admin/feature-requests': typeof AdminFeatureRequestsRoute
-  '/admin/gc-clients': typeof AdminGcClientsRoute
   '/admin/gc-compliance': typeof AdminGcComplianceRoute
-  '/admin/hubspot-simulate': typeof AdminHubspotSimulateRoute
   '/admin/invites': typeof AdminInvitesRoute
   '/admin/pricing': typeof AdminPricingRoute
   '/admin/protection': typeof AdminProtectionRoute
@@ -1060,7 +974,6 @@ export interface FileRoutesById {
   '/building-dept-logins/submit': typeof BuildingDeptLoginsSubmitRoute
   '/forms/payment-authorization': typeof FormsPaymentAuthorizationRoute
   '/forms/permit-intake': typeof FormsPermitIntakeRoute
-  '/forms/subcontractor-intake': typeof FormsSubcontractorIntakeRoute
   '/forms/subcontractors': typeof FormsSubcontractorsRoute
   '/homeowner/$token': typeof HomeownerTokenRoute
   '/join_/$token': typeof JoinTokenRoute
@@ -1083,14 +996,11 @@ export interface FileRoutesById {
   '/portal/permit-fees': typeof PortalPermitFeesRoute
   '/portal/permits': typeof PortalPermitsRouteWithChildren
   '/portal/profile': typeof PortalProfileRoute
-  '/portal/projects': typeof PortalProjectsRouteWithChildren
   '/portal/reports': typeof PortalReportsRoute
   '/portal/request-coi': typeof PortalRequestCoiRoute
   '/portal/request-sub-insurance': typeof PortalRequestSubInsuranceRoute
   '/portal/submissions': typeof PortalSubmissionsRouteWithChildren
   '/portal/utility-locates': typeof PortalUtilityLocatesRoute
-  '/projects/$id': typeof ProjectsIdRoute
-  '/projects/new': typeof ProjectsNewRoute
   '/sub-intake/$token': typeof SubIntakeTokenRoute
   '/sub-portal_/$token': typeof SubPortalTokenRoute
   '/versus/$slug': typeof VersusSlugRoute
@@ -1114,7 +1024,6 @@ export interface FileRoutesById {
   '/portal/hoa-submittals/new': typeof PortalHoaSubmittalsNewRoute
   '/portal/permits/$id': typeof PortalPermitsIdRoute
   '/portal/permits/new': typeof PortalPermitsNewRoute
-  '/portal/projects/$id': typeof PortalProjectsIdRoute
   '/portal/subcontractors/new': typeof PortalSubcontractorsNewRoute
   '/portal/submissions/$id': typeof PortalSubmissionsIdRoute
   '/admin/blog/': typeof AdminBlogIndexRoute
@@ -1145,7 +1054,6 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/fee-calculator'
     | '/forms'
-    | '/gc-portal'
     | '/insurance'
     | '/invoices'
     | '/join'
@@ -1161,7 +1069,6 @@ export interface FileRouteTypes {
     | '/products'
     | '/profile'
     | '/project-guides'
-    | '/projects'
     | '/reset-password'
     | '/reset-password-confirm'
     | '/services'
@@ -1169,11 +1076,8 @@ export interface FileRouteTypes {
     | '/admin/access-requests'
     | '/admin/activity'
     | '/admin/audit'
-    | '/admin/builders'
     | '/admin/feature-requests'
-    | '/admin/gc-clients'
     | '/admin/gc-compliance'
-    | '/admin/hubspot-simulate'
     | '/admin/invites'
     | '/admin/pricing'
     | '/admin/protection'
@@ -1187,7 +1091,6 @@ export interface FileRouteTypes {
     | '/building-dept-logins/submit'
     | '/forms/payment-authorization'
     | '/forms/permit-intake'
-    | '/forms/subcontractor-intake'
     | '/forms/subcontractors'
     | '/homeowner/$token'
     | '/join/$token'
@@ -1210,14 +1113,11 @@ export interface FileRouteTypes {
     | '/portal/permit-fees'
     | '/portal/permits'
     | '/portal/profile'
-    | '/portal/projects'
     | '/portal/reports'
     | '/portal/request-coi'
     | '/portal/request-sub-insurance'
     | '/portal/submissions'
     | '/portal/utility-locates'
-    | '/projects/$id'
-    | '/projects/new'
     | '/sub-intake/$token'
     | '/sub-portal/$token'
     | '/versus/$slug'
@@ -1241,7 +1141,6 @@ export interface FileRouteTypes {
     | '/portal/hoa-submittals/new'
     | '/portal/permits/$id'
     | '/portal/permits/new'
-    | '/portal/projects/$id'
     | '/portal/subcontractors/new'
     | '/portal/submissions/$id'
     | '/admin/blog/'
@@ -1269,7 +1168,6 @@ export interface FileRouteTypes {
     | '/contact'
     | '/dashboard'
     | '/fee-calculator'
-    | '/gc-portal'
     | '/insurance'
     | '/invoices'
     | '/join'
@@ -1284,7 +1182,6 @@ export interface FileRouteTypes {
     | '/products'
     | '/profile'
     | '/project-guides'
-    | '/projects'
     | '/reset-password'
     | '/reset-password-confirm'
     | '/services'
@@ -1292,11 +1189,8 @@ export interface FileRouteTypes {
     | '/admin/access-requests'
     | '/admin/activity'
     | '/admin/audit'
-    | '/admin/builders'
     | '/admin/feature-requests'
-    | '/admin/gc-clients'
     | '/admin/gc-compliance'
-    | '/admin/hubspot-simulate'
     | '/admin/invites'
     | '/admin/pricing'
     | '/admin/protection'
@@ -1310,7 +1204,6 @@ export interface FileRouteTypes {
     | '/building-dept-logins/submit'
     | '/forms/payment-authorization'
     | '/forms/permit-intake'
-    | '/forms/subcontractor-intake'
     | '/forms/subcontractors'
     | '/homeowner/$token'
     | '/join/$token'
@@ -1332,13 +1225,10 @@ export interface FileRouteTypes {
     | '/portal/notary-queue'
     | '/portal/permit-fees'
     | '/portal/profile'
-    | '/portal/projects'
     | '/portal/reports'
     | '/portal/request-coi'
     | '/portal/request-sub-insurance'
     | '/portal/utility-locates'
-    | '/projects/$id'
-    | '/projects/new'
     | '/sub-intake/$token'
     | '/sub-portal/$token'
     | '/versus/$slug'
@@ -1362,7 +1252,6 @@ export interface FileRouteTypes {
     | '/portal/hoa-submittals/new'
     | '/portal/permits/$id'
     | '/portal/permits/new'
-    | '/portal/projects/$id'
     | '/portal/subcontractors/new'
     | '/portal/submissions/$id'
     | '/admin/blog'
@@ -1391,7 +1280,6 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/fee-calculator'
     | '/forms'
-    | '/gc-portal'
     | '/insurance'
     | '/invoices'
     | '/join'
@@ -1407,7 +1295,6 @@ export interface FileRouteTypes {
     | '/products'
     | '/profile'
     | '/project-guides'
-    | '/projects'
     | '/reset-password'
     | '/reset-password-confirm'
     | '/services'
@@ -1415,11 +1302,8 @@ export interface FileRouteTypes {
     | '/admin/access-requests'
     | '/admin/activity'
     | '/admin/audit'
-    | '/admin/builders'
     | '/admin/feature-requests'
-    | '/admin/gc-clients'
     | '/admin/gc-compliance'
-    | '/admin/hubspot-simulate'
     | '/admin/invites'
     | '/admin/pricing'
     | '/admin/protection'
@@ -1433,7 +1317,6 @@ export interface FileRouteTypes {
     | '/building-dept-logins/submit'
     | '/forms/payment-authorization'
     | '/forms/permit-intake'
-    | '/forms/subcontractor-intake'
     | '/forms/subcontractors'
     | '/homeowner/$token'
     | '/join_/$token'
@@ -1456,14 +1339,11 @@ export interface FileRouteTypes {
     | '/portal/permit-fees'
     | '/portal/permits'
     | '/portal/profile'
-    | '/portal/projects'
     | '/portal/reports'
     | '/portal/request-coi'
     | '/portal/request-sub-insurance'
     | '/portal/submissions'
     | '/portal/utility-locates'
-    | '/projects/$id'
-    | '/projects/new'
     | '/sub-intake/$token'
     | '/sub-portal_/$token'
     | '/versus/$slug'
@@ -1487,7 +1367,6 @@ export interface FileRouteTypes {
     | '/portal/hoa-submittals/new'
     | '/portal/permits/$id'
     | '/portal/permits/new'
-    | '/portal/projects/$id'
     | '/portal/subcontractors/new'
     | '/portal/submissions/$id'
     | '/admin/blog/'
@@ -1517,7 +1396,6 @@ export interface RootRouteChildren {
   DashboardRoute: typeof DashboardRoute
   FeeCalculatorRoute: typeof FeeCalculatorRoute
   FormsRoute: typeof FormsRouteWithChildren
-  GcPortalRoute: typeof GcPortalRoute
   InsuranceRoute: typeof InsuranceRoute
   InvoicesRoute: typeof InvoicesRoute
   JoinRoute: typeof JoinRoute
@@ -1533,7 +1411,6 @@ export interface RootRouteChildren {
   ProductsRoute: typeof ProductsRoute
   ProfileRoute: typeof ProfileRoute
   ProjectGuidesRoute: typeof ProjectGuidesRoute
-  ProjectsRoute: typeof ProjectsRouteWithChildren
   ResetPasswordRoute: typeof ResetPasswordRoute
   ResetPasswordConfirmRoute: typeof ResetPasswordConfirmRoute
   ServicesRoute: typeof ServicesRoute
@@ -1541,11 +1418,8 @@ export interface RootRouteChildren {
   AdminAccessRequestsRoute: typeof AdminAccessRequestsRoute
   AdminActivityRoute: typeof AdminActivityRoute
   AdminAuditRoute: typeof AdminAuditRoute
-  AdminBuildersRoute: typeof AdminBuildersRoute
   AdminFeatureRequestsRoute: typeof AdminFeatureRequestsRoute
-  AdminGcClientsRoute: typeof AdminGcClientsRoute
   AdminGcComplianceRoute: typeof AdminGcComplianceRoute
-  AdminHubspotSimulateRoute: typeof AdminHubspotSimulateRoute
   AdminInvitesRoute: typeof AdminInvitesRoute
   AdminPricingRoute: typeof AdminPricingRoute
   AdminProtectionRoute: typeof AdminProtectionRoute
@@ -1646,13 +1520,6 @@ declare module '@tanstack/react-router' {
       path: '/forms'
       fullPath: '/forms'
       preLoaderRoute: typeof FormsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/gc-portal': {
-      id: '/gc-portal'
-      path: '/gc-portal'
-      fullPath: '/gc-portal'
-      preLoaderRoute: typeof GcPortalRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/insurance': {
@@ -1760,13 +1627,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProjectGuidesRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/projects': {
-      id: '/projects'
-      path: '/projects'
-      fullPath: '/projects'
-      preLoaderRoute: typeof ProjectsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/reset-password': {
       id: '/reset-password'
       path: '/reset-password'
@@ -1823,13 +1683,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminAuditRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin/builders': {
-      id: '/admin/builders'
-      path: '/admin/builders'
-      fullPath: '/admin/builders'
-      preLoaderRoute: typeof AdminBuildersRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/admin/feature-requests': {
       id: '/admin/feature-requests'
       path: '/admin/feature-requests'
@@ -1837,25 +1690,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminFeatureRequestsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin/gc-clients': {
-      id: '/admin/gc-clients'
-      path: '/admin/gc-clients'
-      fullPath: '/admin/gc-clients'
-      preLoaderRoute: typeof AdminGcClientsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/admin/gc-compliance': {
       id: '/admin/gc-compliance'
       path: '/admin/gc-compliance'
       fullPath: '/admin/gc-compliance'
       preLoaderRoute: typeof AdminGcComplianceRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/hubspot-simulate': {
-      id: '/admin/hubspot-simulate'
-      path: '/admin/hubspot-simulate'
-      fullPath: '/admin/hubspot-simulate'
-      preLoaderRoute: typeof AdminHubspotSimulateRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/invites': {
@@ -1961,13 +1800,6 @@ declare module '@tanstack/react-router' {
       path: '/permit-intake'
       fullPath: '/forms/permit-intake'
       preLoaderRoute: typeof FormsPermitIntakeRouteImport
-      parentRoute: typeof FormsRoute
-    }
-    '/forms/subcontractor-intake': {
-      id: '/forms/subcontractor-intake'
-      path: '/subcontractor-intake'
-      fullPath: '/forms/subcontractor-intake'
-      preLoaderRoute: typeof FormsSubcontractorIntakeRouteImport
       parentRoute: typeof FormsRoute
     }
     '/forms/subcontractors': {
@@ -2138,13 +1970,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PortalProfileRouteImport
       parentRoute: typeof PortalRoute
     }
-    '/portal/projects': {
-      id: '/portal/projects'
-      path: '/projects'
-      fullPath: '/portal/projects'
-      preLoaderRoute: typeof PortalProjectsRouteImport
-      parentRoute: typeof PortalRoute
-    }
     '/portal/reports': {
       id: '/portal/reports'
       path: '/reports'
@@ -2179,20 +2004,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/portal/utility-locates'
       preLoaderRoute: typeof PortalUtilityLocatesRouteImport
       parentRoute: typeof PortalRoute
-    }
-    '/projects/$id': {
-      id: '/projects/$id'
-      path: '/$id'
-      fullPath: '/projects/$id'
-      preLoaderRoute: typeof ProjectsIdRouteImport
-      parentRoute: typeof ProjectsRoute
-    }
-    '/projects/new': {
-      id: '/projects/new'
-      path: '/new'
-      fullPath: '/projects/new'
-      preLoaderRoute: typeof ProjectsNewRouteImport
-      parentRoute: typeof ProjectsRoute
     }
     '/sub-intake/$token': {
       id: '/sub-intake/$token'
@@ -2355,13 +2166,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PortalPermitsNewRouteImport
       parentRoute: typeof PortalPermitsRoute
     }
-    '/portal/projects/$id': {
-      id: '/portal/projects/$id'
-      path: '/$id'
-      fullPath: '/portal/projects/$id'
-      preLoaderRoute: typeof PortalProjectsIdRouteImport
-      parentRoute: typeof PortalProjectsRoute
-    }
     '/portal/subcontractors/': {
       id: '/portal/subcontractors/'
       path: '/subcontractors'
@@ -2463,7 +2267,6 @@ const BuildingDeptLoginsRouteWithChildren =
 interface FormsRouteChildren {
   FormsPaymentAuthorizationRoute: typeof FormsPaymentAuthorizationRoute
   FormsPermitIntakeRoute: typeof FormsPermitIntakeRoute
-  FormsSubcontractorIntakeRoute: typeof FormsSubcontractorIntakeRoute
   FormsSubcontractorsRoute: typeof FormsSubcontractorsRoute
   FormsIndexRoute: typeof FormsIndexRoute
 }
@@ -2471,7 +2274,6 @@ interface FormsRouteChildren {
 const FormsRouteChildren: FormsRouteChildren = {
   FormsPaymentAuthorizationRoute: FormsPaymentAuthorizationRoute,
   FormsPermitIntakeRoute: FormsPermitIntakeRoute,
-  FormsSubcontractorIntakeRoute: FormsSubcontractorIntakeRoute,
   FormsSubcontractorsRoute: FormsSubcontractorsRoute,
   FormsIndexRoute: FormsIndexRoute,
 }
@@ -2492,18 +2294,6 @@ const PortalPermitsRouteChildren: PortalPermitsRouteChildren = {
 
 const PortalPermitsRouteWithChildren = PortalPermitsRoute._addFileChildren(
   PortalPermitsRouteChildren,
-)
-
-interface PortalProjectsRouteChildren {
-  PortalProjectsIdRoute: typeof PortalProjectsIdRoute
-}
-
-const PortalProjectsRouteChildren: PortalProjectsRouteChildren = {
-  PortalProjectsIdRoute: PortalProjectsIdRoute,
-}
-
-const PortalProjectsRouteWithChildren = PortalProjectsRoute._addFileChildren(
-  PortalProjectsRouteChildren,
 )
 
 interface PortalSubmissionsRouteChildren {
@@ -2537,7 +2327,6 @@ interface PortalRouteChildren {
   PortalPermitFeesRoute: typeof PortalPermitFeesRoute
   PortalPermitsRoute: typeof PortalPermitsRouteWithChildren
   PortalProfileRoute: typeof PortalProfileRoute
-  PortalProjectsRoute: typeof PortalProjectsRouteWithChildren
   PortalReportsRoute: typeof PortalReportsRoute
   PortalRequestCoiRoute: typeof PortalRequestCoiRoute
   PortalRequestSubInsuranceRoute: typeof PortalRequestSubInsuranceRoute
@@ -2576,7 +2365,6 @@ const PortalRouteChildren: PortalRouteChildren = {
   PortalPermitFeesRoute: PortalPermitFeesRoute,
   PortalPermitsRoute: PortalPermitsRouteWithChildren,
   PortalProfileRoute: PortalProfileRoute,
-  PortalProjectsRoute: PortalProjectsRouteWithChildren,
   PortalReportsRoute: PortalReportsRoute,
   PortalRequestCoiRoute: PortalRequestCoiRoute,
   PortalRequestSubInsuranceRoute: PortalRequestSubInsuranceRoute,
@@ -2600,20 +2388,6 @@ const PortalRouteChildren: PortalRouteChildren = {
 const PortalRouteWithChildren =
   PortalRoute._addFileChildren(PortalRouteChildren)
 
-interface ProjectsRouteChildren {
-  ProjectsIdRoute: typeof ProjectsIdRoute
-  ProjectsNewRoute: typeof ProjectsNewRoute
-}
-
-const ProjectsRouteChildren: ProjectsRouteChildren = {
-  ProjectsIdRoute: ProjectsIdRoute,
-  ProjectsNewRoute: ProjectsNewRoute,
-}
-
-const ProjectsRouteWithChildren = ProjectsRoute._addFileChildren(
-  ProjectsRouteChildren,
-)
-
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
@@ -2624,7 +2398,6 @@ const rootRouteChildren: RootRouteChildren = {
   DashboardRoute: DashboardRoute,
   FeeCalculatorRoute: FeeCalculatorRoute,
   FormsRoute: FormsRouteWithChildren,
-  GcPortalRoute: GcPortalRoute,
   InsuranceRoute: InsuranceRoute,
   InvoicesRoute: InvoicesRoute,
   JoinRoute: JoinRoute,
@@ -2640,7 +2413,6 @@ const rootRouteChildren: RootRouteChildren = {
   ProductsRoute: ProductsRoute,
   ProfileRoute: ProfileRoute,
   ProjectGuidesRoute: ProjectGuidesRoute,
-  ProjectsRoute: ProjectsRouteWithChildren,
   ResetPasswordRoute: ResetPasswordRoute,
   ResetPasswordConfirmRoute: ResetPasswordConfirmRoute,
   ServicesRoute: ServicesRoute,
@@ -2648,11 +2420,8 @@ const rootRouteChildren: RootRouteChildren = {
   AdminAccessRequestsRoute: AdminAccessRequestsRoute,
   AdminActivityRoute: AdminActivityRoute,
   AdminAuditRoute: AdminAuditRoute,
-  AdminBuildersRoute: AdminBuildersRoute,
   AdminFeatureRequestsRoute: AdminFeatureRequestsRoute,
-  AdminGcClientsRoute: AdminGcClientsRoute,
   AdminGcComplianceRoute: AdminGcComplianceRoute,
-  AdminHubspotSimulateRoute: AdminHubspotSimulateRoute,
   AdminInvitesRoute: AdminInvitesRoute,
   AdminPricingRoute: AdminPricingRoute,
   AdminProtectionRoute: AdminProtectionRoute,

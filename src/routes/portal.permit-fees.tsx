@@ -3,7 +3,6 @@ import { useEffect, useMemo, useState, type ChangeEvent } from "react";
 import { Wallet, Upload, CheckCircle2, X, Plus, Pencil, Trash2, Package } from "lucide-react";
 import { LogPermitFeeDialog } from "@/components/log-permit-fee-dialog";
 import { listAllFees, deleteFee, fmtUsd, type ManualFee } from "@/lib/manual-fees";
-import { PROJECTS } from "@/lib/projects-data";
 import { listPermits, type PermitRow } from "@/lib/permits-api";
 import { getBundle, bundleBudgetedTotal, bundleAllFeesConfirmed } from "@/lib/bundle";
 
@@ -44,13 +43,21 @@ function PermitFeesPage() {
   const [logOpen, setLogOpen] = useState(false);
   const [editing, setEditing] = useState<ManualFee | null>(null);
   const [bundledPermits, setBundledPermits] = useState<PermitRow[]>([]);
+  const [permits, setPermits] = useState<PermitRow[]>([]);
 
   useEffect(() => {
-    const refresh = () => setManualFees(listAllFees());
+    const refresh = () => {
+      void listAllFees()
+        .then(setManualFees)
+        .catch(() => setManualFees([]));
+    };
     refresh();
     window.addEventListener("manual-fees:changed", refresh);
     listPermits()
-      .then((rows) => setBundledPermits(rows.filter((r) => getBundle(r)?.enabled)))
+      .then((rows) => {
+        setPermits(rows);
+        setBundledPermits(rows.filter((r) => getBundle(r)?.enabled));
+      })
       .catch(() => {});
     return () => window.removeEventListener("manual-fees:changed", refresh);
   }, []);
@@ -65,7 +72,7 @@ function PermitFeesPage() {
   );
 
   function projectName(id: string) {
-    return PROJECTS.find((p) => p.id === id)?.name ?? id;
+    return permits.find((p) => p.id === id)?.project_name ?? id;
   }
 
   function upload(permit: string, e: ChangeEvent<HTMLInputElement>) {
@@ -213,7 +220,7 @@ function PermitFeesPage() {
                   <button type="button" onClick={() => openEdit(f)} className="p-1.5 text-obsidian/60 hover:text-obsidian" aria-label="Edit">
                     <Pencil className="h-3.5 w-3.5" />
                   </button>
-                  <button type="button" onClick={() => deleteFee(f.id)} className="p-1.5 text-obsidian/60 hover:text-oxblood" aria-label="Delete">
+                  <button type="button" onClick={() => void deleteFee(f.id)} className="p-1.5 text-obsidian/60 hover:text-oxblood" aria-label="Delete">
                     <Trash2 className="h-3.5 w-3.5" />
                   </button>
                 </div>

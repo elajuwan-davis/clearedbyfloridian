@@ -1,5 +1,7 @@
 // Registered contractors — used to pre-fill NTBO / Owner Auth forms.
-// localStorage-backed until wired to Supabase (table: registered_contractors).
+// Backed by public.registered_contractors (migration 20260813130000).
+
+import { supabase } from "@/integrations/supabase/client";
 
 export type Contractor = {
   id: string;
@@ -14,71 +16,72 @@ export type Contractor = {
   created_at: string;
 };
 
-const KEY = "cleared.contractors.v1";
 const EVT = "contractors:changed";
 
-const SEED: Contractor[] = [
-  {
-    id: "seed-floridian",
-    firm_name: "Cleard",
-    contact_name: "Elajuwan Davis",
-    address: "1000 S Pine Island Rd, Suite 155, Plantation, FL 33324",
-    phone: "(561) 555-0100",
-    email: "info@cleard.com",
-    license_number: "CPC1459161",
-    license_type: "CPC",
-    active: true,
-    created_at: new Date("2026-01-01").toISOString(),
-  },
-];
+/**
+ * `registered_contractors` is not in the generated Supabase types yet, so the
+ * query builder is described structurally rather than reached for through `any`.
+ */
+type Result = { data: unknown; error: { message: string } | null };
+type Filter = PromiseLike<Result> & {
+  eq: (column: string, value: string | boolean) => Filter;
+  order: (column: string, opts: { ascending: boolean }) => Filter;
+  maybeSingle: () => PromiseLike<Result>;
+  single: () => PromiseLike<Result>;
+  select: (columns: string) => Filter;
+};
+type Table = {
+  select: (columns: string) => Filter;
+  insert: (row: Record<string, unknown>) => Filter;
+  update: (patch: Record<string, unknown>) => Filter;
+  delete: () => Filter;
+};
 
-function read(): Contractor[] {
-  if (typeof window === "undefined") return SEED;
-  try {
-    const raw = window.localStorage.getItem(KEY);
-    if (!raw) {
-      window.localStorage.setItem(KEY, JSON.stringify(SEED));
-      return SEED;
-    }
-    return JSON.parse(raw) as Contractor[];
-  } catch {
-    return SEED;
-  }
+function table(): Table {
+  return supabase.from("registered_contractors" as never) as unknown as Table;
 }
 
-function write(list: Contractor[]) {
+function announceChange() {
   if (typeof window === "undefined") return;
-  window.localStorage.setItem(KEY, JSON.stringify(list));
   window.dispatchEvent(new CustomEvent(EVT));
 }
 
-export function listContractors(activeOnly = false): Contractor[] {
-  const list = read().sort((a, b) => a.firm_name.localeCompare(b.firm_name));
-  return activeOnly ? list.filter((c) => c.active) : list;
+export async function listContractors(activeOnly = false): Promise<Contractor[]> {
+  let q = table().select("*").order("firm_name", { ascending: true });
+  if (activeOnly) q = q.eq("active", true);
+  const { data, error } = await q;
+  if (error) throw new Error(error.message);
+  return (data ?? []) as Contractor[];
 }
 
-export function getContractor(id: string): Contractor | undefined {
-  return read().find((c) => c.id === id);
+export async function getContractor(id: string): Promise<Contractor | undefined> {
+  const { data, error } = await table().select("*").eq("id", id).maybeSingle();
+  if (error) throw new Error(error.message);
+  return (data as Contractor | null) ?? undefined;
 }
 
-export function addContractor(
+export async function addContractor(
   input: Omit<Contractor, "id" | "created_at">,
-): Contractor {
-  const rec: Contractor = {
-    ...input,
-    id: Math.random().toString(36).slice(2, 10),
-    created_at: new Date().toISOString(),
-  };
-  write([rec, ...read()]);
-  return rec;
+): Promise<Contractor> {
+  const { data, error } = await table().insert(input).select("*").single();
+  if (error) throw new Error(error.message);
+  announceChange();
+  return data as Contractor;
 }
 
-export function updateContractor(id: string, patch: Partial<Contractor>) {
-  write(read().map((c) => (c.id === id ? { ...c, ...patch } : c)));
+export async function updateContractor(id: string, patch: Partial<Contractor>): Promise<void> {
+  const { id: _ignored, created_at: _created, ...rest } = patch;
+  const { error } = await table()
+    .update({ ...rest, updated_at: new Date().toISOString() })
+    .eq("id", id);
+  if (error) throw new Error(error.message);
+  announceChange();
 }
 
-export function deleteContractor(id: string) {
-  write(read().filter((c) => c.id !== id));
+export async function deleteContractor(id: string): Promise<void> {
+  const { error } = await table().delete().eq("id", id);
+  if (error) throw new Error(error.message);
+  announceChange();
 }
 
 export function subscribeContractors(cb: () => void): () => void {
@@ -88,4 +91,14 @@ export function subscribeContractors(cb: () => void): () => void {
   return () => window.removeEventListener(EVT, h);
 }
 
-export const LICENSE_TYPES = ["CPC", "CGC", "CBC", "CRC", "EC", "CFC", "CAC", "SI", "Other"] as const;
+export const LICENSE_TYPES = [
+  "CPC",
+  "CGC",
+  "CBC",
+  "CRC",
+  "EC",
+  "CFC",
+  "CAC",
+  "SI",
+  "Other",
+] as const;

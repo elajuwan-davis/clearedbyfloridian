@@ -1,7 +1,7 @@
-import { createFileRoute, notFound, Link } from "@tanstack/react-router";
+import { createFileRoute, notFound } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { QRCodeSVG } from "qrcode.react";
-import { Printer, ArrowLeft, ShieldCheck } from "lucide-react";
+import { Printer, ShieldCheck } from "lucide-react";
 import { getProjectById, fullAddress, type Project } from "@/lib/projects-data";
 import { findPortalForAddress } from "@/lib/municipalities";
 import { buildInspections, loadInspections, POOL_INSPECTIONS, type Inspection } from "@/lib/inspections";
@@ -55,11 +55,7 @@ function PermitCard({ project }: { project: Project }) {
     <div className="min-h-screen bg-[#f5f2ec] text-obsidian print:bg-white">
       {/* Screen-only top bar */}
       <div className="print:hidden border-b border-obsidian/10 bg-white">
-        <div className="mx-auto max-w-4xl px-6 py-3 flex items-center justify-between">
-          <Link to="/portal/projects/$id" params={{ id: project.id }}
-                className="inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.14em] text-obsidian/70 hover:text-obsidian">
-            <ArrowLeft className="h-3 w-3" /> Back to Project
-          </Link>
+        <div className="mx-auto max-w-4xl px-6 py-3 flex items-center justify-end">
           <button onClick={() => window.print()}
                   className="inline-flex items-center gap-1.5 border border-[#153157] bg-[#153157] text-white px-3 py-1.5 text-xs font-medium rounded-[3px] hover:opacity-90">
             <Printer className="h-3.5 w-3.5" /> Print / Save PDF
