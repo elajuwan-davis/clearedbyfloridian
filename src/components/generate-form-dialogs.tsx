@@ -10,7 +10,7 @@ import { Link } from "@tanstack/react-router";
 import type { Project } from "@/lib/projects-data";
 import { fullAddress } from "@/lib/projects-data";
 import { getPCN } from "@/lib/project-pcn";
-import { listContractors, getContractor, type Contractor } from "@/lib/contractors-store";
+import { listContractors, type Contractor } from "@/lib/contractors-store";
 import {
   generateNTBO,
   generateOwnerAuth,
@@ -39,7 +39,7 @@ export function GenerateNTBODialog({
   onOpenChange: (v: boolean) => void;
   project: Project;
 }) {
-  const contractors = useMemo(() => (open ? listContractors(true) : []), [open]);
+  const [contractors, setContractors] = useState<Contractor[]>([]);
   const [contractorId, setContractorId] = useState<string>("");
 
   const [projectName, setProjectName] = useState("");
@@ -64,13 +64,16 @@ export function GenerateNTBODialog({
       setProjectName(project.name);
       void getPCN({ projectId: project.id }).then((v) => setParcelTaxId(v));
       setContractorId("");
+      void listContractors(true)
+        .then(setContractors)
+        .catch(() => setContractors([]));
     }
   }, [open, project]);
 
   // Auto-fill contractor fields when selected
   useEffect(() => {
     if (!contractorId) return;
-    const c = getContractor(contractorId);
+    const c = contractors.find((x) => x.id === contractorId);
     if (!c) return;
     const { line1, line2 } = splitAddress(c.address);
     setFirmName(c.firm_name);
@@ -82,7 +85,7 @@ export function GenerateNTBODialog({
     setLicenseNumber(c.license_number);
     setPrintNameCorporation(c.firm_name);
     setRepresentativeName(c.contact_name);
-  }, [contractorId]);
+  }, [contractorId, contractors]);
 
   async function generate() {
     setBusy(true);
@@ -206,7 +209,7 @@ export function GenerateOwnerAuthDialog({
   onOpenChange: (v: boolean) => void;
   project: Project;
 }) {
-  const contractors = useMemo(() => (open ? listContractors(true) : []), [open]);
+  const [contractors, setContractors] = useState<Contractor[]>([]);
   const [contractorId, setContractorId] = useState<string>("");
 
   const [propertyAddress, setPropertyAddress] = useState("");
@@ -224,19 +227,22 @@ export function GenerateOwnerAuthDialog({
       setPropertyAddress(fullAddress(project));
       setPermitProjectNo(project.permit_no || "");
       setContractorId("");
+      void listContractors(true)
+        .then(setContractors)
+        .catch(() => setContractors([]));
     }
   }, [open, project]);
 
   useEffect(() => {
     if (!contractorId) return;
-    const c = getContractor(contractorId);
+    const c = contractors.find((x) => x.id === contractorId);
     if (!c) return;
     setFirmName(c.firm_name);
     setPrivateProvider(c.contact_name);
     setTelephone(c.phone);
     setEmail(c.email);
     setLicenseNumber(c.license_number);
-  }, [contractorId]);
+  }, [contractorId, contractors]);
 
   async function generate() {
     setBusy(true);
