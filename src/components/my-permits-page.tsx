@@ -228,14 +228,6 @@ export function MyPermitsPage() {
                       {g.items.map((p) => {
                         const c = permitCompleteness(p);
                         const vendor = getVendor(p.project_name);
-                        const tone: MetricTone =
-                          p.status === "permit_issued" || p.status === "approved"
-                            ? "success"
-                            : p.status === "on_hold" || p.status === "corrections_required"
-                              ? "warning"
-                              : p.status === "cancelled"
-                                ? "danger"
-                                : "info";
                         const barColor =
                           c.percent === 100 ? "#22C55E" : c.percent >= 60 ? "#3B82F6" : c.percent >= 30 ? "#F59E0B" : "#EF4444";
                         return (
