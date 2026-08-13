@@ -108,16 +108,18 @@ export function SubcontractorsManager() {
           <p className="mt-3 text-sm text-obsidian/60">No subcontractors saved yet.</p>
         </div>
       ) : (
-        <div className="mt-8 border border-obsidian/10 bg-white rounded-[3px] overflow-hidden">
-          <div className="hidden md:grid grid-cols-[1.5fr_0.8fr_0.9fr_0.9fr_0.9fr_0.8fr_0.6fr] gap-4 px-5 py-3 border-b border-obsidian/10 bg-obsidian/5 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/60">
-            <div>Company</div><div>Trade</div><div>License #</div><div>COI</div><div>Status</div><div>Link</div><div></div>
+        <div className="mt-8 border border-obsidian/10 bg-white rounded-[3px] overflow-x-auto">
+          <div className="hidden min-w-[1080px] md:grid grid-cols-[1.4fr_0.8fr_0.85fr_0.85fr_0.9fr_0.85fr_0.95fr] gap-4 px-5 py-3 border-b border-obsidian/10 bg-obsidian/5 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/60">
+            <div>Company</div><div>Trade</div><div>License #</div><div>COI</div><div>Docs</div><div>DBPR Status</div><div className="text-right">Verify / Link</div>
           </div>
           {subs.map((s) => {
             const coi = coiTone[coiLifecycle(s)];
             const complete = subIsComplete(s);
             const missing = subMissingFields(s);
+            const dbpr = dbprTone[(s as any).dbpr_status ?? "unknown"] ?? dbprTone.unknown;
+            const isVerifying = !!verifying[s.id];
             return (
-              <div key={s.id} className="grid grid-cols-2 md:grid-cols-[1.5fr_0.8fr_0.9fr_0.9fr_0.9fr_0.8fr_0.6fr] gap-x-4 gap-y-2 px-5 py-4 border-b border-obsidian/10 last:border-b-0 items-center text-sm">
+              <div key={s.id} className="grid min-w-[1080px] grid-cols-2 md:grid-cols-[1.4fr_0.8fr_0.85fr_0.85fr_0.9fr_0.85fr_0.95fr] gap-x-4 gap-y-2 px-5 py-4 border-b border-obsidian/10 last:border-b-0 items-center text-sm">
                 <Link to="/portal/subcontractors/new" search={{ id: s.id } as never} className="hover:underline">
                   <div className="text-obsidian font-medium">{s.company_name}</div>
                   {s.qualifier_name && <div className="text-[11px] text-obsidian/50">{s.qualifier_name}</div>}
@@ -139,17 +141,89 @@ export function SubcontractorsManager() {
                     </span>
                   )}
                 </div>
-                <button onClick={() => copySubLink(s.completion_token)} className="inline-flex items-center gap-1 font-mono text-[10px] uppercase tracking-[0.12em] text-obsidian/70 hover:text-obsidian">
-                  <Copy className="h-3 w-3" /> Copy
-                </button>
-                <button onClick={() => remove(s.id, s.company_name)} className="text-red-600 hover:text-red-800 justify-self-end">
-                  <Trash2 className="h-3.5 w-3.5" />
-                </button>
+                <div>
+                  <span className={`inline-block px-2 py-0.5 border rounded-[2px] font-mono text-[10px] uppercase tracking-[0.12em] ${dbpr.cls}`}>{dbpr.label}</span>
+                  {(s as any).dbpr_expiration && (
+                    <div className="mt-1 text-[10px] text-obsidian/50 font-mono">exp {(s as any).dbpr_expiration}</div>
+                  )}
+                </div>
+                <div className="flex items-center justify-end gap-2">
+                  <button
+                    type="button"
+                    onClick={() => verify(s)}
+                    disabled={!s.license_number || isVerifying}
+                    title={s.license_number ? "Verify with DBPR" : "No license number on file yet"}
+                    className="inline-flex items-center gap-1 border border-obsidian/25 bg-white px-2 py-1 font-mono text-[10px] uppercase tracking-[0.12em] text-obsidian rounded-[3px] hover:bg-obsidian/5 disabled:cursor-not-allowed disabled:opacity-40"
+                  >
+                    {isVerifying ? <Loader2 className="h-3 w-3 animate-spin" /> : <ShieldCheck className="h-3 w-3" />} Verify
+                  </button>
+                  {s.license_number && (
+                    <a
+                      href={dbprLookupUrl(s.license_number)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      title="Open DBPR lookup"
+                      className="text-obsidian/60 hover:text-obsidian"
+                    >
+                      <ExternalLink className="h-3.5 w-3.5" />
+                    </a>
+                  )}
+                  <button onClick={() => copySubLink(s.completion_token)} title="Copy intake link" className="text-obsidian/60 hover:text-obsidian">
+                    <Copy className="h-3.5 w-3.5" />
+                  </button>
+                  <button onClick={() => remove(s.id, s.company_name)} title="Delete" className="text-red-600 hover:text-red-800">
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </button>
+                </div>
               </div>
             );
           })}
         </div>
       )}
+
+      {/* COI & license compliance summary */}
+      <div className="mt-10 grid gap-4 lg:grid-cols-[220px_1fr]">
+        <div className="grid grid-cols-2 gap-3 lg:grid-cols-1">
+          <div className="border border-obsidian/10 bg-white rounded-[3px] p-4">
+            <div className="font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/50">Needs Attention</div>
+            <div className={`mt-2 text-3xl ${needsAttention.length ? "text-amber-700" : "text-obsidian"}`}>{needsAttention.length}</div>
+          </div>
+          <div className="border border-obsidian/10 bg-white rounded-[3px] p-4">
+            <div className="font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/50">Expired COIs</div>
+            <div className={`mt-2 text-3xl ${expiredCount ? "text-red-700" : "text-obsidian"}`}>{expiredCount}</div>
+          </div>
+        </div>
+        <div className="border border-obsidian/10 bg-white rounded-[3px]">
+          <div className="flex items-center justify-between border-b border-obsidian/10 px-4 py-2.5">
+            <div className="font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/60">COI Alerts</div>
+            <div className="font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/40">{needsAttention.length} needs attention</div>
+          </div>
+          {loading ? (
+            <div className="px-4 py-4 text-[12px] text-obsidian/50">Loading…</div>
+          ) : needsAttention.length === 0 ? (
+            <div className="flex items-center gap-2.5 px-4 py-4">
+              <ShieldCheck className="h-4 w-4 shrink-0 text-emerald-600" />
+              <div className="text-[12.5px] text-obsidian/60">All COIs on file are 30+ days from expiration.</div>
+            </div>
+          ) : (
+            <div>
+              {needsAttention.map((s) => {
+                const c = coiLifecycle(s);
+                return (
+                  <div key={s.id} className="flex items-center gap-3 border-b border-obsidian/10 px-4 py-2.5 last:border-b-0">
+                    <AlertTriangle className={`h-4 w-4 shrink-0 ${c === "expired" ? "text-red-600" : "text-amber-600"}`} />
+                    <div className="min-w-0 flex-1">
+                      <div className="truncate text-[12.5px] font-medium text-obsidian">{s.company_name}</div>
+                      <div className="truncate text-[11px] text-obsidian/50">{s.trade || "—"} · Exp {s.coi_expiration || "—"}</div>
+                    </div>
+                    <span className={`inline-block px-2 py-0.5 border rounded-[2px] font-mono text-[10px] uppercase tracking-[0.12em] ${coiTone[c].cls}`}>{coiTone[c].label}</span>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      </div>
 
       <MarketplacePanel />
 
