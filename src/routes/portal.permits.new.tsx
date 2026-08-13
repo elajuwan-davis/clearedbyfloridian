@@ -193,7 +193,6 @@ function NewPermitPage() {
     engineerContact: "",
     engineerLicense: "",
     engineerEmail: "",
-    contractorCompany: "",
     ...CLEARD_CONTRACTOR_DEFAULTS,
     /** Checked = GC supplies its own qualifier instead of Cleard's defaults. */
     differentQualifier: false,
