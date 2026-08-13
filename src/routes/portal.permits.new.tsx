@@ -228,6 +228,62 @@ function NewPermitPage() {
       .catch(() => {});
   }, []);
 
+  // ---- Draft auto-save (new permits only) ----------------------------------
+  // The intake is long, so the form auto-saves itself locally as the GC types.
+  // Nothing is written to the permit record until they submit, so a draft can
+  // be kept with any number of fields still empty.
+  const DRAFT_KEY = "cleard.permit-intake.draft.v1";
+  const [draftSavedAt, setDraftSavedAt] = useState<string | null>(null);
+  const [draftRestored, setDraftRestored] = useState(false);
+  const draftHydrated = useRef(false);
+
+  useEffect(() => {
+    if (isEditing) {
+      draftHydrated.current = true;
+      return;
+    }
+    try {
+      const raw = window.localStorage.getItem(DRAFT_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw) as { savedAt?: string; form?: Record<string, unknown> };
+        if (parsed?.form) {
+          setForm((f) => ({ ...f, ...(parsed.form as typeof f) }));
+          setDraftSavedAt(parsed.savedAt ?? null);
+          setDraftRestored(true);
+        }
+      }
+    } catch {
+      /* ignore malformed drafts */
+    }
+    draftHydrated.current = true;
+  }, [isEditing]);
+
+  useEffect(() => {
+    if (isEditing || !draftHydrated.current) return;
+    const t = window.setTimeout(() => {
+      try {
+        const savedAt = new Date().toISOString();
+        window.localStorage.setItem(DRAFT_KEY, JSON.stringify({ savedAt, form }));
+        setDraftSavedAt(savedAt);
+      } catch {
+        /* storage full or unavailable — drafting is best-effort */
+      }
+    }, 800);
+    return () => window.clearTimeout(t);
+  }, [form, isEditing]);
+
+  function discardDraft() {
+    try {
+      window.localStorage.removeItem(DRAFT_KEY);
+    } catch {
+      /* ignore */
+    }
+    setDraftSavedAt(null);
+    setDraftRestored(false);
+    window.location.reload();
+  }
+
+
   // Load existing permit for editing
   useEffect(() => {
     if (!editId) return;
