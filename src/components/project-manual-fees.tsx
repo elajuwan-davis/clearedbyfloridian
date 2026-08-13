@@ -15,7 +15,11 @@ export function ProjectManualFees({ projectId }: { projectId: string }) {
   const [editing, setEditing] = useState<ManualFee | null>(null);
 
   useEffect(() => {
-    const refresh = () => setFees(listFeesForProject(projectId));
+    const refresh = () => {
+      void listFeesForProject(projectId)
+        .then(setFees)
+        .catch(() => setFees([]));
+    };
     refresh();
     window.addEventListener("manual-fees:changed", refresh);
     return () => window.removeEventListener("manual-fees:changed", refresh);
@@ -72,7 +76,7 @@ export function ProjectManualFees({ projectId }: { projectId: string }) {
                   <button
                     type="button"
                     aria-label="Delete"
-                    onClick={() => { if (confirm("Delete this fee?")) deleteFee(f.id); }}
+                    onClick={() => { if (confirm("Delete this fee?")) void deleteFee(f.id); }}
                     className="p-1 text-obsidian/50 hover:text-oxblood"
                   >
                     <Trash2 className="h-3.5 w-3.5" />
