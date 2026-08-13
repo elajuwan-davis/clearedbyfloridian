@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { PortalShell } from "@/components/portal-shell";
 import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
 import { StripeEmbedded } from "@/components/stripe-embedded";
@@ -8,9 +8,19 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
-import { CreditCard, ShieldCheck } from "lucide-react";
+import { CreditCard, FileSignature, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
-import { savePaymentAuth, loadPaymentAuth, type PaymentAuthRecord } from "@/lib/payment-auth";
+import {
+  PAYMENT_AUTH_TERMS,
+  createPaymentAuthDraft,
+  generatePaymentAuthPdf,
+  isPaymentAuthSigned,
+  loadPaymentAuth,
+  type PaymentAuthRecord,
+} from "@/lib/payment-auth";
+import { EmbeddedSigningDialog } from "@/components/embedded-signing-dialog";
+import { sendAgreementForSignature, type SignatureRequest } from "@/lib/signature-requests";
+import { supabase } from "@/integrations/supabase/client";
 import { getStripeEnvironment, isPaymentsConfigured } from "@/lib/stripe";
 import { createPaymentAuthSetup, listSavedPaymentMethods } from "@/lib/payments.functions";
 
@@ -57,6 +67,11 @@ function PaymentAuthPage() {
   const [methods, setMethods] = useState<SavedMethod[]>([]);
   const [loadingMethods, setLoadingMethods] = useState(true);
   const [onFile, setOnFile] = useState<PaymentAuthRecord | null>(null);
+  const [sending, setSending] = useState(false);
+  const [signerEmail, setSignerEmail] = useState<string | null>(null);
+  const [signing, setSigning] = useState<
+    (SignatureRequest & { embeddedSigningUrl?: string }) | null
+  >(null);
 
   function update<K extends keyof typeof form>(k: K, v: (typeof form)[K]) {
     setForm((f) => ({ ...f, [k]: v }));
@@ -80,65 +95,15 @@ function PaymentAuthPage() {
     }
   }, []);
 
-  useEffect(() => {
-    setOnFile(loadPaymentAuth());
-    void refreshMethods();
-  }, [refreshMethods]);
-
-  // Signature pad
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const drawing = useRef(false);
-  const [signed, setSigned] = useState(false);
-
-  useEffect(() => {
-    const c = canvasRef.current;
-    if (!c) return;
-    const dpr = window.devicePixelRatio || 1;
-    const rect = c.getBoundingClientRect();
-    c.width = rect.width * dpr;
-    c.height = rect.height * dpr;
-    const ctx = c.getContext("2d");
-    if (!ctx) return;
-    ctx.scale(dpr, dpr);
-    ctx.lineCap = "round";
-    ctx.lineJoin = "round";
-    ctx.lineWidth = 1.8;
-    ctx.strokeStyle = "#111827";
+  const refreshAuth = useCallback(async () => {
+    setOnFile(await loadPaymentAuth());
   }, []);
 
-  function pos(e: React.PointerEvent<HTMLCanvasElement>) {
-    const rect = e.currentTarget.getBoundingClientRect();
-    return { x: e.clientX - rect.left, y: e.clientY - rect.top };
-  }
-  function start(e: React.PointerEvent<HTMLCanvasElement>) {
-    e.currentTarget.setPointerCapture(e.pointerId);
-    drawing.current = true;
-    const { x, y } = pos(e);
-    const ctx = canvasRef.current?.getContext("2d");
-    if (!ctx) return;
-    ctx.beginPath();
-    ctx.moveTo(x, y);
-  }
-  function move(e: React.PointerEvent<HTMLCanvasElement>) {
-    if (!drawing.current) return;
-    const { x, y } = pos(e);
-    const ctx = canvasRef.current?.getContext("2d");
-    if (!ctx) return;
-    ctx.lineTo(x, y);
-    ctx.stroke();
-    if (!signed) setSigned(true);
-  }
-  function end() {
-    drawing.current = false;
-  }
-  function clearSig() {
-    const c = canvasRef.current;
-    if (!c) return;
-    const ctx = c.getContext("2d");
-    if (!ctx) return;
-    ctx.clearRect(0, 0, c.width, c.height);
-    setSigned(false);
-  }
+  useEffect(() => {
+    void refreshAuth();
+    void refreshMethods();
+    void supabase.auth.getUser().then(({ data }) => setSignerEmail(data?.user?.email ?? null));
+  }, [refreshAuth, refreshMethods]);
 
   function validate(): boolean {
     if (!form.cardholder.trim()) {
@@ -153,11 +118,51 @@ function PaymentAuthPage() {
       toast.error("You must agree to the terms");
       return false;
     }
-    if (!signed) {
-      toast.error("Please sign to authorize");
+    if (!signerEmail) {
+      toast.error("Sign in to sign the authorization");
       return false;
     }
     return true;
+  }
+
+  /** Real SignWell document generated from the terms rendered above. */
+  async function signAuthorization() {
+    if (!validate()) return;
+    setSending(true);
+    try {
+      const draft = await createPaymentAuthDraft({
+        accountHolder: form.cardholder,
+        billingAddress: form.billingAddress,
+        authorizationDate: form.authDate,
+      });
+      const pdf = await generatePaymentAuthPdf({
+        accountHolder: form.cardholder,
+        billingAddress: form.billingAddress,
+        authorizationDate: form.authDate,
+      });
+      const req = await sendAgreementForSignature({
+        contextKind: "payment_authorization",
+        contextId: draft.id,
+        documentName: "Payment Authorization",
+        pdf,
+        recipientEmail: signerEmail ?? "",
+        recipientName: form.cardholder,
+        subject: "Signature required — Payment Authorization",
+      });
+      setSigning(req);
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : String(e));
+    } finally {
+      setSending(false);
+    }
+  }
+
+  /** Only the webhook can make this signed; the iframe closing means nothing. */
+  async function afterSigning() {
+    const fresh = await loadPaymentAuth();
+    setOnFile(fresh);
+    if (isPaymentAuthSigned(fresh)) toast.success("Payment authorization signed");
+    else toast.message("Waiting on SignWell to confirm the signature.");
   }
 
   const fetchClientSecret = useCallback(async () => {
@@ -173,24 +178,14 @@ function PaymentAuthPage() {
   }, []);
 
   function openCheckout() {
-    if (!validate()) return;
     if (!isPaymentsConfigured()) {
       toast.error("Stripe is not configured for this build yet.");
       return;
     }
-    const record: PaymentAuthRecord = {
-      cardholder: form.cardholder,
-      billingAddress: form.billingAddress,
-      cardType: "Credit",
-      brand: "Stripe",
-      last4: "",
-      expiry: "",
-      authorizedAt: new Date().toISOString(),
-      authorizationDate: form.authDate,
-      signatureDataUrl: canvasRef.current?.toDataURL("image/png") ?? "",
-    };
-    savePaymentAuth(record);
-    setOnFile(record);
+    if (!isPaymentAuthSigned(onFile)) {
+      toast.error("Sign the authorization first — SignWell has to confirm it.");
+      return;
+    }
     setCheckoutOpen(true);
   }
 
@@ -241,10 +236,15 @@ function PaymentAuthPage() {
               ))}
             </ul>
           )}
-          {onFile && (
+          {onFile && isPaymentAuthSigned(onFile) && onFile.completedAt && (
             <p className="text-xs font-mono uppercase tracking-[0.14em] text-obsidian/50">
-              Authorization signed {new Date(onFile.authorizedAt).toLocaleDateString()} by{" "}
-              {onFile.cardholder}
+              Authorization signed {new Date(onFile.completedAt).toLocaleDateString()} by{" "}
+              {onFile.accountHolder} · SignWell confirmed
+            </p>
+          )}
+          {onFile && !isPaymentAuthSigned(onFile) && onFile.status !== "draft" && (
+            <p className="text-xs font-mono uppercase tracking-[0.14em] text-amber-700">
+              Authorization sent to SignWell — awaiting confirmation
             </p>
           )}
         </section>
@@ -280,38 +280,13 @@ function PaymentAuthPage() {
 
         <section className="mt-12 space-y-4">
           <h2 className="display-serif text-2xl text-obsidian">Terms and Conditions</h2>
+          {/* Rendered from the same list the signed PDF is built from. */}
           <div className="border border-obsidian/15 bg-paper-warm rounded-[3px] p-5 text-sm text-obsidian/75 leading-relaxed max-h-72 overflow-y-auto space-y-3">
-            <p>
-              By submitting this payment authorization form, I give full authorization to Cleard and
-              its associates for payment of services, permit fees, and any other charges associated
-              with any project under the contractor.
-            </p>
-            <p>
-              <strong>ACH Payment Notice:</strong> If submitting an ACH payment for Payment of
-              Services, a Debit or Credit card must be on file for payment of municipality permit
-              fees.
-            </p>
-            <p>
-              <strong>Scope of Services:</strong> Cleard acts solely as a liaison between the Client
-              and government permitting agencies.
-            </p>
-            <p>
-              <strong>Limitation of Liability:</strong> The Client agrees to indemnify, defend, and
-              hold harmless Cleard, its owners, and employees from any claims arising out of or
-              related to the project, including agency decisions, project delays, and work product
-              accuracy.
-            </p>
-            <p>
-              <strong>No Guarantee of Timelines:</strong> Turnaround estimates are based on past
-              experience and do not constitute a guarantee.
-            </p>
-            <p>
-              <strong>Strict No-Refund Policy:</strong> Once the permitting process has commenced,
-              no refunds shall be issued for any reason. A $100 decline fee is assessed if declined
-              payment is not rectified within two business days. All projects cease until payment is
-              made and a 10% fee accrues on the total owed until rectified.
-            </p>
-            <p>This authorization remains in effect until cancelled in writing.</p>
+            {PAYMENT_AUTH_TERMS.map((t) => (
+              <p key={t.heading ?? t.body.slice(0, 24)}>
+                {t.heading && <strong>{t.heading}:</strong>} {t.body}
+              </p>
+            ))}
           </div>
 
           <label className="flex items-start gap-3 cursor-pointer">
@@ -327,32 +302,35 @@ function PaymentAuthPage() {
         </section>
 
         <section className="mt-10 space-y-3">
-          <div className="flex items-baseline justify-between">
-            <Label className="font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/65">
-              Signature — Please sign below to authorize this payment method
-            </Label>
-            <button
-              type="button"
-              onClick={clearSig}
-              className="text-[11px] font-mono uppercase tracking-[0.14em] text-obsidian/55 hover:text-oxblood"
-            >
-              Clear signature
-            </button>
-          </div>
-          <canvas
-            ref={canvasRef}
-            onPointerDown={start}
-            onPointerMove={move}
-            onPointerUp={end}
-            onPointerCancel={end}
-            onPointerLeave={end}
-            className="w-full h-44 bg-white border border-obsidian/25 rounded-[3px] touch-none cursor-crosshair"
-            aria-label="Signature pad"
-          />
+          <Label className="font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/65">
+            Signature — signed through SignWell
+          </Label>
+          <p className="text-sm text-obsidian/60">
+            The authorization above is generated as a PDF and signed inside this page through
+            SignWell. It counts as signed only once SignWell confirms it.
+          </p>
+          <Button
+            variant="dark"
+            className="rounded-[3px] gap-2"
+            disabled={sending || isPaymentAuthSigned(onFile)}
+            onClick={() => void signAuthorization()}
+          >
+            <FileSignature className="h-4 w-4" />
+            {isPaymentAuthSigned(onFile)
+              ? "Authorization signed"
+              : sending
+                ? "Opening SignWell…"
+                : "Sign authorization"}
+          </Button>
         </section>
 
         <div className="mt-10 pt-6 border-t border-obsidian/10 space-y-3">
-          <Button variant="dark" className="rounded-[3px] w-full sm:w-auto" onClick={openCheckout}>
+          <Button
+            variant="dark"
+            className="rounded-[3px] w-full sm:w-auto"
+            disabled={!isPaymentAuthSigned(onFile)}
+            onClick={openCheckout}
+          >
             Continue to secure Stripe checkout
           </Button>
           <p className="flex items-center gap-2 text-xs text-obsidian/55">
@@ -367,6 +345,20 @@ function PaymentAuthPage() {
           </button>
         </div>
       </div>
+
+      {signing && (
+        <EmbeddedSigningDialog
+          open
+          onOpenChange={(v) => {
+            if (!v) {
+              setSigning(null);
+              void afterSigning();
+            }
+          }}
+          request={signing}
+          onCompleted={() => void afterSigning()}
+        />
+      )}
 
       {checkoutOpen && (
         <StripeEmbedded

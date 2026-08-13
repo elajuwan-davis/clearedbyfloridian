@@ -49,6 +49,9 @@ function notifyChanged() {
 const isLivePermitId = (id: string | undefined | null): boolean =>
   !!id && /^[a-f0-9-]{36}$/i.test(id);
 
+/** Agreements that are signed without a permit behind them. */
+export type AgreementKind = "paa" | "payment_authorization" | "lpoa";
+
 const SELECT =
   "id, permit_id, document_key, document_name, recipient_email, recipient_role, status, status_source, created_at, sent_at, signed_at, completed_at, signed_by_name, signwell_document_id, embedded_signing_url, test_mode, last_event_type";
 
@@ -169,6 +172,65 @@ export async function sendForSignature(input: {
   const req = mapRow(res.signature_request);
   notifyChanged();
   return { ...req, embeddedSigningUrl: res.embedded_signing_url ?? req.embeddedSigningUrl };
+}
+
+/** base64 without blowing the call stack on a multi-page PDF. */
+function toBase64(bytes: Uint8Array): string {
+  let binary = "";
+  const chunk = 0x8000;
+  for (let i = 0; i < bytes.length; i += chunk) {
+    binary += String.fromCharCode(...bytes.subarray(i, i + chunk));
+  }
+  return btoa(binary);
+}
+
+/**
+ * Same pipeline as sendForSignature(), for the agreements that exist before any permit does
+ * (PAA, payment authorization, LPOA). The caller creates its draft row through the matching
+ * record_* RPC first and passes the PDF it rendered from the on-screen text.
+ */
+export async function sendAgreementForSignature(input: {
+  contextKind: AgreementKind;
+  contextId: string;
+  documentName: string;
+  pdf: Uint8Array;
+  recipientEmail: string;
+  recipientName?: string;
+  subject?: string;
+  message?: string;
+}): Promise<SignatureRequest & { embeddedSigningUrl?: string }> {
+  const { data, error } = await supabase.functions.invoke("signwell-send", {
+    body: {
+      context_kind: input.contextKind,
+      context_id: input.contextId,
+      document_name: input.documentName,
+      document_base64: toBase64(input.pdf),
+      recipient_email: input.recipientEmail,
+      recipient_name: input.recipientName,
+      recipient_role: "General Contractor",
+      subject: input.subject,
+      message: input.message,
+    },
+  });
+  if (error) throw new Error(error.message);
+  const res = data as {
+    signature_request?: any;
+    embedded_signing_url?: string | null;
+    error?: string;
+  };
+  if (res?.error) throw new Error(res.error);
+  if (!res?.signature_request) throw new Error("signwell-send returned no signature request");
+
+  const req = mapRow(res.signature_request);
+  notifyChanged();
+  return { ...req, embeddedSigningUrl: res.embedded_signing_url ?? req.embeddedSigningUrl };
+}
+
+/** True only when SignWell confirmed completion — never from browser state. */
+export function isProviderConfirmed(
+  row: { status?: string | null; status_source?: string | null } | null | undefined,
+): boolean {
+  return row?.status === "signed" && row?.status_source === "provider_confirmed";
 }
 
 /**

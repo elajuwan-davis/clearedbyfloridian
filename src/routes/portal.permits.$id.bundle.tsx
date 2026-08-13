@@ -44,11 +44,12 @@ import {
   tradeSignatureState,
 } from "@/lib/bundle-signature";
 import {
-  listSignatureRequests,
   sigBadge,
   sigSourceBadge,
+  sigStatusForDocument,
   type SignatureRequest,
 } from "@/lib/signature-requests";
+import { EmbeddedSigningDialog } from "@/components/embedded-signing-dialog";
 import { createSubmission, type ManifestEntry } from "@/lib/submissions-api";
 import { BundlePartialSubmitDialog } from "@/components/bundle-partial-submit-dialog";
 import { FLORIDIAN_FIRM } from "@/lib/floridian-firm";
@@ -80,6 +81,9 @@ function BundleManagementPage() {
   // only once SignWell's webhook has confirmed it.
   const [sigs, setSigs] = useState<Record<string, SignatureRequest>>({});
   const [sendingTrade, setSendingTrade] = useState<string | null>(null);
+  const [signing, setSigning] = useState<
+    (SignatureRequest & { embeddedSigningUrl?: string }) | null
+  >(null);
 
   useEffect(() => {
     getPermit(id)
@@ -97,21 +101,30 @@ function BundleManagementPage() {
       .finally(() => setLoading(false));
   }, [id]);
 
-  const loadSignatures = useCallback(async (permitId: string) => {
+  // One ledger read per trade document, keyed by the same name the send used.
+  const loadSignatures = useCallback(async (permitId: string, trades: BundleTrade[]) => {
     try {
-      const list = await listSignatureRequests(permitId);
+      const found = await Promise.all(
+        trades.map(async (t) => {
+          const name = tradeDocumentName(t);
+          return [name, await sigStatusForDocument(permitId, name)] as const;
+        }),
+      );
       const byName: Record<string, SignatureRequest> = {};
-      // listSignatureRequests is newest-first, so the first hit per name is the live one.
-      for (const req of list) if (!byName[req.documentName]) byName[req.documentName] = req;
+      for (const [name, req] of found) if (req) byName[name] = req;
       setSigs(byName);
     } catch {
       /* the page still works without signature state */
     }
   }, []);
 
+  const refreshSignatures = useCallback(() => {
+    if (row?.id && bundle) void loadSignatures(row.id, bundle.trades);
+  }, [row?.id, bundle, loadSignatures]);
+
   useEffect(() => {
-    if (row?.id) void loadSignatures(row.id);
-  }, [row?.id, loadSignatures]);
+    refreshSignatures();
+  }, [refreshSignatures]);
 
   const docs = useMemo(() => (row ? getEffectiveDocs(row) : []), [row]);
 
@@ -176,9 +189,9 @@ function BundleManagementPage() {
     if (!row || !bundle) return;
     setSendingTrade(trade.key);
     try {
-      await sendTradeForSignature(row, trade, bundle);
-      await loadSignatures(row.id);
-      await persist({ ...bundle, status: "subs_signing" }, { silent: true });
+      const req = await sendTradeForSignature(row, trade, bundle);
+      await loadSignatures(row.id, bundle.trades);
+      setSigning(req);
       toast.success(
         `Authorization sent to ${trade.sub_snapshot?.company ?? trade.label} via SignWell`,
       );
@@ -597,7 +610,7 @@ function BundleManagementPage() {
                 )}
                 {trade.signature_status !== "pending" && (
                   <button
-                    onClick={() => row && void loadSignatures(row.id)}
+                    onClick={refreshSignatures}
                     className="inline-flex items-center gap-2 border border-obsidian/20 bg-white px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian rounded-[3px] hover:bg-obsidian/5"
                     title="Re-read the signature ledger"
                   >
@@ -654,6 +667,21 @@ function BundleManagementPage() {
           </button>
         </div>
       </div>
+
+      {/* The sub also gets an email; this is for a sub signing here in person. */}
+      {signing && (
+        <EmbeddedSigningDialog
+          open
+          onOpenChange={(v) => {
+            if (!v) {
+              setSigning(null);
+              refreshSignatures();
+            }
+          }}
+          request={signing}
+          onCompleted={() => refreshSignatures()}
+        />
+      )}
 
       <BundlePartialSubmitDialog
         open={partialOpen}

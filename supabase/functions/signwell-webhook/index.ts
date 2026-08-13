@@ -47,6 +47,16 @@ const PROGRESS_STATUS: Record<string, "viewed" | "sent" | "declined"> = {
   document_declined: "declined",
 };
 
+/**
+ * Agreements that have no permit keep their own row alongside the ledger row, so the same
+ * status lands in both places and a page can answer "is this signed?" from one read.
+ */
+const AGREEMENT_TABLES: Record<string, string> = {
+  paa: "paa_signatures",
+  payment_authorization: "payment_authorizations",
+  lpoa: "lpoa_signatures",
+};
+
 Deno.serve(async (req) => {
   if (req.method !== "POST") return json({ error: "method not allowed" }, 405);
 
@@ -141,17 +151,31 @@ Deno.serve(async (req) => {
 
   const { data: rows } = await admin
     .from("signature_requests")
-    .select("id, permit_id, tenant_id, document_name, recipient_email, status, status_source")
+    .select(
+      "id, permit_id, tenant_id, document_name, recipient_email, status, status_source, context_kind, context_id",
+    )
     .eq("signwell_document_id", documentId);
   const ledger = (rows ?? []) as Array<{
     id: string;
-    permit_id: string;
+    permit_id: string | null;
     tenant_id: string | null;
     document_name: string;
     recipient_email: string;
     status: string;
     status_source: string;
+    context_kind: string | null;
+    context_id: string | null;
   }>;
+
+  /** Mirror a ledger update onto the agreement row a standalone signature belongs to. */
+  const updateAgreements = async (patch: Record<string, unknown>) => {
+    for (const row of ledger) {
+      const table = row.context_kind ? AGREEMENT_TABLES[row.context_kind] : undefined;
+      if (!table || !row.context_id) continue;
+      const { error } = await admin.from(table).update(patch).eq("id", row.context_id);
+      if (error) throw error;
+    }
+  };
 
   if (ledger.length === 0) {
     // signwell-send may not have written the ledger row yet. The event stays unprocessed and
@@ -183,6 +207,12 @@ Deno.serve(async (req) => {
       })
       .eq("signwell_document_id", documentId);
     if (upErr) throw upErr;
+
+    await updateAgreements({
+      status: "signed",
+      status_source: "provider_confirmed",
+      completed_at: now,
+    });
 
     for (const row of ledger) {
       await admin.from("activity_events").insert({
@@ -231,6 +261,19 @@ Deno.serve(async (req) => {
       .neq("status_source", "provider_confirmed")
       .neq("status", "signed");
     if (pErr) throw pErr;
+
+    const agreementPatch: Record<string, unknown> = { status: progress };
+    for (const row of ledger) {
+      const table = row.context_kind ? AGREEMENT_TABLES[row.context_kind] : undefined;
+      if (!table || !row.context_id) continue;
+      const { error } = await admin
+        .from(table)
+        .update(agreementPatch)
+        .eq("id", row.context_id)
+        .neq("status_source", "provider_confirmed")
+        .neq("status", "signed");
+      if (error) throw error;
+    }
   }
 
   for (const row of ledger) {
