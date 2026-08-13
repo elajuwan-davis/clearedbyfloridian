@@ -65,17 +65,6 @@ function LoginPage() {
       return;
     }
 
-    // GC Client tier — external general contractors. Any password accepted in scaffold.
-    const { getGCClientByEmail, setGCSession } = await import("@/lib/gc-clients");
-    const gc = getGCClientByEmail(emailKey);
-    if (gc && password.length > 0) {
-      setGCSession(gc.id);
-      setLoading(false);
-      navigate({ to: "/gc-portal", replace: true });
-      return;
-    }
-
-
     const { error, data: signIn } = await supabase.auth.signInWithPassword({ email, password });
     if (error) {
       setLoading(false);
