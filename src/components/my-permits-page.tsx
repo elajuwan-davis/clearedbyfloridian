@@ -53,10 +53,24 @@ export function MyPermitsPage() {
 
   const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [escalatedIds, setEscalatedIds] = useState<Set<string>>(new Set());
+  const [drafts, setDrafts] = useState<LocalPermitDraft[]>([]);
+  const [draftsOpen, setDraftsOpen] = useState(true);
   const [open, setOpen] = useState<Record<GroupKey, boolean>>({
     intake: true, preparing: true, submitted: true, on_hold: true, outsourced: true, issued: true, cancelled: false,
   });
   const internal = isInternalUser();
+
+  useEffect(() => {
+    setDrafts(listLocalPermitDrafts());
+    const on = () => setDrafts(listLocalPermitDrafts());
+    window.addEventListener("focus", on);
+    window.addEventListener("storage", on);
+    return () => {
+      window.removeEventListener("focus", on);
+      window.removeEventListener("storage", on);
+    };
+  }, []);
+
 
   async function changeStatus(id: string, status: PermitStatus) {
     setUpdatingId(id);
