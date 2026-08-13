@@ -923,6 +923,27 @@ function NewPermitPage() {
               Cancel
             </Link>
           </div>
+          {!isEditing && (draftSavedAt || draftRestored) && (
+            <div className="mt-3 flex flex-wrap items-center gap-3 rounded-[3px] border border-obsidian/12 bg-obsidian/[0.02] px-3 py-2">
+              <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/60">
+                {draftRestored ? "Draft restored" : "Draft saved"}
+                {draftSavedAt
+                  ? ` · ${new Date(draftSavedAt).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}`
+                  : ""}
+              </span>
+              <span className="text-[11px] text-obsidian/50">
+                This form saves itself as you type — you can leave fields empty and come back.
+              </span>
+              <button
+                type="button"
+                onClick={discardDraft}
+                className="font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/55 underline underline-offset-2 hover:text-obsidian"
+              >
+                Start fresh
+              </button>
+            </div>
+          )}
+
           <div className="mt-6 flex items-center gap-3">
             {[1, 2].map((n) => (
               <div key={n} className="flex items-center gap-2">
