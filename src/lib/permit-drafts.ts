@@ -24,10 +24,12 @@ export function listLocalPermitDrafts(): LocalPermitDraft[] {
     const parsed = JSON.parse(raw) as { savedAt?: string; form?: Record<string, unknown> };
     const form = parsed?.form;
     if (!form) return [];
-    const projectName = str(form.project_name) || str(form.projectName);
-    const jobAddress = str(form.job_address) || str(form.jobAddress);
-    const permitType = str(form.permit_type) || str(form.permitType);
+    const projectName = str(form.projectName) || str(form.project_name);
+    const jobAddress = str(form.address) || str(form.job_address);
+    const scopes = Array.isArray(form.scopes) ? form.scopes.filter((s) => typeof s === "string") : [];
+    const permitType = str(form.permit_type) || scopes.join(", ");
     const municipality = str(form.municipality);
+
     // Ignore an untouched draft (defaults only, nothing identifying entered).
     if (!projectName && !jobAddress && !permitType && !municipality) return [];
     return [
