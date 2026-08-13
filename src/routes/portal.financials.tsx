@@ -81,7 +81,6 @@ function isActive(status: PermitStatus) {
 }
 
 function FinancialsPage() {
-  const [tab, setTab] = useState<"with" | "before" | "savings" | "quick">("with");
   const [permits, setPermits] = useState<PermitRow[]>([]);
   const [fees, setFees] = useState<ManualFee[]>([]);
   const [loading, setLoading] = useState(true);
