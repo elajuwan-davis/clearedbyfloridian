@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
-import { ChevronDown, ChevronRight, ChevronLeft, LogOut, Menu, X, Building2, Check, ShieldCheck, Sun, Moon, FileText, MessageSquare, Calendar, Bell } from "lucide-react";
+import { ChevronDown, ChevronRight, ChevronLeft, LogOut, Menu, X, Building2, Check, ShieldCheck, Sun, Moon, FileText, MessageSquare, Calendar, Bell, Bookmark, BookmarkCheck } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
 import { cn } from "@/lib/utils";
 
@@ -19,7 +19,7 @@ import { NotificationBell } from "@/components/notification-bell";
 import { BookmarkToggle } from "@/components/bookmark-toggle";
 import { AdminOnly } from "@/components/admin-only";
 
-import { useBookmarks } from "@/lib/bookmarks-api";
+import { useBookmarks, normalizePath } from "@/lib/bookmarks-api";
 import { VictoriaWidget } from "@/components/victoria-widget";
 import { AskVictoriaDock } from "@/components/ask-victoria-dock";
 
@@ -95,26 +95,29 @@ function sectionAlerted(section: NavSection, alertKeys: Set<AlertKey>) {
  * Navigation model is unchanged: same sections, same links, same order.
  */
 function useNavSections(role: AppRole | null, isAdmin: boolean) {
-  const { bookmarks } = useBookmarks();
+  const { bookmarks, toggle } = useBookmarks();
   const sections = sectionsForRole(role, isAdmin);
   const settings = settingsForRole(role);
-  const allSections: NavSection[] = [
-    ...sections.map((s) =>
-      s.key === "bookmarks" && bookmarks.length > 0
+  const marked = new Set(bookmarks.map((b) => normalizePath(b.path)));
+
+  const allSections: NavSection[] = [...sections, settings]
+    .map((s) =>
+      s.key === "bookmarks"
         ? {
             ...s,
             to: undefined,
-            items: [
-              ...bookmarks.map((b) => ({ to: b.path, label: b.label })),
-              { to: "/portal/bookmarks", label: "Manage bookmarks" },
-            ],
+            items: bookmarks.map((b) => ({ to: b.path, label: b.label })),
           }
-        : s,
-    ),
-    settings,
-  ];
-  return allSections;
+        : { ...s, items: s.items?.filter((i) => !marked.has(normalizePath(i.to))) },
+    )
+    // A group whose every link is bookmarked collapses out of the rail until
+    // one of them is un-bookmarked.
+    .filter((s) => Boolean(s.to) || (s.items?.length ?? 0) > 0);
+
+  const isBookmarked = (to: string) => marked.has(normalizePath(to));
+  return { allSections, isBookmarked, toggleBookmark: toggle };
 }
+
 
 /**
  * Rail flyout panel. Renders as a fixed card anchored to the hovered icon but
@@ -186,31 +189,64 @@ function NavLinkRow({
   active,
   alerted,
   onNavigate,
+  bookmarked,
+  onToggleBookmark,
 }: {
   to: string;
   label: string;
   active: boolean;
   alerted?: boolean;
   onNavigate?: () => void;
+  bookmarked?: boolean;
+  onToggleBookmark?: () => void;
 }) {
   return (
-    <Link
-      to={to as never}
-      onClick={onNavigate}
-      className="p-nav-item"
-      data-active={active ? "true" : "false"}
-    >
-      <span className="min-w-0 flex-1 truncate">{label}</span>
-      {alerted && (
-        <span
-          aria-hidden
-          className="h-1.5 w-1.5 shrink-0 rounded-full"
-          style={{ backgroundColor: "var(--p-danger)" }}
-        />
+    <div className="group/nav relative flex items-center">
+      <Link
+        to={to as never}
+        onClick={onNavigate}
+        className="p-nav-item min-w-0 flex-1"
+        data-active={active ? "true" : "false"}
+      >
+        <span className="min-w-0 flex-1 truncate">{label}</span>
+        {alerted && (
+          <span
+            aria-hidden
+            className="h-1.5 w-1.5 shrink-0 rounded-full"
+            style={{ backgroundColor: "var(--p-danger)" }}
+          />
+        )}
+      </Link>
+      {onToggleBookmark && (
+        <button
+          type="button"
+          title={bookmarked ? "Remove from bookmarks" : "Bookmark this page"}
+          aria-pressed={bookmarked ? "true" : "false"}
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            onToggleBookmark();
+          }}
+          className={cn(
+            "absolute right-1 grid h-6 w-6 place-items-center rounded-md transition-opacity",
+            bookmarked ? "opacity-100" : "opacity-0 group-hover/nav:opacity-100 focus:opacity-100",
+          )}
+          style={{ color: "var(--rail-icon)" }}
+        >
+          {bookmarked ? (
+            <BookmarkCheck className="h-3.5 w-3.5" strokeWidth={1.75} />
+          ) : (
+            <Bookmark className="h-3.5 w-3.5" strokeWidth={1.75} />
+          )}
+          <span className="sr-only">
+            {bookmarked ? "Remove from bookmarks" : "Bookmark this page"}
+          </span>
+        </button>
       )}
-    </Link>
+    </div>
   );
 }
+
 
 function SidebarNav({
   pathname,
@@ -237,7 +273,7 @@ function SidebarNav({
   onNavigate?: () => void;
   onSignOut: () => void;
 }) {
-  const allSections = useNavSections(role, isAdmin);
+  const { allSections, isBookmarked, toggleBookmark } = useNavSections(role, isAdmin);
   const [openKey, setOpenKey] = useState<string | null>(null);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isRail = mode === "rail";
@@ -345,6 +381,8 @@ function SidebarNav({
                           label={item.label}
                           active={isItemActive(pathname, item.to)}
                           alerted={item.alertKey ? alertKeys.has(item.alertKey) : false}
+                          bookmarked={isBookmarked(item.to)}
+                          onToggleBookmark={() => void toggleBookmark(item.to, item.label)}
                           onNavigate={() => {
                             setOpenKey(null);
                             onNavigate?.();
@@ -352,6 +390,7 @@ function SidebarNav({
                         />
                       </li>
                     ))}
+
                   </RailFlyout>
                 )}
 
@@ -380,8 +419,11 @@ function SidebarNav({
                       label={item.label}
                       active={isItemActive(pathname, item.to)}
                       alerted={"alertKey" in item && item.alertKey ? alertKeys.has(item.alertKey) : false}
+                      bookmarked={isBookmarked(item.to)}
+                      onToggleBookmark={() => void toggleBookmark(item.to, item.label)}
                       onNavigate={onNavigate}
                     />
+
                   </li>
                 ))}
               </ul>

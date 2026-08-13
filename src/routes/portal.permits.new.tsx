@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useMemo, useState, type ChangeEvent, type DragEvent } from "react";
+import { useEffect, useMemo, useRef, useState, type ChangeEvent, type DragEvent } from "react";
 import {
   Upload,
   Check,
@@ -193,7 +193,6 @@ function NewPermitPage() {
     engineerContact: "",
     engineerLicense: "",
     engineerEmail: "",
-    contractorCompany: "",
     ...CLEARD_CONTRACTOR_DEFAULTS,
     /** Checked = GC supplies its own qualifier instead of Cleard's defaults. */
     differentQualifier: false,
@@ -228,6 +227,62 @@ function NewPermitPage() {
       })
       .catch(() => {});
   }, []);
+
+  // ---- Draft auto-save (new permits only) ----------------------------------
+  // The intake is long, so the form auto-saves itself locally as the GC types.
+  // Nothing is written to the permit record until they submit, so a draft can
+  // be kept with any number of fields still empty.
+  const DRAFT_KEY = "cleard.permit-intake.draft.v1";
+  const [draftSavedAt, setDraftSavedAt] = useState<string | null>(null);
+  const [draftRestored, setDraftRestored] = useState(false);
+  const draftHydrated = useRef(false);
+
+  useEffect(() => {
+    if (isEditing) {
+      draftHydrated.current = true;
+      return;
+    }
+    try {
+      const raw = window.localStorage.getItem(DRAFT_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw) as { savedAt?: string; form?: Record<string, unknown> };
+        if (parsed?.form) {
+          setForm((f) => ({ ...f, ...(parsed.form as typeof f) }));
+          setDraftSavedAt(parsed.savedAt ?? null);
+          setDraftRestored(true);
+        }
+      }
+    } catch {
+      /* ignore malformed drafts */
+    }
+    draftHydrated.current = true;
+  }, [isEditing]);
+
+  useEffect(() => {
+    if (isEditing || !draftHydrated.current) return;
+    const t = window.setTimeout(() => {
+      try {
+        const savedAt = new Date().toISOString();
+        window.localStorage.setItem(DRAFT_KEY, JSON.stringify({ savedAt, form }));
+        setDraftSavedAt(savedAt);
+      } catch {
+        /* storage full or unavailable — drafting is best-effort */
+      }
+    }, 800);
+    return () => window.clearTimeout(t);
+  }, [form, isEditing]);
+
+  function discardDraft() {
+    try {
+      window.localStorage.removeItem(DRAFT_KEY);
+    } catch {
+      /* ignore */
+    }
+    setDraftSavedAt(null);
+    setDraftRestored(false);
+    window.location.reload();
+  }
+
 
   // Load existing permit for editing
   useEffect(() => {
@@ -417,6 +472,19 @@ function NewPermitPage() {
     [form.submittedDate],
   );
 
+  /** Fill a trade row from the GC's own saved subcontractor library. */
+  function pickSavedSub(scope: string, sub: SubRow) {
+    const contact = [sub.contact_first_name, sub.contact_last_name].filter(Boolean).join(" ");
+    updateSubByScope(scope, {
+      companyName: sub.company_name,
+      licenseNumber: sub.license_number ?? "",
+      contactName: contact || sub.qualifier_name || "",
+      contactEmail: sub.email ?? "",
+      marketplaceSubId: null,
+      skipped: false,
+    });
+  }
+
   /** Fill a trade row from Cleard's paid roster. */
   function pickMarketplaceSub(scope: string, sub: MarketplaceSub) {
     updateSubByScope(scope, {
@@ -429,6 +497,7 @@ function NewPermitPage() {
     });
     setPickerScope(null);
   }
+
 
   function gapsForRow(s: SubIntake): CoverageGap[] {
     if (!s.marketplaceSubId) return [];
@@ -813,6 +882,11 @@ function NewPermitPage() {
           submittedDate: form.submittedDate ? new Date(form.submittedDate).toISOString() : null,
         });
 
+        try {
+          window.localStorage.removeItem(DRAFT_KEY);
+        } catch {
+          /* ignore */
+        }
         toast.success(wantBundle ? "Bundle permit created" : "Permit created");
         if (wantBundle) navigate({ to: "/portal/permits/$id/bundle", params: { id: rowId } });
         else navigate({ to: "/portal/permits/$id", params: { id: rowId } });
@@ -849,6 +923,27 @@ function NewPermitPage() {
               Cancel
             </Link>
           </div>
+          {!isEditing && (draftSavedAt || draftRestored) && (
+            <div className="mt-3 flex flex-wrap items-center gap-3 rounded-[3px] border border-obsidian/12 bg-obsidian/[0.02] px-3 py-2">
+              <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/60">
+                {draftRestored ? "Draft restored" : "Draft saved"}
+                {draftSavedAt
+                  ? ` · ${new Date(draftSavedAt).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}`
+                  : ""}
+              </span>
+              <span className="text-[11px] text-obsidian/50">
+                This form saves itself as you type — you can leave fields empty and come back.
+              </span>
+              <button
+                type="button"
+                onClick={discardDraft}
+                className="font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/55 underline underline-offset-2 hover:text-obsidian"
+              >
+                Start fresh
+              </button>
+            </div>
+          )}
+
           <div className="mt-6 flex items-center gap-3">
             {[1, 2].map((n) => (
               <div key={n} className="flex items-center gap-2">
@@ -1225,6 +1320,45 @@ function NewPermitPage() {
                           )}
                           {!s.skipped && (
                             <div className="grid gap-3 sm:grid-cols-2">
+                              <div className="sm:col-span-2">
+                                <label className={labelCls}>
+                                  Choose from your subcontractors
+                                </label>
+                                <select
+                                  className={inputCls}
+                                  value=""
+                                  onChange={(e) => {
+                                    const pick = savedSubs.find((x) => x.id === e.target.value);
+                                    if (!pick) return;
+                                    pickSavedSub(s.scope, pick);
+                                  }}
+                                >
+                                  <option value="">
+                                    {savedSubs.length
+                                      ? "Select a saved subcontractor…"
+                                      : "No saved subcontractors yet"}
+                                  </option>
+                                  {savedSubs
+                                    .slice()
+                                    .sort((a, b) => {
+                                      const at = (a.trade ?? "").toLowerCase() === s.trade.toLowerCase() ? 0 : 1;
+                                      const bt = (b.trade ?? "").toLowerCase() === s.trade.toLowerCase() ? 0 : 1;
+                                      return at - bt || a.company_name.localeCompare(b.company_name);
+                                    })
+                                    .map((x) => (
+                                      <option key={x.id} value={x.id}>
+                                        {x.company_name}
+                                        {x.trade ? ` — ${x.trade}` : ""}
+                                        {x.license_number ? ` (${x.license_number})` : ""}
+                                      </option>
+                                    ))}
+                                </select>
+                                <p className="mt-1 text-[11px] text-obsidian/50">
+                                  Selecting one fills the fields below automatically. You can still
+                                  edit them or type a new sub.
+                                </p>
+                              </div>
+
                               <div>
                                 <label className={labelCls}>Company Name</label>
                                 <input
