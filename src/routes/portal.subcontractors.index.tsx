@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Users, ShieldCheck } from "lucide-react";
 import { SubcontractorsManager } from "@/components/subcontractors-manager";
 import { SubsComplianceView } from "@/components/subs-compliance-view";
+import { Segmented } from "@/components/ui-kit";
 
 export const Route = createFileRoute("/portal/subcontractors/")({
   head: () => ({
