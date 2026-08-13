@@ -65,7 +65,7 @@ function LpoaSigningPage() {
           className="inline-flex items-center gap-1.5 font-mono text-[10px] font-medium uppercase tracking-[0.14em] text-obsidian/55 transition-opacity hover:opacity-70"
         >
           <ArrowLeft className="h-3 w-3" />
-          Back to Projects
+          Back to Permits
         </Link>
 
         {/* Header */}
