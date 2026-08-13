@@ -56,7 +56,7 @@ function PermitCard({ project }: { project: Project }) {
       {/* Screen-only top bar */}
       <div className="print:hidden border-b border-obsidian/10 bg-white">
         <div className="mx-auto max-w-4xl px-6 py-3 flex items-center justify-between">
-          <Link to="/portal/projects/$id" params={{ id: project.id }}
+          <Link to="/portal/permits/$id" params={{ id: project.id }}
                 className="inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.14em] text-obsidian/70 hover:text-obsidian">
             <ArrowLeft className="h-3 w-3" /> Back to Project
           </Link>

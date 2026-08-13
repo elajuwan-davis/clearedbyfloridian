@@ -143,7 +143,6 @@ export const adminSection: NavSection = {
   icon: ShieldCheck,
   items: [
     { to: "/admin/invites", label: "Invite Pipeline" },
-    { to: "/admin/gc-clients", label: "GC Clients" },
     { to: "/admin/workload", label: "Staff Workload" },
     { to: "/admin/audit", label: "Audit Trail" },
 
