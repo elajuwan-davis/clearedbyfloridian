@@ -31,16 +31,6 @@ const GROUPS: Array<{ key: GroupKey; label: string; statuses: PermitStatus[]; bo
   { key: "cancelled", label: "Cancelled", statuses: ["cancelled"], borderColor: "oklch(0.5 0.18 25)" },
 ];
 
-const STATUS_LABEL: Record<PermitStatus, string> = {
-  submitted: "Pre-Check",
-  in_review: "Pre-Check",
-  corrections_required: "Delayed",
-  approved: "Cleared for Takeoff",
-  permit_issued: "En Route",
-  on_hold: "Delayed",
-  outsourced_permitting: "Outsourced",
-  cancelled: "Cancelled",
-};
 
 const STATUS_OPTIONS: Array<{ value: PermitStatus; label: string }> = [
   { value: "submitted", label: "Pre-Check" },
