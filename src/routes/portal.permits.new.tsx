@@ -882,6 +882,11 @@ function NewPermitPage() {
           submittedDate: form.submittedDate ? new Date(form.submittedDate).toISOString() : null,
         });
 
+        try {
+          window.localStorage.removeItem(DRAFT_KEY);
+        } catch {
+          /* ignore */
+        }
         toast.success(wantBundle ? "Bundle permit created" : "Permit created");
         if (wantBundle) navigate({ to: "/portal/permits/$id/bundle", params: { id: rowId } });
         else navigate({ to: "/portal/permits/$id", params: { id: rowId } });
