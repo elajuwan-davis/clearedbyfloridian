@@ -44,11 +44,22 @@ function AdminContractorsPage() {
   const [editing, setEditing] = useState<Contractor | null>(null);
   const [creating, setCreating] = useState(false);
   const [internal, setInternal] = useState(false);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   useEffect(() => {
     setInternal(isInternalUser());
-    setItems(listContractors());
-    return subscribeContractors(() => setItems(listContractors()));
+    const refresh = () => {
+      void listContractors()
+        .then((rows) => {
+          setItems(rows);
+          setLoadError(null);
+        })
+        .catch((e: unknown) =>
+          setLoadError(e instanceof Error ? e.message : "Could not load the registry."),
+        );
+    };
+    refresh();
+    return subscribeContractors(refresh);
   }, []);
 
   if (!internal) {
@@ -112,7 +123,7 @@ function AdminContractorsPage() {
               {items.length === 0 ? (
                 <tr>
                   <td colSpan={6} className="px-6 py-16 text-center text-sm text-obsidian/55">
-                    No contractors registered yet.
+                    {loadError ?? "No contractors registered yet."}
                   </td>
                 </tr>
               ) : (
@@ -159,7 +170,7 @@ function AdminContractorsPage() {
                           size="sm"
                           className="rounded-[3px] text-oxblood hover:text-oxblood"
                           onClick={() => {
-                            if (confirm(`Delete ${c.firm_name}?`)) deleteContractor(c.id);
+                            if (confirm(`Delete ${c.firm_name}?`)) void deleteContractor(c.id);
                           }}
                         >
                           <Trash2 className="h-3.5 w-3.5" />
@@ -205,6 +216,8 @@ function ContractorFormDialog({
   const [license, setLicense] = useState("");
   const [licenseType, setLicenseType] = useState<string>("CGC");
   const [active, setActive] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!open) return;
@@ -227,9 +240,10 @@ function ContractorFormDialog({
       setLicenseType("CGC");
       setActive(true);
     }
+    setError(null);
   }, [open, contractor]);
 
-  function save() {
+  async function save() {
     const payload = {
       firm_name: firm.trim(),
       contact_name: contact.trim(),
@@ -240,10 +254,21 @@ function ContractorFormDialog({
       license_type: licenseType,
       active,
     };
-    if (!payload.firm_name || !payload.license_number) return;
-    if (contractor) updateContractor(contractor.id, payload);
-    else addContractor(payload);
-    onOpenChange(false);
+    if (!payload.firm_name || !payload.license_number) {
+      setError("Firm name and license number are required.");
+      return;
+    }
+    setSaving(true);
+    setError(null);
+    try {
+      if (contractor) await updateContractor(contractor.id, payload);
+      else await addContractor(payload);
+      onOpenChange(false);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Could not save this contractor.");
+    } finally {
+      setSaving(false);
+    }
   }
 
   return (
@@ -292,12 +317,19 @@ function ContractorFormDialog({
           </div>
         </div>
 
+        {error && <p className="mt-4 text-sm text-oxblood">{error}</p>}
+
         <div className="mt-6 flex justify-end gap-2">
           <Button variant="outline" className="rounded-[3px]" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
-          <Button variant="dark" className="rounded-[3px]" onClick={save}>
-            {contractor ? "Save changes" : "Register contractor"}
+          <Button
+            variant="dark"
+            className="rounded-[3px]"
+            disabled={saving}
+            onClick={() => void save()}
+          >
+            {saving ? "Saving…" : contractor ? "Save changes" : "Register contractor"}
           </Button>
         </div>
       </DialogContent>
