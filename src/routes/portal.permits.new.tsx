@@ -1224,6 +1224,45 @@ function NewPermitPage() {
                           )}
                           {!s.skipped && (
                             <div className="grid gap-3 sm:grid-cols-2">
+                              <div className="sm:col-span-2">
+                                <label className={labelCls}>
+                                  Choose from your subcontractors
+                                </label>
+                                <select
+                                  className={inputCls}
+                                  value=""
+                                  onChange={(e) => {
+                                    const pick = savedSubs.find((x) => x.id === e.target.value);
+                                    if (!pick) return;
+                                    pickSavedSub(s.scope, pick);
+                                  }}
+                                >
+                                  <option value="">
+                                    {savedSubs.length
+                                      ? "Select a saved subcontractor…"
+                                      : "No saved subcontractors yet"}
+                                  </option>
+                                  {savedSubs
+                                    .slice()
+                                    .sort((a, b) => {
+                                      const at = (a.trade ?? "").toLowerCase() === s.trade.toLowerCase() ? 0 : 1;
+                                      const bt = (b.trade ?? "").toLowerCase() === s.trade.toLowerCase() ? 0 : 1;
+                                      return at - bt || a.company_name.localeCompare(b.company_name);
+                                    })
+                                    .map((x) => (
+                                      <option key={x.id} value={x.id}>
+                                        {x.company_name}
+                                        {x.trade ? ` — ${x.trade}` : ""}
+                                        {x.license_number ? ` (${x.license_number})` : ""}
+                                      </option>
+                                    ))}
+                                </select>
+                                <p className="mt-1 text-[11px] text-obsidian/50">
+                                  Selecting one fills the fields below automatically. You can still
+                                  edit them or type a new sub.
+                                </p>
+                              </div>
+
                               <div>
                                 <label className={labelCls}>Company Name</label>
                                 <input
