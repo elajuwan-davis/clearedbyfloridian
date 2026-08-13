@@ -1,9 +1,33 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Users, Plus, CheckCircle2, AlertTriangle, Link2, Copy, X, Trash2 } from "lucide-react";
-import { listSubs, createSub, deleteSub, subIsComplete, subMissingFields, coiLifecycle, type SubRow } from "@/lib/subs-api";
+import {
+  Users,
+  Plus,
+  CheckCircle2,
+  AlertTriangle,
+  Link2,
+  Copy,
+  X,
+  Trash2,
+  Loader2,
+  ShieldCheck,
+  ExternalLink,
+} from "lucide-react";
+import { listSubs, createSub, deleteSub, updateSubApi, subIsComplete, subMissingFields, coiLifecycle, type SubRow } from "@/lib/subs-api";
+import { verifyDbprLicense, dbprLookupUrl, type DbprResult } from "@/lib/dbpr-api";
 import { MarketplacePanel } from "@/components/marketplace-panel";
+
+const dbprTone: Record<string, { label: string; cls: string }> = {
+  active: {
+    label: "Verified · Active",
+    cls: "bg-emerald-600/10 text-emerald-700 border-emerald-600/30",
+  },
+  expired: { label: "Expired", cls: "bg-red-500/10 text-red-700 border-red-600/30" },
+  inactive: { label: "Inactive", cls: "bg-red-500/10 text-red-700 border-red-600/30" },
+  not_found: { label: "Not Found", cls: "bg-amber-500/10 text-amber-700 border-amber-600/30" },
+  unknown: { label: "Unverified", cls: "bg-obsidian/5 text-obsidian/60 border-obsidian/20" },
+};
 
 const coiTone: Record<ReturnType<typeof coiLifecycle>, { label: string; cls: string }> = {
   active: { label: "Active", cls: "bg-emerald-600/10 text-emerald-700 border-emerald-600/30" },
