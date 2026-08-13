@@ -416,6 +416,19 @@ function NewPermitPage() {
     [form.submittedDate],
   );
 
+  /** Fill a trade row from the GC's own saved subcontractor library. */
+  function pickSavedSub(scope: string, sub: SubRow) {
+    const contact = [sub.contact_first_name, sub.contact_last_name].filter(Boolean).join(" ");
+    updateSubByScope(scope, {
+      companyName: sub.company_name,
+      licenseNumber: sub.license_number ?? "",
+      contactName: contact || sub.qualifier_name || "",
+      contactEmail: sub.email ?? "",
+      marketplaceSubId: null,
+      skipped: false,
+    });
+  }
+
   /** Fill a trade row from Cleard's paid roster. */
   function pickMarketplaceSub(scope: string, sub: MarketplaceSub) {
     updateSubByScope(scope, {
@@ -428,6 +441,7 @@ function NewPermitPage() {
     });
     setPickerScope(null);
   }
+
 
   function gapsForRow(s: SubIntake): CoverageGap[] {
     if (!s.marketplaceSubId) return [];
