@@ -14,37 +14,34 @@ export const Route = createFileRoute("/portal/subcontractors/")({
   component: SubcontractorsAndCompliance,
 });
 
-const TABS = [
-  { key: "subs" as const, label: "Subcontractors", icon: Users },
-  { key: "compliance" as const, label: "Compliance & COI", icon: ShieldCheck },
-];
-
 function SubcontractorsAndCompliance() {
   const [active, setActive] = useState<"subs" | "compliance">("subs");
 
   return (
     <div>
-      <div className="flex gap-1 border-b border-obsidian/10 px-4 sm:px-6" role="tablist">
-        {TABS.map((t) => {
-          const on = active === t.key;
-          const Icon = t.icon;
-          return (
-            <button
-              key={t.key}
-              type="button"
-              role="tab"
-              aria-selected={on}
-              onClick={() => setActive(t.key)}
-              className={`-mb-px inline-flex items-center gap-2 border-b-2 px-4 py-3 font-mono text-[10px] uppercase tracking-[0.16em] transition-colors ${
-                on
-                  ? "border-current text-foreground"
-                  : "border-transparent text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              <Icon className="h-3.5 w-3.5" strokeWidth={1.5} /> {t.label}
-            </button>
-          );
-        })}
+      <div className="px-4 pt-4 sm:px-6">
+        <Segmented
+          value={active}
+          onChange={setActive}
+          options={[
+            {
+              value: "subs",
+              label: (
+                <span className="inline-flex items-center gap-1.5">
+                  <Users className="h-3.5 w-3.5" strokeWidth={1.75} /> Subcontractors
+                </span>
+              ),
+            },
+            {
+              value: "compliance",
+              label: (
+                <span className="inline-flex items-center gap-1.5">
+                  <ShieldCheck className="h-3.5 w-3.5" strokeWidth={1.75} /> Compliance & COI
+                </span>
+              ),
+            },
+          ]}
+        />
       </div>
 
       {active === "subs" ? (
@@ -57,3 +54,4 @@ function SubcontractorsAndCompliance() {
     </div>
   );
 }
+
