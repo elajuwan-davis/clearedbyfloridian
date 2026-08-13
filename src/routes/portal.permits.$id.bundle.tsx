@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate, notFound } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import {
   ArrowLeft,
@@ -12,6 +12,7 @@ import {
   Loader2,
   Copy,
   Plus,
+  RefreshCw,
   UserPlus,
   Trash2,
 } from "lucide-react";
@@ -37,6 +38,17 @@ import {
   type BundleTrade,
   type TradeCardState,
 } from "@/lib/bundle";
+import {
+  sendTradeForSignature,
+  tradeDocumentName,
+  tradeSignatureState,
+} from "@/lib/bundle-signature";
+import {
+  listSignatureRequests,
+  sigBadge,
+  sigSourceBadge,
+  type SignatureRequest,
+} from "@/lib/signature-requests";
 import { createSubmission, type ManifestEntry } from "@/lib/submissions-api";
 import { BundlePartialSubmitDialog } from "@/components/bundle-partial-submit-dialog";
 import { FLORIDIAN_FIRM } from "@/lib/floridian-firm";
@@ -64,6 +76,10 @@ function BundleManagementPage() {
   const [saving, setSaving] = useState(false);
   const [feeInput, setFeeInput] = useState("");
   const [partialOpen, setPartialOpen] = useState(false);
+  // Signature state is read from the ledger, never from the bundle blob: a trade is signed
+  // only once SignWell's webhook has confirmed it.
+  const [sigs, setSigs] = useState<Record<string, SignatureRequest>>({});
+  const [sendingTrade, setSendingTrade] = useState<string | null>(null);
 
   useEffect(() => {
     getPermit(id)
@@ -81,8 +97,42 @@ function BundleManagementPage() {
       .finally(() => setLoading(false));
   }, [id]);
 
+  const loadSignatures = useCallback(async (permitId: string) => {
+    try {
+      const list = await listSignatureRequests(permitId);
+      const byName: Record<string, SignatureRequest> = {};
+      // listSignatureRequests is newest-first, so the first hit per name is the live one.
+      for (const req of list) if (!byName[req.documentName]) byName[req.documentName] = req;
+      setSigs(byName);
+    } catch {
+      /* the page still works without signature state */
+    }
+  }, []);
+
+  useEffect(() => {
+    if (row?.id) void loadSignatures(row.id);
+  }, [row?.id, loadSignatures]);
+
   const docs = useMemo(() => (row ? getEffectiveDocs(row) : []), [row]);
-  const progress = useMemo(() => bundleProgress(bundle), [bundle]);
+
+  /** The bundle as displayed: every trade's signature status comes from the ledger. */
+  const view: Bundle | null = useMemo(() => {
+    if (!bundle) return null;
+    return {
+      ...bundle,
+      trades: bundle.trades.map((t) => {
+        const req = sigs[tradeDocumentName(t)];
+        return {
+          ...t,
+          signature_status: tradeSignatureState(req),
+          signature_sent_at: req?.sentAt ?? null,
+          signature_signed_at: req?.completedAt ?? null,
+        };
+      }),
+    };
+  }, [bundle, sigs]);
+
+  const progress = useMemo(() => bundleProgress(view), [view]);
 
   async function persist(next: Bundle, opts?: { silent?: boolean }): Promise<PermitRow | null> {
     if (!row) return null;
@@ -124,48 +174,19 @@ function BundleManagementPage() {
 
   async function sendToSub(trade: BundleTrade) {
     if (!row || !bundle) return;
-    if (!trade.sub_snapshot?.email) {
-      toast.error(`No email on file for ${trade.label} sub`);
-      return;
-    }
-    const prefill = buildBundlePrefill(row, trade, bundle);
-    const nextTrades = bundle.trades.map((t) =>
-      t.key === trade.key
-        ? { ...t, signature_status: "sent" as const, signature_sent_at: new Date().toISOString() }
-        : t,
-    );
-    const bundleStatus: Bundle["status"] = nextTrades.some((t) => t.signature_status !== "pending")
-      ? "subs_signing"
-      : "draft";
-    const next: Bundle = { ...bundle, trades: nextTrades, status: bundleStatus };
-    await persist(next, { silent: true });
-    // Signwell mock — log prefill locally so user can see what was sent
+    setSendingTrade(trade.key);
     try {
-      const store = JSON.parse(localStorage.getItem("bundle_signature_log") || "[]");
-      store.unshift({ permit_id: row.id, trade: trade.label, sent_at: new Date().toISOString(), prefill });
-      localStorage.setItem("bundle_signature_log", JSON.stringify(store.slice(0, 100)));
-    } catch { /* noop */ }
-    toast.success(`Signature request sent to ${trade.label} sub`);
-  }
-
-  function markSigned(trade: BundleTrade) {
-    if (!bundle) return;
-    const nextTrades = bundle.trades.map((t) =>
-      t.key === trade.key
-        ? { ...t, signature_status: "signed" as const, signature_signed_at: new Date().toISOString() }
-        : t,
-    );
-    const allSigned = nextTrades.every((t) => t.signature_status === "signed");
-    const next: Bundle = { ...bundle, trades: nextTrades, status: allSigned ? "ready" : "subs_signing" };
-    persist(next, { silent: true });
-  }
-
-  function resetTrade(trade: BundleTrade) {
-    if (!bundle) return;
-    const nextTrades = bundle.trades.map((t) =>
-      t.key === trade.key ? { ...t, signature_status: "pending" as const, signature_sent_at: null, signature_signed_at: null } : t,
-    );
-    setBundle({ ...bundle, trades: nextTrades });
+      await sendTradeForSignature(row, trade, bundle);
+      await loadSignatures(row.id);
+      await persist({ ...bundle, status: "subs_signing" }, { silent: true });
+      toast.success(
+        `Authorization sent to ${trade.sub_snapshot?.company ?? trade.label} via SignWell`,
+      );
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : String(e));
+    } finally {
+      setSendingTrade(null);
+    }
   }
 
   function addTrade() {
@@ -312,7 +333,10 @@ function BundleManagementPage() {
   }
 
   if (loading) return <div className="mx-auto max-w-5xl px-6 py-12 text-obsidian/60">Loading…</div>;
-  if (!row || !bundle) return <div className="mx-auto max-w-5xl px-6 py-12 text-obsidian/60">Bundle not available.</div>;
+  if (!row || !bundle || !view)
+    return (
+      <div className="mx-auto max-w-5xl px-6 py-12 text-obsidian/60">Bundle not available.</div>
+    );
 
   return (
     <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
@@ -410,7 +434,8 @@ function BundleManagementPage() {
             No trades yet. Click <span className="font-mono">Add Trade</span> to start capturing budgeted fees — subs can be assigned later.
           </div>
         )}
-        {bundle.trades.map((trade) => {
+        {view.trades.map((trade) => {
+          const sigReq = sigs[tradeDocumentName(trade)];
           const cardState: TradeCardState = tradeCardState(trade);
           const rowStatus = tradeRowStatus(trade, docs);
           const tradeDocs = docs.filter((d) => trade.doc_keys.length === 0 || trade.doc_keys.includes(d.key));
@@ -454,6 +479,25 @@ function BundleManagementPage() {
                       {trade.sub_snapshot?.contact ? `${trade.sub_snapshot.contact} · ` : ""}
                       {trade.sub_snapshot?.email ?? (trade.sub_snapshot ? "no email" : "GC can upload docs & set fee before assigning sub")}
                     </div>
+                    {sigReq && (
+                      <div className="mt-2 flex flex-wrap items-center gap-2">
+                        <span
+                          className={`px-2 py-0.5 rounded-[3px] font-mono text-[9px] uppercase tracking-[0.14em] ${sigBadge(sigReq.status).className}`}
+                        >
+                          {sigBadge(sigReq.status).label}
+                        </span>
+                        {sigSourceBadge(sigReq) && (
+                          <span
+                            className={`px-2 py-0.5 rounded-[3px] font-mono text-[9px] uppercase tracking-[0.14em] ${sigSourceBadge(sigReq)!.className}`}
+                          >
+                            {sigSourceBadge(sigReq)!.label}
+                          </span>
+                        )}
+                        <span className="text-[11px] text-obsidian/50">
+                          SignWell · {sigReq.documentName}
+                        </span>
+                      </div>
+                    )}
                   </div>
                 </div>
                 <div className="text-right">
@@ -533,9 +577,15 @@ function BundleManagementPage() {
                   <>
                     <button
                       onClick={() => sendToSub(trade)}
-                      className="inline-flex items-center gap-2 bg-obsidian px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-paper rounded-[3px]"
+                      disabled={sendingTrade === trade.key}
+                      className="inline-flex items-center gap-2 bg-obsidian px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-paper rounded-[3px] disabled:opacity-50"
                     >
-                      <Send className="h-3.5 w-3.5" /> Send to Sub
+                      {sendingTrade === trade.key ? (
+                        <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                      ) : (
+                        <Send className="h-3.5 w-3.5" />
+                      )}
+                      {sendingTrade === trade.key ? "Sending…" : "Send to Sub"}
                     </button>
                     <button
                       onClick={() => unassignSub(trade)}
@@ -545,20 +595,13 @@ function BundleManagementPage() {
                     </button>
                   </>
                 )}
-                {cardState === "invited" && (
-                  <button
-                    onClick={() => markSigned(trade)}
-                    className="inline-flex items-center gap-2 border border-emerald-600/40 text-emerald-700 px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] rounded-[3px] hover:bg-emerald-50"
-                  >
-                    <CheckCircle2 className="h-3.5 w-3.5" /> Mark Signed
-                  </button>
-                )}
                 {trade.signature_status !== "pending" && (
                   <button
-                    onClick={() => resetTrade(trade)}
+                    onClick={() => row && void loadSignatures(row.id)}
                     className="inline-flex items-center gap-2 border border-obsidian/20 bg-white px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian rounded-[3px] hover:bg-obsidian/5"
+                    title="Re-read the signature ledger"
                   >
-                    Reset
+                    <RefreshCw className="h-3.5 w-3.5" /> Refresh Status
                   </button>
                 )}
                 {trade.sub_snapshot && (
@@ -614,7 +657,7 @@ function BundleManagementPage() {
 
       <BundlePartialSubmitDialog
         open={partialOpen}
-        bundle={bundle}
+        bundle={view}
         onClose={() => setPartialOpen(false)}
         onSubmit={submitPartial}
       />

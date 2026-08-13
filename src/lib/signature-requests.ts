@@ -135,6 +135,8 @@ export async function sendForSignature(input: {
   recipientRole: RecipientRole;
   message?: string;
   subject?: string;
+  /** Ask SignWell to email the signer a link — for signers who are not portal users. */
+  sendEmail?: boolean;
 }): Promise<SignatureRequest & { embeddedSigningUrl?: string }> {
   const permitId = input.permitId || input.projectId || "";
   if (!isLivePermitId(permitId)) {
@@ -152,6 +154,7 @@ export async function sendForSignature(input: {
       recipient_role: input.recipientRole,
       message: input.message,
       subject: input.subject,
+      send_email: input.sendEmail ?? false,
     },
   });
   if (error) throw new Error(error.message);

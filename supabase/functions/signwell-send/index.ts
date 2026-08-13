@@ -43,6 +43,8 @@ type Body = {
   recipient_role?: string;
   subject?: string;
   message?: string;
+  /** External signers (subs) get an emailed link as well as the embedded session. */
+  send_email?: boolean;
 };
 
 type PermitDoc = {
@@ -117,8 +119,9 @@ Deno.serve(async (req) => {
             id: recipientId,
             name: body.recipient_name ?? email,
             email,
-            // Embedded signing: the signer is handed the iframe, not an email link.
-            send_email: false,
+            // Portal users are handed the iframe; signers outside the portal (subs) would
+            // otherwise have no way to reach the document, so they are emailed a link.
+            send_email: body.send_email === true,
           },
         ],
         metadata: { permit_id: permitId, document_key: body.document_key ?? "" },
