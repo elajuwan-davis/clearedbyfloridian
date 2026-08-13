@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate, notFound } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Trash2, Save, AlertTriangle, FileText, Pencil, X, Lock, Plus, Search, Loader2, Eye, EyeOff, Download, Share2, RotateCcw, Cloud, Package, Scale } from "lucide-react";
+import { Trash2, Save, AlertTriangle, FileText, Pencil, X, Lock, Plus, Search, Loader2, Eye, EyeOff, Download, Share2, RotateCcw, Cloud, Package, Scale, QrCode } from "lucide-react";
 import { NtoSection } from "@/components/nto-section";
 import { getBundle } from "@/lib/bundle";
 import { CoChecklistPanel } from "@/components/co-checklist-panel";
@@ -369,6 +369,14 @@ function PermitDetailPage() {
               </button>
               <Link to="/portal/bid-review" className="p-btn p-btn-ghost">
                 <Scale className="h-3.5 w-3.5" /> Bid Review
+              </Link>
+              <Link
+                to="/permit-card/$id"
+                params={{ id: row.id }}
+                target="_blank"
+                className="p-btn p-btn-ghost"
+              >
+                <QrCode className="h-3.5 w-3.5" /> Permit Card
               </Link>
               <Link
                 to="/portal/permits/new"
