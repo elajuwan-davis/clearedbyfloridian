@@ -257,8 +257,8 @@ export function MyPermitsPage() {
                                     {p.job_address}
                                   </div>
                                 </div>
-                                <StatusChip tone={tone}>{STATUS_LABEL[p.status]}</StatusChip>
                               </div>
+
 
                               {/* Grouped metadata — one quiet line, no badge pile */}
                               <div className="mt-2 flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1 text-[11px] text-muted-foreground">
