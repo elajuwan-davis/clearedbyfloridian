@@ -100,7 +100,11 @@ function FinancialsPage() {
       .then((rows) => alive && setPermits(rows))
       .catch(() => toast.error("Failed to load projects"))
       .finally(() => alive && setLoading(false));
-    const refreshFees = () => setFees(listAllFees());
+    const refreshFees = () => {
+      void listAllFees()
+        .then((rows) => alive && setFees(rows))
+        .catch(() => alive && setFees([]));
+    };
     refreshFees();
     window.addEventListener("manual-fees:changed", refreshFees);
     return () => {

@@ -53,7 +53,7 @@ function LpoaSigningPage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!canSign) return;
-    navigate({ to: "/projects" });
+    navigate({ to: "/portal/permits" });
   };
 
   return (
@@ -61,11 +61,11 @@ function LpoaSigningPage() {
       <form onSubmit={handleSubmit} className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
         {/* Back */}
         <Link
-          to="/projects"
+          to="/portal/permits"
           className="inline-flex items-center gap-1.5 font-mono text-[10px] font-medium uppercase tracking-[0.14em] text-obsidian/55 transition-opacity hover:opacity-70"
         >
           <ArrowLeft className="h-3 w-3" />
-          Back to Projects
+          Back to Permits
         </Link>
 
         {/* Header */}
@@ -321,7 +321,7 @@ function LpoaSigningPage() {
           </div>
           <div className="flex items-center gap-3">
             <Button asChild variant="ghost" className="rounded-[3px]">
-              <Link to="/projects">Cancel</Link>
+              <Link to="/portal/permits">Cancel</Link>
             </Button>
             <Button type="submit" variant="dark" disabled={!canSign}>
               <PenLine className="mr-2 h-4 w-4" />

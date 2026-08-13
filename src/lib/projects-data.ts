@@ -1,8 +1,7 @@
-// Canonical active Cleard projects — 24 real jobs.
-// Consumed by /my-permits, /projects, /projects/$id, /portal, /portal/projects.
+// Seed project fixtures. The real system of record is `permits` (permits-api.ts);
+// what remains here backs dialogs and widgets that have not been migrated yet.
 
 import type { ProjectStatus } from "./status-badges";
-import { getHubspotProject } from "./hubspot-projects";
 import { defaultVendorFor, type Vendor } from "./project-vendors";
 
 export type Project = {
@@ -143,12 +142,7 @@ export const PROJECTS: Project[] = SEED.map((s) => {
 });
 
 export function getProjectById(id: string): Project | null {
-  const seeded = PROJECTS.find((p) => p.id === id);
-  if (seeded) return seeded;
-  if (typeof window !== "undefined" && id.startsWith("hs-")) {
-    return getHubspotProject(id);
-  }
-  return null;
+  return PROJECTS.find((p) => p.id === id) ?? null;
 }
 
 export function fullAddress(p: Project): string {

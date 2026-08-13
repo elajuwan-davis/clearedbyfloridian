@@ -34,8 +34,7 @@ import {
   listSavedPaymentMethods,
 } from "@/lib/payments.functions";
 import { getStripeEnvironment, isPaymentsConfigured } from "@/lib/stripe";
-import { PageShell, Panel, KV, StatusChip, TableShell, Segmented } from "@/components/ui-kit";
-import { InvoicesView } from "@/components/invoices-view";
+import { PageShell, Panel, KV, StatusChip, TableShell } from "@/components/ui-kit";
 
 export const Route = createFileRoute("/portal/billing")({
   head: () => ({
@@ -128,7 +127,6 @@ function useLiveBilling(tenantFilter: string | null, isAdmin: boolean) {
 function BillingPage() {
   const session = useSession();
   const staff = session.isAdmin;
-  const [tab, setTab] = useState<"billing" | "invoices">("billing");
 
   return (
     <PageShell
@@ -142,21 +140,8 @@ function BillingPage() {
             : "Subscription, per-project service fees, and payment history."
       }
     >
-      <div className="mb-4">
-        <Segmented
-          value={tab}
-          onChange={setTab}
-          options={[
-            { value: "billing", label: "Billing" },
-            { value: "invoices", label: "Invoices" },
-          ]}
-        />
-      </div>
-
       {session.loading ? (
         <div className="p-12 text-center text-[12.5px] text-muted-foreground">Loading billing…</div>
-      ) : tab === "invoices" ? (
-        <InvoicesView />
       ) : staff ? (
         <StaffView tenantFilter={session.effectiveTenantId} />
       ) : (

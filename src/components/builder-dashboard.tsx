@@ -223,7 +223,7 @@ export function BuilderDashboard() {
               title="Active permits"
               meta={`${rows.length} shown`}
               action={
-                <Link to="/portal/projects" className="inline-flex items-center gap-1 text-muted-foreground transition-colors hover:text-foreground">
+                <Link to="/portal/permits" className="inline-flex items-center gap-1 text-muted-foreground transition-colors hover:text-foreground">
                   View all <ArrowUpRight className="h-3 w-3" strokeWidth={2} />
                 </Link>
               }
