@@ -201,74 +201,53 @@ function FinancialsPage() {
           ? "Loading…"
           : `${permits.length} projects · ${totals.active} active · ${fmtUsd(totals.combined)} combined`
       }
-      actions={
-        <Segmented
-          value={tab}
-          onChange={setTab}
-          options={[
-            { value: "with", label: "Financial Overview" },
-            { value: "before", label: "Before Cléared" },
-            { value: "quick", label: "Quick Estimate" },
-            { value: "savings", label: "Bundle vs. Per-Trade" },
-          ]}
-        />
-      }
-
       toolbar={
-        tab === "with" ? (
-          <>
-            <Segmented
-              value={statusFilter}
-              onChange={setStatusFilter}
-              options={[
-                { value: "all", label: "All" },
-                { value: "pending", label: "Pending" },
-                { value: "permit_issued", label: "Issued" },
-                { value: "on_hold", label: "On hold" },
-              ]}
-            />
-            <select
-              value={muni}
-              onChange={(e) => setMuni(e.target.value)}
-              className="p-inset h-7 max-w-[190px] bg-transparent px-2 text-[12px]"
-            >
-              <option value="all">All municipalities</option>
-              {municipalities.map((m) => (
-                <option key={m} value={m}>
-                  {m}
-                </option>
-              ))}
-            </select>
-            <input
-              type="date"
-              aria-label="From date"
-              value={from}
-              onChange={(e) => setFrom(e.target.value)}
-              className="p-inset h-7 bg-transparent px-2 text-[12px]"
-            />
-            <input
-              type="date"
-              aria-label="To date"
-              value={to}
-              onChange={(e) => setTo(e.target.value)}
-              className="p-inset h-7 bg-transparent px-2 text-[12px]"
-            />
-            <span className="ml-auto hidden text-[11.5px] text-muted-foreground sm:inline">
-              {filtered.length} shown
-            </span>
-          </>
-        ) : undefined
+        <>
+          <Segmented
+            value={statusFilter}
+            onChange={setStatusFilter}
+            options={[
+              { value: "all", label: "All" },
+              { value: "pending", label: "Pending" },
+              { value: "permit_issued", label: "Issued" },
+              { value: "on_hold", label: "On hold" },
+            ]}
+          />
+          <select
+            value={muni}
+            onChange={(e) => setMuni(e.target.value)}
+            className="p-inset h-7 max-w-[190px] bg-transparent px-2 text-[12px]"
+          >
+            <option value="all">All municipalities</option>
+            {municipalities.map((m) => (
+              <option key={m} value={m}>
+                {m}
+              </option>
+            ))}
+          </select>
+          <input
+            type="date"
+            aria-label="From date"
+            value={from}
+            onChange={(e) => setFrom(e.target.value)}
+            className="p-inset h-7 bg-transparent px-2 text-[12px]"
+          />
+          <input
+            type="date"
+            aria-label="To date"
+            value={to}
+            onChange={(e) => setTo(e.target.value)}
+            className="p-inset h-7 bg-transparent px-2 text-[12px]"
+          />
+          <span className="ml-auto hidden text-[11.5px] text-muted-foreground sm:inline">
+            {filtered.length} shown
+          </span>
+        </>
       }
     >
-      {tab === "quick" ? (
-        <QuickSavingsEstimate />
-      ) : tab === "savings" ? (
-        <SavingsCalculator />
-      ) : tab === "before" ? (
-        <BeforeClearedPanel withClearedTotal={totals.combined} />
-
-      ) : (
+      {
         <>
+
           <MetricRow className="lg:grid-cols-4 xl:grid-cols-4">
             <StatTile
               label="Permit fees"
