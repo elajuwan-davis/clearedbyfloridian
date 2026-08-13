@@ -7,6 +7,7 @@ import { listEscalatedPermitIds } from "@/lib/staff-ops";
 import { listPermits, updatePermit, permitCompleteness, type PermitRow, type PermitStatus } from "@/lib/permits-api";
 import { syncAllPermits, getLastRun, formatRelative } from "@/lib/permit-sync";
 import { getVendor, isVendorManaged } from "@/lib/project-vendors";
+import { listLocalPermitDrafts, discardLocalPermitDrafts, type LocalPermitDraft } from "@/lib/permit-drafts";
 import {
   PageShell,
   Panel,
@@ -14,8 +15,8 @@ import {
   Segmented,
   StatusChip,
   EmptyState,
-  type MetricTone,
 } from "@/components/ui-kit";
+
 
 
 type GroupKey = "intake" | "preparing" | "submitted" | "on_hold" | "outsourced" | "issued" | "cancelled";
