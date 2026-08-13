@@ -40,6 +40,41 @@ export function SubcontractorsManager() {
   const [subs, setSubs] = useState<SubRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [shareUrl, setShareUrl] = useState<string | null>(null);
+  const [verifying, setVerifying] = useState<Record<string, boolean>>({});
+
+  const needsAttention = subs.filter((s) => {
+    const c = coiLifecycle(s);
+    return c === "expired" || c === "expiring_soon" || c === "missing";
+  });
+  const expiredCount = subs.filter((s) => coiLifecycle(s) === "expired").length;
+
+  async function verify(sub: SubRow) {
+    if (!sub.license_number) {
+      toast.error("No license number on file");
+      return;
+    }
+    setVerifying((v) => ({ ...v, [sub.id]: true }));
+    try {
+      const r: DbprResult = await verifyDbprLicense(sub.license_number);
+      const patch = {
+        dbpr_verified_at: r.checked_at,
+        dbpr_status: r.status,
+        dbpr_holder_name: r.holder_name ?? null,
+        dbpr_license_type: r.license_type ?? null,
+        dbpr_expiration: r.expiration ?? null,
+      };
+      await updateSubApi(sub.id, { ...(patch as any) });
+      setSubs((prev) =>
+        prev.map((s) => (s.id === sub.id ? ({ ...s, ...patch } as unknown as SubRow) : s)),
+      );
+      toast.success(`DBPR: ${r.status}`);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Verify failed");
+    } finally {
+      setVerifying((v) => ({ ...v, [sub.id]: false }));
+    }
+  }
+
 
   async function refresh() {
     setLoading(true);
