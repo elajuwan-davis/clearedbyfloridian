@@ -7,6 +7,7 @@ import { listEscalatedPermitIds } from "@/lib/staff-ops";
 import { listPermits, updatePermit, permitCompleteness, type PermitRow, type PermitStatus } from "@/lib/permits-api";
 import { syncAllPermits, getLastRun, formatRelative } from "@/lib/permit-sync";
 import { getVendor, isVendorManaged } from "@/lib/project-vendors";
+import { listLocalPermitDrafts, discardLocalPermitDrafts, type LocalPermitDraft } from "@/lib/permit-drafts";
 import {
   PageShell,
   Panel,
@@ -14,8 +15,8 @@ import {
   Segmented,
   StatusChip,
   EmptyState,
-  type MetricTone,
 } from "@/components/ui-kit";
+
 
 
 type GroupKey = "intake" | "preparing" | "submitted" | "on_hold" | "outsourced" | "issued" | "cancelled";
@@ -30,16 +31,6 @@ const GROUPS: Array<{ key: GroupKey; label: string; statuses: PermitStatus[]; bo
   { key: "cancelled", label: "Cancelled", statuses: ["cancelled"], borderColor: "oklch(0.5 0.18 25)" },
 ];
 
-const STATUS_LABEL: Record<PermitStatus, string> = {
-  submitted: "Pre-Check",
-  in_review: "Pre-Check",
-  corrections_required: "Delayed",
-  approved: "Cleared for Takeoff",
-  permit_issued: "En Route",
-  on_hold: "Delayed",
-  outsourced_permitting: "Outsourced",
-  cancelled: "Cancelled",
-};
 
 const STATUS_OPTIONS: Array<{ value: PermitStatus; label: string }> = [
   { value: "submitted", label: "Pre-Check" },
@@ -62,10 +53,24 @@ export function MyPermitsPage() {
 
   const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [escalatedIds, setEscalatedIds] = useState<Set<string>>(new Set());
+  const [drafts, setDrafts] = useState<LocalPermitDraft[]>([]);
+  const [draftsOpen, setDraftsOpen] = useState(true);
   const [open, setOpen] = useState<Record<GroupKey, boolean>>({
     intake: true, preparing: true, submitted: true, on_hold: true, outsourced: true, issued: true, cancelled: false,
   });
   const internal = isInternalUser();
+
+  useEffect(() => {
+    setDrafts(listLocalPermitDrafts());
+    const on = () => setDrafts(listLocalPermitDrafts());
+    window.addEventListener("focus", on);
+    window.addEventListener("storage", on);
+    return () => {
+      window.removeEventListener("focus", on);
+      window.removeEventListener("storage", on);
+    };
+  }, []);
+
 
   async function changeStatus(id: string, status: PermitStatus) {
     setUpdatingId(id);
@@ -189,7 +194,7 @@ export function MyPermitsPage() {
           </>
         }
       >
-        {permits.length === 0 && !loading ? (
+        {permits.length === 0 && drafts.length === 0 && !loading ? (
           <Panel padded={false}>
             <EmptyState
               icon={<FileText className="h-4 w-4" strokeWidth={1.75} />}
@@ -204,7 +209,68 @@ export function MyPermitsPage() {
           </Panel>
         ) : (
           <div className="space-y-3">
+            {drafts.length > 0 && (
+              <section className="min-w-0">
+                <button
+                  type="button"
+                  onClick={() => setDraftsOpen((o) => !o)}
+                  className="flex w-full items-center gap-2 px-1 py-1.5 text-left"
+                >
+                  <ChevronDown
+                    className={`h-3.5 w-3.5 text-muted-foreground transition-transform ${draftsOpen ? "" : "-rotate-90"}`}
+                    strokeWidth={2}
+                  />
+                  <span className="text-[12.5px] font-semibold tracking-[-0.01em]">Drafts</span>
+                  <span className="text-[11.5px] tabular-nums text-muted-foreground">{drafts.length}</span>
+                </button>
+                {draftsOpen && (
+                  <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+                    {drafts.map((d, i) => (
+                      <div
+                        key={i}
+                        className="p-plate p-hover-plate group flex min-w-0 flex-col overflow-hidden"
+                      >
+                        <Link to="/portal/permits/new" className="min-w-0 flex-1 px-3 pb-2 pt-2.5">
+                          <div className="truncate text-[13px] font-medium leading-tight">
+                            {d.projectName}
+                          </div>
+                          <div className="mt-0.5 truncate text-[11.5px] text-muted-foreground">
+                            {d.jobAddress || "Address not entered"}
+                          </div>
+                          <div className="mt-2 flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1 text-[11px] text-muted-foreground">
+                            {d.permitType && <span className="truncate">{d.permitType}</span>}
+                            {d.municipality && (
+                              <>
+                                <span className="opacity-40">·</span>
+                                <span className="truncate">{d.municipality}</span>
+                              </>
+                            )}
+                            <span className="ml-auto shrink-0 tabular-nums">
+                              {d.savedAt ? new Date(d.savedAt).toLocaleDateString() : ""}
+                            </span>
+                          </div>
+                        </Link>
+                        <div className="flex items-center gap-2 px-3 pb-2.5">
+                          <span className="text-[11px] text-muted-foreground">Not submitted</span>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              discardLocalPermitDrafts();
+                              setDrafts([]);
+                            }}
+                            className="ml-auto text-[11px] text-muted-foreground opacity-0 transition-opacity hover:text-foreground group-hover:opacity-100"
+                          >
+                            Discard
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </section>
+            )}
             {grouped.map((g) => (
+
               <section key={g.key} className="min-w-0">
                 <button
                   type="button"
@@ -228,14 +294,6 @@ export function MyPermitsPage() {
                       {g.items.map((p) => {
                         const c = permitCompleteness(p);
                         const vendor = getVendor(p.project_name);
-                        const tone: MetricTone =
-                          p.status === "permit_issued" || p.status === "approved"
-                            ? "success"
-                            : p.status === "on_hold" || p.status === "corrections_required"
-                              ? "warning"
-                              : p.status === "cancelled"
-                                ? "danger"
-                                : "info";
                         const barColor =
                           c.percent === 100 ? "#22C55E" : c.percent >= 60 ? "#3B82F6" : c.percent >= 30 ? "#F59E0B" : "#EF4444";
                         return (
@@ -257,8 +315,8 @@ export function MyPermitsPage() {
                                     {p.job_address}
                                   </div>
                                 </div>
-                                <StatusChip tone={tone}>{STATUS_LABEL[p.status]}</StatusChip>
                               </div>
+
 
                               {/* Grouped metadata — one quiet line, no badge pile */}
                               <div className="mt-2 flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1 text-[11px] text-muted-foreground">
