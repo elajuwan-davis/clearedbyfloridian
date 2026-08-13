@@ -60,12 +60,9 @@ export const billingSection: NavSection = {
   key: "billing",
   label: "Billing",
   icon: CreditCard,
-  items: [
-    { to: "/portal/billing", label: "Billing Overview" },
-    { to: "/invoices", label: "Invoices" },
-    { to: "/portal/company", label: "Company Profile" },
-  ],
+  items: [{ to: "/portal/billing", label: "Billing & Invoices" }],
 };
+
 
 export const navSections: NavSection[] = [
   dashboardSection,
@@ -79,8 +76,8 @@ export const navSections: NavSection[] = [
     icon: FileText,
     items: [
       { to: "/portal/permits", label: "My Permits", alertKey: "my-permits" },
-      { to: "/portal/guides", label: "Project Guides" },
       { to: "/portal/inspections", label: "Inspections" },
+
       { to: "/portal/hoa-submittals", label: "HOA Submittals" },
       { to: "/portal/bid-review", label: "Bid Review" },
       { to: "/portal/utility-locates", label: "Utility Locates & Protection" },
@@ -159,8 +156,12 @@ export const settingsSection: NavSection = {
   key: "settings",
   label: "Settings",
   icon: Settings,
-  items: [{ to: "/profile", label: "Profile & Notifications" }],
+  items: [
+    { to: "/profile", label: "Profile & Notifications" },
+    { to: "/portal/company", label: "Company Profile" },
+  ],
 };
+
 
 export const subNavSections: NavSection[] = [
   bookmarksSection,
