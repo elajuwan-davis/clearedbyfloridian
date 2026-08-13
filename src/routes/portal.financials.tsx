@@ -454,8 +454,15 @@ function FinancialsPage() {
               )}
             </TableShell>
           </Panel>
+
+          <BeforeClearedPanel withClearedTotal={totals.combined} />
+
+          <QuickSavingsEstimate />
+
+          <SavingsCalculator />
         </>
-      )}
+      }
+
     </PageShell>
   );
 }
