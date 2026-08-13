@@ -97,7 +97,7 @@ import { Route as PortalUtilityLocatesRouteImport } from './routes/portal.utilit
 import { Route as ProjectsIdRouteImport } from './routes/projects.$id'
 import { Route as ProjectsNewRouteImport } from './routes/projects.new'
 import { Route as SubIntakeTokenRouteImport } from './routes/sub-intake.$token'
-import { Route as SubPortalTokenRouteImport } from './routes/sub-portal.$token'
+import { Route as SubPortalTokenRouteImport } from './routes/sub-portal_.$token'
 import { Route as VersusIndexRouteImport } from './routes/versus.index'
 import { Route as VersusSlugRouteImport } from './routes/versus.$slug'
 import { Route as AdminBlogIndexRouteImport } from './routes/admin.blog.index'
@@ -131,7 +131,7 @@ import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/em
 import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/email/auth/webhook'
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 import { Route as PortalHoaSubmittalsTemplatesNewRouteImport } from './routes/portal.hoa-submittals.templates.new'
-import { Route as PortalPermitsIdBundleRouteImport } from './routes/portal.permits.$id.bundle'
+import { Route as PortalPermitsIdBundleRouteImport } from './routes/portal.permits_.$id.bundle'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -578,9 +578,9 @@ const SubIntakeTokenRoute = SubIntakeTokenRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const SubPortalTokenRoute = SubPortalTokenRouteImport.update({
-  id: '/$token',
-  path: '/$token',
-  getParentRoute: () => SubPortalRoute,
+  id: '/sub-portal_/$token',
+  path: '/sub-portal/$token',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const VersusIndexRoute = VersusIndexRouteImport.update({
   id: '/versus/',
@@ -756,9 +756,9 @@ const PortalHoaSubmittalsTemplatesNewRoute =
     getParentRoute: () => PortalRoute,
   } as any)
 const PortalPermitsIdBundleRoute = PortalPermitsIdBundleRouteImport.update({
-  id: '/bundle',
-  path: '/bundle',
-  getParentRoute: () => PortalPermitsIdRoute,
+  id: '/permits_/$id/bundle',
+  path: '/permits/$id/bundle',
+  getParentRoute: () => PortalRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
@@ -791,7 +791,7 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof ResetPasswordRoute
   '/reset-password-confirm': typeof ResetPasswordConfirmRoute
   '/services': typeof ServicesRoute
-  '/sub-portal': typeof SubPortalRouteWithChildren
+  '/sub-portal': typeof SubPortalRoute
   '/admin/access-requests': typeof AdminAccessRequestsRoute
   '/admin/activity': typeof AdminActivityRoute
   '/admin/audit': typeof AdminAuditRoute
@@ -865,7 +865,7 @@ export interface FileRoutesByFullPath {
   '/portal/guides/$slug': typeof PortalGuidesSlugRoute
   '/portal/hoa-submittals/$id': typeof PortalHoaSubmittalsIdRoute
   '/portal/hoa-submittals/new': typeof PortalHoaSubmittalsNewRoute
-  '/portal/permits/$id': typeof PortalPermitsIdRouteWithChildren
+  '/portal/permits/$id': typeof PortalPermitsIdRoute
   '/portal/permits/new': typeof PortalPermitsNewRoute
   '/portal/projects/$id': typeof PortalProjectsIdRoute
   '/portal/subcontractors/new': typeof PortalSubcontractorsNewRoute
@@ -914,7 +914,7 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/reset-password-confirm': typeof ResetPasswordConfirmRoute
   '/services': typeof ServicesRoute
-  '/sub-portal': typeof SubPortalRouteWithChildren
+  '/sub-portal': typeof SubPortalRoute
   '/admin/access-requests': typeof AdminAccessRequestsRoute
   '/admin/activity': typeof AdminActivityRoute
   '/admin/audit': typeof AdminAuditRoute
@@ -986,7 +986,7 @@ export interface FileRoutesByTo {
   '/portal/guides/$slug': typeof PortalGuidesSlugRoute
   '/portal/hoa-submittals/$id': typeof PortalHoaSubmittalsIdRoute
   '/portal/hoa-submittals/new': typeof PortalHoaSubmittalsNewRoute
-  '/portal/permits/$id': typeof PortalPermitsIdRouteWithChildren
+  '/portal/permits/$id': typeof PortalPermitsIdRoute
   '/portal/permits/new': typeof PortalPermitsNewRoute
   '/portal/projects/$id': typeof PortalProjectsIdRoute
   '/portal/subcontractors/new': typeof PortalSubcontractorsNewRoute
@@ -1038,7 +1038,7 @@ export interface FileRoutesById {
   '/reset-password': typeof ResetPasswordRoute
   '/reset-password-confirm': typeof ResetPasswordConfirmRoute
   '/services': typeof ServicesRoute
-  '/sub-portal': typeof SubPortalRouteWithChildren
+  '/sub-portal': typeof SubPortalRoute
   '/admin/access-requests': typeof AdminAccessRequestsRoute
   '/admin/activity': typeof AdminActivityRoute
   '/admin/audit': typeof AdminAuditRoute
@@ -1092,7 +1092,7 @@ export interface FileRoutesById {
   '/projects/$id': typeof ProjectsIdRoute
   '/projects/new': typeof ProjectsNewRoute
   '/sub-intake/$token': typeof SubIntakeTokenRoute
-  '/sub-portal/$token': typeof SubPortalTokenRoute
+  '/sub-portal_/$token': typeof SubPortalTokenRoute
   '/versus/$slug': typeof VersusSlugRoute
   '/admin/': typeof AdminIndexRoute
   '/blog/': typeof BlogIndexRoute
@@ -1112,7 +1112,7 @@ export interface FileRoutesById {
   '/portal/guides/$slug': typeof PortalGuidesSlugRoute
   '/portal/hoa-submittals/$id': typeof PortalHoaSubmittalsIdRoute
   '/portal/hoa-submittals/new': typeof PortalHoaSubmittalsNewRoute
-  '/portal/permits/$id': typeof PortalPermitsIdRouteWithChildren
+  '/portal/permits/$id': typeof PortalPermitsIdRoute
   '/portal/permits/new': typeof PortalPermitsNewRoute
   '/portal/projects/$id': typeof PortalProjectsIdRoute
   '/portal/subcontractors/new': typeof PortalSubcontractorsNewRoute
@@ -1131,7 +1131,7 @@ export interface FileRoutesById {
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
   '/portal/hoa-submittals/templates/new': typeof PortalHoaSubmittalsTemplatesNewRoute
-  '/portal/permits/$id/bundle': typeof PortalPermitsIdBundleRoute
+  '/portal/permits_/$id/bundle': typeof PortalPermitsIdBundleRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -1465,7 +1465,7 @@ export interface FileRouteTypes {
     | '/projects/$id'
     | '/projects/new'
     | '/sub-intake/$token'
-    | '/sub-portal/$token'
+    | '/sub-portal_/$token'
     | '/versus/$slug'
     | '/admin/'
     | '/blog/'
@@ -1504,7 +1504,7 @@ export interface FileRouteTypes {
     | '/lovable/email/auth/webhook'
     | '/lovable/email/queue/process'
     | '/portal/hoa-submittals/templates/new'
-    | '/portal/permits/$id/bundle'
+    | '/portal/permits_/$id/bundle'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -1537,7 +1537,7 @@ export interface RootRouteChildren {
   ResetPasswordRoute: typeof ResetPasswordRoute
   ResetPasswordConfirmRoute: typeof ResetPasswordConfirmRoute
   ServicesRoute: typeof ServicesRoute
-  SubPortalRoute: typeof SubPortalRouteWithChildren
+  SubPortalRoute: typeof SubPortalRoute
   AdminAccessRequestsRoute: typeof AdminAccessRequestsRoute
   AdminActivityRoute: typeof AdminActivityRoute
   AdminAuditRoute: typeof AdminAuditRoute
@@ -1561,6 +1561,7 @@ export interface RootRouteChildren {
   LegalNotaryQueueRoute: typeof LegalNotaryQueueRoute
   PermitCardIdRoute: typeof PermitCardIdRoute
   SubIntakeTokenRoute: typeof SubIntakeTokenRoute
+  SubPortalTokenRoute: typeof SubPortalTokenRoute
   VersusSlugRoute: typeof VersusSlugRoute
   AdminIndexRoute: typeof AdminIndexRoute
   BlogIndexRoute: typeof BlogIndexRoute
@@ -2200,12 +2201,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SubIntakeTokenRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/sub-portal/$token': {
-      id: '/sub-portal/$token'
-      path: '/$token'
+    '/sub-portal_/$token': {
+      id: '/sub-portal_/$token'
+      path: '/sub-portal/$token'
       fullPath: '/sub-portal/$token'
       preLoaderRoute: typeof SubPortalTokenRouteImport
-      parentRoute: typeof SubPortalRoute
+      parentRoute: typeof rootRouteImport
     }
     '/versus/': {
       id: '/versus/'
@@ -2438,12 +2439,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PortalHoaSubmittalsTemplatesNewRouteImport
       parentRoute: typeof PortalRoute
     }
-    '/portal/permits/$id/bundle': {
-      id: '/portal/permits/$id/bundle'
-      path: '/bundle'
+    '/portal/permits_/$id/bundle': {
+      id: '/portal/permits_/$id/bundle'
+      path: '/permits/$id/bundle'
       fullPath: '/portal/permits/$id/bundle'
       preLoaderRoute: typeof PortalPermitsIdBundleRouteImport
-      parentRoute: typeof PortalPermitsIdRoute
+      parentRoute: typeof PortalRoute
     }
   }
 }
@@ -2477,26 +2478,14 @@ const FormsRouteChildren: FormsRouteChildren = {
 
 const FormsRouteWithChildren = FormsRoute._addFileChildren(FormsRouteChildren)
 
-interface PortalPermitsIdRouteChildren {
-  PortalPermitsIdBundleRoute: typeof PortalPermitsIdBundleRoute
-}
-
-const PortalPermitsIdRouteChildren: PortalPermitsIdRouteChildren = {
-  PortalPermitsIdBundleRoute: PortalPermitsIdBundleRoute,
-}
-
-const PortalPermitsIdRouteWithChildren = PortalPermitsIdRoute._addFileChildren(
-  PortalPermitsIdRouteChildren,
-)
-
 interface PortalPermitsRouteChildren {
-  PortalPermitsIdRoute: typeof PortalPermitsIdRouteWithChildren
+  PortalPermitsIdRoute: typeof PortalPermitsIdRoute
   PortalPermitsNewRoute: typeof PortalPermitsNewRoute
   PortalPermitsIndexRoute: typeof PortalPermitsIndexRoute
 }
 
 const PortalPermitsRouteChildren: PortalPermitsRouteChildren = {
-  PortalPermitsIdRoute: PortalPermitsIdRouteWithChildren,
+  PortalPermitsIdRoute: PortalPermitsIdRoute,
   PortalPermitsNewRoute: PortalPermitsNewRoute,
   PortalPermitsIndexRoute: PortalPermitsIndexRoute,
 }
@@ -2566,6 +2555,7 @@ interface PortalRouteChildren {
   PortalHoaSubmittalsIndexRoute: typeof PortalHoaSubmittalsIndexRoute
   PortalSubcontractorsIndexRoute: typeof PortalSubcontractorsIndexRoute
   PortalHoaSubmittalsTemplatesNewRoute: typeof PortalHoaSubmittalsTemplatesNewRoute
+  PortalPermitsIdBundleRoute: typeof PortalPermitsIdBundleRoute
 }
 
 const PortalRouteChildren: PortalRouteChildren = {
@@ -2604,6 +2594,7 @@ const PortalRouteChildren: PortalRouteChildren = {
   PortalHoaSubmittalsIndexRoute: PortalHoaSubmittalsIndexRoute,
   PortalSubcontractorsIndexRoute: PortalSubcontractorsIndexRoute,
   PortalHoaSubmittalsTemplatesNewRoute: PortalHoaSubmittalsTemplatesNewRoute,
+  PortalPermitsIdBundleRoute: PortalPermitsIdBundleRoute,
 }
 
 const PortalRouteWithChildren =
@@ -2621,18 +2612,6 @@ const ProjectsRouteChildren: ProjectsRouteChildren = {
 
 const ProjectsRouteWithChildren = ProjectsRoute._addFileChildren(
   ProjectsRouteChildren,
-)
-
-interface SubPortalRouteChildren {
-  SubPortalTokenRoute: typeof SubPortalTokenRoute
-}
-
-const SubPortalRouteChildren: SubPortalRouteChildren = {
-  SubPortalTokenRoute: SubPortalTokenRoute,
-}
-
-const SubPortalRouteWithChildren = SubPortalRoute._addFileChildren(
-  SubPortalRouteChildren,
 )
 
 const rootRouteChildren: RootRouteChildren = {
@@ -2665,7 +2644,7 @@ const rootRouteChildren: RootRouteChildren = {
   ResetPasswordRoute: ResetPasswordRoute,
   ResetPasswordConfirmRoute: ResetPasswordConfirmRoute,
   ServicesRoute: ServicesRoute,
-  SubPortalRoute: SubPortalRouteWithChildren,
+  SubPortalRoute: SubPortalRoute,
   AdminAccessRequestsRoute: AdminAccessRequestsRoute,
   AdminActivityRoute: AdminActivityRoute,
   AdminAuditRoute: AdminAuditRoute,
@@ -2689,6 +2668,7 @@ const rootRouteChildren: RootRouteChildren = {
   LegalNotaryQueueRoute: LegalNotaryQueueRoute,
   PermitCardIdRoute: PermitCardIdRoute,
   SubIntakeTokenRoute: SubIntakeTokenRoute,
+  SubPortalTokenRoute: SubPortalTokenRoute,
   VersusSlugRoute: VersusSlugRoute,
   AdminIndexRoute: AdminIndexRoute,
   BlogIndexRoute: BlogIndexRoute,

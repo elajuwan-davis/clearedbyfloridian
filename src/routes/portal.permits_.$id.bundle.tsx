@@ -54,7 +54,7 @@ import { createSubmission, type ManifestEntry } from "@/lib/submissions-api";
 import { BundlePartialSubmitDialog } from "@/components/bundle-partial-submit-dialog";
 import { FLORIDIAN_FIRM } from "@/lib/floridian-firm";
 
-export const Route = createFileRoute("/portal/permits/$id/bundle")({
+export const Route = createFileRoute("/portal/permits_/$id/bundle")({
   head: () => ({
     meta: [
       { title: "Bundle Submission — Cleard" },
