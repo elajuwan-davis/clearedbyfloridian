@@ -3365,6 +3365,48 @@ export type Database = {
         }
         Relationships: []
       }
+      registered_contractors: {
+        Row: {
+          active: boolean
+          address: string
+          contact_name: string
+          created_at: string
+          email: string
+          firm_name: string
+          id: string
+          license_number: string
+          license_type: string
+          phone: string
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          address?: string
+          contact_name?: string
+          created_at?: string
+          email?: string
+          firm_name: string
+          id?: string
+          license_number: string
+          license_type?: string
+          phone?: string
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          address?: string
+          contact_name?: string
+          created_at?: string
+          email?: string
+          firm_name?: string
+          id?: string
+          license_number?: string
+          license_type?: string
+          phone?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       service_fee_invoices: {
         Row: {
           created_at: string | null
