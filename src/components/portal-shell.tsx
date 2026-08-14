@@ -298,15 +298,16 @@ function SidebarNav({
         className={cn("flex h-12 shrink-0 items-center gap-2.5", isRail ? "justify-center px-0" : "px-3.5")}
         title="Cleard"
       >
-        <div
-          className="grid h-7 w-7 shrink-0 place-items-center rounded-lg text-[13px] font-bold text-white"
-          style={{ background: "linear-gradient(135deg,#3B82F6 0%,#60A5FA 100%)" }}
-        >
-          C
-        </div>
-        {!isRail && (
+        {isRail ? (
+          <div
+            className="grid h-7 w-7 shrink-0 place-items-center text-[13px] font-bold"
+            style={{ background: "#111110", color: "#FFFFFF" }}
+          >
+            C
+          </div>
+        ) : (
           <span
-            className="truncate text-[15px] font-semibold tracking-[-0.01em]"
+            className="truncate text-[19px] font-bold tracking-[-0.03em]"
             style={{ color: "var(--rail-fg)" }}
           >
             Cleard
