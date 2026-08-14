@@ -28,9 +28,11 @@ import { useMyIdentity } from "@/lib/profile-api";
 import { listAllTenantsFn } from "@/lib/tenants.functions";
 import type { Alert } from "@/lib/expiration-alerts";
 
+import { SectionTabs } from "@/components/section-tabs";
 import {
   sectionsForRole,
   settingsForRole,
+  sidebarSettingsForRole,
   isItemActive,
   type AlertKey,
   type NavSection,
@@ -96,7 +98,7 @@ function sectionAlerted(section: NavSection, alertKeys: Set<AlertKey>) {
 function useNavSections(role: AppRole | null, isAdmin: boolean) {
   const { bookmarks, toggle } = useBookmarks();
   const sections = sectionsForRole(role, isAdmin);
-  const settings = settingsForRole(role);
+  const settings = sidebarSettingsForRole(role);
   const marked = new Set(bookmarks.map((b) => normalizePath(b.path)));
 
   const allSections: NavSection[] = [...sections, settings]
@@ -398,6 +400,34 @@ function SidebarNav({
             );
           }
 
+          if (!group.items && group.to) {
+            return (
+              <Link
+                key={group.key}
+                to={group.to as never}
+                onClick={onNavigate}
+                className="flex items-center gap-2 text-[13px]"
+                style={{
+                  padding: "8px 16px",
+                  borderRadius: 0,
+                  backgroundColor: groupActive ? "var(--rail-item-active-bg)" : "transparent",
+                  color: groupActive ? "var(--rail-fg)" : "var(--rail-muted)",
+                  fontWeight: groupActive ? 600 : 400,
+                }}
+              >
+                <GroupIcon className="h-4 w-4 shrink-0" strokeWidth={1.75} />
+                <span className="min-w-0 flex-1 truncate">{group.label}</span>
+                {groupAlerted && (
+                  <span
+                    aria-hidden
+                    className="h-1.5 w-1.5 shrink-0 rounded-full"
+                    style={{ backgroundColor: "var(--p-danger)" }}
+                  />
+                )}
+              </Link>
+            );
+          }
+
           return (
             <div key={group.key} className="mb-1">
               <div className="p-nav-group flex items-center gap-2">
@@ -522,13 +552,13 @@ function PortalShellInner({ children }: { children: ReactNode }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
-  const [railExpanded, setRailExpanded] = useState(false);
+  const [railExpanded, setRailExpanded] = useState(true);
   const [authState, setAuthState] = useState<"checking" | "authed" | "anon">("checking");
 
   // Restore the pinned/collapsed nav preference (HubSpot-style expand toggle).
   useEffect(() => {
     try {
-      setRailExpanded(localStorage.getItem("cleard-nav-expanded") === "1");
+      setRailExpanded(localStorage.getItem("cleard-nav-expanded") !== "0");
     } catch {
       /* storage unavailable */
     }
@@ -620,7 +650,7 @@ function PortalShellInner({ children }: { children: ReactNode }) {
       {/* Sidebar — 56px icon rail with flyouts, or 240px pinned (HubSpot model) */}
       <aside
         className="fixed inset-y-0 left-0 z-40 hidden lg:block"
-        style={{ width: railExpanded ? 240 : 56 }}
+        style={{ width: railExpanded ? 200 : 56 }}
       >
         <SidebarNav
           pathname={pathname}
@@ -636,7 +666,7 @@ function PortalShellInner({ children }: { children: ReactNode }) {
         />
       </aside>
 
-      <div className={railExpanded ? "lg:pl-[240px]" : "lg:pl-[56px]"}>
+      <div className={railExpanded ? "lg:pl-[200px]" : "lg:pl-[56px]"}>
         <header
           className="sticky top-0 z-30 flex h-12 items-center gap-2 border-b px-3 sm:px-4 lg:px-6"
           style={{ backgroundColor: "var(--p-topbar)", borderColor: "var(--p-border)" }}
@@ -755,6 +785,8 @@ function PortalShellInner({ children }: { children: ReactNode }) {
             </div>
           </div>
         </header>
+
+        <SectionTabs />
 
         <main className="min-h-[calc(100vh-3rem)] min-w-0 overflow-x-hidden pb-20 md:pb-0">
           {children}
