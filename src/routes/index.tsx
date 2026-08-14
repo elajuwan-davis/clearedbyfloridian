@@ -1,10 +1,14 @@
 import { useEffect, useRef, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import {
+  MarketingNavDropdown,
+  PRODUCT_MENU,
+  CONTRACTORS_MENU,
+} from "@/components/marketing-nav-dropdown";
+import {
   ArrowRight,
   ArrowUpRight,
   Bell,
-  ChevronDown,
   ClipboardCheck,
   FileCheck2,
   FileText,
@@ -108,12 +112,7 @@ function AnnouncementBanner() {
 
 /* ----------------------------------- NAV --------------------------------- */
 
-const NAV_LINKS: Array<{ to: string; label: string; caret?: boolean }> = [
-  { to: "/products", label: "Product", caret: true },
-  { to: "/join", label: "Contractors", caret: true },
-  { to: "/pricing", label: "Pricing" },
-  { to: "/about", label: "About" },
-];
+const NAV_LINKS: Array<{ to: string; label: string }> = [{ to: "/pricing", label: "Pricing" }];
 
 function Nav() {
   return (
@@ -128,6 +127,8 @@ function Nav() {
             Cleard
           </Link>
           <nav className="hidden md:flex items-center gap-6">
+            <MarketingNavDropdown label="Product" to="/products" sections={PRODUCT_MENU} triggerColor={GRAY} />
+            <MarketingNavDropdown label="Contractors" to="/join" sections={CONTRACTORS_MENU} triggerColor={GRAY} />
             {NAV_LINKS.map((l) => (
               <Link
                 key={l.to}
@@ -136,11 +137,11 @@ function Nav() {
                 style={{ color: GRAY }}
               >
                 {l.label}
-                {l.caret && <ChevronDown className="h-3.5 w-3.5" />}
               </Link>
             ))}
           </nav>
         </div>
+
 
         <div className="flex items-center gap-3">
           <Link to="/login" className="hidden sm:inline text-[14px] no-underline" style={{ color: GRAY }}>

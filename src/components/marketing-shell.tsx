@@ -1,14 +1,15 @@
 import { useState, type ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
 import { Menu, X, ArrowRight } from "lucide-react";
+import {
+  MarketingNavDropdown,
+  PRODUCT_MENU,
+  CONTRACTORS_MENU,
+} from "@/components/marketing-nav-dropdown";
 
-// Compare and Pricing are intentionally NOT linked publicly — the pages stay
-// live at /versus and /pricing for direct-URL / internal use only.
-const NAV_LINKS: Array<{ to: string; label: string; soon?: boolean }> = [
-  { to: "/products", label: "Product" },
-  { to: "/join", label: "For GCs" },
-  { to: "/about", label: "About" },
-];
+// About is intentionally NOT linked publicly — the page stays live at /about
+// for direct-URL / internal use only.
+const NAV_LINKS: Array<{ to: string; label: string; soon?: boolean }> = [];
 
 
 
@@ -38,6 +39,20 @@ function MarketingNav() {
         </Link>
 
         <nav className="hidden md:flex flex-1 items-center justify-center gap-10">
+          <MarketingNavDropdown
+            label="Product"
+            to="/products"
+            sections={PRODUCT_MENU}
+            triggerColor={BODY_GRAY}
+            triggerSize={13.5}
+          />
+          <MarketingNavDropdown
+            label="Contractors"
+            to="/join"
+            sections={CONTRACTORS_MENU}
+            triggerColor={BODY_GRAY}
+            triggerSize={13.5}
+          />
           {NAV_LINKS.map((l) =>
             l.soon ? (
               <span key={l.to} className="text-[13.5px] cursor-default flex items-center gap-1.5" style={{ color: BODY_GRAY }}>
@@ -89,6 +104,12 @@ function MarketingNav() {
       {open && (
         <div className="md:hidden" style={{ background: NEAR_BLACK, borderTop: `1px solid ${BORDER}` }}>
           <div className="px-6 py-6 space-y-4">
+            <Link to="/products" onClick={() => setOpen(false)} className="block text-base no-underline" style={{ color: BODY_GRAY }}>
+              Product
+            </Link>
+            <Link to="/join" onClick={() => setOpen(false)} className="block text-base no-underline" style={{ color: BODY_GRAY }}>
+              Contractors
+            </Link>
             {NAV_LINKS.map((l) =>
               l.soon ? (
                 <div key={l.to} className="flex items-center gap-2 text-sm" style={{ color: BODY_GRAY }}>
