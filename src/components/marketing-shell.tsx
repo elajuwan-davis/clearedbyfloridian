@@ -39,6 +39,20 @@ function MarketingNav() {
         </Link>
 
         <nav className="hidden md:flex flex-1 items-center justify-center gap-10">
+          <MarketingNavDropdown
+            label="Product"
+            to="/products"
+            sections={PRODUCT_MENU}
+            triggerColor={BODY_GRAY}
+            triggerSize={13.5}
+          />
+          <MarketingNavDropdown
+            label="Contractors"
+            to="/join"
+            sections={CONTRACTORS_MENU}
+            triggerColor={BODY_GRAY}
+            triggerSize={13.5}
+          />
           {NAV_LINKS.map((l) =>
             l.soon ? (
               <span key={l.to} className="text-[13.5px] cursor-default flex items-center gap-1.5" style={{ color: BODY_GRAY }}>
