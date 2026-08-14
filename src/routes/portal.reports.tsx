@@ -93,7 +93,7 @@ function StatCard({
       <div className="flex min-w-0 items-center gap-2">
         <span
           className={`grid h-5 w-5 shrink-0 place-items-center rounded-md ${
-            accent ? "bg-[#3B82F6]/12 text-[#7DB3FB]" : "bg-white/[0.06] text-muted-foreground"
+            accent ? "bg-[#1D4ED8]/12 text-[#1D4ED8]" : "bg-white/[0.06] text-muted-foreground"
           }`}
         >
           <Icon className="h-3 w-3" strokeWidth={1.75} />
@@ -105,7 +105,7 @@ function StatCard({
       <div className="min-w-0">
         <div
           className={`truncate text-[20px] font-semibold leading-none tracking-[-0.03em] ${
-            accent ? "text-[#7DB3FB]" : "text-foreground"
+            accent ? "text-[#1D4ED8]" : "text-foreground"
           }`}
         >
           {value}

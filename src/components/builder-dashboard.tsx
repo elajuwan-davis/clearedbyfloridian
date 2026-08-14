@@ -102,8 +102,8 @@ export function BuilderDashboard() {
       { name: "In review", value: permits.filter((p) => ["submitted", "in_review", "pending"].includes(p.status)).length, color: "#F59E0B" },
       { name: "Corrections", value: corrections, color: "#A78BFA" },
       { name: "On hold", value: permits.filter((p) => p.status === "on_hold").length, color: "#EF4444" },
-      { name: "Issued", value: issued, color: "#22C55E" },
-      { name: "Approved", value: permits.filter((p) => p.status === "approved").length, color: "#3B82F6" },
+      { name: "Issued", value: issued, color: "#00B4A8" },
+      { name: "Approved", value: permits.filter((p) => p.status === "approved").length, color: "#1D4ED8" },
     ];
     return buckets.filter((b) => b.value > 0);
   }, [permits, corrections, issued]);
@@ -341,7 +341,7 @@ export function BuilderDashboard() {
                 <ul className="flex flex-col gap-3 px-4 pb-4">
                   {recent.map((e, i) => (
                     <li key={`${e.title}-${i}`} className="flex min-w-0 items-start gap-2.5">
-                      <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full" style={{ backgroundColor: "#3B82F6" }} />
+                      <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full" style={{ backgroundColor: "#1D4ED8" }} />
                       <div className="min-w-0 flex-1">
                         <div className="truncate text-[13px] font-medium">{e.title}</div>
                         <div className="truncate text-[12px] text-muted-foreground">{e.detail}</div>
@@ -422,7 +422,7 @@ function Banner({
   href: string;
 }) {
   const isWarn = tone === "warn";
-  const accent = isWarn ? "#F59E0B" : "#3B82F6";
+  const accent = isWarn ? "#F59E0B" : "#1D4ED8";
   return (
     <div
       className="flex flex-col items-start gap-3 rounded-2xl border p-4 sm:flex-row sm:items-center"

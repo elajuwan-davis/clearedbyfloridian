@@ -354,8 +354,8 @@ export type MetricTone = "neutral" | "info" | "success" | "warning" | "danger" |
 
 const toneText: Record<MetricTone, string> = {
   neutral: "text-foreground",
-  info: "text-[#7DB3FB]",
-  success: "text-[#4ADE80]",
+  info: "text-[#1D4ED8]",
+  success: "text-[#007C74]",
   warning: "text-[#FBBF24]",
   danger: "text-[#F87171]",
   purple: "text-[#C4B5FD]",
@@ -363,8 +363,8 @@ const toneText: Record<MetricTone, string> = {
 
 const toneWash: Record<MetricTone, string> = {
   neutral: "bg-white/[0.06] text-muted-foreground",
-  info: "bg-[#3B82F6]/12 text-[#7DB3FB]",
-  success: "bg-[#22C55E]/12 text-[#4ADE80]",
+  info: "bg-[#1D4ED8]/12 text-[#1D4ED8]",
+  success: "bg-[#00B4A8]/12 text-[#007C74]",
   warning: "bg-[#F59E0B]/12 text-[#FBBF24]",
   danger: "bg-[#EF4444]/12 text-[#F87171]",
   purple: "bg-[#A78BFA]/12 text-[#C4B5FD]",
