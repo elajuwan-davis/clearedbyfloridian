@@ -47,7 +47,6 @@ const INK = "#111110";
 const GRAY = "#6B6860";
 const LIGHT = "#9E9B96";
 const TEAL = "#00B4A8";
-const TEAL_D = "#009088";
 const BORDER = "#E4E2DE";
 const SANS = "-apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif";
 
@@ -1053,5 +1052,3 @@ function Footer() {
     </footer>
   );
 }
-
-export { TEAL_D };
