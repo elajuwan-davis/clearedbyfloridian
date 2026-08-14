@@ -5,7 +5,7 @@ import { getSubProjectViewFn, getSubProjectDocUrlFn, type SubPortalView } from "
 import { NocAwarenessRibbon } from "@/components/noc-awareness-ribbon";
 import { TradesOnJobPanel } from "@/components/trades-on-job-panel";
 
-export const Route = createFileRoute("/sub-portal/$token")({
+export const Route = createFileRoute("/sub-portal_/$token")({
   head: () => ({
     meta: [
       { title: "Project Documents — Cleard" },

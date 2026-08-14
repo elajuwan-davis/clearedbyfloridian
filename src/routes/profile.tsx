@@ -13,14 +13,26 @@ import {
 } from "@/components/ui/select";
 import { Upload, Plus, Trash2, FileText, CheckCircle2, AlertTriangle, CreditCard, ArrowRight, Users, Mail, Loader2 } from "lucide-react";
 import { toast } from "sonner";
-import { loadPaymentAuth, clearPaymentAuth, type PaymentAuthRecord } from "@/lib/payment-auth";
+import {
+  isPaymentAuthSigned,
+  loadPaymentAuth,
+  revokePaymentAuth as revokePaymentAuthRow,
+  type PaymentAuthRecord,
+} from "@/lib/payment-auth";
 import { supabase } from "@/integrations/supabase/client";
 import { NotificationPrefsSection } from "@/components/notification-prefs-section";
 import { useServerFn } from "@tanstack/react-start";
 import { inviteTeamMemberFn, listMyTeamFn, removeTeamMemberFn, getMyTenantOnboardingFn, setTenantAllowedDomainFn, createInviteTokenFn, revokeInviteTokenFn } from "@/lib/tenants.functions";
 import { useSession } from "@/lib/use-session";
 import { nameFromEmail } from "@/lib/profile-api";
-import { PAA_EVT, acceptTos, loadPaa, loadTosAccepted, type PaaRecord } from "@/lib/paa";
+import {
+  PAA_EVT,
+  acceptTos,
+  isPaaSigned,
+  loadPaa,
+  loadTosAccepted,
+  type PaaRecord,
+} from "@/lib/paa";
 import { PaaSignedCard } from "@/components/paa-sign-dialog";
 import { PageShell, Panel, KV, StatusChip } from "@/components/ui-kit";
 
@@ -58,12 +70,17 @@ function ProfilePage() {
 
   const [userId, setUserId] = useState<string | null>(null);
 
-  useEffect(() => { setPaymentAuth(loadPaymentAuth()); }, []);
+  useEffect(() => { void loadPaymentAuth().then(setPaymentAuth); }, []);
 
-  function revokePaymentAuth() {
-    clearPaymentAuth();
-    setPaymentAuth(null);
-    toast.success("Payment authorization revoked");
+  async function revokePaymentAuth() {
+    if (!paymentAuth) return;
+    try {
+      await revokePaymentAuthRow(paymentAuth.id);
+      setPaymentAuth(null);
+      toast.success("Payment authorization revoked");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : String(e));
+    }
   }
 
 
@@ -301,31 +318,32 @@ function ProfilePage() {
             <TeamOnboardingSection />
 
             <Panel title="Payment Authorization" meta="Authorize Cleard to charge for services and permit fees.">
-              {paymentAuth ? (
+              {paymentAuth && isPaymentAuthSigned(paymentAuth) ? (
                 <div className="p-surface-flat p-3">
                   <div className="flex items-start gap-3">
                     <CheckCircle2 className="h-5 w-5 mt-0.5 shrink-0 text-[var(--p-success)]" strokeWidth={1.8} />
                     <div className="flex-1 min-w-0">
-                      <div className="text-[12.5px] font-medium">On file</div>
+                      <div className="text-[12.5px] font-medium">On file · SignWell confirmed</div>
                       <div className="mt-0.5 text-[11.5px] text-muted-foreground">
-                        Authorized {new Date(paymentAuth.authorizedAt).toLocaleDateString(undefined, { year: "numeric", month: "long", day: "numeric" })}
+                        {paymentAuth.completedAt
+                          ? `Authorized ${new Date(paymentAuth.completedAt).toLocaleDateString(undefined, { year: "numeric", month: "long", day: "numeric" })}`
+                          : "Authorized"}
                       </div>
                     </div>
                     <CreditCard className="h-4 w-4 text-muted-foreground shrink-0" strokeWidth={1.5} />
                   </div>
 
                   <div className="mt-4 grid gap-3 sm:grid-cols-4 pt-3 border-t border-[var(--p-border)]">
-                    <KV label="Type">{paymentAuth.cardType}</KV>
-                    <KV label="Brand">{paymentAuth.brand}</KV>
-                    <KV label={paymentAuth.cardType === "ACH" ? "Account" : "Card"}>{`•••• ${paymentAuth.last4}`}</KV>
-                    {paymentAuth.cardType !== "ACH" && <KV label="Expires">{paymentAuth.expiry}</KV>}
+                    <KV label="Account holder">{paymentAuth.accountHolder}</KV>
+                    <KV label="Billing address">{paymentAuth.billingAddress}</KV>
+                    <KV label="Terms">{paymentAuth.termsVersion}</KV>
                   </div>
 
                   <div className="mt-4 flex flex-wrap gap-2">
                     <Link to="/forms/payment-authorization" className="p-btn p-btn-ghost">
                       Update authorization
                     </Link>
-                    <button type="button" className="p-btn p-btn-ghost text-[var(--p-danger)]" onClick={revokePaymentAuth}>
+                    <button type="button" className="p-btn p-btn-ghost text-[var(--p-danger)]" onClick={() => void revokePaymentAuth()}>
                       Revoke
                     </button>
                   </div>
@@ -625,7 +643,10 @@ function LegalSectionBody() {
   const [tos, setTos] = useState<string | null>(null);
 
   useEffect(() => {
-    const refresh = () => { setPaaRec(loadPaa()); setTos(loadTosAccepted()); };
+    const refresh = () => {
+      void loadPaa().then(setPaaRec);
+      setTos(loadTosAccepted());
+    };
     refresh();
     window.addEventListener(PAA_EVT, refresh);
     return () => window.removeEventListener(PAA_EVT, refresh);
@@ -633,7 +654,7 @@ function LegalSectionBody() {
 
   return (
     <div className="space-y-3">
-      {paa ? (
+      {paa && isPaaSigned(paa) ? (
         <PaaSignedCard rec={paa} />
       ) : (
         <div className="p-surface-flat p-3" style={{ borderLeft: "2px solid var(--p-warning)" }}>

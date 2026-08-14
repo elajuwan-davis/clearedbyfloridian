@@ -7,8 +7,10 @@ import { FileSignature, ShieldCheck, Download, AlertTriangle, CheckCircle2 } fro
 import { toast } from "sonner";
 import {
   PAA_BODY, PAA_DRAFT_NOTICE, PAA_TITLE, PAA_VERSION,
-  downloadPaa, loadPaa, persistPaaSignature, savePaa, type PaaRecord,
+  createPaaDraft, downloadPaa, generatePaaPdf, isPaaSigned, loadPaa, type PaaRecord,
 } from "@/lib/paa";
+import { EmbeddedSigningDialog } from "@/components/embedded-signing-dialog";
+import { sendAgreementForSignature, type SignatureRequest } from "@/lib/signature-requests";
 
 export function PaaDraftBanner() {
   return (
@@ -56,27 +58,50 @@ export function PaaSignStep({
   const [email, setEmail] = useState(defaultEmail ?? "");
   const [agree, setAgree] = useState(false);
   const [sending, setSending] = useState(false);
+  const [signing, setSigning] = useState<(SignatureRequest & { embeddedSigningUrl?: string }) | null>(null);
 
-  useEffect(() => { setRec(loadPaa()); }, []);
+  useEffect(() => { void loadPaa().then(setRec); }, []);
   useEffect(() => { if (defaultName && !name) setName(defaultName); }, [defaultName]);
   useEffect(() => { if (defaultEmail && !email) setEmail(defaultEmail); }, [defaultEmail]);
 
   async function sign() {
     if (!name.trim()) return toast.error("Enter the signer's full legal name");
+    if (!email.trim()) return toast.error("Enter the signer's email");
     if (!agree) return toast.error("Confirm you are authorized to sign for the firm");
     setSending(true);
-    // SignWell e-signature flow. Replace with the provider redirect/embed when the
-    // SignWell account is connected; the completion callback saves the same record.
-    await new Promise((r) => setTimeout(r, 700));
-    const saved = savePaa({ signerName: name, signerEmail: email });
-    await persistPaaSignature(saved);
-    setRec(saved);
-    setSending(false);
-    toast.success("Permit Agent Authorization signed");
-    onSigned?.(saved);
+    try {
+      const draft = await createPaaDraft({ signerName: name, signerEmail: email });
+      const pdf = await generatePaaPdf(name);
+      const req = await sendAgreementForSignature({
+        contextKind: "paa",
+        contextId: draft.id,
+        documentName: `${PAA_TITLE} — ${PAA_VERSION}`,
+        pdf,
+        recipientEmail: email.trim(),
+        recipientName: name.trim(),
+        subject: `Signature required — ${PAA_TITLE}`,
+      });
+      setSigning(req);
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : String(e));
+    } finally {
+      setSending(false);
+    }
   }
 
-  if (rec) return <PaaSignedCard rec={rec} />;
+  /** Closing the iframe proves nothing — re-read the row and see what SignWell confirmed. */
+  async function afterSigning() {
+    const fresh = await loadPaa();
+    setRec(fresh);
+    if (isPaaSigned(fresh)) {
+      toast.success("Permit Agent Authorization signed");
+      if (fresh) onSigned?.(fresh);
+    } else {
+      toast.message("Waiting on SignWell to confirm the signature.");
+    }
+  }
+
+  if (rec && isPaaSigned(rec)) return <PaaSignedCard rec={rec} />;
 
   return (
     <div className="space-y-5">
@@ -114,6 +139,26 @@ export function PaaSignStep({
         <FileSignature className="h-4 w-4" />
         {sending ? "Opening SignWell…" : "Sign Document"}
       </Button>
+
+      {rec && rec.status !== "draft" && !isPaaSigned(rec) && (
+        <p className="text-xs text-obsidian/60">
+          Sent to SignWell — this step completes once SignWell confirms the signature.
+        </p>
+      )}
+
+      {signing && (
+        <EmbeddedSigningDialog
+          open
+          onOpenChange={(v) => {
+            if (!v) {
+              setSigning(null);
+              void afterSigning();
+            }
+          }}
+          request={signing}
+          onCompleted={() => void afterSigning()}
+        />
+      )}
     </div>
   );
 }
@@ -128,16 +173,25 @@ export function PaaSignedCard({ rec }: { rec: PaaRecord }) {
           <div className="text-sm font-semibold text-obsidian">Permit Agent Authorization signed</div>
         </div>
         <div className="mt-3 grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
-          <Meta label="Signed date" value={new Date(rec.signedAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })} />
+          <Meta
+            label="Signed date"
+            value={
+              rec.signedAt
+                ? new Date(rec.signedAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
+                : "—"
+            }
+          />
           <Meta label="Signer" value={rec.signerName} />
           <Meta label="Version" value={rec.version} />
         </div>
         <div className="mt-4 flex flex-wrap items-center gap-2">
-          <Button size="sm" variant="outline" className="rounded-[3px] gap-1.5" onClick={() => downloadPaa(rec)}>
+          <Button size="sm" variant="outline" className="rounded-[3px] gap-1.5" onClick={() => void downloadPaa(rec)}>
             <Download className="h-3.5 w-3.5" /> Download signed PAA
           </Button>
           <span className="inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.12em] text-obsidian/55">
-            <ShieldCheck className="h-3 w-3" /> {rec.provider} · {rec.envelopeId}
+            <ShieldCheck className="h-3 w-3" /> {rec.provider}
+            {rec.envelopeId ? ` · ${rec.envelopeId}` : ""}
+            {rec.statusSource === "provider_confirmed" ? " · SignWell confirmed" : ""}
           </span>
         </div>
       </div>

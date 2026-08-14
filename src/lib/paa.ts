@@ -1,8 +1,12 @@
 import { supabase } from "@/integrations/supabase/client";
+import { generateAgreementPdf, downloadPdf } from "@/lib/private-provider-forms";
 
 // Permit Agent Authorization (PAA) — one-time document GCs sign at onboarding.
-// Placeholder language pending attorney review. Stored locally; swap `read`/`write`
-// for a server function + SignWell webhook when the provider is wired.
+// Placeholder language pending attorney review.
+//
+// Signing is real: record_paa_signature() creates the draft row, signwell-send turns the
+// generated PDF into a SignWell document, and only the HMAC-verified document_completed
+// webhook marks it signed/provider_confirmed. Nothing in the browser can declare it signed.
 
 export const PAA_VERSION = "v0.9 (draft)";
 export const PAA_DRAFT_NOTICE = "DRAFT — PENDING ATTORNEY REVIEW";
@@ -41,63 +45,106 @@ export const PAA_BODY: Array<{ heading: string; body: string }> = [
 ];
 
 export type PaaRecord = {
+  id: string;
   version: string;
   signerName: string;
   signerEmail: string;
-  signedAt: string; // ISO
-  provider: "SignWell";
-  envelopeId: string;
+  /** Set by the webhook; absent until SignWell confirms completion. */
+  signedAt: string | null;
+  provider: string;
+  envelopeId: string | null;
+  status: "draft" | "sent" | "viewed" | "signed" | "declined";
+  statusSource: "provider_confirmed" | "staff_attested";
+  embeddedSigningUrl: string | null;
+  signatureRequestId: string | null;
 };
 
-const PAA_KEY = "cleared.paa.v1";
 const TOS_KEY = "cleared.tosAccepted.v1";
 export const PAA_EVT = "paa:changed";
 
-export function loadPaa(): PaaRecord | null {
-  if (typeof window === "undefined") return null;
-  try {
-    const raw = window.localStorage.getItem(PAA_KEY);
-    return raw ? (JSON.parse(raw) as PaaRecord) : null;
-  } catch {
-    return null;
-  }
+/* paa_signatures post-dates the generated Supabase types. */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+const paaTable = () => supabase.from("paa_signatures" as any) as any;
+
+function mapPaa(row: any): PaaRecord {
+  return {
+    id: row.id as string,
+    version: row.version as string,
+    signerName: row.signer_name as string,
+    signerEmail: row.signer_email as string,
+    signedAt: (row.completed_at as string) ?? null,
+    provider: (row.provider as string) ?? "SignWell",
+    envelopeId: (row.signwell_document_id as string) ?? (row.envelope_id as string) ?? null,
+    status: (row.status as PaaRecord["status"]) ?? "draft",
+    statusSource: (row.status_source as PaaRecord["statusSource"]) ?? "staff_attested",
+    embeddedSigningUrl: (row.embedded_signing_url as string) ?? null,
+    signatureRequestId: (row.signature_request_id as string) ?? null,
+  };
 }
 
-export function savePaa(input: { signerName: string; signerEmail: string }): PaaRecord {
-  const rec: PaaRecord = {
-    version: PAA_VERSION,
-    signerName: input.signerName.trim(),
-    signerEmail: input.signerEmail.trim(),
-    signedAt: new Date().toISOString(),
-    provider: "SignWell",
-    envelopeId: `SW-${Math.random().toString(36).slice(2, 10).toUpperCase()}`,
-  };
-  window.localStorage.setItem(PAA_KEY, JSON.stringify(rec));
-  window.dispatchEvent(new CustomEvent(PAA_EVT));
-  return rec;
+const PAA_SELECT =
+  "id, version, signer_name, signer_email, provider, envelope_id, signwell_document_id, embedded_signing_url, signature_request_id, status, status_source, completed_at, created_at";
+
+/** The tenant's current PAA, whatever state it is in. */
+export async function loadPaa(): Promise<PaaRecord | null> {
+  const { data, error } = await paaTable()
+    .select(PAA_SELECT)
+    .is("revoked_at", null)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (error) return null;
+  return data ? mapPaa(data) : null;
 }
 
 /**
- * Mirror a signed PAA into `paa_signatures` so server-side checks (Agent 1's
- * intake validator) can see it. Best-effort: the localStorage record stays the
- * source of truth for the UI until the SignWell webhook is wired.
+ * Signed means SignWell said so. The one exception is a row created before the integration
+ * existed — it has no SignWell document to confirm, and the validator has always counted it,
+ * so revoking it here would lock out accounts that are legitimately authorized.
  */
-export async function persistPaaSignature(rec: PaaRecord): Promise<void> {
-  try {
-    // record_paa_signature() is the only write path: it resolves the tenant, stamps
-    // the authenticated signer and mints the envelope id server side, so the client
-    // cannot record a signature for another user or fabricate an envelope reference.
-    await (
-      supabase.rpc as unknown as (fn: string, args: Record<string, string>) => Promise<unknown>
-    )("record_paa_signature", {
-      p_version: rec.version,
-      p_signer_name: rec.signerName,
-      p_signer_email: rec.signerEmail,
-      p_provider: rec.provider,
-    });
-  } catch {
-    /* best-effort — the UI already has the signature */
-  }
+export function isPaaSigned(rec: PaaRecord | null | undefined): boolean {
+  if (rec?.status !== "signed") return false;
+  return rec.statusSource === "provider_confirmed" || rec.envelopeId === null;
+}
+
+/**
+ * Creates the draft row the SignWell send attaches to. The RPC resolves the tenant and
+ * stamps the authenticated signer, so a client cannot record a PAA for another account.
+ */
+export async function createPaaDraft(input: {
+  signerName: string;
+  signerEmail: string;
+}): Promise<PaaRecord> {
+  const { data, error } = await (
+    supabase.rpc as unknown as (
+      fn: string,
+      args: Record<string, string>,
+    ) => Promise<{ data: any; error: { message: string } | null }>
+  )("record_paa_signature", {
+    p_version: PAA_VERSION,
+    p_signer_name: input.signerName.trim(),
+    p_signer_email: input.signerEmail.trim(),
+    p_provider: "SignWell",
+  });
+  if (error) throw new Error(error.message);
+  if (!data) throw new Error("record_paa_signature returned no row");
+  if (typeof window !== "undefined") window.dispatchEvent(new CustomEvent(PAA_EVT));
+  return mapPaa(Array.isArray(data) ? data[0] : data);
+}
+/* eslint-enable @typescript-eslint/no-explicit-any */
+
+/** The PDF SignWell sends is generated from the same clauses the page renders. */
+export async function generatePaaPdf(signerName: string): Promise<Uint8Array> {
+  return await generateAgreementPdf({
+    title: PAA_TITLE,
+    subtitle: `Cléared · ${PAA_VERSION} · ${PAA_DRAFT_NOTICE}`,
+    intro:
+      "This authorization lets Cléared file NTBOs, submit permit applications as authorized agent, communicate with building departments, and receive issued permits on the Contractor's behalf.",
+    facts: [{ label: "Contractor", value: signerName || "—" }],
+    sections: PAA_BODY.map((s) => ({ heading: s.heading, body: s.body })),
+    signatureLabel: "Authorized signer",
+    footer: `${PAA_TITLE} · ${PAA_VERSION}`,
+  });
 }
 
 export function loadTosAccepted(): string | null {
@@ -112,32 +159,8 @@ export function acceptTos(): string {
   return at;
 }
 
-/** Plain-text rendering used for the download link. */
-export function paaPlainText(rec?: PaaRecord | null): string {
-  const lines = [
-    `CLÉARED — ${PAA_TITLE.toUpperCase()}`,
-    `Version ${PAA_VERSION} — ${PAA_DRAFT_NOTICE}`,
-    "",
-    ...PAA_BODY.flatMap((s) => [s.heading, s.body, ""]),
-  ];
-  if (rec) {
-    lines.push(
-      "EXECUTION",
-      `Signed by: ${rec.signerName} (${rec.signerEmail})`,
-      `Signed at: ${new Date(rec.signedAt).toLocaleString("en-US")}`,
-      `E-signature provider: ${rec.provider} · Envelope ${rec.envelopeId}`,
-    );
-  }
-  return lines.join("\n");
-}
-
-export function downloadPaa(rec?: PaaRecord | null) {
+export async function downloadPaa(rec?: PaaRecord | null) {
   if (typeof window === "undefined") return;
-  const blob = new Blob([paaPlainText(rec)], { type: "text/plain;charset=utf-8" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "cleared-permit-agent-authorization.txt";
-  a.click();
-  URL.revokeObjectURL(url);
+  const bytes = await generatePaaPdf(rec?.signerName ?? "");
+  downloadPdf(bytes, "cleared-permit-agent-authorization.pdf");
 }

@@ -11,7 +11,7 @@
 // signwell-webhook function promotes it to 'provider_confirmed', and only on
 // document_completed.
 
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.3";
+import { createClient, type SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2.49.3";
 import { createEmbeddedDocument, embeddedUrlFor, SignWellError } from "../_shared/signwell.ts";
 import { errorMessage } from "../_shared/errors.ts";
 
@@ -19,7 +19,9 @@ const SUPABASE_URL = Deno.env.get("SUPABASE_URL") ?? "";
 const SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
 const SIGNWELL_API_KEY = Deno.env.get("SIGNWELL_API_KEY") ?? "";
 const SIGNWELL_TEST_MODE = (Deno.env.get("SIGNWELL_TEST_MODE") ?? "false").toLowerCase() === "true";
+const ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY") ?? "";
 const BUCKET = "permit-files";
+const AGREEMENT_BUCKET = "signed-agreements";
 const SIGNED_URL_TTL = 60 * 60; // SignWell fetches the file during document creation.
 
 const cors = {
@@ -43,6 +45,21 @@ type Body = {
   recipient_role?: string;
   subject?: string;
   message?: string;
+  /** External signers (subs) get an emailed link as well as the embedded session. */
+  send_email?: boolean;
+  /** Non-permit agreements: 'paa' | 'payment_authorization' | 'lpoa'. */
+  context_kind?: string;
+  /** Row id in the agreement table the signature belongs to. */
+  context_id?: string;
+  /** The agreement PDF, generated in the browser from the same text it renders. */
+  document_base64?: string;
+};
+
+/** Agreement kinds that have no permit behind them, and the table each one lives in. */
+const AGREEMENT_TABLES: Record<string, string> = {
+  paa: "paa_signatures",
+  payment_authorization: "payment_authorizations",
+  lpoa: "lpoa_signatures",
 };
 
 type PermitDoc = {
@@ -61,10 +78,17 @@ Deno.serve(async (req) => {
     const body = (await req.json().catch(() => ({}))) as Body;
     const permitId = body.permit_id;
     const email = (body.recipient_email ?? "").trim();
-    if (!permitId || !email)
-      return json({ error: "permit_id and recipient_email are required" }, 400);
+    const contextKind =
+      body.context_kind && body.context_kind !== "permit" ? body.context_kind : null;
 
     const admin = createClient(SUPABASE_URL, SERVICE_KEY, { auth: { persistSession: false } });
+
+    if (contextKind) {
+      return await sendAgreement(req, body, contextKind, email, admin);
+    }
+
+    if (!permitId || !email)
+      return json({ error: "permit_id and recipient_email are required" }, 400);
 
     const { data: permit, error: pErr } = await admin
       .from("permits")
@@ -117,8 +141,9 @@ Deno.serve(async (req) => {
             id: recipientId,
             name: body.recipient_name ?? email,
             email,
-            // Embedded signing: the signer is handed the iframe, not an email link.
-            send_email: false,
+            // Portal users are handed the iframe; signers outside the portal (subs) would
+            // otherwise have no way to reach the document, so they are emailed a link.
+            send_email: body.send_email === true,
           },
         ],
         metadata: { permit_id: permitId, document_key: body.document_key ?? "" },
@@ -186,3 +211,143 @@ Deno.serve(async (req) => {
     return json({ error: errorMessage(err) }, 500);
   }
 });
+
+/**
+ * The PAA / payment authorization / LPOA path. There is no permit to hang the document off,
+ * so the caller first creates a draft row through the record_* RPC and passes its id here
+ * along with the PDF it rendered.
+ *
+ * The caller's own JWT is used to re-read that draft row: RLS only shows it to a member of
+ * the owning tenant, so a caller cannot attach a signature to somebody else's agreement.
+ */
+async function sendAgreement(
+  req: Request,
+  body: Body,
+  contextKind: string,
+  email: string,
+  admin: SupabaseClient,
+): Promise<Response> {
+  const table = AGREEMENT_TABLES[contextKind];
+  if (!table) return json({ error: `unknown context_kind '${contextKind}'` }, 400);
+  if (!body.context_id || !email)
+    return json({ error: "context_id and recipient_email are required" }, 400);
+  if (!body.document_base64) return json({ error: "document_base64 is required" }, 400);
+
+  const authHeader = req.headers.get("Authorization") ?? "";
+  if (!authHeader) return json({ error: "authentication required" }, 401);
+  if (!ANON_KEY) return json({ error: "SUPABASE_ANON_KEY is not configured" }, 500);
+
+  // The draft is read as the caller so RLS — not this function — decides whether the
+  // agreement belongs to them, before the service role touches anything.
+  const asCaller = createClient(SUPABASE_URL, ANON_KEY, {
+    auth: { persistSession: false },
+    global: { headers: { Authorization: authHeader } },
+  });
+
+  const { data: visible, error: vErr } = await asCaller
+    .from(table)
+    .select("id, tenant_id, status")
+    .eq("id", body.context_id)
+    .maybeSingle();
+  if (vErr) throw vErr;
+  if (!visible) return json({ error: "agreement not found for this account" }, 403);
+
+  const row = visible as { id: string; tenant_id: string; status: string };
+  const documentName = body.document_name ?? `${contextKind} agreement`;
+  const path = `${row.tenant_id}/${contextKind}/${row.id}-${Date.now()}.pdf`;
+
+  const pdf = Uint8Array.from(atob(body.document_base64), (c) => c.charCodeAt(0));
+  const { error: upErr } = await admin.storage
+    .from(AGREEMENT_BUCKET)
+    .upload(path, new Blob([pdf], { type: "application/pdf" }), {
+      contentType: "application/pdf",
+      upsert: true,
+    });
+  if (upErr) return json({ error: `could not store the agreement PDF: ${upErr.message}` }, 500);
+
+  const { data: signed, error: sErr } = await admin.storage
+    .from(AGREEMENT_BUCKET)
+    .createSignedUrl(path, SIGNED_URL_TTL);
+  if (sErr || !signed?.signedUrl) {
+    return json({ error: `could not sign ${path}: ${sErr?.message ?? "no url"}` }, 500);
+  }
+  const fileUrl = signed.signedUrl.startsWith("http")
+    ? signed.signedUrl
+    : `${SUPABASE_URL}/storage/v1${signed.signedUrl}`;
+
+  const recipientId = "1";
+  let doc;
+  try {
+    doc = await createEmbeddedDocument(SIGNWELL_API_KEY, {
+      name: documentName,
+      subject: body.subject ?? `Signature required — ${documentName}`,
+      message:
+        body.message ??
+        "Please review and sign this agreement. Signing happens inside the Cleard portal.",
+      files: [{ name: `${contextKind}.pdf`, file_url: fileUrl }],
+      recipients: [
+        { id: recipientId, name: body.recipient_name ?? email, email, send_email: false },
+      ],
+      metadata: { context_kind: contextKind, context_id: row.id },
+      testMode: SIGNWELL_TEST_MODE,
+    });
+  } catch (err) {
+    if (err instanceof SignWellError) {
+      console.error("signwell create document failed", err.status, err.body, err.attempts);
+      return json(
+        { error: err.message, signwell_status: err.status, attempts: err.attempts },
+        err.status === 429 || err.status >= 500 ? 502 : 400,
+      );
+    }
+    throw err;
+  }
+
+  const embeddedUrl =
+    embeddedUrlFor(doc, email) ?? doc.recipients?.[0]?.embedded_signing_url ?? null;
+  const now = new Date().toISOString();
+
+  const { data: ledger, error: iErr } = await admin
+    .from("signature_requests")
+    .insert({
+      tenant_id: row.tenant_id,
+      permit_id: null,
+      context_kind: contextKind,
+      context_id: row.id,
+      document_name: documentName,
+      document_path: path,
+      recipient_email: email,
+      recipient_role: body.recipient_role ?? "General Contractor",
+      status: "sent",
+      // Not provider truth yet — only document_completed makes it that.
+      status_source: "staff_attested",
+      provider: "SignWell",
+      provider_envelope_id: doc.id,
+      signwell_document_id: doc.id,
+      signwell_recipient_id: doc.recipients?.[0]?.id ?? recipientId,
+      embedded_signing_url: embeddedUrl,
+      test_mode: doc.test_mode ?? SIGNWELL_TEST_MODE,
+      sent_at: now,
+    })
+    .select("*")
+    .single();
+  if (iErr) throw iErr;
+
+  const { error: cErr } = await admin
+    .from(table)
+    .update({
+      signature_request_id: (ledger as { id: string }).id,
+      signwell_document_id: doc.id,
+      embedded_signing_url: embeddedUrl,
+      document_path: path,
+      status: "sent",
+    })
+    .eq("id", row.id);
+  if (cErr) throw cErr;
+
+  return json({
+    signature_request: ledger,
+    signwell_document_id: doc.id,
+    embedded_signing_url: embeddedUrl,
+    test_mode: doc.test_mode ?? SIGNWELL_TEST_MODE,
+  });
+}

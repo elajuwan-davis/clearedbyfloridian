@@ -34,3 +34,5 @@ dist-ssr
 # Deno lockfile for edge functions (regenerated on deploy)
 supabase/functions/deno.lock
 deno.lock
+supabase/.temp/
+supabase/.branches/

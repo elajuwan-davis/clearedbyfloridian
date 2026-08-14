@@ -465,8 +465,9 @@ async function checkPaa(supabase: SupabaseClient, permit: PermitRow): Promise<Ch
 
   const { data, error } = await supabase
     .from("paa_signatures")
-    .select("version, signer_name, signer_email, signed_at, envelope_id, revoked_at")
+    .select("version, signer_name, signer_email, signed_at, envelope_id, revoked_at, status")
     .eq("tenant_id", permit.tenant_id)
+    .eq("status", "signed")
     .is("revoked_at", null)
     .order("signed_at", { ascending: false })
     .limit(1);
