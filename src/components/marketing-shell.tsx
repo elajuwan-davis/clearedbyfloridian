@@ -1,14 +1,15 @@
 import { useState, type ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
 import { Menu, X, ArrowRight } from "lucide-react";
+import {
+  MarketingNavDropdown,
+  PRODUCT_MENU,
+  CONTRACTORS_MENU,
+} from "@/components/marketing-nav-dropdown";
 
-// Compare and Pricing are intentionally NOT linked publicly — the pages stay
-// live at /versus and /pricing for direct-URL / internal use only.
-const NAV_LINKS: Array<{ to: string; label: string; soon?: boolean }> = [
-  { to: "/products", label: "Product" },
-  { to: "/join", label: "For GCs" },
-  { to: "/about", label: "About" },
-];
+// About is intentionally NOT linked publicly — the page stays live at /about
+// for direct-URL / internal use only.
+const NAV_LINKS: Array<{ to: string; label: string; soon?: boolean }> = [];
 
 
 
