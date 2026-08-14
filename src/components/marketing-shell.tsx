@@ -13,46 +13,40 @@ const NAV_LINKS: Array<{ to: string; label: string; soon?: boolean }> = [
 
 
 
+const NEAR_BLACK = "#0D0D0B";
+const BODY_GRAY = "#C8C4BC";
+
 function MarketingNav() {
   const [open, setOpen] = useState(false);
   return (
-    <header className="sticky top-0 z-50"
-      style={{ background: "rgba(255,255,255,0.92)", backdropFilter: "blur(10px)" }}>
-      <div className="mx-auto max-w-7xl px-6 lg:px-10 h-[68px] flex items-center justify-between gap-6">
-        <Link to="/" className="flex items-center gap-2.5 no-underline min-w-0">
-          <div
-            className="h-7 w-7 rounded-lg flex items-center justify-center text-white font-bold text-sm"
-            style={{
-              background: "#16A34A",
-              fontFamily: "'Space Grotesk', sans-serif",
-            }}
-          >
-            C
-          </div>
+    <header className="sticky top-0 z-50" style={{ background: NEAR_BLACK }}>
+      <div className="mx-auto max-w-7xl px-6 lg:px-10 h-[76px] flex items-center justify-between gap-6">
+        <Link to="/" className="flex items-center no-underline min-w-0">
           <span
-            className="font-semibold text-[15px] tracking-[-0.01em]"
+            className="text-[19px] tracking-[-0.01em]"
             style={{
               fontFamily: "'Space Grotesk', 'Inter', system-ui, sans-serif",
-              color: "var(--ink, #0F1E2E)",
+              fontWeight: 600,
+              color: "#FFFFFF",
             }}
           >
-            Cleard
+            Cléared
           </span>
         </Link>
 
-        <nav className="hidden md:flex flex-1 items-center justify-center gap-8">
+        <nav className="hidden md:flex flex-1 items-center justify-center gap-10">
           {NAV_LINKS.map((l) =>
             l.soon ? (
-              <span key={l.to} className="text-[13px] md-muted cursor-default flex items-center gap-1.5">
+              <span key={l.to} className="text-[13.5px] cursor-default flex items-center gap-1.5" style={{ color: BODY_GRAY }}>
                 {l.label}
-                <span className="text-[9px] uppercase tracking-[0.2em]" style={{ color: "var(--md-obsidian)" }}>Soon</span>
+                <span className="text-[9px] uppercase tracking-[0.2em]">Soon</span>
               </span>
             ) : (
               <Link
                 key={l.to}
                 to={l.to}
-                className="text-[13px] transition-colors"
-                style={{ color: "var(--md-text)" }}
+                className="text-[13.5px] no-underline transition-opacity hover:opacity-70"
+                style={{ color: BODY_GRAY, fontWeight: 400 }}
               >
                 {l.label}
               </Link>
@@ -60,21 +54,21 @@ function MarketingNav() {
           )}
         </nav>
 
-        <div className="hidden md:flex items-center gap-5">
-          <Link
-            to="/login"
-            className="text-[13.5px] font-medium"
-            style={{ color: "#0F1E2E" }}
-          >
+        <div className="hidden md:flex items-center gap-7">
+          <Link to="/login" className="text-[13.5px] no-underline" style={{ color: BODY_GRAY }}>
             Sign in
           </Link>
           <Link
             to="/join"
             hash="request"
-            className="inline-flex items-center gap-1.5 rounded-lg px-4 py-2 text-[13.5px] font-semibold text-white"
-            style={{ background: "#16A34A" }}
+            className="inline-flex items-center gap-1.5 px-5 py-2.5 text-[13.5px] font-medium no-underline"
+            style={{
+              color: "#FFFFFF",
+              border: "1px solid rgba(255,255,255,0.5)",
+              background: "transparent",
+            }}
           >
-            Get early access <ArrowRight className="h-3.5 w-3.5" />
+            Get early access
           </Link>
         </div>
 
@@ -82,27 +76,27 @@ function MarketingNav() {
           className="md:hidden p-2 -mr-2"
           onClick={() => setOpen((s) => !s)}
           aria-label="Menu"
-          style={{ color: "var(--md-text)" }}
+          style={{ color: BODY_GRAY }}
         >
           {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
         </button>
       </div>
 
       {open && (
-        <div className="md:hidden border-t md-hairline" style={{ background: "#FFFFFF" }}>
+        <div className="md:hidden" style={{ background: NEAR_BLACK, borderTop: "1px solid rgba(255,255,255,0.1)" }}>
           <div className="px-6 py-6 space-y-4">
             {NAV_LINKS.map((l) =>
               l.soon ? (
-                <div key={l.to} className="flex items-center gap-2 text-sm md-muted">
-                  {l.label} <span className="text-[9px] uppercase tracking-[0.2em]" style={{ color: "var(--md-obsidian)" }}>Soon</span>
+                <div key={l.to} className="flex items-center gap-2 text-sm" style={{ color: BODY_GRAY }}>
+                  {l.label} <span className="text-[9px] uppercase tracking-[0.2em]">Soon</span>
                 </div>
               ) : (
                 <Link
                   key={l.to}
                   to={l.to}
                   onClick={() => setOpen(false)}
-                  className="block text-base"
-                  style={{ color: "var(--md-text)" }}
+                  className="block text-base no-underline"
+                  style={{ color: BODY_GRAY }}
                 >
                   {l.label}
                 </Link>
@@ -111,8 +105,8 @@ function MarketingNav() {
             <Link
               to="/login"
               onClick={() => setOpen(false)}
-              className="block text-base font-medium"
-              style={{ color: "#0F1E2E" }}
+              className="block text-base no-underline"
+              style={{ color: BODY_GRAY }}
             >
               Sign in
             </Link>
@@ -120,10 +114,10 @@ function MarketingNav() {
               to="/join"
               hash="request"
               onClick={() => setOpen(false)}
-              className="inline-flex w-full items-center justify-center gap-1.5 rounded-lg px-4 py-2.5 text-sm font-semibold text-white"
-              style={{ background: "#16A34A" }}
+              className="inline-flex w-full items-center justify-center gap-1.5 px-4 py-2.5 text-sm font-medium no-underline"
+              style={{ color: "#FFFFFF", border: "1px solid rgba(255,255,255,0.5)" }}
             >
-              Get early access <ArrowRight className="h-3.5 w-3.5" />
+              Get early access
             </Link>
           </div>
         </div>
@@ -131,6 +125,7 @@ function MarketingNav() {
     </header>
   );
 }
+
 
 function MarketingFooter() {
   return (
