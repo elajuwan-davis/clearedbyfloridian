@@ -34,21 +34,31 @@ export const Route = createFileRoute("/")({
   component: HomePage,
 });
 
-const INK = "#0F1E2E";
-const MUTED = "#5B6B7C";
-const GREEN = "#16A34A";
-const BLUE = "#1B84D4";
-const HAIRLINE = "#E8ECF1";
+/* ------------------------------ DESIGN TOKENS ----------------------------- */
+
+const NEAR_BLACK = "#0D0D0B";
+const CREAM = "#F0EDE8";
+const WHITE = "#FFFFFF";
+const BODY = "#C8C4BC";
+const AMBER = "#C49A3C";
+const DARK_RULE = "rgba(255,255,255,0.10)";
+const CREAM_INK = "#1A1A17";
+const CREAM_BODY = "#5C574F";
+const CREAM_RULE = "rgba(26,26,23,0.12)";
+
+const DISPLAY = "'Space Grotesk', 'Inter', system-ui, sans-serif";
 
 function HomePage() {
   return (
     <MarketingShell>
-      <Hero />
-      <LogoBar />
-      <HowClearedWorks />
-      <PermitIntelligence />
-      <MeetVictoria />
-      <BetaCTA />
+      <div style={{ background: NEAR_BLACK }}>
+        <Hero />
+        <LogoBar />
+        <HowClearedWorks />
+        <PermitIntelligence />
+        <MeetVictoria />
+        <BetaCTA />
+      </div>
     </MarketingShell>
   );
 }
@@ -57,76 +67,60 @@ function HomePage() {
 
 function Hero() {
   return (
-    <section className="relative overflow-hidden" style={{ background: "#FAFAF8" }}>
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          backgroundImage:
-            "radial-gradient(ellipse 80% 40% at 50% -5%, color-mix(in oklab, #1B84D4 12%, transparent) 0%, transparent 70%)",
-        }}
-      />
-      <div className="relative mx-auto max-w-7xl px-6 lg:px-10 pt-24 pb-0 md:pt-36 text-center">
+    <section style={{ background: NEAR_BLACK }}>
+      <div className="mx-auto max-w-7xl px-6 lg:px-10 pt-28 pb-24 md:pt-44 md:pb-32 text-center">
         <div
-          className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-[12px] font-medium tracking-[0.06em] uppercase mb-8"
-          style={{
-            background: "#F2EEE8",
-            color: INK,
-            border: `1px solid ${HAIRLINE}`,
-          }}
+          className="text-[11.5px] uppercase tracking-[0.22em]"
+          style={{ color: AMBER, fontWeight: 500 }}
         >
-          <span className="h-1.5 w-1.5 rounded-full inline-block" style={{ background: GREEN }} />
-          Now in private beta
+          Now in private beta · FL general contractors only
         </div>
 
         <h1
-          className="mx-auto max-w-4xl"
+          className="mx-auto mt-10 max-w-5xl"
           style={{
-            fontFamily: "'Space Grotesk', 'Inter', system-ui, sans-serif",
-            fontWeight: 800,
-            fontSize: "clamp(2.5rem, 6.5vw, 5.5rem)",
-            lineHeight: 1.05,
-            letterSpacing: "-0.03em",
-            color: INK,
+            fontFamily: DISPLAY,
+            fontWeight: 700,
+            fontSize: "clamp(2.75rem, 7vw, 6rem)",
+            lineHeight: 1.02,
+            letterSpacing: "-0.035em",
+            color: WHITE,
           }}
         >
-          Permits shouldn&apos;t slow your{" "}
-          <em className="italic" style={{ color: BLUE }}>
-            projects
-          </em>{" "}
-          down.
+          Permits shouldn&apos;t slow your <span style={{ color: AMBER }}>projects</span> down.
         </h1>
 
-        <p className="mt-7 mx-auto max-w-2xl text-lg leading-relaxed" style={{ color: MUTED }}>
+        <p
+          className="mt-10 mx-auto max-w-3xl text-lg leading-relaxed"
+          style={{ color: BODY }}
+        >
           Cleard handles the permit pipeline — submissions, corrections, inspections, closeout — so
           your team stays on the job, not on hold.
         </p>
 
-        <div className="mt-10 flex flex-col sm:flex-row gap-3 justify-center items-center">
+        <div className="mt-12 flex flex-col sm:flex-row gap-6 sm:gap-8 justify-center items-center">
           <Link
             to="/join"
             hash="request"
-            className="inline-flex items-center gap-2 px-7 py-3.5 rounded-lg text-sm font-semibold text-white"
-            style={{
-              background: GREEN,
-              boxShadow: "0 1px 3px color-mix(in oklab, #16A34A 40%, transparent)",
-            }}
+            className="inline-flex items-center gap-2 px-8 py-4 text-sm font-semibold"
+            style={{ background: AMBER, color: NEAR_BLACK }}
           >
             Get early access <ArrowRight className="h-4 w-4" />
           </Link>
           <Link
             to="/process"
-            className="inline-flex items-center gap-2 px-7 py-3.5 rounded-lg text-sm font-semibold"
-            style={{ color: INK, border: `1px solid ${HAIRLINE}` }}
+            className="inline-flex items-center gap-2 text-sm font-medium"
+            style={{ color: WHITE }}
           >
             See a live demo
           </Link>
         </div>
 
-        <p className="mt-4 text-[12px]" style={{ color: MUTED }}>
+        <p className="mt-8 text-[12px]" style={{ color: "rgba(200,196,188,0.65)" }}>
           No credit card · Free during beta · FL general contractors only
         </p>
 
-        <div className="mt-20 md:mt-24 relative mx-auto" style={{ maxWidth: 1000 }}>
+        <div className="mt-24 md:mt-32 relative mx-auto" style={{ maxWidth: 1040 }}>
           <PortalMockup />
         </div>
       </div>
@@ -140,7 +134,6 @@ const MOCK_ROWS = [
     addr: "14 Pelican Bay Ln, Naples",
     county: "Collier County",
     status: "Approved",
-    tone: "green" as const,
     days: 18,
   },
   {
@@ -148,7 +141,6 @@ const MOCK_ROWS = [
     addr: "2840 SW 48th Ct, Miami",
     county: "Miami-Dade",
     status: "Corrections",
-    tone: "amber" as const,
     days: 34,
   },
   {
@@ -156,7 +148,6 @@ const MOCK_ROWS = [
     addr: "901 Harbour Ct, Jupiter",
     county: "Palm Beach",
     status: "In Review",
-    tone: "blue" as const,
     days: 12,
   },
   {
@@ -164,7 +155,6 @@ const MOCK_ROWS = [
     addr: "7720 NW 2nd Ave, Boca Raton",
     county: "Palm Beach",
     status: "Issued",
-    tone: "green" as const,
     days: 41,
   },
   {
@@ -172,7 +162,6 @@ const MOCK_ROWS = [
     addr: "5612 SE Coconut Ter, Stuart",
     county: "Martin County",
     status: "Submitted",
-    tone: "slate" as const,
     days: 5,
   },
 ];
@@ -182,26 +171,22 @@ const MOCK_NAV = ["My Permits", "Inspections", "Subcontractors", "Victoria", "Do
 function PortalMockup() {
   return (
     <div
-      className="rounded-t-2xl border border-b-0 text-left relative overflow-hidden"
-      style={{
-        background: "#FFFFFF",
-        borderColor: HAIRLINE,
-        boxShadow: "0 -1px 2px rgba(15,30,46,0.03), 0 30px 60px -30px rgba(15,30,46,0.25)",
-      }}
+      className="text-left relative overflow-hidden"
+      style={{ background: "#111110", border: `1px solid ${DARK_RULE}` }}
     >
       {/* Browser chrome */}
       <div
-        className="flex items-center gap-4 px-4 py-3 border-b"
-        style={{ background: "#F2EEE8", borderColor: HAIRLINE }}
+        className="flex items-center gap-4 px-4 py-3"
+        style={{ background: "#171714", borderBottom: `1px solid ${DARK_RULE}` }}
       >
         <div className="flex items-center gap-1.5">
-          <div className="h-2.5 w-2.5 rounded-full bg-[#EF4444]" />
-          <div className="h-2.5 w-2.5 rounded-full bg-[#F59E0B]" />
-          <div className="h-2.5 w-2.5 rounded-full bg-[#10B981]" />
+          <div className="h-2 w-2 rounded-full" style={{ background: "rgba(255,255,255,0.22)" }} />
+          <div className="h-2 w-2 rounded-full" style={{ background: "rgba(255,255,255,0.16)" }} />
+          <div className="h-2 w-2 rounded-full" style={{ background: "rgba(255,255,255,0.12)" }} />
         </div>
         <div
-          className="flex-1 rounded-md px-3 py-1 text-[11px]"
-          style={{ background: "#FFFFFF", border: `1px solid ${HAIRLINE}`, color: "#7890A4" }}
+          className="flex-1 px-3 py-1 text-[11px]"
+          style={{ border: `1px solid ${DARK_RULE}`, color: "rgba(200,196,188,0.6)" }}
         >
           app.cleard.io/permits
         </div>
@@ -209,19 +194,12 @@ function PortalMockup() {
 
       <div className="grid grid-cols-[168px_1fr]">
         {/* Sidebar */}
-        <div
-          className="hidden sm:block border-r p-3"
-          style={{ background: "#FAFAF8", borderColor: HAIRLINE }}
-        >
+        <div className="hidden sm:block p-3" style={{ borderRight: `1px solid ${DARK_RULE}` }}>
           {MOCK_NAV.map((n, i) => (
             <div
               key={n}
-              className="rounded-md px-3 py-2 text-[12px] font-medium"
-              style={
-                i === 0
-                  ? { background: "color-mix(in oklab, #16A34A 12%, transparent)", color: "#15803D" }
-                  : { color: MUTED }
-              }
+              className="px-3 py-2 text-[12px]"
+              style={i === 0 ? { color: AMBER, fontWeight: 600 } : { color: "rgba(200,196,188,0.6)" }}
             >
               {n}
             </div>
@@ -231,22 +209,22 @@ function PortalMockup() {
         {/* Main */}
         <div className="min-w-0">
           <div
-            className="flex items-center justify-between gap-3 px-5 py-4 border-b"
-            style={{ borderColor: HAIRLINE }}
+            className="flex items-center justify-between gap-3 px-5 py-4"
+            style={{ borderBottom: `1px solid ${DARK_RULE}` }}
           >
-            <div className="text-[14px] font-semibold" style={{ color: INK }}>
+            <div className="text-[14px] font-semibold" style={{ color: WHITE }}>
               Active Permits
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3">
               <span
-                className="rounded-md px-2.5 py-1.5 text-[11px] font-medium"
-                style={{ border: `1px solid ${HAIRLINE}`, color: MUTED }}
+                className="px-2.5 py-1.5 text-[11px]"
+                style={{ border: `1px solid ${DARK_RULE}`, color: BODY }}
               >
                 Filter
               </span>
               <span
-                className="rounded-md px-2.5 py-1.5 text-[11px] font-semibold text-white"
-                style={{ background: GREEN }}
+                className="px-2.5 py-1.5 text-[11px] font-semibold"
+                style={{ background: AMBER, color: NEAR_BLACK }}
               >
                 + New permit
               </span>
@@ -257,24 +235,27 @@ function PortalMockup() {
             {MOCK_ROWS.map((r) => (
               <div
                 key={r.permit}
-                className="grid grid-cols-[1fr_auto] sm:grid-cols-[130px_1fr_110px_100px_40px] items-center gap-3 px-5 py-3 border-b"
-                style={{ borderColor: HAIRLINE }}
+                className="grid grid-cols-[1fr_auto] sm:grid-cols-[130px_1fr_110px_100px_40px] items-center gap-3 px-5 py-3"
+                style={{ borderBottom: `1px solid ${DARK_RULE}` }}
               >
-                <div className="text-[11.5px] tabular-nums font-medium" style={{ color: BLUE }}>
+                <div className="text-[11.5px] tabular-nums" style={{ color: AMBER }}>
                   {r.permit}
                 </div>
-                <div className="hidden sm:block truncate text-[12.5px]" style={{ color: INK }}>
+                <div className="hidden sm:block truncate text-[12.5px]" style={{ color: WHITE }}>
                   {r.addr}
                 </div>
-                <div className="hidden sm:block text-[11.5px]" style={{ color: MUTED }}>
+                <div className="hidden sm:block text-[11.5px]" style={{ color: "rgba(200,196,188,0.6)" }}>
                   {r.county}
                 </div>
-                <div className="flex justify-end sm:justify-start">
-                  <StatusPill tone={r.tone}>{r.status}</StatusPill>
+                <div
+                  className="flex justify-end sm:justify-start text-[10.5px] uppercase tracking-[0.14em]"
+                  style={{ color: BODY }}
+                >
+                  {r.status}
                 </div>
                 <div
                   className="hidden sm:block text-right text-[11.5px] tabular-nums"
-                  style={{ color: MUTED }}
+                  style={{ color: "rgba(200,196,188,0.55)" }}
                 >
                   {r.days}
                 </div>
@@ -283,13 +264,10 @@ function PortalMockup() {
           </div>
 
           {/* Victoria alert bar */}
-          <div
-            className="flex items-start gap-3 px-5 py-3.5"
-            style={{ background: "linear-gradient(135deg, #0C1B2B 0%, #071018 100%)" }}
-          >
-            <Sparkles className="h-3.5 w-3.5 shrink-0 mt-0.5" style={{ color: "#7CC7F5" }} />
-            <p className="text-[12px] leading-relaxed" style={{ color: "rgba(255,255,255,0.78)" }}>
-              <strong style={{ color: "#FFFFFF" }}>Victoria:</strong> CLR-2026-0208 has an active
+          <div className="flex items-start gap-3 px-5 py-4" style={{ background: "#171714" }}>
+            <Sparkles className="h-3.5 w-3.5 shrink-0 mt-0.5" style={{ color: AMBER }} />
+            <p className="text-[12px] leading-relaxed" style={{ color: BODY }}>
+              <strong style={{ color: WHITE }}>Victoria:</strong> CLR-2026-0208 has an active
               correction — Miami-Dade typically responds within 3 days. Deadline is Aug 6. I&apos;ll
               remind you Aug 4.
             </p>
@@ -297,30 +275,6 @@ function PortalMockup() {
         </div>
       </div>
     </div>
-  );
-}
-
-function StatusPill({
-  tone,
-  children,
-}: {
-  tone: "blue" | "green" | "amber" | "slate";
-  children: React.ReactNode;
-}) {
-  const map: Record<string, { bg: string; fg: string }> = {
-    blue: { bg: "color-mix(in oklab, #1B84D4 12%, transparent)", fg: "#1268AC" },
-    green: { bg: "color-mix(in oklab, #16A34A 12%, transparent)", fg: "#15803D" },
-    amber: { bg: "color-mix(in oklab, #E8861A 14%, transparent)", fg: "#C4720F" },
-    slate: { bg: "color-mix(in oklab, #6B8299 12%, transparent)", fg: "#4A6278" },
-  };
-  const s = map[tone];
-  return (
-    <span
-      className="text-[10.5px] uppercase tracking-[0.12em] px-2 py-1 rounded-md font-medium whitespace-nowrap"
-      style={{ background: s.bg, color: s.fg }}
-    >
-      {children}
-    </span>
   );
 }
 
@@ -336,21 +290,17 @@ const GC_NAMES = [
 
 function LogoBar() {
   return (
-    <section style={{ background: "#FFFFFF", borderTop: `1px solid ${HAIRLINE}`, borderBottom: `1px solid ${HAIRLINE}` }}>
-      <div className="mx-auto max-w-7xl px-6 lg:px-10 py-8 flex flex-col md:flex-row md:items-center gap-5 md:gap-10">
+    <section style={{ background: NEAR_BLACK, borderTop: `1px solid ${DARK_RULE}` }}>
+      <div className="mx-auto max-w-7xl px-6 lg:px-10 py-12 flex flex-col md:flex-row md:items-center gap-6 md:gap-12">
         <div
-          className="text-[11px] font-semibold uppercase tracking-[0.18em] shrink-0"
-          style={{ color: "#8A9AAA" }}
+          className="text-[11px] uppercase tracking-[0.22em] shrink-0"
+          style={{ color: "rgba(200,196,188,0.55)" }}
         >
           Trusted by builders like
         </div>
-        <div className="flex flex-wrap items-center gap-x-8 gap-y-3">
+        <div className="flex flex-wrap items-center gap-x-10 gap-y-4">
           {GC_NAMES.map((n) => (
-            <span
-              key={n}
-              className="text-[13.5px] font-medium opacity-70"
-              style={{ color: "#7890A4" }}
-            >
+            <span key={n} className="text-[13.5px]" style={{ color: BODY }}>
               {n}
             </span>
           ))}
@@ -365,43 +315,31 @@ function LogoBar() {
 const WORK_FEATURES = [
   {
     icon: ClipboardList,
-    tint: "#EFF6FF",
-    fg: "#2563EB",
     title: "Smart permit intake",
     body: "Cleard runs a pre-check before you submit — flood zone, parcel data, wind speed, scope flags. Catch corrections before the reviewer does.",
   },
   {
     icon: CheckCircle2,
-    tint: "#ECFDF5",
-    fg: "#16A34A",
     title: "Inspection management",
     body: "Schedule, log, and track every inspection in one view. When something fails, Cleard triggers a correction workflow automatically.",
   },
   {
     icon: Zap,
-    tint: "#FEF9C3",
-    fg: "#CA8A04",
     title: "Victoria",
     body: "Your AI permit advisor. Victoria monitors every active permit, alerts you to deadlines, and predicts how long each municipality will take.",
   },
   {
     icon: BadgeCheck,
-    tint: "#FFF1E7",
-    fg: "#EA580C",
     title: "Sub compliance",
     body: "Every subcontractor's COI, license, and permit status tracked in one place. Expired COI? Cleard blocks site access automatically.",
   },
   {
     icon: MapPin,
-    tint: "#ECFDF5",
-    fg: "#16A34A",
     title: "Municipality email parsing",
     body: "Cleard reads your municipality emails and updates permit status automatically. No more scanning inboxes for correction notices.",
   },
   {
     icon: ListChecks,
-    tint: "#FEF9C3",
-    fg: "#CA8A04",
     title: "GC portal for owners",
     body: "Give homeowners a live window into their project's permit status. No calls, no updates to write — it's automatic.",
   },
@@ -409,57 +347,44 @@ const WORK_FEATURES = [
 
 function HowClearedWorks() {
   return (
-    <section style={{ background: "#FFFFFF" }}>
-      <div className="mx-auto max-w-6xl px-6 lg:px-10 py-24 md:py-28">
+    <section style={{ background: CREAM }}>
+      <div className="mx-auto max-w-6xl px-6 lg:px-10 py-28 md:py-36">
         <div
-          className="text-center text-[11px] font-semibold uppercase tracking-[0.18em]"
-          style={{ color: GREEN }}
+          className="text-[11.5px] uppercase tracking-[0.22em]"
+          style={{ color: AMBER, fontWeight: 500 }}
         >
           How Cleard works
         </div>
 
         <h2
-          className="mt-6 max-w-3xl"
+          className="mt-8 max-w-3xl"
           style={{
-            fontFamily: "'Space Grotesk', 'Inter', system-ui, sans-serif",
+            fontFamily: DISPLAY,
             fontWeight: 700,
-            fontSize: "clamp(2rem, 4.4vw, 3.25rem)",
-            lineHeight: 1.08,
-            letterSpacing: "-0.03em",
-            color: INK,
+            fontSize: "clamp(2.1rem, 4.6vw, 3.5rem)",
+            lineHeight: 1.06,
+            letterSpacing: "-0.035em",
+            color: CREAM_INK,
           }}
         >
           One place for every permit, start to finish.
         </h2>
-        <p className="mt-5 max-w-2xl text-base leading-relaxed" style={{ color: MUTED }}>
+        <p className="mt-6 max-w-2xl text-base leading-relaxed" style={{ color: CREAM_BODY }}>
           From intake through inspection to CO — Cleard tracks every move and tells you what&apos;s
           next before you have to ask.
         </p>
 
-        <div className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-20 grid gap-y-16 gap-x-12 sm:grid-cols-2 lg:grid-cols-3">
           {WORK_FEATURES.map((f) => (
-            <div
-              key={f.title}
-              className="rounded-xl p-6"
-              style={{
-                background: "#FFFFFF",
-                border: `1px solid ${HAIRLINE}`,
-                boxShadow: "0 1px 2px rgba(15,30,46,0.04), 0 8px 24px -16px rgba(15,30,46,0.12)",
-              }}
-            >
-              <div
-                className="flex h-10 w-10 items-center justify-center rounded-[10px]"
-                style={{ background: f.tint, color: f.fg }}
-              >
-                <f.icon className="h-5 w-5" strokeWidth={2} />
-              </div>
+            <div key={f.title}>
+              <f.icon className="h-5 w-5" strokeWidth={1.5} style={{ color: AMBER }} />
               <h3
-                className="mt-5 text-[17px] font-semibold tracking-[-0.01em]"
-                style={{ color: INK }}
+                className="mt-6 text-[18px] font-semibold tracking-[-0.015em]"
+                style={{ color: CREAM_INK }}
               >
                 {f.title}
               </h3>
-              <p className="mt-2 text-[14px] leading-relaxed" style={{ color: MUTED }}>
+              <p className="mt-3 text-[14px] leading-relaxed" style={{ color: CREAM_BODY }}>
                 {f.body}
               </p>
             </div>
@@ -481,65 +406,52 @@ const INTEL_STATS = [
 
 function PermitIntelligence() {
   return (
-    <section
-      className="relative overflow-hidden"
-      style={{ background: "linear-gradient(160deg, #0C1B2B 0%, #071018 100%)" }}
-    >
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          backgroundImage:
-            "radial-gradient(ellipse 50% 60% at 20% 0%, color-mix(in oklab, #1B84D4 22%, transparent) 0%, transparent 70%), radial-gradient(ellipse 50% 60% at 85% 100%, color-mix(in oklab, #16A34A 18%, transparent) 0%, transparent 70%)",
-        }}
-      />
-      <div className="relative mx-auto max-w-5xl px-6 lg:px-10 py-24 md:py-28 text-center">
+    <section style={{ background: NEAR_BLACK }}>
+      <div className="mx-auto max-w-5xl px-6 lg:px-10 py-28 md:py-36 text-center">
         <div
-          className="text-[11px] font-semibold uppercase tracking-[0.18em]"
-          style={{ color: "#7CC7F5" }}
+          className="text-[11.5px] uppercase tracking-[0.22em]"
+          style={{ color: AMBER, fontWeight: 500 }}
         >
           Permit intelligence
         </div>
         <h2
-          className="mt-6"
+          className="mt-8"
           style={{
-            fontFamily: "'Space Grotesk', 'Inter', system-ui, sans-serif",
+            fontFamily: DISPLAY,
             fontWeight: 700,
-            fontSize: "clamp(2rem, 4.4vw, 3.25rem)",
-            lineHeight: 1.08,
-            letterSpacing: "-0.03em",
-            color: "#FFFFFF",
+            fontSize: "clamp(2.1rem, 4.6vw, 3.5rem)",
+            lineHeight: 1.06,
+            letterSpacing: "-0.035em",
+            color: WHITE,
           }}
         >
           Built on real permit data.
         </h2>
-        <p
-          className="mt-5 mx-auto max-w-2xl text-base leading-relaxed"
-          style={{ color: "rgba(255,255,255,0.68)" }}
-        >
+        <p className="mt-6 mx-auto max-w-2xl text-base leading-relaxed" style={{ color: BODY }}>
           Every permit Cleard processes trains Victoria to predict timelines, flag corrections, and
           route submissions faster.
         </p>
 
-        <div className="mt-14 grid grid-cols-2 md:grid-cols-4 gap-10">
+        <div className="mt-20 grid grid-cols-2 md:grid-cols-4 gap-12">
           {INTEL_STATS.map((s) => (
             <div key={s.label}>
               <div
-                className="font-bold"
                 style={{
-                  fontFamily: "'Space Grotesk', 'Inter', system-ui, sans-serif",
-                  fontSize: "clamp(2rem, 5vw, 3rem)",
+                  fontFamily: DISPLAY,
+                  fontWeight: 700,
+                  fontSize: "clamp(2.1rem, 5vw, 3.25rem)",
                   lineHeight: 1,
-                  letterSpacing: "-0.03em",
-                  color: "#FFFFFF",
+                  letterSpacing: "-0.035em",
+                  color: WHITE,
                 }}
               >
-                {s.pre && <span style={{ color: "#4ADE80" }}>{s.pre}</span>}
+                {s.pre && <span style={{ color: AMBER }}>{s.pre}</span>}
                 {s.num}
-                {s.suf && <span style={{ color: "#4ADE80" }}>{s.suf}</span>}
+                {s.suf && <span style={{ color: AMBER }}>{s.suf}</span>}
               </div>
               <div
-                className="mt-3 text-[11.5px] uppercase tracking-[0.14em]"
-                style={{ color: "rgba(255,255,255,0.55)" }}
+                className="mt-4 text-[11.5px] uppercase tracking-[0.18em]"
+                style={{ color: "rgba(200,196,188,0.6)" }}
               >
                 {s.label}
               </div>
@@ -555,81 +467,66 @@ function PermitIntelligence() {
 
 function MeetVictoria() {
   return (
-    <section style={{ background: "#FAFAF8" }}>
-      <div className="mx-auto px-6 lg:px-10 py-24 md:py-28" style={{ maxWidth: 1100 }}>
-        <div className="grid gap-12 md:grid-cols-2 md:items-center">
+    <section style={{ background: NEAR_BLACK, borderTop: `1px solid ${DARK_RULE}` }}>
+      <div className="mx-auto px-6 lg:px-10 py-28 md:py-36" style={{ maxWidth: 1100 }}>
+        <div className="grid gap-16 md:grid-cols-2 md:items-center">
           <div>
             <div
-              className="text-[11px] font-semibold uppercase tracking-[0.18em]"
-              style={{ color: BLUE }}
+              className="text-[11.5px] uppercase tracking-[0.22em]"
+              style={{ color: AMBER, fontWeight: 500 }}
             >
               Meet Victoria
             </div>
             <h2
-              className="mt-6"
+              className="mt-8"
               style={{
-                fontFamily: "'Space Grotesk', 'Inter', system-ui, sans-serif",
+                fontFamily: DISPLAY,
                 fontWeight: 700,
-                fontSize: "clamp(1.9rem, 4vw, 3rem)",
-                lineHeight: 1.1,
-                letterSpacing: "-0.03em",
-                color: INK,
+                fontSize: "clamp(2rem, 4.2vw, 3.25rem)",
+                lineHeight: 1.06,
+                letterSpacing: "-0.035em",
+                color: WHITE,
               }}
             >
               Your AI permit advisor, always on.
             </h2>
-            <p className="mt-5 text-base leading-relaxed" style={{ color: MUTED }}>
+            <p className="mt-6 text-base leading-relaxed" style={{ color: BODY }}>
               Victoria monitors every active permit, reads municipality emails, and tells you what
               to do next — before a deadline slips.
             </p>
             <Link
               to="/ask-victoria"
-              className="mt-8 inline-flex items-center gap-2 px-6 py-3.5 rounded-lg text-sm font-semibold text-white"
-              style={{ background: BLUE }}
+              className="mt-10 inline-flex items-center gap-2 px-7 py-4 text-sm font-semibold"
+              style={{ background: AMBER, color: NEAR_BLACK }}
             >
               See Victoria in action <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
 
-          <div
-            className="overflow-hidden"
-            style={{
-              background: "linear-gradient(160deg, #071018 0%, #0C1B2B 100%)",
-              borderRadius: 20,
-              border: "1px solid rgba(255,255,255,0.10)",
-              boxShadow: "0 30px 60px -30px rgba(7,16,24,0.5)",
-            }}
-          >
+          <div className="overflow-hidden" style={{ border: `1px solid ${DARK_RULE}` }}>
             <div
               className="flex items-center gap-3 px-6 py-5"
-              style={{ borderBottom: "1px solid rgba(255,255,255,0.10)" }}
+              style={{ borderBottom: `1px solid ${DARK_RULE}` }}
             >
-              <div
-                className="flex h-9 w-9 items-center justify-center rounded-full"
-                style={{ background: "linear-gradient(135deg, #1B84D4 0%, #16A34A 100%)" }}
-              >
-                <Sparkles className="h-4 w-4 text-white" />
-              </div>
+              <Sparkles className="h-4 w-4" strokeWidth={1.5} style={{ color: AMBER }} />
               <div>
-                <div className="text-[13.5px] font-semibold" style={{ color: "#FFFFFF" }}>
+                <div className="text-[13.5px] font-semibold" style={{ color: WHITE }}>
                   Victoria
                 </div>
-                <div className="text-[11px]" style={{ color: "rgba(255,255,255,0.55)" }}>
+                <div className="text-[11px]" style={{ color: "rgba(200,196,188,0.6)" }}>
                   Cleard AI · Permit Intelligence
                 </div>
               </div>
             </div>
 
-            <div className="p-6 space-y-5">
+            <div className="p-6 space-y-8">
               <VictoriaMessage
                 tag="Correction due Aug 6"
-                tagTone="amber"
                 title="CLR-2026-0208 — 2840 SW 48th Ct, Miami"
                 body="Miami-Dade flagged a missing NOC. I've drafted the corrected NOC — review and re-submit. Based on 14 prior Miami-Dade submissions, expect 3 days to re-review."
               />
               <VictoriaMessage
                 tag="On track"
-                tagTone="green"
                 title="CLR-2026-0204 — 901 Harbour Ct, Jupiter"
                 body="Palm Beach is on day 12 of review. Their median is 14 days — you're right on pace. No action needed."
               />
@@ -643,34 +540,22 @@ function MeetVictoria() {
 
 function VictoriaMessage({
   tag,
-  tagTone,
   title,
   body,
 }: {
   tag: string;
-  tagTone: "amber" | "green";
   title: string;
   body: string;
 }) {
-  const tone =
-    tagTone === "amber"
-      ? { bg: "rgba(232,134,26,0.16)", fg: "#F0B267" }
-      : { bg: "rgba(22,163,74,0.16)", fg: "#4ADE80" };
   return (
-    <div
-      className="rounded-xl p-5"
-      style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}
-    >
-      <span
-        className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10.5px] font-medium uppercase tracking-[0.1em]"
-        style={{ background: tone.bg, color: tone.fg }}
-      >
-        {tagTone === "amber" ? "⚠" : "✓"} {tag}
-      </span>
-      <div className="mt-3 text-[13.5px] font-semibold" style={{ color: "#FFFFFF" }}>
+    <div>
+      <div className="text-[10.5px] uppercase tracking-[0.2em]" style={{ color: AMBER }}>
+        {tag}
+      </div>
+      <div className="mt-3 text-[13.5px] font-semibold" style={{ color: WHITE }}>
         {title}
       </div>
-      <p className="mt-2 text-[13px] leading-relaxed" style={{ color: "rgba(255,255,255,0.68)" }}>
+      <p className="mt-2 text-[13px] leading-relaxed" style={{ color: BODY }}>
         {body}
       </p>
     </div>
@@ -681,50 +566,44 @@ function VictoriaMessage({
 
 function BetaCTA() {
   return (
-    <section
-      style={{
-        background: "#F2EEE8",
-        borderTop: `1px solid ${HAIRLINE}`,
-        borderBottom: `1px solid ${HAIRLINE}`,
-      }}
-    >
-      <div className="mx-auto max-w-3xl px-6 lg:px-10 py-24 md:py-28 text-center">
+    <section style={{ background: NEAR_BLACK, borderTop: `1px solid ${DARK_RULE}` }}>
+      <div className="mx-auto max-w-3xl px-6 lg:px-10 py-28 md:py-36 text-center">
         <div
-          className="text-[11px] font-semibold uppercase tracking-[0.18em]"
-          style={{ color: BLUE }}
+          className="text-[11.5px] uppercase tracking-[0.22em]"
+          style={{ color: AMBER, fontWeight: 500 }}
         >
           Private beta
         </div>
         <h2
-          className="mt-6"
+          className="mt-8"
           style={{
-            fontFamily: "'Space Grotesk', 'Inter', system-ui, sans-serif",
+            fontFamily: DISPLAY,
             fontWeight: 700,
-            fontSize: "clamp(2rem, 4.4vw, 3.25rem)",
-            lineHeight: 1.08,
-            letterSpacing: "-0.03em",
-            color: INK,
+            fontSize: "clamp(2.1rem, 4.6vw, 3.5rem)",
+            lineHeight: 1.06,
+            letterSpacing: "-0.035em",
+            color: WHITE,
           }}
         >
           Get Cleard before your competitors do.
         </h2>
-        <p className="mt-5 mx-auto max-w-xl text-base leading-relaxed" style={{ color: MUTED }}>
+        <p className="mt-6 mx-auto max-w-xl text-base leading-relaxed" style={{ color: BODY }}>
           We&apos;re onboarding general contractors now. Early access is free and includes direct
           access to the Cleard team.
         </p>
-        <div className="mt-10 flex flex-col sm:flex-row gap-3 justify-center items-center">
+        <div className="mt-12 flex flex-col sm:flex-row gap-6 sm:gap-8 justify-center items-center">
           <Link
             to="/join"
             hash="request"
-            className="inline-flex items-center gap-2 px-7 py-3.5 rounded-lg text-sm font-semibold text-white"
-            style={{ background: GREEN }}
+            className="inline-flex items-center gap-2 px-8 py-4 text-sm font-semibold"
+            style={{ background: AMBER, color: NEAR_BLACK }}
           >
             Request early access <ArrowRight className="h-4 w-4" />
           </Link>
           <Link
             to="/contact"
-            className="inline-flex items-center gap-2 px-7 py-3.5 rounded-lg text-sm font-semibold"
-            style={{ color: INK, border: `1px solid ${HAIRLINE}`, background: "#FFFFFF" }}
+            className="inline-flex items-center gap-2 px-8 py-4 text-sm font-medium"
+            style={{ color: WHITE, border: "1px solid rgba(255,255,255,0.45)" }}
           >
             Talk to the team
           </Link>
