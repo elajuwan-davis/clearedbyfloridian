@@ -1397,3 +1397,8 @@ html:not(.dark) .portal-ui .flyout-link[data-active="true"] {
 .marketing-dark textarea:focus,
 .marketing-dark select:focus { border-color: #00B4A8; outline: none; }
 .marketing-dark ::placeholder { color: #9E9B96; }
+
+/* Marketing nav dropdown fade — opacity only */
+@keyframes md-dropdown-fade-in { from { opacity: 0 } to { opacity: 1 } }
+.md-dropdown-fade { animation: md-dropdown-fade-in 150ms linear both; }
+.md-dropdown-fade, .md-dropdown-fade * { border-radius: 0 !important; }
