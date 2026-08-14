@@ -13,24 +13,27 @@ const NAV_LINKS: Array<{ to: string; label: string; soon?: boolean }> = [
 
 
 
-const NEAR_BLACK = "#0D0D0B";
-const BODY_GRAY = "#C8C4BC";
+const NEAR_BLACK = "#FFFFFF";
+const BODY_GRAY = "#6B6860";
+const INK = "#111110";
+const TEAL = "#00B4A8";
+const BORDER = "#E4E2DE";
 
 function MarketingNav() {
   const [open, setOpen] = useState(false);
   return (
-    <header className="sticky top-0 z-50" style={{ background: NEAR_BLACK }}>
+    <header className="sticky top-0 z-50" style={{ background: NEAR_BLACK, borderBottom: `1px solid ${BORDER}` }}>
       <div className="mx-auto max-w-7xl px-6 lg:px-10 h-[76px] flex items-center justify-between gap-6">
         <Link to="/" className="flex items-center no-underline min-w-0">
           <span
             className="text-[19px] tracking-[-0.01em]"
             style={{
-              fontFamily: "'Space Grotesk', 'Inter', system-ui, sans-serif",
-              fontWeight: 600,
-              color: "#FFFFFF",
+              fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif",
+              fontWeight: 700,
+              color: INK,
             }}
           >
-            Cléared
+            Cleard
           </span>
         </Link>
 
@@ -63,9 +66,10 @@ function MarketingNav() {
             hash="request"
             className="inline-flex items-center gap-1.5 px-5 py-2.5 text-[13.5px] font-medium no-underline"
             style={{
-              color: "#FFFFFF",
-              border: "1px solid rgba(255,255,255,0.5)",
-              background: "transparent",
+              color: INK,
+              border: "none",
+              background: TEAL,
+              fontWeight: 700,
             }}
           >
             Get early access
@@ -83,7 +87,7 @@ function MarketingNav() {
       </div>
 
       {open && (
-        <div className="md:hidden" style={{ background: NEAR_BLACK, borderTop: "1px solid rgba(255,255,255,0.1)" }}>
+        <div className="md:hidden" style={{ background: NEAR_BLACK, borderTop: `1px solid ${BORDER}` }}>
           <div className="px-6 py-6 space-y-4">
             {NAV_LINKS.map((l) =>
               l.soon ? (
@@ -115,7 +119,7 @@ function MarketingNav() {
               hash="request"
               onClick={() => setOpen(false)}
               className="inline-flex w-full items-center justify-center gap-1.5 px-4 py-2.5 text-sm font-medium no-underline"
-              style={{ color: "#FFFFFF", border: "1px solid rgba(255,255,255,0.5)" }}
+              style={{ color: INK, background: TEAL, fontWeight: 700 }}
             >
               Get early access
             </Link>
@@ -129,30 +133,30 @@ function MarketingNav() {
 
 function MarketingFooter() {
   return (
-    <footer style={{ background: NEAR_BLACK, borderTop: "1px solid rgba(255,255,255,0.1)" }}>
+    <footer style={{ background: NEAR_BLACK, borderTop: `1px solid ${BORDER}` }}>
       <div className="mx-auto max-w-7xl px-6 lg:px-10 py-12 flex flex-col gap-8 md:flex-row md:items-center md:justify-between">
         <Link to="/" className="flex items-center no-underline">
           <span
             className="text-[16px] tracking-[-0.01em]"
             style={{
-              fontFamily: "'Space Grotesk', 'Inter', system-ui, sans-serif",
-              fontWeight: 600,
-              color: "#FFFFFF",
+              fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif",
+              fontWeight: 700,
+              color: INK,
             }}
           >
-            Cléared
+            Cleard
           </span>
         </Link>
 
         <nav className="flex flex-wrap items-center gap-x-8 gap-y-2 text-[13px]">
-          <Link to="/products" className="no-underline" style={{ color: BODY_GRAY }}>Product</Link>
-          <a href="https://floridianinc.com/privacy" className="no-underline" style={{ color: BODY_GRAY }}>Privacy</a>
-          <a href="https://floridianinc.com/terms" className="no-underline" style={{ color: BODY_GRAY }}>Terms</a>
-          <Link to="/contact" className="no-underline" style={{ color: BODY_GRAY }}>Contact</Link>
+          <Link to="/products" className="no-underline" style={{ color: "rgba(255,255,255,0.7)" }}>Product</Link>
+          <a href="https://floridianinc.com/privacy" className="no-underline" style={{ color: "rgba(255,255,255,0.7)" }}>Privacy</a>
+          <a href="https://floridianinc.com/terms" className="no-underline" style={{ color: "rgba(255,255,255,0.7)" }}>Terms</a>
+          <Link to="/contact" className="no-underline" style={{ color: "rgba(255,255,255,0.7)" }}>Contact</Link>
         </nav>
 
         <div className="text-[12px]" style={{ color: "rgba(200,196,188,0.6)" }}>
-          © 2026 Cleard Inc.
+          © 2026 Cleard
         </div>
       </div>
     </footer>
