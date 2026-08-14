@@ -1300,3 +1300,15 @@ html:not(.dark) .portal-ui .flyout-link[data-active="true"] {
   background-color: #009088 !important;
   color: #111110 !important;
 }
+
+/* Sharp corners win over the legacy radius layer */
+.portal-ui .rounded-\[3px\],
+.portal-ui .rounded-sm,
+.portal-ui .rounded,
+.portal-ui .rounded-md,
+.portal-ui .rounded-lg,
+.portal-ui .rounded-xl,
+.portal-ui .rounded-2xl,
+.portal-ui .rounded-3xl,
+.portal-ui .rounded-full,
+.portal-ui [class*="rounded"] { border-radius: 0 !important; }
