@@ -1016,3 +1016,269 @@ html:not(.dark) .portal-ui .flyout-link[data-active="true"] {
   font-weight: 600;
   border-left-color: var(--sky);
 }
+
+/* =========================================================
+   CLEARD BRAND v2 — PORTAL REBRAND (marketing-matched)
+   Token-only, presentation-only. Overrides every earlier
+   portal palette/radius rule. No markup or logic changes.
+   ========================================================= */
+.portal-ui,
+html.dark .portal-ui,
+html:not(.dark) .portal-ui,
+html:not(.dark) .portal-ui.dark {
+  /* Brand surfaces */
+  --p-bg:        #FFFFFF;
+  --p-card:      #FFFFFF;
+  --p-card-2:    #F5F4F0;
+  --p-border:    #E4E2DE;
+  --p-border-2:  #D8D5D0;
+  --p-text:      #111110;
+  --p-text-2:    #6B6860;
+  --p-text-3:    #9E9B96;
+
+  /* Semantics */
+  --p-success:   #00B4A8;
+  --p-warning:   #B4842A;
+  --p-danger:    #D14343;
+  --p-info:      #00B4A8;
+  --p-accent:    #00B4A8;
+  --p-purple:    #6B6860;
+
+  --primary:            #00B4A8;
+  --primary-foreground: #111110;
+  --accent:             #00B4A8;
+  --accent-foreground:  #111110;
+  --ring:               #00B4A8;
+  --input:              #FFFFFF;
+
+  /* Legacy aliases */
+  --sky:           #00B4A8;
+  --green:         #00B4A8;
+  --green-d:       #009088;
+  --amber:         #B4842A;
+  --obsidian:      #111110;
+  --obsidian-deep: #111110;
+  --paper:         #FFFFFF;
+  --paper-warm:    #F5F4F0;
+  --paper-deep:    #EEECEA;
+  --sand:          #EEECEA;
+  --oxblood:       #D14343;
+
+  --p-tint:      #F5F4F0;
+  --p-tint-2:    #EEECEA;
+  --p-row-hover: #F5F4F0;
+  --p-shadow:    none;
+  --p-topbar:    #FFFFFF;
+
+  /* Sidebar rail */
+  --rail-bg:                 #F5F4F0;
+  --rail-fg:                 #111110;
+  --rail-icon:               #6B6860;
+  --rail-icon-active:        #111110;
+  --rail-muted:              #9E9B96;
+  --rail-hover:              #EEECEA;
+  --rail-item-active-bg:     #EEECEA;
+  --rail-item-active-shadow: none;
+
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+}
+
+/* System type stack everywhere in the portal */
+.portal-ui,
+.portal-ui h1, .portal-ui h2, .portal-ui h3,
+.portal-ui h4, .portal-ui h5, .portal-ui h6,
+.portal-ui .p-eyebrow,
+.portal-ui .label-eyebrow,
+.portal-ui .eyebrow,
+.portal-ui .display-serif,
+.portal-ui .wordmark,
+.portal-ui .font-display,
+.portal-ui .font-mono:not(pre):not(code),
+.portal-ui input,
+.portal-ui textarea,
+.portal-ui select,
+.portal-ui button {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif !important;
+}
+.portal-ui h1, .portal-ui h2, .portal-ui h3,
+.portal-ui h4, .portal-ui h5, .portal-ui h6,
+.portal-ui .display-serif,
+.portal-ui .wordmark,
+.portal-ui .font-display {
+  font-weight: 700 !important;
+  letter-spacing: -0.03em !important;
+  color: var(--p-text);
+}
+.portal-ui .wordmark { font-size: 19px !important; }
+.portal-ui p,
+.portal-ui .text-muted-foreground { color: var(--p-text-2); }
+
+/* Sharp corners across the entire portal */
+.portal-ui,
+.portal-ui *,
+.portal-ui *::before,
+.portal-ui *::after {
+  border-radius: 0 !important;
+}
+.portal-ui .rounded-full,
+.portal-ui .rounded-full * { border-radius: 0 !important; }
+
+/* Surfaces / cards */
+.portal-ui .p-surface,
+.portal-ui .p-surface-flat,
+.portal-ui .p-plate {
+  background-color: #FFFFFF;
+  border: 1px solid var(--p-border);
+  box-shadow: none;
+}
+.portal-ui .p-inset {
+  background-color: #F5F4F0;
+  border: 1px solid var(--p-border);
+}
+.portal-ui .p-hover-plate:hover { background-color: #F5F4F0; }
+
+/* Tables */
+.portal-ui .p-table thead th {
+  background-color: #FFFFFF;
+  color: var(--p-text-3);
+  border-bottom: 1px solid var(--p-border);
+}
+.portal-ui .p-table tbody td {
+  background-color: transparent;
+  border-bottom: 1px solid #EEECEA;
+  color: var(--p-text);
+}
+.portal-ui .p-table tbody tr:hover { background-color: #F5F4F0; }
+
+/* Status tags — sharp, uppercase, tinted */
+.portal-ui .p-chip {
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 10px;
+  font-weight: 600;
+}
+.portal-ui .p-chip-success { color: #007C74; background: rgba(0, 180, 168, 0.12); }
+.portal-ui .p-chip-info    { color: #1D4ED8; background: rgba(29, 78, 216, 0.10); }
+.portal-ui .p-chip-warning { color: #6B6860; background: rgba(17, 17, 16, 0.07); }
+.portal-ui .p-chip-danger  { color: #B42318; background: rgba(209, 67, 67, 0.12); }
+.portal-ui .p-chip-purple  { color: #6B6860; background: rgba(17, 17, 16, 0.07); }
+.portal-ui .p-chip-neutral { color: #6B6860; background: rgba(17, 17, 16, 0.06); }
+
+/* Inputs */
+.portal-ui input,
+.portal-ui textarea,
+.portal-ui select {
+  background-color: #FFFFFF;
+  border: 1px solid var(--p-border);
+  color: var(--p-text);
+}
+.portal-ui input:focus,
+.portal-ui textarea:focus,
+.portal-ui select:focus,
+.portal-ui input:focus-visible,
+.portal-ui textarea:focus-visible,
+.portal-ui select:focus-visible {
+  border-color: #00B4A8;
+  outline: none;
+  box-shadow: none;
+}
+.portal-ui input::placeholder,
+.portal-ui textarea::placeholder { color: var(--p-text-3); }
+
+/* Buttons */
+.portal-ui .p-btn-primary { background: #00B4A8; color: #111110; font-weight: 600; border: 1px solid #00B4A8; }
+.portal-ui .p-btn-primary:hover { background: #009088; border-color: #009088; color: #111110; }
+.portal-ui .p-btn-ghost { background: #FFFFFF; border: 1px solid var(--p-border); color: var(--p-text); }
+.portal-ui .p-btn-ghost:hover { background: #F5F4F0; border-color: var(--p-border-2); color: var(--p-text); }
+.portal-ui .p-btn-quiet { color: var(--p-text-2); }
+.portal-ui .p-btn-quiet:hover { background: #F5F4F0; color: var(--p-text); }
+.portal-ui .p-btn-danger { background: #D14343; color: #FFFFFF; }
+
+/* Segmented control */
+.portal-ui .p-seg { background: #F5F4F0; border: 1px solid var(--p-border); }
+.portal-ui .p-seg > button[data-active="true"],
+.portal-ui .p-seg > a[data-active="true"] {
+  background: #FFFFFF;
+  color: var(--p-text);
+  font-weight: 600;
+  box-shadow: none;
+}
+
+/* Sidebar nav */
+.portal-ui .p-nav-item,
+html:not(.dark) .portal-ui .p-nav-item { color: #6B6860; }
+.portal-ui .p-nav-item:hover,
+html:not(.dark) .portal-ui .p-nav-item:hover { background-color: #EEECEA; color: #111110; }
+.portal-ui .p-nav-item[data-active="true"],
+html:not(.dark) .portal-ui .p-nav-item[data-active="true"] {
+  background-color: #EEECEA;
+  color: #111110;
+  font-weight: 600;
+  box-shadow: none;
+}
+.portal-ui .p-nav-item[data-active="true"]::before { background: #00B4A8; }
+.portal-ui .p-nav-group,
+html:not(.dark) .portal-ui .p-nav-group { color: #9E9B96; }
+
+/* Icon rail + flyouts */
+.portal-ui .rail-btn,
+.portal-ui .flyout-link,
+html:not(.dark) .portal-ui .rail-btn,
+html:not(.dark) .portal-ui .flyout-link { color: #6B6860; }
+.portal-ui .rail-btn:hover,
+.portal-ui .rail-btn:focus-visible,
+.portal-ui .rail-btn[data-open="true"],
+.portal-ui .flyout-link:hover,
+.portal-ui .flyout-link:focus-visible,
+html:not(.dark) .portal-ui .rail-btn:hover,
+html:not(.dark) .portal-ui .rail-btn:focus-visible,
+html:not(.dark) .portal-ui .rail-btn[data-open="true"],
+html:not(.dark) .portal-ui .flyout-link:hover,
+html:not(.dark) .portal-ui .flyout-link:focus-visible {
+  background-color: #EEECEA;
+  color: #111110;
+}
+.portal-ui .rail-btn[data-active="true"],
+.portal-ui .rail-btn[data-active="true"]:hover,
+.portal-ui .rail-btn[data-active="true"][data-open="true"],
+html:not(.dark) .portal-ui .rail-btn[data-active="true"],
+html:not(.dark) .portal-ui .rail-btn[data-active="true"]:hover {
+  background-color: #EEECEA;
+  color: #111110;
+  box-shadow: inset 2px 0 0 0 #00B4A8;
+}
+.portal-ui .flyout-link { font-family: inherit; }
+.portal-ui .flyout-link[data-active="true"],
+html:not(.dark) .portal-ui .flyout-link[data-active="true"] {
+  background-color: #EEECEA;
+  color: #111110;
+  font-weight: 600;
+  border-left-color: #00B4A8;
+  box-shadow: none;
+}
+
+/* Elevated panels — the only allowed shadow */
+.portal-ui [role="dialog"],
+.portal-ui [data-radix-popper-content-wrapper] > * {
+  background-color: #FFFFFF;
+  border: 1px solid var(--p-border);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+}
+
+/* Retire legacy dark/gradient assumptions inside the portal */
+.portal-ui [class*="bg-gradient"] { background-image: none !important; }
+.portal-ui .bg-white,
+.portal-ui .bg-paper,
+.portal-ui .bg-card { background-color: #FFFFFF !important; }
+.portal-ui .bg-paper-warm,
+.portal-ui .bg-paper-deep,
+.portal-ui .bg-secondary,
+.portal-ui .bg-muted { background-color: #F5F4F0 !important; }
+.portal-ui .bg-obsidian,
+.portal-ui .bg-obsidian-deep { background-color: #111110 !important; color: #FFFFFF; }
+.portal-ui .shadow,
+.portal-ui .shadow-sm,
+.portal-ui .shadow-md,
+.portal-ui .shadow-lg,
+.portal-ui .shadow-xl,
+.portal-ui .shadow-2xl { box-shadow: none !important; }
