@@ -133,15 +133,15 @@ function MarketingNav() {
 
 function MarketingFooter() {
   return (
-    <footer style={{ background: NEAR_BLACK, borderTop: `1px solid ${BORDER}` }}>
+    <footer style={{ background: INK, borderTop: "1px solid rgba(255,255,255,0.12)" }}>
       <div className="mx-auto max-w-7xl px-6 lg:px-10 py-12 flex flex-col gap-8 md:flex-row md:items-center md:justify-between">
         <Link to="/" className="flex items-center no-underline">
           <span
-            className="text-[16px] tracking-[-0.01em]"
+            className="text-[18px] tracking-[-0.03em]"
             style={{
               fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif",
               fontWeight: 700,
-              color: INK,
+              color: "#FFFFFF",
             }}
           >
             Cleard
