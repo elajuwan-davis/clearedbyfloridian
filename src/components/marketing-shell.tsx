@@ -104,6 +104,12 @@ function MarketingNav() {
       {open && (
         <div className="md:hidden" style={{ background: NEAR_BLACK, borderTop: `1px solid ${BORDER}` }}>
           <div className="px-6 py-6 space-y-4">
+            <Link to="/products" onClick={() => setOpen(false)} className="block text-base no-underline" style={{ color: BODY_GRAY }}>
+              Product
+            </Link>
+            <Link to="/join" onClick={() => setOpen(false)} className="block text-base no-underline" style={{ color: BODY_GRAY }}>
+              Contractors
+            </Link>
             {NAV_LINKS.map((l) =>
               l.soon ? (
                 <div key={l.to} className="flex items-center gap-2 text-sm" style={{ color: BODY_GRAY }}>
