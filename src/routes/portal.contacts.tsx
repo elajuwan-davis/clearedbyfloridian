@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useRouterState } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { Plus, Pencil, Trash2, Mail, Phone, Loader2 } from "lucide-react";
@@ -60,7 +60,18 @@ function ContactsPage() {
   const [rows, setRows] = useState<ContactRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [query, setQuery] = useState("");
+  // Contacts tabs (Inspectors / Municipalities / Homeowners) drive this filter
+  // through ?type= so each tab lands on the right slice of the contact book.
+  const typeParam = useRouterState({
+    select: (s) => (s.location.search as Record<string, unknown>)?.["type"] as string | undefined,
+  });
   const [typeFilter, setTypeFilter] = useState<"all" | ContactType>("all");
+
+  useEffect(() => {
+    if (typeParam && (CONTACT_TYPES as readonly string[]).includes(typeParam)) {
+      setTypeFilter(typeParam as ContactType);
+    }
+  }, [typeParam]);
 
   const [editing, setEditing] = useState<ContactRow | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);

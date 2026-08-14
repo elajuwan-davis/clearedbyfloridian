@@ -74,6 +74,7 @@ import { Route as PortalCalendarRouteImport } from './routes/portal.calendar'
 import { Route as PortalCompanyRouteImport } from './routes/portal.company'
 import { Route as PortalComplianceRouteImport } from './routes/portal.compliance'
 import { Route as PortalContactsRouteImport } from './routes/portal.contacts'
+import { Route as PortalDocumentsRouteImport } from './routes/portal.documents'
 import { Route as PortalFeatureRequestsRouteImport } from './routes/portal.feature-requests'
 import { Route as PortalFinancialsRouteImport } from './routes/portal.financials'
 import { Route as PortalInspectionsRouteImport } from './routes/portal.inspections'
@@ -451,6 +452,11 @@ const PortalContactsRoute = PortalContactsRouteImport.update({
   path: '/contacts',
   getParentRoute: () => PortalRoute,
 } as any)
+const PortalDocumentsRoute = PortalDocumentsRouteImport.update({
+  id: '/documents',
+  path: '/documents',
+  getParentRoute: () => PortalRoute,
+} as any)
 const PortalFeatureRequestsRoute = PortalFeatureRequestsRouteImport.update({
   id: '/feature-requests',
   path: '/feature-requests',
@@ -767,6 +773,7 @@ export interface FileRoutesByFullPath {
   '/portal/company': typeof PortalCompanyRoute
   '/portal/compliance': typeof PortalComplianceRoute
   '/portal/contacts': typeof PortalContactsRoute
+  '/portal/documents': typeof PortalDocumentsRoute
   '/portal/feature-requests': typeof PortalFeatureRequestsRoute
   '/portal/financials': typeof PortalFinancialsRoute
   '/portal/inspections': typeof PortalInspectionsRoute
@@ -881,6 +888,7 @@ export interface FileRoutesByTo {
   '/portal/company': typeof PortalCompanyRoute
   '/portal/compliance': typeof PortalComplianceRoute
   '/portal/contacts': typeof PortalContactsRoute
+  '/portal/documents': typeof PortalDocumentsRoute
   '/portal/feature-requests': typeof PortalFeatureRequestsRoute
   '/portal/financials': typeof PortalFinancialsRoute
   '/portal/inspections': typeof PortalInspectionsRoute
@@ -996,6 +1004,7 @@ export interface FileRoutesById {
   '/portal/company': typeof PortalCompanyRoute
   '/portal/compliance': typeof PortalComplianceRoute
   '/portal/contacts': typeof PortalContactsRoute
+  '/portal/documents': typeof PortalDocumentsRoute
   '/portal/feature-requests': typeof PortalFeatureRequestsRoute
   '/portal/financials': typeof PortalFinancialsRoute
   '/portal/inspections': typeof PortalInspectionsRoute
@@ -1114,6 +1123,7 @@ export interface FileRouteTypes {
     | '/portal/company'
     | '/portal/compliance'
     | '/portal/contacts'
+    | '/portal/documents'
     | '/portal/feature-requests'
     | '/portal/financials'
     | '/portal/inspections'
@@ -1228,6 +1238,7 @@ export interface FileRouteTypes {
     | '/portal/company'
     | '/portal/compliance'
     | '/portal/contacts'
+    | '/portal/documents'
     | '/portal/feature-requests'
     | '/portal/financials'
     | '/portal/inspections'
@@ -1342,6 +1353,7 @@ export interface FileRouteTypes {
     | '/portal/company'
     | '/portal/compliance'
     | '/portal/contacts'
+    | '/portal/documents'
     | '/portal/feature-requests'
     | '/portal/financials'
     | '/portal/inspections'
@@ -1927,6 +1939,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PortalContactsRouteImport
       parentRoute: typeof PortalRoute
     }
+    '/portal/documents': {
+      id: '/portal/documents'
+      path: '/documents'
+      fullPath: '/portal/documents'
+      preLoaderRoute: typeof PortalDocumentsRouteImport
+      parentRoute: typeof PortalRoute
+    }
     '/portal/feature-requests': {
       id: '/portal/feature-requests'
       path: '/feature-requests'
@@ -2339,6 +2358,7 @@ interface PortalRouteChildren {
   PortalCompanyRoute: typeof PortalCompanyRoute
   PortalComplianceRoute: typeof PortalComplianceRoute
   PortalContactsRoute: typeof PortalContactsRoute
+  PortalDocumentsRoute: typeof PortalDocumentsRoute
   PortalFeatureRequestsRoute: typeof PortalFeatureRequestsRoute
   PortalFinancialsRoute: typeof PortalFinancialsRoute
   PortalInspectionsRoute: typeof PortalInspectionsRoute
@@ -2377,6 +2397,7 @@ const PortalRouteChildren: PortalRouteChildren = {
   PortalCompanyRoute: PortalCompanyRoute,
   PortalComplianceRoute: PortalComplianceRoute,
   PortalContactsRoute: PortalContactsRoute,
+  PortalDocumentsRoute: PortalDocumentsRoute,
   PortalFeatureRequestsRoute: PortalFeatureRequestsRoute,
   PortalFinancialsRoute: PortalFinancialsRoute,
   PortalInspectionsRoute: PortalInspectionsRoute,
