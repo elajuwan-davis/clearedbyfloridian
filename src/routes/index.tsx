@@ -1,21 +1,35 @@
 import { useEffect, useRef, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, ArrowUpRight, ChevronDown, X } from "lucide-react";
+import {
+  ArrowRight,
+  ArrowUpRight,
+  Bell,
+  ChevronDown,
+  ClipboardCheck,
+  FileCheck2,
+  FileText,
+  FolderOpen,
+  Send,
+  ShieldCheck,
+  Smartphone,
+  Users,
+  X,
+} from "lucide-react";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Cleard — Permits cleared. Projects move." },
+      { title: "Cleard — Run projects. Not paperwork." },
       {
         name: "description",
         content:
-          "Cleard handles the full permit pipeline — submissions, corrections, inspections, closeout — so your team builds instead of waiting.",
+          "Cleard runs the entire back office behind your projects — permit submission, private provider plan review, corrections, inspections, licenses, insurance and documents.",
       },
-      { property: "og:title", content: "Cleard — Permits cleared. Projects move." },
+      { property: "og:title", content: "Cleard — Run projects. Not paperwork." },
       {
         property: "og:description",
         content:
-          "Cleard handles the full permit pipeline — submissions, corrections, inspections, closeout — so your team builds instead of waiting.",
+          "Cleard runs the entire back office behind your projects — permits, plan review, corrections, inspections, licenses, insurance and documents.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -27,28 +41,41 @@ export const Route = createFileRoute("/")({
 /* ------------------------------ DESIGN TOKENS ----------------------------- */
 
 const WHITE = "#FFFFFF";
-const OFFWHITE = "#F5F4F0";
+const OFF = "#F5F4F0";
+const OFF2 = "#EEECEA";
 const INK = "#111110";
 const GRAY = "#6B6860";
 const LIGHT = "#9E9B96";
 const TEAL = "#00B4A8";
+const TEAL_D = "#009088";
 const BORDER = "#E4E2DE";
-const SANS =
-  "-apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif";
+const SANS = "-apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif";
 
 /* --------------------------------- PAGE ---------------------------------- */
 
 function HomePage() {
   return (
     <div style={{ background: WHITE, color: INK, fontFamily: SANS }}>
-      <AnnouncementBanner />
-      <Nav />
-      <Hero />
-      <SocialProof />
-      <Features />
-      <HowItWorks />
-      <BottomCTA />
-      <Footer />
+      <style>{`
+        .cl-home *, .cl-home *::before, .cl-home *::after { border-radius: 0 !important; }
+        .cl-home .cl-dot { border-radius: 999px !important; }
+        @keyframes clWordIn { from { opacity: 0; transform: translateY(0.5em); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes clSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        @keyframes clFade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+      `}</style>
+      <div className="cl-home">
+        <AnnouncementBanner />
+        <Nav />
+        <Hero />
+        <Circle360 />
+        <StatsStrip />
+        <Services />
+        <PortalShowcase />
+        <MobileApp />
+        <HowItWorks />
+        <BottomCTA />
+        <Footer />
+      </div>
     </div>
   );
 }
@@ -59,11 +86,11 @@ function AnnouncementBanner() {
   const [open, setOpen] = useState(true);
   if (!open) return null;
   return (
-    <div style={{ background: "#000000" }}>
+    <div style={{ background: INK }}>
       <div className="mx-auto max-w-7xl px-5 py-2.5 flex items-center justify-center gap-3 relative">
         <p className="text-[13px]" style={{ color: WHITE }}>
           Now accepting contractor applications for the private beta.{" "}
-          <Link to="/join" hash="request" className="underline" style={{ color: WHITE }}>
+          <Link to="/join" hash="request" className="underline font-semibold" style={{ color: WHITE }}>
             Apply here →
           </Link>
         </p>
@@ -91,21 +118,13 @@ const NAV_LINKS: Array<{ to: string; label: string; caret?: boolean }> = [
 
 function Nav() {
   return (
-    <header
-      className="sticky top-0 z-50"
-      style={{ background: WHITE, borderBottom: `1px solid ${BORDER}` }}
-    >
+    <header className="sticky top-0 z-50" style={{ background: WHITE, borderBottom: `1px solid ${BORDER}` }}>
       <div className="mx-auto max-w-7xl px-5 lg:px-8 h-[58px] flex items-center justify-between gap-6">
         <div className="flex items-center gap-8 min-w-0">
           <Link
             to="/"
             className="no-underline"
-            style={{
-              color: INK,
-              fontWeight: 700,
-              fontSize: 20,
-              letterSpacing: "-0.03em",
-            }}
+            style={{ color: INK, fontWeight: 700, fontSize: 20, letterSpacing: "-0.03em" }}
           >
             Cleard
           </Link>
@@ -125,11 +144,7 @@ function Nav() {
         </div>
 
         <div className="flex items-center gap-3">
-          <Link
-            to="/login"
-            className="hidden sm:inline text-[14px] no-underline"
-            style={{ color: GRAY }}
-          >
+          <Link to="/login" className="hidden sm:inline text-[14px] no-underline" style={{ color: GRAY }}>
             Sign in
           </Link>
           <Link
@@ -142,8 +157,8 @@ function Nav() {
           <Link
             to="/join"
             hash="request"
-            className="inline-flex items-center px-4 py-2 text-[13.5px] font-semibold no-underline"
-            style={{ background: TEAL, color: "#000000" }}
+            className="inline-flex items-center px-4 py-2 text-[13.5px] font-bold no-underline"
+            style={{ background: TEAL, color: INK }}
           >
             Get started
           </Link>
@@ -153,61 +168,78 @@ function Nav() {
   );
 }
 
-/* ---------------------------------- HERO --------------------------------- */
+/* -------------------------------- HOOKS ---------------------------------- */
 
-function useCountUp(target: number, duration = 1600) {
+function useCountUp(target: number, duration = 1600, start = true) {
   const [value, setValue] = useState(0);
-  const started = useRef(false);
+  const done = useRef(false);
   useEffect(() => {
-    if (started.current) return;
-    started.current = true;
-    const start = performance.now();
+    if (!start || done.current) return;
+    done.current = true;
+    const t0 = performance.now();
     let raf = 0;
     const tick = (now: number) => {
-      const p = Math.min(1, (now - start) / duration);
-      const eased = 1 - Math.pow(1 - p, 3);
-      setValue(Math.round(target * eased));
+      const p = Math.min(1, (now - t0) / duration);
+      setValue(Math.round(target * (1 - Math.pow(1 - p, 3))));
       if (p < 1) raf = requestAnimationFrame(tick);
     };
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
-  }, [target, duration]);
+  }, [target, duration, start]);
   return value;
 }
 
+function useInView<T extends HTMLElement>() {
+  const ref = useRef<T | null>(null);
+  const [seen, setSeen] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || seen) return;
+    const io = new IntersectionObserver(
+      (entries) => entries.forEach((e) => e.isIntersecting && setSeen(true)),
+      { threshold: 0.25 },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [seen]);
+  return { ref, seen };
+}
+
+function useCycle(length: number, ms: number) {
+  const [i, setI] = useState(0);
+  useEffect(() => {
+    const t = setInterval(() => setI((v) => (v + 1) % length), ms);
+    return () => clearInterval(t);
+  }, [length, ms]);
+  return i;
+}
+
+/* ---------------------------------- HERO --------------------------------- */
+
+const CYCLE_WORDS = ["paperwork.", "corrections.", "inspections.", "compliance.", "overhead.", "admin."];
+
 function Hero() {
-  const count = useCountUp(847);
+  const count = useCountUp(847, 1800);
+  const w = useCycle(CYCLE_WORDS.length, 2200);
   return (
     <section
       style={{
         background: WHITE,
-        backgroundImage: `radial-gradient(rgba(0,0,0,0.06) 1px, transparent 1px)`,
-        backgroundSize: "24px 24px",
+        backgroundImage: "radial-gradient(rgba(0,0,0,0.07) 1px, transparent 1px)",
+        backgroundSize: "22px 22px",
       }}
     >
       <div className="mx-auto max-w-7xl px-5 lg:px-8 py-20 md:py-28 grid gap-16 lg:grid-cols-2 lg:items-center">
         <div>
-          <div className="flex items-center gap-2.5">
+          <div className="flex flex-wrap items-center gap-2.5">
             <span className="relative flex h-2 w-2">
-              <span
-                className="absolute inline-flex h-full w-full rounded-full animate-ping"
-                style={{ background: TEAL, opacity: 0.6 }}
-              />
-              <span
-                className="relative inline-flex h-2 w-2 rounded-full"
-                style={{ background: TEAL }}
-              />
+              <span className="cl-dot absolute inline-flex h-full w-full animate-ping" style={{ background: TEAL, opacity: 0.6 }} />
+              <span className="cl-dot relative inline-flex h-2 w-2" style={{ background: TEAL }} />
             </span>
-            <span
-              className="text-[10.5px] uppercase tracking-[0.16em]"
-              style={{ color: LIGHT }}
-            >
+            <span className="text-[10.5px] uppercase tracking-[0.16em]" style={{ color: LIGHT }}>
               Permits managed through Cleard today:
             </span>
-            <span
-              className="text-[13px] font-semibold tabular-nums"
-              style={{ color: INK }}
-            >
+            <span className="text-[13px] font-semibold tabular-nums" style={{ color: INK }}>
               {count}
             </span>
           </div>
@@ -222,18 +254,23 @@ function Hero() {
               color: INK,
             }}
           >
-            Permits cleared. Projects move.
+            Run projects. Not{" "}
+            <span className="inline-block overflow-hidden align-bottom">
+              <span
+                key={w}
+                className="inline-block"
+                style={{ color: TEAL, animation: "clWordIn 420ms ease-out both" }}
+              >
+                {CYCLE_WORDS[w]}
+              </span>
+            </span>
           </h1>
 
           <p className="mt-6 max-w-xl text-[17px] leading-relaxed" style={{ color: GRAY }}>
-            Cleard handles the full permit pipeline — submissions, corrections,
-            inspections, closeout — so your team builds instead of waiting.
+            Your team focuses on building. We run the entire back office behind it.
           </p>
 
-          <form
-            className="mt-9 flex flex-col sm:flex-row gap-3 max-w-lg"
-            onSubmit={(e) => e.preventDefault()}
-          >
+          <form className="mt-9 flex flex-col sm:flex-row gap-3 max-w-lg" onSubmit={(e) => e.preventDefault()}>
             <input
               type="email"
               placeholder="What's your work email?"
@@ -244,18 +281,14 @@ function Hero() {
             <Link
               to="/join"
               hash="request"
-              className="inline-flex items-center justify-center gap-2 px-6 py-3 text-[14px] font-semibold no-underline"
-              style={{ background: TEAL, color: "#000000" }}
+              className="inline-flex items-center justify-center gap-2 px-6 py-3 text-[14px] font-bold no-underline"
+              style={{ background: TEAL, color: INK }}
             >
               Get started <ArrowRight className="h-4 w-4" />
             </Link>
           </form>
 
-          <Link
-            to="/process"
-            className="mt-5 inline-block text-[14px] no-underline"
-            style={{ color: GRAY }}
-          >
+          <Link to="/process" className="mt-5 inline-block text-[14px] no-underline" style={{ color: GRAY }}>
             See a live demo →
           </Link>
         </div>
@@ -266,173 +299,226 @@ function Hero() {
   );
 }
 
+/* ----------------------------- PORTAL MOCKUPS ---------------------------- */
+
 const ROWS = [
-  {
-    id: "CLR-2026-0212",
-    addr: "14 Pelican Bay Ln, Naples",
-    juris: "Collier County",
-    status: "Approved",
-  },
-  {
-    id: "CLR-2026-0208",
-    addr: "2840 SW 48th Ct, Miami",
-    juris: "Miami-Dade",
-    status: "Corrections",
-  },
-  {
-    id: "CLR-2026-0204",
-    addr: "901 Harbour Ct, Jupiter",
-    juris: "Palm Beach",
-    status: "In Review",
-  },
-  {
-    id: "CLR-2026-0199",
-    addr: "7720 NW 2nd Ave, Boca Raton",
-    juris: "Palm Beach",
-    status: "Approved",
-  },
-  {
-    id: "CLR-2026-0195",
-    addr: "5612 SE Coconut Ter, Stuart",
-    juris: "Martin County",
-    status: "In Review",
-  },
+  { id: "CLR-2026-0212", addr: "14 Pelican Bay Ln, Naples", juris: "Collier County", status: "Approved" },
+  { id: "CLR-2026-0208", addr: "2840 SW 48th Ct, Miami", juris: "Miami-Dade", status: "Corrections" },
+  { id: "CLR-2026-0204", addr: "901 Harbour Ct, Jupiter", juris: "Palm Beach", status: "In Review" },
+  { id: "CLR-2026-0199", addr: "7720 NW 2nd Ave, Boca Raton", juris: "Palm Beach", status: "Permit Issued" },
+  { id: "CLR-2026-0195", addr: "5612 SE Coconut Ter, Stuart", juris: "Martin County", status: "In Review" },
 ];
 
-const NAV_ITEMS = ["My Permits", "Inspections", "Subcontractors", "Documents", "Reports"];
+const APP_NAV = [
+  "My Permits",
+  "Inspections",
+  "Subcontractors",
+  "Licenses",
+  "Insurance",
+  "Documents",
+];
 
 function statusStyle(status: string) {
-  if (status === "Approved")
-    return { background: "rgba(0,180,168,0.12)", color: "#00786F" };
-  if (status === "Corrections")
-    return { background: "rgba(220,38,38,0.10)", color: "#B42318" };
-  return { background: "rgba(17,17,16,0.06)", color: GRAY };
+  switch (status) {
+    case "Approved":
+    case "Verified":
+    case "Passed":
+    case "Clear":
+      return { background: "rgba(0,180,168,0.12)", color: "#00917F" };
+    case "Corrections":
+    case "Alert":
+    case "Expired":
+    case "Failed":
+      return { background: "rgba(220,60,60,0.1)", color: "#C03030" };
+    case "Permit Issued":
+    case "Active":
+      return { background: "rgba(0,95,163,0.1)", color: "#005fa3" };
+    case "En Route":
+    case "In Progress":
+      return { background: "rgba(120,80,200,0.1)", color: "#6040a0" };
+    default:
+      return { background: "rgba(0,0,0,0.06)", color: GRAY };
+  }
 }
 
-function AppPreview() {
+function Tag({ children }: { children: string }) {
   return (
-    <div style={{ background: WHITE, border: `1px solid ${BORDER}` }}>
-      <div
-        className="flex items-center gap-3 px-3 py-2.5"
-        style={{ background: OFFWHITE, borderBottom: `1px solid ${BORDER}` }}
-      >
-        <div className="flex items-center gap-1.5">
-          <span className="h-2.5 w-2.5 rounded-full" style={{ background: "#FF5F57" }} />
-          <span className="h-2.5 w-2.5 rounded-full" style={{ background: "#FEBC2E" }} />
-          <span className="h-2.5 w-2.5 rounded-full" style={{ background: "#28C840" }} />
-        </div>
-        <div
-          className="flex-1 px-3 py-1 text-[11px]"
-          style={{ background: WHITE, border: `1px solid ${BORDER}`, color: LIGHT }}
-        >
-          app.cleard.io/permits
-        </div>
+    <span className="px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.06em]" style={statusStyle(children)}>
+      {children}
+    </span>
+  );
+}
+
+function BrowserChrome({ path }: { path: string }) {
+  return (
+    <div className="flex items-center gap-3 px-3 py-2.5" style={{ background: OFF, borderBottom: `1px solid ${BORDER}` }}>
+      <div className="flex items-center gap-1.5">
+        <span className="cl-dot h-2.5 w-2.5" style={{ background: "#FF5F57" }} />
+        <span className="cl-dot h-2.5 w-2.5" style={{ background: "#FEBC2E" }} />
+        <span className="cl-dot h-2.5 w-2.5" style={{ background: "#28C840" }} />
       </div>
-
-      <div className="grid grid-cols-[1fr] sm:grid-cols-[150px_1fr]">
-        <div
-          className="hidden sm:block py-3"
-          style={{ background: OFFWHITE, borderRight: `1px solid ${BORDER}` }}
-        >
-          {NAV_ITEMS.map((n, i) => (
-            <div
-              key={n}
-              className="px-4 py-2 text-[12px]"
-              style={
-                i === 0
-                  ? { color: INK, fontWeight: 600, background: WHITE }
-                  : { color: GRAY }
-              }
-            >
-              {n}
-            </div>
-          ))}
-        </div>
-
-        <div className="min-w-0">
-          <div
-            className="flex items-center justify-between px-4 py-3"
-            style={{ borderBottom: `1px solid ${BORDER}` }}
-          >
-            <span className="text-[13px] font-semibold" style={{ color: INK }}>
-              Active permits
-            </span>
-            <span
-              className="px-2.5 py-1 text-[11px] font-semibold"
-              style={{ background: TEAL, color: "#000000" }}
-            >
-              + New permit
-            </span>
-          </div>
-          <div
-            className="hidden sm:grid grid-cols-[110px_1fr_100px_86px] gap-2 px-4 py-2 text-[10px] uppercase tracking-[0.12em]"
-            style={{ color: LIGHT, borderBottom: `1px solid ${BORDER}` }}
-          >
-            <span>ID</span>
-            <span>Address</span>
-            <span>Jurisdiction</span>
-            <span>Status</span>
-          </div>
-          {ROWS.map((r) => (
-            <div
-              key={r.id}
-              className="grid grid-cols-[1fr_auto] sm:grid-cols-[110px_1fr_100px_86px] items-center gap-2 px-4 py-2.5"
-              style={{ borderBottom: `1px solid ${BORDER}` }}
-            >
-              <span className="text-[11px] tabular-nums" style={{ color: GRAY }}>
-                {r.id}
-              </span>
-              <span className="hidden sm:block truncate text-[12px]" style={{ color: INK }}>
-                {r.addr}
-              </span>
-              <span className="hidden sm:block text-[11px]" style={{ color: LIGHT }}>
-                {r.juris}
-              </span>
-              <span
-                className="justify-self-end sm:justify-self-start px-2 py-0.5 text-[10.5px] font-medium"
-                style={statusStyle(r.status)}
-              >
-                {r.status}
-              </span>
-            </div>
-          ))}
-        </div>
+      <div className="flex-1 px-3 py-1 text-[11px]" style={{ background: WHITE, border: `1px solid ${BORDER}`, color: LIGHT }}>
+        {path}
       </div>
     </div>
   );
 }
 
-/* ------------------------------ SOCIAL PROOF ----------------------------- */
+function AppSidebar({ active }: { active: string }) {
+  return (
+    <div className="hidden sm:block py-3" style={{ background: OFF, borderRight: `1px solid ${BORDER}` }}>
+      <div className="px-4 pb-3 text-[16px] font-bold" style={{ color: INK, letterSpacing: "-0.03em" }}>
+        Cleard
+      </div>
+      {APP_NAV.map((n) => (
+        <div
+          key={n}
+          className="px-4 py-2 text-[12px]"
+          style={n === active ? { color: INK, fontWeight: 600, background: OFF2 } : { color: GRAY }}
+        >
+          {n}
+        </div>
+      ))}
+    </div>
+  );
+}
 
-const STATS = [
-  { num: "340+", label: "Permits submitted" },
-  { num: "11 days", label: "Avg. approval time" },
-  { num: "98%", label: "On-time submission rate" },
-  { num: "2 hrs", label: "Average intake to submission" },
+function AppPreview() {
+  return (
+    <div style={{ background: WHITE, border: `1px solid ${BORDER}` }}>
+      <BrowserChrome path="app.cleard.io/permits" />
+      <div className="grid grid-cols-[1fr] sm:grid-cols-[160px_1fr]">
+        <AppSidebar active="My Permits" />
+        <PermitsTable />
+      </div>
+    </div>
+  );
+}
+
+function PermitsTable() {
+  return (
+    <div className="min-w-0">
+      <div className="flex items-center justify-between px-4 py-3" style={{ borderBottom: `1px solid ${BORDER}` }}>
+        <span className="text-[13px] font-semibold" style={{ color: INK }}>
+          Active permits
+        </span>
+        <span className="px-2.5 py-1 text-[11px] font-bold" style={{ background: TEAL, color: INK }}>
+          + New permit
+        </span>
+      </div>
+      <div
+        className="hidden sm:grid grid-cols-[112px_1fr_104px_104px] gap-2 px-4 py-2 text-[10px] font-bold uppercase tracking-[0.06em]"
+        style={{ color: LIGHT, borderBottom: `1px solid ${BORDER}` }}
+      >
+        <span>ID</span>
+        <span>Address</span>
+        <span>Jurisdiction</span>
+        <span>Status</span>
+      </div>
+      {ROWS.map((r) => (
+        <div
+          key={r.id}
+          className="grid grid-cols-[1fr_auto] sm:grid-cols-[112px_1fr_104px_104px] items-center gap-2 px-4 py-2.5"
+          style={{ borderBottom: `1px solid ${OFF2}` }}
+        >
+          <span className="text-[11px] font-semibold tabular-nums" style={{ color: TEAL }}>
+            {r.id}
+          </span>
+          <span className="hidden sm:block truncate text-[12px]" style={{ color: INK }}>
+            {r.addr}
+          </span>
+          <span className="hidden sm:block text-[11px]" style={{ color: GRAY }}>
+            {r.juris}
+          </span>
+          <span className="justify-self-end sm:justify-self-start">
+            <Tag>{r.status}</Tag>
+          </span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/* ------------------------------ 360 SECTION ------------------------------ */
+
+const NODES = [
+  "Permit Submission",
+  "Private Provider Plan Review",
+  "Correction Management",
+  "Inspection Scheduling",
+  "Subcontractor Coordination",
+  "License Verification",
+  "Insurance & COI Tracking",
+  "Document Management",
 ];
 
-function SocialProof() {
+function Circle360() {
   return (
-    <section
-      style={{
-        background: WHITE,
-        borderTop: `1px solid ${BORDER}`,
-        borderBottom: `1px solid ${BORDER}`,
-      }}
-    >
-      <div className="mx-auto max-w-7xl px-5 lg:px-8 py-8 flex flex-col lg:flex-row lg:items-center gap-8 lg:gap-14">
-        <div className="text-[10.5px] uppercase tracking-[0.16em] shrink-0" style={{ color: LIGHT }}>
-          Cleard by the numbers
+    <section style={{ background: OFF, borderTop: `1px solid ${BORDER}`, borderBottom: `1px solid ${BORDER}` }}>
+      <div className="mx-auto max-w-7xl px-5 lg:px-8 py-24 md:py-28 text-center">
+        <div className="text-[10.5px] uppercase tracking-[0.18em] font-bold" style={{ color: TEAL }}>
+          What we run for you
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 flex-1">
-          {STATS.map((s) => (
-            <div key={s.label}>
-              <div className="text-[22px] font-bold tracking-[-0.03em]" style={{ color: INK }}>
-                {s.num}
+        <h2
+          className="mt-6 mx-auto max-w-3xl"
+          style={{ fontSize: "clamp(2rem, 3.6vw, 2.875rem)", lineHeight: 1.08, letterSpacing: "-0.035em" }}
+        >
+          <span style={{ color: GRAY, fontWeight: 600 }}>Every moving part. </span>
+          <span style={{ color: INK, fontWeight: 800 }}>From signed contract to CO.</span>
+        </h2>
+        <p className="mt-5 mx-auto max-w-2xl text-[16px] leading-relaxed" style={{ color: GRAY }}>
+          Most back offices juggle 6–8 vendors to get a project through. Cleard replaces all of them.
+        </p>
+
+        {/* Ring — desktop */}
+        <div className="hidden lg:block relative mx-auto mt-16" style={{ width: 720, height: 720 }}>
+          <div
+            className="absolute inset-0"
+            style={{ animation: "clSpin 60s linear infinite" }}
+          >
+            {NODES.map((n, i) => {
+              const angle = (i / NODES.length) * 2 * Math.PI - Math.PI / 2;
+              const r = 300;
+              const x = 360 + r * Math.cos(angle);
+              const y = 360 + r * Math.sin(angle);
+              return (
+                <div
+                  key={n}
+                  className="absolute -translate-x-1/2 -translate-y-1/2 px-4 py-3 text-[12.5px] font-semibold w-[190px]"
+                  style={{
+                    left: x,
+                    top: y,
+                    background: WHITE,
+                    border: `1px solid ${BORDER}`,
+                    color: INK,
+                    animation: "clSpin 60s linear infinite reverse",
+                  }}
+                >
+                  {n}
+                </div>
+              );
+            })}
+          </div>
+          <div
+            className="cl-dot absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 grid place-items-center"
+            style={{ width: 220, height: 220, background: INK, borderRadius: "999px" }}
+          >
+            <div className="text-center">
+              <div className="text-[22px] font-bold" style={{ color: WHITE, letterSpacing: "-0.03em" }}>
+                Cleard
               </div>
-              <div className="mt-1 text-[13px]" style={{ color: GRAY }}>
-                {s.label}
+              <div className="mt-1 text-[10.5px] uppercase tracking-[0.16em]" style={{ color: TEAL }}>
+                Back office
               </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Grid — mobile/tablet */}
+        <div className="lg:hidden mt-12 grid grid-cols-1 sm:grid-cols-2 gap-3 text-left">
+          {NODES.map((n) => (
+            <div key={n} className="px-4 py-3 text-[13px] font-semibold" style={{ background: WHITE, border: `1px solid ${BORDER}`, color: INK }}>
+              {n}
             </div>
           ))}
         </div>
@@ -441,95 +527,413 @@ function SocialProof() {
   );
 }
 
-/* -------------------------------- FEATURES ------------------------------- */
+/* ------------------------------ STATS STRIP ------------------------------ */
 
-const FEATURES = [
+const APPROVALS = [
+  { label: "Gas permit", days: 2 },
+  { label: "Electrical permit", days: 4 },
+  { label: "Pool permit", days: 5 },
+  { label: "Roofing permit", days: 8 },
+  { label: "Residential SFR", days: 10 },
+];
+
+function StatsStrip() {
+  const { ref, seen } = useInView<HTMLDivElement>();
+  const permits = useCountUp(4847, 3000, seen);
+  const [extra, setExtra] = useState(0);
+  const rate = useCountUp(100, 2000, seen);
+  const ai = useCycle(APPROVALS.length, 3000);
+
+  useEffect(() => {
+    if (!seen) return;
+    let t: ReturnType<typeof setTimeout>;
+    const schedule = () => {
+      t = setTimeout(() => {
+        setExtra((v) => v + 1 + Math.floor(Math.random() * 2));
+        schedule();
+      }, 8000 + Math.random() * 6000);
+    };
+    schedule();
+    return () => clearTimeout(t);
+  }, [seen]);
+
+  return (
+    <section style={{ background: WHITE, borderBottom: `1px solid ${BORDER}` }}>
+      <div ref={ref} className="mx-auto max-w-7xl px-5 lg:px-8 py-14">
+        <div className="text-[10.5px] uppercase tracking-[0.16em] font-bold" style={{ color: LIGHT }}>
+          Cleard by the numbers
+        </div>
+        <div className="mt-8 grid gap-10 md:grid-cols-3">
+          <div>
+            <div className="text-[44px] font-bold tabular-nums leading-none" style={{ color: INK, letterSpacing: "-0.04em" }}>
+              {(permits + extra).toLocaleString()}
+            </div>
+            <div className="mt-2 text-[13.5px]" style={{ color: GRAY }}>
+              Permits submitted — and counting
+            </div>
+          </div>
+          <div>
+            <div className="text-[44px] font-bold tabular-nums leading-none" style={{ color: INK, letterSpacing: "-0.04em" }}>
+              {APPROVALS[ai].days} <span className="text-[24px] font-semibold">days</span>
+            </div>
+            <div key={ai} className="mt-2 text-[13.5px]" style={{ color: GRAY, animation: "clFade 500ms ease-out both" }}>
+              Avg. approval time — {APPROVALS[ai].label}
+            </div>
+          </div>
+          <div>
+            <div className="text-[44px] font-bold tabular-nums leading-none" style={{ color: INK, letterSpacing: "-0.04em" }}>
+              {rate}%
+            </div>
+            <div className="mt-2 text-[13.5px]" style={{ color: GRAY }}>
+              On-time submission rate
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* -------------------------------- SERVICES ------------------------------- */
+
+const SERVICES = [
   {
-    title: "Permit submission that doesn't stall.",
-    secondary: "Complete packages, first time.",
-    body: "We assemble, pre-check, and file the submittal package with the jurisdiction so nothing bounces back for a missing form.",
-    arrow: true,
+    icon: Send,
+    title: "Permit Submission",
+    body: "We prepare and submit applications across any jurisdiction. Every field, every attachment, submitted correctly the first time.",
+    tag: "Core service",
   },
   {
-    title: "Corrections handled without the back-and-forth.",
-    secondary: "One thread, one owner.",
-    body: "Every comment is logged, assigned, and answered on the clock — your PM never chases a reviewer again.",
+    icon: FileCheck2,
+    title: "Private Provider Plan Review",
+    body: "Licensed private providers approve your plans in days, not weeks. We manage the full engagement on your behalf.",
+    tag: "Speeds approval",
   },
   {
-    title: "Inspections scheduled and tracked.",
-    secondary: "Booked, logged, closed.",
-    body: "Request, confirm, and record every inspection with results attached to the permit record automatically.",
+    icon: ClipboardCheck,
+    title: "Correction Management",
+    body: "When the building department flags issues, we respond, revise, and resubmit. You get a notification, not a problem.",
+    tag: "Zero PM burden",
   },
   {
-    title: "Full visibility across every project.",
-    secondary: "One live pipeline view.",
-    body: "See every permit, jurisdiction, and deadline in one place — with status that updates as it happens.",
+    icon: FileText,
+    title: "Inspection Scheduling",
+    body: "We schedule every required inspection and confirm with your super — date, time, what to stage.",
+    tag: "All trade inspections",
+  },
+  {
+    icon: ShieldCheck,
+    title: "License Verification",
+    body: "We pull and verify current licenses for every sub. Expiration alerts before they become a stop-work order.",
+    tag: "Active monitoring",
+  },
+  {
+    icon: Users,
+    title: "Insurance Verification",
+    body: "We collect, review, and store COIs for every subcontractor. Coverage limits, effective dates, named-insured accuracy — all checked.",
+    tag: "COI management",
   },
 ];
 
-function Features() {
+function Services() {
   return (
     <section style={{ background: WHITE }}>
-      <div className="mx-auto max-w-7xl px-5 lg:px-8 py-24 md:py-32">
-        <div className="grid gap-14 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)] lg:items-start">
-          <div>
-            <div
-              className="text-[10.5px] uppercase tracking-[0.18em] font-semibold"
-              style={{ color: TEAL }}
-            >
-              What Cleard does
-            </div>
-            <h2
-              className="mt-6"
-              style={{
-                fontSize: "clamp(2rem, 3.6vw, 2.875rem)",
-                lineHeight: 1.08,
-                letterSpacing: "-0.035em",
-              }}
-            >
-              <span style={{ color: INK, fontWeight: 800 }}>One platform for the </span>
-              <span style={{ color: GRAY, fontWeight: 600 }}>entire permit lifecycle.</span>
-            </h2>
-            <p className="mt-6 max-w-lg text-[16px] leading-relaxed" style={{ color: GRAY }}>
-              We handle every phase — from application to certificate of occupancy — so
-              your PM doesn&apos;t have to.
-            </p>
-            <div className="mt-8 flex items-center gap-6">
-              <Link
-                to="/join"
-                hash="request"
-                className="inline-flex items-center px-5 py-3 text-[14px] font-semibold no-underline"
-                style={{ background: TEAL, color: "#000000" }}
+      <div className="mx-auto max-w-7xl px-5 lg:px-8 py-24 md:py-28">
+        <h2
+          className="max-w-3xl"
+          style={{ fontSize: "clamp(2rem, 3.6vw, 2.875rem)", lineHeight: 1.08, letterSpacing: "-0.035em" }}
+        >
+          <span style={{ color: INK, fontWeight: 800 }}>One team runs it all. </span>
+          <span style={{ color: GRAY, fontWeight: 600 }}>So yours doesn&apos;t have to.</span>
+        </h2>
+        <p className="mt-5 max-w-2xl text-[16px] leading-relaxed" style={{ color: GRAY }}>
+          Most contractors spread this across 4–6 vendors, two admins, and a lot of phone calls. Cleard
+          consolidates the entire compliance and administrative operation — under one roof, in one portal.
+        </p>
+
+        <div className="mt-14 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {SERVICES.map((s) => (
+            <div key={s.title} className="relative p-6" style={{ background: OFF, border: `1px solid ${BORDER}` }}>
+              <ArrowUpRight className="absolute right-5 top-5 h-4 w-4" style={{ color: LIGHT }} />
+              <s.icon className="h-5 w-5" style={{ color: TEAL }} strokeWidth={1.75} />
+              <h3 className="mt-5 text-[17px] font-bold" style={{ color: INK, letterSpacing: "-0.02em" }}>
+                {s.title}
+              </h3>
+              <p className="mt-3 text-[14px] leading-relaxed" style={{ color: GRAY }}>
+                {s.body}
+              </p>
+              <span
+                className="mt-5 inline-block px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.06em]"
+                style={{ background: "rgba(0,180,168,0.12)", color: "#00917F" }}
               >
-                Get started
-              </Link>
-              <Link to="/process" className="text-[14px] no-underline" style={{ color: GRAY }}>
-                View demo →
-              </Link>
+                {s.tag}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* --------------------------- PORTAL SHOWCASE ----------------------------- */
+
+const INSPECTIONS = [
+  { id: "INS-4821", addr: "14 Pelican Bay Ln", type: "Final Electrical", when: "Today · 10:00 AM", status: "In Progress" },
+  { id: "INS-4818", addr: "901 Harbour Ct", type: "Framing", when: "Today · 1:30 PM", status: "En Route" },
+  { id: "INS-4810", addr: "2840 SW 48th Ct", type: "Plumbing Rough", when: "Yesterday", status: "Passed" },
+  { id: "INS-4802", addr: "5612 SE Coconut Ter", type: "Roof Dry-In", when: "Aug 11", status: "Failed" },
+];
+
+const COMPLIANCE = [
+  { id: "SUB-0142", name: "Gulfstream Electric", license: "EC13009821", ins: "Verified", status: "Clear" },
+  { id: "SUB-0138", name: "Atlantic Plumbing Co", license: "CFC1428817", ins: "Verified", status: "Clear" },
+  { id: "SUB-0131", name: "Coastal Roofing LLC", license: "CCC1331902", ins: "Expired", status: "Alert" },
+  { id: "SUB-0127", name: "Meridian Mechanical", license: "CAC1819330", ins: "Verified", status: "Clear" },
+];
+
+const TABS = ["My Permits", "Inspections", "License & Insurance"] as const;
+
+function PortalShowcase() {
+  const [tab, setTab] = useState<(typeof TABS)[number]>("My Permits");
+  return (
+    <section style={{ background: OFF, borderTop: `1px solid ${BORDER}`, borderBottom: `1px solid ${BORDER}` }}>
+      <div className="mx-auto max-w-7xl px-5 lg:px-8 py-24 md:py-28">
+        <h2
+          className="max-w-3xl"
+          style={{ fontSize: "clamp(2rem, 3.6vw, 2.875rem)", lineHeight: 1.08, letterSpacing: "-0.035em" }}
+        >
+          <span style={{ color: INK, fontWeight: 800 }}>One dashboard. </span>
+          <span style={{ color: GRAY, fontWeight: 600 }}>Every moving part.</span>
+        </h2>
+
+        <div className="mt-9 flex flex-wrap gap-0" style={{ border: `1px solid ${BORDER}`, background: WHITE, width: "fit-content" }}>
+          {TABS.map((t) => (
+            <button
+              key={t}
+              type="button"
+              onClick={() => setTab(t)}
+              className="px-5 py-2.5 text-[13px]"
+              style={
+                tab === t
+                  ? { background: INK, color: WHITE, fontWeight: 600 }
+                  : { background: WHITE, color: GRAY }
+              }
+            >
+              {t}
+            </button>
+          ))}
+        </div>
+
+        <div key={tab} className="mt-8" style={{ animation: "clFade 400ms ease-out both" }}>
+          <div style={{ background: WHITE, border: `1px solid ${BORDER}` }}>
+            <BrowserChrome path={`app.cleard.io/${tab.toLowerCase().replace(/[^a-z]+/g, "-")}`} />
+            <div className="grid grid-cols-[1fr] sm:grid-cols-[160px_1fr]">
+              <AppSidebar active={tab === "License & Insurance" ? "Licenses" : tab} />
+              {tab === "My Permits" && <PermitsTable />}
+              {tab === "Inspections" && <MockTable
+                title="Scheduled inspections"
+                cols={["ID", "Project", "Type", "Status"]}
+                rows={INSPECTIONS.map((r) => [r.id, r.addr, `${r.type} · ${r.when}`, r.status])}
+              />}
+              {tab === "License & Insurance" && <MockTable
+                title="Subcontractor compliance"
+                cols={["ID", "Subcontractor", "License / Insurance", "Status"]}
+                rows={COMPLIANCE.map((r) => [r.id, r.name, `${r.license} · COI ${r.ins}`, r.status])}
+              />}
             </div>
           </div>
+        </div>
+      </div>
+    </section>
+  );
+}
 
-          <div className="grid gap-5 sm:grid-cols-2">
-            {FEATURES.map((f) => (
-              <div key={f.title} className="p-6 relative" style={{ background: OFFWHITE }}>
-                {f.arrow && (
-                  <ArrowUpRight
-                    className="absolute right-5 top-5 h-4 w-4"
-                    style={{ color: LIGHT }}
-                  />
-                )}
-                <h3
-                  className="pr-6 text-[16px] font-bold tracking-[-0.02em]"
-                  style={{ color: INK }}
-                >
-                  {f.title}
-                </h3>
-                <div className="mt-1.5 text-[13.5px] font-medium" style={{ color: GRAY }}>
-                  {f.secondary}
+function MockTable({ title, cols, rows }: { title: string; cols: string[]; rows: string[][] }) {
+  return (
+    <div className="min-w-0">
+      <div className="flex items-center justify-between px-4 py-3" style={{ borderBottom: `1px solid ${BORDER}` }}>
+        <span className="text-[13px] font-semibold" style={{ color: INK }}>
+          {title}
+        </span>
+      </div>
+      <div
+        className="hidden sm:grid grid-cols-[112px_1fr_1fr_104px] gap-2 px-4 py-2 text-[10px] font-bold uppercase tracking-[0.06em]"
+        style={{ color: LIGHT, borderBottom: `1px solid ${BORDER}` }}
+      >
+        {cols.map((c) => (
+          <span key={c}>{c}</span>
+        ))}
+      </div>
+      {rows.map((r) => (
+        <div
+          key={r[0]}
+          className="grid grid-cols-[1fr_auto] sm:grid-cols-[112px_1fr_1fr_104px] items-center gap-2 px-4 py-2.5"
+          style={{ borderBottom: `1px solid ${OFF2}` }}
+        >
+          <span className="text-[11px] font-semibold tabular-nums" style={{ color: TEAL }}>
+            {r[0]}
+          </span>
+          <span className="hidden sm:block truncate text-[12px]" style={{ color: INK }}>
+            {r[1]}
+          </span>
+          <span className="hidden sm:block truncate text-[11px]" style={{ color: GRAY }}>
+            {r[2]}
+          </span>
+          <span className="justify-self-end sm:justify-self-start">
+            <Tag>{r[3]}</Tag>
+          </span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/* ------------------------------ MOBILE APP ------------------------------- */
+
+const LIVE_STATUSES = ["Scheduled", "En Route", "In Progress", "Passed"];
+
+function MobileApp() {
+  const screen = useCycle(4, 4000);
+  const live = useCycle(LIVE_STATUSES.length, 3800);
+  const tabs = [
+    { icon: "⊞", label: "Permits" },
+    { icon: "✓", label: "Inspections" },
+    { icon: "☑", label: "Compliance" },
+    { icon: "☰", label: "Documents" },
+  ];
+
+  return (
+    <section style={{ background: WHITE }}>
+      <div className="mx-auto max-w-7xl px-5 lg:px-8 py-24 md:py-28 grid gap-16 lg:grid-cols-2 lg:items-center">
+        <div className="mx-auto w-[300px]" style={{ border: `1px solid ${BORDER}`, background: WHITE, boxShadow: "0 2px 12px rgba(0,0,0,0.06)" }}>
+          <div className="px-4 py-3 flex items-center justify-between" style={{ borderBottom: `1px solid ${BORDER}` }}>
+            <span className="text-[15px] font-bold" style={{ color: INK, letterSpacing: "-0.03em" }}>
+              Cleard
+            </span>
+            <Bell className="h-4 w-4" style={{ color: GRAY }} />
+          </div>
+
+          <div key={screen} className="h-[420px] overflow-hidden" style={{ animation: "clFade 400ms ease-out both" }}>
+            {screen === 0 && (
+              <div>
+                {ROWS.slice(0, 5).map((r) => (
+                  <div key={r.id} className="px-4 py-3" style={{ borderBottom: `1px solid ${OFF2}` }}>
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="text-[11px] font-semibold" style={{ color: TEAL }}>{r.id}</span>
+                      <Tag>{r.status}</Tag>
+                    </div>
+                    <div className="mt-1 text-[12.5px] truncate" style={{ color: INK }}>{r.addr}</div>
+                    <div className="text-[11px]" style={{ color: GRAY }}>{r.juris}</div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {screen === 1 && (
+              <div>
+                <div className="m-3 p-4" style={{ background: INK, borderLeft: `3px solid ${TEAL}` }}>
+                  <div className="text-[10px] uppercase tracking-[0.16em]" style={{ color: TEAL }}>
+                    Live inspection
+                  </div>
+                  <div className="mt-2 text-[15px] font-semibold" style={{ color: WHITE }}>
+                    Final Electrical · 14 Pelican Bay
+                  </div>
+                  <div key={live} className="mt-2 text-[13px] font-bold" style={{ color: TEAL, animation: "clFade 400ms ease-out both" }}>
+                    {LIVE_STATUSES[live]}
+                    {LIVE_STATUSES[live] === "Passed" ? " ✓" : ""}
+                  </div>
                 </div>
-                <p className="mt-3 text-[13.5px] leading-relaxed" style={{ color: GRAY }}>
-                  {f.body}
-                </p>
+                {INSPECTIONS.map((r) => (
+                  <div key={r.id} className="px-4 py-2.5" style={{ borderBottom: `1px solid ${OFF2}` }}>
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="text-[12.5px]" style={{ color: INK }}>{r.type}</span>
+                      <Tag>{r.status}</Tag>
+                    </div>
+                    <div className="text-[11px]" style={{ color: GRAY }}>{r.addr} · {r.when}</div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {screen === 2 && (
+              <div>
+                <div className="grid grid-cols-2 gap-3 p-3">
+                  <div className="p-3" style={{ background: OFF, border: `1px solid ${BORDER}` }}>
+                    <div className="text-[24px] font-bold" style={{ color: INK }}>4</div>
+                    <div className="text-[11px]" style={{ color: GRAY }}>Verified</div>
+                  </div>
+                  <div className="p-3" style={{ background: OFF, border: `1px solid ${BORDER}` }}>
+                    <div className="text-[24px] font-bold" style={{ color: "#C03030" }}>1</div>
+                    <div className="text-[11px]" style={{ color: GRAY }}>Alert</div>
+                  </div>
+                </div>
+                {COMPLIANCE.map((c) => (
+                  <div key={c.id} className="px-4 py-2.5" style={{ borderBottom: `1px solid ${OFF2}` }}>
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="text-[12.5px] truncate" style={{ color: INK }}>{c.name}</span>
+                      <Tag>{c.status}</Tag>
+                    </div>
+                    <div className="text-[11px]" style={{ color: GRAY }}>
+                      {c.license} · COI {c.ins}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {screen === 3 && (
+              <div>
+                {[
+                  "Permit-Application-CLR-0212.pdf",
+                  "Stamped-Plans-Rev-B.pdf",
+                  "COI-Gulfstream-Electric.pdf",
+                  "NOC-14-Pelican-Bay.pdf",
+                  "Inspection-Report-4810.pdf",
+                ].map((d) => (
+                  <div key={d} className="px-4 py-3 flex items-center justify-between gap-3" style={{ borderBottom: `1px solid ${OFF2}` }}>
+                    <div className="flex items-center gap-2 min-w-0">
+                      <FolderOpen className="h-4 w-4 shrink-0" style={{ color: LIGHT }} />
+                      <span className="text-[12px] truncate" style={{ color: INK }}>{d}</span>
+                    </div>
+                    <span className="text-[13px]" style={{ color: TEAL }}>↓</span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <div className="grid grid-cols-4" style={{ borderTop: `1px solid ${BORDER}`, background: OFF }}>
+            {tabs.map((t, i) => (
+              <div
+                key={t.label}
+                className="py-2.5 text-center"
+                style={{ color: i === screen ? INK : LIGHT, background: i === screen ? OFF2 : "transparent" }}
+              >
+                <div className="text-[14px]">{t.icon}</div>
+                <div className="text-[9.5px] uppercase tracking-[0.08em]">{t.label}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <h2 style={{ fontSize: "clamp(2rem, 3.6vw, 2.875rem)", lineHeight: 1.08, letterSpacing: "-0.035em" }}>
+            <span style={{ color: GRAY, fontWeight: 600 }}>Your whole permit office </span>
+            <span style={{ color: INK, fontWeight: 800 }}>in your pocket.</span>
+          </h2>
+          <div className="mt-10 space-y-7">
+            {[
+              { icon: Smartphone, t: "Live inspection tracking", b: "Watch every inspection move from scheduled to passed, in real time, from the field." },
+              { icon: Bell, t: "Instant alerts", b: "Corrections, expirations, and approvals push straight to your phone the moment they happen." },
+              { icon: FolderOpen, t: "Documents on site", b: "Permits, plans, COIs and inspection reports — available at the job, not back at the office." },
+            ].map((f) => (
+              <div key={f.t} className="flex gap-4">
+                <f.icon className="h-5 w-5 mt-0.5 shrink-0" style={{ color: TEAL }} strokeWidth={1.75} />
+                <div>
+                  <div className="text-[15.5px] font-bold" style={{ color: INK, letterSpacing: "-0.02em" }}>{f.t}</div>
+                  <p className="mt-1.5 text-[14px] leading-relaxed" style={{ color: GRAY }}>{f.b}</p>
+                </div>
               </div>
             ))}
           </div>
@@ -542,75 +946,40 @@ function Features() {
 /* ------------------------------ HOW IT WORKS ----------------------------- */
 
 const STEPS = [
-  {
-    n: "01",
-    title: "Send the plans",
-    body: "Upload the stamped set and project details. Defer anything not ready yet.",
-  },
-  {
-    n: "02",
-    title: "We submit",
-    body: "Cleard prepares the package and files it with the jurisdiction on your behalf.",
-  },
-  {
-    n: "03",
-    title: "Track in real time",
-    body: "Watch review status, corrections, and inspections move as they happen.",
-  },
-  {
-    n: "04",
-    title: "Permit issued",
-    body: "Approved permit and closeout documents land in your project record.",
-  },
+  { t: "Send the plans", b: "Share drawings and scope. We intake, review, and prep for submission — including sub license and insurance collection." },
+  { t: "We submit", b: "We submit through licensed private providers — bypassing county review queues and compressing your approval window." },
+  { t: "Manage corrections", b: "If the building department flags issues, we handle it — drafting responses, coordinating revised drawings, resubmitting." },
+  { t: "Inspections coordinated", b: "We schedule and confirm every required inspection. Your super gets the date, type, and what to have staged." },
+  { t: "Inspections approved", b: "Each trade passes. We track every result, flag failures, and coordinate resolution before the next phase moves." },
+  { t: "Certificate of Occupancy", b: "Final inspections clear. CO is issued. Full documentation stored in your portal — project closed, cleanly." },
 ];
 
 function HowItWorks() {
   return (
-    <section
-      style={{
-        background: OFFWHITE,
-        borderTop: `1px solid ${BORDER}`,
-        borderBottom: `1px solid ${BORDER}`,
-      }}
-    >
+    <section style={{ background: OFF, borderTop: `1px solid ${BORDER}` }}>
       <div className="mx-auto max-w-7xl px-5 lg:px-8 py-24 md:py-28">
-        <div
-          className="text-[10.5px] uppercase tracking-[0.18em] font-semibold"
-          style={{ color: TEAL }}
-        >
+        <div className="text-[10.5px] uppercase tracking-[0.18em] font-bold" style={{ color: TEAL }}>
           How it works
         </div>
         <h2
-          className="mt-6 max-w-2xl"
-          style={{
-            fontWeight: 800,
-            fontSize: "clamp(2rem, 3.6vw, 2.75rem)",
-            lineHeight: 1.08,
-            letterSpacing: "-0.035em",
-            color: INK,
-          }}
+          className="mt-6 max-w-3xl"
+          style={{ fontSize: "clamp(2rem, 3.6vw, 2.875rem)", lineHeight: 1.08, letterSpacing: "-0.035em" }}
         >
-          From contract to CO. Without the chaos.
+          <span style={{ color: INK, fontWeight: 800 }}>Six steps. </span>
+          <span style={{ color: GRAY, fontWeight: 600 }}>Contract to certificate.</span>
         </h2>
 
-        <div
-          className="mt-14 grid sm:grid-cols-2 lg:grid-cols-4"
-          style={{ borderTop: `1px solid ${BORDER}`, borderLeft: `1px solid ${BORDER}` }}
-        >
-          {STEPS.map((s) => (
-            <div
-              key={s.n}
-              className="p-7"
-              style={{ borderRight: `1px solid ${BORDER}`, borderBottom: `1px solid ${BORDER}` }}
-            >
-              <div className="text-[11px] font-semibold tabular-nums" style={{ color: TEAL }}>
-                Step {s.n}
+        <div className="mt-14 grid gap-px sm:grid-cols-2 lg:grid-cols-6" style={{ background: BORDER, border: `1px solid ${BORDER}` }}>
+          {STEPS.map((s, i) => (
+            <div key={s.t} className="p-5" style={{ background: WHITE }}>
+              <div className="text-[11px] font-bold tabular-nums" style={{ color: TEAL }}>
+                {String(i + 1).padStart(2, "0")}
               </div>
-              <h3 className="mt-4 text-[16px] font-bold tracking-[-0.02em]" style={{ color: INK }}>
-                {s.title}
-              </h3>
-              <p className="mt-3 text-[13.5px] leading-relaxed" style={{ color: GRAY }}>
-                {s.body}
+              <div className="mt-3 text-[14.5px] font-bold" style={{ color: INK, letterSpacing: "-0.02em" }}>
+                {s.t}
+              </div>
+              <p className="mt-2.5 text-[12.5px] leading-relaxed" style={{ color: GRAY }}>
+                {s.b}
               </p>
             </div>
           ))}
@@ -620,37 +989,28 @@ function HowItWorks() {
   );
 }
 
-/* ------------------------------ BOTTOM CTA ------------------------------- */
+/* --------------------------------- CTA ----------------------------------- */
 
 function BottomCTA() {
   return (
-    <section style={{ background: "#000000" }}>
-      <div className="mx-auto max-w-7xl px-5 lg:px-8 py-24 md:py-28 grid gap-12 lg:grid-cols-[1.4fr_1fr] lg:items-center">
+    <section style={{ background: INK }}>
+      <div className="mx-auto max-w-7xl px-5 lg:px-8 py-20 flex flex-col gap-8 md:flex-row md:items-center md:justify-between">
         <h2
-          style={{
-            fontWeight: 800,
-            fontSize: "clamp(2rem, 4vw, 3.25rem)",
-            lineHeight: 1.06,
-            letterSpacing: "-0.04em",
-            color: WHITE,
-          }}
+          className="max-w-xl"
+          style={{ fontSize: "clamp(1.75rem, 3.2vw, 2.5rem)", lineHeight: 1.1, letterSpacing: "-0.035em", color: WHITE, fontWeight: 800 }}
         >
-          Your next permit is already behind. Fix that today.
+          Stop running permits. Start building.
         </h2>
-        <div className="flex flex-col items-start lg:items-end gap-4">
+        <div className="flex items-center gap-6">
           <Link
             to="/join"
             hash="request"
-            className="inline-flex items-center gap-2 px-6 py-3.5 text-[14px] font-semibold no-underline"
-            style={{ background: TEAL, color: "#000000" }}
+            className="inline-flex items-center gap-2 px-6 py-3 text-[14px] font-bold no-underline"
+            style={{ background: TEAL, color: INK }}
           >
             Get started <ArrowRight className="h-4 w-4" />
           </Link>
-          <Link
-            to="/process"
-            className="text-[14px] no-underline"
-            style={{ color: "rgba(255,255,255,0.65)" }}
-          >
+          <Link to="/process" className="text-[14px] no-underline" style={{ color: "rgba(255,255,255,0.72)" }}>
             See a demo →
           </Link>
         </div>
@@ -659,42 +1019,39 @@ function BottomCTA() {
   );
 }
 
-/* -------------------------------- FOOTER -------------------------------- */
-
-const FOOTER_LINKS: Array<{ to: string; label: string }> = [
-  { to: "/products", label: "Product" },
-  { to: "/join", label: "Contractors" },
-  { to: "/about", label: "Privacy" },
-  { to: "/about", label: "Terms" },
-];
+/* -------------------------------- FOOTER --------------------------------- */
 
 function Footer() {
   return (
-    <footer
-      style={{ background: "#000000", borderTop: "1px solid rgba(255,255,255,0.08)" }}
-    >
-      <div className="mx-auto max-w-7xl px-5 lg:px-8 py-12 flex flex-col md:flex-row md:items-center justify-between gap-6">
-        <span
-          style={{ color: WHITE, fontWeight: 700, fontSize: 20, letterSpacing: "-0.03em" }}
+    <footer style={{ background: INK, borderTop: "1px solid rgba(255,255,255,0.12)" }}>
+      <div className="mx-auto max-w-7xl px-5 lg:px-8 py-12 flex flex-col gap-8 md:flex-row md:items-center md:justify-between">
+        <Link
+          to="/"
+          className="no-underline"
+          style={{ color: WHITE, fontWeight: 700, fontSize: 18, letterSpacing: "-0.03em" }}
         >
           Cleard
-        </span>
-        <div className="flex flex-wrap items-center gap-7">
-          {FOOTER_LINKS.map((l) => (
-            <Link
-              key={l.label}
-              to={l.to}
-              className="text-[13.5px] no-underline"
-              style={{ color: "rgba(255,255,255,0.6)" }}
-            >
-              {l.label}
-            </Link>
-          ))}
+        </Link>
+        <nav className="flex flex-wrap items-center gap-x-8 gap-y-2 text-[13px]">
+          <Link to="/products" className="no-underline" style={{ color: "rgba(255,255,255,0.7)" }}>
+            Product
+          </Link>
+          <Link to="/join" className="no-underline" style={{ color: "rgba(255,255,255,0.7)" }}>
+            Contractors
+          </Link>
+          <a href="https://floridianinc.com/privacy" className="no-underline" style={{ color: "rgba(255,255,255,0.7)" }}>
+            Privacy
+          </a>
+          <a href="https://floridianinc.com/terms" className="no-underline" style={{ color: "rgba(255,255,255,0.7)" }}>
+            Terms
+          </a>
+        </nav>
+        <div className="text-[12px]" style={{ color: "rgba(255,255,255,0.5)" }}>
+          © 2026 Cleard
         </div>
-        <span className="text-[12.5px]" style={{ color: "rgba(255,255,255,0.45)" }}>
-          © {new Date().getFullYear()} Cleard
-        </span>
       </div>
     </footer>
   );
 }
+
+export { TEAL_D };
