@@ -128,12 +128,7 @@ export const adminSection: NavSection = {
   key: "admin",
   label: "Admin",
   icon: ShieldCheck,
-  items: [
-    { to: "/admin/invites", label: "Invite Pipeline" },
-    { to: "/admin/workload", label: "Staff Workload" },
-    { to: "/admin/audit", label: "Audit Trail" },
-
-  ],
+  to: "/admin/invites",
 };
 
 
@@ -169,9 +164,21 @@ export const subSettingsSection: NavSection = {
 
 export function sectionsForRole(role: AppRole | null, isAdmin: boolean): NavSection[] {
   if (role === "subcontractor") return subNavSections;
-  return isAdmin ? [...navSections, legalSection, adminSection] : navSections;
+  return isAdmin ? [...navSections, adminSection] : navSections;
 }
 
+
+/** Flat sidebar entry for Settings (sub-pages live as tabs on the page). */
+export const sidebarSettingsSection: NavSection = {
+  key: "settings",
+  label: "Settings",
+  icon: Settings,
+  to: "/profile",
+};
+
+export function sidebarSettingsForRole(role: AppRole | null): NavSection {
+  return role === "subcontractor" ? { ...sidebarSettingsSection } : sidebarSettingsSection;
+}
 
 export function settingsForRole(role: AppRole | null): NavSection {
   return role === "subcontractor" ? subSettingsSection : settingsSection;
