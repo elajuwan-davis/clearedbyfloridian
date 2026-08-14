@@ -2680,6 +2680,57 @@ export type Database = {
           },
         ]
       }
+      permit_fees: {
+        Row: {
+          amount_cents: number
+          created_at: string
+          created_by: string | null
+          date_paid: string
+          fee_type: string
+          id: string
+          notes: string | null
+          permit_id: string
+          tenant_id: string
+        }
+        Insert: {
+          amount_cents: number
+          created_at?: string
+          created_by?: string | null
+          date_paid?: string
+          fee_type?: string
+          id?: string
+          notes?: string | null
+          permit_id: string
+          tenant_id: string
+        }
+        Update: {
+          amount_cents?: number
+          created_at?: string
+          created_by?: string | null
+          date_paid?: string
+          fee_type?: string
+          id?: string
+          notes?: string | null
+          permit_id?: string
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "permit_fees_permit_id_fkey"
+            columns: ["permit_id"]
+            isOneToOne: false
+            referencedRelation: "permits"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "permit_fees_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       permit_inspections: {
         Row: {
           created_at: string
