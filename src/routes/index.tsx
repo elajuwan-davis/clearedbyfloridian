@@ -406,7 +406,7 @@ function PermitsTable() {
         </span>
       </div>
       <div
-        className="hidden sm:grid grid-cols-[112px_1fr_104px_104px] gap-2 px-4 py-2 text-[10px] font-bold uppercase tracking-[0.06em]"
+        className="hidden sm:grid grid-cols-[104px_1fr_96px_100px] gap-2 px-4 py-2 text-[10px] font-bold uppercase tracking-[0.06em]"
         style={{ color: LIGHT, borderBottom: `1px solid ${BORDER}` }}
       >
         <span>ID</span>
