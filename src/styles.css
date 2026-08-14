@@ -1282,3 +1282,21 @@ html:not(.dark) .portal-ui .flyout-link[data-active="true"] {
 .portal-ui .shadow-lg,
 .portal-ui .shadow-xl,
 .portal-ui .shadow-2xl { box-shadow: none !important; }
+
+/* Primary CTAs inside the portal read teal, not obsidian */
+.portal-ui button.bg-obsidian,
+.portal-ui a.bg-obsidian,
+.portal-ui button.bg-primary,
+.portal-ui a.bg-primary {
+  background-color: #00B4A8 !important;
+  color: #111110 !important;
+  font-weight: 600;
+  border-color: #00B4A8 !important;
+}
+.portal-ui button.bg-obsidian:hover,
+.portal-ui a.bg-obsidian:hover,
+.portal-ui button.bg-primary:hover,
+.portal-ui a.bg-primary:hover {
+  background-color: #009088 !important;
+  color: #111110 !important;
+}
