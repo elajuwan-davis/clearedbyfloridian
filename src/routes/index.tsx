@@ -9,13 +9,13 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "Cleard handles the full Florida permit pipeline — submissions, corrections, inspections, closeout — so your team builds instead of waiting.",
+          "Cleard handles the full permit pipeline — submissions, corrections, inspections, closeout — so your team builds instead of waiting.",
       },
       { property: "og:title", content: "Cleard — Permits cleared. Projects move." },
       {
         property: "og:description",
         content:
-          "Cleard handles the full Florida permit pipeline — submissions, corrections, inspections, closeout — so your team builds instead of waiting.",
+          "Cleard handles the full permit pipeline — submissions, corrections, inspections, closeout — so your team builds instead of waiting.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -62,7 +62,7 @@ function AnnouncementBanner() {
     <div style={{ background: "#000000" }}>
       <div className="mx-auto max-w-7xl px-5 py-2.5 flex items-center justify-center gap-3 relative">
         <p className="text-[13px]" style={{ color: WHITE }}>
-          Now accepting GC applications for the Florida private beta.{" "}
+          Now accepting contractor applications for the private beta.{" "}
           <Link to="/join" hash="request" className="underline" style={{ color: WHITE }}>
             Apply here →
           </Link>
@@ -84,7 +84,7 @@ function AnnouncementBanner() {
 
 const NAV_LINKS: Array<{ to: string; label: string; caret?: boolean }> = [
   { to: "/products", label: "Product", caret: true },
-  { to: "/join", label: "For GCs", caret: true },
+  { to: "/join", label: "Contractors", caret: true },
   { to: "/pricing", label: "Pricing" },
   { to: "/about", label: "About" },
 ];
@@ -407,8 +407,8 @@ function AppPreview() {
 const STATS = [
   { num: "340+", label: "Permits submitted" },
   { num: "11 days", label: "Avg. approval time" },
-  { num: "14", label: "FL municipalities covered" },
-  { num: "100%", label: "Florida-licensed provider" },
+  { num: "98%", label: "On-time submission rate" },
+  { num: "2 hrs", label: "Average intake to submission" },
 ];
 
 function SocialProof() {
@@ -663,7 +663,7 @@ function BottomCTA() {
 
 const FOOTER_LINKS: Array<{ to: string; label: string }> = [
   { to: "/products", label: "Product" },
-  { to: "/join", label: "For GCs" },
+  { to: "/join", label: "Contractors" },
   { to: "/about", label: "Privacy" },
   { to: "/about", label: "Terms" },
 ];
