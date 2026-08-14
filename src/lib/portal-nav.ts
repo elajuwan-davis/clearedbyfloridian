@@ -8,6 +8,7 @@ import {
   DollarSign,
   FolderOpen,
   BookOpen,
+  MessageSquare,
 
   ShieldCheck,
   Scale,
