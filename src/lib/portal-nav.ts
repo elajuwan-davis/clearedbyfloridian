@@ -35,11 +35,7 @@ export const dashboardSection: NavSection = {
   key: "dashboard",
   label: "Dashboard",
   icon: LayoutDashboard,
-  items: [
-    { to: "/dashboard", label: "Overview" },
-    { to: "/portal/alerts", label: "Victoria Alerts" },
-    { to: "/messages", label: "Messages" },
-  ],
+  to: "/dashboard",
 };
 
 export const bookmarksSection: NavSection = {
@@ -60,71 +56,61 @@ export const billingSection: NavSection = {
   key: "billing",
   label: "Billing",
   icon: CreditCard,
-  items: [{ to: "/portal/billing", label: "Billing & Invoices" }],
+  to: "/portal/billing",
 };
 
-
+/**
+ * Flat sidebar — one click per section. Every former sub-item now lives as a
+ * tab inside its section page (see src/lib/portal-tabs.ts).
+ */
 export const navSections: NavSection[] = [
   dashboardSection,
-  bookmarksSection,
-  calendarSection,
-  billingSection,
-
   {
     key: "permits",
-    label: "Permits",
+    label: "My Permits",
     icon: FileText,
-    items: [
-      { to: "/portal/permits", label: "My Permits", alertKey: "my-permits" },
-      { to: "/portal/inspections", label: "Inspections" },
-
-      { to: "/portal/hoa-submittals", label: "HOA Submittals" },
-      { to: "/portal/bid-review", label: "Bid Review" },
-      { to: "/portal/utility-locates", label: "Utility Locates & Protection" },
-    ],
+    to: "/portal/permits",
   },
   {
-    key: "people",
-    label: "People",
+    key: "inspections",
+    label: "Inspections",
+    icon: CalendarDays,
+    to: "/portal/inspections",
+  },
+  {
+    key: "contacts",
+    label: "Contacts",
     icon: Users,
-    items: [
-      { to: "/portal/contacts", label: "Contacts" },
-      { to: "/portal/subcontractors", label: "Subcontractors & Compliance" },
-      { to: "/portal/request-coi", label: "Insurance Requests", alertKey: "sub-insurance" },
-    ],
-  },
-  {
-    key: "financials",
-    label: "Financials",
-    icon: DollarSign,
-    items: [
-      { to: "/portal/financials", label: "Savings" },
-      { to: "/portal/permit-fees", label: "Permit Fees" },
-    ],
+    to: "/portal/contacts",
   },
   {
     key: "documents",
     label: "Documents",
     icon: FolderOpen,
-    items: [
-      { to: "/forms/payment-authorization", label: "Payment Authorization" },
-      { to: "/portal/building-dept", label: "Building Departments" },
-      { to: "/building-dept-logins", label: "Portal Logins" },
-      { to: "/portal/notary-queue", label: "Notary Queue" },
-    ],
+    to: "/portal/documents",
   },
+  {
+    key: "financials",
+    label: "Financials",
+    icon: DollarSign,
+    to: "/portal/financials",
+  },
+  {
+    key: "messages",
+    label: "Messages",
+    icon: MessageSquare,
+    to: "/messages",
+  },
+  calendarSection,
   {
     key: "resources",
     label: "Resources",
     icon: BookOpen,
-    items: [
-      { to: "/portal/reports", label: "Reports" },
-      { to: "/portal/blog", label: "Blog" },
-      { to: "/portal/feature-requests", label: "Feature Requests" },
-      { to: "/portal/marketplace", label: "Marketplace" },
-    ],
+    to: "/portal/blog",
   },
+  bookmarksSection,
 ];
+
 
 
 
