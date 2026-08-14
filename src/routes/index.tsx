@@ -417,7 +417,7 @@ function PermitsTable() {
       {ROWS.map((r) => (
         <div
           key={r.id}
-          className="grid grid-cols-[1fr_auto] sm:grid-cols-[112px_1fr_104px_104px] items-center gap-2 px-4 py-2.5"
+          className="grid grid-cols-[1fr_auto] sm:grid-cols-[104px_1fr_96px_100px] items-center gap-2 px-4 py-2.5"
           style={{ borderBottom: `1px solid ${OFF2}` }}
         >
           <span className="text-[11px] font-semibold tabular-nums" style={{ color: TEAL }}>
