@@ -295,7 +295,7 @@ export function MyPermitsPage() {
                         const c = permitCompleteness(p);
                         const vendor = getVendor(p.project_name);
                         const barColor =
-                          c.percent === 100 ? "#22C55E" : c.percent >= 60 ? "#3B82F6" : c.percent >= 30 ? "#F59E0B" : "#EF4444";
+                          c.percent === 100 ? "#00B4A8" : c.percent >= 60 ? "#1D4ED8" : c.percent >= 30 ? "#F59E0B" : "#EF4444";
                         return (
                           <div
                             key={p.id}
