@@ -1312,3 +1312,88 @@ html:not(.dark) .portal-ui .flyout-link[data-active="true"] {
 .portal-ui .rounded-3xl,
 .portal-ui .rounded-full,
 .portal-ui [class*="rounded"] { border-radius: 0 !important; }
+
+/* =========================================================
+   CLEARD BRAND v2 — MARKETING PAGES (token override)
+   Presentation-only. Aligns every public page with the
+   homepage palette, system type stack and sharp corners.
+   ========================================================= */
+.marketing-dark {
+  --md-bg:        #FFFFFF;
+  --md-surface:   #F5F4F0;
+  --md-surface-2: #EEECEA;
+  --md-border:    #E4E2DE;
+  --md-text:      #111110;
+  --md-muted:     #6B8299;
+  --md-brand:     #00B4A8;
+  --md-green:     #00B4A8;
+  --md-amber:     #B4842A;
+  --md-obsidian:  #111110;
+  --md-gold:      #00B4A8;
+  --md-gold-soft: rgba(0, 180, 168, 0.12);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+}
+.marketing-dark { --md-muted: #6B6860; }
+
+.marketing-dark,
+.marketing-dark *,
+.marketing-dark *::before,
+.marketing-dark *::after {
+  border-radius: 0 !important;
+}
+
+.marketing-dark h1, .marketing-dark h2, .marketing-dark h3,
+.marketing-dark h4, .marketing-dark h5, .marketing-dark h6,
+.marketing-dark .md-serif,
+.marketing-dark .md-eyebrow,
+.marketing-dark input,
+.marketing-dark textarea,
+.marketing-dark select,
+.marketing-dark button {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif !important;
+}
+.marketing-dark h1, .marketing-dark h2, .marketing-dark h3,
+.marketing-dark .md-serif {
+  font-weight: 800 !important;
+  font-style: normal !important;
+  letter-spacing: -0.035em !important;
+}
+
+.marketing-dark .md-btn-primary,
+.marketing-dark .md-btn-gold {
+  background: #00B4A8 !important;
+  color: #111110 !important;
+  border-color: #00B4A8 !important;
+  font-weight: 700 !important;
+}
+.marketing-dark .md-btn-primary:hover,
+.marketing-dark .md-btn-gold:hover {
+  background: #009088 !important;
+  border-color: #009088 !important;
+  color: #111110 !important;
+}
+.marketing-dark .md-btn-ghost,
+.marketing-dark .md-btn-gold-outline {
+  background: #FFFFFF !important;
+  color: #111110 !important;
+  border: 1px solid #E4E2DE !important;
+}
+.marketing-dark .md-btn-ghost:hover,
+.marketing-dark .md-btn-gold-outline:hover {
+  background: #F5F4F0 !important;
+  color: #111110 !important;
+}
+.marketing-dark .md-card { background: #F5F4F0; border-color: #E4E2DE; }
+.marketing-dark .md-section-alt { background: #F5F4F0; }
+.marketing-dark .md-section-dark { background: #111110; }
+.marketing-dark input,
+.marketing-dark textarea,
+.marketing-dark select {
+  border: 1px solid #E4E2DE;
+  padding: 10px 14px;
+  font-size: 14px;
+}
+.marketing-dark input:focus,
+.marketing-dark textarea:focus,
+.marketing-dark select:focus { border-color: #00B4A8; outline: none; }
+.marketing-dark ::placeholder { color: #9E9B96; }
