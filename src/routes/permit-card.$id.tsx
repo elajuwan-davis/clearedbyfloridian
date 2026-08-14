@@ -1,11 +1,9 @@
-import { createFileRoute, notFound } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { createFileRoute } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import { QRCodeSVG } from "qrcode.react";
 import { Printer, ShieldCheck } from "lucide-react";
-import { getProjectById, fullAddress, type Project } from "@/lib/projects-data";
 import { findPortalForAddress } from "@/lib/municipalities";
-import { buildInspections, loadInspections, POOL_INSPECTIONS, type Inspection } from "@/lib/inspections";
-import { supabase } from "@/integrations/supabase/client";
+import { labelFor, type InspectionResult } from "@/lib/inspections-api";
 
 export const Route = createFileRoute("/permit-card/$id")({
   head: () => ({
@@ -18,46 +16,103 @@ export const Route = createFileRoute("/permit-card/$id")({
   component: PermitCardPage,
 });
 
+/** The public-safe subset served by /api/public/permit-card/$id. */
+type PublicPermit = {
+  id: string;
+  project_name: string;
+  job_address: string;
+  city: string | null;
+  municipality: string | null;
+  permit_type: string | null;
+  permit_number: string | null;
+  submitted_date: string | null;
+  description: string | null;
+  contractor_company: string | null;
+  contractor_qualifier: string | null;
+};
+
+type PublicInspection = {
+  id: string;
+  inspection_type: string;
+  result: InspectionResult | string | null;
+  scheduled_date: string | null;
+  requested_date: string | null;
+};
+
 function PermitCardPage() {
   const { id } = Route.useParams();
-  const initial = getProjectById(id);
-  const [project, setProject] = useState<Project | null>(initial);
-  const [resolved, setResolved] = useState<boolean>(Boolean(initial) || !id.startsWith("hs-"));
-  useEffect(() => { if (!initial) { setProject(getProjectById(id)); setResolved(true); } }, [id, initial]);
-
-  if (!resolved) return null;
-  if (!project) throw notFound();
-  return <PermitCard project={project} />;
-}
-
-function PermitCard({ project }: { project: Project }) {
-  const portal = findPortalForAddress(`${project.address}, ${project.city}`);
-  const [dispatch, setDispatch] = useState<{ owner_name: string | null; parcel_id: string | null; flood_zone: string | null } | null>(null);
-  const [inspections, setInspections] = useState<Inspection[]>(() => buildInspections(false));
+  const [permit, setPermit] = useState<PublicPermit | null>(null);
+  const [inspections, setInspections] = useState<PublicInspection[]>([]);
+  const [state, setState] = useState<"loading" | "ready" | "missing">("loading");
 
   useEffect(() => {
-    setInspections(loadInspections(project.id, buildInspections(false)));
-    supabase
-      .from("dispatch_results")
-      .select("owner_name, parcel_id, flood_zone")
-      .eq("permit_id", project.id)
-      .order("fetched_at", { ascending: false })
-      .limit(1)
-      .maybeSingle()
-      .then(({ data }) => setDispatch(data));
-  }, [project.id]);
+    let alive = true;
+    fetch(`/api/public/permit-card/${encodeURIComponent(id)}`)
+      .then(async (r) => {
+        if (!alive) return;
+        if (!r.ok) {
+          setState("missing");
+          return;
+        }
+        const json = (await r.json()) as {
+          permit: PublicPermit;
+          inspections: PublicInspection[];
+        };
+        setPermit(json.permit);
+        setInspections(json.inspections ?? []);
+        setState("ready");
+      })
+      .catch(() => alive && setState("missing"));
+    return () => {
+      alive = false;
+    };
+  }, [id]);
 
-  const passed = inspections.filter((i) => i.status === "passed").length;
-  const url = typeof window !== "undefined" ? window.location.href : `https://cleared.floridianinc.com/permit-card/${project.id}`;
-  const issueDate = useMemo(() => project.submitted_at || new Date().toISOString().slice(0, 10), [project]);
+  if (state === "loading") {
+    return (
+      <div className="min-h-screen bg-[#f5f2ec] px-6 py-24 text-center text-sm text-obsidian/60">
+        Loading permit card…
+      </div>
+    );
+  }
+
+  if (state === "missing" || !permit) {
+    return (
+      <div className="min-h-screen bg-[#f5f2ec] px-6 py-24 text-center">
+        <h1 className="display-serif text-3xl text-obsidian">Permit card not found</h1>
+        <p className="mt-2 text-sm text-obsidian/60">
+          This card may have been removed, or the code was scanned incorrectly.
+        </p>
+      </div>
+    );
+  }
+
+  return <PermitCard permit={permit} inspections={inspections} />;
+}
+
+function PermitCard({
+  permit,
+  inspections,
+}: {
+  permit: PublicPermit;
+  inspections: PublicInspection[];
+}) {
+  const portal = findPortalForAddress(permit.job_address);
+  const passed = inspections.filter((i) => i.result === "passed").length;
+  const url =
+    typeof window !== "undefined"
+      ? window.location.href
+      : `https://cleardinc.com/permit-card/${permit.id}`;
 
   return (
     <div className="min-h-screen bg-[#f5f2ec] text-obsidian print:bg-white">
       {/* Screen-only top bar */}
       <div className="print:hidden border-b border-obsidian/10 bg-white">
         <div className="mx-auto max-w-4xl px-6 py-3 flex items-center justify-end">
-          <button onClick={() => window.print()}
-                  className="inline-flex items-center gap-1.5 border border-[#153157] bg-[#153157] text-white px-3 py-1.5 text-xs font-medium rounded-[3px] hover:opacity-90">
+          <button
+            onClick={() => window.print()}
+            className="inline-flex items-center gap-1.5 border border-[#153157] bg-[#153157] text-white px-3 py-1.5 text-xs font-medium rounded-[3px] hover:opacity-90"
+          >
             <Printer className="h-3.5 w-3.5" /> Print / Save PDF
           </button>
         </div>
@@ -85,40 +140,50 @@ function PermitCard({ project }: { project: Project }) {
 
           {/* Project block */}
           <section className="grid grid-cols-1 sm:grid-cols-2 gap-6 px-8 py-6 border-b border-obsidian/15">
-            <Field label="Project" value={project.name} big />
-            <Field label="Permit Number" value={project.permit_no || "— pending —"} mono big />
-            <Field label="Job Site Address" value={fullAddress(project)} full />
-            <Field label="Scope of Work" value={project.scope || "Pool, Spa & Hardscape"} />
-            <Field label="Contractor of Record" value="Cleard" />
-            <Field label="Florida License" value="CPC1459161" mono />
-            <Field label="Issue Date" value={issueDate} mono />
-            <Field label="Municipality" value={portal?.name ?? project.city} />
-            {dispatch && (
-              <>
-                <Field label="Owner of Record" value={dispatch.owner_name ?? "—"} />
-                <Field label="PCN" value={dispatch.parcel_id ?? "—"} mono />
-                <Field label="Flood Zone" value={dispatch.flood_zone ?? "—"} mono />
-              </>
-            )}
+            <Field label="Project" value={permit.project_name} big />
+            <Field label="Permit Number" value={permit.permit_number || "— pending —"} mono big />
+            <Field label="Job Site Address" value={permit.job_address} full />
+            <Field label="Scope of Work" value={permit.permit_type || permit.description || "—"} />
+            <Field label="Contractor of Record" value={permit.contractor_company || "—"} />
+            <Field label="Qualifier" value={permit.contractor_qualifier || "—"} />
+            <Field label="Submitted" value={permit.submitted_date || "— pending —"} mono />
+            <Field
+              label="Municipality"
+              value={permit.municipality || portal?.name || permit.city || "—"}
+            />
           </section>
 
           {/* Inspections */}
           <section className="px-8 py-6">
             <div className="flex items-baseline justify-between">
               <h2 className="display-serif text-xl text-obsidian">Inspection Progress</h2>
-              <div className="font-mono text-xs uppercase tracking-[0.12em] text-obsidian/70">
-                {passed}/{inspections.length} passed
-              </div>
+              {inspections.length > 0 && (
+                <div className="font-mono text-xs uppercase tracking-[0.12em] text-obsidian/70">
+                  {passed}/{inspections.length} passed
+                </div>
+              )}
             </div>
-            <ol className="mt-4 divide-y divide-obsidian/10 border border-obsidian/15 rounded-[3px]">
-              {inspections.map((i) => (
-                <li key={i.code} className="flex items-center gap-3 px-3 py-2.5">
-                  <span className="font-mono text-[11px] w-10 text-obsidian/60">{i.code}</span>
-                  <span className="flex-1 text-sm text-obsidian">{i.name}</span>
-                  <StatusPill status={i.status} />
-                </li>
-              ))}
-            </ol>
+            {inspections.length === 0 ? (
+              <p className="mt-4 border border-obsidian/15 rounded-[3px] px-3 py-6 text-center text-sm text-obsidian/55">
+                No inspections scheduled yet.
+              </p>
+            ) : (
+              <ol className="mt-4 divide-y divide-obsidian/10 border border-obsidian/15 rounded-[3px]">
+                {inspections.map((i) => (
+                  <li key={i.id} className="flex items-center gap-3 px-3 py-2.5">
+                    <span className="flex-1 text-sm text-obsidian">
+                      {labelFor(i.inspection_type)}
+                    </span>
+                    {i.scheduled_date && (
+                      <span className="font-mono text-[11px] text-obsidian/55">
+                        {i.scheduled_date}
+                      </span>
+                    )}
+                    <StatusPill result={i.result} scheduled={Boolean(i.scheduled_date)} />
+                  </li>
+                ))}
+              </ol>
+            )}
           </section>
 
           {/* Footer */}
@@ -128,7 +193,7 @@ function PermitCard({ project }: { project: Project }) {
               Scan the QR code to verify this permit &amp; view live inspection status.
             </div>
             <div className="font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/50">
-              cleared.floridianinc.com
+              cleardinc.com
             </div>
           </footer>
         </article>
@@ -145,29 +210,50 @@ function PermitCard({ project }: { project: Project }) {
   );
 }
 
-function Field({ label, value, mono, big, full }: {
-  label: string; value: string; mono?: boolean; big?: boolean; full?: boolean;
+function Field({
+  label,
+  value,
+  mono,
+  big,
+  full,
+}: {
+  label: string;
+  value: string;
+  mono?: boolean;
+  big?: boolean;
+  full?: boolean;
 }) {
   return (
     <div className={full ? "sm:col-span-2" : ""}>
-      <div className="font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/55">{label}</div>
-      <div className={`${big ? "text-lg" : "text-sm"} ${mono ? "font-mono" : ""} text-obsidian mt-0.5`}>
+      <div className="font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/55">
+        {label}
+      </div>
+      <div
+        className={`${big ? "text-lg" : "text-sm"} ${mono ? "font-mono" : ""} text-obsidian mt-0.5`}
+      >
         {value}
       </div>
     </div>
   );
 }
 
-function StatusPill({ status }: { status: Inspection["status"] }) {
-  const map: Record<Inspection["status"], { bg: string; text: string; label: string }> = {
-    passed:       { bg: "bg-green-600",  text: "text-white", label: "Passed" },
-    scheduled:    { bg: "bg-blue-600",   text: "text-white", label: "Scheduled" },
-    corrections:  { bg: "bg-red-600",    text: "text-white", label: "Corrections" },
-    pending:      { bg: "bg-obsidian/10",text: "text-obsidian/70", label: "Pending" },
-  };
-  const s = map[status];
+const RESULT_PILL: Record<string, { bg: string; text: string; label: string }> = {
+  passed: { bg: "bg-green-600", text: "text-white", label: "Passed" },
+  failed: { bg: "bg-red-600", text: "text-white", label: "Failed" },
+  reinspect: { bg: "bg-amber-600", text: "text-white", label: "Reinspect" },
+  cancelled: { bg: "bg-obsidian/40", text: "text-white", label: "Cancelled" },
+};
+
+function StatusPill({ result, scheduled }: { result: string | null; scheduled: boolean }) {
+  const s =
+    (result ? RESULT_PILL[result] : undefined) ??
+    (scheduled
+      ? { bg: "bg-blue-600", text: "text-white", label: "Scheduled" }
+      : { bg: "bg-obsidian/10", text: "text-obsidian/70", label: "Pending" });
   return (
-    <span className={`inline-flex items-center rounded-[3px] px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.12em] ${s.bg} ${s.text} print:border print:border-black`}>
+    <span
+      className={`inline-flex items-center rounded-[3px] px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.12em] ${s.bg} ${s.text} print:border print:border-black`}
+    >
       {s.label}
     </span>
   );
