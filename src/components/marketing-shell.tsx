@@ -129,39 +129,36 @@ function MarketingNav() {
 
 function MarketingFooter() {
   return (
-    <footer style={{ background: "#FFFFFF", borderTop: "1px solid #E8ECF1" }}>
-      <div className="mx-auto max-w-7xl px-6 lg:px-10 py-8 flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
-        <Link to="/" className="flex items-center gap-2.5 no-underline">
-          <div
-            className="h-7 w-7 rounded-lg flex items-center justify-center text-white font-bold text-sm"
-            style={{ background: "#16A34A", fontFamily: "'Space Grotesk', sans-serif" }}
-          >
-            C
-          </div>
+    <footer style={{ background: NEAR_BLACK, borderTop: "1px solid rgba(255,255,255,0.1)" }}>
+      <div className="mx-auto max-w-7xl px-6 lg:px-10 py-12 flex flex-col gap-8 md:flex-row md:items-center md:justify-between">
+        <Link to="/" className="flex items-center no-underline">
           <span
-            className="font-semibold text-[15px] tracking-[-0.01em]"
-            style={{ fontFamily: "'Space Grotesk', 'Inter', system-ui, sans-serif", color: "#0F1E2E" }}
+            className="text-[16px] tracking-[-0.01em]"
+            style={{
+              fontFamily: "'Space Grotesk', 'Inter', system-ui, sans-serif",
+              fontWeight: 600,
+              color: "#FFFFFF",
+            }}
           >
-            Cleard
+            Cléared
           </span>
         </Link>
 
-        <nav className="flex flex-wrap items-center gap-x-6 gap-y-2 text-[13px]" style={{ color: "#7890A4" }}>
-          <Link to="/products" style={{ color: "#7890A4" }}>Product</Link>
-          
-
-          <a href="https://floridianinc.com/privacy" style={{ color: "#7890A4" }}>Privacy</a>
-          <a href="https://floridianinc.com/terms" style={{ color: "#7890A4" }}>Terms</a>
-          <Link to="/contact" style={{ color: "#7890A4" }}>Contact</Link>
+        <nav className="flex flex-wrap items-center gap-x-8 gap-y-2 text-[13px]">
+          <Link to="/products" className="no-underline" style={{ color: BODY_GRAY }}>Product</Link>
+          <a href="https://floridianinc.com/privacy" className="no-underline" style={{ color: BODY_GRAY }}>Privacy</a>
+          <a href="https://floridianinc.com/terms" className="no-underline" style={{ color: BODY_GRAY }}>Terms</a>
+          <Link to="/contact" className="no-underline" style={{ color: BODY_GRAY }}>Contact</Link>
         </nav>
 
-        <div className="text-[12px]" style={{ color: "#8A9AAA" }}>
+        <div className="text-[12px]" style={{ color: "rgba(200,196,188,0.6)" }}>
           © 2026 Cleard Inc.
         </div>
       </div>
     </footer>
   );
 }
+
 
 
 export function MarketingShell({ children }: { children: ReactNode }) {
