@@ -242,10 +242,10 @@ export function AdminDashboard() {
   const donut = useMemo(() => {
     const buckets: Array<{ name: string; value: number; color: string }> = [
       { name: "Pre-check", value: permits.filter((p) => ["submitted", "in_review", "pending"].includes(p.status)).length, color: "#F59E0B" },
-      { name: "En route", value: permits.filter((p) => ["inspection_scheduled", "permit_issued"].includes(p.status)).length, color: "#3B82F6" },
+      { name: "En route", value: permits.filter((p) => ["inspection_scheduled", "permit_issued"].includes(p.status)).length, color: "#1D4ED8" },
       { name: "Corrections", value: correctionsCount, color: "#A78BFA" },
       { name: "On hold", value: permits.filter((p) => p.status === "on_hold").length, color: "#EF4444" },
-      { name: "Cleared", value: permits.filter((p) => ["approved", "inspection_complete", "resubmitted", "resubmitted_to_county", "correction_response_under_review"].includes(p.status)).length, color: "#22C55E" },
+      { name: "Cleared", value: permits.filter((p) => ["approved", "inspection_complete", "resubmitted", "resubmitted_to_county", "correction_response_under_review"].includes(p.status)).length, color: "#00B4A8" },
     ];
     return buckets.filter((b) => b.value > 0);
   }, [permits, correctionsCount]);
@@ -473,7 +473,7 @@ export function AdminDashboard() {
                     <li key={`${e.title}-${i}`} className="flex min-w-0 items-start gap-2.5">
                       <span
                         className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full"
-                        style={{ backgroundColor: e.tone === "success" ? "#22C55E" : "#3B82F6" }}
+                        style={{ backgroundColor: e.tone === "success" ? "#00B4A8" : "#1D4ED8" }}
                       />
                       <div className="min-w-0 flex-1">
                         <div className="truncate text-[13px] font-medium">{e.title}</div>
@@ -533,7 +533,7 @@ export function AdminDashboard() {
                   <span className="font-medium tabular-nums">{onTime}%</span>
                 </div>
                 <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-white/[0.07]">
-                  <div className="h-full rounded-full" style={{ width: `${onTime}%`, backgroundColor: "#22C55E" }} />
+                  <div className="h-full rounded-full" style={{ width: `${onTime}%`, backgroundColor: "#00B4A8" }} />
                 </div>
               </div>
             </div>
