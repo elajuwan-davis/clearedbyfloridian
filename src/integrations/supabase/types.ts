@@ -1981,6 +1981,81 @@ export type Database = {
           },
         ]
       }
+      lpoa_signatures: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          document_path: string | null
+          document_revision: string
+          embedded_signing_url: string | null
+          id: string
+          license_number: string
+          revoked_at: string | null
+          signature_request_id: string | null
+          signed_by: string | null
+          signer_email: string | null
+          signer_name: string
+          signer_title: string
+          signwell_document_id: string | null
+          status: string
+          status_source: string
+          tenant_id: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          document_path?: string | null
+          document_revision?: string
+          embedded_signing_url?: string | null
+          id?: string
+          license_number: string
+          revoked_at?: string | null
+          signature_request_id?: string | null
+          signed_by?: string | null
+          signer_email?: string | null
+          signer_name: string
+          signer_title: string
+          signwell_document_id?: string | null
+          status?: string
+          status_source?: string
+          tenant_id: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          document_path?: string | null
+          document_revision?: string
+          embedded_signing_url?: string | null
+          id?: string
+          license_number?: string
+          revoked_at?: string | null
+          signature_request_id?: string | null
+          signed_by?: string | null
+          signer_email?: string | null
+          signer_name?: string
+          signer_title?: string
+          signwell_document_id?: string | null
+          status?: string
+          status_source?: string
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lpoa_signatures_signature_request_id_fkey"
+            columns: ["signature_request_id"]
+            isOneToOne: false
+            referencedRelation: "signature_requests"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lpoa_signatures_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       marketplace_access: {
         Row: {
           amount_cents: number | null
@@ -2629,50 +2704,201 @@ export type Database = {
       }
       paa_signatures: {
         Row: {
+          completed_at: string | null
           created_at: string
           document_path: string | null
+          embedded_signing_url: string | null
           envelope_id: string | null
           id: string
           provider: string
           revoked_at: string | null
+          signature_request_id: string | null
           signed_at: string
           signed_by: string | null
           signer_email: string
           signer_name: string
+          signwell_document_id: string | null
+          status: string
+          status_source: string
           tenant_id: string
           version: string
         }
         Insert: {
+          completed_at?: string | null
           created_at?: string
           document_path?: string | null
+          embedded_signing_url?: string | null
           envelope_id?: string | null
           id?: string
           provider?: string
           revoked_at?: string | null
+          signature_request_id?: string | null
           signed_at?: string
           signed_by?: string | null
           signer_email: string
           signer_name: string
+          signwell_document_id?: string | null
+          status?: string
+          status_source?: string
           tenant_id: string
           version: string
         }
         Update: {
+          completed_at?: string | null
           created_at?: string
           document_path?: string | null
+          embedded_signing_url?: string | null
           envelope_id?: string | null
           id?: string
           provider?: string
           revoked_at?: string | null
+          signature_request_id?: string | null
           signed_at?: string
           signed_by?: string | null
           signer_email?: string
           signer_name?: string
+          signwell_document_id?: string | null
+          status?: string
+          status_source?: string
           tenant_id?: string
           version?: string
         }
         Relationships: [
           {
+            foreignKeyName: "paa_signatures_signature_request_id_fkey"
+            columns: ["signature_request_id"]
+            isOneToOne: false
+            referencedRelation: "signature_requests"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "paa_signatures_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      payment_authorizations: {
+        Row: {
+          account_holder: string
+          authorization_date: string
+          billing_address: string
+          completed_at: string | null
+          created_at: string
+          document_path: string | null
+          embedded_signing_url: string | null
+          id: string
+          revoked_at: string | null
+          signature_request_id: string | null
+          signed_by: string | null
+          signer_email: string | null
+          signwell_document_id: string | null
+          status: string
+          status_source: string
+          tenant_id: string
+          terms_version: string
+        }
+        Insert: {
+          account_holder: string
+          authorization_date: string
+          billing_address: string
+          completed_at?: string | null
+          created_at?: string
+          document_path?: string | null
+          embedded_signing_url?: string | null
+          id?: string
+          revoked_at?: string | null
+          signature_request_id?: string | null
+          signed_by?: string | null
+          signer_email?: string | null
+          signwell_document_id?: string | null
+          status?: string
+          status_source?: string
+          tenant_id: string
+          terms_version?: string
+        }
+        Update: {
+          account_holder?: string
+          authorization_date?: string
+          billing_address?: string
+          completed_at?: string | null
+          created_at?: string
+          document_path?: string | null
+          embedded_signing_url?: string | null
+          id?: string
+          revoked_at?: string | null
+          signature_request_id?: string | null
+          signed_by?: string | null
+          signer_email?: string | null
+          signwell_document_id?: string | null
+          status?: string
+          status_source?: string
+          tenant_id?: string
+          terms_version?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payment_authorizations_signature_request_id_fkey"
+            columns: ["signature_request_id"]
+            isOneToOne: false
+            referencedRelation: "signature_requests"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payment_authorizations_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      permit_fees: {
+        Row: {
+          amount_cents: number
+          created_at: string
+          created_by: string | null
+          date_paid: string
+          fee_type: string
+          id: string
+          notes: string | null
+          permit_id: string
+          tenant_id: string
+        }
+        Insert: {
+          amount_cents: number
+          created_at?: string
+          created_by?: string | null
+          date_paid?: string
+          fee_type?: string
+          id?: string
+          notes?: string | null
+          permit_id: string
+          tenant_id: string
+        }
+        Update: {
+          amount_cents?: number
+          created_at?: string
+          created_by?: string | null
+          date_paid?: string
+          fee_type?: string
+          id?: string
+          notes?: string | null
+          permit_id?: string
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "permit_fees_permit_id_fkey"
+            columns: ["permit_id"]
+            isOneToOne: false
+            referencedRelation: "permits"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "permit_fees_tenant_id_fkey"
             columns: ["tenant_id"]
             isOneToOne: false
             referencedRelation: "tenants"
@@ -3314,6 +3540,48 @@ export type Database = {
         }
         Relationships: []
       }
+      registered_contractors: {
+        Row: {
+          active: boolean
+          address: string
+          contact_name: string
+          created_at: string
+          email: string
+          firm_name: string
+          id: string
+          license_number: string
+          license_type: string
+          phone: string
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          address?: string
+          contact_name?: string
+          created_at?: string
+          email?: string
+          firm_name: string
+          id?: string
+          license_number: string
+          license_type?: string
+          phone?: string
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          address?: string
+          contact_name?: string
+          created_at?: string
+          email?: string
+          firm_name?: string
+          id?: string
+          license_number?: string
+          license_type?: string
+          phone?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       service_fee_invoices: {
         Row: {
           created_at: string | null
@@ -3380,17 +3648,20 @@ export type Database = {
       signature_requests: {
         Row: {
           completed_at: string | null
+          context_id: string | null
+          context_kind: string
           created_at: string
           created_by: string | null
           declined_at: string | null
           declined_reason: string | null
           document_key: string | null
           document_name: string
+          document_path: string | null
           embedded_signing_url: string | null
           id: string
           last_event_at: string | null
           last_event_type: string | null
-          permit_id: string
+          permit_id: string | null
           provider: string
           provider_envelope_id: string | null
           recipient_email: string
@@ -3408,17 +3679,20 @@ export type Database = {
         }
         Insert: {
           completed_at?: string | null
+          context_id?: string | null
+          context_kind?: string
           created_at?: string
           created_by?: string | null
           declined_at?: string | null
           declined_reason?: string | null
           document_key?: string | null
           document_name: string
+          document_path?: string | null
           embedded_signing_url?: string | null
           id?: string
           last_event_at?: string | null
           last_event_type?: string | null
-          permit_id: string
+          permit_id?: string | null
           provider?: string
           provider_envelope_id?: string | null
           recipient_email: string
@@ -3436,17 +3710,20 @@ export type Database = {
         }
         Update: {
           completed_at?: string | null
+          context_id?: string | null
+          context_kind?: string
           created_at?: string
           created_by?: string | null
           declined_at?: string | null
           declined_reason?: string | null
           document_key?: string | null
           document_name?: string
+          document_path?: string | null
           embedded_signing_url?: string | null
           id?: string
           last_event_at?: string | null
           last_event_type?: string | null
-          permit_id?: string
+          permit_id?: string | null
           provider?: string
           provider_envelope_id?: string | null
           recipient_email?: string
@@ -4829,6 +5106,40 @@ export type Database = {
           read_ct: number
         }[]
       }
+      record_lpoa_signature: {
+        Args: {
+          p_document_revision?: string
+          p_license_number: string
+          p_signer_email?: string
+          p_signer_name: string
+          p_signer_title: string
+        }
+        Returns: {
+          completed_at: string | null
+          created_at: string
+          document_path: string | null
+          document_revision: string
+          embedded_signing_url: string | null
+          id: string
+          license_number: string
+          revoked_at: string | null
+          signature_request_id: string | null
+          signed_by: string | null
+          signer_email: string | null
+          signer_name: string
+          signer_title: string
+          signwell_document_id: string | null
+          status: string
+          status_source: string
+          tenant_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "lpoa_signatures"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       record_paa_signature: {
         Args: {
           p_provider?: string
@@ -4837,22 +5148,62 @@ export type Database = {
           p_version: string
         }
         Returns: {
+          completed_at: string | null
           created_at: string
           document_path: string | null
+          embedded_signing_url: string | null
           envelope_id: string | null
           id: string
           provider: string
           revoked_at: string | null
+          signature_request_id: string | null
           signed_at: string
           signed_by: string | null
           signer_email: string
           signer_name: string
+          signwell_document_id: string | null
+          status: string
+          status_source: string
           tenant_id: string
           version: string
         }
         SetofOptions: {
           from: "*"
           to: "paa_signatures"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      record_payment_authorization: {
+        Args: {
+          p_account_holder: string
+          p_authorization_date: string
+          p_billing_address: string
+          p_signer_email?: string
+          p_terms_version?: string
+        }
+        Returns: {
+          account_holder: string
+          authorization_date: string
+          billing_address: string
+          completed_at: string | null
+          created_at: string
+          document_path: string | null
+          embedded_signing_url: string | null
+          id: string
+          revoked_at: string | null
+          signature_request_id: string | null
+          signed_by: string | null
+          signer_email: string | null
+          signwell_document_id: string | null
+          status: string
+          status_source: string
+          tenant_id: string
+          terms_version: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "payment_authorizations"
           isOneToOne: true
           isSetofReturn: false
         }
@@ -4935,6 +5286,10 @@ export type Database = {
           isOneToOne: true
           isSetofReturn: false
         }
+      }
+      revoke_payment_authorization: {
+        Args: { p_id: string }
+        Returns: undefined
       }
       send_permit_status_digest: { Args: never; Returns: number }
       status_digest_visible: { Args: { _permit_id: string }; Returns: boolean }
