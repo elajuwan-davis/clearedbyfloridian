@@ -1,10 +1,14 @@
 import { useEffect, useRef, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import {
+  MarketingNavDropdown,
+  PRODUCT_MENU,
+  CONTRACTORS_MENU,
+} from "@/components/marketing-nav-dropdown";
+import {
   ArrowRight,
   ArrowUpRight,
   Bell,
-  ChevronDown,
   ClipboardCheck,
   FileCheck2,
   FileText,
