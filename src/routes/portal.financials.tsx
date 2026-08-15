@@ -19,8 +19,6 @@ import { QuickSavingsEstimate } from "@/components/quick-savings-estimate";
 
 import {
   PageShell,
-  MetricRow,
-  StatTile,
   StatusChip,
   Panel,
   Segmented,
@@ -28,6 +26,16 @@ import {
   type MetricTone,
 } from "@/components/ui-kit";
 import { toast } from "sonner";
+import {
+  Area,
+  AreaChart,
+  CartesianGrid,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
+import { CDS, Kpi, KpiBar, Reveal } from "@/components/cds-kit";
 
 export const Route = createFileRoute("/portal/financials")({
   head: () => ({
@@ -168,6 +176,35 @@ function FinancialsPage() {
     return { permitFees, clearedFees, combined: permitFees + clearedFees };
   }, [filtered, feesByProject]);
 
+  /** Recorded municipal payments — real ManualFee rows with a paid date. */
+  const collected = useMemo(() => fees.reduce((s, f) => s + f.amountCents, 0), [fees]);
+
+  /** Last 6 calendar months: Cléared fees invoiced vs municipal fees paid. */
+  const trend = useMemo(() => {
+    const months: Array<{ key: string; month: string; invoiced: number; collected: number }> = [];
+    const now = new Date();
+    for (let i = 5; i >= 0; i -= 1) {
+      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      months.push({
+        key: `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`,
+        month: d.toLocaleDateString("en-US", { month: "short" }),
+        invoiced: 0,
+        collected: 0,
+      });
+    }
+    const index = new Map(months.map((m) => [m.key, m]));
+    for (const p of permits) {
+      const iso = (p.submitted_date || p.created_at || "").slice(0, 7);
+      const bucket = index.get(iso);
+      if (bucket) bucket.invoiced += p.cleared_fee_cents ?? 0;
+    }
+    for (const f of fees) {
+      const bucket = index.get((f.datePaid || f.createdAt || "").slice(0, 7));
+      if (bucket) bucket.collected += f.amountCents;
+    }
+    return months.map((m) => ({ month: m.month, invoiced: m.invoiced / 100, collected: m.collected / 100 }));
+  }, [permits, fees]);
+
   function toggle(id: string) {
     setExpanded((s) => {
       const n = new Set(s);
@@ -295,7 +332,7 @@ function FinancialsPage() {
                         borderRadius: 0,
                         fontSize: 12,
                       }}
-                      formatter={(v: number) => fmtUsd(v)}
+                      formatter={(v: number) => fmtUsd(Math.round(v * 100))}
                     />
                     <Area
                       type="linear"
