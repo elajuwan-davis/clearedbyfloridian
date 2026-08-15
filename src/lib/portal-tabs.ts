@@ -50,6 +50,7 @@ export const tabGroups: TabGroup[] = [
     key: "documents",
     label: "Documents",
     tabs: [
+      { label: "All Documents", to: "/portal/documents" },
       { label: "Payment Authorization", to: "/forms/payment-authorization" },
       { label: "Billing", to: "/portal/billing" },
       { label: "Departments", to: "/portal/building-dept" },
