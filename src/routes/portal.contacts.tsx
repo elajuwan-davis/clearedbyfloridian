@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useRouterState } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
-import { Plus, Pencil, Trash2, Mail, Phone, Loader2 } from "lucide-react";
+import { Plus, Pencil, Trash2, Mail, Phone, Loader2, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -32,7 +32,8 @@ import {
   type ContactType,
   type ContactInput,
 } from "@/lib/contacts-api";
-import { PageShell, SearchInput, Segmented, TableShell, EmptyState, StatusChip } from "@/components/ui-kit";
+import { PageShell, SearchInput, Segmented } from "@/components/ui-kit";
+import { CDS, CdsCard, CdsEmpty, Kpi, KpiBar, SkeletonCards, Tag } from "@/components/cds-kit";
 
 export const Route = createFileRoute("/portal/contacts")({
   head: () => ({
