@@ -203,7 +203,7 @@ export function PageHeader({
         <h1
           className="mt-6 md-in md-in-2 max-w-4xl"
           style={{
-            fontFamily: "'Space Grotesk', 'Inter', system-ui, sans-serif",
+            fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif",
             fontWeight: 800,
             fontSize: "clamp(2.25rem, 6vw, 4.5rem)",
             lineHeight: 1.05,
