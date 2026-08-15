@@ -267,31 +267,34 @@ function Hero() {
           </h1>
 
           <p className="mt-6 max-w-xl text-[17px] leading-relaxed" style={{ color: GRAY }}>
-            Your team focuses on building. We run the entire back office behind it.
+            Cleard runs the back office for every licensed Florida contractor — permits,
+            inspections, lien rights, insurance compliance, and license administration. One
+            platform. Year-round.
           </p>
 
-          <form className="mt-9 flex flex-col sm:flex-row gap-3 max-w-lg" onSubmit={(e) => e.preventDefault()}>
-            <input
-              type="email"
-              placeholder="What's your work email?"
-              aria-label="Work email"
-              className="flex-1 px-4 py-3 text-[14px] outline-none"
-              style={{ border: `1px solid ${BORDER}`, background: WHITE, color: INK }}
-            />
+          <div className="mt-9 flex flex-col sm:flex-row gap-3 max-w-lg">
             <Link
               to="/join"
               hash="request"
               className="inline-flex items-center justify-center gap-2 px-6 py-3 text-[14px] font-bold no-underline"
               style={{ background: TEAL, color: INK }}
             >
-              Get started <ArrowRight className="h-4 w-4" />
+              Get early access <ArrowRight className="h-4 w-4" />
             </Link>
-          </form>
+            <Link
+              to="/process"
+              className="inline-flex items-center justify-center px-6 py-3 text-[14px] font-medium no-underline"
+              style={{ border: `1px solid ${BORDER}`, background: WHITE, color: INK }}
+            >
+              See a live demo
+            </Link>
+          </div>
 
-          <Link to="/process" className="mt-5 inline-block text-[14px] no-underline" style={{ color: GRAY }}>
-            See a live demo →
-          </Link>
+          <p className="mt-5 text-[12.5px]" style={{ color: LIGHT }}>
+            No credit card · Free during beta · All licensed Florida contractors
+          </p>
         </div>
+
 
         <AppPreview />
       </div>
