@@ -1,10 +1,9 @@
 import { Link } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { Fragment, useEffect, useMemo, useState } from "react";
 import { PortalShell } from "@/components/portal-shell";
 import {
   ChevronDown,
   ChevronRight,
-  Search,
   AlertTriangle,
   Plus,
   FileText,
@@ -399,8 +398,8 @@ export function MyPermitsPage() {
                         const vendor = getVendor(p.project_name);
                         const isOpen = expanded === p.id;
                         return (
-                          <>
-                            <tr key={p.id}>
+                          <Fragment key={p.id}>
+                            <tr>
                               <td>
                                 <button
                                   type="button"
@@ -462,7 +461,7 @@ export function MyPermitsPage() {
                               </td>
                             </tr>
                             {isOpen && (
-                              <tr key={`${p.id}-detail`}>
+                              <tr>
                                 <td colSpan={9} style={{ background: CDS.off, padding: 0 }}>
                                   <PermitDetail
                                     permit={p}
@@ -474,7 +473,7 @@ export function MyPermitsPage() {
                                 </td>
                               </tr>
                             )}
-                          </>
+                          </Fragment>
                         );
                       })}
                     </tbody>
