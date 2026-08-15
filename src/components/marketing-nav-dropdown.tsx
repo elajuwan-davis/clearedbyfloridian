@@ -25,7 +25,7 @@ export const PRODUCT_MENU: NavMenuSection[] = [
   },
   {
     label: "Compare",
-    items: [{ to: "/versus", label: "Cleard vs alternatives", description: "Side-by-side breakdowns" }],
+    items: [{ to: "/compare", label: "Cleard vs alternatives", description: "Side-by-side breakdowns" }],
   },
 ];
 

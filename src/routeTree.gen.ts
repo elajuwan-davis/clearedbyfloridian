@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as AskVictoriaRouteImport } from './routes/ask-victoria'
 import { Route as BuildingDeptLoginsRouteImport } from './routes/building-dept-logins'
+import { Route as CompareRouteImport } from './routes/compare'
 import { Route as ComplianceRouteImport } from './routes/compliance'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as DashboardRouteImport } from './routes/dashboard'
@@ -143,6 +144,11 @@ const AskVictoriaRoute = AskVictoriaRouteImport.update({
 const BuildingDeptLoginsRoute = BuildingDeptLoginsRouteImport.update({
   id: '/building-dept-logins',
   path: '/building-dept-logins',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CompareRoute = CompareRouteImport.update({
+  id: '/compare',
+  path: '/compare',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ComplianceRoute = ComplianceRouteImport.update({
@@ -717,6 +723,7 @@ export interface FileRoutesByFullPath {
   '/about': typeof AboutRoute
   '/ask-victoria': typeof AskVictoriaRoute
   '/building-dept-logins': typeof BuildingDeptLoginsRouteWithChildren
+  '/compare': typeof CompareRoute
   '/compliance': typeof ComplianceRoute
   '/contact': typeof ContactRoute
   '/dashboard': typeof DashboardRoute
@@ -834,6 +841,7 @@ export interface FileRoutesByTo {
   '/about': typeof AboutRoute
   '/ask-victoria': typeof AskVictoriaRoute
   '/building-dept-logins': typeof BuildingDeptLoginsRouteWithChildren
+  '/compare': typeof CompareRoute
   '/compliance': typeof ComplianceRoute
   '/contact': typeof ContactRoute
   '/dashboard': typeof DashboardRoute
@@ -948,6 +956,7 @@ export interface FileRoutesById {
   '/about': typeof AboutRoute
   '/ask-victoria': typeof AskVictoriaRoute
   '/building-dept-logins': typeof BuildingDeptLoginsRouteWithChildren
+  '/compare': typeof CompareRoute
   '/compliance': typeof ComplianceRoute
   '/contact': typeof ContactRoute
   '/dashboard': typeof DashboardRoute
@@ -1067,6 +1076,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/ask-victoria'
     | '/building-dept-logins'
+    | '/compare'
     | '/compliance'
     | '/contact'
     | '/dashboard'
@@ -1184,6 +1194,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/ask-victoria'
     | '/building-dept-logins'
+    | '/compare'
     | '/compliance'
     | '/contact'
     | '/dashboard'
@@ -1297,6 +1308,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/ask-victoria'
     | '/building-dept-logins'
+    | '/compare'
     | '/compliance'
     | '/contact'
     | '/dashboard'
@@ -1415,6 +1427,7 @@ export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   AskVictoriaRoute: typeof AskVictoriaRoute
   BuildingDeptLoginsRoute: typeof BuildingDeptLoginsRouteWithChildren
+  CompareRoute: typeof CompareRoute
   ComplianceRoute: typeof ComplianceRoute
   ContactRoute: typeof ContactRoute
   DashboardRoute: typeof DashboardRoute
@@ -1510,6 +1523,13 @@ declare module '@tanstack/react-router' {
       path: '/building-dept-logins'
       fullPath: '/building-dept-logins'
       preLoaderRoute: typeof BuildingDeptLoginsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/compare': {
+      id: '/compare'
+      path: '/compare'
+      fullPath: '/compare'
+      preLoaderRoute: typeof CompareRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/compliance': {
@@ -2434,6 +2454,7 @@ const rootRouteChildren: RootRouteChildren = {
   AboutRoute: AboutRoute,
   AskVictoriaRoute: AskVictoriaRoute,
   BuildingDeptLoginsRoute: BuildingDeptLoginsRouteWithChildren,
+  CompareRoute: CompareRoute,
   ComplianceRoute: ComplianceRoute,
   ContactRoute: ContactRoute,
   DashboardRoute: DashboardRoute,
