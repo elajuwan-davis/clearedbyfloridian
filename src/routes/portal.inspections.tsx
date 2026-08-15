@@ -8,6 +8,7 @@ import {
   X,
   CheckCircle2,
   XCircle,
+  CalendarDays,
 } from "lucide-react";
 import { PermitPicker } from "@/components/permit-picker";
 import { Button } from "@/components/ui/button";
@@ -29,7 +30,20 @@ import {
   type PermitInspection,
   type InspectionType,
 } from "@/lib/inspections-api";
-import { PageShell, Panel, StatusChip, EmptyState, type MetricTone } from "@/components/ui-kit";
+import { PageShell, StatusChip, type MetricTone } from "@/components/ui-kit";
+import {
+  CDS,
+  CdsCard,
+  CdsEmpty,
+  Kpi,
+  KpiBar,
+  Reveal,
+  SkeletonCards,
+  Tag,
+  WeekStrip,
+  isoDay,
+  startOfWeek,
+} from "@/components/cds-kit";
 
 export const Route = createFileRoute("/portal/inspections")({
   head: () => ({
@@ -83,16 +97,6 @@ function InspectionsPage() {
   useEffect(() => {
     void refresh();
   }, [refresh]);
-
-  const { upcoming, past } = useMemo(() => {
-    const up: PermitInspection[] = [];
-    const pa: PermitInspection[] = [];
-    for (const r of rows) {
-      if (isUpcoming(r)) up.push(r);
-      else pa.push(r);
-    }
-    return { upcoming: up, past: pa };
-  }, [rows]);
 
   const [weekStart, setWeekStart] = useState(() => startOfWeek(new Date()));
   const [selectedDay, setSelectedDay] = useState<string | null>(null);
@@ -370,7 +374,7 @@ function InspectionGroup({
                     <div className="mt-1.5 flex flex-wrap items-center gap-2">
                       <Tag tone="neutral">{labelFor(i.inspection_type)}</Tag>
                       <span style={{ fontSize: 11.5, color: CDS.gray }}>
-                        {i.municipality || i.county || ""}
+                        {i.permit_number ? `Permit ${i.permit_number}` : i.project_name || ""}
                       </span>
                     </div>
                     <div style={{ fontSize: 11.5, color: CDS.gray, marginTop: 6 }}>
