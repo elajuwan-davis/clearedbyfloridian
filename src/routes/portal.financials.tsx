@@ -251,36 +251,74 @@ function FinancialsPage() {
       {
         <>
 
-          <MetricRow className="lg:grid-cols-4 xl:grid-cols-4">
-            <StatTile
-              label="Permit fees"
-              value={fmtUsd(totals.permitFees)}
-              context="Municipal, all projects"
-              icon={<Receipt className="h-3 w-3" strokeWidth={1.75} />}
-              tone="info"
+          <KpiBar>
+            <Kpi label="Permit fees (municipal)" value={fmtUsd(totals.permitFees)} context="All projects" tone="blue" />
+            <Kpi label="Collected / paid" value={fmtUsd(collected)} context="Recorded payments" tone="teal" />
+            <Kpi
+              label="Outstanding"
+              value={fmtUsd(Math.max(0, totals.combined - collected))}
+              context="Combined minus paid"
+              tone={totals.combined - collected > 0 ? "red" : "gray"}
             />
-            <StatTile
-              label="Cléared fees"
-              value={fmtUsd(totals.clearedFees)}
-              context="Service fees on file"
-              icon={<DollarSign className="h-3 w-3" strokeWidth={1.75} />}
-              tone="purple"
-            />
-            <StatTile
-              label="Combined"
-              value={fmtUsd(totals.combined)}
-              context="Total investment"
-              icon={<TrendingUp className="h-3 w-3" strokeWidth={1.75} />}
-              tone="success"
-            />
-            <StatTile
-              label="Active permits"
-              value={String(totals.active)}
-              context={`${permits.length} on file`}
-              icon={<FolderOpen className="h-3 w-3" strokeWidth={1.75} />}
-              tone="neutral"
-            />
-          </MetricRow>
+            <Kpi label="Active permits" value={String(totals.active)} context={`${permits.length} on file`} />
+          </KpiBar>
+
+          <Reveal className="mb-4">
+            <div style={{ background: CDS.white, border: `1px solid ${CDS.border}` }}>
+              <div
+                className="flex items-center gap-2"
+                style={{ borderBottom: `1px solid ${CDS.border}`, padding: "10px 12px" }}
+              >
+                <span style={{ fontSize: 13, fontWeight: 700, color: CDS.black }}>Billing trend</span>
+                <span style={{ fontSize: 11.5, color: CDS.grayLt }}>Last 6 months · invoiced vs collected</span>
+              </div>
+              <div style={{ height: 220, padding: "12px 8px 4px" }}>
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={trend} margin={{ top: 4, right: 12, left: 0, bottom: 0 }}>
+                    <CartesianGrid stroke={CDS.border} strokeWidth={1} vertical={false} />
+                    <XAxis
+                      dataKey="month"
+                      tick={{ fontSize: 11, fill: CDS.grayLt }}
+                      axisLine={{ stroke: CDS.border }}
+                      tickLine={false}
+                    />
+                    <YAxis
+                      tick={{ fontSize: 11, fill: CDS.grayLt }}
+                      axisLine={false}
+                      tickLine={false}
+                      tickFormatter={(v: number) => `$${Math.round(v / 1000)}k`}
+                    />
+                    <Tooltip
+                      contentStyle={{
+                        background: CDS.white,
+                        border: `1px solid ${CDS.border}`,
+                        borderRadius: 0,
+                        fontSize: 12,
+                      }}
+                      formatter={(v: number) => fmtUsd(v)}
+                    />
+                    <Area
+                      type="linear"
+                      dataKey="invoiced"
+                      name="Invoiced"
+                      stroke={CDS.teal}
+                      strokeWidth={2}
+                      fill="rgba(0,180,168,0.12)"
+                    />
+                    <Area
+                      type="linear"
+                      dataKey="collected"
+                      name="Collected"
+                      stroke={CDS.black}
+                      strokeWidth={2}
+                      fill="transparent"
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+          </Reveal>
+
 
           <Panel
             title="Fees by project"
