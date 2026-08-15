@@ -1,10 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import {
-  MarketingNavDropdown,
-  PRODUCT_MENU,
-  CONTRACTORS_MENU,
-} from "@/components/marketing-nav-dropdown";
+import { MarketingNav as Nav } from "@/components/marketing-shell";
 import {
   ArrowRight,
   ArrowUpRight,
@@ -107,64 +103,6 @@ function AnnouncementBanner() {
         </button>
       </div>
     </div>
-  );
-}
-
-/* ----------------------------------- NAV --------------------------------- */
-
-const NAV_LINKS: Array<{ to: string; label: string }> = [{ to: "/pricing", label: "Pricing" }];
-
-function Nav() {
-  return (
-    <header className="sticky top-0 z-50" style={{ background: WHITE, borderBottom: `1px solid ${BORDER}` }}>
-      <div className="mx-auto max-w-7xl px-5 lg:px-8 h-[58px] flex items-center justify-between gap-6">
-        <div className="flex items-center gap-8 min-w-0">
-          <Link
-            to="/"
-            className="no-underline"
-            style={{ color: INK, fontWeight: 700, fontSize: 20, letterSpacing: "-0.03em" }}
-          >
-            Cleard
-          </Link>
-          <nav className="hidden md:flex items-center gap-6">
-            <MarketingNavDropdown label="Product" to="/products" sections={PRODUCT_MENU} triggerColor={GRAY} />
-            <MarketingNavDropdown label="Contractors" to="/join" sections={CONTRACTORS_MENU} triggerColor={GRAY} />
-            {NAV_LINKS.map((l) => (
-              <Link
-                key={l.to}
-                to={l.to}
-                className="inline-flex items-center gap-1 text-[14px] no-underline transition-opacity hover:opacity-70"
-                style={{ color: GRAY }}
-              >
-                {l.label}
-              </Link>
-            ))}
-          </nav>
-        </div>
-
-
-        <div className="flex items-center gap-3">
-          <Link to="/login" className="hidden sm:inline text-[14px] no-underline" style={{ color: GRAY }}>
-            Sign in
-          </Link>
-          <Link
-            to="/process"
-            className="hidden sm:inline-flex items-center px-4 py-2 text-[13.5px] font-medium no-underline"
-            style={{ color: INK, border: `1px solid ${BORDER}`, background: WHITE }}
-          >
-            See a demo
-          </Link>
-          <Link
-            to="/join"
-            hash="request"
-            className="inline-flex items-center px-4 py-2 text-[13.5px] font-bold no-underline"
-            style={{ background: TEAL, color: INK }}
-          >
-            Get started
-          </Link>
-        </div>
-      </div>
-    </header>
   );
 }
 
