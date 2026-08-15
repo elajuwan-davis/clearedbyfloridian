@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { CDS, SkeletonRows, Tag } from "@/components/cds-kit";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { PortalShell } from "@/components/portal-shell";
@@ -240,19 +241,37 @@ function MessagesPage() {
           </button>
         }
       >
-        <div className="grid min-w-0 grid-cols-1 gap-0 overflow-hidden rounded-lg lg:grid-cols-[300px_1fr] p-surface-flat" style={{ height: "calc(100vh - 130px)" }}>
+        <div
+          className="grid min-w-0 grid-cols-1 overflow-hidden lg:grid-cols-[280px_1fr]"
+          style={{ height: "calc(100vh - 130px)", background: CDS.white, border: `1px solid ${CDS.border}` }}
+        >
           {/* Thread list */}
-          <aside className="flex min-h-0 flex-col border-b lg:border-b-0 lg:border-r" style={{ borderColor: "var(--p-border)" }}>
-            <div className="p-2" style={{ borderBottom: "1px solid var(--p-border)" }}>
-              <SearchInput value={query} onChange={setQuery} placeholder="Search conversations…" />
-            </div>
+          <aside
+            className="flex min-h-0 flex-col"
+            style={{ background: CDS.off, borderRight: `1px solid ${CDS.border}` }}
+          >
+            <input
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Search conversations…"
+              aria-label="Search conversations"
+              style={{
+                border: "none",
+                borderBottom: `1px solid ${CDS.border}`,
+                padding: "12px 16px",
+                width: "100%",
+                fontSize: 13,
+                background: CDS.off,
+                color: CDS.black,
+              }}
+            />
             <ul className="flex-1 overflow-y-auto">
               {loading ? (
-                <li className="flex items-center justify-center gap-2 p-8 text-[12.5px] text-muted-foreground">
-                  <Loader2 className="h-4 w-4 animate-spin" /> Loading…
+                <li style={{ padding: 16 }}>
+                  <SkeletonRows rows={5} />
                 </li>
               ) : filtered.length === 0 ? (
-                <li className="p-8 text-center text-[12.5px] text-muted-foreground">
+                <li className="p-8 text-center" style={{ fontSize: 12.5, color: CDS.grayLt }}>
                   <Inbox className="mx-auto mb-2 h-6 w-6 opacity-40" strokeWidth={1.5} />
                   No conversations yet.
                 </li>
@@ -265,32 +284,37 @@ function MessagesPage() {
                       <button
                         type="button"
                         onClick={() => setActiveId(t.id)}
-                        className={`block w-full min-w-0 text-left px-3 py-2.5 transition-colors ${
-                          isActive ? "bg-[var(--p-card-2)]" : "p-hover-plate"
-                        }`}
-                        style={{ borderBottom: "1px solid var(--p-border)" }}
+                        className="block w-full min-w-0 text-left transition-colors hover:bg-[#EEECEA]"
+                        style={{
+                          background: isActive ? CDS.off2 : "transparent",
+                          borderBottom: `1px solid ${CDS.border}`,
+                          padding: "10px 16px",
+                        }}
                       >
-                        <div className="flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-2">
+                          {unread > 0 && (
+                            <span
+                              aria-hidden
+                              style={{ width: 6, height: 6, background: CDS.teal, display: "inline-block" }}
+                            />
+                          )}
                           <span
-                            className="truncate text-[12.5px]"
-                            style={{ fontWeight: unread ? 600 : 400 }}
+                            className="min-w-0 flex-1 truncate"
+                            style={{
+                              fontSize: 13,
+                              fontWeight: unread ? 700 : 500,
+                              color: CDS.black,
+                            }}
                           >
                             {t.subject}
                           </span>
-                          {unread > 0 && (
-                            <span className="inline-flex h-4.5 min-w-[18px] shrink-0 items-center justify-center rounded-full px-1 text-[10px] font-medium text-white" style={{ backgroundColor: "var(--p-danger)" }}>
-                              {unread}
-                            </span>
-                          )}
+                          <span className="shrink-0 tabular-nums" style={{ fontSize: 11, color: CDS.grayLt }}>
+                            {fmt(t.last_message_at)}
+                          </span>
                         </div>
-                        {isAdmin && t.created_by_email && (
-                          <div className="mt-0.5 truncate text-[11px] text-muted-foreground">
-                            {t.created_by_email}
-                          </div>
-                        )}
-                        <div className="mt-1 flex items-center gap-2 text-[11px] text-muted-foreground">
-                          <span>{fmt(t.last_message_at)}</span>
-                          {t.status === "closed" && <span>· Closed</span>}
+                        <div className="mt-0.5 truncate" style={{ fontSize: 11.5, color: CDS.gray }}>
+                          {isAdmin && t.created_by_email ? t.created_by_email : ""}
+                          {t.status === "closed" ? " · Closed" : ""}
                         </div>
                       </button>
                     </li>
@@ -301,20 +325,27 @@ function MessagesPage() {
           </aside>
 
           {/* Conversation */}
-          <section className="flex min-h-0 flex-col">
+          <section className="flex min-h-0 flex-col" style={{ background: CDS.white }}>
             {!active ? (
               <div className="grid flex-1 place-items-center p-8 text-center">
                 <div>
                   <MessageSquare className="mx-auto h-8 w-8 opacity-25" strokeWidth={1.5} />
-                  <p className="mt-3 text-[12.5px] text-muted-foreground">Select a conversation, or start a new one.</p>
+                  <p style={{ fontSize: 13, color: CDS.gray, marginTop: 12 }}>
+                    Select a conversation, or start a new one.
+                  </p>
                 </div>
               </div>
             ) : (
               <>
-                <div className="flex flex-wrap items-start justify-between gap-3 px-4 py-3" style={{ borderBottom: "1px solid var(--p-border)" }}>
+                <div
+                  className="flex flex-wrap items-start justify-between gap-3"
+                  style={{ borderBottom: `1px solid ${CDS.border}`, padding: "16px 20px" }}
+                >
                   <div className="min-w-0">
-                    <div className="truncate text-[14px] font-semibold">{active.subject}</div>
-                    <div className="mt-0.5 text-[11px] text-muted-foreground">
+                    <div className="truncate" style={{ fontSize: 15, fontWeight: 700, color: CDS.black }}>
+                      {active.subject}
+                    </div>
+                    <div style={{ fontSize: 11.5, color: CDS.gray, marginTop: 2 }}>
                       Opened {fmt(active.created_at)}
                       {active.created_by_email ? ` · ${active.created_by_email}` : ""}
                       {active.recipient_role
@@ -324,59 +355,70 @@ function MessagesPage() {
                         : ""}
                     </div>
                   </div>
-                  {isAdmin && (
-                    <button type="button" className="p-btn p-btn-ghost p-btn-sm" onClick={toggleStatus}>
-                      {active.status === "open" ? "Mark resolved" : "Reopen"}
-                    </button>
-                  )}
+                  <div className="flex shrink-0 items-center gap-2">
+                    <Tag tone={active.status === "open" ? "success" : "neutral"}>
+                      {active.status === "open" ? "Open" : "Resolved"}
+                    </Tag>
+                    {isAdmin && (
+                      <button type="button" className="p-btn p-btn-ghost p-btn-sm" onClick={toggleStatus}>
+                        {active.status === "open" ? "Mark resolved" : "Reopen"}
+                      </button>
+                    )}
+                  </div>
                 </div>
 
-                <div className="flex-1 space-y-3 overflow-y-auto p-4">
+                <div className="flex-1 space-y-3 overflow-y-auto" style={{ padding: 20 }}>
                   {postsLoading ? (
-                    <div className="flex items-center gap-2 text-[12.5px] text-muted-foreground">
-                      <Loader2 className="h-4 w-4 animate-spin" /> Loading messages…
-                    </div>
+                    <SkeletonRows rows={4} />
                   ) : (
                     posts.map((m) => {
                       const senderEmail = m.from_admin
                         ? CLEARD_SUPPORT_EMAIL
                         : m.author_email ?? active.created_by_email ?? "";
+                      const own = !m.from_admin;
                       return (
-                      <div key={m.id} className={`flex ${m.from_admin ? "justify-start" : "justify-end"}`}>
-                        <div className="max-w-[75%]">
-                          <div className="mb-1 flex flex-wrap items-baseline gap-2">
-                            <span className="text-[11px] font-medium text-muted-foreground">
-                              {m.author_label ?? (m.from_admin ? CLEARD_SUPPORT_LABEL : "Client")}
-                            </span>
-                            {senderEmail && (
-                              <span className="text-[10.5px] lowercase text-muted-foreground/70">
-                                &lt;{senderEmail}&gt;
+                        <div key={m.id} className={`flex ${own ? "justify-end" : "justify-start"}`}>
+                          <div className="min-w-0" style={{ maxWidth: "70%" }}>
+                            <div
+                              className={`mb-0.5 flex flex-wrap items-baseline gap-2 ${own ? "justify-end" : ""}`}
+                            >
+                              <span
+                                style={{ fontSize: 11, fontWeight: 700, color: CDS.grayLt }}
+                              >
+                                {m.author_label ?? (m.from_admin ? CLEARD_SUPPORT_LABEL : "Client")}
                               </span>
-                            )}
-                            <span className="text-[10.5px] text-muted-foreground/70">{fmt(m.created_at)}</span>
-                          </div>
-                          <div
-                            className="whitespace-pre-wrap rounded-lg px-3 py-2 text-[12.5px] leading-relaxed"
-                            style={
-                              m.from_admin
-                                ? { backgroundColor: "var(--p-card-2)", color: "var(--p-text)" }
-                                : { backgroundColor: "var(--p-info)", color: "#fff" }
-                            }
-                          >
-                            {m.body}
+                              {senderEmail && (
+                                <span style={{ fontSize: 10.5, color: CDS.grayLt, textTransform: "lowercase" }}>
+                                  &lt;{senderEmail}&gt;
+                                </span>
+                              )}
+                              <span style={{ fontSize: 10.5, color: CDS.grayLt }}>{fmt(m.created_at)}</span>
+                            </div>
+                            <div
+                              className="whitespace-pre-wrap"
+                              style={{
+                                background: own ? CDS.black : CDS.off,
+                                color: own ? CDS.white : CDS.black,
+                                border: `1px solid ${own ? CDS.black : CDS.border}`,
+                                padding: "10px 14px",
+                                fontSize: 13,
+                                lineHeight: 1.55,
+                              }}
+                            >
+                              {m.body}
+                            </div>
                           </div>
                         </div>
-                      </div>
                       );
                     })
                   )}
                 </div>
 
-                <div className="p-3" style={{ borderTop: "1px solid var(--p-border)" }}>
-                  <div className="mb-1.5 text-[11px] text-muted-foreground">
-                    From <span className="lowercase text-foreground/80">{fromEmail}</span>
+                <div style={{ borderTop: `1px solid ${CDS.border}`, padding: "12px 20px" }}>
+                  <div style={{ fontSize: 11, color: CDS.grayLt, marginBottom: 6 }}>
+                    From <span style={{ textTransform: "lowercase", color: CDS.gray }}>{fromEmail}</span>
                   </div>
-                  <div className="flex items-end gap-2">
+                  <div className="flex items-end gap-2.5">
                     <Textarea
                       value={draft}
                       onChange={(e) => setDraft(e.target.value)}
@@ -388,7 +430,7 @@ function MessagesPage() {
                       }}
                       rows={2}
                       placeholder="Write a reply… (Enter to send, Shift+Enter for a new line)"
-                      className="min-h-[52px] flex-1 resize-none text-[12.5px]"
+                      className="min-h-[52px] flex-1 resize-none text-[13px]"
                     />
                     <button type="button" onClick={send} disabled={sending} className="p-btn p-btn-primary h-11 gap-1.5">
                       {sending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" strokeWidth={1.75} />}
@@ -398,6 +440,7 @@ function MessagesPage() {
                 </div>
               </>
             )}
+
           </section>
         </div>
       </PageShell>

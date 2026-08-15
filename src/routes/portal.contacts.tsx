@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useRouterState } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
-import { Plus, Pencil, Trash2, Mail, Phone, Loader2 } from "lucide-react";
+import { Plus, Pencil, Trash2, Mail, Phone, Loader2, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -32,7 +32,8 @@ import {
   type ContactType,
   type ContactInput,
 } from "@/lib/contacts-api";
-import { PageShell, SearchInput, Segmented, TableShell, EmptyState, StatusChip } from "@/components/ui-kit";
+import { PageShell, SearchInput, Segmented } from "@/components/ui-kit";
+import { CDS, CdsCard, CdsEmpty, Kpi, KpiBar, SkeletonCards, Tag } from "@/components/cds-kit";
 
 export const Route = createFileRoute("/portal/contacts")({
   head: () => ({
@@ -184,79 +185,98 @@ function ContactsPage() {
         </>
       }
     >
+      <KpiBar>
+        <Kpi label="Contacts" value={rows.length} />
+        <Kpi label="Shown" value={filtered.length} tone="teal" />
+        <Kpi label="With email" value={rows.filter((r) => Boolean(r.email)).length} tone="blue" />
+        <Kpi label="Missing phone" value={rows.filter((r) => !r.phone).length} tone="gray" />
+      </KpiBar>
+
       {loading ? (
-        <div className="flex items-center justify-center gap-2 p-12 text-[12.5px] text-muted-foreground">
-          <Loader2 className="h-4 w-4 animate-spin" /> Loading contacts…
-        </div>
+        <SkeletonCards count={6} />
       ) : filtered.length === 0 ? (
-        <EmptyState
+        <CdsEmpty
+          icon={<Users className="h-4 w-4" strokeWidth={1.75} />}
           title={rows.length === 0 ? "No contacts yet" : "No contacts match your search"}
+          description="Subcontractors, inspectors, municipal staff and homeowners all live in one shared book."
           action={
             rows.length === 0 ? (
-              <button type="button" className="p-btn p-btn-ghost" onClick={openNew}>
-                Add your first contact
+              <button type="button" className="p-btn p-btn-primary" onClick={openNew}>
+                <Plus className="h-3.5 w-3.5" strokeWidth={1.75} /> Add your first contact
               </button>
             ) : undefined
           }
         />
       ) : (
-        <TableShell>
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Type</th>
-              <th>Company</th>
-              <th>Email</th>
-              <th>Phone</th>
-              <th className="w-[1%]" />
-            </tr>
-          </thead>
-          <tbody>
-            {filtered.map((c) => (
-              <tr key={c.id} className="group">
-                <td className="min-w-0">
-                  <div className="truncate font-medium">{c.name}</div>
-                  {c.trade && <div className="truncate text-[11px] text-muted-foreground">{c.trade}</div>}
-                </td>
-                <td>
-                  <StatusChip tone="neutral">{CONTACT_TYPE_LABEL[c.contact_type] ?? c.contact_type}</StatusChip>
-                </td>
-                <td className="max-w-[200px] truncate text-muted-foreground">{c.company || "—"}</td>
-                <td className="max-w-[220px] truncate">
-                  {c.email ? (
+        <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
+          {filtered.map((c, i) => {
+            const incomplete = !c.email || !c.phone;
+            return (
+              <CdsCard key={c.id} index={i} alert={incomplete}>
+                <div className="flex min-w-0 items-start gap-2">
+                  <div className="min-w-0 flex-1">
+                    <div className="truncate" style={{ fontSize: 15, fontWeight: 700, color: CDS.black }}>
+                      {c.name}
+                    </div>
+                    <div className="truncate" style={{ fontSize: 12, color: CDS.gray, marginTop: 2 }}>
+                      {[c.trade, c.company].filter(Boolean).join(" · ") || "No company on file"}
+                    </div>
+                  </div>
+                  <Tag>{CONTACT_TYPE_LABEL[c.contact_type] ?? c.contact_type}</Tag>
+                </div>
+
+                <div className="mt-3 flex flex-wrap items-center gap-2">
+                  <Tag tone={c.email ? "success" : "danger"}>{c.email ? "Email on file" : "No email"}</Tag>
+                  <Tag tone={c.phone ? "success" : "danger"}>{c.phone ? "Phone on file" : "No phone"}</Tag>
+                </div>
+
+                <div className="mt-3 space-y-1">
+                  {c.email && (
                     <Link
                       to="/messages"
                       search={{ contact: c.id }}
                       title={`Message ${c.name} in Cleard`}
-                      className="inline-flex items-center gap-1.5 hover:underline"
+                      className="flex min-w-0 items-center gap-1.5 hover:underline"
+                      style={{ fontSize: 12.5, color: CDS.gray }}
                     >
-                      <Mail className="h-3 w-3 shrink-0 text-muted-foreground" strokeWidth={1.6} /> {c.email}
+                      <Mail className="h-3 w-3 shrink-0" strokeWidth={1.6} />
+                      <span className="truncate">{c.email}</span>
                     </Link>
-                  ) : "—"}
-                </td>
-
-                <td className="whitespace-nowrap">
-                  {c.phone ? (
-                    <a href={`tel:${c.phone}`} className="inline-flex items-center gap-1.5 hover:underline">
-                      <Phone className="h-3 w-3 shrink-0 text-muted-foreground" strokeWidth={1.6} /> {c.phone}
+                  )}
+                  {c.phone && (
+                    <a
+                      href={`tel:${c.phone}`}
+                      className="flex items-center gap-1.5 hover:underline"
+                      style={{ fontSize: 12.5, color: CDS.gray }}
+                    >
+                      <Phone className="h-3 w-3 shrink-0" strokeWidth={1.6} /> {c.phone}
                     </a>
-                  ) : "—"}
-                </td>
-                <td>
-                  <div className="flex items-center justify-end gap-1 opacity-0 transition-opacity group-hover:opacity-100">
-                    <button type="button" className="p-btn p-btn-quiet p-btn-sm" onClick={() => openEdit(c)} aria-label={`Edit ${c.name}`}>
-                      <Pencil className="h-3.5 w-3.5" strokeWidth={1.75} />
-                    </button>
-                    <button type="button" className="p-btn p-btn-quiet p-btn-sm text-[var(--p-danger)]" onClick={() => setDeleteTarget(c)} aria-label={`Delete ${c.name}`}>
-                      <Trash2 className="h-3.5 w-3.5" strokeWidth={1.75} />
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </TableShell>
+                  )}
+                </div>
+
+                <div className="cds-card-actions mt-3 flex items-center gap-1.5">
+                  <button type="button" className="p-btn p-btn-quiet p-btn-sm" onClick={() => openEdit(c)}>
+                    <Pencil className="h-3 w-3" strokeWidth={1.75} /> Edit
+                  </button>
+                  <Link to="/messages" search={{ contact: c.id }} className="p-btn p-btn-quiet p-btn-sm">
+                    Message
+                  </Link>
+                  <button
+                    type="button"
+                    className="p-btn p-btn-quiet p-btn-sm ml-auto"
+                    style={{ color: CDS.red }}
+                    onClick={() => setDeleteTarget(c)}
+                    aria-label={`Delete ${c.name}`}
+                  >
+                    <Trash2 className="h-3 w-3" strokeWidth={1.75} />
+                  </button>
+                </div>
+              </CdsCard>
+            );
+          })}
+        </div>
       )}
+
 
       {/* Create / edit */}
       <Dialog open={dialogOpen} onOpenChange={(o) => { setDialogOpen(o); if (!o) setEditing(null); }}>

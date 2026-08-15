@@ -1,36 +1,59 @@
 import { Link } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { Fragment, useEffect, useMemo, useState } from "react";
 import { PortalShell } from "@/components/portal-shell";
-import { ChevronDown, Search, AlertTriangle, Plus, FileText, RefreshCw, Flag } from "lucide-react";
+import {
+  ChevronDown,
+  ChevronRight,
+  AlertTriangle,
+  Plus,
+  FileText,
+  RefreshCw,
+  Flag,
+  ArrowUpRight,
+} from "lucide-react";
 import { isInternalUser } from "@/lib/is-internal-user";
 import { listEscalatedPermitIds } from "@/lib/staff-ops";
-import { listPermits, updatePermit, permitCompleteness, type PermitRow, type PermitStatus } from "@/lib/permits-api";
+import {
+  listPermits,
+  updatePermit,
+  permitCompleteness,
+  type PermitRow,
+  type PermitStatus,
+} from "@/lib/permits-api";
 import { syncAllPermits, getLastRun, formatRelative } from "@/lib/permit-sync";
 import { getVendor, isVendorManaged } from "@/lib/project-vendors";
-import { listLocalPermitDrafts, discardLocalPermitDrafts, type LocalPermitDraft } from "@/lib/permit-drafts";
 import {
-  PageShell,
-  Panel,
-  SearchInput,
-  Segmented,
-  StatusChip,
-  EmptyState,
-} from "@/components/ui-kit";
+  listLocalPermitDrafts,
+  discardLocalPermitDrafts,
+  type LocalPermitDraft,
+} from "@/lib/permit-drafts";
+import { PageShell, Panel, SearchInput, Segmented, EmptyState } from "@/components/ui-kit";
+import {
+  CDS,
+  Kpi,
+  KpiBar,
+  Reveal,
+  SkeletonRows,
+  StagePipeline,
+  Tag,
+  toneForStatus,
+  type PipelineStage,
+} from "@/components/cds-kit";
 
+/** Stage keys mirror the real permit statuses — no new data, just a view. */
+type StageKey = "drafts" | PermitStatus;
 
-
-type GroupKey = "intake" | "preparing" | "submitted" | "on_hold" | "outsourced" | "issued" | "cancelled";
-
-const GROUPS: Array<{ key: GroupKey; label: string; statuses: PermitStatus[]; borderColor: string }> = [
-  { key: "intake", label: "Pre-Check", statuses: ["submitted"], borderColor: "oklch(0.78 0.13 75)" },
-  { key: "preparing", label: "Pre-Check — In Review", statuses: ["in_review", "corrections_required"], borderColor: "oklch(0.78 0.13 75)" },
-  { key: "submitted", label: "Cleared for Takeoff", statuses: ["approved"], borderColor: "oklch(0.78 0.13 75)" },
-  { key: "on_hold", label: "Delayed", statuses: ["on_hold"], borderColor: "oklch(0.72 0.17 65)" },
-  { key: "outsourced", label: "Outsourced Permitting", statuses: ["outsourced_permitting"], borderColor: "oklch(0.5 0.2 285)" },
-  { key: "issued", label: "En Route", statuses: ["permit_issued"], borderColor: "oklch(0.58 0.16 150)" },
-  { key: "cancelled", label: "Cancelled", statuses: ["cancelled"], borderColor: "oklch(0.5 0.18 25)" },
+const STAGES: Array<{ key: StageKey; label: string; countColor?: string }> = [
+  { key: "drafts", label: "Intake" },
+  { key: "submitted", label: "Submitted" },
+  { key: "in_review", label: "In Review" },
+  { key: "corrections_required", label: "Corrections", countColor: CDS.red },
+  { key: "approved", label: "Approved" },
+  { key: "outsourced_permitting", label: "Outsourced" },
+  { key: "permit_issued", label: "Issued", countColor: CDS.tealText },
+  { key: "on_hold", label: "Delayed", countColor: CDS.red },
+  { key: "cancelled", label: "Cancelled" },
 ];
-
 
 const STATUS_OPTIONS: Array<{ value: PermitStatus; label: string }> = [
   { value: "submitted", label: "Pre-Check" },
@@ -41,6 +64,19 @@ const STATUS_OPTIONS: Array<{ value: PermitStatus; label: string }> = [
   { value: "permit_issued", label: "En Route" },
   { value: "cancelled", label: "Cancelled" },
 ];
+
+const STATUS_LABEL: Record<string, string> = {
+  submitted: "Submitted",
+  in_review: "In Review",
+  corrections_required: "Corrections",
+  approved: "Approved",
+  on_hold: "Delayed",
+  outsourced_permitting: "Outsourced",
+  permit_issued: "Issued",
+  cancelled: "Cancelled",
+};
+
+type SortKey = "id" | "address" | "jurisdiction" | "type" | "stage" | "assigned" | "updated";
 
 export function MyPermitsPage() {
   const [permits, setPermits] = useState<PermitRow[]>([]);
@@ -54,9 +90,11 @@ export function MyPermitsPage() {
   const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [escalatedIds, setEscalatedIds] = useState<Set<string>>(new Set());
   const [drafts, setDrafts] = useState<LocalPermitDraft[]>([]);
-  const [draftsOpen, setDraftsOpen] = useState(true);
-  const [open, setOpen] = useState<Record<GroupKey, boolean>>({
-    intake: true, preparing: true, submitted: true, on_hold: true, outsourced: true, issued: true, cancelled: false,
+  const [stage, setStage] = useState<StageKey | null>(null);
+  const [expanded, setExpanded] = useState<string | null>(null);
+  const [sort, setSort] = useState<{ key: SortKey; dir: "asc" | "desc" }>({
+    key: "updated",
+    dir: "desc",
   });
   const internal = isInternalUser();
 
@@ -70,7 +108,6 @@ export function MyPermitsPage() {
       window.removeEventListener("storage", on);
     };
   }, []);
-
 
   async function changeStatus(id: string, status: PermitStatus) {
     setUpdatingId(id);
@@ -90,7 +127,9 @@ export function MyPermitsPage() {
     try {
       const rows = await listPermits();
       setPermits(rows);
-    } finally { setLoading(false); }
+    } finally {
+      setLoading(false);
+    }
   }
 
   async function handleSync() {
@@ -117,7 +156,9 @@ export function MyPermitsPage() {
   useEffect(() => {
     if (!internal) return;
     listEscalatedPermitIds().then(setEscalatedIds);
-    const on = () => { void listEscalatedPermitIds().then(setEscalatedIds); };
+    const on = () => {
+      void listEscalatedPermitIds().then(setEscalatedIds);
+    };
     window.addEventListener("staff-ops:changed", on);
     return () => window.removeEventListener("staff-ops:changed", on);
   }, [internal]);
@@ -131,14 +172,54 @@ export function MyPermitsPage() {
       );
     }
     if (!q) return rows;
-    return rows.filter((p) => `${p.project_name} ${p.job_address} ${p.county ?? ""} ${p.municipality ?? ""}`.toLowerCase().includes(q));
+    return rows.filter((p) =>
+      `${p.project_name} ${p.job_address} ${p.county ?? ""} ${p.municipality ?? ""}`
+        .toLowerCase()
+        .includes(q),
+    );
   }, [permits, query, management]);
 
-
-  const grouped = useMemo(
-    () => GROUPS.map((g) => ({ ...g, items: filtered.filter((p) => g.statuses.includes(p.status)) })),
-    [filtered],
+  const stages: PipelineStage[] = useMemo(
+    () =>
+      STAGES.map((s) => ({
+        key: s.key,
+        label: s.label,
+        countColor: s.countColor,
+        count:
+          s.key === "drafts" ? drafts.length : filtered.filter((p) => p.status === s.key).length,
+      })),
+    [filtered, drafts.length],
   );
+
+  const staged = useMemo(
+    () => (stage && stage !== "drafts" ? filtered.filter((p) => p.status === stage) : filtered),
+    [filtered, stage],
+  );
+
+  const rows = useMemo(() => {
+    const val = (p: PermitRow, key: SortKey) => {
+      switch (key) {
+        case "id":
+          return p.permit_number ?? p.id;
+        case "address":
+          return p.job_address ?? "";
+        case "jurisdiction":
+          return p.municipality ?? p.county ?? "";
+        case "type":
+          return p.permit_type ?? "";
+        case "stage":
+          return STATUS_LABEL[p.status] ?? p.status;
+        case "assigned":
+          return getVendor(p.project_name) ?? "Cléared";
+        default:
+          return p.updated_at;
+      }
+    };
+    const dir = sort.dir === "asc" ? 1 : -1;
+    return [...staged].sort(
+      (a, b) => String(val(a, sort.key)).localeCompare(String(val(b, sort.key))) * dir,
+    );
+  }, [staged, sort]);
 
   const counts = useMemo(
     () => ({
@@ -149,6 +230,12 @@ export function MyPermitsPage() {
     }),
     [filtered],
   );
+
+  function toggleSort(key: SortKey) {
+    setSort((s) => (s.key === key ? { key, dir: s.dir === "asc" ? "desc" : "asc" } : { key, dir: "asc" }));
+  }
+
+  const showDrafts = drafts.length > 0 && (stage === null || stage === "drafts");
 
   return (
     <PortalShell>
@@ -189,11 +276,20 @@ export function MyPermitsPage() {
               ]}
             />
             <span className="ml-auto hidden text-[11.5px] text-muted-foreground sm:inline">
-              {counts.total} shown
+              {rows.length} shown
             </span>
           </>
         }
       >
+        <KpiBar>
+          <Kpi label="Total permits" value={counts.total} />
+          <Kpi label="Active" value={counts.active} tone="teal" />
+          <Kpi label="Blocked" value={counts.blocked} tone={counts.blocked > 0 ? "red" : "gray"} />
+          <Kpi label="Issued" value={counts.issued} tone="blue" />
+        </KpiBar>
+
+        <StagePipeline stages={stages} active={stage} onSelect={(k) => setStage(k as StageKey | null)} />
+
         {permits.length === 0 && drafts.length === 0 && !loading ? (
           <Panel padded={false}>
             <EmptyState
@@ -208,190 +304,183 @@ export function MyPermitsPage() {
             />
           </Panel>
         ) : (
-          <div className="space-y-3">
-            {drafts.length > 0 && (
-              <section className="min-w-0">
-                <button
-                  type="button"
-                  onClick={() => setDraftsOpen((o) => !o)}
-                  className="flex w-full items-center gap-2 px-1 py-1.5 text-left"
-                >
-                  <ChevronDown
-                    className={`h-3.5 w-3.5 text-muted-foreground transition-transform ${draftsOpen ? "" : "-rotate-90"}`}
-                    strokeWidth={2}
-                  />
-                  <span className="text-[12.5px] font-semibold tracking-[-0.01em]">Drafts</span>
-                  <span className="text-[11.5px] tabular-nums text-muted-foreground">{drafts.length}</span>
-                </button>
-                {draftsOpen && (
-                  <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+          <div className="space-y-4">
+            {showDrafts && (
+              <Reveal>
+                <div style={{ background: CDS.white, border: `1px solid ${CDS.border}` }}>
+                  <div
+                    className="flex items-center gap-2"
+                    style={{ borderBottom: `1px solid ${CDS.border}`, padding: "10px 12px" }}
+                  >
+                    <span style={{ fontSize: 13, fontWeight: 700, color: CDS.black }}>Drafts</span>
+                    <Tag>{drafts.length} not submitted</Tag>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        discardLocalPermitDrafts();
+                        setDrafts([]);
+                      }}
+                      className="ml-auto"
+                      style={{ fontSize: 11, color: CDS.gray, background: "none", border: "none" }}
+                    >
+                      Discard all
+                    </button>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3">
                     {drafts.map((d, i) => (
-                      <div
+                      <Link
                         key={i}
-                        className="p-plate p-hover-plate group flex min-w-0 flex-col overflow-hidden"
+                        to="/portal/permits/new"
+                        className="cds-card-hover min-w-0"
+                        style={{
+                          borderRight: `1px solid ${CDS.border}`,
+                          borderBottom: `1px solid ${CDS.border}`,
+                          padding: "12px 14px",
+                        }}
                       >
-                        <Link to="/portal/permits/new" className="min-w-0 flex-1 px-3 pb-2 pt-2.5">
-                          <div className="truncate text-[13px] font-medium leading-tight">
-                            {d.projectName}
-                          </div>
-                          <div className="mt-0.5 truncate text-[11.5px] text-muted-foreground">
-                            {d.jobAddress || "Address not entered"}
-                          </div>
-                          <div className="mt-2 flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1 text-[11px] text-muted-foreground">
-                            {d.permitType && <span className="truncate">{d.permitType}</span>}
-                            {d.municipality && (
-                              <>
-                                <span className="opacity-40">·</span>
-                                <span className="truncate">{d.municipality}</span>
-                              </>
-                            )}
-                            <span className="ml-auto shrink-0 tabular-nums">
-                              {d.savedAt ? new Date(d.savedAt).toLocaleDateString() : ""}
-                            </span>
-                          </div>
-                        </Link>
-                        <div className="flex items-center gap-2 px-3 pb-2.5">
-                          <span className="text-[11px] text-muted-foreground">Not submitted</span>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              discardLocalPermitDrafts();
-                              setDrafts([]);
-                            }}
-                            className="ml-auto text-[11px] text-muted-foreground opacity-0 transition-opacity hover:text-foreground group-hover:opacity-100"
-                          >
-                            Discard
-                          </button>
+                        <div className="truncate" style={{ fontSize: 13, fontWeight: 600, color: CDS.black }}>
+                          {d.projectName || "Untitled draft"}
                         </div>
-                      </div>
+                        <div className="truncate" style={{ fontSize: 11.5, color: CDS.gray, marginTop: 2 }}>
+                          {d.jobAddress || "Address not entered"}
+                        </div>
+                        <div
+                          className="mt-2 flex items-center gap-2 truncate"
+                          style={{ fontSize: 11, color: CDS.grayLt }}
+                        >
+                          {d.permitType && <span className="truncate">{d.permitType}</span>}
+                          {d.municipality && <span className="truncate">· {d.municipality}</span>}
+                          <span className="ml-auto shrink-0 tabular-nums">
+                            {d.savedAt ? new Date(d.savedAt).toLocaleDateString() : ""}
+                          </span>
+                        </div>
+                      </Link>
                     ))}
                   </div>
-                )}
-              </section>
+                </div>
+              </Reveal>
             )}
-            {grouped.map((g) => (
 
-              <section key={g.key} className="min-w-0">
-                <button
-                  type="button"
-                  onClick={() => setOpen((o) => ({ ...o, [g.key]: !o[g.key] }))}
-                  className="flex w-full items-center gap-2 px-1 py-1.5 text-left"
-                >
-                  <ChevronDown
-                    className={`h-3.5 w-3.5 text-muted-foreground transition-transform ${open[g.key] ? "" : "-rotate-90"}`}
-                    strokeWidth={2}
-                  />
-                  <span className="text-[12.5px] font-semibold tracking-[-0.01em]">{g.label}</span>
-                  <span className="text-[11.5px] tabular-nums text-muted-foreground">
-                    {g.items.length}
-                  </span>
-                </button>
-                {open[g.key] &&
-                  (g.items.length === 0 ? (
-                    <div className="px-1 py-2 text-[11.5px] text-muted-foreground">Empty stage.</div>
-                  ) : (
-                    <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
-                      {g.items.map((p) => {
+            {stage !== "drafts" && (
+              <Reveal>
+                <div className="min-w-0 overflow-x-auto" style={{ background: CDS.white, border: `1px solid ${CDS.border}` }}>
+                  <table className="cds-table">
+                    <thead>
+                      <tr>
+                        <th style={{ width: 28 }} aria-label="Expand" />
+                        <SortTh label="ID" k="id" sort={sort} onSort={toggleSort} />
+                        <SortTh label="Address" k="address" sort={sort} onSort={toggleSort} />
+                        <SortTh label="Jurisdiction" k="jurisdiction" sort={sort} onSort={toggleSort} />
+                        <SortTh label="Type" k="type" sort={sort} onSort={toggleSort} />
+                        <SortTh label="Stage" k="stage" sort={sort} onSort={toggleSort} />
+                        <SortTh label="Assigned" k="assigned" sort={sort} onSort={toggleSort} />
+                        <SortTh label="Last updated" k="updated" sort={sort} onSort={toggleSort} />
+                        <th>Status</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {loading && rows.length === 0 && (
+                        <tr>
+                          <td colSpan={9}>
+                            <SkeletonRows rows={6} />
+                          </td>
+                        </tr>
+                      )}
+                      {!loading && rows.length === 0 && (
+                        <tr>
+                          <td colSpan={9} style={{ color: CDS.grayLt, fontSize: 12.5 }}>
+                            No permits in this stage.
+                          </td>
+                        </tr>
+                      )}
+                      {rows.map((p) => {
                         const c = permitCompleteness(p);
                         const vendor = getVendor(p.project_name);
-                        const barColor =
-                          c.percent === 100 ? "#00B4A8" : c.percent >= 60 ? "#1D4ED8" : c.percent >= 30 ? "#F59E0B" : "#EF4444";
+                        const isOpen = expanded === p.id;
                         return (
-                          <div
-                            key={p.id}
-                            className="p-plate p-hover-plate group flex min-w-0 flex-col overflow-hidden"
-                          >
-                            <Link
-                              to="/portal/permits/$id"
-                              params={{ id: p.id }}
-                              className="min-w-0 flex-1 px-3 pb-2 pt-2.5"
-                            >
-                              <div className="flex min-w-0 items-start gap-2">
-                                <div className="min-w-0 flex-1">
-                                  <div className="truncate text-[13px] font-medium leading-tight">
-                                    {p.project_name}
-                                  </div>
-                                  <div className="mt-0.5 truncate text-[11.5px] text-muted-foreground">
-                                    {p.job_address}
-                                  </div>
+                          <Fragment key={p.id}>
+                            <tr>
+                              <td>
+                                <button
+                                  type="button"
+                                  aria-label={isOpen ? "Collapse detail" : "Expand detail"}
+                                  onClick={() => setExpanded(isOpen ? null : p.id)}
+                                  style={{ background: "none", border: "none", color: CDS.grayLt, padding: 0 }}
+                                >
+                                  {isOpen ? (
+                                    <ChevronDown className="h-3.5 w-3.5" strokeWidth={2} />
+                                  ) : (
+                                    <ChevronRight className="h-3.5 w-3.5" strokeWidth={2} />
+                                  )}
+                                </button>
+                              </td>
+                              <td className="cds-cell-id">{p.permit_number ?? p.id.slice(0, 8).toUpperCase()}</td>
+                              <td className="cds-cell-primary">
+                                <button
+                                  type="button"
+                                  onClick={() => setExpanded(isOpen ? null : p.id)}
+                                  className="max-w-[280px] truncate text-left"
+                                  style={{ background: "none", border: "none", color: CDS.black, fontWeight: 500 }}
+                                >
+                                  {p.job_address || p.project_name}
+                                </button>
+                                <div className="max-w-[280px] truncate" style={{ fontSize: 11, color: CDS.grayLt }}>
+                                  {p.project_name}
                                 </div>
-                              </div>
-
-
-                              {/* Grouped metadata — one quiet line, no badge pile */}
-                              <div className="mt-2 flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1 text-[11px] text-muted-foreground">
-                                {p.permit_type && <span className="truncate">{p.permit_type}</span>}
-                                {p.municipality && (
-                                  <>
-                                    <span className="opacity-40">·</span>
-                                    <span className="truncate">{p.municipality}</span>
-                                  </>
-                                )}
-                                {vendor && (
-                                  <>
-                                    <span className="opacity-40">·</span>
-                                    <span className="truncate" title={`Managed by ${vendor} — record copy only`}>
-                                      {vendor}
-                                    </span>
-                                  </>
-                                )}
-                                <span className="ml-auto shrink-0 tabular-nums">
-                                  {new Date(p.updated_at).toLocaleDateString()}
-                                </span>
-                              </div>
-
-                              {(internal && escalatedIds.has(p.id)) ||
-                              (!vendor && (c.missingFields.length > 0 || c.missingDocs.length > 0)) ? (
-                                <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
+                              </td>
+                              <td>{p.municipality ?? p.county ?? "—"}</td>
+                              <td>{p.permit_type ?? "—"}</td>
+                              <td>
+                                <Tag tone={toneForStatus(STATUS_LABEL[p.status] ?? p.status)}>
+                                  {STATUS_LABEL[p.status] ?? p.status}
+                                </Tag>
+                              </td>
+                              <td>{vendor ?? "Cléared"}</td>
+                              <td className="tabular-nums">{new Date(p.updated_at).toLocaleDateString()}</td>
+                              <td>
+                                <div className="flex items-center gap-1.5">
                                   {internal && escalatedIds.has(p.id) && (
-                                    <StatusChip tone="danger">
-                                      <Flag className="h-2.5 w-2.5" /> Escalated
-                                    </StatusChip>
+                                    <Tag tone="danger">
+                                      <Flag className="mr-1 inline h-2.5 w-2.5" /> Escalated
+                                    </Tag>
                                   )}
                                   {!vendor && c.missingFields.length > 0 && (
-                                    <StatusChip tone="danger">
-                                      <AlertTriangle className="h-2.5 w-2.5" /> {c.missingFields.length}
-                                    </StatusChip>
+                                    <Tag tone="danger">
+                                      <AlertTriangle className="mr-1 inline h-2.5 w-2.5" />
+                                      {c.missingFields.length}
+                                    </Tag>
                                   )}
                                   {!vendor && c.missingDocs.length > 0 && (
-                                    <StatusChip tone="warning">
-                                      <FileText className="h-2.5 w-2.5" /> {c.missingDocs.length}
-                                    </StatusChip>
+                                    <Tag tone="neutral">
+                                      <FileText className="mr-1 inline h-2.5 w-2.5" />
+                                      {c.missingDocs.length}
+                                    </Tag>
                                   )}
+                                  {c.percent === 100 && <Tag tone="success">Complete</Tag>}
                                 </div>
-                              ) : null}
-                            </Link>
-
-                            {/* Slim footer: progress + status control, revealed on hover */}
-                            <div className="flex items-center gap-2 px-3 pb-2.5">
-                              <div className="h-1 min-w-0 flex-1 overflow-hidden rounded-full bg-white/[0.08]">
-                                <div className="h-full" style={{ width: `${c.percent}%`, background: barColor }} />
-                              </div>
-                              <span className="shrink-0 text-[11px] tabular-nums text-muted-foreground">
-                                {c.done}/{c.total}
-                              </span>
-                              <select
-                                value={p.status}
-                                disabled={updatingId === p.id}
-                                onChange={(e) => changeStatus(p.id, e.target.value as PermitStatus)}
-                                title="Change status"
-                                aria-label="Change status"
-                                className="w-[26px] shrink-0 border-0 bg-transparent px-0 text-[11px] text-muted-foreground opacity-0 transition-opacity focus:opacity-100 group-hover:opacity-100 disabled:opacity-40"
-                              >
-                                {STATUS_OPTIONS.map((s) => (
-                                  <option key={s.value} value={s.value}>
-                                    {s.label}
-                                  </option>
-                                ))}
-                              </select>
-                            </div>
-                          </div>
+                              </td>
+                            </tr>
+                            {isOpen && (
+                              <tr>
+                                <td colSpan={9} style={{ background: CDS.off, padding: 0 }}>
+                                  <PermitDetail
+                                    permit={p}
+                                    completeness={c}
+                                    vendor={vendor}
+                                    updating={updatingId === p.id}
+                                    onStatus={(s) => changeStatus(p.id, s)}
+                                  />
+                                </td>
+                              </tr>
+                            )}
+                          </Fragment>
                         );
                       })}
-                    </div>
-                  ))}
-              </section>
-            ))}
+                    </tbody>
+                  </table>
+                </div>
+              </Reveal>
+            )}
           </div>
         )}
       </PageShell>
@@ -399,3 +488,144 @@ export function MyPermitsPage() {
   );
 }
 
+function SortTh({
+  label,
+  k,
+  sort,
+  onSort,
+}: {
+  label: string;
+  k: SortKey;
+  sort: { key: SortKey; dir: "asc" | "desc" };
+  onSort: (k: SortKey) => void;
+}) {
+  const active = sort.key === k;
+  return (
+    <th
+      className="cds-sortable"
+      aria-sort={active ? (sort.dir === "asc" ? "ascending" : "descending") : "none"}
+      onClick={() => onSort(k)}
+      style={{ color: active ? CDS.black : undefined }}
+    >
+      {label}
+      <span style={{ marginLeft: 4, opacity: active ? 1 : 0.25 }}>
+        {active && sort.dir === "desc" ? "▾" : "▴"}
+      </span>
+    </th>
+  );
+}
+
+function PermitDetail({
+  permit,
+  completeness,
+  vendor,
+  updating,
+  onStatus,
+}: {
+  permit: PermitRow;
+  completeness: ReturnType<typeof permitCompleteness>;
+  vendor: string | null;
+  updating: boolean;
+  onStatus: (s: PermitStatus) => void;
+}) {
+  const docs = permit.documents ?? [];
+  const timeline = [
+    { label: "Created", at: permit.created_at },
+    { label: "Submitted", at: permit.submitted_date },
+    { label: "Last update", at: permit.updated_at },
+  ].filter((t) => Boolean(t.at));
+
+  return (
+    <div className="grid grid-cols-1 gap-px lg:grid-cols-3" style={{ background: CDS.border }}>
+      <div style={{ background: CDS.off, padding: 16 }}>
+        <DetailHead>Timeline</DetailHead>
+        <ul className="space-y-1.5">
+          {timeline.map((t) => (
+            <li key={t.label} className="flex items-baseline gap-2" style={{ fontSize: 12.5, color: CDS.gray }}>
+              <span style={{ width: 8, height: 8, background: CDS.teal, display: "inline-block" }} />
+              <span style={{ color: CDS.black, fontWeight: 500 }}>{t.label}</span>
+              <span className="ml-auto tabular-nums" style={{ fontSize: 11.5 }}>
+                {new Date(t.at as string).toLocaleDateString()}
+              </span>
+            </li>
+          ))}
+        </ul>
+        <div className="mt-3 flex items-center gap-2">
+          <div className="h-1 min-w-0 flex-1" style={{ background: CDS.off2 }}>
+            <div style={{ height: "100%", width: `${completeness.percent}%`, background: CDS.teal }} />
+          </div>
+          <span className="tabular-nums" style={{ fontSize: 11, color: CDS.gray }}>
+            {completeness.done}/{completeness.total}
+          </span>
+        </div>
+      </div>
+
+      <div style={{ background: CDS.off, padding: 16 }}>
+        <DetailHead>Documents</DetailHead>
+        {docs.length === 0 ? (
+          <p style={{ fontSize: 12.5, color: CDS.grayLt }}>No documents attached.</p>
+        ) : (
+          <ul className="space-y-1.5">
+            {docs.slice(0, 6).map((d) => (
+              <li key={d.key} className="flex min-w-0 items-center gap-2" style={{ fontSize: 12.5 }}>
+                <span className="min-w-0 flex-1 truncate" style={{ color: CDS.black }}>
+                  {d.label}
+                </span>
+                <Tag tone={toneForStatus(d.status === "uploaded" ? "verified" : d.status)}>
+                  {d.status.replace("_", " ")}
+                </Tag>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+
+      <div style={{ background: CDS.off, padding: 16 }}>
+        <DetailHead>Notes & controls</DetailHead>
+        <p style={{ fontSize: 12.5, color: CDS.gray }}>
+          {permit.additional_notes || permit.description || "No notes on this permit."}
+        </p>
+        {vendor && (
+          <p style={{ fontSize: 11.5, color: CDS.grayLt, marginTop: 6 }}>
+            Managed by {vendor} — record copy only.
+          </p>
+        )}
+        <div className="mt-3 flex flex-wrap items-center gap-2">
+          <select
+            value={permit.status}
+            disabled={updating}
+            onChange={(e) => onStatus(e.target.value as PermitStatus)}
+            aria-label="Change status"
+            style={{ fontSize: 13, padding: "8px 10px" }}
+          >
+            {STATUS_OPTIONS.map((s) => (
+              <option key={s.value} value={s.value}>
+                {s.label}
+              </option>
+            ))}
+          </select>
+          <Link to="/portal/permits/$id" params={{ id: permit.id }} className="p-btn p-btn-ghost">
+            Open permit <ArrowUpRight className="h-3.5 w-3.5" strokeWidth={1.75} />
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function DetailHead({ children }: { children: React.ReactNode }) {
+  return (
+    <div
+      style={{
+        fontSize: 10,
+        fontWeight: 700,
+        letterSpacing: "0.08em",
+        textTransform: "uppercase",
+        color: CDS.grayLt,
+        marginBottom: 8,
+      }}
+    >
+      {children}
+    </div>
+  );
+}

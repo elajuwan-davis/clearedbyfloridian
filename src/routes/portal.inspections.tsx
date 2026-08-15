@@ -8,6 +8,7 @@ import {
   X,
   CheckCircle2,
   XCircle,
+  CalendarDays,
 } from "lucide-react";
 import { PermitPicker } from "@/components/permit-picker";
 import { Button } from "@/components/ui/button";
@@ -29,7 +30,20 @@ import {
   type PermitInspection,
   type InspectionType,
 } from "@/lib/inspections-api";
-import { PageShell, Panel, StatusChip, EmptyState, type MetricTone } from "@/components/ui-kit";
+import { PageShell, StatusChip, type MetricTone } from "@/components/ui-kit";
+import {
+  CDS,
+  CdsCard,
+  CdsEmpty,
+  Kpi,
+  KpiBar,
+  Reveal,
+  SkeletonCards,
+  Tag,
+  WeekStrip,
+  isoDay,
+  startOfWeek,
+} from "@/components/cds-kit";
 
 export const Route = createFileRoute("/portal/inspections")({
   head: () => ({
@@ -84,14 +98,48 @@ function InspectionsPage() {
     void refresh();
   }, [refresh]);
 
+  const [weekStart, setWeekStart] = useState(() => startOfWeek(new Date()));
+  const [selectedDay, setSelectedDay] = useState<string | null>(null);
+
+  const dayOf = (i: PermitInspection) => i.scheduled_date || i.requested_date || "";
+
+  const dayCounts = useMemo(() => {
+    const out: Record<string, number> = {};
+    for (const r of rows) {
+      const d = dayOf(r);
+      if (d) out[d] = (out[d] ?? 0) + 1;
+    }
+    return out;
+  }, [rows]);
+
+  const visible = useMemo(
+    () => (selectedDay ? rows.filter((r) => dayOf(r) === selectedDay) : rows),
+    [rows, selectedDay],
+  );
+
   const { upcoming, past } = useMemo(() => {
     const up: PermitInspection[] = [];
     const pa: PermitInspection[] = [];
-    for (const r of rows) {
+    for (const r of visible) {
       if (isUpcoming(r)) up.push(r);
       else pa.push(r);
     }
     return { upcoming: up, past: pa };
+  }, [visible]);
+
+  const stats = useMemo(() => {
+    const today = isoDay(new Date());
+    return {
+      today: rows.filter((r) => dayOf(r) === today).length,
+      scheduled: rows.filter((r) => r.result === "pending" || !r.result).length,
+      passed: rows.filter((r) => r.result === "passed").length,
+      failed: rows.filter((r) => r.result === "failed" || r.result === "reinspect").length,
+    };
+  }, [rows]);
+
+  const live = useMemo(() => {
+    const today = isoDay(new Date());
+    return rows.find((r) => dayOf(r) === today && (r.result === "pending" || !r.result)) ?? null;
   }, [rows]);
 
   return (
@@ -106,12 +154,35 @@ function InspectionsPage() {
           </button>
         }
       >
+        <KpiBar>
+          <Kpi label="Today" value={stats.today} />
+          <Kpi label="Scheduled" value={stats.scheduled} tone="blue" />
+          <Kpi label="Passed" value={stats.passed} tone="teal" />
+          <Kpi label="Failed / reinspect" value={stats.failed} tone={stats.failed > 0 ? "red" : "gray"} />
+        </KpiBar>
+
+        <WeekStrip
+          weekStart={weekStart}
+          counts={dayCounts}
+          selected={selectedDay}
+          onSelect={setSelectedDay}
+          onShift={(weeks) =>
+            setWeekStart((w) => {
+              const next = new Date(w);
+              next.setDate(next.getDate() + weeks * 7);
+              return next;
+            })
+          }
+        />
+
+        {live && <LiveInspectionCard inspection={live} />}
+
         {loading ? (
-          <div className="px-1 py-6 text-[12.5px] text-muted-foreground">Loading inspections…</div>
+          <SkeletonCards count={4} />
         ) : (
           <div className="space-y-4">
             <InspectionGroup
-              title="Upcoming"
+              title={selectedDay ? "Scheduled this day" : "Upcoming"}
               empty="No upcoming inspections."
               rows={upcoming}
               isAdmin={session.isAdmin}
@@ -172,6 +243,75 @@ function InspectionsPage() {
   );
 }
 
+const LIVE_STEPS = ["Scheduled", "En Route", "In Progress", "Passed"] as const;
+
+/** Pinned card for an inspection happening today. Progress reflects real state. */
+function LiveInspectionCard({ inspection }: { inspection: PermitInspection }) {
+  const step = inspection.result === "passed" ? 3 : inspection.scheduled_date ? 1 : 0;
+  return (
+    <Reveal className="mb-4">
+      <div style={{ background: CDS.black, border: `1px solid ${CDS.black}`, padding: 20 }}>
+        <div className="flex min-w-0 flex-wrap items-baseline gap-2">
+          <span
+            style={{
+              fontSize: 10,
+              fontWeight: 700,
+              letterSpacing: "0.12em",
+              textTransform: "uppercase",
+              color: CDS.teal,
+            }}
+          >
+            Live today
+          </span>
+          <span className="truncate" style={{ fontSize: 15, fontWeight: 700, color: CDS.white }}>
+            {labelFor(inspection.inspection_type)}
+          </span>
+          <span className="truncate" style={{ fontSize: 12.5, color: "rgba(255,255,255,0.6)" }}>
+            {inspection.job_address || inspection.project_name || ""}
+          </span>
+        </div>
+        <div className="mt-3 h-1 w-full" style={{ background: "rgba(255,255,255,0.14)" }}>
+          <div
+            style={{
+              height: "100%",
+              width: `${((step + 1) / LIVE_STEPS.length) * 100}%`,
+              background: CDS.teal,
+              transition: "width 0.4s ease",
+            }}
+          />
+        </div>
+        <div className="mt-2 flex flex-wrap gap-x-5 gap-y-1">
+          {LIVE_STEPS.map((s, i) => (
+            <span
+              key={s}
+              style={{
+                fontSize: 11,
+                fontWeight: i === step ? 700 : 400,
+                color: i <= step ? CDS.white : "rgba(255,255,255,0.4)",
+              }}
+            >
+              {s}
+            </span>
+          ))}
+        </div>
+        <div style={{ fontSize: 11.5, color: "rgba(255,255,255,0.6)", marginTop: 10 }}>
+          {labelForTime(inspection.preferred_time)}
+          {inspection.inspector_name ? ` · ${inspection.inspector_name}` : ""}
+        </div>
+      </div>
+    </Reveal>
+  );
+}
+
+const ACCENT: Record<string, string> = {
+  pending: CDS.teal,
+  passed: CDS.tealText,
+  failed: CDS.red,
+  reinspect: CDS.red,
+  cancelled: CDS.grayLt,
+  in_progress: CDS.purple,
+};
+
 function InspectionGroup({
   title,
   empty,
@@ -188,49 +328,67 @@ function InspectionGroup({
   onUpdateStatus: (i: PermitInspection) => void;
 }) {
   return (
-    <Panel title={title} meta={rows.length} padded={rows.length === 0}>
+    <section className="min-w-0">
+      <div className="mb-2 flex items-center gap-2">
+        <h2 style={{ fontSize: 13, fontWeight: 700, color: CDS.black }}>{title}</h2>
+        <Tag>{rows.length}</Tag>
+      </div>
       {rows.length === 0 ? (
-        <EmptyState title={empty} />
+        <CdsEmpty
+          icon={<CalendarDays className="h-4 w-4" strokeWidth={1.75} />}
+          title={empty}
+          description="Inspections you request appear here with live status and inspector notes."
+        />
       ) : (
-        <div className="p-divide -mx-3">
-          {rows.map((i) => {
+        <div className="grid grid-cols-1 gap-3 xl:grid-cols-2">
+          {rows.map((i, idx) => {
             const dateStr = i.scheduled_date || i.requested_date;
             const d = dateStr ? new Date(dateStr + "T12:00:00") : null;
+            const accent = ACCENT[i.result ?? "pending"] ?? CDS.teal;
+            const passed = i.result === "passed";
             return (
-              <div key={i.id} className="flex flex-wrap items-center gap-4 px-3 py-2.5">
-                <div className="w-[92px] shrink-0">
-                  {d ? (
-                    <>
-                      <div className="text-[12.5px] font-semibold tabular-nums">
-                        {d.toLocaleDateString("en-US", { month: "short", day: "numeric" })}
-                      </div>
-                      <div className="text-[11px] text-muted-foreground">
-                        {d.toLocaleDateString("en-US", { year: "numeric" })}
-                        {i.preferred_time ? ` · ${labelForTime(i.preferred_time)}` : ""}
-                      </div>
-                    </>
-                  ) : (
-                    <div className="text-[11px] text-muted-foreground">Unscheduled</div>
-                  )}
-                </div>
-                <div className="min-w-0 flex-1">
-                  <div className="truncate text-[12.5px] font-medium">{labelFor(i.inspection_type)}</div>
-                  <div className="mt-0.5 truncate text-[11.5px] text-muted-foreground">
-                    {i.job_address || i.project_name || "—"}
+              <CdsCard
+                key={i.id}
+                index={idx}
+                style={{
+                  borderLeft: `3px solid ${accent}`,
+                  background: passed ? "rgba(0,180,168,0.06)" : CDS.white,
+                  padding: 16,
+                }}
+              >
+                <div className="flex min-w-0 flex-wrap items-start gap-x-3 gap-y-2">
+                  <div className="min-w-0 flex-1">
+                    {i.project_name && (
+                      <Link
+                        to="/portal/permits/$id"
+                        params={{ id: i.permit_id }}
+                        className="cds-cell-id block truncate"
+                        style={{ color: CDS.teal, fontSize: 11, fontWeight: 600 }}
+                      >
+                        {i.permit_number ?? i.project_name}
+                      </Link>
+                    )}
+                    <div className="truncate" style={{ fontSize: 14, fontWeight: 700, color: CDS.black }}>
+                      {i.job_address || i.project_name || "—"}
+                    </div>
+                    <div className="mt-1.5 flex flex-wrap items-center gap-2">
+                      <Tag tone="neutral">{labelFor(i.inspection_type)}</Tag>
+                      <span style={{ fontSize: 11.5, color: CDS.gray }}>
+                        {i.permit_number ? `Permit ${i.permit_number}` : i.project_name || ""}
+                      </span>
+                    </div>
+                    <div style={{ fontSize: 11.5, color: CDS.gray, marginTop: 6 }}>
+                      {d
+                        ? `${d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}${
+                            i.preferred_time ? ` · ${labelForTime(i.preferred_time)}` : ""
+                          }`
+                        : "Unscheduled"}
+                      {i.inspector_name ? ` · ${i.inspector_name}` : ""}
+                    </div>
                   </div>
-                  {i.project_name && (
-                    <Link
-                      to="/portal/permits/$id"
-                      params={{ id: i.permit_id }}
-                      className="mt-0.5 inline-block truncate text-[11.5px] text-[var(--p-info)] hover:underline"
-                    >
-                      {i.project_name}
-                      {i.permit_number ? ` · ${i.permit_number}` : ""}
-                    </Link>
-                  )}
+                  <ResultBadge result={i.result} />
                 </div>
-                <ResultBadge result={i.result} />
-                <div className="flex shrink-0 items-center gap-2">
+                <div className="cds-card-actions mt-3 flex flex-wrap items-center gap-2">
                   {hasReport(i) && (
                     <button className="p-btn p-btn-ghost p-btn-sm" onClick={() => onViewReport(i)}>
                       View report <ArrowRight className="h-3 w-3" />
@@ -242,14 +400,15 @@ function InspectionGroup({
                     </button>
                   )}
                 </div>
-              </div>
+              </CdsCard>
             );
           })}
         </div>
       )}
-    </Panel>
+    </section>
   );
 }
+
 
 function RequestInspectionDialog({
   permit,

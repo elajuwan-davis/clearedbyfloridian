@@ -19,8 +19,6 @@ import { QuickSavingsEstimate } from "@/components/quick-savings-estimate";
 
 import {
   PageShell,
-  MetricRow,
-  StatTile,
   StatusChip,
   Panel,
   Segmented,
@@ -28,6 +26,16 @@ import {
   type MetricTone,
 } from "@/components/ui-kit";
 import { toast } from "sonner";
+import {
+  Area,
+  AreaChart,
+  CartesianGrid,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
+import { CDS, Kpi, KpiBar, Reveal } from "@/components/cds-kit";
 
 export const Route = createFileRoute("/portal/financials")({
   head: () => ({
@@ -168,6 +176,35 @@ function FinancialsPage() {
     return { permitFees, clearedFees, combined: permitFees + clearedFees };
   }, [filtered, feesByProject]);
 
+  /** Recorded municipal payments — real ManualFee rows with a paid date. */
+  const collected = useMemo(() => fees.reduce((s, f) => s + f.amountCents, 0), [fees]);
+
+  /** Last 6 calendar months: Cléared fees invoiced vs municipal fees paid. */
+  const trend = useMemo(() => {
+    const months: Array<{ key: string; month: string; invoiced: number; collected: number }> = [];
+    const now = new Date();
+    for (let i = 5; i >= 0; i -= 1) {
+      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      months.push({
+        key: `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`,
+        month: d.toLocaleDateString("en-US", { month: "short" }),
+        invoiced: 0,
+        collected: 0,
+      });
+    }
+    const index = new Map(months.map((m) => [m.key, m]));
+    for (const p of permits) {
+      const iso = (p.submitted_date || p.created_at || "").slice(0, 7);
+      const bucket = index.get(iso);
+      if (bucket) bucket.invoiced += p.cleared_fee_cents ?? 0;
+    }
+    for (const f of fees) {
+      const bucket = index.get((f.datePaid || f.createdAt || "").slice(0, 7));
+      if (bucket) bucket.collected += f.amountCents;
+    }
+    return months.map((m) => ({ month: m.month, invoiced: m.invoiced / 100, collected: m.collected / 100 }));
+  }, [permits, fees]);
+
   function toggle(id: string) {
     setExpanded((s) => {
       const n = new Set(s);
@@ -251,36 +288,74 @@ function FinancialsPage() {
       {
         <>
 
-          <MetricRow className="lg:grid-cols-4 xl:grid-cols-4">
-            <StatTile
-              label="Permit fees"
-              value={fmtUsd(totals.permitFees)}
-              context="Municipal, all projects"
-              icon={<Receipt className="h-3 w-3" strokeWidth={1.75} />}
-              tone="info"
+          <KpiBar>
+            <Kpi label="Permit fees (municipal)" value={fmtUsd(totals.permitFees)} context="All projects" tone="blue" />
+            <Kpi label="Collected / paid" value={fmtUsd(collected)} context="Recorded payments" tone="teal" />
+            <Kpi
+              label="Outstanding"
+              value={fmtUsd(Math.max(0, totals.combined - collected))}
+              context="Combined minus paid"
+              tone={totals.combined - collected > 0 ? "red" : "gray"}
             />
-            <StatTile
-              label="Cléared fees"
-              value={fmtUsd(totals.clearedFees)}
-              context="Service fees on file"
-              icon={<DollarSign className="h-3 w-3" strokeWidth={1.75} />}
-              tone="purple"
-            />
-            <StatTile
-              label="Combined"
-              value={fmtUsd(totals.combined)}
-              context="Total investment"
-              icon={<TrendingUp className="h-3 w-3" strokeWidth={1.75} />}
-              tone="success"
-            />
-            <StatTile
-              label="Active permits"
-              value={String(totals.active)}
-              context={`${permits.length} on file`}
-              icon={<FolderOpen className="h-3 w-3" strokeWidth={1.75} />}
-              tone="neutral"
-            />
-          </MetricRow>
+            <Kpi label="Active permits" value={String(totals.active)} context={`${permits.length} on file`} />
+          </KpiBar>
+
+          <Reveal className="mb-4">
+            <div style={{ background: CDS.white, border: `1px solid ${CDS.border}` }}>
+              <div
+                className="flex items-center gap-2"
+                style={{ borderBottom: `1px solid ${CDS.border}`, padding: "10px 12px" }}
+              >
+                <span style={{ fontSize: 13, fontWeight: 700, color: CDS.black }}>Billing trend</span>
+                <span style={{ fontSize: 11.5, color: CDS.grayLt }}>Last 6 months · invoiced vs collected</span>
+              </div>
+              <div style={{ height: 220, padding: "12px 8px 4px" }}>
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={trend} margin={{ top: 4, right: 12, left: 0, bottom: 0 }}>
+                    <CartesianGrid stroke={CDS.border} strokeWidth={1} vertical={false} />
+                    <XAxis
+                      dataKey="month"
+                      tick={{ fontSize: 11, fill: CDS.grayLt }}
+                      axisLine={{ stroke: CDS.border }}
+                      tickLine={false}
+                    />
+                    <YAxis
+                      tick={{ fontSize: 11, fill: CDS.grayLt }}
+                      axisLine={false}
+                      tickLine={false}
+                      tickFormatter={(v: number) => `$${Math.round(v / 1000)}k`}
+                    />
+                    <Tooltip
+                      contentStyle={{
+                        background: CDS.white,
+                        border: `1px solid ${CDS.border}`,
+                        borderRadius: 0,
+                        fontSize: 12,
+                      }}
+                      formatter={(v: number) => fmtUsd(Math.round(v * 100))}
+                    />
+                    <Area
+                      type="linear"
+                      dataKey="invoiced"
+                      name="Invoiced"
+                      stroke={CDS.teal}
+                      strokeWidth={2}
+                      fill="rgba(0,180,168,0.12)"
+                    />
+                    <Area
+                      type="linear"
+                      dataKey="collected"
+                      name="Collected"
+                      stroke={CDS.black}
+                      strokeWidth={2}
+                      fill="transparent"
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+          </Reveal>
+
 
           <Panel
             title="Fees by project"
