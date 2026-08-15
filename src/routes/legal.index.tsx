@@ -28,7 +28,7 @@ import {
 export const Route = createFileRoute("/legal/")({
   head: () => ({
     meta: [
-      { title: "Legal Library — Cléared" },
+      { title: "Legal Library — Cleard" },
       { name: "description", content: "Permit agent authorizations, NTBO templates, and platform legal documents." },
       { name: "robots", content: "noindex" },
     ],

@@ -1,22 +1,22 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Check, ArrowRight, Clock } from "lucide-react";
+import { Check } from "lucide-react";
 
 import { MarketingShell } from "@/components/marketing-shell";
 
 export const Route = createFileRoute("/pricing")({
   head: () => ({
     meta: [
-      { title: "Pricing — Cléared Permitting for Florida Builders" },
+      { title: "Pricing — Cleard" },
       {
         name: "description",
         content:
-          "À la carte permitting: single trade permit administration $500, independent inspections $99, single plan review $250. Full-service Foundation, Builder, and Elite packages coming soon.",
+          "One subscription for your entire back office. Starter $99/mo, Pro $249/mo, Back Office $499/mo. 14-day free trial, no credit card required.",
       },
-      { property: "og:title", content: "Cléared Pricing — Pay Only For What You Need" },
+      { property: "og:title", content: "One subscription. Your entire back office." },
       {
         property: "og:description",
         content:
-          "À la carte permit administration, private provider inspections, and plan review. Full-service packages coming soon.",
+          "Permits, lien rights, insurance compliance, and license administration from $99/month.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -25,237 +25,174 @@ export const Route = createFileRoute("/pricing")({
   component: PricingPage,
 });
 
-type AlaCarte = { name: string; price: string; unit?: string; blurb: string };
+const INK = "#111110";
+const GRAY = "#6B6860";
+const LIGHT = "#9E9B96";
+const TEAL = "#00B4A8";
+const BORDER = "#E4E2DE";
+const OFF = "#F5F4F0";
 
-const A_LA_CARTE: AlaCarte[] = [
-  {
-    name: "Single Trade Permit Administration",
-    price: "$500",
-    blurb:
-      "Full permit application, submission, monitoring, and issuance for a single trade.",
-  },
-  {
-    name: "Independent Inspection",
-    price: "$99",
-    unit: "/ inspection",
-    blurb:
-      "Licensed private provider inspection for a single milestone. Scheduled and reported through Cléared.",
-  },
-  {
-    name: "Single Plan Review",
-    price: "$250",
-    blurb:
-      "Licensed PE/AE review and stamp for a single trade's plans under F.S. 553.791.",
-  },
-];
-
-type Tier = {
+type Plan = {
   name: string;
-  blurb: string;
-  inheritsLabel?: string;
-  bullets: string[];
-  featured?: boolean;
+  price: string;
+  inherits?: string;
+  features: string[];
+  limits: string;
+  popular?: boolean;
 };
 
-const TIERS: Tier[] = [
+const PLANS: Plan[] = [
   {
-    name: "Foundation",
-    blurb: "Everything required to get a permit filed, tracked, and issued.",
-    bullets: [
-      "Platform access",
-      "Private provider services",
-      "SFR permit administration — filing, tracking, corrections, issuance",
-      "2-day plan review",
-      "Same-day inspections",
+    name: "Starter",
+    price: "$99",
+    features: [
+      "Permit tracking & pipeline (My Permits kanban)",
+      "Basic COI monitoring & expiration alerts",
+      "License verification dashboard",
+      "Building dept portal hub",
     ],
+    limits: "Up to 5 active projects · 1 user seat",
   },
   {
-    name: "Builder",
-    blurb: "Adds intelligence, homeowner visibility, and trade verification.",
-    inheritsLabel: "Everything in Foundation, plus:",
-    featured: true,
-    bullets: [
-      "Victoria AI assistant — 24/7 project Q&A",
-      "Homeowner portal access",
-      "License & insurance verification",
+    name: "Pro",
+    price: "$249",
+    popular: true,
+    inherits: "Everything in Starter, plus:",
+    features: [
+      "Lien document generation (NOC, Preliminary Notice, Waivers)",
+      "Deadline tracker (FL Statute 713)",
+      "License renewal alerts (90/60/30-day)",
+      "Continuing education (CE) tracking",
+      "DBPR license verification for subs",
     ],
+    limits: "Up to 25 active projects · 3 user seats",
   },
   {
-    name: "Elite",
-    blurb: "Adds municipal fee auditing and recovery on every permit.",
-    inheritsLabel: "Everything in Builder, plus:",
-    bullets: [
-      "Permit fee cost check & recovery — we audit every municipal fee, fight overcharges, and split recovered amounts 75/25 in your favor",
-      "Dedicated permit coordinator",
+    name: "Back Office",
+    price: "$499",
+    inherits: "Everything in Pro, plus:",
+    features: [
+      "License renewal management (Cleard submits on your behalf)",
+      "FDEP permit tracking",
+      "Worker's comp exemption tracking",
+      "Code violation monitoring",
+      "After-the-fact permit workflow",
+      "Qualifying agent monitoring",
     ],
+    limits: "Unlimited projects · Unlimited user seats",
   },
 ];
 
 function PricingPage() {
   return (
     <MarketingShell>
-      {/* Hero */}
-      <section className="relative overflow-hidden border-b md-hairline">
-        <div className="absolute inset-0 md-grain opacity-40" />
-        <div className="relative mx-auto max-w-7xl px-6 lg:px-10 py-24 md:py-32">
-          <div className="md-eyebrow md-in md-in-1">Pricing</div>
+      <div style={{ background: "#FFFFFF", color: INK }}>
+        {/* Hero */}
+        <section className="mx-auto max-w-7xl px-5 lg:px-8 pt-20 pb-10 md:pt-28">
+          <div className="text-[10.5px] uppercase tracking-[0.22em]" style={{ color: LIGHT }}>
+            Pricing
+          </div>
           <h1
-            className="mt-6 md-in md-in-2 max-w-4xl"
+            className="mt-6 max-w-3xl"
             style={{
-              fontFamily: "'Space Grotesk', 'Inter', system-ui, sans-serif",
               fontWeight: 800,
-              fontSize: "clamp(2.25rem, 6vw, 4.5rem)",
+              fontSize: "clamp(2.25rem, 5vw, 3.75rem)",
               lineHeight: 1.05,
-              letterSpacing: "-0.03em",
-              color: "var(--md-text)",
+              letterSpacing: "-0.04em",
             }}
           >
-            Priced per project. Nothing hidden.
+            One subscription. Your entire back office.
           </h1>
-          <p className="mt-7 max-w-2xl text-base sm:text-lg md-muted md-in md-in-3">
-            Start à la carte with the exact service you need today, or move to a
-            full-service package that covers permit administration, plan review,
-            and every inspection.
+          <p className="mt-6 max-w-2xl text-[17px] leading-relaxed" style={{ color: GRAY }}>
+            Start with what you need today. Upgrade as your operation grows.
           </p>
-        </div>
-      </section>
+        </section>
 
-      {/* Section 1 — À La Carte */}
-      <section className="mx-auto max-w-7xl px-6 lg:px-10 py-20 md:py-24">
-        <div className="md-eyebrow">À La Carte Services</div>
-        <h2
-          className="mt-4 md-serif text-3xl md:text-4xl"
-          style={{ color: "var(--md-text)" }}
-        >
-          Partial platform access. Pay only for what you need.
-        </h2>
-
-        <div className="mt-10 grid gap-5 md:grid-cols-3 items-stretch">
-          {A_LA_CARTE.map((s) => (
-            <div
-              key={s.name}
-              className="rounded-lg border md-hairline p-7 flex flex-col"
-              style={{ background: "transparent" }}
-            >
+        {/* Plans */}
+        <section className="mx-auto max-w-7xl px-5 lg:px-8 pb-16">
+          <div className="grid gap-5 md:grid-cols-3 items-stretch">
+            {PLANS.map((p) => (
               <div
-                className="text-[13px] uppercase tracking-[0.14em]"
-                style={{ color: "var(--md-text)" }}
+                key={p.name}
+                className="flex flex-col p-7"
+                style={{
+                  background: p.popular ? OFF : "#FFFFFF",
+                  border: `1px solid ${p.popular ? TEAL : BORDER}`,
+                }}
               >
-                {s.name}
-              </div>
-              <div
-                className="mt-5 flex items-baseline gap-1.5"
-                style={{ fontFamily: "'Space Grotesk', sans-serif", color: "var(--md-text)" }}
-              >
-                <span style={{ fontWeight: 800, fontSize: "2.5rem", letterSpacing: "-0.03em" }}>
-                  {s.price}
-                </span>
-                {s.unit && <span className="text-[13px] md-muted">{s.unit}</span>}
-              </div>
-              <p className="mt-4 text-sm md-muted leading-relaxed flex-1">{s.blurb}</p>
-              <Link
-                to="/contact"
-                className="md-btn-ghost mt-7 w-full justify-center"
-              >
-                Request this service <ArrowRight className="h-4 w-4" />
-              </Link>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Section 2 — Full-Service Packages */}
-      <section className="mx-auto max-w-7xl px-6 lg:px-10 pb-20 md:pb-24">
-        <div className="md-eyebrow">Full-Service Packages</div>
-        <h2
-          className="mt-4 md-serif text-3xl md:text-4xl"
-          style={{ color: "var(--md-text)" }}
-        >
-          Full platform access. SFR permit administration, plans review, and all
-          inspections — together.
-        </h2>
-
-        <div className="mt-10 grid gap-5 md:grid-cols-3 items-start">
-          {TIERS.map((t) => (
-            <div
-              key={t.name}
-              className="md-card p-8 flex flex-col h-full relative"
-              style={
-                t.featured
-                  ? {
-                      borderColor: "var(--brand, #1B84D4)",
-                      boxShadow: "0 12px 40px rgba(21,49,87,0.12)",
-                    }
-                  : undefined
-              }
-            >
-              <div
-                className="absolute -top-3 left-8 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] uppercase tracking-[0.18em]"
-                style={{ background: "#153157", color: "#FFFFFF" }}
-              >
-                <Clock className="h-3 w-3" /> Coming soon
-              </div>
-
-              <div className="md-eyebrow mt-2">{t.name}</div>
-              <p className="mt-4 text-sm md-muted leading-relaxed">{t.blurb}</p>
-
-              <div className="mt-6 pt-6 border-t md-hairline flex-1">
-                {t.inheritsLabel && (
-                  <div className="text-[11px] uppercase tracking-[0.16em] md-muted mb-4">
-                    {t.inheritsLabel}
+                <div className="flex items-center justify-between gap-3">
+                  <div className="text-[13px] uppercase tracking-[0.16em]" style={{ color: INK, fontWeight: 700 }}>
+                    {p.name}
                   </div>
-                )}
-                <ul className="space-y-3">
-                  {t.bullets.map((b) => (
-                    <li
-                      key={b}
-                      className="flex items-start gap-2.5 text-sm"
-                      style={{ color: "var(--md-text)" }}
+                  {p.popular && (
+                    <span
+                      className="px-2 py-1 text-[10px] uppercase tracking-[0.16em]"
+                      style={{ background: TEAL, color: INK, fontWeight: 700 }}
                     >
-                      <Check
-                        className="h-4 w-4 mt-0.5 shrink-0"
-                        style={{ color: "var(--green, #12A05C)" }}
-                        strokeWidth={2.5}
-                      />
-                      <span className="leading-relaxed">{b}</span>
+                      Most popular
+                    </span>
+                  )}
+                </div>
+
+                <div className="mt-6 flex items-baseline gap-1.5">
+                  <span style={{ fontWeight: 800, fontSize: "2.75rem", letterSpacing: "-0.04em" }}>
+                    {p.price}
+                  </span>
+                  <span className="text-[13px]" style={{ color: GRAY }}>
+                    /month
+                  </span>
+                </div>
+
+                {p.inherits && (
+                  <p className="mt-5 text-[13px]" style={{ color: INK, fontWeight: 600 }}>
+                    {p.inherits}
+                  </p>
+                )}
+
+                <ul className="mt-5 space-y-3 flex-1">
+                  {p.features.map((f) => (
+                    <li key={f} className="flex items-start gap-2.5">
+                      <Check className="mt-0.5 h-4 w-4 shrink-0" style={{ color: TEAL }} />
+                      <span className="text-[14px] leading-snug" style={{ color: INK }}>
+                        {f}
+                      </span>
                     </li>
                   ))}
                 </ul>
+
+                <p className="mt-6 pt-5 text-[13px]" style={{ color: GRAY, borderTop: `1px solid ${BORDER}` }}>
+                  {p.limits}
+                </p>
+
+                <Link
+                  to="/join"
+                  hash="request"
+                  className="mt-6 inline-flex items-center justify-center px-5 py-3 text-[14px] no-underline"
+                  style={
+                    p.popular
+                      ? { background: TEAL, color: INK, fontWeight: 700 }
+                      : { background: "#FFFFFF", color: INK, border: `1px solid ${BORDER}`, fontWeight: 600 }
+                  }
+                >
+                  Get started
+                </Link>
               </div>
-
-              <Link
-                to="/contact"
-                className={
-                  t.featured
-                    ? "md-btn-primary mt-8 w-full justify-center"
-                    : "md-btn-ghost mt-8 w-full justify-center"
-                }
-              >
-                Join the waitlist <ArrowRight className="h-4 w-4" />
-              </Link>
-            </div>
-          ))}
-        </div>
-
-        <p className="mt-6 text-[13px] md-muted">
-          Package pricing is being finalized. Join the waitlist and we'll share
-          tier pricing before launch.
-        </p>
-      </section>
-
-      {/* CTA */}
-      <section className="md-section-dark">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10 py-20 text-center">
-          <h2 className="md-serif text-3xl md:text-5xl" style={{ color: "#FFFFFF" }}>
-            Ready to run your next permit through Cléared?
-          </h2>
-          <div className="mt-8">
-            <Link to="/contact" className="md-btn-primary">
-              Talk to us <ArrowRight className="h-4 w-4" />
-            </Link>
+            ))}
           </div>
-        </div>
-      </section>
+
+          <p className="mt-8 text-[14px]" style={{ color: GRAY }}>
+            All plans include a 14-day free trial. No credit card required. Cancel anytime.
+          </p>
+
+          <p className="mt-3 text-[14px]" style={{ color: GRAY }}>
+            Need something custom? Real estate permit searches and specialty services are available à
+            la carte.{" "}
+            <Link to="/contact" className="underline" style={{ color: INK, fontWeight: 600 }}>
+              Talk to us →
+            </Link>
+          </p>
+        </section>
+      </div>
     </MarketingShell>
   );
 }

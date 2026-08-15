@@ -16,11 +16,11 @@ export const PAA_TITLE = "Permit Agent Authorization";
 export const PAA_BODY: Array<{ heading: string; body: string }> = [
   {
     heading: "1. Appointment of Authorized Agent",
-    body: 'The undersigned general contractor ("Contractor") appoints Cléared, the private provider permitting division of Flōridian LLC ("Cléared"), as its authorized permit agent for all building permit activity undertaken on Contractor\'s behalf in the State of Florida. This appointment remains in effect until revoked in writing by Contractor.',
+    body: 'The undersigned general contractor ("Contractor") appoints Cleard, the private provider permitting division of Flōridian LLC ("Cleard"), as its authorized permit agent for all building permit activity undertaken on Contractor\'s behalf in the State of Florida. This appointment remains in effect until revoked in writing by Contractor.',
   },
   {
     heading: "2. Scope of Authority",
-    body: "Contractor authorizes Cléared to (a) prepare, sign, and submit permit applications and supporting documents as authorized agent of record; (b) prepare, execute, and file Notices to Owner and Notices to Builder/Owner (NTBO) on Contractor's behalf; (c) communicate directly with building departments, plan reviewers, inspection coordinators, and other municipal officials regarding Contractor's projects; and (d) receive issued permits, permit cards, correction notices, and inspection results on Contractor's behalf.",
+    body: "Contractor authorizes Cleard to (a) prepare, sign, and submit permit applications and supporting documents as authorized agent of record; (b) prepare, execute, and file Notices to Owner and Notices to Builder/Owner (NTBO) on Contractor's behalf; (c) communicate directly with building departments, plan reviewers, inspection coordinators, and other municipal officials regarding Contractor's projects; and (d) receive issued permits, permit cards, correction notices, and inspection results on Contractor's behalf.",
   },
   {
     heading: "3. Contractor Responsibilities",
@@ -28,15 +28,15 @@ export const PAA_BODY: Array<{ heading: string; body: string }> = [
   },
   {
     heading: "4. Private Provider Services",
-    body: "Where Contractor elects private provider plan review or inspection services pursuant to Section 553.791, Florida Statutes, Cléared will furnish the statutory notice to the local building official and perform 2-day plan review and same-day inspections through duly licensed personnel.",
+    body: "Where Contractor elects private provider plan review or inspection services pursuant to Section 553.791, Florida Statutes, Cleard will furnish the statutory notice to the local building official and perform 2-day plan review and same-day inspections through duly licensed personnel.",
   },
   {
     heading: "5. Fees and Authorization to Charge",
-    body: "Contractor authorizes Cléared to advance municipal permit and plan review fees on Contractor's behalf and to charge those amounts, together with Cléared's service fees, to the payment method on file under Contractor's Payment Authorization.",
+    body: "Contractor authorizes Cleard to advance municipal permit and plan review fees on Contractor's behalf and to charge those amounts, together with Cleard's service fees, to the payment method on file under Contractor's Payment Authorization.",
   },
   {
     heading: "6. Limitation of Authority",
-    body: "This authorization does not empower Cléared to enter into construction contracts, waive lien rights, settle claims, or bind Contractor to any obligation unrelated to permit administration.",
+    body: "This authorization does not empower Cleard to enter into construction contracts, waive lien rights, settle claims, or bind Contractor to any obligation unrelated to permit administration.",
   },
   {
     heading: "7. Term and Revocation",
@@ -137,9 +137,9 @@ export async function createPaaDraft(input: {
 export async function generatePaaPdf(signerName: string): Promise<Uint8Array> {
   return await generateAgreementPdf({
     title: PAA_TITLE,
-    subtitle: `Cléared · ${PAA_VERSION} · ${PAA_DRAFT_NOTICE}`,
+    subtitle: `Cleard · ${PAA_VERSION} · ${PAA_DRAFT_NOTICE}`,
     intro:
-      "This authorization lets Cléared file NTBOs, submit permit applications as authorized agent, communicate with building departments, and receive issued permits on the Contractor's behalf.",
+      "This authorization lets Cleard file NTBOs, submit permit applications as authorized agent, communicate with building departments, and receive issued permits on the Contractor's behalf.",
     facts: [{ label: "Contractor", value: signerName || "—" }],
     sections: PAA_BODY.map((s) => ({ heading: s.heading, body: s.body })),
     signatureLabel: "Authorized signer",

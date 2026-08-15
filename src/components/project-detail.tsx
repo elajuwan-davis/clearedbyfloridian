@@ -34,7 +34,7 @@ function VendorManagedBanner({ project }: { project: Project }) {
       <div>
         <div className="font-mono text-[10px] uppercase tracking-[0.14em] text-slate-500">Vendor Managed · Record Copy</div>
         <p className="mt-1 text-sm text-slate-700">
-          This permit is managed by {vendor}. Cléared maintains a record copy only.
+          This permit is managed by {vendor}. Cleard maintains a record copy only.
         </p>
       </div>
     </div>

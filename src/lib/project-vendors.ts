@@ -66,7 +66,7 @@ export const VENDOR_PLACEHOLDER = "—";
 
 /**
  * Vendor-managed projects are fully handled by the external vendor.
- * Cléared keeps a record copy only — they must never enter internal work
+ * Cleard keeps a record copy only — they must never enter internal work
  * queues and no automated workflows may run against them.
  */
 export function isVendorManaged(projectName: string | null | undefined): boolean {

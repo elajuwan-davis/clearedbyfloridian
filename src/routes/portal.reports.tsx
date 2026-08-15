@@ -26,7 +26,7 @@ export const Route = createFileRoute("/portal/reports")({
     meta: [
       { title: "Reports & Analytics — Cleard" },
       { name: "robots", content: "noindex" },
-      { name: "description", content: "Permit volume, turnaround, correction rate and fee analytics for Cléared staff and GC clients." },
+      { name: "description", content: "Permit volume, turnaround, correction rate and fee analytics for Cleard staff and GC clients." },
     ],
   }),
   component: ReportsPage,
@@ -55,7 +55,7 @@ function ReportsPage() {
           </TabsTrigger>
           {internal && (
             <TabsTrigger value="internal" className="h-7 px-3 text-[12px]">
-              Cléared Internal
+              Cleard Internal
             </TabsTrigger>
           )}
           <TabsTrigger value="weekly" className="h-7 px-3 text-[12px]">
@@ -228,7 +228,7 @@ function InternalReports() {
         <StatCard label="Total Permits" value={String(totalPermits)} icon={FolderOpen} />
         <StatCard label="Avg Correction Rate" value={`${avgCorrectionRate}%`} icon={ShieldAlert} accent />
         <StatCard label="Permit Fees Collected" value={fmtMoney(totalFees)} icon={DollarSign} />
-        <StatCard label="Cléared Revenue" value={fmtMoney(totalRevenue)} icon={TrendingUp} accent />
+        <StatCard label="Cleard Revenue" value={fmtMoney(totalRevenue)} icon={TrendingUp} accent />
       </div>
 
       <ReportSection
@@ -295,11 +295,11 @@ function InternalReports() {
 
       <ReportSection
         title="Fee Summary"
-        description="Total permit fees collected and Cléared revenue (per-project fees + transaction fees) by month."
+        description="Total permit fees collected and Cleard revenue (per-project fees + transaction fees) by month."
         onExport={() =>
           downloadCsv(
             "fee-summary-by-month.csv",
-            ["Month", "Permit Fees Collected", "Cléared Revenue"],
+            ["Month", "Permit Fees Collected", "Cleard Revenue"],
             fees.map((r) => [r.month, fmtMoney(r.permitFeesCents), fmtMoney(r.clearedRevenueCents)]),
           )
         }
@@ -313,12 +313,12 @@ function InternalReports() {
               <Tooltip formatter={(v: number) => fmtMoney(v)} />
               <Legend />
               <Bar dataKey="permitFeesCents" name="Permit Fees" fill={COLORS.sky} radius={[3, 3, 0, 0]} />
-              <Bar dataKey="clearedRevenueCents" name="Cléared Revenue" fill={COLORS.obsidian} radius={[3, 3, 0, 0]} />
+              <Bar dataKey="clearedRevenueCents" name="Cleard Revenue" fill={COLORS.obsidian} radius={[3, 3, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
         <SimpleTable
-          headers={["Month", "Permit Fees Collected", "Cléared Revenue"]}
+          headers={["Month", "Permit Fees Collected", "Cleard Revenue"]}
           rows={fees.map((r) => [r.month, fmtMoney(r.permitFeesCents), fmtMoney(r.clearedRevenueCents)])}
         />
       </ReportSection>
@@ -397,7 +397,7 @@ function GcReports() {
 
   const cycleData = [
     { key: name, value: gcCycle },
-    { key: "Cléared Platform Avg", value: platformCycle },
+    { key: "Cleard Platform Avg", value: platformCycle },
   ];
 
   if (loading) return <div className="py-10 text-[12px] text-muted-foreground">Loading reports…</div>;
@@ -426,7 +426,7 @@ function GcReports() {
 
       <ReportSection
         title="Average Cycle Time vs. Platform"
-        description="Your average submission-to-issuance time compared to the anonymized Cléared platform average."
+        description="Your average submission-to-issuance time compared to the anonymized Cleard platform average."
         onExport={() => downloadCsv("gc-cycle-time.csv", ["Group", "Avg Days"], cycleData.map((r) => [r.key, r.value]))}
       >
         <div className="h-52 w-full">
@@ -445,14 +445,14 @@ function GcReports() {
 
       <ReportSection
         title="Cost Summary"
-        description="Permit fees, Cléared fees paid, and estimated savings from using a private provider vs. self-permitting."
+        description="Permit fees, Cleard fees paid, and estimated savings from using a private provider vs. self-permitting."
         onExport={() =>
           downloadCsv(
             "gc-cost-summary.csv",
             ["Metric", "Amount"],
             [
               ["Permit Fees Paid", fmtMoney(cost.permitFeesCents)],
-              ["Cléared Fees Paid", fmtMoney(cost.clearedFeesCents)],
+              ["Cleard Fees Paid", fmtMoney(cost.clearedFeesCents)],
               ["Estimated Savings", fmtMoney(cost.savingsCents)],
             ],
           )
@@ -462,7 +462,7 @@ function GcReports() {
           headers={["Metric", "Amount"]}
           rows={[
             ["Permit Fees Paid", fmtMoney(cost.permitFeesCents)],
-            ["Cléared Fees Paid", fmtMoney(cost.clearedFeesCents)],
+            ["Cleard Fees Paid", fmtMoney(cost.clearedFeesCents)],
             ["Estimated Savings via Private Provider", fmtMoney(cost.savingsCents)],
           ]}
         />
