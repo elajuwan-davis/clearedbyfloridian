@@ -1813,3 +1813,33 @@ tbody tr:hover, .p-table tbody tr:hover { background: #F5F4F0; }
   to   { opacity: 1; transform: translateY(0); }
 }
 .cds-reveal { animation: cds-fade-up 0.5s ease both; }
+
+/* ── Portal interaction kit (cds-kit.tsx) ── */
+@keyframes cds-shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+.cds-skel {
+  background: linear-gradient(90deg, #F5F4F0 25%, #EEECEA 50%, #F5F4F0 75%);
+  background-size: 200% 100%;
+  animation: cds-shimmer 1.5s infinite linear;
+  border-radius: 0;
+}
+.cds-card-hover { transition: background 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease; }
+.cds-card-hover:hover { background: #F5F4F0 !important; box-shadow: 0 2px 12px rgba(0,0,0,0.06) !important; }
+.cds-card-actions { opacity: 0; transition: opacity 0.15s ease; }
+.cds-card-base:hover .cds-card-actions, .cds-card-base:focus-within .cds-card-actions { opacity: 1; }
+
+/* High-density table, locked spec */
+.cds-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.cds-table thead th {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+  color: #9E9B96; border-bottom: 1px solid #E4E2DE; padding: 8px 12px; text-align: left; background: #FFFFFF;
+  white-space: nowrap;
+}
+.cds-table tbody td { border-bottom: 1px solid #EEECEA; color: #6B6860; padding: 12px; vertical-align: middle; }
+.cds-table tbody tr:hover > td { background: #F5F4F0; }
+.cds-table .cds-cell-id { color: #00B4A8; font-weight: 600; font-size: 11px; white-space: nowrap; }
+.cds-table .cds-cell-primary { color: #111110; font-weight: 500; }
+.cds-sortable { cursor: pointer; user-select: none; }
+.cds-sortable:hover { color: #111110; }
