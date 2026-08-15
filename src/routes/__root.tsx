@@ -113,11 +113,10 @@ function RootShell({ children }: { children: ReactNode }) {
     <html lang="en">
       <head>
         <HeadContent />
-        {/* Restore saved theme before first paint; default to dark */}
+        {/* Design system lockdown: single light palette — dark class never applied. */}
         <script
           dangerouslySetInnerHTML={{
-            __html:
-              "try{var t=localStorage.getItem('cleard-theme');document.documentElement.classList.toggle('dark',t!=='light')}catch(e){document.documentElement.classList.add('dark')}",
+            __html: "try{document.documentElement.classList.remove('dark')}catch(e){}",
           }}
         />
         {/* Supabase recovery links may land on the site root; forward them to the reset form. */}

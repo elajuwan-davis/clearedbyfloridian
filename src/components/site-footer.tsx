@@ -42,7 +42,6 @@ export function SiteFooter() {
             <li><Link to="/services" className="hover:opacity-70 transition-opacity">Services</Link></li>
             <li><Link to="/process" className="hover:opacity-70 transition-opacity">Process</Link></li>
             
-            <li><Link to="/about" className="hover:opacity-70 transition-opacity">About</Link></li>
             <li><Link to="/contact" className="hover:opacity-70 transition-opacity">Contact</Link></li>
             <li><Link to="/portal" className="hover:opacity-70 transition-opacity">Client portal</Link></li>
           </ul>
