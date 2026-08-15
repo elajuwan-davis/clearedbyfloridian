@@ -115,16 +115,16 @@ export function BeforeClearedPanel({ withClearedTotal }: { withClearedTotal: num
     <div className="space-y-2">
       <MetricRow className="mb-2 lg:grid-cols-3 xl:grid-cols-3">
         <StatTile
-          label="Before Cléared"
+          label="Before Cleard"
           value={fmtUsd(beforeTotal)}
           context={`${rows.length} prior permit${rows.length === 1 ? "" : "s"} logged`}
           icon={<Receipt className="h-3 w-3" strokeWidth={1.75} />}
           tone="info"
         />
         <StatTile
-          label="With Cléared"
+          label="With Cleard"
           value={fmtUsd(withClearedTotal)}
-          context="Permit + Cléared fees, live"
+          context="Permit + Cleard fees, live"
           icon={<DollarSign className="h-3 w-3" strokeWidth={1.75} />}
           tone="purple"
         />
@@ -145,7 +145,7 @@ export function BeforeClearedPanel({ withClearedTotal }: { withClearedTotal: num
       </MetricRow>
 
       <Panel
-        title="Prior permits (before Cléared)"
+        title="Prior permits (before Cleard)"
         meta={`${rows.length} logged · ${fmtUsd(beforeTotal)}`}
         action={
           <button

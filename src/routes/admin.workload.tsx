@@ -13,10 +13,10 @@ import type { MetricTone } from "@/components/ui-kit";
 export const Route = createFileRoute("/admin/workload")({
   head: () => ({
     meta: [
-      { title: "Staff Workload · Admin — Cléared" },
-      { name: "description", content: "Internal ops view of staff assignments, priority load and escalations across active Cléared projects." },
-      { property: "og:title", content: "Staff Workload · Admin — Cléared" },
-      { property: "og:description", content: "Internal ops view of staff assignments, priority load and escalations across active Cléared projects." },
+      { title: "Staff Workload · Admin — Cleard" },
+      { name: "description", content: "Internal ops view of staff assignments, priority load and escalations across active Cleard projects." },
+      { property: "og:title", content: "Staff Workload · Admin — Cleard" },
+      { property: "og:description", content: "Internal ops view of staff assignments, priority load and escalations across active Cleard projects." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "robots", content: "noindex" },

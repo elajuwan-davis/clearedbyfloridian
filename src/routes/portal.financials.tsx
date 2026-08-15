@@ -179,7 +179,7 @@ function FinancialsPage() {
   /** Recorded municipal payments — real ManualFee rows with a paid date. */
   const collected = useMemo(() => fees.reduce((s, f) => s + f.amountCents, 0), [fees]);
 
-  /** Last 6 calendar months: Cléared fees invoiced vs municipal fees paid. */
+  /** Last 6 calendar months: Cleard fees invoiced vs municipal fees paid. */
   const trend = useMemo(() => {
     const months: Array<{ key: string; month: string; invoiced: number; collected: number }> = [];
     const now = new Date();
@@ -370,7 +370,7 @@ function FinancialsPage() {
                   <th className="hidden md:table-cell">Municipality</th>
                   <th>Status</th>
                   <th className="text-right">Permit fees</th>
-                  <th className="text-right">Cléared fee</th>
+                  <th className="text-right">Cleard fee</th>
                   <th className="text-right">Total</th>
                   <th className="hidden lg:table-cell">Permit #</th>
                 </tr>
@@ -475,7 +475,7 @@ function FinancialsPage() {
                                 <button
                                   onClick={() => openEdit(p)}
                                   className="text-muted-foreground transition-colors hover:text-foreground"
-                                  aria-label="Edit Cléared fee"
+                                  aria-label="Edit Cleard fee"
                                 >
                                   <Pencil className="h-3 w-3" />
                                 </button>

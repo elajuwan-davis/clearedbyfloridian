@@ -210,7 +210,7 @@ export function MyPermitsPage() {
         case "stage":
           return STATUS_LABEL[p.status] ?? p.status;
         case "assigned":
-          return getVendor(p.project_name) ?? "Cléared";
+          return getVendor(p.project_name) ?? "Cleard";
         default:
           return p.updated_at;
       }
@@ -271,7 +271,7 @@ export function MyPermitsPage() {
               onChange={setManagement}
               options={[
                 { value: "all", label: "All" },
-                { value: "cleared", label: "Cléared" },
+                { value: "cleared", label: "Cleard" },
                 { value: "vendor", label: "Vendor" },
               ]}
             />
@@ -435,7 +435,7 @@ export function MyPermitsPage() {
                                   {STATUS_LABEL[p.status] ?? p.status}
                                 </Tag>
                               </td>
-                              <td>{vendor ?? "Cléared"}</td>
+                              <td>{vendor ?? "Cleard"}</td>
                               <td className="tabular-nums">{new Date(p.updated_at).toLocaleDateString()}</td>
                               <td>
                                 <div className="flex items-center gap-1.5">

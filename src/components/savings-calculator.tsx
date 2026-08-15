@@ -119,7 +119,7 @@ export function SavingsCalculator() {
         <div className="p-plate flex min-w-0 flex-col gap-2 px-3 py-2.5">
           <div className="flex items-center justify-between gap-2">
             <span className="text-[11px] font-medium uppercase tracking-[0.06em] text-muted-foreground">
-              Bundled via Cléared
+              Bundled via Cleard
             </span>
             <Segmented
               value={clearedMode}
@@ -149,7 +149,7 @@ export function SavingsCalculator() {
                 className="p-inset h-7 w-full bg-transparent px-1.5 text-right text-[12px] tabular-nums"
               />
             </Row>
-            <Row label={clearedMode === "flat" ? "Cléared fee ($)" : "Cléared fee (%)"}>
+            <Row label={clearedMode === "flat" ? "Cleard fee ($)" : "Cleard fee (%)"}>
               <input
                 type="number"
                 step={clearedMode === "flat" ? "1" : "0.1"}
@@ -166,7 +166,7 @@ export function SavingsCalculator() {
           <div className="mt-auto border-t pt-2" style={{ borderColor: "var(--p-border)" }}>
             <div className="flex items-center justify-between text-[11px] text-muted-foreground">
               <span>GC permit {fmtUsd(gcFeeCents)}</span>
-              <span>Cléared {fmtUsd(clearedFeeCents)}</span>
+              <span>Cleard {fmtUsd(clearedFeeCents)}</span>
             </div>
             <div className="mt-1 text-[11px] text-muted-foreground">Bundled total</div>
             <div className="text-[20px] font-semibold leading-none tracking-[-0.03em] tabular-nums">

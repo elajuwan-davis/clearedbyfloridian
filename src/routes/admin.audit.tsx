@@ -8,10 +8,10 @@ import { listAudit, toCsv, type AuditAction, type AuditEvent } from "@/lib/audit
 export const Route = createFileRoute("/admin/audit")({
   head: () => ({
     meta: [
-      { title: "Audit Trail · Admin — Cléared" },
-      { name: "description", content: "Read-only global audit trail of project, document, fee and permit events across the Cléared portal." },
-      { property: "og:title", content: "Audit Trail · Admin — Cléared" },
-      { property: "og:description", content: "Read-only global audit trail of project, document, fee and permit events across the Cléared portal." },
+      { title: "Audit Trail · Admin — Cleard" },
+      { name: "description", content: "Read-only global audit trail of project, document, fee and permit events across the Cleard portal." },
+      { property: "og:title", content: "Audit Trail · Admin — Cleard" },
+      { property: "og:description", content: "Read-only global audit trail of project, document, fee and permit events across the Cleard portal." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "robots", content: "noindex" },
@@ -81,7 +81,7 @@ function AuditPage() {
         <div className="label-eyebrow text-obsidian/50">Admin · Internal Ops</div>
         <h1 className="display-serif mt-2 text-4xl leading-tight text-obsidian">Audit Trail</h1>
         <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
-          Read-only, append-only log of activity across all Cléared projects (activity_events).
+          Read-only, append-only log of activity across all Cleard projects (activity_events).
         </p>
 
         <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-5">

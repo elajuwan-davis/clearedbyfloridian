@@ -6,13 +6,13 @@ import { MarketingShell } from "@/components/marketing-shell";
 export const Route = createFileRoute("/pricing")({
   head: () => ({
     meta: [
-      { title: "Pricing — Cléared Permitting for Florida Builders" },
+      { title: "Pricing — Cleard Permitting for Florida Builders" },
       {
         name: "description",
         content:
           "À la carte permitting: single trade permit administration $500, independent inspections $99, single plan review $250. Full-service Foundation, Builder, and Elite packages coming soon.",
       },
-      { property: "og:title", content: "Cléared Pricing — Pay Only For What You Need" },
+      { property: "og:title", content: "Cleard Pricing — Pay Only For What You Need" },
       {
         property: "og:description",
         content:
@@ -39,7 +39,7 @@ const A_LA_CARTE: AlaCarte[] = [
     price: "$99",
     unit: "/ inspection",
     blurb:
-      "Licensed private provider inspection for a single milestone. Scheduled and reported through Cléared.",
+      "Licensed private provider inspection for a single milestone. Scheduled and reported through Cleard.",
   },
   {
     name: "Single Plan Review",
@@ -247,7 +247,7 @@ function PricingPage() {
       <section className="md-section-dark">
         <div className="mx-auto max-w-7xl px-6 lg:px-10 py-20 text-center">
           <h2 className="md-serif text-3xl md:text-5xl" style={{ color: "#FFFFFF" }}>
-            Ready to run your next permit through Cléared?
+            Ready to run your next permit through Cleard?
           </h2>
           <div className="mt-8">
             <Link to="/contact" className="md-btn-primary">

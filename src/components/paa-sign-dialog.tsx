@@ -30,7 +30,7 @@ export function PaaDocument() {
       <PaaDraftBanner />
       <div className="border border-obsidian/12 bg-white p-6 rounded-[3px] max-h-[46vh] overflow-y-auto">
         <div className="font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/55">
-          Cléared · {PAA_VERSION}
+          Cleard · {PAA_VERSION}
         </div>
         <h2 className="display-serif mt-2 text-2xl text-obsidian">{PAA_TITLE}</h2>
         <div className="mt-5 space-y-4">
@@ -109,7 +109,7 @@ export function PaaSignStep({
         <div className="font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/55">Required step</div>
         <h1 className="display-serif mt-1 text-3xl text-obsidian">Sign Your Permit Agent Authorization</h1>
         <p className="mt-2 text-sm text-obsidian/65">
-          This one-time authorization lets Cléared file NTBOs, submit permit applications as your
+          This one-time authorization lets Cleard file NTBOs, submit permit applications as your
           authorized agent, communicate with building departments, and receive issued permits on your behalf.
         </p>
       </div>
@@ -130,7 +130,7 @@ export function PaaSignStep({
       <label className="flex items-start gap-2.5 text-sm text-obsidian/75">
         <Checkbox checked={agree} onCheckedChange={(v) => setAgree(Boolean(v))} className="mt-0.5" />
         <span>
-          I am the licensed qualifier or an officer authorized to bind the firm, and I authorize Cléared
+          I am the licensed qualifier or an officer authorized to bind the firm, and I authorize Cleard
           to act as permit agent under the terms above.
         </span>
       </label>
