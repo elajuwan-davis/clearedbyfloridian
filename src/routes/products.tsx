@@ -1,5 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { PublicShell, OBSIDIAN, HAIRLINE, MUTED } from "@/components/public-shell";
+import { PublicShell } from "@/components/public-shell";
+
+/* Homepage-matching brand tokens */
+const OBSIDIAN = "#111110";
+const MUTED = "#6B6860";
+const HAIRLINE = "#E4E2DE";
+const TEAL = "#00B4A8";
 import {
   FileStack,
   ShieldCheck,
@@ -285,7 +291,7 @@ function ProductsPage() {
             What's Inside Cleard
           </div>
           <h1
-            className="display-serif font-bold leading-[1.02] mb-8 max-w-3xl"
+            className="font-bold leading-[1.02] mb-8 max-w-3xl"
             style={{ color: OBSIDIAN, fontSize: "clamp(2.5rem, 6vw, 5rem)", letterSpacing: "-0.02em" }}
           >
             Every tool your operation needs.
@@ -358,7 +364,7 @@ function ProductsPage() {
                         )}
                       </div>
                       <h3
-                        className="display-serif font-bold leading-[1.05] mb-6"
+                        className="font-bold leading-[1.05] mb-6"
                         style={{
                           color: OBSIDIAN,
                           fontSize: "clamp(1.75rem, 3.5vw, 2.75rem)",
@@ -411,7 +417,7 @@ function ProductsPage() {
       <section className="px-6 lg:px-10 py-24" style={{ backgroundColor: OBSIDIAN }}>
         <div className="max-w-3xl mx-auto text-center">
           <h2
-            className="display-serif font-bold leading-[1.05] mb-6"
+            className="font-bold leading-[1.05] mb-6"
             style={{ color: "#fff", fontSize: "clamp(1.75rem, 4vw, 3rem)", letterSpacing: "-0.02em" }}
           >
             One platform. Your entire back office.
@@ -423,7 +429,7 @@ function ProductsPage() {
             to="/join"
             hash="request"
             className="inline-flex items-center px-8 h-14 text-[12px] font-mono uppercase tracking-[0.24em] transition-opacity hover:opacity-85"
-            style={{ backgroundColor: "#fff", color: OBSIDIAN, borderRadius: 0 }}
+            style={{ backgroundColor: TEAL, color: OBSIDIAN, borderRadius: 0 }}
           >
             Get early access
           </Link>
