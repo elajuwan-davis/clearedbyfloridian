@@ -8,12 +8,12 @@ export const COMPETITORS: Competitor[] = [
   {
     slug: "1-contractor-solutions",
     name: "1 Contractor Solutions",
-    positioning: "Florida-specific permit management, purpose-built for GCs — not just a permit expediter.",
+    positioning: "Purpose-built permit management for GCs — not just a permit expediter.",
   },
   {
     slug: "permit-flow",
     name: "Permit Flow",
-    positioning: "Built for Florida's 400+ jurisdictions with private provider workflows baked in.",
+    positioning: "Built for thousands of jurisdictions with private provider workflows baked in.",
   },
   {
     slug: "in-house-permit-runner",
@@ -28,7 +28,7 @@ export const COMPETITORS: Competitor[] = [
   {
     slug: "construct-cc",
     name: "Construct CC",
-    positioning: "Florida permitting admin support — but without the bundled submission capability, jurisdiction intelligence, or integrated sub signing that Cleard delivers.",
+    positioning: "Permitting admin support — but without the bundled submission capability, jurisdiction intelligence, or integrated sub signing that Cleard delivers.",
   },
   {
     slug: "tew-and-taylor",
@@ -49,14 +49,9 @@ export type FeatureRow = {
 };
 
 export const DEFAULT_FEATURE_MATRIX: FeatureRow[] = [
-  { feature: "Permit Tracking", cleared: true, competitor: "limited" },
-  { feature: "Bundled Multi-Trade Submission", cleared: true, competitor: "no" },
-  { feature: "Sub Coordination & Signing", cleared: true, competitor: "no" },
-  { feature: "COI Tracking", cleared: true, competitor: "limited" },
-  { feature: "Jurisdiction Intelligence (400+ FL cities)", cleared: true, competitor: "no" },
-  { feature: "Private Provider Docs", cleared: true, competitor: "no" },
-  { feature: "AI Assistant (Victoria)", cleared: true, competitor: "no" },
-  { feature: "Real-Time Status Notifications", cleared: true, competitor: "limited" },
-  { feature: "Fee Savings Calculator", cleared: true, competitor: "no" },
-  { feature: "Florida-Specific (not generic)", cleared: true, competitor: "no" },
+  { feature: "Permitting Administration", cleared: true, competitor: "limited" },
+  { feature: "Private Plan Review & Inspections", cleared: true, competitor: "no" },
+  { feature: "Contractor License Management", cleared: true, competitor: "no" },
+  { feature: "Insurance Compliance", cleared: true, competitor: "limited" },
+  { feature: "Victoria.AI", cleared: true, competitor: "no" },
 ];

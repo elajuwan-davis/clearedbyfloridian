@@ -15,9 +15,9 @@ export function SiteFooter() {
             <span className="wordmark text-3xl">Cleard</span>
           </div>
           <p className="mt-4 max-w-sm text-sm text-muted-foreground">
-            Private-provider permitting for Florida's elite general
-            contractors — plan review, inspections, and permit coordination
-            on a statutory clock.
+            Private-provider permitting for leading general contractors —
+            plan review, inspections, and permit coordination on a
+            documented clock.
           </p>
           <Link
             to="/portal"
@@ -31,7 +31,7 @@ export function SiteFooter() {
         <div>
           <div className="label-eyebrow mb-4">Coverage</div>
           <p className="text-sm leading-relaxed">
-            Statewide coverage across Florida.
+            Nationwide coverage.
           </p>
           <p className="mt-4 text-sm font-mono">info@cleard.com</p>
         </div>

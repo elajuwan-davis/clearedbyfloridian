@@ -16,10 +16,10 @@ export const Route = createFileRoute("/contact")({
       {
         name: "description",
         content:
-          "Licensed Florida general contractor? Request Cleard private-provider permitting access. West Palm Beach, all of South Florida.",
+          "Licensed general contractor? Request Cleard private-provider permitting access.",
       },
       { property: "og:title", content: "Request Cleard access" },
-      { property: "og:description", content: "Private-provider permitting for South Florida's elite general contractors." },
+      { property: "og:description", content: "Private-provider permitting for leading general contractors." },
     ],
   }),
   component: ContactPage,
@@ -78,7 +78,7 @@ function ContactPage() {
               </Select>
             </Field>
             <Field label="Project address">
-              <Input required name="address" placeholder="1217 S Ocean Blvd, Manalapan, FL" className="h-11 rounded-sm" />
+              <Input required name="address" placeholder="1217 Main St, Suite 200" className="h-11 rounded-sm" />
             </Field>
             <Field label="Cleard project / scope">
               <Textarea required name="scope" rows={5} placeholder="Cleard pool & summer kitchen + new 4,200 sqft SFR. Drawings ready." className="rounded-sm" />

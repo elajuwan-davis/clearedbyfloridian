@@ -20,7 +20,7 @@ export const Route = createFileRoute("/versus/$slug")({
     }
     const c = loaderData.competitor;
     const url = `https://cleared.floridianinc.com/versus/${params.slug}`;
-    const title = `Cleard vs ${c.name} — Florida Permit Management Compared`;
+    const title = `Cleard vs ${c.name} — Permit Management Compared`;
     return {
       meta: [
         { title },

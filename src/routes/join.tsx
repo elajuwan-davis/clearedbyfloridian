@@ -8,10 +8,10 @@ export const Route = createFileRoute("/join")({
   component: JoinPage,
   head: () => ({
     meta: [
-      { title: "Cleard — Permit management for Florida contractors" },
+      { title: "Cleard — Permit management for licensed contractors" },
       { name: "description", content: "Cleard handles jurisdiction requirements, sub coordination, document collection, and submission so your projects don't stall." },
       { property: "og:title", content: "Stop losing weeks to the permit process." },
-      { property: "og:description", content: "One platform. Every permit. Every trade. Built for Florida contractors." },
+      { property: "og:description", content: "One platform. Every permit. Every trade. Built for licensed contractors." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -68,7 +68,7 @@ function JoinPage() {
               className="font-mono text-[10px] uppercase mb-8"
               style={{ color: OBSIDIAN, letterSpacing: "0.32em" }}
             >
-              Permit Management for Florida Contractors
+              Permit Management for Licensed Contractors
             </div>
             <h1
               className="display-serif font-bold leading-[1.02] mb-8"
@@ -183,7 +183,7 @@ function JoinPage() {
                 body: "Every missed document, wrong jurisdiction requirement, or slow sub signature pushes your project back weeks. And that cost falls on you.",
               },
               {
-                label: "400+ Florida jurisdictions. Zero consistency.",
+                label: "Thousands of jurisdictions. Zero consistency.",
                 body: "Every city has different checklists, different portals, different requirements. Tracking them manually is a full-time job nobody signed up for.",
               },
               {
@@ -241,7 +241,7 @@ function JoinPage() {
               {
                 Icon: Map,
                 label: "Jurisdiction Intelligence",
-                body: "Every Florida municipality mapped with its exact checklist. The right documents, pre-loaded, every time.",
+                body: "Every municipality mapped with its exact checklist. The right documents, pre-loaded, every time.",
               },
               {
                 Icon: Users,
@@ -270,7 +270,7 @@ function JoinPage() {
       <section className="px-6 lg:px-10 py-24" style={{ backgroundColor: OBSIDIAN }}>
         <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-16 md:gap-8 text-center">
           {[
-            { n: "400+", l: "Florida jurisdictions mapped" },
+            { n: "400+", l: "Jurisdictions mapped" },
             { n: "All trades", l: "Bundled in one submission" },
             { n: "Real-time", l: "Permit status tracking" },
           ].map((s) => (

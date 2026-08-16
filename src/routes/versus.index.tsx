@@ -7,17 +7,17 @@ import { VERSUS_COMPETITORS } from "@/lib/versus-competitors";
 export const Route = createFileRoute("/versus/")({
   head: () => ({
     meta: [
-      { title: "Cleard vs The Field — Florida Permit Platforms Compared" },
+      { title: "Cleard vs The Field — Permit Platforms Compared" },
       {
         name: "description",
         content:
-          "Compare Cleard to PermitFlow, GreenLite, and FCC. Florida private-provider licensing, Victoria AI, and sub compliance built in from day one.",
+          "Compare Cleard to PermitFlow, GreenLite, and FCC. Private-provider licensing, Victoria AI, and sub compliance built in from day one.",
       },
       { property: "og:title", content: "Cleard vs The Field" },
       {
         property: "og:description",
         content:
-          "Every permit platform claims to handle Florida. Only Cleard was built specifically for FL general contractors.",
+          "Every permit platform claims to handle permits. Only Cleard was built as a full back office for general contractors.",
       },
       { property: "og:type", content: "website" },
       { property: "og:url", content: "https://cleared.floridianinc.com/versus" },
@@ -45,11 +45,11 @@ function VersusHub() {
               letterSpacing: "-0.03em",
             }}
           >
-            {"Built for Florida.\nNot retrofitted for it."}
+            {"Built for contractors.\nNot retrofitted for them."}
           </h1>
           <p className="mt-7 max-w-2xl text-base sm:text-lg md-muted md-in md-in-3">
-            Every permit platform claims to handle Florida. Only Cleard was built
-            specifically for FL general contractors — with private-provider
+            Every permit platform claims to handle permits. Only Cleard was built
+            as a full back office for general contractors — with private-provider
             licensing, Victoria AI, and sub compliance built in from day one.
           </p>
           <div className="mt-9 md-in md-in-4">
@@ -98,12 +98,12 @@ function VersusHub() {
           <div className="mt-10 grid gap-10 md:grid-cols-3">
             {[
               {
-                k: "FL-only depth",
-                v: "Built for Florida Statute 553.791 private-provider licensing. PermitFlow and GreenLite don't hold this license.",
+                k: "Licensed depth",
+                v: "Built around private-provider licensing. PermitFlow and GreenLite don't hold this license.",
               },
               {
                 k: "Victoria AI",
-                v: "Real-time permit intelligence trained on FL municipality data. No competitor has an AI advisor layer.",
+                v: "Real-time permit intelligence trained on real municipality data. No competitor has an AI advisor layer.",
               },
               {
                 k: "Sub compliance built in",
