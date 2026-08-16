@@ -12,6 +12,7 @@ import {
   Send,
   ShieldCheck,
   Smartphone,
+  Sparkles,
   Users,
   X,
 } from "lucide-react";
@@ -23,7 +24,7 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "Cleard runs the entire back office behind your projects — permit submission, private provider plan review, corrections, inspections, licenses, insurance and documents.",
+          "Cleard runs the entire back office behind your projects — permitting administration, private plan review and inspections, license management, insurance compliance, and Victoria.AI.",
       },
       { property: "og:title", content: "Cleard — Run projects. Not paperwork." },
       {
@@ -205,9 +206,9 @@ function Hero() {
           </h1>
 
           <p className="mt-6 max-w-xl text-[17px] leading-relaxed" style={{ color: GRAY }}>
-            Cleard runs the back office for every licensed Florida contractor — permits,
-            inspections, lien rights, insurance compliance, and license administration. One
-            platform. Year-round.
+            Cleard runs the back office for every licensed contractor — permitting administration,
+            private plan review and inspections, license management, insurance compliance, and
+            Victoria.AI. One platform. Year-round.
           </p>
 
           <div className="mt-9 flex flex-col sm:flex-row gap-3 max-w-lg">
@@ -229,7 +230,7 @@ function Hero() {
           </div>
 
           <p className="mt-5 text-[12.5px]" style={{ color: LIGHT }}>
-            No credit card · Free during beta · All licensed Florida contractors
+            No credit card · Free during beta · All licensed contractors
           </p>
         </div>
 
