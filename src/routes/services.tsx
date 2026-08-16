@@ -9,13 +9,13 @@ export const Route = createFileRoute("/services")({
       {
         name: "description",
         content:
-          "Permitting administration, private plan review & inspections, contractor license management, insurance compliance, and Victoria.AI — the full back office.",
+          "Permitting administration, private plan review & inspections, contractor license management, insurance compliance, and lien rights — the full back office.",
       },
       { property: "og:title", content: "Cleard Services" },
       {
         property: "og:description",
         content:
-          "Permitting, private plan review & inspections, license management, insurance compliance, and Victoria.AI — five services, one contract.",
+          "Permitting, private plan review & inspections, license management, insurance compliance, and lien rights — five services, one contract.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -51,7 +51,7 @@ const VISUALS: Record<string, { gradient: string; caption: string }> = {
   "05": {
     gradient:
       "linear-gradient(135deg, #0A0E17 0%, #12312f 45%, #00B4A8 130%)",
-    caption: "Victoria.AI · Always on",
+    caption: "Lien Rights · Statutory clock",
   },
 };
 
@@ -97,7 +97,7 @@ function ServicesPage() {
       <PageHeader
         eyebrow="Services"
         title="Five services. One contract."
-        intro="A licensed private provider can act in place of the building official for plan review and inspections. Cleard delivers the full permitting lifecycle — plus license management, insurance compliance, and Victoria.AI — on a documented clock."
+        intro="A licensed private provider can act in place of the building official for plan review and inspections. Cleard delivers the full permitting lifecycle — plus license management, insurance compliance, and lien rights — on a documented clock."
       />
 
       <section className="mx-auto max-w-7xl px-6 lg:px-10 py-16 md:py-24 space-y-16 md:space-y-24">

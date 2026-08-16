@@ -53,5 +53,5 @@ export const DEFAULT_FEATURE_MATRIX: FeatureRow[] = [
   { feature: "Private Plan Review & Inspections", cleared: true, competitor: "no" },
   { feature: "Contractor License Management", cleared: true, competitor: "no" },
   { feature: "Insurance Compliance", cleared: true, competitor: "limited" },
-  { feature: "Victoria.AI", cleared: true, competitor: "no" },
+  { feature: "Lien Rights", cleared: true, competitor: "no" },
 ];

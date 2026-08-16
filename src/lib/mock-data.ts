@@ -203,14 +203,14 @@ export const services = [
   },
   {
     code: "05",
-    title: "Victoria.AI",
+    title: "Lien Rights",
     summary:
-      "Your AI back-office assistant. Answers jurisdiction questions, flags missing documents, routes corrections, and surfaces compliance risks before they become delays.",
+      "Notice of Commencement, Preliminary Notices, Lien Waivers, and statutory deadline tracking — generated, signed, and recorded without leaving the platform.",
     bullets: [
-      "Answers jurisdiction requirement questions",
-      "Flags missing documents before submittal",
-      "Routes correction notices to the right owner",
-      "Surfaces compliance risks across active projects",
+      "Notice of Commencement prep, signature, and recording",
+      "Preliminary Notices and Notices to Owner",
+      "Conditional and unconditional lien waivers",
+      "Statutory deadline tracking with countdown alerts",
     ],
   },
 ];

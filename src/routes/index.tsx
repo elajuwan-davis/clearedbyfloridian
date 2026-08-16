@@ -9,6 +9,7 @@ import {
   FileCheck2,
   FileText,
   FolderOpen,
+  Scale,
   Send,
   ShieldCheck,
   Smartphone,
@@ -24,7 +25,7 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "Cleard runs the entire back office behind your projects — permitting administration, private plan review and inspections, license management, insurance compliance, and Victoria.AI.",
+          "Cleard runs the entire back office behind your projects — permitting administration, private plan review and inspections, license management, insurance compliance, and lien rights.",
       },
       { property: "og:title", content: "Cleard — Run projects. Not paperwork." },
       {
@@ -70,6 +71,7 @@ function HomePage() {
         <Circle360 />
         <StatsStrip />
         <Services />
+        <VictoriaLayer />
         <PortalShowcase />
         <MobileApp />
         <HowItWorks />
@@ -208,7 +210,7 @@ function Hero() {
           <p className="mt-6 max-w-xl text-[17px] leading-relaxed" style={{ color: GRAY }}>
             Cleard runs the back office for every licensed contractor — permitting administration,
             private plan review and inspections, license management, insurance compliance, and
-            Victoria.AI. One platform. Year-round.
+            lien rights. One platform. Year-round.
           </p>
 
           <div className="mt-9 flex flex-col sm:flex-row gap-3 max-w-lg">
@@ -564,10 +566,10 @@ const SERVICES = [
     tag: "COI management",
   },
   {
-    icon: Sparkles,
-    title: "Victoria.AI",
-    body: "Your AI back-office assistant. Answers jurisdiction questions, flags missing documents, routes corrections, and surfaces compliance risks before they become delays.",
-    tag: "AI assistant",
+    icon: Scale,
+    title: "Lien Rights",
+    body: "Notice of Commencement, Preliminary Notices, Lien Waivers, and statutory deadline tracking — generated, signed, and recorded without leaving the platform.",
+    tag: "Statutory deadlines",
   },
 ];
 
@@ -607,6 +609,66 @@ function Services() {
               </span>
             </div>
           ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ------------------------- VICTORIA (PLATFORM LAYER) --------------------- */
+
+function VictoriaLayer() {
+  return (
+    <section style={{ background: OFF, borderTop: `1px solid ${BORDER}` }}>
+      <div className="mx-auto max-w-7xl px-5 lg:px-8 py-20 md:py-24">
+        <div className="grid gap-10 md:grid-cols-12 md:items-center">
+          <div className="md:col-span-7">
+            <div className="flex items-center gap-2">
+              <Sparkles className="h-4 w-4" style={{ color: TEAL }} strokeWidth={1.75} />
+              <span
+                className="text-[10px] font-bold uppercase tracking-[0.22em]"
+                style={{ color: "#00917F" }}
+              >
+                Platform intelligence
+              </span>
+            </div>
+            <h2
+              className="mt-5"
+              style={{
+                color: INK,
+                fontWeight: 800,
+                fontSize: "clamp(2rem, 3.6vw, 2.875rem)",
+                lineHeight: 1.08,
+                letterSpacing: "-0.035em",
+              }}
+            >
+              Powered by Victoria
+            </h2>
+            <p className="mt-5 max-w-2xl text-[16px] leading-relaxed" style={{ color: GRAY }}>
+              Every service on this platform is backed by Victoria — Cleard&apos;s AI engine. She
+              answers jurisdiction questions, flags missing documents, routes correction responses,
+              and surfaces compliance risks before they become delays. You don&apos;t buy Victoria.
+              She comes with Cleard.
+            </p>
+          </div>
+          <div className="md:col-span-5">
+            <div className="p-6" style={{ background: WHITE, border: `1px solid ${BORDER}` }}>
+              <div
+                className="text-[10px] font-bold uppercase tracking-[0.18em]"
+                style={{ color: LIGHT }}
+              >
+                Victoria works across
+              </div>
+              <ul className="mt-4 space-y-3">
+                {SERVICES.map((s) => (
+                  <li key={s.title} className="flex items-center gap-3 text-[14px]" style={{ color: INK }}>
+                    <s.icon className="h-4 w-4 shrink-0" style={{ color: TEAL }} strokeWidth={1.75} />
+                    {s.title}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
         </div>
       </div>
     </section>
