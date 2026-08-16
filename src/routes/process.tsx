@@ -9,7 +9,7 @@ export const Route = createFileRoute("/process")({
       {
         name: "description",
         content:
-          "From submittal to certificate of occupancy: how Cleard moves Cleard-affiliated residential permits through plan review and inspection under Florida's private provider statute.",
+          "From submittal to certificate of occupancy: how Cleard moves residential permits through private plan review and inspection.",
       },
       { property: "og:title", content: "Cleard Process" },
       { property: "og:description", content: "From submittal to CO — the private provider workflow." },
@@ -30,15 +30,15 @@ const steps = [
     n: "02",
     day: "Day 1–2",
     t: "Plan Review",
-    d: "A licensed Florida engineer or architect performs a full code review against the Florida Building Code 8th Edition — 2-day plan review turnaround. Comments are returned on the original set with cloud markups and a tracked correction log.",
+    d: "A licensed engineer or architect performs a full code review against the governing building code — 2-day plan review turnaround. Comments are returned on the original set with cloud markups and a tracked correction log.",
     out: "Red-lined set · Correction log · Compliance summary",
   },
   {
     n: "03",
     day: "Day 3–5",
     t: "Affidavit & Permit",
-    d: "Once revisions clear, we sign and file the Private Provider Affidavit with the AHJ. By statute, the building department has 10 business days to issue the permit or cite specific plan deficiencies.",
-    out: "FS 553.791 affidavit · Permit issued",
+    d: "Once revisions clear, we sign and file the Private Provider Affidavit with the AHJ. By statute, the building department typically has 10 business days to issue the permit or cite specific plan deficiencies.",
+    out: "Private provider affidavit · Permit issued",
   },
   {
     n: "04",
@@ -62,7 +62,7 @@ function ProcessPage() {
       <PageHeader
         eyebrow="Process"
         title="From submittal to CO. Five phases. No surprises."
-        intro="Every Cleard project follows the same documented workflow under Florida Statute 553.791. Here is exactly what to expect and when."
+        intro="Every Cleard project follows the same documented private provider workflow. Here is exactly what to expect and when."
       />
 
       <section className="mx-auto max-w-6xl px-4 sm:px-6 py-24">
