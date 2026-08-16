@@ -112,6 +112,7 @@ import { Route as PortalHoaSubmittalsNewRouteImport } from './routes/portal.hoa-
 import { Route as PortalLienRightsDeadlinesRouteImport } from './routes/portal.lien-rights.deadlines'
 import { Route as PortalLienRightsDocumentsRouteImport } from './routes/portal.lien-rights.documents'
 import { Route as PortalLienRightsERecordingRouteImport } from './routes/portal.lien-rights.e-recording'
+import { Route as PortalLienRightsSettingsRouteImport } from './routes/portal.lien-rights.settings'
 import { Route as PortalPermitsIndexRouteImport } from './routes/portal.permits.index'
 import { Route as PortalPermitsIdRouteImport } from './routes/portal.permits.$id'
 import { Route as PortalPermitsNewRouteImport } from './routes/portal.permits.new'
@@ -652,6 +653,12 @@ const PortalLienRightsERecordingRoute =
     path: '/lien-rights/e-recording',
     getParentRoute: () => PortalRoute,
   } as any)
+const PortalLienRightsSettingsRoute =
+  PortalLienRightsSettingsRouteImport.update({
+    id: '/lien-rights/settings',
+    path: '/lien-rights/settings',
+    getParentRoute: () => PortalRoute,
+  } as any)
 const PortalPermitsIndexRoute = PortalPermitsIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -839,6 +846,7 @@ export interface FileRoutesByFullPath {
   '/portal/lien-rights/deadlines': typeof PortalLienRightsDeadlinesRoute
   '/portal/lien-rights/documents': typeof PortalLienRightsDocumentsRoute
   '/portal/lien-rights/e-recording': typeof PortalLienRightsERecordingRoute
+  '/portal/lien-rights/settings': typeof PortalLienRightsSettingsRoute
   '/portal/permits/$id': typeof PortalPermitsIdRoute
   '/portal/permits/new': typeof PortalPermitsNewRoute
   '/portal/subcontractors/new': typeof PortalSubcontractorsNewRoute
@@ -956,6 +964,7 @@ export interface FileRoutesByTo {
   '/portal/lien-rights/deadlines': typeof PortalLienRightsDeadlinesRoute
   '/portal/lien-rights/documents': typeof PortalLienRightsDocumentsRoute
   '/portal/lien-rights/e-recording': typeof PortalLienRightsERecordingRoute
+  '/portal/lien-rights/settings': typeof PortalLienRightsSettingsRoute
   '/portal/permits/$id': typeof PortalPermitsIdRoute
   '/portal/permits/new': typeof PortalPermitsNewRoute
   '/portal/subcontractors/new': typeof PortalSubcontractorsNewRoute
@@ -1078,6 +1087,7 @@ export interface FileRoutesById {
   '/portal/lien-rights/deadlines': typeof PortalLienRightsDeadlinesRoute
   '/portal/lien-rights/documents': typeof PortalLienRightsDocumentsRoute
   '/portal/lien-rights/e-recording': typeof PortalLienRightsERecordingRoute
+  '/portal/lien-rights/settings': typeof PortalLienRightsSettingsRoute
   '/portal/permits/$id': typeof PortalPermitsIdRoute
   '/portal/permits/new': typeof PortalPermitsNewRoute
   '/portal/subcontractors/new': typeof PortalSubcontractorsNewRoute
@@ -1201,6 +1211,7 @@ export interface FileRouteTypes {
     | '/portal/lien-rights/deadlines'
     | '/portal/lien-rights/documents'
     | '/portal/lien-rights/e-recording'
+    | '/portal/lien-rights/settings'
     | '/portal/permits/$id'
     | '/portal/permits/new'
     | '/portal/subcontractors/new'
@@ -1318,6 +1329,7 @@ export interface FileRouteTypes {
     | '/portal/lien-rights/deadlines'
     | '/portal/lien-rights/documents'
     | '/portal/lien-rights/e-recording'
+    | '/portal/lien-rights/settings'
     | '/portal/permits/$id'
     | '/portal/permits/new'
     | '/portal/subcontractors/new'
@@ -1439,6 +1451,7 @@ export interface FileRouteTypes {
     | '/portal/lien-rights/deadlines'
     | '/portal/lien-rights/documents'
     | '/portal/lien-rights/e-recording'
+    | '/portal/lien-rights/settings'
     | '/portal/permits/$id'
     | '/portal/permits/new'
     | '/portal/subcontractors/new'
@@ -2257,6 +2270,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PortalLienRightsERecordingRouteImport
       parentRoute: typeof PortalRoute
     }
+    '/portal/lien-rights/settings': {
+      id: '/portal/lien-rights/settings'
+      path: '/lien-rights/settings'
+      fullPath: '/portal/lien-rights/settings'
+      preLoaderRoute: typeof PortalLienRightsSettingsRouteImport
+      parentRoute: typeof PortalRoute
+    }
     '/portal/permits/': {
       id: '/portal/permits/'
       path: '/'
@@ -2461,6 +2481,7 @@ interface PortalRouteChildren {
   PortalLienRightsDeadlinesRoute: typeof PortalLienRightsDeadlinesRoute
   PortalLienRightsDocumentsRoute: typeof PortalLienRightsDocumentsRoute
   PortalLienRightsERecordingRoute: typeof PortalLienRightsERecordingRoute
+  PortalLienRightsSettingsRoute: typeof PortalLienRightsSettingsRoute
   PortalSubcontractorsNewRoute: typeof PortalSubcontractorsNewRoute
   PortalBlogIndexRoute: typeof PortalBlogIndexRoute
   PortalGuidesIndexRoute: typeof PortalGuidesIndexRoute
@@ -2503,6 +2524,7 @@ const PortalRouteChildren: PortalRouteChildren = {
   PortalLienRightsDeadlinesRoute: PortalLienRightsDeadlinesRoute,
   PortalLienRightsDocumentsRoute: PortalLienRightsDocumentsRoute,
   PortalLienRightsERecordingRoute: PortalLienRightsERecordingRoute,
+  PortalLienRightsSettingsRoute: PortalLienRightsSettingsRoute,
   PortalSubcontractorsNewRoute: PortalSubcontractorsNewRoute,
   PortalBlogIndexRoute: PortalBlogIndexRoute,
   PortalGuidesIndexRoute: PortalGuidesIndexRoute,
