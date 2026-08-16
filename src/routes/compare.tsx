@@ -8,11 +8,11 @@ import { AppFrame, KanbanMock, M } from "@/components/marketing-mockups";
 export const Route = createFileRoute("/compare")({
   head: () => ({
     meta: [
-      { title: "Compare — Cleard vs GreenLite, SunRay, myCOI" },
+      { title: "Compare — Cleard vs GreenLite, Permit Flow, SunRay, myCOI" },
       {
         name: "description",
         content:
-          "Side-by-side comparison of Cleard against GreenLite, PermitRockstar, SunRay, myCOI, and 1 Contractor Solutions across permitting, private plan review, licensing, insurance compliance, and AI.",
+          "Side-by-side comparison of Cleard against GreenLite, Permit Flow, SunRay, myCOI, Inspected, 1 Contractor Solutions, and Freedom Code Compliance across permitting, private plan review, licensing, insurance compliance, and lien rights.",
       },
       { property: "og:title", content: "Built where others stop." },
       {
@@ -142,7 +142,7 @@ function ComparePage() {
         {/* Table */}
         <section className="mx-auto max-w-7xl px-5 lg:px-8 pb-16">
           <div className="overflow-x-auto" style={{ border: `1px solid ${BORDER}` }}>
-            <table className="w-full" style={{ borderCollapse: "collapse", minWidth: 880 }}>
+            <table className="w-full" style={{ borderCollapse: "collapse", minWidth: 1120 }}>
               <thead>
                 <tr style={{ background: OFF }}>
                   <th
