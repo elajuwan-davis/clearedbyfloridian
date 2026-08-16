@@ -17,6 +17,18 @@ import {
   Users,
   X,
 } from "lucide-react";
+import {
+  AppFrame,
+  CertificateMock,
+  IntakeFormMock,
+  KanbanMock,
+  M,
+  NeuralArt,
+  TealGlow,
+  TESTIMONIALS,
+  TRUST_LOGOS,
+  VictoriaChatMock,
+} from "@/components/marketing-mockups";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -68,10 +80,13 @@ function HomePage() {
         <AnnouncementBanner />
         <Nav />
         <Hero />
+        <HeroStatBar />
         <Circle360 />
         <StatsStrip />
         <Services />
+        <ThreeSteps />
         <VictoriaLayer />
+        <TrustBar />
         <PortalShowcase />
         <MobileApp />
         <HowItWorks />
@@ -170,7 +185,7 @@ function Hero() {
         backgroundSize: "22px 22px",
       }}
     >
-      <div className="mx-auto max-w-7xl px-5 lg:px-8 py-20 md:py-28 grid gap-16 lg:grid-cols-2 lg:items-center">
+      <div className="mx-auto max-w-7xl px-5 lg:px-8 py-20 md:py-28 lg:py-32 grid gap-14 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] lg:items-center">
         <div>
           <div className="flex flex-wrap items-center gap-2.5">
             <span className="relative flex h-2 w-2">
@@ -237,7 +252,61 @@ function Hero() {
         </div>
 
 
-        <AppPreview />
+        <div className="relative">
+          <div
+            aria-hidden
+            className="pointer-events-none absolute -inset-10"
+            style={{
+              background:
+                "radial-gradient(55% 50% at 55% 45%, rgba(0,180,168,0.22) 0%, rgba(0,180,168,0.06) 48%, transparent 74%)",
+            }}
+          />
+          <div className="relative">
+            <AppFrame path="app.cleard.io/permits" active="Permits">
+              <KanbanMock />
+            </AppFrame>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ----------------------------- HERO STAT BAR ----------------------------- */
+
+const HERO_STATS = [
+  { k: "1,200+", v: "Permits managed" },
+  { k: "94%", v: "On-time approval rate" },
+  { k: "48 hr", v: "Average plan review" },
+  { k: "400+", v: "Jurisdictions covered" },
+];
+
+function HeroStatBar() {
+  return (
+    <section style={{ background: M.bg0 }}>
+      <div className="mx-auto max-w-7xl px-5 lg:px-8">
+        <div className="grid grid-cols-2 md:grid-cols-4">
+          {HERO_STATS.map((s, i) => (
+            <div
+              key={s.v}
+              className="py-8 md:py-10 px-5"
+              style={{
+                borderLeft: i === 0 ? "none" : `1px solid ${M.line}`,
+                borderTop: i > 1 ? `1px solid ${M.line}` : "none",
+              }}
+            >
+              <div
+                className="text-[26px] md:text-[32px] font-bold leading-none tabular-nums"
+                style={{ color: M.text, letterSpacing: "-0.04em" }}
+              >
+                {s.k}
+              </div>
+              <div className="mt-2.5 text-[10.5px] uppercase tracking-[0.16em]" style={{ color: M.teal }}>
+                {s.v}
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </section>
   );
@@ -323,18 +392,6 @@ function AppSidebar({ active }: { active: string }) {
           {n}
         </div>
       ))}
-    </div>
-  );
-}
-
-function AppPreview() {
-  return (
-    <div style={{ background: WHITE, border: `1px solid ${BORDER}` }}>
-      <BrowserChrome path="app.cleard.io/permits" />
-      <div className="grid grid-cols-[1fr] sm:grid-cols-[160px_1fr]">
-        <AppSidebar active="My Permits" />
-        <PermitsTable />
-      </div>
     </div>
   );
 }
@@ -590,12 +647,21 @@ function Services() {
           consolidates the entire compliance and administrative operation — under one roof, in one portal.
         </p>
 
-        <div className="mt-14 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {SERVICES.map((s) => (
-            <div key={s.title} className="relative p-6" style={{ background: OFF, border: `1px solid ${BORDER}` }}>
+        <div className="mt-14 grid gap-4 md:grid-cols-2 lg:grid-cols-6">
+          {SERVICES.map((s, i) => (
+            <div
+              key={s.title}
+              className={`relative p-6 lg:p-7 ${i < 2 ? "lg:col-span-3" : "lg:col-span-2"}`}
+              style={{ background: OFF, border: `1px solid ${BORDER}` }}
+            >
               <ArrowUpRight className="absolute right-5 top-5 h-4 w-4" style={{ color: LIGHT }} />
-              <s.icon className="h-5 w-5" style={{ color: TEAL }} strokeWidth={1.75} />
-              <h3 className="mt-5 text-[17px] font-bold" style={{ color: INK, letterSpacing: "-0.02em" }}>
+              <span
+                className="inline-flex h-11 w-11 items-center justify-center"
+                style={{ background: M.bg0 }}
+              >
+                <s.icon className="h-[19px] w-[19px]" style={{ color: TEAL }} strokeWidth={1.5} />
+              </span>
+              <h3 className={`mt-5 font-bold ${i < 2 ? "text-[19px]" : "text-[17px]"}`} style={{ color: INK, letterSpacing: "-0.02em" }}>
                 {s.title}
               </h3>
               <p className="mt-3 text-[14px] leading-relaxed" style={{ color: GRAY }}>
@@ -619,56 +685,173 @@ function Services() {
 
 function VictoriaLayer() {
   return (
-    <section style={{ background: OFF, borderTop: `1px solid ${BORDER}` }}>
-      <div className="mx-auto max-w-7xl px-5 lg:px-8 py-20 md:py-24">
-        <div className="grid gap-10 md:grid-cols-12 md:items-center">
-          <div className="md:col-span-7">
+    <section className="relative overflow-hidden" style={{ background: M.bg0 }}>
+      <TealGlow opacity={0.45} />
+      <div className="relative mx-auto max-w-7xl px-5 lg:px-8 py-24 md:py-32">
+        <div className="grid gap-14 lg:grid-cols-12 lg:items-center">
+          <div className="lg:col-span-5">
+            <NeuralArt />
+          </div>
+          <div className="lg:col-span-7">
             <div className="flex items-center gap-2">
               <Sparkles className="h-4 w-4" style={{ color: TEAL }} strokeWidth={1.75} />
-              <span
-                className="text-[10px] font-bold uppercase tracking-[0.22em]"
-                style={{ color: "#00917F" }}
-              >
+              <span className="text-[10px] font-bold uppercase tracking-[0.22em]" style={{ color: TEAL }}>
                 Platform intelligence
               </span>
             </div>
             <h2
               className="mt-5"
               style={{
-                color: INK,
+                color: M.text,
                 fontWeight: 800,
-                fontSize: "clamp(2rem, 3.6vw, 2.875rem)",
-                lineHeight: 1.08,
+                fontSize: "clamp(2rem, 3.8vw, 3rem)",
+                lineHeight: 1.06,
                 letterSpacing: "-0.035em",
               }}
             >
               Powered by Victoria
             </h2>
-            <p className="mt-5 max-w-2xl text-[16px] leading-relaxed" style={{ color: GRAY }}>
+            <p className="mt-5 max-w-2xl text-[16px] leading-relaxed" style={{ color: M.muted }}>
               Every service on this platform is backed by Victoria — Cleard&apos;s AI engine. She
-              answers jurisdiction questions, flags missing documents, routes correction responses,
-              and surfaces compliance risks before they become delays. You don&apos;t buy Victoria.
-              She comes with Cleard.
+              answers jurisdiction questions, flags missing documents, routes correction responses, and
+              surfaces compliance risks before they become delays. You don&apos;t buy Victoria. She
+              comes with Cleard.
             </p>
-          </div>
-          <div className="md:col-span-5">
-            <div className="p-6" style={{ background: WHITE, border: `1px solid ${BORDER}` }}>
-              <div
-                className="text-[10px] font-bold uppercase tracking-[0.18em]"
-                style={{ color: LIGHT }}
-              >
-                Victoria works across
-              </div>
-              <ul className="mt-4 space-y-3">
-                {SERVICES.map((s) => (
-                  <li key={s.title} className="flex items-center gap-3 text-[14px]" style={{ color: INK }}>
-                    <s.icon className="h-4 w-4 shrink-0" style={{ color: TEAL }} strokeWidth={1.75} />
-                    {s.title}
-                  </li>
-                ))}
-              </ul>
+            <div className="mt-9">
+              <VictoriaChatMock />
+            </div>
+            <div className="mt-6 flex flex-wrap gap-x-6 gap-y-2">
+              {SERVICES.map((s) => (
+                <span key={s.title} className="flex items-center gap-2 text-[12px]" style={{ color: M.faint }}>
+                  <s.icon className="h-3.5 w-3.5" style={{ color: TEAL }} strokeWidth={1.75} />
+                  {s.title}
+                </span>
+              ))}
             </div>
           </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ------------------------------- 3 STEPS --------------------------------- */
+
+function ThreeSteps() {
+  const steps = [
+    {
+      n: "01",
+      t: "Submit",
+      b: "Send scope and drawings once. We build the application, run the document checklist, and file it.",
+      visual: (
+        <AppFrame path="app.cleard.io/permits/new" active="Permits">
+          <IntakeFormMock />
+        </AppFrame>
+      ),
+    },
+    {
+      n: "02",
+      t: "Track",
+      b: "Every permit, correction, and inspection moves across one live pipeline — no status calls.",
+      visual: (
+        <AppFrame path="app.cleard.io/permits" active="Permits">
+          <KanbanMock />
+        </AppFrame>
+      ),
+    },
+    {
+      n: "03",
+      t: "Close",
+      b: "Final inspections clear, the CO is issued, and your full closeout package is archived.",
+      visual: (
+        <AppFrame path="app.cleard.io/permits/CLR-2026-0212" active="Documents">
+          <CertificateMock />
+        </AppFrame>
+      ),
+    },
+  ];
+  return (
+    <section style={{ background: M.bg1 }}>
+      <div className="mx-auto max-w-7xl px-5 lg:px-8 py-24 md:py-32">
+        <div className="text-[10.5px] font-bold uppercase tracking-[0.2em]" style={{ color: TEAL }}>
+          How it works
+        </div>
+        <h2
+          className="mt-6 max-w-3xl"
+          style={{ fontSize: "clamp(2rem, 3.8vw, 3rem)", lineHeight: 1.06, letterSpacing: "-0.035em" }}
+        >
+          <span style={{ color: M.text, fontWeight: 800 }}>Submit. Track. Close. </span>
+          <span style={{ color: M.muted, fontWeight: 600 }}>That&apos;s your part.</span>
+        </h2>
+
+        <div className="mt-16 space-y-16 md:space-y-24">
+          {steps.map((s, i) => (
+            <div key={s.t} className="grid gap-10 lg:grid-cols-12 lg:items-center">
+              <div className={`lg:col-span-4 ${i % 2 === 1 ? "lg:order-2" : ""}`}>
+                <div
+                  className="inline-flex h-12 w-12 items-center justify-center text-[15px] font-bold tabular-nums"
+                  style={{ background: TEAL, color: M.bg0 }}
+                >
+                  {s.n}
+                </div>
+                <h3
+                  className="mt-6 font-bold"
+                  style={{ color: M.text, fontSize: "clamp(1.5rem, 2.4vw, 2rem)", letterSpacing: "-0.03em" }}
+                >
+                  {s.t}
+                </h3>
+                <p className="mt-4 text-[15px] leading-relaxed" style={{ color: M.muted }}>
+                  {s.b}
+                </p>
+              </div>
+              <div className={`lg:col-span-8 ${i % 2 === 1 ? "lg:order-1" : ""}`}>{s.visual}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ------------------------------- TRUST BAR ------------------------------- */
+
+function TrustBar() {
+  return (
+    <section style={{ background: WHITE, borderTop: `1px solid ${BORDER}` }}>
+      <div className="mx-auto max-w-7xl px-5 lg:px-8 py-24 md:py-32">
+        <div className="text-center text-[10.5px] font-bold uppercase tracking-[0.2em]" style={{ color: LIGHT }}>
+          Trusted by contractors across the country
+        </div>
+        <div className="mt-10 grid grid-cols-2 gap-px sm:grid-cols-3 lg:grid-cols-6" style={{ background: BORDER }}>
+          {TRUST_LOGOS.map((l) => (
+            <div
+              key={l}
+              className="flex items-center justify-center px-4 py-7 text-center text-[11px] font-bold uppercase tracking-[0.12em]"
+              style={{ background: WHITE, color: INK }}
+            >
+              {l}
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-14 grid gap-4 md:grid-cols-3">
+          {TESTIMONIALS.map((t) => (
+            <figure key={t.name} className="flex flex-col p-7" style={{ background: OFF, border: `1px solid ${BORDER}` }}>
+              <div className="text-[28px] font-bold leading-none" style={{ color: TEAL }}>
+                &ldquo;
+              </div>
+              <blockquote className="mt-4 flex-1 text-[15px] leading-relaxed" style={{ color: INK }}>
+                {t.quote}
+              </blockquote>
+              <figcaption className="mt-6 pt-5 text-[12.5px]" style={{ borderTop: `1px solid ${BORDER}`, color: GRAY }}>
+                <span className="font-bold" style={{ color: INK }}>
+                  {t.name}
+                </span>
+                <br />
+                {t.role}
+              </figcaption>
+            </figure>
+          ))}
         </div>
       </div>
     </section>
