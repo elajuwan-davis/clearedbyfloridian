@@ -35,6 +35,16 @@ export const tabGroups: TabGroup[] = [
     ],
   },
   {
+    key: "lien-rights",
+    label: "Lien Rights",
+    tabs: [
+      { label: "Documents", to: "/portal/lien-rights/documents" },
+      { label: "Deadlines", to: "/portal/lien-rights/deadlines" },
+      { label: "E-Recording", to: "/portal/lien-rights/e-recording" },
+      { label: "Settings", to: "/portal/lien-rights/settings" },
+    ],
+  },
+  {
     key: "contacts",
     label: "Contacts",
     tabs: [

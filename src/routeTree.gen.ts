@@ -109,6 +109,10 @@ import { Route as PortalGuidesSlugRouteImport } from './routes/portal.guides.$sl
 import { Route as PortalHoaSubmittalsIndexRouteImport } from './routes/portal.hoa-submittals.index'
 import { Route as PortalHoaSubmittalsIdRouteImport } from './routes/portal.hoa-submittals.$id'
 import { Route as PortalHoaSubmittalsNewRouteImport } from './routes/portal.hoa-submittals.new'
+import { Route as PortalLienRightsDeadlinesRouteImport } from './routes/portal.lien-rights.deadlines'
+import { Route as PortalLienRightsDocumentsRouteImport } from './routes/portal.lien-rights.documents'
+import { Route as PortalLienRightsERecordingRouteImport } from './routes/portal.lien-rights.e-recording'
+import { Route as PortalLienRightsSettingsRouteImport } from './routes/portal.lien-rights.settings'
 import { Route as PortalPermitsIndexRouteImport } from './routes/portal.permits.index'
 import { Route as PortalPermitsIdRouteImport } from './routes/portal.permits.$id'
 import { Route as PortalPermitsNewRouteImport } from './routes/portal.permits.new'
@@ -631,6 +635,30 @@ const PortalHoaSubmittalsNewRoute = PortalHoaSubmittalsNewRouteImport.update({
   path: '/hoa-submittals/new',
   getParentRoute: () => PortalRoute,
 } as any)
+const PortalLienRightsDeadlinesRoute =
+  PortalLienRightsDeadlinesRouteImport.update({
+    id: '/lien-rights/deadlines',
+    path: '/lien-rights/deadlines',
+    getParentRoute: () => PortalRoute,
+  } as any)
+const PortalLienRightsDocumentsRoute =
+  PortalLienRightsDocumentsRouteImport.update({
+    id: '/lien-rights/documents',
+    path: '/lien-rights/documents',
+    getParentRoute: () => PortalRoute,
+  } as any)
+const PortalLienRightsERecordingRoute =
+  PortalLienRightsERecordingRouteImport.update({
+    id: '/lien-rights/e-recording',
+    path: '/lien-rights/e-recording',
+    getParentRoute: () => PortalRoute,
+  } as any)
+const PortalLienRightsSettingsRoute =
+  PortalLienRightsSettingsRouteImport.update({
+    id: '/lien-rights/settings',
+    path: '/lien-rights/settings',
+    getParentRoute: () => PortalRoute,
+  } as any)
 const PortalPermitsIndexRoute = PortalPermitsIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -815,6 +843,10 @@ export interface FileRoutesByFullPath {
   '/portal/guides/$slug': typeof PortalGuidesSlugRoute
   '/portal/hoa-submittals/$id': typeof PortalHoaSubmittalsIdRoute
   '/portal/hoa-submittals/new': typeof PortalHoaSubmittalsNewRoute
+  '/portal/lien-rights/deadlines': typeof PortalLienRightsDeadlinesRoute
+  '/portal/lien-rights/documents': typeof PortalLienRightsDocumentsRoute
+  '/portal/lien-rights/e-recording': typeof PortalLienRightsERecordingRoute
+  '/portal/lien-rights/settings': typeof PortalLienRightsSettingsRoute
   '/portal/permits/$id': typeof PortalPermitsIdRoute
   '/portal/permits/new': typeof PortalPermitsNewRoute
   '/portal/subcontractors/new': typeof PortalSubcontractorsNewRoute
@@ -929,6 +961,10 @@ export interface FileRoutesByTo {
   '/portal/guides/$slug': typeof PortalGuidesSlugRoute
   '/portal/hoa-submittals/$id': typeof PortalHoaSubmittalsIdRoute
   '/portal/hoa-submittals/new': typeof PortalHoaSubmittalsNewRoute
+  '/portal/lien-rights/deadlines': typeof PortalLienRightsDeadlinesRoute
+  '/portal/lien-rights/documents': typeof PortalLienRightsDocumentsRoute
+  '/portal/lien-rights/e-recording': typeof PortalLienRightsERecordingRoute
+  '/portal/lien-rights/settings': typeof PortalLienRightsSettingsRoute
   '/portal/permits/$id': typeof PortalPermitsIdRoute
   '/portal/permits/new': typeof PortalPermitsNewRoute
   '/portal/subcontractors/new': typeof PortalSubcontractorsNewRoute
@@ -1048,6 +1084,10 @@ export interface FileRoutesById {
   '/portal/guides/$slug': typeof PortalGuidesSlugRoute
   '/portal/hoa-submittals/$id': typeof PortalHoaSubmittalsIdRoute
   '/portal/hoa-submittals/new': typeof PortalHoaSubmittalsNewRoute
+  '/portal/lien-rights/deadlines': typeof PortalLienRightsDeadlinesRoute
+  '/portal/lien-rights/documents': typeof PortalLienRightsDocumentsRoute
+  '/portal/lien-rights/e-recording': typeof PortalLienRightsERecordingRoute
+  '/portal/lien-rights/settings': typeof PortalLienRightsSettingsRoute
   '/portal/permits/$id': typeof PortalPermitsIdRoute
   '/portal/permits/new': typeof PortalPermitsNewRoute
   '/portal/subcontractors/new': typeof PortalSubcontractorsNewRoute
@@ -1168,6 +1208,10 @@ export interface FileRouteTypes {
     | '/portal/guides/$slug'
     | '/portal/hoa-submittals/$id'
     | '/portal/hoa-submittals/new'
+    | '/portal/lien-rights/deadlines'
+    | '/portal/lien-rights/documents'
+    | '/portal/lien-rights/e-recording'
+    | '/portal/lien-rights/settings'
     | '/portal/permits/$id'
     | '/portal/permits/new'
     | '/portal/subcontractors/new'
@@ -1282,6 +1326,10 @@ export interface FileRouteTypes {
     | '/portal/guides/$slug'
     | '/portal/hoa-submittals/$id'
     | '/portal/hoa-submittals/new'
+    | '/portal/lien-rights/deadlines'
+    | '/portal/lien-rights/documents'
+    | '/portal/lien-rights/e-recording'
+    | '/portal/lien-rights/settings'
     | '/portal/permits/$id'
     | '/portal/permits/new'
     | '/portal/subcontractors/new'
@@ -1400,6 +1448,10 @@ export interface FileRouteTypes {
     | '/portal/guides/$slug'
     | '/portal/hoa-submittals/$id'
     | '/portal/hoa-submittals/new'
+    | '/portal/lien-rights/deadlines'
+    | '/portal/lien-rights/documents'
+    | '/portal/lien-rights/e-recording'
+    | '/portal/lien-rights/settings'
     | '/portal/permits/$id'
     | '/portal/permits/new'
     | '/portal/subcontractors/new'
@@ -2197,6 +2249,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PortalHoaSubmittalsNewRouteImport
       parentRoute: typeof PortalRoute
     }
+    '/portal/lien-rights/deadlines': {
+      id: '/portal/lien-rights/deadlines'
+      path: '/lien-rights/deadlines'
+      fullPath: '/portal/lien-rights/deadlines'
+      preLoaderRoute: typeof PortalLienRightsDeadlinesRouteImport
+      parentRoute: typeof PortalRoute
+    }
+    '/portal/lien-rights/documents': {
+      id: '/portal/lien-rights/documents'
+      path: '/lien-rights/documents'
+      fullPath: '/portal/lien-rights/documents'
+      preLoaderRoute: typeof PortalLienRightsDocumentsRouteImport
+      parentRoute: typeof PortalRoute
+    }
+    '/portal/lien-rights/e-recording': {
+      id: '/portal/lien-rights/e-recording'
+      path: '/lien-rights/e-recording'
+      fullPath: '/portal/lien-rights/e-recording'
+      preLoaderRoute: typeof PortalLienRightsERecordingRouteImport
+      parentRoute: typeof PortalRoute
+    }
+    '/portal/lien-rights/settings': {
+      id: '/portal/lien-rights/settings'
+      path: '/lien-rights/settings'
+      fullPath: '/portal/lien-rights/settings'
+      preLoaderRoute: typeof PortalLienRightsSettingsRouteImport
+      parentRoute: typeof PortalRoute
+    }
     '/portal/permits/': {
       id: '/portal/permits/'
       path: '/'
@@ -2398,6 +2478,10 @@ interface PortalRouteChildren {
   PortalGuidesSlugRoute: typeof PortalGuidesSlugRoute
   PortalHoaSubmittalsIdRoute: typeof PortalHoaSubmittalsIdRoute
   PortalHoaSubmittalsNewRoute: typeof PortalHoaSubmittalsNewRoute
+  PortalLienRightsDeadlinesRoute: typeof PortalLienRightsDeadlinesRoute
+  PortalLienRightsDocumentsRoute: typeof PortalLienRightsDocumentsRoute
+  PortalLienRightsERecordingRoute: typeof PortalLienRightsERecordingRoute
+  PortalLienRightsSettingsRoute: typeof PortalLienRightsSettingsRoute
   PortalSubcontractorsNewRoute: typeof PortalSubcontractorsNewRoute
   PortalBlogIndexRoute: typeof PortalBlogIndexRoute
   PortalGuidesIndexRoute: typeof PortalGuidesIndexRoute
@@ -2437,6 +2521,10 @@ const PortalRouteChildren: PortalRouteChildren = {
   PortalGuidesSlugRoute: PortalGuidesSlugRoute,
   PortalHoaSubmittalsIdRoute: PortalHoaSubmittalsIdRoute,
   PortalHoaSubmittalsNewRoute: PortalHoaSubmittalsNewRoute,
+  PortalLienRightsDeadlinesRoute: PortalLienRightsDeadlinesRoute,
+  PortalLienRightsDocumentsRoute: PortalLienRightsDocumentsRoute,
+  PortalLienRightsERecordingRoute: PortalLienRightsERecordingRoute,
+  PortalLienRightsSettingsRoute: PortalLienRightsSettingsRoute,
   PortalSubcontractorsNewRoute: PortalSubcontractorsNewRoute,
   PortalBlogIndexRoute: PortalBlogIndexRoute,
   PortalGuidesIndexRoute: PortalGuidesIndexRoute,

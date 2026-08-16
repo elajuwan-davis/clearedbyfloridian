@@ -79,6 +79,12 @@ export const navSections: NavSection[] = [
     to: "/portal/inspections",
   },
   {
+    key: "lien-rights",
+    label: "Lien Rights",
+    icon: Scale,
+    to: "/portal/lien-rights/documents",
+  },
+  {
     key: "contacts",
     label: "Contacts",
     icon: Users,
