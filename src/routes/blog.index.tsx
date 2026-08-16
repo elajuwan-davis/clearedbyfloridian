@@ -11,13 +11,13 @@ export const Route = createFileRoute("/blog/")({
       {
         name: "description",
         content:
-          "Code updates, municipality changes, private provider news, and what every Florida GC needs to know.",
+          "Code updates, municipality changes, private provider news, and what every GC needs to know.",
       },
       { property: "og:title", content: "Insights — Cleard" },
       {
         property: "og:description",
         content:
-          "Code updates, municipality changes, private provider news, and what every Florida GC needs to know.",
+          "Code updates, municipality changes, private provider news, and what every GC needs to know.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -58,7 +58,7 @@ function PublicBlogIndex() {
             Permitting <em>intelligence,</em> published.
           </h1>
           <p className="mt-5 max-w-2xl text-base text-obsidian/65 sm:text-lg">
-            Code updates, municipality changes, private provider news, and what every Florida
+            Code updates, municipality changes, private provider news, and what every
             GC needs to know.
           </p>
         </div>
