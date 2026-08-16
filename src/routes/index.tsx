@@ -540,41 +540,36 @@ function StatsStrip() {
 const SERVICES = [
   {
     icon: Send,
-    title: "Permit Submission",
-    body: "We prepare and submit applications across any jurisdiction. Every field, every attachment, submitted correctly the first time.",
+    title: "Permitting Administration",
+    body: "Full-service permit management — application, submission, tracking, corrections, and certificate of occupancy, handled end to end.",
     tag: "Core service",
   },
   {
     icon: FileCheck2,
-    title: "Private Provider Plan Review",
-    body: "Licensed private providers approve your plans in days, not weeks. We manage the full engagement on your behalf.",
+    title: "Private Plan Review & Inspections",
+    body: "Faster approvals through licensed private providers. Plan review and field inspections performed by certified professionals, not municipal backlogs.",
     tag: "Speeds approval",
   },
   {
-    icon: ClipboardCheck,
-    title: "Correction Management",
-    body: "When the building department flags issues, we respond, revise, and resubmit. You get a notification, not a problem.",
-    tag: "Zero PM burden",
-  },
-  {
-    icon: FileText,
-    title: "Inspection Scheduling",
-    body: "We schedule every required inspection and confirm with your super — date, time, what to stage.",
-    tag: "All trade inspections",
-  },
-  {
     icon: ShieldCheck,
-    title: "License Verification",
-    body: "We pull and verify current licenses for every sub. Expiration alerts before they become a stop-work order.",
+    title: "Contractor License Management",
+    body: "License verification, renewal tracking, CE hour monitoring, and qualifying agent oversight — all in one dashboard.",
     tag: "Active monitoring",
   },
   {
     icon: Users,
-    title: "Insurance Verification",
-    body: "We collect, review, and store COIs for every subcontractor. Coverage limits, effective dates, named-insured accuracy — all checked.",
+    title: "Insurance Compliance",
+    body: "Certificate of insurance collection, coverage validation, expiration tracking, and automated follow-up for your entire subcontractor roster.",
     tag: "COI management",
   },
+  {
+    icon: Sparkles,
+    title: "Victoria.AI",
+    body: "Your AI back-office assistant. Answers jurisdiction questions, flags missing documents, routes corrections, and surfaces compliance risks before they become delays.",
+    tag: "AI assistant",
+  },
 ];
+
 
 function Services() {
   return (
