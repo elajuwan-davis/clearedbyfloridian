@@ -10,13 +10,13 @@ export const Route = createFileRoute("/pricing")({
       {
         name: "description",
         content:
-          "One subscription for your entire back office. Starter $99/mo, Pro $249/mo, Back Office $499/mo. 14-day free trial, no credit card required.",
+          "Five services, one subscription. Starter $99/mo, Pro $249/mo, Back Office $499/mo. 14-day free trial, no credit card required.",
       },
       { property: "og:title", content: "One subscription. Your entire back office." },
       {
         property: "og:description",
         content:
-          "Permits, lien rights, insurance compliance, and license administration from $99/month.",
+          "Permitting administration, private plan review, license management, insurance compliance, and Victoria.AI from $99/month.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -46,10 +46,10 @@ const PLANS: Plan[] = [
     name: "Starter",
     price: "$99",
     features: [
-      "Permit tracking & pipeline (My Permits kanban)",
-      "Basic COI monitoring & expiration alerts",
-      "License verification dashboard",
-      "Building dept portal hub",
+      "Permitting Administration — tracking & pipeline",
+      "Insurance Compliance — basic COI monitoring & expiration alerts",
+      "Contractor License Management — verification dashboard",
+      "Building department portal hub",
     ],
     limits: "Up to 5 active projects · 1 user seat",
   },
@@ -59,11 +59,11 @@ const PLANS: Plan[] = [
     popular: true,
     inherits: "Everything in Starter, plus:",
     features: [
-      "Lien document generation (NOC, Preliminary Notice, Waivers)",
-      "Deadline tracker (FL Statute 713)",
-      "License renewal alerts (90/60/30-day)",
-      "Continuing education (CE) tracking",
-      "DBPR license verification for subs",
+      "Permitting Administration — full submission, corrections & CO management",
+      "Private Plan Review & Inspections — 2-day plan review, same-day inspections",
+      "Contractor License Management — renewal alerts and CE hour tracking",
+      "Insurance Compliance — coverage validation and automated sub follow-up",
+      "Victoria.AI — jurisdiction answers and missing-document flags",
     ],
     limits: "Up to 25 active projects · 3 user seats",
   },
@@ -72,12 +72,11 @@ const PLANS: Plan[] = [
     price: "$499",
     inherits: "Everything in Pro, plus:",
     features: [
-      "License renewal management (Cleard submits on your behalf)",
-      "FDEP permit tracking",
-      "Worker's comp exemption tracking",
-      "Code violation monitoring",
-      "After-the-fact permit workflow",
-      "Qualifying agent monitoring",
+      "Contractor License Management — Cleard submits renewals on your behalf",
+      "Contractor License Management — qualifying agent oversight",
+      "Insurance Compliance — full subcontractor roster at any size",
+      "Private Plan Review & Inspections — priority scheduling",
+      "Victoria.AI — proactive compliance risk monitoring and correction routing",
     ],
     limits: "Unlimited projects · Unlimited user seats",
   },
@@ -185,8 +184,7 @@ function PricingPage() {
           </p>
 
           <p className="mt-3 text-[14px]" style={{ color: GRAY }}>
-            Need something custom? Real estate permit searches and specialty services are available à
-            la carte.{" "}
+            Need something custom? Volume plans and specialty services are available on request.{" "}
             <Link to="/contact" className="underline" style={{ color: INK, fontWeight: 600 }}>
               Talk to us →
             </Link>

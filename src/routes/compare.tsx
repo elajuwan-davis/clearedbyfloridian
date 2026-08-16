@@ -9,13 +9,13 @@ export const Route = createFileRoute("/compare")({
       {
         name: "description",
         content:
-          "Side-by-side comparison of Cleard against GreenLite, PermitRockstar, SunRay, myCOI, and 1 Contractor Solutions across permits, lien rights, insurance, and licensing.",
+          "Side-by-side comparison of Cleard against GreenLite, PermitRockstar, SunRay, myCOI, and 1 Contractor Solutions across permitting, private plan review, licensing, insurance compliance, and AI.",
       },
       { property: "og:title", content: "Built where others stop." },
       {
         property: "og:description",
         content:
-          "Most tools do one thing. Cleard does permits, lien rights, insurance, licensing, and compliance in one platform.",
+          "Most tools do one thing. Cleard delivers all five services — permitting, private plan review, licensing, insurance compliance, and Victoria.AI — in one platform.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -36,31 +36,23 @@ const COMPETITORS = ["GreenLite", "PermitRockstar", "SunRay", "myCOI", "1 Contra
 type Row = { feature: string; cells: string[] }; // [cleard, ...competitors]
 
 const ROWS: Row[] = [
-  { feature: "Permit administration", cells: ["✓", "✓", "✓", "—", "—", "✓"] },
-  { feature: "Private provider inspections", cells: ["✓", "✓", "✓", "—", "—", "—"] },
-  { feature: "Lien document generation", cells: ["✓", "—", "—", "✓", "—", "—"] },
-  { feature: "Lien deadline tracker (FL Statute 713)", cells: ["✓", "—", "—", "✓", "—", "—"] },
-  { feature: "COI & insurance compliance", cells: ["✓", "—", "—", "—", "✓", "—"] },
-  { feature: "License renewal management", cells: ["✓", "—", "—", "—", "—", "✓"] },
-  { feature: "Continuing education (CE) tracking", cells: ["✓", "—", "—", "—", "—", "—"] },
-  { feature: "Worker's comp exemption tracking", cells: ["✓", "—", "—", "—", "—", "—"] },
-  { feature: "Code violation monitoring", cells: ["✓", "—", "—", "—", "—", "—"] },
-  { feature: "After-the-fact permits", cells: ["✓", "—", "✓", "—", "—", "✓"] },
-  { feature: "Self-serve platform (no agency)", cells: ["✓", "✓", "—", "✓", "✓", "—"] },
-  { feature: "Monthly subscription model", cells: ["✓", "✓", "—", "✓", "✓", "—"] },
-  { feature: "All FL licensed contractor types", cells: ["✓", "—", "Partial", "✓", "✓", "✓"] },
+  { feature: "Permitting Administration", cells: ["✓", "✓", "✓", "—", "—", "✓"] },
+  { feature: "Private Plan Review & Inspections", cells: ["✓", "✓", "✓", "—", "—", "—"] },
+  { feature: "Contractor License Management", cells: ["✓", "—", "—", "—", "—", "✓"] },
+  { feature: "Insurance Compliance", cells: ["✓", "—", "—", "—", "✓", "—"] },
+  { feature: "Victoria.AI back-office assistant", cells: ["✓", "—", "—", "—", "—", "—"] },
 ];
 
 const CALLOUTS = [
   {
     title: "vs. GreenLite",
     body:
-      "GreenLite handles permitting and inspections. Cleard handles those — plus lien rights, COI compliance, license admin, and CE tracking. GreenLite is a permit tool. Cleard is your back office.",
+      "GreenLite handles permitting and inspections. Cleard handles those — plus contractor license management, insurance compliance, and Victoria.AI. GreenLite is a permit tool. Cleard is your back office.",
   },
   {
     title: "vs. SunRay + myCOI",
     body:
-      "SunRay manages lien docs. myCOI manages certificates. Using both means two logins, two bills, and no connection between them. Cleard does both — integrated.",
+      "SunRay manages documents. myCOI manages certificates. Using both means two logins, two bills, and no connection between them. Cleard covers both — integrated.",
   },
   {
     title: "vs. PermitRockstar + 1 Contractor Solutions",
@@ -90,8 +82,9 @@ function ComparePage() {
             Built where others stop.
           </h1>
           <p className="mt-6 max-w-2xl text-[17px] leading-relaxed" style={{ color: GRAY }}>
-            Most tools do one thing. Cleard does everything — permits, lien rights, insurance,
-            licensing, and compliance — in one platform.
+            Most tools do one thing. Cleard delivers all five services — permitting administration,
+            private plan review and inspections, license management, insurance compliance, and
+            Victoria.AI — in one platform.
           </p>
         </section>
 
