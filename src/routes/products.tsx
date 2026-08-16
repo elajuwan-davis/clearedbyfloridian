@@ -23,13 +23,13 @@ export const Route = createFileRoute("/products")({
       {
         name: "description",
         content:
-          "Permitting administration, private plan review and inspections, contractor license management, insurance compliance, and Victoria.AI — built for licensed contractors.",
+          "Permitting administration, private plan review and inspections, contractor license management, insurance compliance, and lien rights — built for licensed contractors.",
       },
       { property: "og:title", content: "Every tool your operation needs." },
       {
         property: "og:description",
         content:
-          "Five services. One platform. Permitting, private plan review, license management, insurance compliance, and Victoria.AI.",
+          "Five services. One platform. Permitting, private plan review, license management, insurance compliance, and lien rights.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -96,16 +96,17 @@ const PRODUCTS: Product[] = [
     Icon: FileCheck2,
   },
   {
-    name: "Victoria.AI",
+    name: "Lien Rights",
     tagline:
-      "Your AI back-office assistant. Answers jurisdiction questions, flags missing documents, routes corrections, and surfaces compliance risks before they become delays.",
+      "Notice of Commencement, Preliminary Notices, Lien Waivers, and statutory deadline tracking — generated, signed, and recorded without leaving the platform.",
     bullets: [
-      "Answers jurisdiction requirement questions instantly",
-      "Flags missing documents before submittal",
-      "Routes correction notices to the right owner",
-      "Surfaces compliance risks across every active project",
+      "Notice of Commencement prep, signature, and recording",
+      "Preliminary Notices and Notices to Owner",
+      "Conditional and unconditional lien waivers",
+      "Statutory deadline tracking with countdown alerts",
+      "County e-recording requests from inside the platform",
     ],
-    Icon: Sparkles,
+    Icon: Scale,
   },
 ];
 
@@ -223,7 +224,7 @@ function ProductsPage() {
             One platform. Your entire back office.
           </h2>
           <p className="text-lg mb-10" style={{ color: "rgba(255,255,255,0.7)" }}>
-            See how Cleard runs permitting, private plan review, licensing, insurance compliance, and Victoria.AI for your operation.
+            See how Cleard runs permitting, private plan review, licensing, insurance compliance, and lien rights for your operation.
           </p>
           <Link
             to="/join"

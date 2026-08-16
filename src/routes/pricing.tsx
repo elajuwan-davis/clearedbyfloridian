@@ -16,7 +16,7 @@ export const Route = createFileRoute("/pricing")({
       {
         property: "og:description",
         content:
-          "Permitting administration, private plan review, license management, insurance compliance, and Victoria.AI from $99/month.",
+          "Permitting administration, private plan review, license management, insurance compliance, and lien rights from $99/month.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -63,7 +63,7 @@ const PLANS: Plan[] = [
       "Private Plan Review & Inspections — 2-day plan review, same-day inspections",
       "Contractor License Management — renewal alerts and CE hour tracking",
       "Insurance Compliance — coverage validation and automated sub follow-up",
-      "Victoria.AI — jurisdiction answers and missing-document flags",
+      "Lien rights documents — NOC, Preliminary Notices, and waivers",
     ],
     limits: "Up to 25 active projects · 3 user seats",
   },
@@ -76,7 +76,7 @@ const PLANS: Plan[] = [
       "Contractor License Management — qualifying agent oversight",
       "Insurance Compliance — full subcontractor roster at any size",
       "Private Plan Review & Inspections — priority scheduling",
-      "Victoria.AI — proactive compliance risk monitoring and correction routing",
+      "Lien rights — statutory deadline tracking and county e-recording",
     ],
     limits: "Unlimited projects · Unlimited user seats",
   },

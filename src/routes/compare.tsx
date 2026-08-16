@@ -15,7 +15,7 @@ export const Route = createFileRoute("/compare")({
       {
         property: "og:description",
         content:
-          "Most tools do one thing. Cleard delivers all five services — permitting, private plan review, licensing, insurance compliance, and Victoria.AI — in one platform.",
+          "Most tools do one thing. Cleard delivers all five services — permitting, private plan review, licensing, insurance compliance, and lien rights — in one platform.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -40,14 +40,14 @@ const ROWS: Row[] = [
   { feature: "Private Plan Review & Inspections", cells: ["✓", "✓", "✓", "—", "—", "—"] },
   { feature: "Contractor License Management", cells: ["✓", "—", "—", "—", "—", "✓"] },
   { feature: "Insurance Compliance", cells: ["✓", "—", "—", "—", "✓", "—"] },
-  { feature: "Victoria.AI back-office assistant", cells: ["✓", "—", "—", "—", "—", "—"] },
+  { feature: "Lien rights documents & deadline tracking", cells: ["✓", "—", "—", "—", "—", "—"] },
 ];
 
 const CALLOUTS = [
   {
     title: "vs. GreenLite",
     body:
-      "GreenLite handles permitting and inspections. Cleard handles those — plus contractor license management, insurance compliance, and Victoria.AI. GreenLite is a permit tool. Cleard is your back office.",
+      "GreenLite handles permitting and inspections. Cleard handles those — plus contractor license management, insurance compliance, and lien rights. GreenLite is a permit tool. Cleard is your back office.",
   },
   {
     title: "vs. SunRay + myCOI",
@@ -84,7 +84,7 @@ function ComparePage() {
           <p className="mt-6 max-w-2xl text-[17px] leading-relaxed" style={{ color: GRAY }}>
             Most tools do one thing. Cleard delivers all five services — permitting administration,
             private plan review and inspections, license management, insurance compliance, and
-            Victoria.AI — in one platform.
+            lien rights — in one platform.
           </p>
         </section>
 

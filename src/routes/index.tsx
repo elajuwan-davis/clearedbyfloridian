@@ -24,7 +24,7 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "Cleard runs the entire back office behind your projects — permitting administration, private plan review and inspections, license management, insurance compliance, and Victoria.AI.",
+          "Cleard runs the entire back office behind your projects — permitting administration, private plan review and inspections, license management, insurance compliance, and lien rights.",
       },
       { property: "og:title", content: "Cleard — Run projects. Not paperwork." },
       {
@@ -208,7 +208,7 @@ function Hero() {
           <p className="mt-6 max-w-xl text-[17px] leading-relaxed" style={{ color: GRAY }}>
             Cleard runs the back office for every licensed contractor — permitting administration,
             private plan review and inspections, license management, insurance compliance, and
-            Victoria.AI. One platform. Year-round.
+            lien rights. One platform. Year-round.
           </p>
 
           <div className="mt-9 flex flex-col sm:flex-row gap-3 max-w-lg">
@@ -564,10 +564,10 @@ const SERVICES = [
     tag: "COI management",
   },
   {
-    icon: Sparkles,
-    title: "Victoria.AI",
-    body: "Your AI back-office assistant. Answers jurisdiction questions, flags missing documents, routes corrections, and surfaces compliance risks before they become delays.",
-    tag: "AI assistant",
+    icon: Scale,
+    title: "Lien Rights",
+    body: "Notice of Commencement, Preliminary Notices, Lien Waivers, and statutory deadline tracking — generated, signed, and recorded without leaving the platform.",
+    tag: "Statutory deadlines",
   },
 ];
 
