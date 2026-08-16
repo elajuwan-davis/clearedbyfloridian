@@ -109,6 +109,7 @@ import { Route as PortalGuidesSlugRouteImport } from './routes/portal.guides.$sl
 import { Route as PortalHoaSubmittalsIndexRouteImport } from './routes/portal.hoa-submittals.index'
 import { Route as PortalHoaSubmittalsIdRouteImport } from './routes/portal.hoa-submittals.$id'
 import { Route as PortalHoaSubmittalsNewRouteImport } from './routes/portal.hoa-submittals.new'
+import { Route as PortalLienRightsDocumentsRouteImport } from './routes/portal.lien-rights.documents'
 import { Route as PortalPermitsIndexRouteImport } from './routes/portal.permits.index'
 import { Route as PortalPermitsIdRouteImport } from './routes/portal.permits.$id'
 import { Route as PortalPermitsNewRouteImport } from './routes/portal.permits.new'
@@ -631,6 +632,12 @@ const PortalHoaSubmittalsNewRoute = PortalHoaSubmittalsNewRouteImport.update({
   path: '/hoa-submittals/new',
   getParentRoute: () => PortalRoute,
 } as any)
+const PortalLienRightsDocumentsRoute =
+  PortalLienRightsDocumentsRouteImport.update({
+    id: '/lien-rights/documents',
+    path: '/lien-rights/documents',
+    getParentRoute: () => PortalRoute,
+  } as any)
 const PortalPermitsIndexRoute = PortalPermitsIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -815,6 +822,7 @@ export interface FileRoutesByFullPath {
   '/portal/guides/$slug': typeof PortalGuidesSlugRoute
   '/portal/hoa-submittals/$id': typeof PortalHoaSubmittalsIdRoute
   '/portal/hoa-submittals/new': typeof PortalHoaSubmittalsNewRoute
+  '/portal/lien-rights/documents': typeof PortalLienRightsDocumentsRoute
   '/portal/permits/$id': typeof PortalPermitsIdRoute
   '/portal/permits/new': typeof PortalPermitsNewRoute
   '/portal/subcontractors/new': typeof PortalSubcontractorsNewRoute
@@ -929,6 +937,7 @@ export interface FileRoutesByTo {
   '/portal/guides/$slug': typeof PortalGuidesSlugRoute
   '/portal/hoa-submittals/$id': typeof PortalHoaSubmittalsIdRoute
   '/portal/hoa-submittals/new': typeof PortalHoaSubmittalsNewRoute
+  '/portal/lien-rights/documents': typeof PortalLienRightsDocumentsRoute
   '/portal/permits/$id': typeof PortalPermitsIdRoute
   '/portal/permits/new': typeof PortalPermitsNewRoute
   '/portal/subcontractors/new': typeof PortalSubcontractorsNewRoute
@@ -1048,6 +1057,7 @@ export interface FileRoutesById {
   '/portal/guides/$slug': typeof PortalGuidesSlugRoute
   '/portal/hoa-submittals/$id': typeof PortalHoaSubmittalsIdRoute
   '/portal/hoa-submittals/new': typeof PortalHoaSubmittalsNewRoute
+  '/portal/lien-rights/documents': typeof PortalLienRightsDocumentsRoute
   '/portal/permits/$id': typeof PortalPermitsIdRoute
   '/portal/permits/new': typeof PortalPermitsNewRoute
   '/portal/subcontractors/new': typeof PortalSubcontractorsNewRoute
@@ -1168,6 +1178,7 @@ export interface FileRouteTypes {
     | '/portal/guides/$slug'
     | '/portal/hoa-submittals/$id'
     | '/portal/hoa-submittals/new'
+    | '/portal/lien-rights/documents'
     | '/portal/permits/$id'
     | '/portal/permits/new'
     | '/portal/subcontractors/new'
@@ -1282,6 +1293,7 @@ export interface FileRouteTypes {
     | '/portal/guides/$slug'
     | '/portal/hoa-submittals/$id'
     | '/portal/hoa-submittals/new'
+    | '/portal/lien-rights/documents'
     | '/portal/permits/$id'
     | '/portal/permits/new'
     | '/portal/subcontractors/new'
@@ -1400,6 +1412,7 @@ export interface FileRouteTypes {
     | '/portal/guides/$slug'
     | '/portal/hoa-submittals/$id'
     | '/portal/hoa-submittals/new'
+    | '/portal/lien-rights/documents'
     | '/portal/permits/$id'
     | '/portal/permits/new'
     | '/portal/subcontractors/new'
@@ -2197,6 +2210,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PortalHoaSubmittalsNewRouteImport
       parentRoute: typeof PortalRoute
     }
+    '/portal/lien-rights/documents': {
+      id: '/portal/lien-rights/documents'
+      path: '/lien-rights/documents'
+      fullPath: '/portal/lien-rights/documents'
+      preLoaderRoute: typeof PortalLienRightsDocumentsRouteImport
+      parentRoute: typeof PortalRoute
+    }
     '/portal/permits/': {
       id: '/portal/permits/'
       path: '/'
@@ -2398,6 +2418,7 @@ interface PortalRouteChildren {
   PortalGuidesSlugRoute: typeof PortalGuidesSlugRoute
   PortalHoaSubmittalsIdRoute: typeof PortalHoaSubmittalsIdRoute
   PortalHoaSubmittalsNewRoute: typeof PortalHoaSubmittalsNewRoute
+  PortalLienRightsDocumentsRoute: typeof PortalLienRightsDocumentsRoute
   PortalSubcontractorsNewRoute: typeof PortalSubcontractorsNewRoute
   PortalBlogIndexRoute: typeof PortalBlogIndexRoute
   PortalGuidesIndexRoute: typeof PortalGuidesIndexRoute
@@ -2437,6 +2458,7 @@ const PortalRouteChildren: PortalRouteChildren = {
   PortalGuidesSlugRoute: PortalGuidesSlugRoute,
   PortalHoaSubmittalsIdRoute: PortalHoaSubmittalsIdRoute,
   PortalHoaSubmittalsNewRoute: PortalHoaSubmittalsNewRoute,
+  PortalLienRightsDocumentsRoute: PortalLienRightsDocumentsRoute,
   PortalSubcontractorsNewRoute: PortalSubcontractorsNewRoute,
   PortalBlogIndexRoute: PortalBlogIndexRoute,
   PortalGuidesIndexRoute: PortalGuidesIndexRoute,
