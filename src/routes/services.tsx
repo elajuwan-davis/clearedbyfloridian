@@ -9,13 +9,13 @@ export const Route = createFileRoute("/services")({
       {
         name: "description",
         content:
-          "Permit administration, subcontractor coordination, private plan review & inspection, and certificate of occupancy — the full permitting lifecycle.",
+          "Permitting administration, private plan review & inspections, contractor license management, insurance compliance, and Victoria.AI — the full back office.",
       },
       { property: "og:title", content: "Cleard Services" },
       {
         property: "og:description",
         content:
-          "Permit admin, sub coordination, private plan review & inspection, and CO — the full lifecycle on a statutory clock.",
+          "Permitting, private plan review & inspections, license management, insurance compliance, and Victoria.AI — five services, one contract.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -31,22 +31,27 @@ const VISUALS: Record<string, { gradient: string; caption: string }> = {
     // deep obsidian → warm concrete, subtle sky wash
     gradient:
       "linear-gradient(135deg, #0A0E17 0%, #153157 45%, #2a3a52 75%, #4a4238 100%)",
-    caption: "Framing · Palm Beach",
+    caption: "Framing · Job site",
   },
   "02": {
     gradient:
       "linear-gradient(160deg, #0A0E17 0%, #1a2740 40%, #3a4a60 70%, #C8A97E 130%)",
-    caption: "Trades on site · Jupiter",
+    caption: "Trades on site",
   },
   "03": {
     gradient:
       "linear-gradient(120deg, #0A0E17 0%, #153157 50%, #5c7a94 100%)",
-    caption: "Pool excavation · Manalapan",
+    caption: "Pool excavation",
   },
   "04": {
     gradient:
       "linear-gradient(145deg, #1a1410 0%, #2a2018 40%, #153157 90%)",
-    caption: "Outdoor living close-out · Vero Beach",
+    caption: "Compliance review · Field office",
+  },
+  "05": {
+    gradient:
+      "linear-gradient(135deg, #0A0E17 0%, #12312f 45%, #00B4A8 130%)",
+    caption: "Victoria.AI · Always on",
   },
 };
 
@@ -91,8 +96,8 @@ function ServicesPage() {
     <MarketingShell>
       <PageHeader
         eyebrow="Services"
-        title="Four services. One contract."
-        intro="Florida Statute 553.791 lets a licensed private provider act in place of the building official for plan review and inspections. Cleard delivers the full permitting lifecycle on a statutory clock."
+        title="Five services. One contract."
+        intro="A licensed private provider can act in place of the building official for plan review and inspections. Cleard delivers the full permitting lifecycle — plus license management, insurance compliance, and Victoria.AI — on a documented clock."
       />
 
       <section className="mx-auto max-w-7xl px-6 lg:px-10 py-16 md:py-24 space-y-16 md:space-y-24">
@@ -127,7 +132,7 @@ function ServicesPage() {
                   {s.code}
                 </div>
                 <div className="md-eyebrow mt-4">
-                  {s.code} / 04 · Service
+                  {s.code} / 05 · Service
                 </div>
                 <h2
                   className="mt-4 md-serif"

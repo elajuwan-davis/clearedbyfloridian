@@ -155,50 +155,62 @@ export const inspections: Inspection[] = [
 export const services = [
   {
     code: "01",
-    title: "Permit Administration",
+    title: "Permitting Administration",
     summary:
-      "We manage the full permit lifecycle — intake, submittal, corrections, and close-out — so your team stays on site, not in line at the building department.",
+      "Full-service permit management — application, submission, tracking, corrections, and certificate of occupancy, handled end to end.",
     bullets: [
-      "Permit intake and document preparation",
-      "Jurisdiction submittal and corrections",
-      "Status tracking through the Cleard portal",
-      "Records archival and close-out",
+      "Application prep and jurisdiction submittal",
+      "Smart document checklists per jurisdiction",
+      "Correction responses and resubmittals",
+      "Status tracking through certificate of occupancy",
     ],
   },
   {
     code: "02",
-    title: "Subcontractor Coordination",
+    title: "Private Plan Review & Inspections",
     summary:
-      "Cleard verifies every sub's license, insurance, and compliance documentation before they touch the job — automatically.",
-    bullets: [
-      "DBPR license verification",
-      "COI, Workers' Comp, and Umbrella review",
-      "W-9 and onboarding document collection",
-      "Real-time compliance status dashboard",
-    ],
-  },
-  {
-    code: "03",
-    title: "Private Plan Review & Inspection",
-    summary:
-      "As a registered private provider under Florida Statute 553.791, we deliver 2-day plan review and same-day inspections — on a statutory clock.",
+      "Faster approvals through licensed private providers. Plan review and field inspections performed by certified professionals, not municipal backlogs.",
     bullets: [
       "Structural, mechanical, electrical, and plumbing review",
-      "High-velocity hurricane zone (HVHZ) compliance",
-      "Same-day field inspection scheduling",
+      "2-day plan review turnaround",
+      "Same-day inspections coordinated with your super",
       "Code red-line and constructibility feedback",
     ],
   },
   {
-    code: "04",
-    title: "Certificate of Occupancy",
+    code: "03",
+    title: "Contractor License Management",
     summary:
-      "We coordinate final inspections, punch through outstanding corrections, and drive every job to CO — without leaving it on someone else's desk.",
+      "License verification, renewal tracking, CE hour monitoring, and qualifying agent oversight — all in one dashboard.",
     bullets: [
-      "Final inspection coordination",
-      "CO and TCO tracking",
-      "Lien release and NTO compliance",
-      "Project close-out documentation",
+      "Live license status for your company and every sub",
+      "Renewal alerts at 90/60/30 days",
+      "Continuing education hour tracking",
+      "Qualifying agent monitoring",
+    ],
+  },
+  {
+    code: "04",
+    title: "Insurance Compliance",
+    summary:
+      "Certificate of insurance collection, coverage validation, expiration tracking, and automated follow-up for your entire subcontractor roster.",
+    bullets: [
+      "COI requests with required coverage specs",
+      "Coverage validation: types, limits, additional insured",
+      "Automated follow-up until compliant",
+      "Expiration alerts at 90/60/30 days",
+    ],
+  },
+  {
+    code: "05",
+    title: "Victoria.AI",
+    summary:
+      "Your AI back-office assistant. Answers jurisdiction questions, flags missing documents, routes corrections, and surfaces compliance risks before they become delays.",
+    bullets: [
+      "Answers jurisdiction requirement questions",
+      "Flags missing documents before submittal",
+      "Routes correction notices to the right owner",
+      "Surfaces compliance risks across active projects",
     ],
   },
 ];
