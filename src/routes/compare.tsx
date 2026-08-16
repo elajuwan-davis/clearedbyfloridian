@@ -269,7 +269,7 @@ function ComparePage() {
               See Cleard in action
             </h2>
             <Link
-              to="/process"
+              to="/product"
               className="mt-8 inline-flex items-center px-6 py-3 text-[14px] no-underline"
               style={{ background: TEAL, color: INK, fontWeight: 700 }}
             >
