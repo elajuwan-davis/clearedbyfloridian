@@ -238,7 +238,7 @@ function Hero() {
               Get early access <ArrowRight className="h-4 w-4" />
             </Link>
             <Link
-              to="/process"
+              to="/product"
               className="inline-flex items-center justify-center px-6 py-3 text-[14px] font-medium no-underline"
               style={{ border: `1px solid ${BORDER}`, background: WHITE, color: INK }}
             >
@@ -1192,7 +1192,7 @@ function BottomCTA() {
           >
             Get started <ArrowRight className="h-4 w-4" />
           </Link>
-          <Link to="/process" className="text-[14px] no-underline" style={{ color: "rgba(255,255,255,0.72)" }}>
+          <Link to="/product" className="text-[14px] no-underline" style={{ color: "rgba(255,255,255,0.72)" }}>
             See a demo →
           </Link>
         </div>
@@ -1215,7 +1215,7 @@ function Footer() {
           Cleard
         </Link>
         <nav className="flex flex-wrap items-center gap-x-8 gap-y-2 text-[13px]">
-          <Link to="/products" className="no-underline" style={{ color: "rgba(255,255,255,0.7)" }}>
+          <Link to="/product" className="no-underline" style={{ color: "rgba(255,255,255,0.7)" }}>
             Product
           </Link>
           <Link to="/join" className="no-underline" style={{ color: "rgba(255,255,255,0.7)" }}>

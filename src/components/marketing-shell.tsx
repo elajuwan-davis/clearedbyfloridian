@@ -1,14 +1,10 @@
 import { useState, type ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
 import { Menu, X, ArrowRight } from "lucide-react";
-import {
-  MarketingNavDropdown,
-  PRODUCT_MENU,
-  CONTRACTORS_MENU,
-} from "@/components/marketing-nav-dropdown";
-
-/** Flat nav links, rendered after the two dropdowns on every marketing page. */
+/** Flat nav links — no dropdowns anywhere on the marketing site. */
 const NAV_LINKS: Array<{ to: string; label: string }> = [
+  { to: "/product", label: "Product" },
+  { to: "/join", label: "For Contractors" },
   { to: "/pricing", label: "Pricing" },
   { to: "/compare", label: "Compare" },
   { to: "/about", label: "About" },
@@ -49,22 +45,6 @@ export function MarketingNav() {
             className="hidden items-center gap-5 md:flex"
             style={{ flexWrap: "nowrap", whiteSpace: "nowrap" }}
           >
-            <div style={{ flexShrink: 0, whiteSpace: "nowrap" }}>
-              <MarketingNavDropdown
-                label="Product"
-                to="/products"
-                sections={PRODUCT_MENU}
-                triggerColor={BODY_GRAY}
-              />
-            </div>
-            <div style={{ flexShrink: 0, whiteSpace: "nowrap" }}>
-              <MarketingNavDropdown
-                label="For Contractors"
-                to="/join"
-                sections={CONTRACTORS_MENU}
-                triggerColor={BODY_GRAY}
-              />
-            </div>
             {NAV_LINKS.map((l) => (
               <Link
                 key={l.to}
@@ -109,8 +89,6 @@ export function MarketingNav() {
         <div className="md:hidden" style={{ background: NEAR_BLACK, borderTop: `1px solid ${BORDER}` }}>
           <div className="space-y-4 px-6 py-6">
             {[
-              { to: "/products", label: "Product" },
-              { to: "/join", label: "For Contractors" },
               ...NAV_LINKS,
               { to: "/login", label: "Sign in" },
             ].map((l) => (
@@ -160,7 +138,7 @@ function MarketingFooter() {
         </Link>
 
         <nav className="flex flex-wrap items-center gap-x-8 gap-y-2 text-[13px]">
-          <Link to="/products" className="no-underline" style={{ color: "rgba(255,255,255,0.7)" }}>Product</Link>
+          <Link to="/product" className="no-underline" style={{ color: "rgba(255,255,255,0.7)" }}>Product</Link>
           <a href="https://floridianinc.com/privacy" className="no-underline" style={{ color: "rgba(255,255,255,0.7)" }}>Privacy</a>
           <a href="https://floridianinc.com/terms" className="no-underline" style={{ color: "rgba(255,255,255,0.7)" }}>Terms</a>
           <Link to="/contact" className="no-underline" style={{ color: "rgba(255,255,255,0.7)" }}>Contact</Link>

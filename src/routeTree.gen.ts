@@ -31,6 +31,7 @@ import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as PortalRouteImport } from './routes/portal'
 import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as ProcessRouteImport } from './routes/process'
+import { Route as ProductRouteImport } from './routes/product'
 import { Route as ProductsRouteImport } from './routes/products'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as ProjectGuidesRouteImport } from './routes/project-guides'
@@ -238,6 +239,11 @@ const PricingRoute = PricingRouteImport.update({
 const ProcessRoute = ProcessRouteImport.update({
   id: '/process',
   path: '/process',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProductRoute = ProductRouteImport.update({
+  id: '/product',
+  path: '/product',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProductsRoute = ProductsRouteImport.update({
@@ -769,6 +775,7 @@ export interface FileRoutesByFullPath {
   '/portal': typeof PortalRouteWithChildren
   '/pricing': typeof PricingRoute
   '/process': typeof ProcessRoute
+  '/product': typeof ProductRoute
   '/products': typeof ProductsRoute
   '/profile': typeof ProfileRoute
   '/project-guides': typeof ProjectGuidesRoute
@@ -889,6 +896,7 @@ export interface FileRoutesByTo {
   '/onboarding': typeof OnboardingRoute
   '/pricing': typeof PricingRoute
   '/process': typeof ProcessRoute
+  '/product': typeof ProductRoute
   '/products': typeof ProductsRoute
   '/profile': typeof ProfileRoute
   '/project-guides': typeof ProjectGuidesRoute
@@ -1010,6 +1018,7 @@ export interface FileRoutesById {
   '/portal': typeof PortalRouteWithChildren
   '/pricing': typeof PricingRoute
   '/process': typeof ProcessRoute
+  '/product': typeof ProductRoute
   '/products': typeof ProductsRoute
   '/profile': typeof ProfileRoute
   '/project-guides': typeof ProjectGuidesRoute
@@ -1134,6 +1143,7 @@ export interface FileRouteTypes {
     | '/portal'
     | '/pricing'
     | '/process'
+    | '/product'
     | '/products'
     | '/profile'
     | '/project-guides'
@@ -1254,6 +1264,7 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/pricing'
     | '/process'
+    | '/product'
     | '/products'
     | '/profile'
     | '/project-guides'
@@ -1374,6 +1385,7 @@ export interface FileRouteTypes {
     | '/portal'
     | '/pricing'
     | '/process'
+    | '/product'
     | '/products'
     | '/profile'
     | '/project-guides'
@@ -1497,6 +1509,7 @@ export interface RootRouteChildren {
   PortalRoute: typeof PortalRouteWithChildren
   PricingRoute: typeof PricingRoute
   ProcessRoute: typeof ProcessRoute
+  ProductRoute: typeof ProductRoute
   ProductsRoute: typeof ProductsRoute
   ProfileRoute: typeof ProfileRoute
   ProjectGuidesRoute: typeof ProjectGuidesRoute
@@ -1701,6 +1714,13 @@ declare module '@tanstack/react-router' {
       path: '/process'
       fullPath: '/process'
       preLoaderRoute: typeof ProcessRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/product': {
+      id: '/product'
+      path: '/product'
+      fullPath: '/product'
+      preLoaderRoute: typeof ProductRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/products': {
@@ -2560,6 +2580,7 @@ const rootRouteChildren: RootRouteChildren = {
   PortalRoute: PortalRouteWithChildren,
   PricingRoute: PricingRoute,
   ProcessRoute: ProcessRoute,
+  ProductRoute: ProductRoute,
   ProductsRoute: ProductsRoute,
   ProfileRoute: ProfileRoute,
   ProjectGuidesRoute: ProjectGuidesRoute,

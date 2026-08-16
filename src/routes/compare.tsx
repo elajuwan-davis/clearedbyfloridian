@@ -8,11 +8,11 @@ import { AppFrame, KanbanMock, M } from "@/components/marketing-mockups";
 export const Route = createFileRoute("/compare")({
   head: () => ({
     meta: [
-      { title: "Compare — Cleard vs GreenLite, SunRay, myCOI" },
+      { title: "Compare — Cleard vs GreenLite, Permit Flow, SunRay, myCOI" },
       {
         name: "description",
         content:
-          "Side-by-side comparison of Cleard against GreenLite, PermitRockstar, SunRay, myCOI, and 1 Contractor Solutions across permitting, private plan review, licensing, insurance compliance, and AI.",
+          "Side-by-side comparison of Cleard against GreenLite, Permit Flow, SunRay, myCOI, Inspected, 1 Contractor Solutions, and Freedom Code Compliance across permitting, private plan review, licensing, insurance compliance, and lien rights.",
       },
       { property: "og:title", content: "Built where others stop." },
       {
@@ -34,16 +34,64 @@ const TEAL = "#00B4A8";
 const BORDER = "#E4E2DE";
 const OFF = "#F5F4F0";
 
-const COMPETITORS = ["GreenLite", "PermitRockstar", "SunRay", "myCOI", "1 Contractor Solutions"];
+const COMPETITORS = [
+  "GreenLite",
+  "Permit Flow",
+  "SunRay",
+  "myCOI",
+  "Inspected",
+  "1 Contractor Solutions",
+  "Freedom Code Compliance",
+];
 
-type Row = { feature: string; cells: string[] }; // [cleard, ...competitors]
+type Row = { feature: string; cells: string[] }; // [Cleard, ...COMPETITORS]
 
 const ROWS: Row[] = [
-  { feature: "Permitting Administration", cells: ["✓", "✓", "✓", "—", "—", "✓"] },
-  { feature: "Private Plan Review & Inspections", cells: ["✓", "✓", "✓", "—", "—", "—"] },
-  { feature: "Contractor License Management", cells: ["✓", "—", "—", "—", "—", "✓"] },
-  { feature: "Insurance Compliance", cells: ["✓", "—", "—", "—", "✓", "—"] },
-  { feature: "Lien rights documents & deadline tracking", cells: ["✓", "—", "—", "—", "—", "—"] },
+  {
+    feature: "Permitting Administration",
+    cells: ["\u2713", "\u2713", "\u2713", "\u2014", "\u2014", "\u2014", "\u2713", "\u2014"],
+  },
+  {
+    feature: "Private Plan Review & Inspections",
+    cells: ["\u2713", "\u2713", "\u2014", "\u2014", "\u2014", "\u2713", "\u2014", "\u2713"],
+  },
+  {
+    feature: "Contractor License Management",
+    cells: ["\u2713", "\u2014", "\u2014", "\u2014", "\u2014", "\u2014", "\u2713", "\u2014"],
+  },
+  {
+    feature: "Insurance Compliance",
+    cells: ["\u2713", "\u2014", "\u2014", "\u2014", "\u2713", "\u2014", "\u2014", "\u2014"],
+  },
+  {
+    feature: "Lien Rights",
+    cells: ["\u2713", "\u2014", "\u2014", "\u2713", "\u2014", "\u2014", "\u2014", "\u2014"],
+  },
+  {
+    feature: "Permit flow / submission tracking",
+    cells: ["\u2713", "\u2713", "\u2713", "\u2014", "\u2014", "\u2014", "\u2713", "\u2014"],
+  },
+  {
+    feature: "AI assistant",
+    cells: ["\u2713", "\u2713", "\u2713", "\u2014", "\u2014", "\u2014", "\u2014", "\u2014"],
+  },
+  {
+    feature: "Pricing model",
+    cells: [
+      "Subscription",
+      "Per-project",
+      "Subscription",
+      "Per-document",
+      "Subscription",
+      "Per-inspection",
+      "Per-project",
+      "Per-project",
+    ],
+  },
+  {
+    feature: "Dedicated back-office support",
+    cells: ["\u2713", "\u2014", "\u2014", "\u2014", "\u2014", "\u2014", "\u2713", "\u2014"],
+  },
 ];
 
 const CALLOUTS = [
@@ -58,9 +106,9 @@ const CALLOUTS = [
       "SunRay manages documents. myCOI manages certificates. Using both means two logins, two bills, and no connection between them. Cleard covers both — integrated.",
   },
   {
-    title: "vs. PermitRockstar + 1 Contractor Solutions",
+    title: "vs. 1 Contractor Solutions + Freedom Code Compliance",
     body:
-      "Both are agency models — they do the work, you wait. Cleard gives you the platform to run it yourself, with support when you need it.",
+      "Both are service-agency models — they do the work, you wait, and there is no platform of record. Cleard gives you the software plus the back office, so you can see every permit, license, COI, and lien deadline yourself.",
   },
 ];
 
@@ -94,7 +142,7 @@ function ComparePage() {
         {/* Table */}
         <section className="mx-auto max-w-7xl px-5 lg:px-8 pb-16">
           <div className="overflow-x-auto" style={{ border: `1px solid ${BORDER}` }}>
-            <table className="w-full" style={{ borderCollapse: "collapse", minWidth: 880 }}>
+            <table className="w-full" style={{ borderCollapse: "collapse", minWidth: 1120 }}>
               <thead>
                 <tr style={{ background: OFF }}>
                   <th
@@ -269,7 +317,7 @@ function ComparePage() {
               See Cleard in action
             </h2>
             <Link
-              to="/process"
+              to="/product"
               className="mt-8 inline-flex items-center px-6 py-3 text-[14px] no-underline"
               style={{ background: TEAL, color: INK, fontWeight: 700 }}
             >
