@@ -9,21 +9,8 @@ const TEAL = "#00B4A8";
 import {
   FileStack,
   ShieldCheck,
-  Building2,
-  FileSignature,
-  CalendarClock,
-  PenTool,
-  FileCheck2,
-  Users,
   BadgeCheck,
-  RefreshCw,
-  GraduationCap,
-  UserCheck,
-  ShieldAlert,
-  Leaf,
-  Gavel,
-  Hammer,
-  Search,
+  FileCheck2,
   Sparkles,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
@@ -36,13 +23,13 @@ export const Route = createFileRoute("/products")({
       {
         name: "description",
         content:
-          "Permits, private provider services, lien rights, COI compliance, license administration, and compliance monitoring — built for all licensed Florida contractors.",
+          "Permitting administration, private plan review and inspections, contractor license management, insurance compliance, and Victoria.AI — built for licensed contractors.",
       },
       { property: "og:title", content: "Every tool your operation needs." },
       {
         property: "og:description",
         content:
-          "Permitting, lien rights, insurance, license administration, and compliance monitoring in one platform.",
+          "Five services. One platform. Permitting, private plan review, license management, insurance compliance, and Victoria.AI.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -55,225 +42,70 @@ type Product = {
   tagline: string;
   bullets: string[];
   Icon: LucideIcon;
-  comingSoon?: boolean;
 };
 
-type Group = { section: string; products: Product[] };
-
-const GROUPS: Group[] = [
+const PRODUCTS: Product[] = [
   {
-    section: "Permitting",
-    products: [
-      {
-        name: "Permit Administration",
-        tagline: "End-to-end permit management for every trade, every jurisdiction, every job.",
-        bullets: [
-          "Smart document checklists per municipality",
-          "Real-time status tracking from submission to issuance",
-          "Full permit history and fee ledger",
-          "Supports all trade types: Pool/Spa, Roofing, Electrical, Plumbing, HVAC, General/Residential, Foundation, Commercial",
-        ],
-        Icon: FileStack,
-      },
-      {
-        name: "Private Provider Services",
-        tagline: "Florida's private provider compliance layer, built in.",
-        bullets: [
-          "Private provider docs per jurisdiction",
-          "Inspection coordination and tracking",
-          "Approval workflows for ICI-compatible submissions",
-        ],
-        Icon: ShieldCheck,
-      },
-      {
-        name: "Building Dept Portal Hub",
-        tagline: "400+ Florida jurisdictions. One place to find them all.",
-        bullets: [
-          "Every city's building dept portal linked and searchable",
-          "Municipality-specific document requirements pre-loaded",
-          "Region → County → City hierarchy for fast navigation",
-        ],
-        Icon: Building2,
-      },
+    name: "Permitting Administration",
+    tagline:
+      "Full-service permit management — application, submission, tracking, corrections, and certificate of occupancy, handled end to end.",
+    bullets: [
+      "Application prep and jurisdiction submittal",
+      "Smart document checklists per jurisdiction",
+      "Correction responses and resubmittals",
+      "Real-time status tracking through certificate of occupancy",
+      "Supports every trade: pool/spa, roofing, electrical, plumbing, HVAC, general/residential, foundation, and commercial",
     ],
+    Icon: FileStack,
   },
   {
-    section: "Lien Rights",
-    products: [
-      {
-        name: "Lien Document Generation",
-        tagline: "Generate every document FL Statute 713 requires.",
-        bullets: [
-          "Notice of Commencement",
-          "Preliminary Notice",
-          "Conditional and Unconditional Lien Waivers",
-        ],
-        Icon: FileSignature,
-      },
-      {
-        name: "Deadline Tracker",
-        tagline: "Never miss a lien deadline.",
-        bullets: [
-          "FL Statute 713 rules engine",
-          "45-day preliminary notice gate",
-          "90-day claim of lien gate",
-          "1-year enforcement window and NOC validity alerts",
-        ],
-        Icon: CalendarClock,
-      },
-      {
-        name: "E-Recording & E-Sign",
-        tagline: "Close the loop without leaving the platform.",
-        bullets: [
-          "Electronic lien waiver signing via SignWell",
-          "E-recording request flow",
-          "Full audit trail",
-        ],
-        Icon: PenTool,
-      },
+    name: "Private Plan Review & Inspections",
+    tagline:
+      "Faster approvals through licensed private providers. Plan review and field inspections performed by certified professionals, not municipal backlogs.",
+    bullets: [
+      "2-day plan review by licensed engineers and architects",
+      "Same-day inspections coordinated with your super",
+      "Structural, mechanical, electrical, and plumbing review",
+      "Documented correction log on the original plan set",
     ],
+    Icon: ShieldCheck,
   },
   {
-    section: "Insurance & Subcontractors",
-    products: [
-      {
-        name: "COI Compliance",
-        tagline: "Stop chasing certificates. Start tracking compliance.",
-        bullets: [
-          "Send COI requests to subs with required coverage specs",
-          "Vendor portal — unique link per sub",
-          "Coverage validation: types, limits, expiration, additional insured",
-          "Automated follow-up reminders at day 3, 7, 14",
-          "Expiration alerts at 90/60/30 days",
-        ],
-        Icon: FileCheck2,
-      },
-      {
-        name: "Subcontractor Coordination",
-        tagline: "Get your subs signed, verified, and ready.",
-        bullets: [
-          "Digital signature requests via SignWell",
-          "DBPR license verification built in",
-          "Budgeted fees per trade from day one",
-        ],
-        Icon: Users,
-      },
+    name: "Contractor License Management",
+    tagline:
+      "License verification, renewal tracking, CE hour monitoring, and qualifying agent oversight — all in one dashboard.",
+    bullets: [
+      "Live license status for your company and every sub",
+      "Renewal alerts at 90/60/30 days",
+      "Continuing education hour tracking with course directory",
+      "Qualifying agent monitoring and change-of-status support",
     ],
+    Icon: BadgeCheck,
   },
   {
-    section: "License Administration",
-    products: [
-      {
-        name: "License Verification Dashboard",
-        tagline: "Live DBPR status for your license and all your subs.",
-        bullets: [
-          "Active, delinquent, suspended, renewal-due — all in one view",
-          "Renewal alerts at 90/60/30 days",
-        ],
-        Icon: BadgeCheck,
-      },
-      {
-        name: "License Renewal Management",
-        tagline: "Cleard submits your DBPR renewal on your behalf. Available on Back Office plan.",
-        bullets: [
-          "48-hour turnaround",
-          "No paperwork on your end",
-          "Renewal confirmation in your dashboard",
-        ],
-        Icon: RefreshCw,
-      },
-      {
-        name: "Continuing Education (CE) Tracking",
-        tagline: "Florida requires 14 CE hours per renewal cycle.",
-        bullets: [
-          "Hours completed tracked automatically",
-          "Accredited course directory",
-          "Alert when falling short of requirements",
-        ],
-        Icon: GraduationCap,
-      },
-      {
-        name: "Qualifying Agent Monitoring",
-        tagline: "Tracks QA status per company.",
-        bullets: [
-          "Alerts when your qualifying agent is at risk",
-          "Facilitates DBPR change-of-status filing",
-        ],
-        Icon: UserCheck,
-      },
-      {
-        name: "Worker's Comp Exemption Tracking",
-        tagline: "FL exemptions expire annually.",
-        bullets: [
-          "Expiration tracking for all exemptions",
-          "DFS renewal facilitation",
-          "Dashboard view across all trades",
-        ],
-        Icon: ShieldAlert,
-      },
+    name: "Insurance Compliance",
+    tagline:
+      "Certificate of insurance collection, coverage validation, expiration tracking, and automated follow-up for your entire subcontractor roster.",
+    bullets: [
+      "COI requests with required coverage specs per trade",
+      "Vendor portal — a unique link for every sub",
+      "Coverage validation: types, limits, additional insured",
+      "Automated follow-up reminders at day 3, 7, and 14",
+      "Expiration alerts at 90/60/30 days",
     ],
+    Icon: FileCheck2,
   },
   {
-    section: "Compliance Monitoring",
-    products: [
-      {
-        name: "FDEP Permit Tracking",
-        tagline: "Environmental permits tracked alongside building permits.",
-        bullets: [
-          "Septic, stormwater, and wetlands permits",
-          "Independent expiration timelines",
-          "County-by-county coverage",
-        ],
-        Icon: Leaf,
-      },
-      {
-        name: "Code Violation & Lien Monitoring",
-        tagline: "Monitors active project properties.",
-        bullets: [
-          "Open county code enforcement violations",
-          "Active liens on project properties",
-          "Monthly monitoring subscription",
-        ],
-        Icon: Gavel,
-      },
+    name: "Victoria.AI",
+    tagline:
+      "Your AI back-office assistant. Answers jurisdiction questions, flags missing documents, routes corrections, and surfaces compliance risks before they become delays.",
+    bullets: [
+      "Answers jurisdiction requirement questions instantly",
+      "Flags missing documents before submittal",
+      "Routes correction notices to the right owner",
+      "Surfaces compliance risks across every active project",
     ],
-  },
-  {
-    section: "Specialty Services",
-    products: [
-      {
-        name: "After-the-Fact Permits",
-        tagline: "Work done without a permit? We handle it.",
-        bullets: [
-          "As-built documentation management",
-          "Inspection coordination",
-          "County negotiation and case management",
-          "Pricing per case",
-        ],
-        Icon: Hammer,
-      },
-      {
-        name: "Real Estate Transaction Permit Search",
-        tagline: "Open permit verification for closings.",
-        bullets: [
-          "$75–$150 per search",
-          "For Realtors, title companies, and contractors",
-          "Results in 24 hours",
-        ],
-        Icon: Search,
-      },
-      {
-        name: "Victoria (AI Agent)",
-        tagline: "Your permit operations assistant, always on.",
-        bullets: [
-          "Answers jurisdiction requirement questions",
-          "Flags missing docs and expiring items",
-          "Learns your project history over time",
-        ],
-        Icon: Sparkles,
-        comingSoon: true,
-      },
-    ],
+    Icon: Sparkles,
   },
 ];
 
@@ -297,8 +129,8 @@ function ProductsPage() {
             Every tool your operation needs.
           </h1>
           <p className="text-lg max-w-2xl" style={{ color: MUTED, lineHeight: 1.55 }}>
-            Built for all licensed Florida contractors — pool, roofing, electrical, plumbing, HVAC,
-            general, foundation, and commercial.
+            Five services. One platform. Built for licensed contractors — pool, roofing,
+            electrical, plumbing, HVAC, general, foundation, and commercial.
           </p>
         </div>
       </section>
@@ -423,7 +255,7 @@ function ProductsPage() {
             One platform. Your entire back office.
           </h2>
           <p className="text-lg mb-10" style={{ color: "rgba(255,255,255,0.7)" }}>
-            See how Cleard runs permits, lien rights, insurance, and licensing for your operation.
+            See how Cleard runs permitting, private plan review, licensing, insurance compliance, and Victoria.AI for your operation.
           </p>
           <Link
             to="/join"
