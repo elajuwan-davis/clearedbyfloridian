@@ -34,16 +34,64 @@ const TEAL = "#00B4A8";
 const BORDER = "#E4E2DE";
 const OFF = "#F5F4F0";
 
-const COMPETITORS = ["GreenLite", "PermitRockstar", "SunRay", "myCOI", "1 Contractor Solutions"];
+const COMPETITORS = [
+  "GreenLite",
+  "Permit Flow",
+  "SunRay",
+  "myCOI",
+  "Inspected",
+  "1 Contractor Solutions",
+  "Freedom Code Compliance",
+];
 
-type Row = { feature: string; cells: string[] }; // [cleard, ...competitors]
+type Row = { feature: string; cells: string[] }; // [Cleard, ...COMPETITORS]
 
 const ROWS: Row[] = [
-  { feature: "Permitting Administration", cells: ["✓", "✓", "✓", "—", "—", "✓"] },
-  { feature: "Private Plan Review & Inspections", cells: ["✓", "✓", "✓", "—", "—", "—"] },
-  { feature: "Contractor License Management", cells: ["✓", "—", "—", "—", "—", "✓"] },
-  { feature: "Insurance Compliance", cells: ["✓", "—", "—", "—", "✓", "—"] },
-  { feature: "Lien rights documents & deadline tracking", cells: ["✓", "—", "—", "—", "—", "—"] },
+  {
+    feature: "Permitting Administration",
+    cells: ["\u2713", "\u2713", "\u2713", "\u2014", "\u2014", "\u2014", "\u2713", "\u2014"],
+  },
+  {
+    feature: "Private Plan Review & Inspections",
+    cells: ["\u2713", "\u2713", "\u2014", "\u2014", "\u2014", "\u2713", "\u2014", "\u2713"],
+  },
+  {
+    feature: "Contractor License Management",
+    cells: ["\u2713", "\u2014", "\u2014", "\u2014", "\u2014", "\u2014", "\u2713", "\u2014"],
+  },
+  {
+    feature: "Insurance Compliance",
+    cells: ["\u2713", "\u2014", "\u2014", "\u2014", "\u2713", "\u2014", "\u2014", "\u2014"],
+  },
+  {
+    feature: "Lien Rights",
+    cells: ["\u2713", "\u2014", "\u2014", "\u2713", "\u2014", "\u2014", "\u2014", "\u2014"],
+  },
+  {
+    feature: "Permit flow / submission tracking",
+    cells: ["\u2713", "\u2713", "\u2713", "\u2014", "\u2014", "\u2014", "\u2713", "\u2014"],
+  },
+  {
+    feature: "AI assistant",
+    cells: ["\u2713", "\u2713", "\u2713", "\u2014", "\u2014", "\u2014", "\u2014", "\u2014"],
+  },
+  {
+    feature: "Pricing model",
+    cells: [
+      "Subscription",
+      "Per-project",
+      "Subscription",
+      "Per-document",
+      "Subscription",
+      "Per-inspection",
+      "Per-project",
+      "Per-project",
+    ],
+  },
+  {
+    feature: "Dedicated back-office support",
+    cells: ["\u2713", "\u2014", "\u2014", "\u2014", "\u2014", "\u2014", "\u2713", "\u2014"],
+  },
 ];
 
 const CALLOUTS = [
