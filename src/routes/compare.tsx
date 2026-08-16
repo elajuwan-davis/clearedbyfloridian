@@ -1,6 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 
+import { Layers, ShieldCheck, Sparkles } from "lucide-react";
+
 import { MarketingShell } from "@/components/marketing-shell";
+import { AppFrame, KanbanMock, M } from "@/components/marketing-mockups";
 
 export const Route = createFileRoute("/compare")({
   head: () => ({
@@ -101,23 +104,43 @@ function ComparePage() {
                     Feature
                   </th>
                   <th
-                    className="px-4 py-3 text-center text-[11px] uppercase tracking-[0.16em]"
+                    className="px-4 py-4 align-bottom text-center"
                     style={{
-                      color: INK,
-                      fontWeight: 800,
                       background: "rgba(0,180,168,0.14)",
                       borderBottom: `2px solid ${TEAL}`,
                     }}
                   >
-                    Cleard
+                    <span
+                      className="mx-auto mb-2 flex h-9 w-9 items-center justify-center text-[13px] font-bold"
+                      style={{ background: M.bg0, color: TEAL }}
+                    >
+                      C
+                    </span>
+                    <span
+                      className="block text-[11px] uppercase tracking-[0.16em]"
+                      style={{ color: INK, fontWeight: 800 }}
+                    >
+                      Cleard
+                    </span>
                   </th>
                   {COMPETITORS.map((c) => (
                     <th
                       key={c}
-                      className="px-4 py-3 text-center text-[10px] uppercase tracking-[0.16em]"
-                      style={{ color: GRAY, borderBottom: `1px solid ${BORDER}`, whiteSpace: "nowrap" }}
+                      className="px-4 py-4 align-bottom text-center"
+                      style={{ borderBottom: `1px solid ${BORDER}`, whiteSpace: "nowrap" }}
                     >
-                      {c}
+                      <span
+                        className="mx-auto mb-2 flex h-9 w-9 items-center justify-center text-[13px] font-bold"
+                        style={{ background: OFF, border: `1px solid ${BORDER}`, color: GRAY }}
+                      >
+                        {c.replace(/[^A-Za-z]/g, "").charAt(0).toUpperCase()}
+                      </span>
+                      <span
+                        className="block text-[10px] uppercase tracking-[0.16em]"
+                        style={{ color: GRAY }}
+                      >
+                        {c}
+                      </span>
                     </th>
                   ))}
                 </tr>
@@ -167,6 +190,68 @@ function ComparePage() {
                 </p>
               </div>
             ))}
+          </div>
+        </section>
+
+        {/* Why Cleard wins */}
+        <section style={{ background: M.bg0 }}>
+          <div className="mx-auto max-w-7xl px-5 lg:px-8 py-24 md:py-32">
+            <div className="text-[10.5px] font-bold uppercase tracking-[0.2em]" style={{ color: TEAL }}>
+              Why Cleard wins
+            </div>
+            <h2
+              className="mt-6 max-w-3xl"
+              style={{
+                color: M.text,
+                fontWeight: 800,
+                fontSize: "clamp(2rem, 3.8vw, 3rem)",
+                lineHeight: 1.06,
+                letterSpacing: "-0.035em",
+              }}
+            >
+              One platform instead of four vendors.
+            </h2>
+
+            <div className="mt-14 grid gap-px md:grid-cols-3" style={{ background: M.line }}>
+              {[
+                {
+                  Icon: Layers,
+                  t: "Full lifecycle, one login",
+                  b: "Permits, private plan review, licenses, insurance, and lien rights share the same project record — nothing gets re-keyed between systems.",
+                },
+                {
+                  Icon: ShieldCheck,
+                  t: "Licensed private provider",
+                  b: "We do not just track submittals. Certified professionals perform plan review and field inspections, so approvals do not wait behind a municipal queue.",
+                },
+                {
+                  Icon: Sparkles,
+                  t: "Victoria watches everything",
+                  b: "Missing documents, expiring COIs, and statutory deadlines get flagged before they turn into a delay or a lost lien right.",
+                },
+              ].map((c) => (
+                <div key={c.t} className="p-8" style={{ background: M.bg1 }}>
+                  <span
+                    className="inline-flex h-11 w-11 items-center justify-center"
+                    style={{ background: "rgba(0,180,168,0.12)" }}
+                  >
+                    <c.Icon className="h-5 w-5" style={{ color: TEAL }} strokeWidth={1.5} />
+                  </span>
+                  <h3 className="mt-6 text-[17px] font-bold" style={{ color: M.text, letterSpacing: "-0.02em" }}>
+                    {c.t}
+                  </h3>
+                  <p className="mt-3 text-[14px] leading-relaxed" style={{ color: M.muted }}>
+                    {c.b}
+                  </p>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-16">
+              <AppFrame path="app.cleard.io/permits" active="Permits">
+                <KanbanMock />
+              </AppFrame>
+            </div>
           </div>
         </section>
 

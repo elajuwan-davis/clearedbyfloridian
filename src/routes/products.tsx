@@ -15,6 +15,42 @@ import {
   Sparkles,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
+import {
+  AppFrame,
+  CoiCheckMock,
+  InspectionCalendarMock,
+  KanbanMock,
+  LicenseDashMock,
+  LienDocsMock,
+} from "@/components/marketing-mockups";
+
+const PRODUCT_VISUALS: Record<string, { path: string; nav: string; node: React.ReactNode }> = {
+  "Permitting Administration": {
+    path: "app.cleard.io/permits",
+    nav: "Permits",
+    node: <KanbanMock />,
+  },
+  "Private Plan Review & Inspections": {
+    path: "app.cleard.io/inspections",
+    nav: "Inspections",
+    node: <InspectionCalendarMock />,
+  },
+  "Contractor License Management": {
+    path: "app.cleard.io/licenses",
+    nav: "Licenses",
+    node: <LicenseDashMock />,
+  },
+  "Insurance Compliance": {
+    path: "app.cleard.io/insurance",
+    nav: "Insurance",
+    node: <CoiCheckMock />,
+  },
+  "Lien Rights": {
+    path: "app.cleard.io/lien-rights",
+    nav: "Lien Rights",
+    node: <LienDocsMock />,
+  },
+};
 
 export const Route = createFileRoute("/products")({
   component: ProductsPage,
@@ -145,7 +181,7 @@ function ProductsPage() {
           return (
             <section
               key={p.name}
-              className="px-6 lg:px-10 py-20 lg:py-28"
+              className="px-6 lg:px-10 py-24 lg:py-32"
               style={{
                 backgroundColor: stripe ? "#fafafa" : "#ffffff",
                 borderTop: `1px solid ${HAIRLINE}`,
@@ -159,6 +195,12 @@ function ProductsPage() {
                 {/* Copy */}
                 <div>
                   <div className="flex items-center gap-3 mb-6">
+                    <span
+                      className="inline-flex h-10 w-10 items-center justify-center"
+                      style={{ background: OBSIDIAN }}
+                    >
+                      <p.Icon size={18} strokeWidth={1.5} style={{ color: TEAL }} />
+                    </span>
                     <div
                       className="font-mono text-[10px] uppercase"
                       style={{ color: MUTED, letterSpacing: "0.22em" }}
@@ -194,19 +236,24 @@ function ProductsPage() {
                   </ul>
                 </div>
 
-                {/* Visual */}
-                <div
-                  className="aspect-[4/3] bg-white flex items-center justify-center"
-                  style={{
-                    border: `1px solid ${HAIRLINE}`,
-                    boxShadow: "0 30px 80px -30px rgba(21,49,87,0.15)",
-                  }}
-                >
-                  <p.Icon
-                    size={96}
-                    strokeWidth={0.75}
-                    style={{ color: `color-mix(in oklab, ${OBSIDIAN} 40%, transparent)` }}
+                {/* Visual — live product mockup */}
+                <div className="relative">
+                  <div
+                    aria-hidden
+                    className="pointer-events-none absolute -inset-8"
+                    style={{
+                      background:
+                        "radial-gradient(55% 50% at 50% 45%, rgba(0,180,168,0.16) 0%, transparent 70%)",
+                    }}
                   />
+                  <div className="relative">
+                    <AppFrame
+                      path={PRODUCT_VISUALS[p.name]?.path ?? "app.cleard.io"}
+                      active={PRODUCT_VISUALS[p.name]?.nav ?? "Permits"}
+                    >
+                      {PRODUCT_VISUALS[p.name]?.node ?? <KanbanMock />}
+                    </AppFrame>
+                  </div>
                 </div>
               </div>
             </section>

@@ -82,6 +82,24 @@ const PLANS: Plan[] = [
   },
 ];
 
+
+type MatrixRow = { feature: string; cells: string[] }; // [Starter, Pro, Back Office]
+
+const PLAN_MATRIX: MatrixRow[] = [
+  { feature: "Permitting Administration", cells: ["yes", "yes", "yes"] },
+  { feature: "Active permits included", cells: ["5", "25", "Unlimited"] },
+  { feature: "Private Plan Review & Inspections", cells: ["—", "yes", "yes"] },
+  { feature: "Contractor License Management", cells: ["—", "yes", "yes"] },
+  { feature: "Insurance Compliance (COI tracking)", cells: ["—", "yes", "yes"] },
+  { feature: "Lien Rights documents & deadlines", cells: ["—", "yes", "yes"] },
+  { feature: "Victoria AI assistant", cells: ["yes", "yes", "yes"] },
+  { feature: "Document vault & closeout packages", cells: ["yes", "yes", "yes"] },
+  { feature: "Team seats", cells: ["2", "10", "Unlimited"] },
+  { feature: "E-recording & notary queue", cells: ["—", "—", "yes"] },
+  { feature: "Dedicated permit coordinator", cells: ["—", "—", "yes"] },
+  { feature: "Support", cells: ["Email", "Priority", "Named account team"] },
+];
+
 function PricingPage() {
   return (
     <MarketingShell>
@@ -177,6 +195,75 @@ function PricingPage() {
                 </Link>
               </div>
             ))}
+          </div>
+
+
+          {/* Feature comparison table */}
+          <div className="mt-16">
+            <h2
+              style={{ color: INK, fontWeight: 800, fontSize: "clamp(1.5rem, 3vw, 2.25rem)", letterSpacing: "-0.03em" }}
+            >
+              Compare plans
+            </h2>
+            <div className="mt-8 overflow-x-auto" style={{ border: `1px solid ${BORDER}` }}>
+              <table className="w-full" style={{ borderCollapse: "collapse", minWidth: 720 }}>
+                <thead>
+                  <tr style={{ background: OFF }}>
+                    <th
+                      className="px-4 py-3 text-left text-[10px] uppercase tracking-[0.16em]"
+                      style={{ color: GRAY, borderBottom: `1px solid ${BORDER}` }}
+                    >
+                      Feature
+                    </th>
+                    {PLANS.map((p) => (
+                      <th
+                        key={p.name}
+                        className="px-4 py-3 text-center text-[11px] uppercase tracking-[0.16em]"
+                        style={{
+                          color: INK,
+                          fontWeight: p.popular ? 800 : 700,
+                          whiteSpace: "nowrap",
+                          background: p.popular ? "rgba(0,180,168,0.14)" : "transparent",
+                          borderBottom: p.popular ? `2px solid ${TEAL}` : `1px solid ${BORDER}`,
+                        }}
+                      >
+                        {p.name}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {PLAN_MATRIX.map((row) => (
+                    <tr key={row.feature}>
+                      <td
+                        className="px-4 py-3 text-[14px]"
+                        style={{ color: INK, borderBottom: `1px solid ${BORDER}` }}
+                      >
+                        {row.feature}
+                      </td>
+                      {row.cells.map((cell, i) => (
+                        <td
+                          key={`${row.feature}-${i}`}
+                          className="px-4 py-3 text-center text-[13px]"
+                          style={{
+                            borderBottom: `1px solid ${BORDER}`,
+                            background: PLANS[i]?.popular ? "rgba(0,180,168,0.06)" : "transparent",
+                            color: cell === "—" ? LIGHT : INK,
+                            fontWeight: 600,
+                          }}
+                        >
+                          {cell === "yes" ? (
+                            <Check className="mx-auto h-4 w-4" style={{ color: TEAL }} />
+                          ) : (
+                            cell
+                          )}
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
 
           <p className="mt-8 text-[14px]" style={{ color: GRAY }}>
