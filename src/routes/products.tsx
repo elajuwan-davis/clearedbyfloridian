@@ -11,6 +11,7 @@ import {
   ShieldCheck,
   BadgeCheck,
   FileCheck2,
+  Scale,
   Sparkles,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
@@ -213,6 +214,36 @@ function ProductsPage() {
         })}
       </div>
 
+
+      {/* VICTORIA — platform intelligence layer, not a service */}
+      <section
+        className="px-6 lg:px-10 py-20"
+        style={{ background: "#F5F4F0", borderTop: `1px solid ${HAIRLINE}` }}
+      >
+        <div className="max-w-4xl mx-auto">
+          <div className="flex items-center gap-2">
+            <Sparkles size={16} strokeWidth={1.75} style={{ color: TEAL }} />
+            <span
+              className="font-mono text-[10px] uppercase"
+              style={{ color: OBSIDIAN, letterSpacing: "0.28em" }}
+            >
+              Platform intelligence
+            </span>
+          </div>
+          <h2
+            className="font-bold mt-6 mb-6"
+            style={{ color: OBSIDIAN, fontSize: "clamp(1.75rem, 4vw, 3rem)", letterSpacing: "-0.02em", lineHeight: 1.05 }}
+          >
+            Powered by Victoria
+          </h2>
+          <p className="text-lg" style={{ color: MUTED, lineHeight: 1.55 }}>
+            Every service on this platform is backed by Victoria — Cleard&apos;s AI engine. She
+            answers jurisdiction questions, flags missing documents, routes correction responses, and
+            surfaces compliance risks before they become delays. You don&apos;t buy Victoria. She
+            comes with Cleard.
+          </p>
+        </div>
+      </section>
 
       {/* CTA */}
       <section className="px-6 lg:px-10 py-24" style={{ backgroundColor: OBSIDIAN }}>
