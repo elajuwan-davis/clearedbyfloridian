@@ -78,22 +78,22 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Cleard — Private Provider Permitting for South Florida" },
+      { title: "Cleard — Private Provider Permitting & Contractor Back Office" },
       {
         name: "description",
         content:
-          "Cleard is the private-provider permitting partner for South Florida's elite general contractors — plan review, inspections, and permit coordination on a statutory clock.",
+          "Cleard is the private-provider permitting partner for licensed general contractors — plan review, inspections, and permit coordination on a documented clock.",
       },
       { name: "author", content: "Cleard" },
-      { property: "og:title", content: "Cleard — Private Provider Permitting for South Florida" },
+      { property: "og:title", content: "Cleard — Private Provider Permitting & Contractor Back Office" },
       {
         property: "og:description",
         content:
-          "Private-provider plan review and inspections under FL Statute 553.791. Broward through the Treasure Coast.",
+          "Private-provider plan review and inspections, license management, insurance compliance, and Victoria.AI.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
-      { name: "twitter:title", content: "Cleard — Private Provider Permitting for South Florida" },
+      { name: "twitter:title", content: "Cleard — Private Provider Permitting & Contractor Back Office" },
       { name: "description", content: "Cleard is a full-stack permitting portal and marketing website for residential builders." },
       { property: "og:description", content: "Cleard is a full-stack permitting portal and marketing website for residential builders." },
       { name: "twitter:description", content: "Cleard is a full-stack permitting portal and marketing website for residential builders." },
