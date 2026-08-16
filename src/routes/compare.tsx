@@ -106,9 +106,9 @@ const CALLOUTS = [
       "SunRay manages documents. myCOI manages certificates. Using both means two logins, two bills, and no connection between them. Cleard covers both — integrated.",
   },
   {
-    title: "vs. PermitRockstar + 1 Contractor Solutions",
+    title: "vs. 1 Contractor Solutions + Freedom Code Compliance",
     body:
-      "Both are agency models — they do the work, you wait. Cleard gives you the platform to run it yourself, with support when you need it.",
+      "Both are service-agency models — they do the work, you wait, and there is no platform of record. Cleard gives you the software plus the back office, so you can see every permit, license, COI, and lien deadline yourself.",
   },
 ];
 
