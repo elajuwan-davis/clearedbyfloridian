@@ -453,7 +453,7 @@ function HeroNav() {
     >
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-5 lg:px-8">
         <Link to="/" className="flex items-center">
-          <img src={wordmark.url} alt="Cleard" className="h-6 w-auto" />
+          <img src={wordmark.url} alt="Cleard — private permit provider" className="h-9 w-auto" />
         </Link>
         <nav className="hidden items-center gap-9 md:flex">
           {NAV.map((l) => (
@@ -549,7 +549,7 @@ export function ClearedHero() {
           <img
             src={wordmark.url}
             alt="Cleard"
-            className="mx-auto h-10 w-auto lg:mx-0 lg:h-12"
+            className="mx-auto h-20 w-auto lg:mx-0 lg:h-24"
             style={{ transitionDelay: "80ms" }}
           />
           <p
