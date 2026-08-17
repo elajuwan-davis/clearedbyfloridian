@@ -43,7 +43,12 @@ function HeroNav() {
     >
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-5 lg:px-8">
         <Link to="/" className="flex items-center" style={{ flexShrink: 0 }}>
-          <ClearedWordmark className="h-9 w-auto" title="Cleard, private permit provider" />
+          <img
+            src={cIcon.url}
+            alt="Cleard"
+            className="h-9 w-9 object-contain"
+            style={{ filter: "drop-shadow(0 0 10px rgba(30,111,217,0.35))" }}
+          />
         </Link>
 
         <nav
