@@ -161,7 +161,11 @@ export function ClearedHero() {
       {/* translucent glass card */}
       <div className="relative mx-auto w-full max-w-7xl px-5 pb-20 pt-28 lg:px-8 lg:pb-28 lg:pt-32">
         <div className="mx-auto w-full max-w-3xl text-center">
-          <ClearedWordmark className="mx-auto h-24 w-auto sm:h-32 lg:h-40" />
+          <img
+            src={wordmark.url}
+            alt="Cleard"
+            className="mx-auto block h-auto w-full max-w-[640px] object-contain"
+          />
           <p
             className="mt-8 text-[13px] font-semibold uppercase sm:text-[15px]"
             style={{ color: CYAN, letterSpacing: "0.26em" }}
