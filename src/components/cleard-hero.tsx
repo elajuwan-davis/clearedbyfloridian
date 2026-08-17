@@ -149,7 +149,7 @@ export function ClearedHero() {
         className="pointer-events-none absolute inset-0"
         style={{
           background:
-            "linear-gradient(180deg, rgba(10,26,48,0.72) 0%, rgba(10,26,48,0.55) 45%, rgba(10,26,48,0.88) 100%)",
+            "linear-gradient(180deg, rgba(10,26,48,0.58) 0%, rgba(10,26,48,0.42) 45%, rgba(10,26,48,0.80) 100%)",
         }}
       />
       {/* blueprint graph-paper grid */}
