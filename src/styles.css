@@ -1527,6 +1527,11 @@ h1, h2, h3, .wordmark, .display-serif, .md-serif, .font-display {
 *::before,
 *::after { border-radius: 0 !important; }
 
+/* Hero CTA pills are the one intentional exception */
+.hero-pill,
+.hero-pill::before,
+.hero-pill::after { border-radius: 9999px !important; }
+
 /* ── Buttons ── */
 button, .btn, [role="button"] { font-family: var(--font-cds); cursor: pointer; }
 .cds-btn,
