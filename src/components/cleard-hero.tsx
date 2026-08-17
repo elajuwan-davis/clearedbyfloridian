@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
 
-import { ClearedWordmark } from "@/components/cleard-wordmark";
-import heroVideo from "@/assets/hero-architecture.mp4.asset.json";
+import heroVideo from "@/assets/hero-blueprint.mp4.asset.json";
+import wordmark from "@/assets/cleard-wordmark.png.asset.json";
+import cIcon from "@/assets/cleard-c-icon.png.asset.json";
 
 /* ------------------------------- BRAND TOKENS ------------------------------ */
 
@@ -42,7 +43,12 @@ function HeroNav() {
     >
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-5 lg:px-8">
         <Link to="/" className="flex items-center" style={{ flexShrink: 0 }}>
-          <ClearedWordmark className="h-9 w-auto" title="Cleard, private permit provider" />
+          <img
+            src={cIcon.url}
+            alt="Cleard"
+            className="h-9 w-9 object-contain"
+            style={{ filter: "drop-shadow(0 0 10px rgba(30,111,217,0.35))" }}
+          />
         </Link>
 
         <nav
@@ -143,7 +149,19 @@ export function ClearedHero() {
         className="pointer-events-none absolute inset-0"
         style={{
           background:
-            "linear-gradient(180deg, rgba(10,26,48,0.72) 0%, rgba(10,26,48,0.55) 45%, rgba(10,26,48,0.88) 100%)",
+            "linear-gradient(180deg, rgba(10,26,48,0.58) 0%, rgba(10,26,48,0.42) 45%, rgba(10,26,48,0.80) 100%)",
+        }}
+      />
+      {/* blueprint graph-paper grid */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0"
+        style={{
+          backgroundImage: `linear-gradient(to right, rgba(126,195,236,0.10) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(126,195,236,0.10) 1px, transparent 1px),
+            linear-gradient(to right, rgba(126,195,236,0.05) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(126,195,236,0.05) 1px, transparent 1px)`,
+          backgroundSize: "120px 120px, 120px 120px, 24px 24px, 24px 24px",
         }}
       />
       <div
@@ -155,7 +173,11 @@ export function ClearedHero() {
       {/* translucent glass card */}
       <div className="relative mx-auto w-full max-w-7xl px-5 pb-20 pt-28 lg:px-8 lg:pb-28 lg:pt-32">
         <div className="mx-auto w-full max-w-3xl text-center">
-          <ClearedWordmark className="mx-auto h-24 w-auto sm:h-32 lg:h-40" />
+          <img
+            src={wordmark.url}
+            alt="Cleard"
+            className="mx-auto block h-auto w-full max-w-[640px] object-contain"
+          />
           <p
             className="mt-8 text-[13px] font-semibold uppercase sm:text-[15px]"
             style={{ color: CYAN, letterSpacing: "0.26em" }}
