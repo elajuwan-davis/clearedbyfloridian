@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { MarketingNav as Nav } from "@/components/marketing-shell";
+import { ClearedHero } from "@/components/cleard-hero";
 import {
   ArrowRight,
   ArrowUpRight,
@@ -77,9 +77,7 @@ function HomePage() {
         @keyframes clFade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
       `}</style>
       <div className="cl-home">
-        <AnnouncementBanner />
-        <Nav />
-        <Hero />
+        <ClearedHero />
         <HeroStatBar />
         <Circle360 />
         <StatsStrip />
@@ -171,107 +169,6 @@ function useCycle(length: number, ms: number) {
 }
 
 /* ---------------------------------- HERO --------------------------------- */
-
-const CYCLE_WORDS = ["paperwork.", "corrections.", "inspections.", "compliance.", "overhead.", "admin."];
-
-function Hero() {
-  const count = useCountUp(847, 1800);
-  const w = useCycle(CYCLE_WORDS.length, 2200);
-  return (
-    <section
-      style={{
-        background: WHITE,
-        backgroundImage: "radial-gradient(rgba(0,0,0,0.07) 1px, transparent 1px)",
-        backgroundSize: "22px 22px",
-      }}
-    >
-      <div className="mx-auto max-w-7xl px-5 lg:px-8 py-20 md:py-28 lg:py-32 grid gap-14 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] lg:items-center">
-        <div>
-          <div className="flex flex-wrap items-center gap-2.5">
-            <span className="relative flex h-2 w-2">
-              <span className="cl-dot absolute inline-flex h-full w-full animate-ping" style={{ background: TEAL, opacity: 0.6 }} />
-              <span className="cl-dot relative inline-flex h-2 w-2" style={{ background: TEAL }} />
-            </span>
-            <span className="text-[10.5px] uppercase tracking-[0.16em]" style={{ color: LIGHT }}>
-              Permits managed through Cleard today:
-            </span>
-            <span className="text-[13px] font-semibold tabular-nums" style={{ color: INK }}>
-              {count}
-            </span>
-          </div>
-
-          <h1
-            className="mt-7"
-            style={{
-              fontWeight: 800,
-              fontSize: "clamp(2.5rem, 5.2vw, 3.875rem)",
-              lineHeight: 1.04,
-              letterSpacing: "-0.04em",
-              color: INK,
-            }}
-          >
-            Run projects. Not{" "}
-            <span className="inline-block overflow-hidden align-bottom">
-              <span
-                key={w}
-                className="inline-block"
-                style={{ color: TEAL, animation: "clWordIn 420ms ease-out both" }}
-              >
-                {CYCLE_WORDS[w]}
-              </span>
-            </span>
-          </h1>
-
-          <p className="mt-6 max-w-xl text-[17px] leading-relaxed" style={{ color: GRAY }}>
-            Cleard runs the back office for every licensed contractor — permitting administration,
-            private plan review and inspections, license management, insurance compliance, and
-            lien rights. One platform. Year-round.
-          </p>
-
-          <div className="mt-9 flex flex-col sm:flex-row gap-3 max-w-lg">
-            <Link
-              to="/join"
-              hash="request"
-              className="inline-flex items-center justify-center gap-2 px-6 py-3 text-[14px] font-bold no-underline"
-              style={{ background: TEAL, color: INK }}
-            >
-              Get early access <ArrowRight className="h-4 w-4" />
-            </Link>
-            <Link
-              to="/product"
-              className="inline-flex items-center justify-center px-6 py-3 text-[14px] font-medium no-underline"
-              style={{ border: `1px solid ${BORDER}`, background: WHITE, color: INK }}
-            >
-              See a live demo
-            </Link>
-          </div>
-
-          <p className="mt-5 text-[12.5px]" style={{ color: LIGHT }}>
-            No credit card · Free during beta · All licensed contractors
-          </p>
-        </div>
-
-
-        <div className="relative">
-          <div
-            aria-hidden
-            className="pointer-events-none absolute -inset-10"
-            style={{
-              background:
-                "radial-gradient(55% 50% at 55% 45%, rgba(0,180,168,0.22) 0%, rgba(0,180,168,0.06) 48%, transparent 74%)",
-            }}
-          />
-          <div className="relative">
-            <AppFrame path="app.cleard.io/permits" active="Permits">
-              <KanbanMock />
-            </AppFrame>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
 /* ----------------------------- HERO STAT BAR ----------------------------- */
 
 const HERO_STATS = [
