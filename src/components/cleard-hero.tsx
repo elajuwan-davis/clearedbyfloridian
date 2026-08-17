@@ -152,6 +152,18 @@ export function ClearedHero() {
             "linear-gradient(180deg, rgba(10,26,48,0.72) 0%, rgba(10,26,48,0.55) 45%, rgba(10,26,48,0.88) 100%)",
         }}
       />
+      {/* blueprint graph-paper grid */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0"
+        style={{
+          backgroundImage: `linear-gradient(to right, rgba(126,195,236,0.10) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(126,195,236,0.10) 1px, transparent 1px),
+            linear-gradient(to right, rgba(126,195,236,0.05) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(126,195,236,0.05) 1px, transparent 1px)`,
+          backgroundSize: "120px 120px, 120px 120px, 24px 24px, 24px 24px",
+        }}
+      />
       <div
         aria-hidden
         className="pointer-events-none absolute inset-x-0 bottom-0 h-28"
