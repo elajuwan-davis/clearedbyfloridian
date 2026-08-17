@@ -173,7 +173,7 @@ export function ClearedHero() {
             <Link
               to="/join"
               hash="request"
-              className="inline-flex items-center rounded-full px-7 py-3 text-[14px] font-semibold no-underline"
+              className="hero-pill inline-flex items-center px-7 py-3 text-[14px] font-semibold no-underline"
               style={{
                 background: `linear-gradient(135deg, ${BLUE}, #3b9bf5)`,
                 color: "#fff",
@@ -184,7 +184,7 @@ export function ClearedHero() {
             </Link>
             <Link
               to="/contact"
-              className="inline-flex items-center rounded-full px-7 py-3 text-[14px] font-semibold no-underline"
+              className="hero-pill inline-flex items-center px-7 py-3 text-[14px] font-semibold no-underline"
               style={{ border: `1px solid rgba(126,195,236,0.45)`, color: "#fff" }}
             >
               See A Live Demo
