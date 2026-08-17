@@ -131,11 +131,10 @@ export function ClearedHero() {
     >
       <HeroNav />
 
-      {/* full-bleed looping blueprint video, scaled so it fills every edge */}
+      {/* full-bleed looping blueprint video */}
       <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
         <video
-          className="absolute left-1/2 top-1/2 h-full w-full -translate-x-1/2 -translate-y-1/2 object-cover"
-          style={{ minWidth: "100%", minHeight: "100%", transform: "translate(-50%,-50%) scale(1.35)" }}
+          className="absolute -inset-[8%] h-[116%] w-[116%] object-cover"
           src={heroVideo.url}
           autoPlay
           loop
@@ -167,10 +166,10 @@ export function ClearedHero() {
         }}
       />
 
-      {/* continuously re-drawing blueprint line work, full page */}
+      {/* continuously re-drawing architectural line work across the full page */}
       <svg
         aria-hidden
-        className="pointer-events-none absolute inset-0 h-full w-full"
+        className="pointer-events-none absolute inset-0 h-full w-full opacity-80"
         viewBox="0 0 1600 900"
         preserveAspectRatio="none"
         fill="none"
@@ -178,20 +177,24 @@ export function ClearedHero() {
         strokeWidth={1.25}
       >
         {[
-          { d: "M60 760 L60 320 L300 180 L540 320 L540 760 Z", delay: 0 },
-          { d: "M120 760 L120 470 L300 470 L300 760", delay: 1.2 },
-          { d: "M1060 800 L1060 300 L1300 180 L1540 300 L1540 800 Z", delay: 2.1 },
-          { d: "M1120 800 L1120 520 L1300 520 L1300 800", delay: 3 },
-          { d: "M620 840 L620 420 L800 300 L980 420 L980 840 Z", delay: 1.6 },
-          { d: "M660 840 L660 600 L940 600 L940 840", delay: 3.6 },
-          { d: "M0 120 L1600 120", delay: 0.6 },
-          { d: "M0 860 L1600 860", delay: 2.6 },
-          { d: "M300 60 L300 900", delay: 4.2 },
-          { d: "M1300 60 L1300 900", delay: 5 },
+          { d: "M0 170 H1600 M0 730 H1600", delay: 0 },
+          { d: "M170 0 V900 M530 0 V900 M1070 0 V900 M1430 0 V900", delay: 0.8 },
+          { d: "M-80 400 L280 145 L640 400 L640 815 H-80 Z", delay: 0.2 },
+          { d: "M20 815 V455 H500 V815 M20 570 H500 M165 455 V815 M350 455 V815", delay: 1.1 },
+          { d: "M960 400 L1320 145 L1680 400 L1680 815 H960 Z", delay: 1.7 },
+          { d: "M1100 815 V455 H1580 V815 M1100 570 H1580 M1245 455 V815 M1430 455 V815", delay: 2.5 },
+          { d: "M560 770 V340 L800 205 L1040 340 V770 Z", delay: 1.2 },
+          { d: "M620 770 V470 H980 V770 M620 590 H980 M800 470 V770", delay: 3.2 },
+          { d: "M70 105 H420 M70 88 V122 M420 88 V122 M1180 105 H1530 M1180 88 V122 M1530 88 V122", delay: 2.1 },
+          { d: "M710 105 H890 M710 88 V122 M890 88 V122", delay: 3.8 },
+          { d: "M85 260 H455 M85 245 V275 M455 245 V275 M1145 260 H1515 M1145 245 V275 M1515 245 V275", delay: 4.4 },
+          { d: "M0 845 H1600 M35 825 V865 M1565 825 V865", delay: 2.8 },
         ].map((p) => (
           <path
             key={p.d}
             d={p.d}
+            pathLength={1}
+            vectorEffect="non-scaling-stroke"
             className="hero-blueprint-line"
             style={{ animationDelay: `${p.delay}s` }}
           />
@@ -207,14 +210,12 @@ export function ClearedHero() {
       {/* seamless translucent card */}
       <div className="relative mx-auto w-full max-w-7xl px-5 pb-20 pt-28 lg:px-8 lg:pb-28 lg:pt-32">
         <div
-          className="mx-auto w-full max-w-3xl px-6 py-12 text-center sm:px-12 sm:py-14"
+          className="hero-glass mx-auto w-full max-w-3xl px-6 py-12 text-center sm:px-12 sm:py-14"
           style={{
-            background: "rgba(10,26,48,0.34)",
-            backdropFilter: "blur(18px) saturate(140%)",
+            background: "rgba(10,26,48,0.14)",
+            backdropFilter: "blur(9px) saturate(125%)",
             border: "none",
-            boxShadow: "none",
-            maskImage:
-              "radial-gradient(120% 120% at 50% 50%, rgba(0,0,0,1) 55%, rgba(0,0,0,0) 100%)",
+            boxShadow: "0 24px 80px rgba(0,0,0,0.12)",
           }}
         >
           <img
