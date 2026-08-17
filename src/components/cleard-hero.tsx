@@ -488,6 +488,11 @@ function HeroNav() {
 
 export function ClearedHero() {
   const [built, setBuilt] = useState(false);
+  // safety net: reveal the copy even if WebGL is unavailable
+  useEffect(() => {
+    const id = window.setTimeout(() => setBuilt(true), (BUILD_TIME + 1.2) * 1000);
+    return () => window.clearTimeout(id);
+  }, []);
   return (
     <section
       className="relative isolate overflow-hidden"
