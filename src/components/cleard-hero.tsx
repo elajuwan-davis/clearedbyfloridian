@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
 
-import wordmark from "@/assets/cleard-wordmark-light.png.asset.json";
+import { ClearedWordmark } from "@/components/cleard-wordmark";
 import heroVideo from "@/assets/hero-architecture.mp4.asset.json";
 
 /* ------------------------------- BRAND TOKENS ------------------------------ */
@@ -42,7 +42,7 @@ function HeroNav() {
     >
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-5 lg:px-8">
         <Link to="/" className="flex items-center" style={{ flexShrink: 0 }}>
-          <img src={wordmark.url} alt="Cleard — private permit provider" className="h-8 w-auto" />
+          <ClearedWordmark className="h-9 w-auto" title="Cleard, private permit provider" />
         </Link>
 
         <nav
@@ -154,39 +154,26 @@ export function ClearedHero() {
 
       {/* translucent glass card */}
       <div className="relative mx-auto w-full max-w-7xl px-5 pb-20 pt-28 lg:px-8 lg:pb-28 lg:pt-32">
-        <div
-          className="mx-auto w-full max-w-2xl px-7 py-10 text-center sm:px-12 sm:py-14 lg:mx-0 lg:text-left"
-          style={{
-            background: "rgba(10,26,48,0.42)",
-            backdropFilter: "blur(18px)",
-            WebkitBackdropFilter: "blur(18px)",
-            border: "1px solid rgba(126,195,236,0.28)",
-            boxShadow: "0 30px 90px rgba(3,10,22,0.55)",
-          }}
-        >
-          <img
-            src={wordmark.url}
-            alt="Cleard"
-            className="mx-auto h-16 w-auto lg:mx-0 lg:h-20"
-          />
+        <div className="mx-auto w-full max-w-3xl text-center">
+          <ClearedWordmark className="mx-auto h-24 w-auto sm:h-32 lg:h-40" />
           <p
-            className="mt-6 text-[13px] font-semibold uppercase sm:text-[15px]"
+            className="mt-8 text-[13px] font-semibold uppercase sm:text-[15px]"
             style={{ color: CYAN, letterSpacing: "0.26em" }}
           >
             Run projects. Not paperwork.
           </p>
           <p
-            className="mx-auto mt-5 max-w-xl text-[16px] leading-relaxed lg:mx-0"
-            style={{ color: "rgba(255,255,255,0.82)" }}
+            className="mx-auto mt-5 max-w-2xl text-[16px] leading-relaxed sm:text-[17px]"
+            style={{ color: "rgba(255,255,255,0.85)" }}
           >
-            Permitting, private plan review, inspections, licensing, insurance, and lien rights —
-            one platform, every jurisdiction along the coast.
+            Permitting, private plan review, inspections, licensing, insurance, and lien rights.
+            One platform, every jurisdiction along the coast.
           </p>
-          <div className="mt-9 flex flex-wrap justify-center gap-3 lg:justify-start">
+          <div className="mt-10 flex flex-wrap justify-center gap-3">
             <Link
               to="/join"
               hash="request"
-              className="inline-flex items-center px-6 py-3 text-[14px] font-semibold no-underline"
+              className="inline-flex items-center rounded-full px-7 py-3 text-[14px] font-semibold no-underline"
               style={{
                 background: `linear-gradient(135deg, ${BLUE}, #3b9bf5)`,
                 color: "#fff",
@@ -197,7 +184,7 @@ export function ClearedHero() {
             </Link>
             <Link
               to="/contact"
-              className="inline-flex items-center px-6 py-3 text-[14px] font-semibold no-underline"
+              className="inline-flex items-center rounded-full px-7 py-3 text-[14px] font-semibold no-underline"
               style={{ border: `1px solid rgba(126,195,236,0.45)`, color: "#fff" }}
             >
               See A Live Demo
