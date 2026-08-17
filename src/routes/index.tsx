@@ -15,7 +15,6 @@ import {
   Smartphone,
   Sparkles,
   Users,
-  X,
 } from "lucide-react";
 import {
   AppFrame,
@@ -90,33 +89,6 @@ function HomePage() {
         <HowItWorks />
         <BottomCTA />
         <Footer />
-      </div>
-    </div>
-  );
-}
-
-/* ---------------------------- ANNOUNCEMENT BAR --------------------------- */
-
-function AnnouncementBanner() {
-  const [open, setOpen] = useState(true);
-  if (!open) return null;
-  return (
-    <div style={{ background: INK }}>
-      <div className="mx-auto max-w-7xl px-5 py-2.5 flex items-center justify-center gap-3 relative">
-        <p className="text-[13px]" style={{ color: WHITE }}>
-          Now accepting contractor applications for the private beta.{" "}
-          <Link to="/join" hash="request" className="underline font-semibold" style={{ color: WHITE }}>
-            Apply here →
-          </Link>
-        </p>
-        <button
-          onClick={() => setOpen(false)}
-          aria-label="Dismiss announcement"
-          className="absolute right-5 top-1/2 -translate-y-1/2 p-1"
-          style={{ color: "rgba(255,255,255,0.7)" }}
-        >
-          <X className="h-3.5 w-3.5" />
-        </button>
       </div>
     </div>
   );
