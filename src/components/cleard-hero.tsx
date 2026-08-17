@@ -416,7 +416,7 @@ function HouseScene({ onDone }: { onDone: () => void }) {
     <Canvas
       orthographic
       dpr={[1, 2]}
-      camera={{ position: [11, 8.5, 12], zoom: 52, near: -100, far: 200 }}
+      camera={{ position: [11, 8.5, 12], zoom: 44, near: -100, far: 200 }}
       gl={{ antialias: true, alpha: true }}
       onCreated={({ camera }) => camera.lookAt(0, 0.6, 0)}
       style={{ width: "100%", height: "100%" }}
