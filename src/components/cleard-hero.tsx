@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
 
-import { ClearedWordmark } from "@/components/cleard-wordmark";
-import heroVideo from "@/assets/hero-architecture.mp4.asset.json";
+import heroVideo from "@/assets/hero-blueprint.mp4.asset.json";
+import wordmark from "@/assets/cleard-wordmark.png.asset.json";
+import cIcon from "@/assets/cleard-c-icon.png.asset.json";
 
 /* ------------------------------- BRAND TOKENS ------------------------------ */
 
