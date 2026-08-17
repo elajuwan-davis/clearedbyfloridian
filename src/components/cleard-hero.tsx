@@ -3,7 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 
-import wordmark from "@/assets/cleard-wordmark.png.asset.json";
+import wordmark from "@/assets/cleard-wordmark-light.png.asset.json";
 
 /* ------------------------------- BRAND TOKENS ------------------------------ */
 
