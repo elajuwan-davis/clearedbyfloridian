@@ -1,16 +1,15 @@
 import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
 
-import heroVideo from "@/assets/hero-blueprint.mp4.asset.json";
-import wordmark from "@/assets/cleard-wordmark.png.asset.json";
-import cIcon from "@/assets/cleard-c-icon.png.asset.json";
-
 /* ------------------------------- BRAND TOKENS ------------------------------ */
 
 const NAVY = "#0a1a30";
 const BLUE = "#1e6fd9";
 const CYAN = "#7ec3ec";
 const SANS = "-apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif";
+const ASSET_ORIGIN = "https://clearedbyfloridian.lovable.app";
+const WORDMARK_URL = `${ASSET_ORIGIN}/__l5e/assets-v1/c3b48b43-4af8-4625-b17e-60075a710155/cleard-wordmark.png`;
+const C_ICON_URL = `${ASSET_ORIGIN}/__l5e/assets-v1/201b1eb0-eafb-4428-9d98-023eda7c09f4/cleard-c-icon.png`;
 
 /* ---------------------------------- NAV ---------------------------------- */
 
@@ -44,7 +43,7 @@ function HeroNav() {
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-5 lg:px-8">
         <Link to="/" className="flex items-center" style={{ flexShrink: 0 }}>
           <img
-            src={cIcon.url}
+            src={C_ICON_URL}
             alt="Cleard"
             className="h-9 w-9 object-contain"
             style={{ filter: "drop-shadow(0 0 10px rgba(30,111,217,0.35))" }}
@@ -131,19 +130,6 @@ export function ClearedHero() {
     >
       <HeroNav />
 
-      {/* full-bleed looping blueprint video */}
-      <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
-        <video
-          className="absolute -inset-[8%] h-[116%] w-[116%] object-cover"
-          src={heroVideo.url}
-          autoPlay
-          loop
-          muted
-          playsInline
-          preload="auto"
-        />
-      </div>
-
       {/* tint + vignette so the card and copy stay legible */}
       <div
         aria-hidden
@@ -177,11 +163,9 @@ export function ClearedHero() {
         strokeWidth={1.25}
       >
         {[
-          { d: "M0 170 H1600 M0 730 H1600", delay: 0 },
-          { d: "M170 0 V900 M530 0 V900 M1070 0 V900 M1430 0 V900", delay: 0.8 },
-          { d: "M-80 400 L280 145 L640 400 L640 815 H-80 Z", delay: 0.2 },
-          { d: "M960 400 L1320 145 L1680 400 L1680 815 H960 Z", delay: 1.7 },
-          { d: "M560 770 V340 L800 205 L1040 340 V770 Z", delay: 1.2 },
+          { d: "M-90 420 L270 155 L630 420 V815 H-90 Z M-25 420 L270 205 L565 420 M40 815 V520 H500 V815 M120 520 V815 M420 520 V815 M210 610 H330 V815", delay: 0.2 },
+          { d: "M485 405 L800 175 L1115 405 V815 H485 Z M555 405 L800 225 L1045 405 M565 815 V510 H1035 V815 M655 510 V815 M945 510 V815 M745 590 H855 V815", delay: 1.2 },
+          { d: "M970 420 L1330 155 L1690 420 V815 H970 Z M1035 420 L1330 205 L1625 420 M1100 815 V520 H1560 V815 M1180 520 V815 M1480 520 V815 M1270 610 H1390 V815", delay: 2.2 },
         ].map((p) => (
 
           <path
@@ -213,7 +197,7 @@ export function ClearedHero() {
           }}
         >
           <img
-            src={wordmark.url}
+            src={WORDMARK_URL}
             alt="Cleard"
             className="mx-auto block h-auto w-full max-w-[400px] object-contain sm:max-w-[460px]"
           />
