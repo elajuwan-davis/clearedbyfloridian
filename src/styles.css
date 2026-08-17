@@ -1532,6 +1532,19 @@ html body .hero-pill.hero-pill,
 html body .hero-pill.hero-pill::before,
 html body .hero-pill.hero-pill::after { border-radius: 9999px !important; }
 
+/* Hero blueprint: continuously re-drawing line work */
+@keyframes heroDraw {
+  0%   { stroke-dashoffset: 1400; opacity: 0; }
+  8%   { opacity: 0.85; }
+  70%  { stroke-dashoffset: 0; opacity: 0.85; }
+  92%  { stroke-dashoffset: 0; opacity: 0; }
+  100% { stroke-dashoffset: 1400; opacity: 0; }
+}
+.hero-blueprint-line {
+  stroke-dasharray: 1400;
+  animation: heroDraw 9s linear infinite;
+}
+
 /* ── Buttons ── */
 button, .btn, [role="button"] { font-family: var(--font-cds); cursor: pointer; }
 .cds-btn,
