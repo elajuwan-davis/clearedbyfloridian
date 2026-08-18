@@ -61,6 +61,8 @@ const GRAY = "#7A5C68";
 const LIGHT = "#9A8E7C";
 const TEAL = "#673147";
 const PLUM_LT = "#D9AFC1"; /* accent legible on dark slate surfaces */
+const GREEN = "#2F4F4F"; /* minor accent: numerals, eyebrows, small labels */
+const GREEN_LT = "#9CBEB2"; /* same accent, legible on dark plum */
 const BORDER = "#E0D3BC";
 const SANS = "-apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif";
 
@@ -292,7 +294,7 @@ function PermitsTable() {
           className="grid grid-cols-[1fr_auto] sm:grid-cols-[104px_1fr_96px_100px] items-center gap-2 px-4 py-2.5"
           style={{ borderBottom: `1px solid ${OFF2}` }}
         >
-          <span className="text-[11px] font-semibold tabular-nums" style={{ color: TEAL }}>
+          <span className="text-[11px] font-semibold tabular-nums" style={{ color: GREEN }}>
             {r.id}
           </span>
           <span className="hidden sm:block truncate text-[12px]" style={{ color: INK }}>
@@ -327,7 +329,7 @@ function Circle360() {
   return (
     <section style={{ background: OFF, borderTop: `1px solid ${BORDER}`, borderBottom: `1px solid ${BORDER}` }}>
       <div className="mx-auto max-w-7xl px-5 lg:px-8 py-24 md:py-28 text-center">
-        <div className="text-[10.5px] uppercase tracking-[0.18em] font-bold" style={{ color: TEAL }}>
+        <div className="text-[10.5px] uppercase tracking-[0.18em] font-bold" style={{ color: GREEN }}>
           What we run for you
         </div>
         <h2
@@ -378,7 +380,7 @@ function Circle360() {
               <div className="text-[22px] font-bold" style={{ color: WHITE, letterSpacing: "-0.03em" }}>
                 Cleard
               </div>
-              <div className="mt-1 text-[10.5px] uppercase tracking-[0.16em]" style={{ color: PLUM_LT }}>
+              <div className="mt-1 text-[10.5px] uppercase tracking-[0.16em]" style={{ color: GREEN_LT }}>
                 Back office
               </div>
             </div>
@@ -565,7 +567,7 @@ function VictoriaLayer() {
           <div className="lg:col-span-7">
             <div className="flex items-center gap-2">
               <Sparkles className="h-4 w-4" style={{ color: PLUM_LT }} strokeWidth={1.75} />
-              <span className="text-[10px] font-bold uppercase tracking-[0.22em]" style={{ color: PLUM_LT }}>
+              <span className="text-[10px] font-bold uppercase tracking-[0.22em]" style={{ color: GREEN_LT }}>
                 Platform intelligence
               </span>
             </div>
@@ -643,7 +645,7 @@ function ThreeSteps() {
   return (
     <section style={{ background: M.bg1 }}>
       <div className="mx-auto max-w-7xl px-5 lg:px-8 py-24 md:py-32">
-        <div className="text-[10.5px] font-bold uppercase tracking-[0.2em]" style={{ color: PLUM_LT }}>
+        <div className="text-[10.5px] font-bold uppercase tracking-[0.2em]" style={{ color: GREEN_LT }}>
           How it works
         </div>
         <h2
@@ -707,7 +709,7 @@ function TrustBar() {
         <div className="mt-14 grid gap-4 md:grid-cols-3">
           {TESTIMONIALS.map((t) => (
             <figure key={t.name} className="flex flex-col p-7" style={{ background: OFF, border: `1px solid ${BORDER}` }}>
-              <div className="text-[28px] font-bold leading-none" style={{ color: TEAL }}>
+              <div className="text-[28px] font-bold leading-none" style={{ color: GREEN }}>
                 &ldquo;
               </div>
               <blockquote className="mt-4 flex-1 text-[15px] leading-relaxed" style={{ color: INK }}>
@@ -823,7 +825,7 @@ function MockTable({ title, cols, rows }: { title: string; cols: string[]; rows:
           className="grid grid-cols-[1fr_auto] sm:grid-cols-[112px_1fr_1fr_104px] items-center gap-2 px-4 py-2.5"
           style={{ borderBottom: `1px solid ${OFF2}` }}
         >
-          <span className="text-[11px] font-semibold tabular-nums" style={{ color: TEAL }}>
+          <span className="text-[11px] font-semibold tabular-nums" style={{ color: GREEN }}>
             {r[0]}
           </span>
           <span className="hidden sm:block truncate text-[12px]" style={{ color: INK }}>
@@ -872,7 +874,7 @@ function MobileApp() {
                 {ROWS.slice(0, 5).map((r) => (
                   <div key={r.id} className="px-4 py-3" style={{ borderBottom: `1px solid ${OFF2}` }}>
                     <div className="flex items-center justify-between gap-2">
-                      <span className="text-[11px] font-semibold" style={{ color: TEAL }}>{r.id}</span>
+                      <span className="text-[11px] font-semibold" style={{ color: GREEN }}>{r.id}</span>
                       <Tag>{r.status}</Tag>
                     </div>
                     <div className="mt-1 text-[12.5px] truncate" style={{ color: INK }}>{r.addr}</div>
@@ -885,7 +887,7 @@ function MobileApp() {
             {screen === 1 && (
               <div>
                 <div className="m-3 p-4" style={{ background: INK, borderLeft: `3px solid ${PLUM_LT}` }}>
-                  <div className="text-[10px] uppercase tracking-[0.16em]" style={{ color: PLUM_LT }}>
+                  <div className="text-[10px] uppercase tracking-[0.16em]" style={{ color: GREEN_LT }}>
                     Live inspection
                   </div>
                   <div className="mt-2 text-[15px] font-semibold" style={{ color: WHITE }}>
@@ -1010,7 +1012,7 @@ function HowItWorks() {
   return (
     <section style={{ background: OFF, borderTop: `1px solid ${BORDER}` }}>
       <div className="mx-auto max-w-7xl px-5 lg:px-8 py-24 md:py-28">
-        <div className="text-[10.5px] uppercase tracking-[0.18em] font-bold" style={{ color: TEAL }}>
+        <div className="text-[10.5px] uppercase tracking-[0.18em] font-bold" style={{ color: GREEN }}>
           How it works
         </div>
         <h2
@@ -1024,7 +1026,7 @@ function HowItWorks() {
         <div className="mt-14 grid gap-px sm:grid-cols-2 lg:grid-cols-6" style={{ background: BORDER, border: `1px solid ${BORDER}` }}>
           {STEPS.map((s, i) => (
             <div key={s.t} className="p-5" style={{ background: WHITE }}>
-              <div className="text-[11px] font-bold tabular-nums" style={{ color: TEAL }}>
+              <div className="text-[11px] font-bold tabular-nums" style={{ color: GREEN }}>
                 {String(i + 1).padStart(2, "0")}
               </div>
               <div className="mt-3 text-[14.5px] font-bold" style={{ color: INK, letterSpacing: "-0.02em" }}>
@@ -1058,7 +1060,7 @@ function BottomCTA() {
             to="/join"
             hash="request"
             className="inline-flex items-center gap-2 px-6 py-3 text-[14px] font-bold no-underline"
-            style={{ background: PLUM_LT, color: INK }}
+            style={{ background: GREEN, color: WHITE }}
           >
             Get started <ArrowRight className="h-4 w-4" />
           </Link>
