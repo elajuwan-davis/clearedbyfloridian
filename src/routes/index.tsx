@@ -60,6 +60,7 @@ const INK = "#2F4F4F";
 const GRAY = "#5F7373";
 const LIGHT = "#9A8E7C";
 const TEAL = "#673147";
+const PLUM_LT = "#D9AFC1"; /* accent legible on dark slate surfaces */
 const BORDER = "#E0D3BC";
 const SANS = "-apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif";
 
@@ -528,7 +529,7 @@ function Services() {
                 className="inline-flex h-11 w-11 items-center justify-center"
                 style={{ background: M.bg0 }}
               >
-                <s.icon className="h-[19px] w-[19px]" style={{ color: TEAL }} strokeWidth={1.5} />
+                <s.icon className="h-[19px] w-[19px]" style={{ color: PLUM_LT }} strokeWidth={1.5} />
               </span>
               <h3 className={`mt-5 font-bold ${i < 2 ? "text-[19px]" : "text-[17px]"}`} style={{ color: INK, letterSpacing: "-0.02em" }}>
                 {s.title}
@@ -563,8 +564,8 @@ function VictoriaLayer() {
           </div>
           <div className="lg:col-span-7">
             <div className="flex items-center gap-2">
-              <Sparkles className="h-4 w-4" style={{ color: TEAL }} strokeWidth={1.75} />
-              <span className="text-[10px] font-bold uppercase tracking-[0.22em]" style={{ color: TEAL }}>
+              <Sparkles className="h-4 w-4" style={{ color: PLUM_LT }} strokeWidth={1.75} />
+              <span className="text-[10px] font-bold uppercase tracking-[0.22em]" style={{ color: PLUM_LT }}>
                 Platform intelligence
               </span>
             </div>
@@ -592,7 +593,7 @@ function VictoriaLayer() {
             <div className="mt-6 flex flex-wrap gap-x-6 gap-y-2">
               {SERVICES.map((s) => (
                 <span key={s.title} className="flex items-center gap-2 text-[12px]" style={{ color: M.faint }}>
-                  <s.icon className="h-3.5 w-3.5" style={{ color: TEAL }} strokeWidth={1.75} />
+                  <s.icon className="h-3.5 w-3.5" style={{ color: PLUM_LT }} strokeWidth={1.75} />
                   {s.title}
                 </span>
               ))}
@@ -947,7 +948,7 @@ function MobileApp() {
                       <FolderOpen className="h-4 w-4 shrink-0" style={{ color: LIGHT }} />
                       <span className="text-[12px] truncate" style={{ color: INK }}>{d}</span>
                     </div>
-                    <span className="text-[13px]" style={{ color: TEAL }}>↓</span>
+                    <span className="text-[13px]" style={{ color: PLUM_LT }}>↓</span>
                   </div>
                 ))}
               </div>
