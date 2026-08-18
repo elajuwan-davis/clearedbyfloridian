@@ -378,7 +378,7 @@ function Circle360() {
               <div className="text-[22px] font-bold" style={{ color: WHITE, letterSpacing: "-0.03em" }}>
                 Cleard
               </div>
-              <div className="mt-1 text-[10.5px] uppercase tracking-[0.16em]" style={{ color: TEAL }}>
+              <div className="mt-1 text-[10.5px] uppercase tracking-[0.16em]" style={{ color: PLUM_LT }}>
                 Back office
               </div>
             </div>
@@ -643,7 +643,7 @@ function ThreeSteps() {
   return (
     <section style={{ background: M.bg1 }}>
       <div className="mx-auto max-w-7xl px-5 lg:px-8 py-24 md:py-32">
-        <div className="text-[10.5px] font-bold uppercase tracking-[0.2em]" style={{ color: TEAL }}>
+        <div className="text-[10.5px] font-bold uppercase tracking-[0.2em]" style={{ color: PLUM_LT }}>
           How it works
         </div>
         <h2
@@ -884,14 +884,14 @@ function MobileApp() {
 
             {screen === 1 && (
               <div>
-                <div className="m-3 p-4" style={{ background: INK, borderLeft: `3px solid ${TEAL}` }}>
-                  <div className="text-[10px] uppercase tracking-[0.16em]" style={{ color: TEAL }}>
+                <div className="m-3 p-4" style={{ background: INK, borderLeft: `3px solid ${PLUM_LT}` }}>
+                  <div className="text-[10px] uppercase tracking-[0.16em]" style={{ color: PLUM_LT }}>
                     Live inspection
                   </div>
                   <div className="mt-2 text-[15px] font-semibold" style={{ color: WHITE }}>
                     Final Electrical · 14 Pelican Bay
                   </div>
-                  <div key={live} className="mt-2 text-[13px] font-bold" style={{ color: TEAL, animation: "clFade 400ms ease-out both" }}>
+                  <div key={live} className="mt-2 text-[13px] font-bold" style={{ color: PLUM_LT, animation: "clFade 400ms ease-out both" }}>
                     {LIVE_STATUSES[live]}
                     {LIVE_STATUSES[live] === "Passed" ? " ✓" : ""}
                   </div>
