@@ -30,17 +30,22 @@ export function MarketingNav() {
         <div className="flex min-w-0 items-center gap-6">
           <Link
             to="/"
-            className="no-underline"
-            style={{
-              color: INK,
-              fontWeight: 700,
-              fontSize: 20,
-              letterSpacing: "-0.03em",
-              whiteSpace: "nowrap",
-              flexShrink: 0,
-            }}
+            className="flex items-center gap-2.5 no-underline"
+            style={{ flexShrink: 0 }}
           >
-            Cleard
+            <img src={mark2d.url} alt="Cleard" className="h-7 w-7 object-contain" />
+            <span
+              style={{
+                color: TEAL,
+                fontFamily: SERIF,
+                fontWeight: 600,
+                fontSize: 20,
+                letterSpacing: "-0.02em",
+                whiteSpace: "nowrap",
+              }}
+            >
+              Cleard
+            </span>
           </Link>
 
           <nav
