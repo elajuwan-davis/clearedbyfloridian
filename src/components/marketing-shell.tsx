@@ -10,11 +10,11 @@ const NAV_LINKS: Array<{ to: string; label: string }> = [
   { to: "/about", label: "About" },
 ];
 
-const NEAR_BLACK = "#FFFFFF";
-const BODY_GRAY = "#6B6860";
-const INK = "#111110";
-const TEAL = "#00B4A8";
-const BORDER = "#E4E2DE";
+const NEAR_BLACK = "#FAF3E6";
+const BODY_GRAY = "#5F7373";
+const INK = "#2F4F4F";
+const TEAL = "#673147";
+const BORDER = "#E0D3BC";
 
 /** The single marketing nav — identical on every public page. */
 export function MarketingNav() {
@@ -130,7 +130,7 @@ function MarketingFooter() {
             style={{
               fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif",
               fontWeight: 700,
-              color: "#FFFFFF",
+              color: "#FAF3E6",
             }}
           >
             Cleard

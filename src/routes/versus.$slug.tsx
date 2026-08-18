@@ -43,10 +43,10 @@ function Yes() {
   return (
     <span
       className="inline-flex items-center justify-center h-5 w-5 rounded-full"
-      style={{ background: "color-mix(in oklab, var(--green, #12A05C) 18%, transparent)" }}
+      style={{ background: "color-mix(in oklab, var(--green, #4E6B5C) 18%, transparent)" }}
       aria-label="Included"
     >
-      <Check className="h-3 w-3" style={{ color: "var(--green, #12A05C)" }} strokeWidth={3} />
+      <Check className="h-3 w-3" style={{ color: "var(--green, #4E6B5C)" }} strokeWidth={3} />
     </span>
   );
 }
@@ -114,13 +114,13 @@ function VersusDetail() {
                 </th>
                 <th
                   className="px-5 py-4 text-[12px] uppercase tracking-[0.16em] text-center"
-                  style={{ background: "var(--brand, #1B84D4)", color: "#FFFFFF" }}
+                  style={{ background: "var(--brand, #673147)", color: "#FAF3E6" }}
                 >
                   Cleard
                 </th>
                 <th
                   className="px-5 py-4 text-[12px] uppercase tracking-[0.16em] text-center md-muted"
-                  style={{ background: "color-mix(in oklab, #6B8299 12%, transparent)" }}
+                  style={{ background: "color-mix(in oklab, #5F7373 12%, transparent)" }}
                 >
                   {c.name}
                 </th>
@@ -132,7 +132,7 @@ function VersusDetail() {
                   key={r.feature}
                   style={{
                     background:
-                      i % 2 === 1 ? "color-mix(in oklab, #6B8299 6%, transparent)" : "transparent",
+                      i % 2 === 1 ? "color-mix(in oklab, #5F7373 6%, transparent)" : "transparent",
                   }}
                 >
                   <td className="px-5 py-3.5 text-sm" style={{ color: "var(--md-text)" }}>
@@ -161,7 +161,7 @@ function VersusDetail() {
               </div>
               <div className="mt-3 grid grid-cols-2 gap-3">
                 <div className="flex items-center gap-2">
-                  <span className="text-[11px] uppercase tracking-[0.16em]" style={{ color: "var(--brand, #1B84D4)" }}>
+                  <span className="text-[11px] uppercase tracking-[0.16em]" style={{ color: "var(--brand, #673147)" }}>
                     Cleard
                   </span>
                   {r.cleard ? <Yes /> : <No />}
@@ -183,7 +183,7 @@ function VersusDetail() {
             const Icon = ICONS[d.icon];
             return (
               <div key={d.headline}>
-                <Icon className="h-5 w-5" style={{ color: "var(--brand, #1B84D4)" }} strokeWidth={1.5} />
+                <Icon className="h-5 w-5" style={{ color: "var(--brand, #673147)" }} strokeWidth={1.5} />
                 <h3 className="mt-4 md-serif text-2xl" style={{ color: "var(--md-text)" }}>
                   {d.headline}
                 </h3>
@@ -197,7 +197,7 @@ function VersusDetail() {
       {/* CTA strip */}
       <section className="md-section-dark">
         <div className="mx-auto max-w-7xl px-6 lg:px-10 py-20 text-center">
-          <h2 className="md-serif text-3xl md:text-5xl" style={{ color: "#FFFFFF" }}>
+          <h2 className="md-serif text-3xl md:text-5xl" style={{ color: "#FAF3E6" }}>
             Ready to switch?
           </h2>
           <div className="mt-8">

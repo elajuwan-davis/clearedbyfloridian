@@ -162,7 +162,7 @@ function JoinPage() {
       </section>
 
       {/* PROBLEM */}
-      <section id="problem" className="px-6 lg:px-10 py-24" style={{ backgroundColor: "#fafafa" }}>
+      <section id="problem" className="px-6 lg:px-10 py-24" style={{ backgroundColor: "#FAF3E6" }}>
         <div className="max-w-7xl mx-auto">
           <div
             className="font-mono text-[10px] uppercase mb-6"
@@ -293,7 +293,7 @@ function JoinPage() {
       </section>
 
       {/* REQUEST FORM */}
-      <section id="request" className="py-28 px-6" style={{ backgroundColor: "#fafafa" }}>
+      <section id="request" className="py-28 px-6" style={{ backgroundColor: "#FAF3E6" }}>
         <div className="max-w-lg mx-auto">
           <div
             className="font-mono text-[10px] uppercase mb-4 text-center"

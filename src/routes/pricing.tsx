@@ -25,12 +25,12 @@ export const Route = createFileRoute("/pricing")({
   component: PricingPage,
 });
 
-const INK = "#111110";
-const GRAY = "#6B6860";
-const LIGHT = "#9E9B96";
-const TEAL = "#00B4A8";
-const BORDER = "#E4E2DE";
-const OFF = "#F5F4F0";
+const INK = "#2F4F4F";
+const GRAY = "#5F7373";
+const LIGHT = "#9A8E7C";
+const TEAL = "#673147";
+const BORDER = "#E0D3BC";
+const OFF = "#F3EAD9";
 
 type Plan = {
   name: string;
@@ -103,7 +103,7 @@ const PLAN_MATRIX: MatrixRow[] = [
 function PricingPage() {
   return (
     <MarketingShell>
-      <div style={{ background: "#FFFFFF", color: INK }}>
+      <div style={{ background: "#FAF3E6", color: INK }}>
         {/* Hero */}
         <section className="mx-auto max-w-7xl px-5 lg:px-8 pt-20 pb-10 md:pt-28">
           <div className="text-[10.5px] uppercase tracking-[0.22em]" style={{ color: LIGHT }}>
@@ -133,7 +133,7 @@ function PricingPage() {
                 key={p.name}
                 className="flex flex-col p-7"
                 style={{
-                  background: p.popular ? OFF : "#FFFFFF",
+                  background: p.popular ? OFF : "#FAF3E6",
                   border: `1px solid ${p.popular ? TEAL : BORDER}`,
                 }}
               >
@@ -188,7 +188,7 @@ function PricingPage() {
                   style={
                     p.popular
                       ? { background: TEAL, color: INK, fontWeight: 700 }
-                      : { background: "#FFFFFF", color: INK, border: `1px solid ${BORDER}`, fontWeight: 600 }
+                      : { background: "#FAF3E6", color: INK, border: `1px solid ${BORDER}`, fontWeight: 600 }
                   }
                 >
                   Get started
@@ -223,7 +223,7 @@ function PricingPage() {
                           color: INK,
                           fontWeight: p.popular ? 800 : 700,
                           whiteSpace: "nowrap",
-                          background: p.popular ? "rgba(0,180,168,0.14)" : "transparent",
+                          background: p.popular ? "rgba(103,49,71,0.14)" : "transparent",
                           borderBottom: p.popular ? `2px solid ${TEAL}` : `1px solid ${BORDER}`,
                         }}
                       >
@@ -247,7 +247,7 @@ function PricingPage() {
                           className="px-4 py-3 text-center text-[13px]"
                           style={{
                             borderBottom: `1px solid ${BORDER}`,
-                            background: PLANS[i]?.popular ? "rgba(0,180,168,0.06)" : "transparent",
+                            background: PLANS[i]?.popular ? "rgba(103,49,71,0.06)" : "transparent",
                             color: cell === "—" ? LIGHT : INK,
                             fontWeight: 600,
                           }}

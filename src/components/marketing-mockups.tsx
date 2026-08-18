@@ -9,26 +9,26 @@ import { Check, Minus, Sparkles } from "lucide-react";
 /* ------------------------------- tokens ---------------------------------- */
 
 export const M = {
-  bg0: "#0C0D0B",
-  bg1: "#111310",
-  bg2: "#171A16",
-  line: "rgba(245,244,240,0.12)",
-  line2: "rgba(245,244,240,0.07)",
-  text: "#F5F4F0",
-  muted: "rgba(245,244,240,0.56)",
-  faint: "rgba(245,244,240,0.34)",
-  teal: "#00B4A8",
+  bg0: "#1E3333",
+  bg1: "#26403F",
+  bg2: "#26403F",
+  line: "rgba(250,243,230,0.12)",
+  line2: "rgba(250,243,230,0.07)",
+  text: "#F3EAD9",
+  muted: "rgba(250,243,230,0.56)",
+  faint: "rgba(250,243,230,0.34)",
+  teal: "#673147",
   amber: "#E0A83A",
   red: "#E06060",
   blue: "#5FA8E0",
 } as const;
 
 const CHIP: Record<string, { bg: string; fg: string }> = {
-  APPROVED: { bg: "rgba(0,180,168,0.16)", fg: M.teal },
-  PASSED: { bg: "rgba(0,180,168,0.16)", fg: M.teal },
-  CLEAR: { bg: "rgba(0,180,168,0.16)", fg: M.teal },
-  VERIFIED: { bg: "rgba(0,180,168,0.16)", fg: M.teal },
-  RECORDED: { bg: "rgba(0,180,168,0.16)", fg: M.teal },
+  APPROVED: { bg: "rgba(103,49,71,0.16)", fg: M.teal },
+  PASSED: { bg: "rgba(103,49,71,0.16)", fg: M.teal },
+  CLEAR: { bg: "rgba(103,49,71,0.16)", fg: M.teal },
+  VERIFIED: { bg: "rgba(103,49,71,0.16)", fg: M.teal },
+  RECORDED: { bg: "rgba(103,49,71,0.16)", fg: M.teal },
   "IN REVIEW": { bg: "rgba(95,168,224,0.16)", fg: M.blue },
   SCHEDULED: { bg: "rgba(95,168,224,0.16)", fg: M.blue },
   SIGNED: { bg: "rgba(95,168,224,0.16)", fg: M.blue },
@@ -42,7 +42,7 @@ const CHIP: Record<string, { bg: string; fg: string }> = {
 };
 
 export function Chip({ children }: { children: string }) {
-  const c = CHIP[children.toUpperCase()] ?? { bg: "rgba(245,244,240,0.08)", fg: M.faint };
+  const c = CHIP[children.toUpperCase()] ?? { bg: "rgba(250,243,230,0.08)", fg: M.faint };
   return (
     <span
       className="inline-block px-2 py-[3px] text-[9.5px] font-bold uppercase tracking-[0.1em] whitespace-nowrap"
@@ -62,7 +62,7 @@ export function TealGlow({ opacity = 0.5 }: { opacity?: number }) {
       className="pointer-events-none absolute inset-0"
       style={{
         background:
-          "radial-gradient(60% 55% at 50% 40%, rgba(0,180,168,0.30) 0%, rgba(0,180,168,0.07) 45%, transparent 72%)",
+          "radial-gradient(60% 55% at 50% 40%, rgba(103,49,71,0.30) 0%, rgba(103,49,71,0.07) 45%, transparent 72%)",
         opacity,
       }}
     />
@@ -92,7 +92,7 @@ export function BrowserFrame({
         style={{ background: M.bg0, borderBottom: `1px solid ${M.line}` }}
       >
         <div className="flex items-center gap-1.5">
-          {["rgba(245,244,240,0.22)", "rgba(245,244,240,0.16)", "rgba(245,244,240,0.12)"].map((c) => (
+          {["rgba(250,243,230,0.22)", "rgba(250,243,230,0.16)", "rgba(250,243,230,0.12)"].map((c) => (
             <span key={c} className="h-2 w-2" style={{ background: c, borderRadius: 999 }} />
           ))}
         </div>
@@ -348,7 +348,7 @@ export function CertificateMock() {
             border: `2px solid ${M.teal}`,
             color: M.teal,
             transform: "rotate(-8deg)",
-            background: "rgba(0,180,168,0.08)",
+            background: "rgba(103,49,71,0.08)",
           }}
         >
           <div className="text-[13px] font-bold uppercase tracking-[0.22em]">Approved</div>
@@ -687,7 +687,7 @@ export function VictoriaChatMock() {
         <div className="flex">
           <div
             className="max-w-[92%] px-3.5 py-2.5 text-[12px] leading-relaxed"
-            style={{ background: "rgba(0,180,168,0.1)", borderLeft: `2px solid ${M.teal}`, color: M.text }}
+            style={{ background: "rgba(103,49,71,0.1)", borderLeft: `2px solid ${M.teal}`, color: M.text }}
           >
             Martin County requires a 7.5-ft rear setback for pool equipment and 6 ft from the water&apos;s
             edge to the rear property line. Screen enclosures reduce to 5 ft with an engineered tie-down

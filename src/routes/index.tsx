@@ -53,14 +53,14 @@ export const Route = createFileRoute("/")({
 
 /* ------------------------------ DESIGN TOKENS ----------------------------- */
 
-const WHITE = "#FFFFFF";
-const OFF = "#F5F4F0";
-const OFF2 = "#EEECEA";
-const INK = "#111110";
-const GRAY = "#6B6860";
-const LIGHT = "#9E9B96";
-const TEAL = "#00B4A8";
-const BORDER = "#E4E2DE";
+const WHITE = "#FAF3E6";
+const OFF = "#F3EAD9";
+const OFF2 = "#EDE0C9";
+const INK = "#2F4F4F";
+const GRAY = "#5F7373";
+const LIGHT = "#9A8E7C";
+const TEAL = "#673147";
+const BORDER = "#E0D3BC";
 const SANS = "-apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif";
 
 /* --------------------------------- PAGE ---------------------------------- */
@@ -206,7 +206,7 @@ function statusStyle(status: string) {
     case "Verified":
     case "Passed":
     case "Clear":
-      return { background: "rgba(0,180,168,0.12)", color: "#00917F" };
+      return { background: "rgba(103,49,71,0.12)", color: "#52243A" };
     case "Corrections":
     case "Alert":
     case "Expired":
@@ -538,7 +538,7 @@ function Services() {
               </p>
               <span
                 className="mt-5 inline-block px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.06em]"
-                style={{ background: "rgba(0,180,168,0.12)", color: "#00917F" }}
+                style={{ background: "rgba(103,49,71,0.12)", color: "#52243A" }}
               >
                 {s.tag}
               </span>
