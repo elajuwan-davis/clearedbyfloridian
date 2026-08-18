@@ -17,18 +17,18 @@ export const M = {
   text: "#F3EAD9",
   muted: "rgba(250,243,230,0.56)",
   faint: "rgba(250,243,230,0.34)",
-  teal: "#673147",
+  teal: "#D9AFC1",
   amber: "#E0A83A",
   red: "#E06060",
   blue: "#5FA8E0",
 } as const;
 
 const CHIP: Record<string, { bg: string; fg: string }> = {
-  APPROVED: { bg: "rgba(103,49,71,0.16)", fg: M.teal },
-  PASSED: { bg: "rgba(103,49,71,0.16)", fg: M.teal },
-  CLEAR: { bg: "rgba(103,49,71,0.16)", fg: M.teal },
-  VERIFIED: { bg: "rgba(103,49,71,0.16)", fg: M.teal },
-  RECORDED: { bg: "rgba(103,49,71,0.16)", fg: M.teal },
+  APPROVED: { bg: "rgba(217,175,193,0.16)", fg: M.teal },
+  PASSED: { bg: "rgba(217,175,193,0.16)", fg: M.teal },
+  CLEAR: { bg: "rgba(217,175,193,0.16)", fg: M.teal },
+  VERIFIED: { bg: "rgba(217,175,193,0.16)", fg: M.teal },
+  RECORDED: { bg: "rgba(217,175,193,0.16)", fg: M.teal },
   "IN REVIEW": { bg: "rgba(95,168,224,0.16)", fg: M.blue },
   SCHEDULED: { bg: "rgba(95,168,224,0.16)", fg: M.blue },
   SIGNED: { bg: "rgba(95,168,224,0.16)", fg: M.blue },
@@ -62,7 +62,7 @@ export function TealGlow({ opacity = 0.5 }: { opacity?: number }) {
       className="pointer-events-none absolute inset-0"
       style={{
         background:
-          "radial-gradient(60% 55% at 50% 40%, rgba(103,49,71,0.30) 0%, rgba(103,49,71,0.07) 45%, transparent 72%)",
+          "radial-gradient(60% 55% at 50% 40%, rgba(217,175,193,0.30) 0%, rgba(217,175,193,0.08) 45%, transparent 72%)",
         opacity,
       }}
     />
@@ -348,7 +348,7 @@ export function CertificateMock() {
             border: `2px solid ${M.teal}`,
             color: M.teal,
             transform: "rotate(-8deg)",
-            background: "rgba(103,49,71,0.08)",
+            background: "rgba(217,175,193,0.10)",
           }}
         >
           <div className="text-[13px] font-bold uppercase tracking-[0.22em]">Approved</div>
