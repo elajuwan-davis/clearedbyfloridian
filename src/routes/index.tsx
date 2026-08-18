@@ -336,7 +336,7 @@ function Circle360() {
           className="mt-6 mx-auto max-w-3xl"
           style={{ fontSize: "clamp(2rem, 3.6vw, 2.875rem)", lineHeight: 1.08, letterSpacing: "-0.035em" }}
         >
-          <span style={{ color: GRAY, fontWeight: 600 }}>Every moving part. </span>
+          <span style={{ color: GREEN, fontWeight: 600 }}>Every moving part. </span>
           <span style={{ color: INK, fontWeight: 800 }}>From signed contract to CO.</span>
         </h2>
         <p className="mt-5 mx-auto max-w-2xl text-[16px] leading-relaxed" style={{ color: GRAY }}>
@@ -512,7 +512,7 @@ function Services() {
           style={{ fontSize: "clamp(2rem, 3.6vw, 2.875rem)", lineHeight: 1.08, letterSpacing: "-0.035em" }}
         >
           <span style={{ color: INK, fontWeight: 800 }}>One team runs it all. </span>
-          <span style={{ color: GRAY, fontWeight: 600 }}>So yours doesn&apos;t have to.</span>
+          <span style={{ color: GREEN, fontWeight: 600 }}>So yours doesn&apos;t have to.</span>
         </h2>
         <p className="mt-5 max-w-2xl text-[16px] leading-relaxed" style={{ color: GRAY }}>
           Most contractors spread this across 4–6 vendors, two admins, and a lot of phone calls. Cleard
@@ -531,7 +531,7 @@ function Services() {
                 className="inline-flex h-11 w-11 items-center justify-center"
                 style={{ background: M.bg0 }}
               >
-                <s.icon className="h-[19px] w-[19px]" style={{ color: PLUM_LT }} strokeWidth={1.5} />
+                <s.icon className="h-[19px] w-[19px]" style={{ color: GREEN_LT }} strokeWidth={1.5} />
               </span>
               <h3 className={`mt-5 font-bold ${i < 2 ? "text-[19px]" : "text-[17px]"}`} style={{ color: INK, letterSpacing: "-0.02em" }}>
                 {s.title}
@@ -758,7 +758,7 @@ function PortalShowcase() {
           style={{ fontSize: "clamp(2rem, 3.6vw, 2.875rem)", lineHeight: 1.08, letterSpacing: "-0.035em" }}
         >
           <span style={{ color: INK, fontWeight: 800 }}>One dashboard. </span>
-          <span style={{ color: GRAY, fontWeight: 600 }}>Every moving part.</span>
+          <span style={{ color: GREEN, fontWeight: 600 }}>Every moving part.</span>
         </h2>
 
         <div className="mt-9 flex flex-wrap gap-0" style={{ border: `1px solid ${BORDER}`, background: WHITE, width: "fit-content" }}>
@@ -973,7 +973,7 @@ function MobileApp() {
 
         <div>
           <h2 style={{ fontSize: "clamp(2rem, 3.6vw, 2.875rem)", lineHeight: 1.08, letterSpacing: "-0.035em" }}>
-            <span style={{ color: GRAY, fontWeight: 600 }}>Your whole permit office </span>
+            <span style={{ color: GREEN, fontWeight: 600 }}>Your whole permit office </span>
             <span style={{ color: INK, fontWeight: 800 }}>in your pocket.</span>
           </h2>
           <div className="mt-10 space-y-7">
@@ -1020,7 +1020,7 @@ function HowItWorks() {
           style={{ fontSize: "clamp(2rem, 3.6vw, 2.875rem)", lineHeight: 1.08, letterSpacing: "-0.035em" }}
         >
           <span style={{ color: INK, fontWeight: 800 }}>Six steps. </span>
-          <span style={{ color: GRAY, fontWeight: 600 }}>Contract to certificate.</span>
+          <span style={{ color: GREEN, fontWeight: 600 }}>Contract to certificate.</span>
         </h2>
 
         <div className="mt-14 grid gap-px sm:grid-cols-2 lg:grid-cols-6" style={{ background: BORDER, border: `1px solid ${BORDER}` }}>

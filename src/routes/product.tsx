@@ -206,7 +206,7 @@ function ProductPage() {
               to="/join"
               hash="request"
               className="inline-flex items-center px-5 py-3 text-[14px] no-underline"
-              style={{ background: TEAL, color: "#FAF3E6", fontWeight: 700 }}
+              style={{ background: GREEN, color: "#FAF3E6", fontWeight: 700 }}
             >
               Get early access
             </Link>
@@ -320,7 +320,7 @@ function ProductPage() {
                   <div className={`lg:col-span-4 ${i % 2 === 1 ? "lg:order-2" : ""}`}>
                     <div
                       className="inline-flex h-12 w-12 items-center justify-center text-[15px] font-bold tabular-nums"
-                      style={{ background: TEAL, color: M.bg0 }}
+                      style={{ background: GREEN, color: "#FAF3E6" }}
                     >
                       {s.n}
                     </div>
@@ -402,7 +402,7 @@ function ProductPage() {
               to="/join"
               hash="request"
               className="mt-8 inline-flex items-center px-6 py-3 text-[14px] no-underline"
-              style={{ background: TEAL, color: "#FAF3E6", fontWeight: 700 }}
+              style={{ background: GREEN, color: "#FAF3E6", fontWeight: 700 }}
             >
               Get early access
             </Link>
