@@ -272,7 +272,7 @@ function PermitsTable() {
         <span className="text-[13px] font-semibold" style={{ color: INK }}>
           Active permits
         </span>
-        <span className="px-2.5 py-1 text-[11px] font-bold" style={{ background: TEAL, color: INK }}>
+        <span className="px-2.5 py-1 text-[11px] font-bold" style={{ background: TEAL, color: WHITE }}>
           + New permit
         </span>
       </div>
@@ -1057,7 +1057,7 @@ function BottomCTA() {
             to="/join"
             hash="request"
             className="inline-flex items-center gap-2 px-6 py-3 text-[14px] font-bold no-underline"
-            style={{ background: TEAL, color: INK }}
+            style={{ background: TEAL, color: WHITE }}
           >
             Get started <ArrowRight className="h-4 w-4" />
           </Link>
