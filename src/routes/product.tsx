@@ -47,8 +47,8 @@ export const Route = createFileRoute("/product")({
   component: ProductPage,
 });
 
-const INK = "#2F4F4F";
-const GRAY = "#5F7373";
+const INK = "#2B1620";
+const GRAY = "#7A5C68";
 const LIGHT = "#9A8E7C";
 const TEAL = "#673147";
 const BORDER = "#E0D3BC";

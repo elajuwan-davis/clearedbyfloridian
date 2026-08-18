@@ -7,7 +7,7 @@ import mark2d from "@/assets/cleard-mark-2d.png.asset.json";
 
 const OAT = "#FAF3E6";
 const OAT_DEEP = "#F3EAD9";
-const SLATE = "#2F4F4F";
+const SLATE = "#2B1620";
 const PLUM = "#673147";
 const LAVENDER = "#E6E6FA";
 const SERIF = '"Fraunces", "Iowan Old Style", Georgia, serif';
