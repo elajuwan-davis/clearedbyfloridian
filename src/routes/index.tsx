@@ -1058,7 +1058,7 @@ function BottomCTA() {
             to="/join"
             hash="request"
             className="inline-flex items-center gap-2 px-6 py-3 text-[14px] font-bold no-underline"
-            style={{ background: TEAL, color: WHITE }}
+            style={{ background: PLUM_LT, color: INK }}
           >
             Get started <ArrowRight className="h-4 w-4" />
           </Link>

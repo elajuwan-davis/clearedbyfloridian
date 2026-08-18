@@ -232,7 +232,7 @@ export function ClearedHero() {
               className="absolute bottom-5 left-6 text-[10px] uppercase"
               style={{ letterSpacing: "0.28em", color: SLATE }}
             >
-              Cleard · est. 1998 lineage
+              Cleard · private provider · by invitation
             </div>
           </div>
         </div>
