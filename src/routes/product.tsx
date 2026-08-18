@@ -206,7 +206,7 @@ function ProductPage() {
               to="/join"
               hash="request"
               className="inline-flex items-center px-5 py-3 text-[14px] no-underline"
-              style={{ background: TEAL, color: "#FAF3E6", fontWeight: 700 }}
+              style={{ background: GREEN, color: "#FAF3E6", fontWeight: 700 }}
             >
               Get early access
             </Link>
@@ -402,7 +402,7 @@ function ProductPage() {
               to="/join"
               hash="request"
               className="mt-8 inline-flex items-center px-6 py-3 text-[14px] no-underline"
-              style={{ background: TEAL, color: "#FAF3E6", fontWeight: 700 }}
+              style={{ background: GREEN, color: "#FAF3E6", fontWeight: 700 }}
             >
               Get early access
             </Link>
