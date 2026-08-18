@@ -1,6 +1,7 @@
 import { useState, type ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
 import { Menu, X, ArrowRight } from "lucide-react";
+import mark2d from "@/assets/cleard-mark-2d.png.asset.json";
 /** Flat nav links — no dropdowns anywhere on the marketing site. */
 const NAV_LINKS: Array<{ to: string; label: string }> = [
   { to: "/product", label: "Product" },
@@ -77,7 +78,7 @@ export function MarketingNav() {
             to="/join"
             hash="request"
             className="inline-flex items-center px-4 py-2 text-[13.5px] no-underline"
-            style={{ background: TEAL, color: INK, fontWeight: 700, whiteSpace: "nowrap" }}
+            style={{ background: TEAL, color: OAT, fontWeight: 600, whiteSpace: "nowrap" }}
           >
             Get early access
           </Link>
@@ -114,7 +115,7 @@ export function MarketingNav() {
               hash="request"
               onClick={() => setOpen(false)}
               className="inline-flex w-full items-center justify-center px-4 py-2.5 text-sm no-underline"
-              style={{ color: INK, background: TEAL, fontWeight: 700 }}
+              style={{ color: OAT, background: TEAL, fontWeight: 600 }}
             >
               Get early access
             </Link>
@@ -135,8 +136,8 @@ function MarketingFooter() {
           <span
             className="text-[18px] tracking-[-0.03em]"
             style={{
-              fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif",
-              fontWeight: 700,
+              fontFamily: SERIF,
+              fontWeight: 600,
               color: "#FAF3E6",
             }}
           >
@@ -188,8 +189,8 @@ export function PageHeader({
         <h1
           className="mt-6 md-in md-in-2 max-w-4xl"
           style={{
-            fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif",
-            fontWeight: 800,
+            fontFamily: SERIF,
+            fontWeight: 500,
             fontSize: "clamp(2.25rem, 6vw, 4.5rem)",
             lineHeight: 1.05,
             letterSpacing: "-0.03em",
