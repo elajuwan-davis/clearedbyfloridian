@@ -10,6 +10,8 @@ const OAT_DEEP = "#F3EAD9";
 const SLATE = "#2B1620";
 const PLUM = "#673147";
 const LAVENDER = "#E6E6FA";
+const GREEN = "#2F4F4F"; /* minor accent only: eyebrows, secondary CTA, metadata */
+
 const SERIF = '"Fraunces", "Iowan Old Style", Georgia, serif';
 
 const NAV = [
