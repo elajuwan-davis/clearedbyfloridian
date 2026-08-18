@@ -1865,3 +1865,96 @@ tbody tr:hover, .p-table tbody tr:hover { background: #F5F4F0; }
 .cds-table .cds-cell-primary { color: #111110; font-weight: 500; }
 .cds-sortable { cursor: pointer; user-select: none; }
 .cds-sortable:hover { color: #111110; }
+
+/* =========================================================
+   NORDIC LUXURY — PUBLIC MARKETING SITE ONLY (final layer)
+   Scoped to .marketing-dark / .cl-home. The portal (.portal-ui)
+   is untouched. Presentation only.
+   ========================================================= */
+.marketing-dark,
+.cl-home {
+  --md-bg:        #FAF3E6;
+  --md-surface:   #F3EAD9;
+  --md-surface-2: #EDE0C9;
+  --md-border:    #E0D3BC;
+  --md-text:      #2F4F4F;
+  --md-muted:     #5F7373;
+  --md-brand:     #673147;
+  --md-green:     #4E6B5C;
+  --md-amber:     #9A7B2E;
+  --md-obsidian:  #2F4F4F;
+  --md-gold:      #673147;
+  --md-gold-soft: rgba(103, 49, 71, 0.10);
+  --md-lavender:  #E6E6FA;
+  background-color: #FAF3E6;
+  color: #2F4F4F;
+}
+
+.marketing-dark h1, .marketing-dark h2, .marketing-dark h3,
+.marketing-dark .md-serif,
+.cl-home h1, .cl-home h2, .cl-home h3 {
+  font-family: "Fraunces", "Iowan Old Style", Georgia, serif !important;
+  font-weight: 500 !important;
+  letter-spacing: -0.025em !important;
+  font-variation-settings: "SOFT" 0, "WONK" 1;
+  color: #673147;
+}
+.marketing-dark .md-serif em,
+.marketing-dark h2 em, .cl-home h2 em {
+  font-style: italic;
+  color: #2F4F4F;
+}
+.marketing-dark .md-eyebrow,
+.cl-home .cl-eyebrow {
+  color: #673147 !important;
+  letter-spacing: 0.3em !important;
+  font-weight: 600 !important;
+}
+
+/* Generous, Scandinavian corners: soft, never pill-shaped */
+.marketing-dark, .marketing-dark *, .marketing-dark *::before, .marketing-dark *::after,
+.cl-home, .cl-home *, .cl-home *::before, .cl-home *::after { border-radius: 0 !important; }
+.cl-home .cl-dot, .marketing-dark .cl-dot { border-radius: 999px !important; }
+
+.marketing-dark .md-btn-primary,
+.marketing-dark .md-btn-gold {
+  background: #673147 !important;
+  border-color: #673147 !important;
+  color: #FAF3E6 !important;
+  font-weight: 600 !important;
+}
+.marketing-dark .md-btn-primary:hover,
+.marketing-dark .md-btn-gold:hover {
+  background: #52243A !important;
+  border-color: #52243A !important;
+  color: #FAF3E6 !important;
+}
+.marketing-dark .md-btn-ghost,
+.marketing-dark .md-btn-gold-outline {
+  background: transparent !important;
+  color: #2F4F4F !important;
+  border: 1px solid #2F4F4F !important;
+}
+.marketing-dark .md-btn-ghost:hover,
+.marketing-dark .md-btn-gold-outline:hover {
+  background: #E6E6FA !important;
+  color: #2F4F4F !important;
+}
+.marketing-dark .md-card { background: #F3EAD9 !important; border-color: #E0D3BC !important; }
+.marketing-dark .md-card:hover { background: #E6E6FA !important; }
+.marketing-dark .md-section-alt { background: #F3EAD9 !important; }
+.marketing-dark .md-section-dark { background: #2F4F4F !important; }
+.marketing-dark .md-section-dark .md-serif,
+.marketing-dark .md-section-dark h1,
+.marketing-dark .md-section-dark h2,
+.marketing-dark .md-section-dark h3 { color: #FAF3E6 !important; }
+.marketing-dark .md-hairline { border-color: #E0D3BC !important; }
+.marketing-dark .md-grain {
+  background-image:
+    radial-gradient(circle at 12% 8%, rgba(103,49,71,0.06) 0%, transparent 55%),
+    radial-gradient(circle at 88% 92%, rgba(230,230,250,0.55) 0%, transparent 60%);
+}
+.marketing-dark input:focus,
+.marketing-dark textarea:focus,
+.marketing-dark select:focus { border-color: #673147 !important; }
+.marketing-dark ::selection, .cl-home ::selection { background: #E6E6FA; color: #2F4F4F; }
