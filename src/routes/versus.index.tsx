@@ -73,7 +73,7 @@ function VersusHub() {
             >
               <div
                 className="h-11 w-11 rounded-md border md-hairline flex items-center justify-center text-lg font-semibold"
-                style={{ color: "var(--md-muted, #5F7373)" }}
+                style={{ color: "var(--md-muted, #7A5C68)" }}
               >
                 {c.initial}
               </div>

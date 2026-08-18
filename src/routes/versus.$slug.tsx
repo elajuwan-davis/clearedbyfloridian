@@ -120,7 +120,7 @@ function VersusDetail() {
                 </th>
                 <th
                   className="px-5 py-4 text-[12px] uppercase tracking-[0.16em] text-center md-muted"
-                  style={{ background: "color-mix(in oklab, #5F7373 12%, transparent)" }}
+                  style={{ background: "color-mix(in oklab, #7A5C68 12%, transparent)" }}
                 >
                   {c.name}
                 </th>
@@ -132,7 +132,7 @@ function VersusDetail() {
                   key={r.feature}
                   style={{
                     background:
-                      i % 2 === 1 ? "color-mix(in oklab, #5F7373 6%, transparent)" : "transparent",
+                      i % 2 === 1 ? "color-mix(in oklab, #7A5C68 6%, transparent)" : "transparent",
                   }}
                 >
                   <td className="px-5 py-3.5 text-sm" style={{ color: "var(--md-text)" }}>

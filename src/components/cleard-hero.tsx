@@ -7,7 +7,7 @@ import mark2d from "@/assets/cleard-mark-2d.png.asset.json";
 
 const OAT = "#FAF3E6";
 const OAT_DEEP = "#F3EAD9";
-const SLATE = "#2F4F4F";
+const SLATE = "#2B1620";
 const PLUM = "#673147";
 const LAVENDER = "#E6E6FA";
 const SERIF = '"Fraunces", "Iowan Old Style", Georgia, serif';
@@ -137,15 +137,15 @@ export function ClearedHero() {
         aria-hidden
         className="pointer-events-none absolute inset-0"
         style={{
-          backgroundImage: `linear-gradient(to right, rgba(47,79,79,0.06) 1px, transparent 1px),
-            linear-gradient(to bottom, rgba(47,79,79,0.06) 1px, transparent 1px)`,
+          backgroundImage: `linear-gradient(to right, rgba(43,22,32,0.06) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(43,22,32,0.06) 1px, transparent 1px)`,
           backgroundSize: "88px 88px",
         }}
       />
       <div
         aria-hidden
         className="pointer-events-none absolute inset-y-0 left-1/2 hidden w-px lg:block"
-        style={{ background: "rgba(47,79,79,0.10)" }}
+        style={{ background: "rgba(43,22,32,0.10)" }}
       />
 
       <div className="relative mx-auto grid max-w-7xl items-center gap-16 px-5 pb-24 pt-36 lg:grid-cols-[1.05fr_0.95fr] lg:gap-10 lg:px-10 lg:pb-32 lg:pt-44">
@@ -221,7 +221,7 @@ export function ClearedHero() {
             <div
               aria-hidden
               className="pointer-events-none absolute inset-6"
-              style={{ border: "1px solid rgba(47,79,79,0.14)" }}
+              style={{ border: "1px solid rgba(43,22,32,0.14)" }}
             />
             <img
               src={mark3d.url}

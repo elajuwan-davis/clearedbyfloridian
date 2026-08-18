@@ -1877,17 +1877,17 @@ tbody tr:hover, .p-table tbody tr:hover { background: #F5F4F0; }
   --md-surface:   #F3EAD9;
   --md-surface-2: #EDE0C9;
   --md-border:    #E0D3BC;
-  --md-text:      #2F4F4F;
-  --md-muted:     #5F7373;
+  --md-text:      #2B1620;
+  --md-muted:     #7A5C68;
   --md-brand:     #673147;
   --md-green:     #4E6B5C;
   --md-amber:     #9A7B2E;
-  --md-obsidian:  #2F4F4F;
+  --md-obsidian:  #2B1620;
   --md-gold:      #673147;
   --md-gold-soft: rgba(103, 49, 71, 0.10);
   --md-lavender:  #E6E6FA;
   background-color: #FAF3E6;
-  color: #2F4F4F;
+  color: #2B1620;
 }
 
 .marketing-dark h1, .marketing-dark h2, .marketing-dark h3,
@@ -1902,7 +1902,7 @@ tbody tr:hover, .p-table tbody tr:hover { background: #F5F4F0; }
 .marketing-dark .md-serif em,
 .marketing-dark h2 em, .cl-home h2 em {
   font-style: italic;
-  color: #2F4F4F;
+  color: #2B1620;
 }
 .marketing-dark .md-eyebrow,
 .cl-home .cl-eyebrow {
@@ -1932,18 +1932,18 @@ tbody tr:hover, .p-table tbody tr:hover { background: #F5F4F0; }
 .marketing-dark .md-btn-ghost,
 .marketing-dark .md-btn-gold-outline {
   background: transparent !important;
-  color: #2F4F4F !important;
-  border: 1px solid #2F4F4F !important;
+  color: #2B1620 !important;
+  border: 1px solid #2B1620 !important;
 }
 .marketing-dark .md-btn-ghost:hover,
 .marketing-dark .md-btn-gold-outline:hover {
   background: #E6E6FA !important;
-  color: #2F4F4F !important;
+  color: #2B1620 !important;
 }
 .marketing-dark .md-card { background: #F3EAD9 !important; border-color: #E0D3BC !important; }
 .marketing-dark .md-card:hover { background: #E6E6FA !important; }
 .marketing-dark .md-section-alt { background: #F3EAD9 !important; }
-.marketing-dark .md-section-dark { background: #2F4F4F !important; }
+.marketing-dark .md-section-dark { background: #2B1620 !important; }
 .marketing-dark .md-section-dark .md-serif,
 .marketing-dark .md-section-dark h1,
 .marketing-dark .md-section-dark h2,
@@ -1957,4 +1957,4 @@ tbody tr:hover, .p-table tbody tr:hover { background: #F5F4F0; }
 .marketing-dark input:focus,
 .marketing-dark textarea:focus,
 .marketing-dark select:focus { border-color: #673147 !important; }
-.marketing-dark ::selection, .cl-home ::selection { background: #E6E6FA; color: #2F4F4F; }
+.marketing-dark ::selection, .cl-home ::selection { background: #E6E6FA; color: #2B1620; }

@@ -9,9 +9,9 @@ import { Check, Minus, Sparkles } from "lucide-react";
 /* ------------------------------- tokens ---------------------------------- */
 
 export const M = {
-  bg0: "#1E3333",
-  bg1: "#26403F",
-  bg2: "#26403F",
+  bg0: "#241017",
+  bg1: "#331B26",
+  bg2: "#331B26",
   line: "rgba(250,243,230,0.12)",
   line2: "rgba(250,243,230,0.07)",
   text: "#F3EAD9",
