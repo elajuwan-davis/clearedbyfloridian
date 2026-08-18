@@ -320,7 +320,7 @@ function ProductPage() {
                   <div className={`lg:col-span-4 ${i % 2 === 1 ? "lg:order-2" : ""}`}>
                     <div
                       className="inline-flex h-12 w-12 items-center justify-center text-[15px] font-bold tabular-nums"
-                      style={{ background: TEAL, color: M.bg0 }}
+                      style={{ background: GREEN, color: "#FAF3E6" }}
                     >
                       {s.n}
                     </div>
