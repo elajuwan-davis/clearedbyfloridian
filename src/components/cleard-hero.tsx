@@ -191,7 +191,7 @@ export function ClearedHero() {
               to="/join"
               hash="request"
               className="inline-flex items-center px-7 py-3.5 text-[13.5px] no-underline"
-              style={{ background: PLUM, color: OAT, fontWeight: 600 }}
+              style={{ background: GREEN, color: OAT, fontWeight: 600 }}
             >
               Get early access
             </Link>
