@@ -1,17 +1,16 @@
 import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
+import mark3d from "@/assets/cleard-3d-mark.png.asset.json";
+import mark2d from "@/assets/cleard-mark-2d.png.asset.json";
 
-/* ------------------------------- BRAND TOKENS ------------------------------ */
+/* ---------------------- NORDIC LUXURY BRAND TOKENS ---------------------- */
 
-const NAVY = "#0a1a30";
-const BLUE = "#1e6fd9";
-const CYAN = "#7ec3ec";
-const SANS = "-apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif";
-const ASSET_ORIGIN = "https://clearedbyfloridian.lovable.app";
-const WORDMARK_URL = `${ASSET_ORIGIN}/__l5e/assets-v1/c3b48b43-4af8-4625-b17e-60075a710155/cleard-wordmark.png`;
-const C_ICON_URL = `${ASSET_ORIGIN}/__l5e/assets-v1/201b1eb0-eafb-4428-9d98-023eda7c09f4/cleard-c-icon.png`;
-
-/* ---------------------------------- NAV ---------------------------------- */
+const OAT = "#FAF3E6";
+const OAT_DEEP = "#F3EAD9";
+const SLATE = "#2F4F4F";
+const PLUM = "#673147";
+const LAVENDER = "#E6E6FA";
+const SERIF = '"Fraunces", "Iowan Old Style", Georgia, serif';
 
 const NAV = [
   { to: "/product", label: "Product" },
@@ -21,78 +20,81 @@ const NAV = [
   { to: "/about", label: "About" },
 ] as const;
 
+/* ---------------------------------- NAV ---------------------------------- */
+
 function HeroNav() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 24);
+    const onScroll = () => setScrolled(window.scrollY > 16);
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
   return (
     <header
       className="fixed inset-x-0 top-0 z-50 transition-all duration-300"
       style={{
-        background: scrolled || open ? "rgba(10,26,48,0.86)" : "transparent",
-        backdropFilter: scrolled || open ? "blur(14px)" : "none",
-        borderBottom:
-          scrolled || open ? "1px solid rgba(126,195,236,0.16)" : "1px solid transparent",
+        background: scrolled || open ? "rgba(250,243,230,0.92)" : "transparent",
+        backdropFilter: scrolled || open ? "blur(10px)" : "none",
+        borderBottom: `1px solid ${scrolled || open ? "#E0D3BC" : "transparent"}`,
       }}
     >
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-5 lg:px-8">
-        <Link to="/" className="flex items-center" style={{ flexShrink: 0 }}>
-          <img
-            src={C_ICON_URL}
-            alt="Cleard"
-            className="h-9 w-9 object-contain"
-            style={{ filter: "drop-shadow(0 0 10px rgba(30,111,217,0.35))" }}
-          />
+      <div className="mx-auto flex h-[68px] max-w-7xl items-center justify-between gap-4 px-5 lg:px-10">
+        <Link to="/" className="flex items-center gap-2.5 no-underline" style={{ flexShrink: 0 }}>
+          <img src={mark2d.url} alt="Cleard" className="h-8 w-8 object-contain" />
+          <span
+            style={{
+              fontFamily: SERIF,
+              fontWeight: 600,
+              fontSize: 21,
+              letterSpacing: "-0.02em",
+              color: PLUM,
+            }}
+          >
+            Cleard
+          </span>
         </Link>
 
         <nav
-          className="hidden items-center gap-7 md:flex"
+          className="hidden items-center gap-8 md:flex"
           style={{ whiteSpace: "nowrap", flexWrap: "nowrap" }}
         >
           {NAV.map((l) => (
             <Link
               key={l.to}
               to={l.to}
-              className="text-[13.5px] no-underline transition-opacity hover:opacity-100"
-              style={{ color: "rgba(255,255,255,0.78)", whiteSpace: "nowrap" }}
+              className="text-[13.5px] no-underline transition-colors"
+              style={{ color: SLATE, whiteSpace: "nowrap" }}
             >
               {l.label}
             </Link>
           ))}
         </nav>
 
-        <div className="flex items-center gap-3" style={{ flexShrink: 0 }}>
+        <div className="flex items-center gap-4" style={{ flexShrink: 0 }}>
           <Link
             to="/login"
             className="hidden text-[13.5px] no-underline sm:inline"
-            style={{ color: "rgba(255,255,255,0.78)", whiteSpace: "nowrap" }}
+            style={{ color: SLATE, whiteSpace: "nowrap" }}
           >
             Sign in
           </Link>
           <Link
             to="/join"
             hash="request"
-            className="inline-flex items-center px-4 py-2 text-[13px] font-semibold no-underline"
-            style={{
-              background: `linear-gradient(135deg, ${BLUE}, #2f8ef0)`,
-              color: "#fff",
-              boxShadow: `0 0 24px rgba(30,111,217,0.45)`,
-              whiteSpace: "nowrap",
-            }}
+            className="inline-flex items-center px-5 py-2.5 text-[13px] no-underline"
+            style={{ background: PLUM, color: OAT, fontWeight: 600, whiteSpace: "nowrap" }}
           >
-            Get Early Access
+            Get early access
           </Link>
           <button
             type="button"
             className="-mr-1 p-2 text-[13px] md:hidden"
             aria-label="Menu"
             onClick={() => setOpen((s) => !s)}
-            style={{ color: "rgba(255,255,255,0.8)" }}
+            style={{ color: SLATE }}
           >
             {open ? "Close" : "Menu"}
           </button>
@@ -100,15 +102,15 @@ function HeroNav() {
       </div>
 
       {open && (
-        <div className="md:hidden" style={{ borderTop: "1px solid rgba(126,195,236,0.16)" }}>
-          <div className="space-y-3 px-5 py-5">
+        <div className="md:hidden" style={{ background: OAT, borderTop: `1px solid #E0D3BC` }}>
+          <div className="space-y-4 px-5 py-6">
             {[...NAV, { to: "/login", label: "Sign in" } as const].map((l) => (
               <Link
                 key={l.label}
                 to={l.to}
                 onClick={() => setOpen(false)}
                 className="block text-[15px] no-underline"
-                style={{ color: "rgba(255,255,255,0.85)" }}
+                style={{ color: SLATE }}
               >
                 {l.label}
               </Link>
@@ -125,115 +127,113 @@ function HeroNav() {
 export function ClearedHero() {
   return (
     <section
-      className="relative isolate flex min-h-[92vh] items-center overflow-hidden"
-      style={{ background: NAVY, color: "#fff", fontFamily: SANS }}
+      className="relative isolate overflow-hidden"
+      style={{ background: OAT, color: SLATE }}
     >
       <HeroNav />
 
-      {/* tint + vignette so the card and copy stay legible */}
+      {/* fine slate line-art: quiet drafting grid, no glow, no gradients */}
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0"
         style={{
-          background:
-            "linear-gradient(180deg, rgba(10,26,48,0.58) 0%, rgba(10,26,48,0.42) 45%, rgba(10,26,48,0.80) 100%)",
+          backgroundImage: `linear-gradient(to right, rgba(47,79,79,0.06) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(47,79,79,0.06) 1px, transparent 1px)`,
+          backgroundSize: "88px 88px",
         }}
       />
-      {/* blueprint graph-paper grid across the whole viewport */}
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0"
-        style={{
-          backgroundImage: `linear-gradient(to right, rgba(126,195,236,0.10) 1px, transparent 1px),
-            linear-gradient(to bottom, rgba(126,195,236,0.10) 1px, transparent 1px),
-            linear-gradient(to right, rgba(126,195,236,0.05) 1px, transparent 1px),
-            linear-gradient(to bottom, rgba(126,195,236,0.05) 1px, transparent 1px)`,
-          backgroundSize: "120px 120px, 120px 120px, 24px 24px, 24px 24px",
-        }}
+        className="pointer-events-none absolute inset-y-0 left-1/2 hidden w-px lg:block"
+        style={{ background: "rgba(47,79,79,0.10)" }}
       />
 
-      {/* continuously re-drawing architectural line work across the full page */}
-      <svg
-        aria-hidden
-        className="pointer-events-none absolute inset-0 h-full w-full opacity-80"
-        viewBox="0 0 1600 900"
-        preserveAspectRatio="none"
-        fill="none"
-        stroke={CYAN}
-        strokeWidth={1.25}
-      >
-        {[
-          { d: "M-90 420 L270 155 L630 420 V815 H-90 Z M-25 420 L270 205 L565 420 M40 815 V520 H500 V815 M120 520 V815 M420 520 V815 M210 610 H330 V815", delay: 0.2 },
-          { d: "M485 405 L800 175 L1115 405 V815 H485 Z M555 405 L800 225 L1045 405 M565 815 V510 H1035 V815 M655 510 V815 M945 510 V815 M745 590 H855 V815", delay: 1.2 },
-          { d: "M970 420 L1330 155 L1690 420 V815 H970 Z M1035 420 L1330 205 L1625 420 M1100 815 V520 H1560 V815 M1180 520 V815 M1480 520 V815 M1270 610 H1390 V815", delay: 2.2 },
-        ].map((p) => (
-
-          <path
-            key={p.d}
-            d={p.d}
-            pathLength={1}
-            vectorEffect="non-scaling-stroke"
-            className="hero-blueprint-line"
-            style={{ animationDelay: `${p.delay}s` }}
-          />
-        ))}
-      </svg>
-
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-x-0 bottom-0 h-28"
-        style={{ background: `linear-gradient(to bottom, transparent, ${NAVY})` }}
-      />
-
-      {/* seamless translucent card */}
-      <div className="relative mx-auto w-full max-w-7xl px-5 pb-20 pt-28 lg:px-8 lg:pb-28 lg:pt-32">
-        <div
-          className="hero-glass mx-auto w-full max-w-3xl px-6 py-12 text-center sm:px-12 sm:py-14"
-          style={{
-            background: "rgba(10,26,48,0.14)",
-            backdropFilter: "blur(9px) saturate(125%)",
-            border: "none",
-            boxShadow: "0 24px 80px rgba(0,0,0,0.12)",
-          }}
-        >
-          <img
-            src={WORDMARK_URL}
-            alt="Cleard"
-            className="mx-auto block h-auto w-full max-w-[400px] object-contain sm:max-w-[460px]"
-          />
-          <p
-            className="mt-7 text-[12px] font-semibold uppercase sm:text-[14px]"
-            style={{ color: CYAN, letterSpacing: "0.26em" }}
+      <div className="relative mx-auto grid max-w-7xl items-center gap-16 px-5 pb-24 pt-36 lg:grid-cols-[1.05fr_0.95fr] lg:gap-10 lg:px-10 lg:pb-32 lg:pt-44">
+        {/* copy */}
+        <div>
+          <div
+            className="text-[10.5px] uppercase"
+            style={{ letterSpacing: "0.32em", color: PLUM, fontWeight: 600 }}
           >
-            Run projects. Not paperwork.
-          </p>
-          <p
-            className="mx-auto mt-5 max-w-2xl text-[15.5px] leading-relaxed sm:text-[16.5px]"
-            style={{ color: "rgba(255,255,255,0.86)" }}
+            Private provider permitting
+          </div>
+
+          <h1
+            className="mt-7 max-w-[15ch]"
+            style={{
+              fontFamily: SERIF,
+              fontWeight: 500,
+              fontSize: "clamp(2.9rem, 6.4vw, 5.1rem)",
+              lineHeight: 0.98,
+              letterSpacing: "-0.03em",
+              color: PLUM,
+              fontVariationSettings: '"SOFT" 0, "WONK" 1',
+            }}
           >
-            Permitting, private plan review, inspections, licensing, insurance, and lien rights.
-            One platform, every jurisdiction along the coast.
+            Run projects.
+            <br />
+            <span style={{ fontStyle: "italic", color: SLATE }}>Not paperwork.</span>
+          </h1>
+
+          <p
+            className="mt-8 max-w-xl text-[16px] leading-[1.75]"
+            style={{ color: SLATE }}
+          >
+            Permitting administration, private plan review and inspections, license
+            management, insurance compliance and lien rights. One back office, every
+            jurisdiction you build in.
           </p>
-          <div className="mt-9 flex flex-wrap justify-center gap-3">
+
+          <div className="mt-10 flex flex-wrap items-center gap-4">
             <Link
               to="/join"
               hash="request"
-              className="hero-pill inline-flex items-center px-7 py-3 text-[14px] font-semibold no-underline"
-              style={{
-                background: `linear-gradient(135deg, ${BLUE}, #3b9bf5)`,
-                color: "#fff",
-                boxShadow: "0 0 34px rgba(30,111,217,0.5)",
-              }}
+              className="inline-flex items-center px-7 py-3.5 text-[13.5px] no-underline"
+              style={{ background: PLUM, color: OAT, fontWeight: 600 }}
             >
-              Get Early Access
+              Get early access
             </Link>
             <Link
               to="/contact"
-              className="hero-pill inline-flex items-center px-7 py-3 text-[14px] font-semibold no-underline"
-              style={{ border: `1px solid rgba(126,195,236,0.45)`, color: "#fff" }}
+              className="inline-flex items-center px-7 py-3.5 text-[13.5px] no-underline"
+              style={{ border: `1px solid ${SLATE}`, color: SLATE, fontWeight: 600 }}
             >
-              See A Live Demo
+              See a live demo
             </Link>
+          </div>
+
+          <div
+            className="mt-12 flex flex-wrap gap-x-10 gap-y-4 pt-8 text-[11px] uppercase"
+            style={{ borderTop: "1px solid #E0D3BC", letterSpacing: "0.16em", color: SLATE }}
+          >
+            <span>2-day plan review</span>
+            <span>Same-day inspections</span>
+            <span>By invitation</span>
+          </div>
+        </div>
+
+        {/* 3D mark, set on a lavender plate like a pressed seal */}
+        <div className="relative flex justify-center lg:justify-end">
+          <div
+            className="relative flex aspect-square w-full max-w-[430px] items-center justify-center"
+            style={{ background: LAVENDER, border: `1px solid ${OAT_DEEP}` }}
+          >
+            <div
+              aria-hidden
+              className="pointer-events-none absolute inset-6"
+              style={{ border: "1px solid rgba(47,79,79,0.14)" }}
+            />
+            <img
+              src={mark3d.url}
+              alt="Cleard mark"
+              className="relative w-[62%] object-contain"
+            />
+            <div
+              className="absolute bottom-5 left-6 text-[10px] uppercase"
+              style={{ letterSpacing: "0.28em", color: SLATE }}
+            >
+              Cleard · est. 1998 lineage
+            </div>
           </div>
         </div>
       </div>
