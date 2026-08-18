@@ -144,7 +144,7 @@ function PricingPage() {
                   {p.popular && (
                     <span
                       className="px-2 py-1 text-[10px] uppercase tracking-[0.16em]"
-                      style={{ background: TEAL, color: INK, fontWeight: 700 }}
+                      style={{ background: TEAL, color: "#FAF3E6", fontWeight: 700 }}
                     >
                       Most popular
                     </span>
@@ -187,7 +187,7 @@ function PricingPage() {
                   className="mt-6 inline-flex items-center justify-center px-5 py-3 text-[14px] no-underline"
                   style={
                     p.popular
-                      ? { background: TEAL, color: INK, fontWeight: 700 }
+                      ? { background: TEAL, color: "#FAF3E6", fontWeight: 700 }
                       : { background: "#FAF3E6", color: INK, border: `1px solid ${BORDER}`, fontWeight: 600 }
                   }
                 >
