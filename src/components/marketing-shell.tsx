@@ -14,7 +14,9 @@ const NEAR_BLACK = "#FAF3E6";
 const BODY_GRAY = "#5F7373";
 const INK = "#2F4F4F";
 const TEAL = "#673147";
+const OAT = "#FAF3E6";
 const BORDER = "#E0D3BC";
+const SERIF = '"Fraunces", "Iowan Old Style", Georgia, serif';
 
 /** The single marketing nav — identical on every public page. */
 export function MarketingNav() {
