@@ -30,6 +30,7 @@ export const Route = createFileRoute("/compare")({
 const INK = "#2B1620";
 const GRAY = "#7A5C68";
 const LIGHT = "#9A8E7C";
+const GREEN = "#2F4F4F"; /* minor accent only */
 const TEAL = "#673147";
 const BORDER = "#E0D3BC";
 const OFF = "#F3EAD9";
@@ -118,7 +119,7 @@ function ComparePage() {
       <div style={{ background: "#FAF3E6", color: INK }}>
         {/* Hero */}
         <section className="mx-auto max-w-7xl px-5 lg:px-8 pt-20 pb-10 md:pt-28">
-          <div className="text-[10.5px] uppercase tracking-[0.22em]" style={{ color: LIGHT }}>
+          <div className="text-[10.5px] uppercase tracking-[0.22em]" style={{ color: GREEN }}>
             Compare
           </div>
           <h1
@@ -244,7 +245,7 @@ function ComparePage() {
         {/* Why Cleard wins */}
         <section style={{ background: M.bg0 }}>
           <div className="mx-auto max-w-7xl px-5 lg:px-8 py-24 md:py-32">
-            <div className="text-[10.5px] font-bold uppercase tracking-[0.2em]" style={{ color: TEAL }}>
+            <div className="text-[10.5px] font-bold uppercase tracking-[0.2em]" style={{ color: GREEN }}>
               Why Cleard wins
             </div>
             <h2

@@ -10,6 +10,8 @@ const OAT_DEEP = "#F3EAD9";
 const SLATE = "#2B1620";
 const PLUM = "#673147";
 const LAVENDER = "#E6E6FA";
+const GREEN = "#2F4F4F"; /* minor accent only: eyebrows, secondary CTA, metadata */
+
 const SERIF = '"Fraunces", "Iowan Old Style", Georgia, serif';
 
 const NAV = [
@@ -153,7 +155,7 @@ export function ClearedHero() {
         <div>
           <div
             className="text-[10.5px] uppercase"
-            style={{ letterSpacing: "0.32em", color: PLUM, fontWeight: 600 }}
+            style={{ letterSpacing: "0.32em", color: GREEN, fontWeight: 600 }}
           >
             Private provider permitting
           </div>
@@ -196,7 +198,7 @@ export function ClearedHero() {
             <Link
               to="/contact"
               className="inline-flex items-center px-7 py-3.5 text-[13.5px] no-underline"
-              style={{ border: `1px solid ${SLATE}`, color: SLATE, fontWeight: 600 }}
+              style={{ border: `1px solid ${GREEN}`, color: GREEN, fontWeight: 600 }}
             >
               See a live demo
             </Link>
@@ -204,7 +206,7 @@ export function ClearedHero() {
 
           <div
             className="mt-12 flex flex-wrap gap-x-10 gap-y-4 pt-8 text-[11px] uppercase"
-            style={{ borderTop: "1px solid #E0D3BC", letterSpacing: "0.16em", color: SLATE }}
+            style={{ borderTop: "1px solid #E0D3BC", letterSpacing: "0.16em", color: GREEN }}
           >
             <span>2-day plan review</span>
             <span>Same-day inspections</span>
