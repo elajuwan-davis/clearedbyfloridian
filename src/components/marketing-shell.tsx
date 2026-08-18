@@ -1,6 +1,7 @@
 import { useState, type ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
 import { Menu, X, ArrowRight } from "lucide-react";
+import mark2d from "@/assets/cleard-mark-2d.png.asset.json";
 /** Flat nav links — no dropdowns anywhere on the marketing site. */
 const NAV_LINKS: Array<{ to: string; label: string }> = [
   { to: "/product", label: "Product" },
@@ -10,11 +11,13 @@ const NAV_LINKS: Array<{ to: string; label: string }> = [
   { to: "/about", label: "About" },
 ];
 
-const NEAR_BLACK = "#FFFFFF";
-const BODY_GRAY = "#6B6860";
-const INK = "#111110";
-const TEAL = "#00B4A8";
-const BORDER = "#E4E2DE";
+const NEAR_BLACK = "#FAF3E6";
+const BODY_GRAY = "#5F7373";
+const INK = "#2F4F4F";
+const TEAL = "#673147";
+const OAT = "#FAF3E6";
+const BORDER = "#E0D3BC";
+const SERIF = '"Fraunces", "Iowan Old Style", Georgia, serif';
 
 /** The single marketing nav — identical on every public page. */
 export function MarketingNav() {
@@ -28,17 +31,22 @@ export function MarketingNav() {
         <div className="flex min-w-0 items-center gap-6">
           <Link
             to="/"
-            className="no-underline"
-            style={{
-              color: INK,
-              fontWeight: 700,
-              fontSize: 20,
-              letterSpacing: "-0.03em",
-              whiteSpace: "nowrap",
-              flexShrink: 0,
-            }}
+            className="flex items-center gap-2.5 no-underline"
+            style={{ flexShrink: 0 }}
           >
-            Cleard
+            <img src={mark2d.url} alt="Cleard" className="h-7 w-7 object-contain" />
+            <span
+              style={{
+                color: TEAL,
+                fontFamily: SERIF,
+                fontWeight: 600,
+                fontSize: 20,
+                letterSpacing: "-0.02em",
+                whiteSpace: "nowrap",
+              }}
+            >
+              Cleard
+            </span>
           </Link>
 
           <nav
@@ -70,7 +78,7 @@ export function MarketingNav() {
             to="/join"
             hash="request"
             className="inline-flex items-center px-4 py-2 text-[13.5px] no-underline"
-            style={{ background: TEAL, color: INK, fontWeight: 700, whiteSpace: "nowrap" }}
+            style={{ background: TEAL, color: OAT, fontWeight: 600, whiteSpace: "nowrap" }}
           >
             Get early access
           </Link>
@@ -107,7 +115,7 @@ export function MarketingNav() {
               hash="request"
               onClick={() => setOpen(false)}
               className="inline-flex w-full items-center justify-center px-4 py-2.5 text-sm no-underline"
-              style={{ color: INK, background: TEAL, fontWeight: 700 }}
+              style={{ color: OAT, background: TEAL, fontWeight: 600 }}
             >
               Get early access
             </Link>
@@ -128,9 +136,9 @@ function MarketingFooter() {
           <span
             className="text-[18px] tracking-[-0.03em]"
             style={{
-              fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif",
-              fontWeight: 700,
-              color: "#FFFFFF",
+              fontFamily: SERIF,
+              fontWeight: 600,
+              color: "#FAF3E6",
             }}
           >
             Cleard
@@ -181,8 +189,8 @@ export function PageHeader({
         <h1
           className="mt-6 md-in md-in-2 max-w-4xl"
           style={{
-            fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif",
-            fontWeight: 800,
+            fontFamily: SERIF,
+            fontWeight: 500,
             fontSize: "clamp(2.25rem, 6vw, 4.5rem)",
             lineHeight: 1.05,
             letterSpacing: "-0.03em",

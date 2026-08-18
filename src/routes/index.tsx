@@ -53,14 +53,15 @@ export const Route = createFileRoute("/")({
 
 /* ------------------------------ DESIGN TOKENS ----------------------------- */
 
-const WHITE = "#FFFFFF";
-const OFF = "#F5F4F0";
-const OFF2 = "#EEECEA";
-const INK = "#111110";
-const GRAY = "#6B6860";
-const LIGHT = "#9E9B96";
-const TEAL = "#00B4A8";
-const BORDER = "#E4E2DE";
+const WHITE = "#FAF3E6";
+const OFF = "#F3EAD9";
+const OFF2 = "#EDE0C9";
+const INK = "#2F4F4F";
+const GRAY = "#5F7373";
+const LIGHT = "#9A8E7C";
+const TEAL = "#673147";
+const PLUM_LT = "#D9AFC1"; /* accent legible on dark slate surfaces */
+const BORDER = "#E0D3BC";
 const SANS = "-apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif";
 
 /* --------------------------------- PAGE ---------------------------------- */
@@ -206,7 +207,7 @@ function statusStyle(status: string) {
     case "Verified":
     case "Passed":
     case "Clear":
-      return { background: "rgba(0,180,168,0.12)", color: "#00917F" };
+      return { background: "rgba(103,49,71,0.12)", color: "#52243A" };
     case "Corrections":
     case "Alert":
     case "Expired":
@@ -272,7 +273,7 @@ function PermitsTable() {
         <span className="text-[13px] font-semibold" style={{ color: INK }}>
           Active permits
         </span>
-        <span className="px-2.5 py-1 text-[11px] font-bold" style={{ background: TEAL, color: INK }}>
+        <span className="px-2.5 py-1 text-[11px] font-bold" style={{ background: TEAL, color: WHITE }}>
           + New permit
         </span>
       </div>
@@ -377,7 +378,7 @@ function Circle360() {
               <div className="text-[22px] font-bold" style={{ color: WHITE, letterSpacing: "-0.03em" }}>
                 Cleard
               </div>
-              <div className="mt-1 text-[10.5px] uppercase tracking-[0.16em]" style={{ color: TEAL }}>
+              <div className="mt-1 text-[10.5px] uppercase tracking-[0.16em]" style={{ color: PLUM_LT }}>
                 Back office
               </div>
             </div>
@@ -528,7 +529,7 @@ function Services() {
                 className="inline-flex h-11 w-11 items-center justify-center"
                 style={{ background: M.bg0 }}
               >
-                <s.icon className="h-[19px] w-[19px]" style={{ color: TEAL }} strokeWidth={1.5} />
+                <s.icon className="h-[19px] w-[19px]" style={{ color: PLUM_LT }} strokeWidth={1.5} />
               </span>
               <h3 className={`mt-5 font-bold ${i < 2 ? "text-[19px]" : "text-[17px]"}`} style={{ color: INK, letterSpacing: "-0.02em" }}>
                 {s.title}
@@ -538,7 +539,7 @@ function Services() {
               </p>
               <span
                 className="mt-5 inline-block px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.06em]"
-                style={{ background: "rgba(0,180,168,0.12)", color: "#00917F" }}
+                style={{ background: "rgba(103,49,71,0.12)", color: "#52243A" }}
               >
                 {s.tag}
               </span>
@@ -563,8 +564,8 @@ function VictoriaLayer() {
           </div>
           <div className="lg:col-span-7">
             <div className="flex items-center gap-2">
-              <Sparkles className="h-4 w-4" style={{ color: TEAL }} strokeWidth={1.75} />
-              <span className="text-[10px] font-bold uppercase tracking-[0.22em]" style={{ color: TEAL }}>
+              <Sparkles className="h-4 w-4" style={{ color: PLUM_LT }} strokeWidth={1.75} />
+              <span className="text-[10px] font-bold uppercase tracking-[0.22em]" style={{ color: PLUM_LT }}>
                 Platform intelligence
               </span>
             </div>
@@ -592,7 +593,7 @@ function VictoriaLayer() {
             <div className="mt-6 flex flex-wrap gap-x-6 gap-y-2">
               {SERVICES.map((s) => (
                 <span key={s.title} className="flex items-center gap-2 text-[12px]" style={{ color: M.faint }}>
-                  <s.icon className="h-3.5 w-3.5" style={{ color: TEAL }} strokeWidth={1.75} />
+                  <s.icon className="h-3.5 w-3.5" style={{ color: PLUM_LT }} strokeWidth={1.75} />
                   {s.title}
                 </span>
               ))}
@@ -642,7 +643,7 @@ function ThreeSteps() {
   return (
     <section style={{ background: M.bg1 }}>
       <div className="mx-auto max-w-7xl px-5 lg:px-8 py-24 md:py-32">
-        <div className="text-[10.5px] font-bold uppercase tracking-[0.2em]" style={{ color: TEAL }}>
+        <div className="text-[10.5px] font-bold uppercase tracking-[0.2em]" style={{ color: PLUM_LT }}>
           How it works
         </div>
         <h2
@@ -883,14 +884,14 @@ function MobileApp() {
 
             {screen === 1 && (
               <div>
-                <div className="m-3 p-4" style={{ background: INK, borderLeft: `3px solid ${TEAL}` }}>
-                  <div className="text-[10px] uppercase tracking-[0.16em]" style={{ color: TEAL }}>
+                <div className="m-3 p-4" style={{ background: INK, borderLeft: `3px solid ${PLUM_LT}` }}>
+                  <div className="text-[10px] uppercase tracking-[0.16em]" style={{ color: PLUM_LT }}>
                     Live inspection
                   </div>
                   <div className="mt-2 text-[15px] font-semibold" style={{ color: WHITE }}>
                     Final Electrical · 14 Pelican Bay
                   </div>
-                  <div key={live} className="mt-2 text-[13px] font-bold" style={{ color: TEAL, animation: "clFade 400ms ease-out both" }}>
+                  <div key={live} className="mt-2 text-[13px] font-bold" style={{ color: PLUM_LT, animation: "clFade 400ms ease-out both" }}>
                     {LIVE_STATUSES[live]}
                     {LIVE_STATUSES[live] === "Passed" ? " ✓" : ""}
                   </div>
@@ -947,7 +948,7 @@ function MobileApp() {
                       <FolderOpen className="h-4 w-4 shrink-0" style={{ color: LIGHT }} />
                       <span className="text-[12px] truncate" style={{ color: INK }}>{d}</span>
                     </div>
-                    <span className="text-[13px]" style={{ color: TEAL }}>↓</span>
+                    <span className="text-[13px]" style={{ color: PLUM_LT }}>↓</span>
                   </div>
                 ))}
               </div>
@@ -1057,7 +1058,7 @@ function BottomCTA() {
             to="/join"
             hash="request"
             className="inline-flex items-center gap-2 px-6 py-3 text-[14px] font-bold no-underline"
-            style={{ background: TEAL, color: INK }}
+            style={{ background: PLUM_LT, color: INK }}
           >
             Get started <ArrowRight className="h-4 w-4" />
           </Link>

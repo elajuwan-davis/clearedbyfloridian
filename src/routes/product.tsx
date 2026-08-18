@@ -47,12 +47,12 @@ export const Route = createFileRoute("/product")({
   component: ProductPage,
 });
 
-const INK = "#111110";
-const GRAY = "#6B6860";
-const LIGHT = "#9E9B96";
-const TEAL = "#00B4A8";
-const BORDER = "#E4E2DE";
-const OFF = "#F5F4F0";
+const INK = "#2F4F4F";
+const GRAY = "#5F7373";
+const LIGHT = "#9A8E7C";
+const TEAL = "#673147";
+const BORDER = "#E0D3BC";
+const OFF = "#F3EAD9";
 
 type Service = {
   name: string;
@@ -178,7 +178,7 @@ const STEPS = [
 function ProductPage() {
   return (
     <MarketingShell>
-      <div style={{ background: "#FFFFFF", color: INK }}>
+      <div style={{ background: "#FAF3E6", color: INK }}>
         {/* INTRO */}
         <section className="mx-auto max-w-7xl px-5 lg:px-8 pt-20 pb-16 md:pt-28">
           <div className="text-[10.5px] font-bold uppercase tracking-[0.22em]" style={{ color: LIGHT }}>
@@ -205,7 +205,7 @@ function ProductPage() {
               to="/join"
               hash="request"
               className="inline-flex items-center px-5 py-3 text-[14px] no-underline"
-              style={{ background: TEAL, color: INK, fontWeight: 700 }}
+              style={{ background: TEAL, color: "#FAF3E6", fontWeight: 700 }}
             >
               Get early access
             </Link>
@@ -236,7 +236,7 @@ function ProductPage() {
               <section
                 key={s.name}
                 className="px-5 lg:px-8 py-24 lg:py-32"
-                style={{ background: idx % 2 === 1 ? "#FAFAFA" : "#FFFFFF", borderTop: `1px solid ${BORDER}` }}
+                style={{ background: idx % 2 === 1 ? "#FAF3E6" : "#FAF3E6", borderTop: `1px solid ${BORDER}` }}
               >
                 <div
                   className={`mx-auto grid max-w-7xl items-center gap-12 lg:grid-cols-2 lg:gap-20 ${
@@ -284,7 +284,7 @@ function ProductPage() {
                       className="pointer-events-none absolute -inset-8"
                       style={{
                         background:
-                          "radial-gradient(55% 50% at 50% 45%, rgba(0,180,168,0.16) 0%, transparent 70%)",
+                          "radial-gradient(55% 50% at 50% 45%, rgba(103,49,71,0.16) 0%, transparent 70%)",
                       }}
                     />
                     <div className="relative">
@@ -401,7 +401,7 @@ function ProductPage() {
               to="/join"
               hash="request"
               className="mt-8 inline-flex items-center px-6 py-3 text-[14px] no-underline"
-              style={{ background: TEAL, color: INK, fontWeight: 700 }}
+              style={{ background: TEAL, color: "#FAF3E6", fontWeight: 700 }}
             >
               Get early access
             </Link>

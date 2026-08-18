@@ -27,12 +27,12 @@ export const Route = createFileRoute("/compare")({
   component: ComparePage,
 });
 
-const INK = "#111110";
-const GRAY = "#6B6860";
-const LIGHT = "#9E9B96";
-const TEAL = "#00B4A8";
-const BORDER = "#E4E2DE";
-const OFF = "#F5F4F0";
+const INK = "#2F4F4F";
+const GRAY = "#5F7373";
+const LIGHT = "#9A8E7C";
+const TEAL = "#673147";
+const BORDER = "#E0D3BC";
+const OFF = "#F3EAD9";
 
 const COMPETITORS = [
   "GreenLite",
@@ -115,7 +115,7 @@ const CALLOUTS = [
 function ComparePage() {
   return (
     <MarketingShell>
-      <div style={{ background: "#FFFFFF", color: INK }}>
+      <div style={{ background: "#FAF3E6", color: INK }}>
         {/* Hero */}
         <section className="mx-auto max-w-7xl px-5 lg:px-8 pt-20 pb-10 md:pt-28">
           <div className="text-[10.5px] uppercase tracking-[0.22em]" style={{ color: LIGHT }}>
@@ -154,7 +154,7 @@ function ComparePage() {
                   <th
                     className="px-4 py-4 align-bottom text-center"
                     style={{
-                      background: "rgba(0,180,168,0.14)",
+                      background: "rgba(103,49,71,0.14)",
                       borderBottom: `2px solid ${TEAL}`,
                     }}
                   >
@@ -211,8 +211,8 @@ function ComparePage() {
                           className="px-4 py-3 text-center text-[14px]"
                           style={{
                             borderBottom: `1px solid ${BORDER}`,
-                            background: isCleard ? "rgba(0,180,168,0.06)" : "transparent",
-                            color: isCleard && yes ? "#00917F" : yes ? INK : LIGHT,
+                            background: isCleard ? "rgba(103,49,71,0.06)" : "transparent",
+                            color: isCleard && yes ? "#52243A" : yes ? INK : LIGHT,
                             fontWeight: isCleard ? 700 : 500,
                           }}
                         >
@@ -229,7 +229,7 @@ function ComparePage() {
           {/* Callouts */}
           <div className="mt-10 grid gap-5 md:grid-cols-3">
             {CALLOUTS.map((c) => (
-              <div key={c.title} className="p-6" style={{ border: `1px solid ${BORDER}`, background: "#FFFFFF" }}>
+              <div key={c.title} className="p-6" style={{ border: `1px solid ${BORDER}`, background: "#FAF3E6" }}>
                 <div className="text-[13px] uppercase tracking-[0.16em]" style={{ color: INK, fontWeight: 700 }}>
                   {c.title}
                 </div>
@@ -281,7 +281,7 @@ function ComparePage() {
                 <div key={c.t} className="p-8" style={{ background: M.bg1 }}>
                   <span
                     className="inline-flex h-11 w-11 items-center justify-center"
-                    style={{ background: "rgba(0,180,168,0.12)" }}
+                    style={{ background: "rgba(103,49,71,0.12)" }}
                   >
                     <c.Icon className="h-5 w-5" style={{ color: TEAL }} strokeWidth={1.5} />
                   </span>
@@ -319,7 +319,7 @@ function ComparePage() {
             <Link
               to="/product"
               className="mt-8 inline-flex items-center px-6 py-3 text-[14px] no-underline"
-              style={{ background: TEAL, color: INK, fontWeight: 700 }}
+              style={{ background: TEAL, color: "#FAF3E6", fontWeight: 700 }}
             >
               See a live demo
             </Link>
