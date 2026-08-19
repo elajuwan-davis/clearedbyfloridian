@@ -1958,3 +1958,19 @@ tbody tr:hover, .p-table tbody tr:hover { background: #F5F4F0; }
 .marketing-dark textarea:focus,
 .marketing-dark select:focus { border-color: #673147 !important; }
 .marketing-dark ::selection, .cl-home ::selection { background: #E6E6FA; color: #2B1620; }
+
+/* ---- Investor deck password gate ---- */
+@keyframes investorShake {
+  0%, 100% { transform: translateX(0); }
+  15% { transform: translateX(-7px); }
+  30% { transform: translateX(6px); }
+  45% { transform: translateX(-5px); }
+  60% { transform: translateX(4px); }
+  80% { transform: translateX(-2px); }
+}
+.investor-shake { animation: investorShake 0.42s ease-in-out; }
+@keyframes investorGateOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+.investor-gate-out { animation: investorGateOut 0.42s ease forwards; }
