@@ -70,12 +70,6 @@ ALTER TABLE public.paa_signatures
   ADD COLUMN IF NOT EXISTS status_source text NOT NULL DEFAULT 'staff_attested',
   ADD COLUMN IF NOT EXISTS completed_at timestamptz;
 
--- Rows written before SignWell was wired were the localStorage mirror: they were treated as
--- signed by the validator, so they keep that meaning rather than silently regressing.
-UPDATE public.paa_signatures
-   SET status = 'signed'
- WHERE status = 'draft' AND signwell_document_id IS NULL AND created_at < now();
-
 ALTER TABLE public.paa_signatures
   DROP CONSTRAINT IF EXISTS paa_signatures_status_check;
 ALTER TABLE public.paa_signatures
