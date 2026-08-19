@@ -84,6 +84,7 @@ function HomePage() {
         <Circle360 />
         <StatsStrip />
         <Services />
+        <MunicipalityTrack />
         <ThreeSteps />
         <VictoriaLayer />
         <TrustBar />
@@ -507,6 +508,9 @@ function Services() {
   return (
     <section style={{ background: WHITE }}>
       <div className="mx-auto max-w-7xl px-5 lg:px-8 py-24 md:py-28">
+        <div className="mb-6 text-[10.5px] font-bold uppercase tracking-[0.22em]" style={{ color: GREEN }}>
+          For contractors
+        </div>
         <h2
           className="max-w-3xl"
           style={{ fontSize: "clamp(2rem, 3.6vw, 2.875rem)", lineHeight: 1.08, letterSpacing: "-0.035em" }}
@@ -552,6 +556,59 @@ function Services() {
     </section>
   );
 }
+
+/* --------------------------- MUNICIPALITY TRACK -------------------------- */
+
+function MunicipalityTrack() {
+  const CARD_BG = "#111310";
+  const CARD_BORDER = "#2A2E2C";
+  const TEAL = "#00B4A8";
+  return (
+    <section style={{ background: WHITE }}>
+      <div className="mx-auto max-w-7xl px-5 lg:px-8 pb-24 md:pb-28">
+        <div className="mb-6 text-[10.5px] font-bold uppercase tracking-[0.22em]" style={{ color: GREEN }}>
+          For municipalities
+        </div>
+        <div className="p-8 md:p-14" style={{ background: CARD_BG, borderLeft: `3px solid ${TEAL}` }}>
+          <div style={{ color: "#F5F4F0", fontSize: 32, fontWeight: 700, letterSpacing: "-0.03em" }}>
+            [DEPT]
+          </div>
+          <div className="mt-2 text-[17px] font-semibold" style={{ color: TEAL }}>
+            The building department, outsourced.
+          </div>
+          <p className="mt-6 max-w-3xl text-[15.5px] leading-relaxed" style={{ color: "#8C8B7A" }}>
+            Contract plan review, field inspections, backlog reduction, and staff augmentation for
+            municipalities. You retain full oversight and final authority. Cleard provides the licensed
+            professionals and the platform they work in.
+          </p>
+          <div className="mt-8 flex flex-wrap gap-3">
+            {[
+              "Contract plan review · All disciplines",
+              "Inspections, all trades",
+              "Backlog reduction programs",
+            ].map((c) => (
+              <span
+                key={c}
+                className="px-4 py-2 text-[12.5px]"
+                style={{ border: `1px solid ${CARD_BORDER}`, color: "#F5F4F0" }}
+              >
+                {c}
+              </span>
+            ))}
+          </div>
+          <Link
+            to="/contact"
+            className="mt-10 inline-flex items-center gap-2 px-6 py-3 text-[14px] no-underline"
+            style={{ background: TEAL, color: "#0B0D0B", fontWeight: 700 }}
+          >
+            Talk to our team <ArrowUpRight className="h-4 w-4" strokeWidth={2} />
+          </Link>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 
 /* ------------------------- VICTORIA (PLATFORM LAYER) --------------------- */
 
