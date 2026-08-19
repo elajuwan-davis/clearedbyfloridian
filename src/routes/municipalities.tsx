@@ -154,7 +154,7 @@ function MunicipalitiesPage() {
         {/* HERO */}
         <section className="mx-auto max-w-7xl px-5 lg:px-8 pt-20 pb-20 md:pt-28">
           <div className="text-[10.5px] font-bold uppercase tracking-[0.22em]" style={{ color: TEAL }}>
-            For building departments
+            CleardGov · For building departments
           </div>
           <h1
             className="mt-6 max-w-3xl"
@@ -165,8 +165,9 @@ function MunicipalitiesPage() {
               letterSpacing: "-0.04em",
             }}
           >
-            Your backlog. Handled.
+            The building department, outsourced.
           </h1>
+
           <p className="mt-6 max-w-2xl text-[17px] leading-relaxed" style={{ color: MUTED }}>
             When permit volume outpaces your staff, CleardGov by Cleard provides licensed professionals
             to perform plan reviews and inspections under your oversight — on your timeline, at your
