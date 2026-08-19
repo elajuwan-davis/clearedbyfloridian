@@ -1,5 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
-import type { ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
+
+/** Change the investor deck passcode here. */
+const PASSCODE = "rainfall2026";
+const GATE_KEY = "cleard-investor-unlocked";
+
 
 export const Route = createFileRoute("/investor")({
   head: () => ({
