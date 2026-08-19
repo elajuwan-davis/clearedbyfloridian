@@ -20,7 +20,7 @@ export const Route = createFileRoute("/municipalities")({
         content:
           "CleardGov by Cleard provides licensed plan reviewers and inspectors to municipal building departments — contract plan review, contract inspections, backlog reduction, and staff augmentation under your oversight.",
       },
-      { property: "og:title", content: "Your backlog. Handled." },
+      { property: "og:title", content: "CleardGov — The building department, outsourced." },
       {
         property: "og:description",
         content:
@@ -398,8 +398,9 @@ function MunicipalitiesPage() {
               Ready to talk capacity?
             </h2>
             <p className="mt-5 text-[16px] leading-relaxed" style={{ color: MUTED }}>
-              A 20-minute conversation with our team covers your volume, jurisdiction, and what a
-              contract arrangement looks like.
+              Schedule a call with your city manager or building official on the line. A 20-minute
+              conversation covers your volume, jurisdiction, oversight protocols, and what the
+              fee-share arrangement looks like.
             </p>
             <Link
               to="/contact"
