@@ -26,7 +26,7 @@ export const Route = createFileRoute("/investor")({
       { name: "robots", content: "noindex" },
     ],
   }),
-  component: InvestorDeck,
+  component: InvestorPage,
 });
 
 const BG = "#0C0D0B";
