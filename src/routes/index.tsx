@@ -507,6 +507,9 @@ function Services() {
   return (
     <section style={{ background: WHITE }}>
       <div className="mx-auto max-w-7xl px-5 lg:px-8 py-24 md:py-28">
+        <div className="mb-6 text-[10.5px] font-bold uppercase tracking-[0.22em]" style={{ color: GREEN }}>
+          For contractors
+        </div>
         <h2
           className="max-w-3xl"
           style={{ fontSize: "clamp(2rem, 3.6vw, 2.875rem)", lineHeight: 1.08, letterSpacing: "-0.035em" }}
