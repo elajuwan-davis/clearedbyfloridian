@@ -319,6 +319,52 @@ function MunicipalitiesPage() {
           </div>
         </section>
 
+        {/* DIFFERENTIATORS */}
+        <section className="px-5 lg:px-8 py-20" style={{ borderTop: `1px solid ${BORDER}` }}>
+          <div className="mx-auto max-w-7xl">
+            <div className="text-[10.5px] font-bold uppercase tracking-[0.22em]" style={{ color: TEAL }}>
+              What sets CleardGov apart
+            </div>
+            <h2
+              className="mt-5 max-w-3xl font-bold"
+              style={{ fontSize: "clamp(1.875rem, 3.6vw, 2.75rem)", lineHeight: 1.06, letterSpacing: "-0.035em" }}
+            >
+              The people and the platform. Funded by fees.
+            </h2>
+            <div className="mt-12 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+              {DIFFERENTIATORS.map((d) => (
+                <div key={d.t} className="p-7" style={{ background: SURFACE, border: `1px solid ${BORDER}` }}>
+                  <h3 className="text-[16px] font-semibold" style={{ color: TITLE }}>
+                    {d.t}
+                  </h3>
+                  <p className="mt-3 text-[13.5px] leading-relaxed" style={{ color: MUTED }}>
+                    {d.b}
+                  </p>
+                </div>
+              ))}
+            </div>
+            <div
+              className="mt-4 grid gap-4 p-7 sm:grid-cols-2"
+              style={{ background: SURFACE, border: `1px solid ${TEAL}` }}
+            >
+              <div>
+                <div style={{ color: TEAL, fontSize: 34, fontWeight: 700, letterSpacing: "-0.03em" }}>15%</div>
+                <div className="mt-2 text-[13.5px] leading-relaxed" style={{ color: MUTED }}>
+                  Retained by the city on every permit fee collected — revenue without headcount.
+                </div>
+              </div>
+              <div>
+                <div style={{ color: TITLE, fontSize: 34, fontWeight: 700, letterSpacing: "-0.03em" }}>85%</div>
+                <div className="mt-2 text-[13.5px] leading-relaxed" style={{ color: MUTED }}>
+                  Retained by Cleard, covering licensed staff, technology, and program liability.
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+
+
         {/* FOR BUILDING OFFICIALS */}
         <section className="px-5 lg:px-8 py-20" style={{ borderTop: `1px solid ${BORDER}` }}>
           <div className="mx-auto max-w-7xl">
