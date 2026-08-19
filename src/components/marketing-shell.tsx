@@ -154,6 +154,18 @@ function MarketingFooter() {
 
         <div className="flex flex-col gap-2">
           <div className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: "rgba(255,255,255,0.45)" }}>
+            Company
+          </div>
+          <Link to="/about" className="no-underline text-[13px]" style={{ color: "rgba(255,255,255,0.7)" }}>
+            About
+          </Link>
+          <Link to="/investor" className="no-underline text-[13px]" style={{ color: "rgba(255,255,255,0.7)" }}>
+            Investor Deck
+          </Link>
+        </div>
+
+        <div className="flex flex-col gap-2">
+          <div className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: "rgba(255,255,255,0.45)" }}>
             For Municipalities
           </div>
           <Link to="/municipalities" className="no-underline text-[13px]" style={{ color: "rgba(255,255,255,0.7)" }}>
@@ -163,6 +175,7 @@ function MarketingFooter() {
             cleard.io/municipalities
           </span>
         </div>
+
 
         <div className="text-[12px]" style={{ color: "rgba(200,196,188,0.6)" }}>
           © 2026 Cleard
