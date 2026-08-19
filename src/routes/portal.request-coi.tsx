@@ -261,7 +261,7 @@ function CoiForm() {
 
       <div
         className="rounded-[3px] p-5 border"
-        style={{ backgroundColor: "#B6DAEA", borderColor: "#153157", color: "#153157" }}
+        style={{ backgroundColor: "#E6E6FA", borderColor: "#2F4F4F", color: "#2F4F4F" }}
       >
         <div className="font-mono text-[10px] uppercase tracking-[0.18em] opacity-70">Reference</div>
         <div className="mt-1 font-display text-lg">COI Requirements — Cleard</div>

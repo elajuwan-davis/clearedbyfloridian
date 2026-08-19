@@ -32,7 +32,7 @@ export const Route = createFileRoute("/portal/reports")({
   component: ReportsPage,
 });
 
-const COLORS = { obsidian: "#153157", sky: "#1B84D4", green: "#12A05C", amber: "#E8861A" };
+const COLORS = { obsidian: "#2F4F4F", sky: "#673147", green: "#4E6B5C", amber: "#9A7B2E" };
 
 function ReportsPage() {
   const [internal, setInternal] = useState(false);
@@ -93,7 +93,7 @@ function StatCard({
       <div className="flex min-w-0 items-center gap-2">
         <span
           className={`grid h-5 w-5 shrink-0 place-items-center rounded-md ${
-            accent ? "bg-[#1D4ED8]/12 text-[#1D4ED8]" : "bg-white/[0.06] text-muted-foreground"
+            accent ? "bg-[#673147]/12 text-[#673147]" : "bg-white/[0.06] text-muted-foreground"
           }`}
         >
           <Icon className="h-3 w-3" strokeWidth={1.75} />
@@ -105,7 +105,7 @@ function StatCard({
       <div className="min-w-0">
         <div
           className={`truncate text-[20px] font-semibold leading-none tracking-[-0.03em] ${
-            accent ? "text-[#1D4ED8]" : "text-foreground"
+            accent ? "text-[#673147]" : "text-foreground"
           }`}
         >
           {value}
@@ -525,7 +525,7 @@ function WeeklyDigest() {
           {report.compliance_flags.map((f, i) => (
             <li key={i} className="flex items-center gap-3 py-1.5 text-[12.5px]">
               <span className="min-w-0 flex-1 truncate">{f.subcontractor}</span>
-              <span className="shrink-0 text-[11.5px] text-[#F87171]">{f.issue}</span>
+              <span className="shrink-0 text-[11.5px] text-[#D08585]">{f.issue}</span>
             </li>
           ))}
         </ul>

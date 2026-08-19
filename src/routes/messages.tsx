@@ -284,7 +284,7 @@ function MessagesPage() {
                       <button
                         type="button"
                         onClick={() => setActiveId(t.id)}
-                        className="block w-full min-w-0 text-left transition-colors hover:bg-[#EEECEA]"
+                        className="block w-full min-w-0 text-left transition-colors hover:bg-[#EFE6D6]"
                         style={{
                           background: isActive ? CDS.off2 : "transparent",
                           borderBottom: `1px solid ${CDS.border}`,

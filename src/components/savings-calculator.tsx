@@ -99,7 +99,7 @@ export function SavingsCalculator() {
                 <button
                   onClick={() => removeTrade(t.id)}
                   disabled={trades.length === 1}
-                  className="text-muted-foreground transition-colors hover:text-[#F87171] disabled:opacity-25"
+                  className="text-muted-foreground transition-colors hover:text-[#D08585] disabled:opacity-25"
                   aria-label="Remove trade"
                 >
                   <Trash2 className="h-3 w-3" />
@@ -182,7 +182,7 @@ export function SavingsCalculator() {
           </span>
           <div
             className={`text-[28px] font-semibold leading-none tracking-[-0.03em] tabular-nums ${
-              positive ? "text-[#4ADE80]" : savings < 0 ? "text-[#FBBF24]" : ""
+              positive ? "text-[#7FA98F]" : savings < 0 ? "text-[#D2B15C]" : ""
             }`}
           >
             {fmtUsd(Math.abs(savings))}

@@ -160,7 +160,7 @@ function LienDocumentsPage() {
           <DialogDescription className="text-[12px]">
             E-sign request sent via SignWell for {signing?.type} ({signing?.id}).
           </DialogDescription>
-          <div className="mt-4 flex items-center gap-2 text-[12px]" style={{ color: "#00B4A8" }}>
+          <div className="mt-4 flex items-center gap-2 text-[12px]" style={{ color: "#673147" }}>
             <CheckCircle2 className="h-4 w-4" /> Awaiting signature from {signing?.ownerOrGc}.
           </div>
           <div className="mt-4 flex justify-end">
@@ -246,7 +246,7 @@ function GenerateDialog({
             <DialogDescription className="text-[12px]">
               {created.type} ({created.id}) was added to your lien documents as a Draft.
             </DialogDescription>
-            <div className="mt-4 flex items-center gap-2 text-[12px]" style={{ color: "#00B4A8" }}>
+            <div className="mt-4 flex items-center gap-2 text-[12px]" style={{ color: "#673147" }}>
               <CheckCircle2 className="h-4 w-4" /> {created.project} — {created.address}
             </div>
             <div className="mt-5 flex justify-end gap-2">
@@ -345,7 +345,7 @@ function GenerateDialog({
               )}
 
               {error && (
-                <p className="text-[12px]" style={{ color: "#B42318" }}>
+                <p className="text-[12px]" style={{ color: "#8C3B3B" }}>
                   {error}
                 </p>
               )}

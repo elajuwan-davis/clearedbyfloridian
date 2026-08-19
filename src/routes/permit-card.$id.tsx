@@ -70,7 +70,7 @@ function PermitCardPage() {
 
   if (state === "loading") {
     return (
-      <div className="min-h-screen bg-[#f5f2ec] px-6 py-24 text-center text-sm text-obsidian/60">
+      <div className="min-h-screen bg-[#faf3e6] px-6 py-24 text-center text-sm text-obsidian/60">
         Loading permit card…
       </div>
     );
@@ -78,7 +78,7 @@ function PermitCardPage() {
 
   if (state === "missing" || !permit) {
     return (
-      <div className="min-h-screen bg-[#f5f2ec] px-6 py-24 text-center">
+      <div className="min-h-screen bg-[#faf3e6] px-6 py-24 text-center">
         <h1 className="display-serif text-3xl text-obsidian">Permit card not found</h1>
         <p className="mt-2 text-sm text-obsidian/60">
           This card may have been removed, or the code was scanned incorrectly.
@@ -105,13 +105,13 @@ function PermitCard({
       : `https://cleardinc.com/permit-card/${permit.id}`;
 
   return (
-    <div className="min-h-screen bg-[#f5f2ec] text-obsidian print:bg-white">
+    <div className="min-h-screen bg-[#faf3e6] text-obsidian print:bg-white">
       {/* Screen-only top bar */}
       <div className="print:hidden border-b border-obsidian/10 bg-white">
         <div className="mx-auto max-w-4xl px-6 py-3 flex items-center justify-end">
           <button
             onClick={() => window.print()}
-            className="inline-flex items-center gap-1.5 border border-[#153157] bg-[#153157] text-white px-3 py-1.5 text-xs font-medium rounded-[3px] hover:opacity-90"
+            className="inline-flex items-center gap-1.5 border border-[#2F4F4F] bg-[#2F4F4F] text-white px-3 py-1.5 text-xs font-medium rounded-[3px] hover:opacity-90"
           >
             <Printer className="h-3.5 w-3.5" /> Print / Save PDF
           </button>
@@ -119,12 +119,12 @@ function PermitCard({
       </div>
 
       <main className="mx-auto max-w-4xl px-6 py-8 print:py-4">
-        <article className="bg-white border-2 border-[#153157] rounded-[3px] print:border-black">
+        <article className="bg-white border-2 border-[#2F4F4F] rounded-[3px] print:border-black">
           {/* Header */}
-          <header className="bg-[#153157] text-white px-8 py-6 print:bg-[#153157] print:text-white">
+          <header className="bg-[#2F4F4F] text-white px-8 py-6 print:bg-[#2F4F4F] print:text-white">
             <div className="flex items-start justify-between gap-6">
               <div>
-                <div className="font-mono text-[10px] uppercase tracking-[0.24em] text-[#B6DAEA]">
+                <div className="font-mono text-[10px] uppercase tracking-[0.24em] text-[#E6E6FA]">
                   Cleard · Private Provider
                 </div>
                 <h1 className="mt-1 display-serif text-3xl">Digital Permit Card</h1>
@@ -187,7 +187,7 @@ function PermitCard({
           </section>
 
           {/* Footer */}
-          <footer className="bg-[#f5f2ec] px-8 py-4 border-t border-obsidian/15 flex items-center justify-between gap-4">
+          <footer className="bg-[#faf3e6] px-8 py-4 border-t border-obsidian/15 flex items-center justify-between gap-4">
             <div className="flex items-center gap-2 text-[11px] text-obsidian/70">
               <ShieldCheck className="h-3.5 w-3.5" />
               Scan the QR code to verify this permit &amp; view live inspection status.

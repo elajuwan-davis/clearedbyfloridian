@@ -99,11 +99,11 @@ export function BuilderDashboard() {
 
   const donut = useMemo(() => {
     const buckets = [
-      { name: "In review", value: permits.filter((p) => ["submitted", "in_review", "pending"].includes(p.status)).length, color: "#F59E0B" },
-      { name: "Corrections", value: corrections, color: "#A78BFA" },
-      { name: "On hold", value: permits.filter((p) => p.status === "on_hold").length, color: "#EF4444" },
-      { name: "Issued", value: issued, color: "#00B4A8" },
-      { name: "Approved", value: permits.filter((p) => p.status === "approved").length, color: "#1D4ED8" },
+      { name: "In review", value: permits.filter((p) => ["submitted", "in_review", "pending"].includes(p.status)).length, color: "#9A7B2E" },
+      { name: "Corrections", value: corrections, color: "#7A5C8A" },
+      { name: "On hold", value: permits.filter((p) => p.status === "on_hold").length, color: "#8C3B3B" },
+      { name: "Issued", value: issued, color: "#673147" },
+      { name: "Approved", value: permits.filter((p) => p.status === "approved").length, color: "#673147" },
     ];
     return buckets.filter((b) => b.value > 0);
   }, [permits, corrections, issued]);
@@ -300,14 +300,14 @@ export function BuilderDashboard() {
                   <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
                       <Pie
-                        data={donut.length ? donut : [{ name: "None", value: 1, color: "#1A2436" }]}
+                        data={donut.length ? donut : [{ name: "None", value: 1, color: "#1E3434" }]}
                         dataKey="value"
                         innerRadius={44}
                         outerRadius={62}
                         paddingAngle={2}
                         stroke="none"
                       >
-                        {(donut.length ? donut : [{ name: "None", value: 1, color: "#1A2436" }]).map((d) => (
+                        {(donut.length ? donut : [{ name: "None", value: 1, color: "#1E3434" }]).map((d) => (
                           <Cell key={d.name} fill={d.color} />
                         ))}
                       </Pie>
@@ -341,7 +341,7 @@ export function BuilderDashboard() {
                 <ul className="flex flex-col gap-3 px-4 pb-4">
                   {recent.map((e, i) => (
                     <li key={`${e.title}-${i}`} className="flex min-w-0 items-start gap-2.5">
-                      <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full" style={{ backgroundColor: "#1D4ED8" }} />
+                      <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full" style={{ backgroundColor: "#673147" }} />
                       <div className="min-w-0 flex-1">
                         <div className="truncate text-[13px] font-medium">{e.title}</div>
                         <div className="truncate text-[12px] text-muted-foreground">{e.detail}</div>
@@ -422,13 +422,13 @@ function Banner({
   href: string;
 }) {
   const isWarn = tone === "warn";
-  const accent = isWarn ? "#F59E0B" : "#1D4ED8";
+  const accent = isWarn ? "#9A7B2E" : "#673147";
   return (
     <div
       className="flex flex-col items-start gap-3 rounded-2xl border p-4 sm:flex-row sm:items-center"
       style={{
-        backgroundColor: isWarn ? "rgba(245,158,11,0.08)" : "rgba(59,130,246,0.08)",
-        borderColor: isWarn ? "rgba(245,158,11,0.24)" : "rgba(59,130,246,0.24)",
+        backgroundColor: isWarn ? "rgba(154, 123, 46,0.08)" : "rgba(103, 49, 71,0.08)",
+        borderColor: isWarn ? "rgba(154, 123, 46,0.24)" : "rgba(103, 49, 71,0.24)",
       }}
     >
       <div className="flex min-w-0 flex-1 items-start gap-3">

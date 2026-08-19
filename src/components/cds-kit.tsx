@@ -6,8 +6,8 @@
  * detail panel, skeletons and empty states. No data fetching, no business
  * logic, no routing decisions.
  *
- * Palette is fixed: teal #00B4A8 · ink #111110 · off-white #F5F4F0 ·
- * border #E4E2DE. Radius is always 0.
+ * Palette is fixed: teal #673147 · ink #2F4F4F · off-white #F3EAD9 ·
+ * border #E0D3BC. Radius is always 0.
  */
 import {
   useEffect,
@@ -20,19 +20,19 @@ import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export const CDS = {
-  white: "#FFFFFF",
-  off: "#F5F4F0",
-  off2: "#EEECEA",
-  black: "#111110",
-  gray: "#6B6860",
-  grayLt: "#9E9B96",
-  teal: "#00B4A8",
-  tealDark: "#009088",
-  tealText: "#00917F",
-  border: "#E4E2DE",
-  red: "#C03030",
-  blue: "#005fa3",
-  purple: "#6040a0",
+  white: "#FAF3E6",
+  off: "#F3EAD9",
+  off2: "#EFE6D6",
+  black: "#2F4F4F",
+  gray: "#5C7370",
+  grayLt: "#8B9A97",
+  teal: "#673147",
+  tealDark: "#52243A",
+  tealText: "#4E6B5C",
+  border: "#E0D3BC",
+  red: "#8C3B3B",
+  blue: "#673147",
+  purple: "#7a5c8a",
 } as const;
 
 /* ───────────────────────── Scroll reveal ───────────────────────── */
@@ -127,7 +127,7 @@ export function Kpi({
     <Tag
       type={onClick ? "button" : undefined}
       onClick={onClick}
-      className={cn("min-w-0 text-left transition-colors", onClick && "hover:bg-[#F5F4F0]")}
+      className={cn("min-w-0 text-left transition-colors", onClick && "hover:bg-[#F3EAD9]")}
       style={{ background: CDS.white, border: `1px solid ${CDS.border}`, padding: "16px 20px" }}
     >
       <div
@@ -217,7 +217,7 @@ function PipelineCell({
       role="tab"
       aria-selected={selected}
       onClick={onClick}
-      className="min-w-[104px] flex-1 text-left transition-colors hover:bg-[#EEECEA]"
+      className="min-w-[104px] flex-1 text-left transition-colors hover:bg-[#EFE6D6]"
       style={{
         background: selected ? CDS.off2 : CDS.off,
         borderRight: `1px solid ${CDS.border}`,
@@ -369,7 +369,7 @@ function StripArrow({
       type="button"
       aria-label={label}
       onClick={onClick}
-      className="shrink-0 px-3 transition-colors hover:bg-[#F5F4F0]"
+      className="shrink-0 px-3 transition-colors hover:bg-[#F3EAD9]"
       style={{ background: CDS.white, color: CDS.gray, fontSize: 18, lineHeight: 1 }}
     >
       {children}
@@ -406,7 +406,7 @@ export function DropZone({
       className="text-center"
       style={{
         border: `1.5px dashed ${over ? CDS.teal : CDS.border}`,
-        background: over ? "rgba(0,180,168,0.04)" : CDS.off,
+        background: over ? "rgba(103, 49, 71,0.04)" : CDS.off,
         padding: 28,
       }}
     >
@@ -503,7 +503,7 @@ export function SidePanel({
             type="button"
             aria-label="Close panel"
             onClick={onClose}
-            className="shrink-0 p-1 transition-colors hover:bg-[#F5F4F0]"
+            className="shrink-0 p-1 transition-colors hover:bg-[#F3EAD9]"
             style={{ color: CDS.gray }}
           >
             <X className="h-4 w-4" strokeWidth={1.75} />
@@ -610,11 +610,11 @@ export function CdsEmpty({
 export type TagTone = "success" | "danger" | "neutral" | "info" | "progress";
 
 const tagStyle: Record<TagTone, CSSProperties> = {
-  success: { background: "rgba(0,180,168,0.12)", color: CDS.tealText },
+  success: { background: "rgba(103, 49, 71,0.12)", color: CDS.tealText },
   danger: { background: "rgba(220,60,60,0.1)", color: CDS.red },
   neutral: { background: "rgba(0,0,0,0.06)", color: CDS.gray },
-  info: { background: "rgba(0,95,163,0.1)", color: CDS.blue },
-  progress: { background: "rgba(120,80,200,0.1)", color: CDS.purple },
+  info: { background: "rgba(103, 49, 71,0.1)", color: CDS.blue },
+  progress: { background: "rgba(122, 92, 138,0.1)", color: CDS.purple },
 };
 
 export function Tag({

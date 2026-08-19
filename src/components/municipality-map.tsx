@@ -24,8 +24,8 @@ export const REGISTERED_MUNIS: RegisteredMuni[] = [
   { name: "Palm Beach", county: "Palm Beach", lat: 26.706, lng: -80.037 },
 ];
 
-const OBSIDIAN = "#153157";
-const SKY = "#B6DAEA";
+const OBSIDIAN = "#2F4F4F";
+const SKY = "#E6E6FA";
 
 // Projection bounds — South Florida coastal corridor
 const LAT_MAX = 27.85;
@@ -111,7 +111,7 @@ export default function MunicipalityMap() {
         <path d={oceanPath} fill="url(#ocean-wave)" />
 
         {/* Land */}
-        <path d={landPath} fill="#FFFFFF" />
+        <path d={landPath} fill="#FAF3E6" />
         <path d={landPath} fill="url(#wave-pattern)" />
 
         {/* Coastline stroke */}
@@ -174,7 +174,7 @@ export default function MunicipalityMap() {
               <circle
                 r={active ? 10 : 7}
                 fill={OBSIDIAN}
-                stroke="#FFFFFF"
+                stroke="#FAF3E6"
                 strokeWidth="2"
                 style={{ transition: "r 150ms ease" }}
               />
@@ -209,9 +209,9 @@ export default function MunicipalityMap() {
                 <text
                   x={tx + 14}
                   y={ty + 22}
-                  fill="#FFFFFF"
+                  fill="#FAF3E6"
                   fontSize="14"
-                  fontFamily="'DM Sans', sans-serif"
+                  fontFamily="'Fraunces', 'Iowan Old Style', Georgia, serif"
                   fontWeight="600"
                 >
                   {m.name}
@@ -238,17 +238,17 @@ export function MunicipalityMapHero() {
   return (
     <section
       className="relative rounded-sm border overflow-hidden"
-      style={{ background: "#FAFAF7", borderColor: "rgba(21,49,87,0.15)" }}
+      style={{ background: "#FAF3E6", borderColor: "rgba(47, 79, 79,0.15)" }}
     >
       <div className="grid md:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)] gap-0">
-        <div className="p-8 md:p-10 flex flex-col justify-center" style={{ background: OBSIDIAN, color: "#FFFFFF" }}>
+        <div className="p-8 md:p-10 flex flex-col justify-center" style={{ background: OBSIDIAN, color: "#FAF3E6" }}>
           <div className="font-mono text-[10px] tracking-[0.24em] uppercase" style={{ color: SKY }}>
             Coverage Map
           </div>
           <h2
             className="mt-4 leading-[0.95]"
             style={{
-              fontFamily: "'Cormorant Garamond', serif",
+              fontFamily: "'Fraunces', 'Iowan Old Style', Georgia, serif",
               fontSize: "clamp(48px, 6vw, 88px)",
               fontWeight: 500,
               letterSpacing: "-0.02em",
@@ -277,11 +277,11 @@ export function MunicipalityMapHero() {
           <MunicipalityMap />
         </div>
       </div>
-      <div className="border-t px-6 py-4 flex flex-wrap gap-x-6 gap-y-2" style={{ borderColor: "rgba(21,49,87,0.12)" }}>
+      <div className="border-t px-6 py-4 flex flex-wrap gap-x-6 gap-y-2" style={{ borderColor: "rgba(47, 79, 79,0.12)" }}>
         {REGISTERED_MUNIS.map((m) => (
           <div key={m.name} className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full" style={{ background: OBSIDIAN }} />
-            <span className="text-xs" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+            <span className="text-xs" style={{ fontFamily: "'Fraunces', 'Iowan Old Style', Georgia, serif" }}>
               {m.name}
             </span>
           </div>

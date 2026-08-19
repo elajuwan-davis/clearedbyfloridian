@@ -1087,7 +1087,7 @@ function NewPermitPage() {
                   maximumFractionDigits: 0,
                 });
                 return (
-                  <div className="rounded-[3px] border border-obsidian/15 bg-[#153157]/[0.03] px-4 py-3">
+                  <div className="rounded-[3px] border border-obsidian/15 bg-[#2F4F4F]/[0.03] px-4 py-3">
                     <div className="text-[10px] font-mono uppercase tracking-[0.15em] text-obsidian/60">
                       Estimated Cleard service fee
                     </div>
@@ -1193,7 +1193,7 @@ function NewPermitPage() {
                     <button
                       type="button"
                       onClick={() => update("description", scopeDraft.detailed)}
-                      className="rounded-[3px] bg-[#153157] px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-white"
+                      className="rounded-[3px] bg-[#2F4F4F] px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-white"
                     >
                       Use detailed scope
                     </button>
@@ -1217,8 +1217,8 @@ function NewPermitPage() {
                     return (
                       <div key={s.scope} className="space-y-2">
                         {reuse && !s.skipped && (
-                          <div className="flex items-start gap-3 border border-[#153157]/30 bg-[#B6DAEA]/15 rounded-[3px] px-4 py-3">
-                            <Sparkles className="mt-0.5 h-4 w-4 shrink-0 text-[#153157]" />
+                          <div className="flex items-start gap-3 border border-[#2F4F4F]/30 bg-[#E6E6FA]/15 rounded-[3px] px-4 py-3">
+                            <Sparkles className="mt-0.5 h-4 w-4 shrink-0 text-[#2F4F4F]" />
                             <div className="flex-1 text-[13px] text-obsidian/85">
                               <div className="text-obsidian font-medium">
                                 {s.trade} is already on this job — {reuse.companyName} is handling
@@ -1254,7 +1254,7 @@ function NewPermitPage() {
                         >
                           <div className="flex items-center justify-between gap-3">
                             <div className="flex items-center gap-2">
-                              <span className="inline-flex items-center bg-[#153157] text-white px-2 py-0.5 rounded-[3px] text-[10px] font-mono uppercase tracking-[0.12em]">
+                              <span className="inline-flex items-center bg-[#2F4F4F] text-white px-2 py-0.5 rounded-[3px] text-[10px] font-mono uppercase tracking-[0.12em]">
                                 {s.trade}
                               </span>
                               {optional && (
@@ -1270,7 +1270,7 @@ function NewPermitPage() {
                                   onClick={() =>
                                     setPickerScope(pickerScope === s.scope ? null : s.scope)
                                   }
-                                  className="inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-[#153157] hover:text-obsidian underline underline-offset-2"
+                                  className="inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-[#2F4F4F] hover:text-obsidian underline underline-offset-2"
                                 >
                                   <Store className="h-3 w-3" />
                                   {s.marketplaceSubId
@@ -1289,7 +1289,7 @@ function NewPermitPage() {
                           </div>
 
                           {pickerScope === s.scope && (
-                            <div className="border border-[#153157]/30 rounded-[3px] divide-y divide-obsidian/10">
+                            <div className="border border-[#2F4F4F]/30 rounded-[3px] divide-y divide-obsidian/10">
                               {roster.length === 0 ? (
                                 <div className="px-3 py-3 text-[12px] text-obsidian/60">
                                   No subs listed on the marketplace yet.
@@ -1440,8 +1440,8 @@ function NewPermitPage() {
                             })()}
 
                           {!s.skipped && !s.marketplaceSubId && s.companyName.trim() && (
-                            <div className="flex items-start gap-3 border border-[#153157]/25 bg-[#B6DAEA]/15 rounded-[3px] px-4 py-3">
-                              <Store className="mt-0.5 h-4 w-4 shrink-0 text-[#153157]" />
+                            <div className="flex items-start gap-3 border border-[#2F4F4F]/25 bg-[#E6E6FA]/15 rounded-[3px] px-4 py-3">
+                              <Store className="mt-0.5 h-4 w-4 shrink-0 text-[#2F4F4F]" />
                               <div className="flex-1 text-[13px] text-obsidian/85">
                                 <div className="text-obsidian font-medium">
                                   {rosterCount === 1
@@ -1476,7 +1476,7 @@ function NewPermitPage() {
                     );
                   })}
                   {filledSubs.length > 0 && (
-                    <div className="border-l-2 border-[#153157] bg-obsidian/[0.03] px-4 py-3 text-[12px] text-obsidian/80">
+                    <div className="border-l-2 border-[#2F4F4F] bg-obsidian/[0.03] px-4 py-3 text-[12px] text-obsidian/80">
                       {wantBundle ? (
                         <>
                           This submission will cover <strong>{filledSubs.length} trades</strong>{" "}

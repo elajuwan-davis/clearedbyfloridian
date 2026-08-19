@@ -25,9 +25,9 @@ export const Route = createFileRoute("/pricing")({
   component: PricingPage,
 });
 
-const INK = "#2B1620";
+const INK = "#2F4F4F";
 const GRAY = "#7A5C68";
-const LIGHT = "#9A8E7C";
+const LIGHT = "#8B9A97";
 const GREEN = "#2F4F4F"; /* minor accent only */
 const TEAL = "#673147";
 const BORDER = "#E0D3BC";

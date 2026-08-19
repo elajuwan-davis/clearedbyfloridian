@@ -235,7 +235,7 @@ function Chip({ active, onClick, label }: { active: boolean; onClick: () => void
       type="button"
       onClick={onClick}
       className={`border px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.12em] rounded-[3px] ${
-        active ? "border-[#153157] bg-[#153157] text-white" : "border-obsidian/15 bg-white text-obsidian/70 hover:bg-paper-warm"
+        active ? "border-[#2F4F4F] bg-[#2F4F4F] text-white" : "border-obsidian/15 bg-white text-obsidian/70 hover:bg-paper-warm"
       }`}
     >
       {label}

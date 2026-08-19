@@ -1,7 +1,7 @@
 /** Cleard wordmark (vector). `tone` picks the letter color; the A stays brand blue. */
 export function ClearedWordmark({
   className,
-  tone = "#FFFFFF",
+  tone = "#FAF3E6",
   title = "Cleard",
 }: {
   className?: string;
@@ -17,7 +17,7 @@ export function ClearedWordmark({
       xmlns="http://www.w3.org/2000/svg"
     >
       <g
-        fontFamily="Montserrat, Avenir Next, Helvetica Neue, Arial, sans-serif"
+        fontFamily="Fraunces, Iowan Old Style, Georgia, serif"
         fontSize="390"
         fontWeight="700"
         letterSpacing="24"

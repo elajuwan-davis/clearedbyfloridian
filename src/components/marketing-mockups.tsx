@@ -10,8 +10,8 @@ import { Check, Minus, Sparkles } from "lucide-react";
 
 export const M = {
   bg0: "#241017",
-  bg1: "#331B26",
-  bg2: "#331B26",
+  bg1: "#2F4F4F",
+  bg2: "#2F4F4F",
   line: "rgba(250,243,230,0.12)",
   line2: "rgba(250,243,230,0.07)",
   text: "#F3EAD9",

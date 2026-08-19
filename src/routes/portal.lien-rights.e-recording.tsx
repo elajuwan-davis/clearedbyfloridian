@@ -150,7 +150,7 @@ function SubmitDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (v:
               E-recording request submitted. Cleard will file with the county and upload the recorded
               copy when available.
             </DialogDescription>
-            <div className="mt-4 flex items-center gap-2 text-[12px]" style={{ color: "#00B4A8" }}>
+            <div className="mt-4 flex items-center gap-2 text-[12px]" style={{ color: "#673147" }}>
               <CheckCircle2 className="h-4 w-4" /> Queued for {county} County.
             </div>
             <div className="mt-5 flex justify-end">
@@ -219,7 +219,7 @@ function SubmitDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (v:
               </div>
 
               {error && (
-                <p className="text-[12px]" style={{ color: "#B42318" }}>
+                <p className="text-[12px]" style={{ color: "#8C3B3B" }}>
                   {error}
                 </p>
               )}

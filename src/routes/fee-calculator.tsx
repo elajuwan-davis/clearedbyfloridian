@@ -139,7 +139,7 @@ function FeeCalculatorPage() {
                 className="px-4 py-2.5 font-mono text-[11px] uppercase tracking-[0.16em] border-b-2 -mb-px transition-colors"
                 style={{
                   borderColor: active ? "var(--obsidian)" : "transparent",
-                  color: active ? "var(--obsidian)" : "rgba(21,49,87,0.5)",
+                  color: active ? "var(--obsidian)" : "rgba(47, 79, 79,0.5)",
                 }}
               >
                 {t.l}

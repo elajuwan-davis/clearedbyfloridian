@@ -67,7 +67,7 @@ const PAGE_H = 792;
 const INK = rgb(0.05, 0.05, 0.05);
 const MUTED = rgb(0.35, 0.35, 0.35);
 const RULE = rgb(0.75, 0.75, 0.75);
-const OBSIDIAN = rgb(0.082, 0.192, 0.341); // #153157
+const OBSIDIAN = rgb(0.082, 0.192, 0.341); // #2F4F4F
 
 // Standard Helvetica/WinAnsi throws on characters it cannot encode ("Ō" in
 // FLŌRIDIAN, smart quotes pasted into intake fields), which aborts the whole

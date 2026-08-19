@@ -303,7 +303,7 @@ function SidebarNav({
         {isRail ? (
           <div
             className="grid h-7 w-7 shrink-0 place-items-center text-[13px] font-bold"
-            style={{ background: "#111110", color: "#FFFFFF" }}
+            style={{ background: "#2F4F4F", color: "#FAF3E6" }}
           >
             C
           </div>
@@ -474,7 +474,7 @@ function SidebarNav({
             to="/profile"
             onClick={onNavigate}
             className="grid h-8 w-8 shrink-0 place-items-center rounded-lg text-[11px] font-semibold text-white"
-            style={{ backgroundColor: "#1F2937" }}
+            style={{ backgroundColor: "#1E3434" }}
             title={displayName}
           >
             {initials}
@@ -743,7 +743,7 @@ function PortalShellInner({ children }: { children: ReactNode }) {
                 <DropdownMenuTrigger className="flex h-8 items-center gap-1.5 rounded-lg px-1 outline-none hover:bg-[var(--rail-hover)]">
                   <div
                     className="grid h-7 w-7 place-items-center rounded-lg text-[11px] font-semibold"
-                    style={{ backgroundColor: "#1F2937", color: "white" }}
+                    style={{ backgroundColor: "#1E3434", color: "white" }}
                   >
                     {me.initials}
                   </div>

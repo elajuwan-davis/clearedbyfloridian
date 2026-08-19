@@ -25,12 +25,12 @@ type Props = {
 
 
 const STATUS_META: Record<InspectionStatus, { label: string; pill: string }> = {
-  passed: { label: "Passed", pill: "bg-[#16a34a] text-white border-[#16a34a]" },
-  pending: { label: "Pending", pill: "bg-[#6b7280] text-white border-[#6b7280]" },
-  scheduled: { label: "Scheduled", pill: "bg-[#153157] text-white border-[#153157]" },
+  passed: { label: "Passed", pill: "bg-[#3f5749] text-white border-[#3f5749]" },
+  pending: { label: "Pending", pill: "bg-[#5c7370] text-white border-[#5c7370]" },
+  scheduled: { label: "Scheduled", pill: "bg-[#2F4F4F] text-white border-[#2F4F4F]" },
   corrections: {
     label: "Corrections Required",
-    pill: "bg-[#dc2626] text-white border-[#dc2626]",
+    pill: "bg-[#8c3b3b] text-white border-[#8c3b3b]",
   },
 };
 
@@ -110,7 +110,7 @@ export function InspectionsSection({
             <div className="font-mono text-[11px] tabular-nums text-obsidian/55">{pct}%</div>
           </div>
           <div className="mt-3 h-2 w-full overflow-hidden rounded-[2px] bg-obsidian/10">
-            <div className="h-full bg-[#16a34a] transition-all" style={{ width: `${pct}%` }} />
+            <div className="h-full bg-[#3f5749] transition-all" style={{ width: `${pct}%` }} />
           </div>
         </div>
 
@@ -121,7 +121,7 @@ export function InspectionsSection({
             return (
               <li key={ins.code} className="px-5 py-4">
                 <div className="flex flex-wrap items-center gap-3">
-                  <span className="inline-flex h-8 min-w-[3rem] items-center justify-center bg-[#153157] px-2 font-mono text-[11px] font-semibold tracking-[0.08em] text-white rounded-[3px]">
+                  <span className="inline-flex h-8 min-w-[3rem] items-center justify-center bg-[#2F4F4F] px-2 font-mono text-[11px] font-semibold tracking-[0.08em] text-white rounded-[3px]">
                     {ins.code.replace(/-.*$/, "")}
 
                   </span>
@@ -214,7 +214,7 @@ export function InspectionsSection({
                       onChange={(e) => update(ins.code, { notes: e.target.value })}
                       rows={2}
                       placeholder="Describe the correction required by the inspector…"
-                      className="block w-full border border-[#dc2626]/40 bg-red-50/40 px-3 py-2 text-sm text-obsidian placeholder:text-obsidian/40 focus:border-[#dc2626] focus:outline-none rounded-[3px]"
+                      className="block w-full border border-[#8c3b3b]/40 bg-red-50/40 px-3 py-2 text-sm text-obsidian placeholder:text-obsidian/40 focus:border-[#8c3b3b] focus:outline-none rounded-[3px]"
                     />
                   </div>
                 )}

@@ -37,14 +37,14 @@ export const Route = createFileRoute("/product")({
 });
 
 /* Cleard design system tokens for this page */
-const CARD_BG = "#111310";
+const CARD_BG = "#2F4F4F";
 const CARD_BG_HOVER = "#1A1C1A";
-const CARD_BORDER = "#2A2E2C";
-const TEAL = "#00B4A8";
-const CARD_TITLE = "#F5F4F0";
-const CARD_MUTED = "#8C8B7A";
+const CARD_BORDER = "#3F5C5A";
+const TEAL = "#673147";
+const CARD_TITLE = "#F3EAD9";
+const CARD_MUTED = "#5C7370";
 
-const INK = "#2B1620";
+const INK = "#2F4F4F";
 const GRAY = "#7A5C68";
 const GREEN = "#2F4F4F";
 const BORDER = "#E0D3BC";
@@ -259,7 +259,7 @@ function ProductPage() {
               <Link
                 to="/contact"
                 className="mt-10 inline-flex items-center gap-2 px-6 py-3 text-[14px] no-underline"
-                style={{ background: TEAL, color: "#0B0D0B", fontWeight: 700, borderRadius: 0 }}
+                style={{ background: TEAL, color: "#FAF3E6", fontWeight: 700, borderRadius: 0 }}
               >
                 Talk to our team <ArrowRight className="h-4 w-4" strokeWidth={2} />
               </Link>

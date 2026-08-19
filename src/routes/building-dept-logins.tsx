@@ -195,7 +195,7 @@ function BuildingDeptLoginsPage() {
                                 href={l.resolvedPortalUrl}
                                 target="_blank"
                                 rel="noreferrer"
-                                className="inline-flex items-center gap-1.5 text-[12.5px] text-[#7DB3FB] hover:opacity-80"
+                                className="inline-flex items-center gap-1.5 text-[12.5px] text-[#8E4B67] hover:opacity-80"
                               >
                                 {l.resolvedPortalUrl.replace(/^https?:\/\//, "")}
                                 <ExternalLink className="h-3 w-3" />
@@ -240,7 +240,7 @@ function BuildingDeptLoginsPage() {
                                       <div className="truncate text-[12.5px]">{d.doc_label}</div>
                                     </div>
                                     <div
-                                      className={`text-[11.5px] tabular-nums ${expired ? "text-[#F87171]" : "text-muted-foreground"}`}
+                                      className={`text-[11.5px] tabular-nums ${expired ? "text-[#D08585]" : "text-muted-foreground"}`}
                                     >
                                       {expired ? "Expired " : "Exp. "}{fmtDate(d.expiration_date)}
                                     </div>
@@ -296,7 +296,7 @@ function CopyButton({ value }: { value: string }) {
       className="p-1.5 text-muted-foreground transition-colors hover:text-foreground"
       aria-label="Copy"
     >
-      {done ? <Check className="h-3.5 w-3.5 text-[#4ADE80]" /> : <Copy className="h-3.5 w-3.5" />}
+      {done ? <Check className="h-3.5 w-3.5 text-[#7FA98F]" /> : <Copy className="h-3.5 w-3.5" />}
     </button>
   );
 }
@@ -382,7 +382,7 @@ function ViewDocButton({ path }: { path: string }) {
       type="button"
       onClick={() => void open()}
       disabled={opening}
-      className="inline-flex items-center gap-1 text-[11.5px] text-[#7DB3FB] hover:opacity-80"
+      className="inline-flex items-center gap-1 text-[11.5px] text-[#8E4B67] hover:opacity-80"
     >
       {opening ? <Loader2 className="h-3 w-3 animate-spin" /> : null}
       View

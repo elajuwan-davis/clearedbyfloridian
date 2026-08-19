@@ -116,13 +116,13 @@ function LoginPage() {
           <Link to="/" className="flex items-center gap-3">
             <div
               className="h-9 w-9 rounded-xl flex items-center justify-center text-white font-bold text-base"
-              style={{ background: "linear-gradient(135deg, #1B84D4 0%, #12A05C 100%)", fontFamily: "'Space Grotesk', sans-serif" }}
+              style={{ background: "linear-gradient(135deg, #673147 0%, #4E6B5C 100%)", fontFamily: "'Fraunces', 'Iowan Old Style', Georgia, serif" }}
             >
               C
             </div>
             <span
               className="font-semibold text-[20px]"
-              style={{ fontFamily: "'Space Grotesk', sans-serif", color: "var(--paper)" }}
+              style={{ fontFamily: "'Fraunces', 'Iowan Old Style', Georgia, serif", color: "var(--paper)" }}
             >
               Cleard
             </span>
@@ -132,13 +132,13 @@ function LoginPage() {
         <div className="relative max-w-md space-y-6">
           <div
             className="label-eyebrow"
-            style={{ color: "color-mix(in oklab, var(--sky) 80%, transparent)" }}
+            style={{ color: "var(--nl-lavender)" }}
           >
             FL Statute 553.791
           </div>
           <p
             className="text-3xl leading-[1.15] text-paper font-bold"
-            style={{ fontFamily: "'Space Grotesk', 'Inter', sans-serif", letterSpacing: "-0.02em" }}
+            style={{ fontFamily: "'Fraunces', 'Iowan Old Style', Georgia, serif", letterSpacing: "-0.02em" }}
           >
             Private‑provider permitting on a statutory clock.
           </p>
@@ -153,7 +153,7 @@ function LoginPage() {
 
         <div
           className="relative font-mono text-[10px] tracking-[0.2em] uppercase"
-          style={{ color: "color-mix(in oklab, var(--paper) 40%, transparent)" }}
+          style={{ color: "color-mix(in oklab, var(--nl-oat) 55%, transparent)" }}
         >
           FL Statute 553.791
         </div>
@@ -166,13 +166,13 @@ function LoginPage() {
           <Link to="/" className="lg:hidden flex items-center gap-2.5 mb-10">
             <div
               className="h-7 w-7 rounded-lg flex items-center justify-center text-white font-bold text-sm"
-              style={{ background: "linear-gradient(135deg, #1B84D4 0%, #12A05C 100%)", fontFamily: "'Space Grotesk', sans-serif" }}
+              style={{ background: "linear-gradient(135deg, #673147 0%, #4E6B5C 100%)", fontFamily: "'Fraunces', 'Iowan Old Style', Georgia, serif" }}
             >
               C
             </div>
             <span
               className="font-semibold text-[17px]"
-              style={{ fontFamily: "'Space Grotesk', sans-serif", color: "var(--foreground)" }}
+              style={{ fontFamily: "'Fraunces', 'Iowan Old Style', Georgia, serif", color: "var(--foreground)" }}
             >
               Cleard
             </span>
@@ -182,7 +182,7 @@ function LoginPage() {
             <div className="label-eyebrow">Builder portal</div>
             <h1
               className="text-4xl leading-[1.05] font-bold"
-              style={{ fontFamily: "'Space Grotesk', 'Inter', sans-serif", letterSpacing: "-0.02em", color: "var(--foreground)" }}
+              style={{ fontFamily: "'Fraunces', 'Iowan Old Style', Georgia, serif", letterSpacing: "-0.02em", color: "var(--foreground)" }}
             >
               Sign in.
             </h1>
@@ -258,7 +258,7 @@ function LoginPage() {
               type="submit"
               disabled={loading}
               className="w-full h-11 rounded-[3px] font-subline tracking-wide gap-2"
-              style={{ backgroundColor: "#12A05C", color: "#FFFFFF" }}
+              style={{ backgroundColor: "#4E6B5C", color: "#FAF3E6" }}
             >
               {loading ? (
                 <>

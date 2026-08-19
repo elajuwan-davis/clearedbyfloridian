@@ -39,7 +39,7 @@ function LienDeadlinesPage() {
         className="mb-4 flex items-start gap-2.5 border px-4 py-3 text-[12px] leading-relaxed"
         style={{ borderColor: "var(--p-border)", backgroundColor: "var(--p-bg)" }}
       >
-        <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" style={{ color: "#00B4A8" }} />
+        <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" style={{ color: "#673147" }} />
         <span>
           Deadlines are calculated under Florida Statute 713. Consult a licensed Florida
           construction attorney before filing any lien document.
