@@ -84,6 +84,7 @@ function HomePage() {
         <Circle360 />
         <StatsStrip />
         <Services />
+        <MunicipalityTrack />
         <ThreeSteps />
         <VictoriaLayer />
         <TrustBar />
