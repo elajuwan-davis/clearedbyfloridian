@@ -63,6 +63,7 @@ import { Route as FormsPaymentAuthorizationRouteImport } from './routes/forms.pa
 import { Route as FormsPermitIntakeRouteImport } from './routes/forms.permit-intake'
 import { Route as FormsSubcontractorsRouteImport } from './routes/forms.subcontractors'
 import { Route as HomeownerTokenRouteImport } from './routes/homeowner.$token'
+import { Route as InvestorAdminRouteImport } from './routes/investor_.admin'
 import { Route as JoinTokenRouteImport } from './routes/join_.$token'
 import { Route as LegalIndexRouteImport } from './routes/legal.index'
 import { Route as LegalNotaryQueueRouteImport } from './routes/legal.notary-queue'
@@ -402,6 +403,11 @@ const FormsSubcontractorsRoute = FormsSubcontractorsRouteImport.update({
 const HomeownerTokenRoute = HomeownerTokenRouteImport.update({
   id: '/homeowner/$token',
   path: '/homeowner/$token',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InvestorAdminRoute = InvestorAdminRouteImport.update({
+  id: '/investor_/admin',
+  path: '/investor/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
 const JoinTokenRoute = JoinTokenRouteImport.update({
@@ -810,6 +816,7 @@ export interface FileRoutesByFullPath {
   '/forms/permit-intake': typeof FormsPermitIntakeRoute
   '/forms/subcontractors': typeof FormsSubcontractorsRoute
   '/homeowner/$token': typeof HomeownerTokenRoute
+  '/investor/admin': typeof InvestorAdminRoute
   '/join/$token': typeof JoinTokenRoute
   '/legal/notary-queue': typeof LegalNotaryQueueRoute
   '/permit-card/$id': typeof PermitCardIdRoute
@@ -932,6 +939,7 @@ export interface FileRoutesByTo {
   '/forms/permit-intake': typeof FormsPermitIntakeRoute
   '/forms/subcontractors': typeof FormsSubcontractorsRoute
   '/homeowner/$token': typeof HomeownerTokenRoute
+  '/investor/admin': typeof InvestorAdminRoute
   '/join/$token': typeof JoinTokenRoute
   '/legal/notary-queue': typeof LegalNotaryQueueRoute
   '/permit-card/$id': typeof PermitCardIdRoute
@@ -1055,6 +1063,7 @@ export interface FileRoutesById {
   '/forms/permit-intake': typeof FormsPermitIntakeRoute
   '/forms/subcontractors': typeof FormsSubcontractorsRoute
   '/homeowner/$token': typeof HomeownerTokenRoute
+  '/investor_/admin': typeof InvestorAdminRoute
   '/join_/$token': typeof JoinTokenRoute
   '/legal/notary-queue': typeof LegalNotaryQueueRoute
   '/permit-card/$id': typeof PermitCardIdRoute
@@ -1181,6 +1190,7 @@ export interface FileRouteTypes {
     | '/forms/permit-intake'
     | '/forms/subcontractors'
     | '/homeowner/$token'
+    | '/investor/admin'
     | '/join/$token'
     | '/legal/notary-queue'
     | '/permit-card/$id'
@@ -1303,6 +1313,7 @@ export interface FileRouteTypes {
     | '/forms/permit-intake'
     | '/forms/subcontractors'
     | '/homeowner/$token'
+    | '/investor/admin'
     | '/join/$token'
     | '/legal/notary-queue'
     | '/permit-card/$id'
@@ -1425,6 +1436,7 @@ export interface FileRouteTypes {
     | '/forms/permit-intake'
     | '/forms/subcontractors'
     | '/homeowner/$token'
+    | '/investor_/admin'
     | '/join_/$token'
     | '/legal/notary-queue'
     | '/permit-card/$id'
@@ -1546,6 +1558,7 @@ export interface RootRouteChildren {
   ApiVerifyLicenseRoute: typeof ApiVerifyLicenseRoute
   BlogSlugRoute: typeof BlogSlugRoute
   HomeownerTokenRoute: typeof HomeownerTokenRoute
+  InvestorAdminRoute: typeof InvestorAdminRoute
   JoinTokenRoute: typeof JoinTokenRoute
   LegalNotaryQueueRoute: typeof LegalNotaryQueueRoute
   PermitCardIdRoute: typeof PermitCardIdRoute
@@ -1951,6 +1964,13 @@ declare module '@tanstack/react-router' {
       path: '/homeowner/$token'
       fullPath: '/homeowner/$token'
       preLoaderRoute: typeof HomeownerTokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/investor_/admin': {
+      id: '/investor_/admin'
+      path: '/investor/admin'
+      fullPath: '/investor/admin'
+      preLoaderRoute: typeof InvestorAdminRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/join_/$token': {
@@ -2625,6 +2645,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiVerifyLicenseRoute: ApiVerifyLicenseRoute,
   BlogSlugRoute: BlogSlugRoute,
   HomeownerTokenRoute: HomeownerTokenRoute,
+  InvestorAdminRoute: InvestorAdminRoute,
   JoinTokenRoute: JoinTokenRoute,
   LegalNotaryQueueRoute: LegalNotaryQueueRoute,
   PermitCardIdRoute: PermitCardIdRoute,

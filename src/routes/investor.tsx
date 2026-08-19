@@ -1,9 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState, type ReactNode } from "react";
+import {
+  checkEmailDomain,
+  readInvestorAccess,
+  redeemAccessCode,
+  writeInvestorAccess,
+} from "@/lib/investor-access";
 
-/** Change the investor deck passcode here. */
-const PASSCODE = "rainfall2026";
-const GATE_KEY = "cleard-investor-unlocked";
 
 
 export const Route = createFileRoute("/investor")({
@@ -497,22 +500,22 @@ function InvestorPage() {
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    try {
-      if (sessionStorage.getItem(GATE_KEY) === "1") setUnlocked(true);
-    } catch {
-      /* sessionStorage unavailable */
-    }
+    if (readInvestorAccess()) setUnlocked(true);
     setReady(true);
   }, []);
 
   if (!ready) return <div style={{ background: BG, minHeight: "100vh" }} />;
-  if (!unlocked) return <PasscodeGate onUnlock={() => setUnlocked(true)} />;
+  if (!unlocked) return <AccessGate onUnlock={() => setUnlocked(true)} />;
   return <InvestorDeck />;
 }
 
-function PasscodeGate({ onUnlock }: { onUnlock: () => void }) {
-  const [value, setValue] = useState("");
-  const [error, setError] = useState(false);
+function AccessGate({ onUnlock }: { onUnlock: () => void }) {
+  const [email, setEmail] = useState("");
+  const [code, setCode] = useState("");
+  const [emailMsg, setEmailMsg] = useState<string | null>(null);
+  const [codeMsg, setCodeMsg] = useState<string | null>(null);
+  const [codeError, setCodeError] = useState(false);
+  const [busy, setBusy] = useState<"email" | "code" | null>(null);
   const [leaving, setLeaving] = useState(false);
   const shakeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -523,24 +526,50 @@ function PasscodeGate({ onUnlock }: { onUnlock: () => void }) {
     [],
   );
 
-  function submit(e: React.FormEvent) {
+  function unlock(kind: "domain_verified" | "code_verified") {
+    writeInvestorAccess(kind);
+    setLeaving(true);
+    setTimeout(onUnlock, 400);
+  }
+
+  async function submitEmail(e: React.FormEvent) {
     e.preventDefault();
-    if (value.trim() === PASSCODE) {
-      try {
-        sessionStorage.setItem(GATE_KEY, "1");
-      } catch {
-        /* ignore */
-      }
-      setLeaving(true);
-      setTimeout(onUnlock, 400);
+    if (busy) return;
+    setEmailMsg(null);
+    setBusy("email");
+    const ok = await checkEmailDomain(email);
+    setBusy(null);
+    if (ok) {
+      unlock("domain_verified");
       return;
     }
-    setError(false);
-    // re-arm so the shake replays on repeated wrong entries
-    requestAnimationFrame(() => setError(true));
-    if (shakeTimer.current) clearTimeout(shakeTimer.current);
-    shakeTimer.current = setTimeout(() => setError(false), 2600);
+    setEmailMsg("This email isn't on our access list. Request access at elajuwan@clearedinc.com.");
   }
+
+  async function submitCode(e: React.FormEvent) {
+    e.preventDefault();
+    if (busy) return;
+    setCodeMsg(null);
+    setBusy("code");
+    const ok = await redeemAccessCode(code);
+    setBusy(null);
+    if (ok) {
+      unlock("code_verified");
+      return;
+    }
+    setCodeMsg("This code is invalid or has already been used.");
+    setCodeError(false);
+    requestAnimationFrame(() => setCodeError(true));
+    if (shakeTimer.current) clearTimeout(shakeTimer.current);
+    shakeTimer.current = setTimeout(() => setCodeError(false), 2600);
+  }
+
+  const inputStyle = (bad?: boolean): React.CSSProperties => ({
+    background: SURFACE,
+    border: `1px solid ${bad ? "#D24B4B" : BORDER}`,
+    color: OFF,
+    borderRadius: 0,
+  });
 
   return (
     <div
@@ -553,7 +582,7 @@ function PasscodeGate({ onUnlock }: { onUnlock: () => void }) {
           background: `radial-gradient(circle, rgba(0,180,168,0.16) 0%, rgba(0,180,168,0) 68%)`,
         }}
       />
-      <div className="relative w-full max-w-[420px]">
+      <div className="relative w-full max-w-[760px]">
         <Eyebrow>Cleard · Investor Relations</Eyebrow>
         <h1
           className="mt-5 text-[34px] font-extrabold tracking-[-0.03em]"
@@ -561,45 +590,112 @@ function PasscodeGate({ onUnlock }: { onUnlock: () => void }) {
         >
           Investor Deck
         </h1>
+        <p className="mt-4 text-[14px]" style={{ color: MUTED }}>
+          Enter your work email or an access code to continue.
+        </p>
 
-        <form onSubmit={submit} className="mt-8">
-          <label htmlFor="passcode" className="sr-only">
-            Passcode
-          </label>
-          <div className={error ? "investor-shake" : undefined} key={error ? "err" : "ok"}>
+        <div className="mt-10 grid gap-8 md:grid-cols-[1fr_auto_1fr] md:items-start md:gap-6">
+          {/* PATH 1 — email domain */}
+          <form onSubmit={submitEmail}>
+            <label
+              htmlFor="investor-email"
+              className="text-[11px] uppercase tracking-[0.2em]"
+              style={{ fontFamily: MONO, color: MUTED }}
+            >
+              Work email
+            </label>
             <input
-              id="passcode"
-              type="password"
-              autoFocus
-              autoComplete="off"
-              value={value}
-              onChange={(e) => setValue(e.target.value)}
-              placeholder="Passcode"
-              className="w-full px-4 py-3 text-[14px] outline-none"
+              id="investor-email"
+              type="email"
+              autoComplete="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="you@firm.com"
+              className="mt-3 w-full px-4 py-3 text-[14px] outline-none"
+              style={inputStyle()}
+            />
+            <button
+              type="submit"
+              disabled={busy === "email"}
+              className="mt-3 w-full px-4 py-3 text-[14px] font-semibold disabled:opacity-60"
+              style={{ background: TEAL, color: "#06110F", borderRadius: 0 }}
+            >
+              {busy === "email" ? "Checking…" : "Request Access →"}
+            </button>
+            {emailMsg && (
+              <p className="mt-3 text-[12px] leading-relaxed" style={{ color: MUTED }}>
+                {emailMsg}
+              </p>
+            )}
+          </form>
+
+          {/* divider */}
+          <div className="flex items-center justify-center md:h-full md:flex-col">
+            <div className="h-px flex-1 md:h-full md:w-px" style={{ background: BORDER }} />
+            <span
+              className="px-3 py-1 text-[11px] uppercase tracking-[0.2em] md:py-3"
+              style={{ fontFamily: MONO, color: MUTED }}
+            >
+              or
+            </span>
+            <div className="h-px flex-1 md:h-full md:w-px" style={{ background: BORDER }} />
+          </div>
+
+          {/* PATH 2 — one-time code */}
+          <form onSubmit={submitCode}>
+            <label
+              htmlFor="investor-code"
+              className="text-[11px] uppercase tracking-[0.2em]"
+              style={{ fontFamily: MONO, color: MUTED }}
+            >
+              Access code
+            </label>
+            <div
+              className={codeError ? "investor-shake" : undefined}
+              key={codeError ? "err" : "ok"}
+            >
+              <input
+                id="investor-code"
+                type="text"
+                autoComplete="off"
+                value={code}
+                onChange={(e) => setCode(e.target.value.toUpperCase())}
+                placeholder="RV2026XQ"
+                maxLength={16}
+                className="mt-3 w-full px-4 py-3 text-[14px] tracking-[0.18em] outline-none"
+                style={{ ...inputStyle(codeError), fontFamily: MONO }}
+              />
+            </div>
+            <button
+              type="submit"
+              disabled={busy === "code"}
+              className="mt-3 w-full px-4 py-3 text-[14px] font-semibold disabled:opacity-60"
               style={{
-                background: SURFACE,
-                border: `1px solid ${error ? "#D24B4B" : BORDER}`,
-                color: OFF,
+                background: "transparent",
+                border: `1px solid ${TEAL}`,
+                color: TEAL,
                 borderRadius: 0,
               }}
-            />
-          </div>
-          <button
-            type="submit"
-            className="mt-3 w-full px-4 py-3 text-[14px] font-semibold"
-            style={{ background: TEAL, color: "#06110F", borderRadius: 0 }}
-          >
-            Enter →
-          </button>
-        </form>
+            >
+              {busy === "code" ? "Checking…" : "Enter →"}
+            </button>
+            {codeMsg && (
+              <p className="mt-3 text-[12px] leading-relaxed" style={{ color: "#D98A8A" }}>
+                {codeMsg}
+              </p>
+            )}
+          </form>
+        </div>
 
-        <p className="mt-6 text-[11px]" style={{ fontFamily: MONO, color: MUTED }}>
+        <p className="mt-10 text-[11px]" style={{ fontFamily: MONO, color: MUTED }}>
           Confidential · For discussion only · 2026
         </p>
       </div>
     </div>
   );
 }
+
+
 
 function InvestorDeck() {
 

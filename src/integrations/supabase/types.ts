@@ -1771,6 +1771,57 @@ export type Database = {
           },
         ]
       }
+      investor_access_codes: {
+        Row: {
+          code: string
+          created_at: string
+          expires_at: string | null
+          id: string
+          label: string
+          used: boolean
+          used_at: string | null
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          label: string
+          used?: boolean
+          used_at?: string | null
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          label?: string
+          used?: boolean
+          used_at?: string | null
+        }
+        Relationships: []
+      }
+      investor_allowed_domains: {
+        Row: {
+          created_at: string
+          domain: string
+          id: string
+          label: string
+        }
+        Insert: {
+          created_at?: string
+          domain: string
+          id?: string
+          label: string
+        }
+        Update: {
+          created_at?: string
+          domain?: string
+          id?: string
+          label?: string
+        }
+        Relationships: []
+      }
       legal_document_versions: {
         Row: {
           change_notes: string | null
@@ -5208,6 +5259,7 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      redeem_investor_code: { Args: { _code: string }; Returns: boolean }
       reject_correction_plan: {
         Args: { _plan_id: string; _reason: string }
         Returns: {
