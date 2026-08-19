@@ -525,7 +525,7 @@ function WeeklyDigest() {
           {report.compliance_flags.map((f, i) => (
             <li key={i} className="flex items-center gap-3 py-1.5 text-[12.5px]">
               <span className="min-w-0 flex-1 truncate">{f.subcontractor}</span>
-              <span className="shrink-0 text-[11.5px] text-[#D08585]">{f.issue}</span>
+              <span className="shrink-0 text-[11.5px] text-[#8C3B3B]">{f.issue}</span>
             </li>
           ))}
         </ul>

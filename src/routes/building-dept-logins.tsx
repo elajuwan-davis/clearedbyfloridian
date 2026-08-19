@@ -240,7 +240,7 @@ function BuildingDeptLoginsPage() {
                                       <div className="truncate text-[12.5px]">{d.doc_label}</div>
                                     </div>
                                     <div
-                                      className={`text-[11.5px] tabular-nums ${expired ? "text-[#D08585]" : "text-muted-foreground"}`}
+                                      className={`text-[11.5px] tabular-nums ${expired ? "text-[#8C3B3B]" : "text-muted-foreground"}`}
                                     >
                                       {expired ? "Expired " : "Exp. "}{fmtDate(d.expiration_date)}
                                     </div>
@@ -296,7 +296,7 @@ function CopyButton({ value }: { value: string }) {
       className="p-1.5 text-muted-foreground transition-colors hover:text-foreground"
       aria-label="Copy"
     >
-      {done ? <Check className="h-3.5 w-3.5 text-[#7FA98F]" /> : <Copy className="h-3.5 w-3.5" />}
+      {done ? <Check className="h-3.5 w-3.5 text-[#4E6B5C]" /> : <Copy className="h-3.5 w-3.5" />}
     </button>
   );
 }

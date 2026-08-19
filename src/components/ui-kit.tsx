@@ -356,18 +356,18 @@ const toneText: Record<MetricTone, string> = {
   neutral: "text-foreground",
   info: "text-[#673147]",
   success: "text-[#4E6B5C]",
-  warning: "text-[#D2B15C]",
-  danger: "text-[#D08585]",
-  purple: "text-[#C7B7E8]",
+  warning: "text-[#9A7B2E]",
+  danger: "text-[#8C3B3B]",
+  purple: "text-[#7A5C8A]",
 };
 
 const toneWash: Record<MetricTone, string> = {
   neutral: "bg-white/[0.06] text-muted-foreground",
   info: "bg-[#673147]/12 text-[#673147]",
   success: "bg-[#673147]/12 text-[#4E6B5C]",
-  warning: "bg-[#9A7B2E]/12 text-[#D2B15C]",
-  danger: "bg-[#8C3B3B]/12 text-[#D08585]",
-  purple: "bg-[#7A5C8A]/12 text-[#C7B7E8]",
+  warning: "bg-[#9A7B2E]/12 text-[#9A7B2E]",
+  danger: "bg-[#8C3B3B]/12 text-[#8C3B3B]",
+  purple: "bg-[#7A5C8A]/12 text-[#7A5C8A]",
 };
 
 /** Compact metric — label above, bold number, muted context. No card chrome. */

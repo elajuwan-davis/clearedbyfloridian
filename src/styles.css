@@ -503,7 +503,7 @@ html:not(.dark) .portal-ui .flyout-link[data-active="true"] {
 }
 .portal-ui input:not([type="checkbox"]):not([type="radio"]),
 .portal-ui select {
-  height: 30px;
+  min-height: 30px;
 }
 .portal-ui input::placeholder,
 .portal-ui textarea::placeholder {
@@ -1083,9 +1083,9 @@ html:not(.dark) .portal-ui.dark {
   --p-purple:    #5C7370;
 
   --primary:            #673147;
-  --primary-foreground: #2F4F4F;
+  --primary-foreground: #FAF3E6;
   --accent:             #673147;
-  --accent-foreground:  #2F4F4F;
+  --accent-foreground:  #FAF3E6;
   --ring:               #673147;
   --input:              #FAF3E6;
 
@@ -1298,7 +1298,7 @@ html:not(.dark) .portal-ui .flyout-link[data-active="true"] {
 /* Elevated panels — the only allowed shadow */
 .portal-ui [role="dialog"],
 .portal-ui [data-radix-popper-content-wrapper] > * {
-  background-color: #FAF3E6;
+  background-color: var(--p-card);
   border: 1px solid var(--p-border);
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
 }
@@ -1307,11 +1307,11 @@ html:not(.dark) .portal-ui .flyout-link[data-active="true"] {
 .portal-ui [class*="bg-gradient"] { background-image: none !important; }
 .portal-ui .bg-white,
 .portal-ui .bg-paper,
-.portal-ui .bg-card { background-color: #FAF3E6 !important; }
+.portal-ui .bg-card { background-color: var(--p-card) !important; }
 .portal-ui .bg-paper-warm,
 .portal-ui .bg-paper-deep,
 .portal-ui .bg-secondary,
-.portal-ui .bg-muted { background-color: #F3EAD9 !important; }
+.portal-ui .bg-muted { background-color: var(--p-card-2) !important; }
 .portal-ui .bg-obsidian,
 .portal-ui .bg-obsidian-deep { background-color: #2F4F4F !important; color: #FAF3E6; }
 .portal-ui .shadow,
@@ -1412,9 +1412,9 @@ html:not(.dark) .portal-ui .flyout-link[data-active="true"] {
 }
 .marketing-dark .md-btn-ghost,
 .marketing-dark .md-btn-gold-outline {
-  background: #FAF3E6 !important;
-  color: #2F4F4F !important;
-  border: 1px solid #E0D3BC !important;
+  background: var(--card) !important;
+  color: var(--foreground) !important;
+  border: 1px solid var(--border) !important;
 }
 .marketing-dark .md-btn-ghost:hover,
 .marketing-dark .md-btn-gold-outline:hover {
@@ -1493,13 +1493,13 @@ html:not(.dark) .portal-ui .flyout-link[data-active="true"] {
   --popover:           #FAF3E6;
   --popover-foreground:#2F4F4F;
   --primary:           #673147;
-  --primary-foreground:#2F4F4F;
+  --primary-foreground:#FAF3E6;
   --secondary:         #F3EAD9;
   --secondary-foreground:#2F4F4F;
   --muted:             #F3EAD9;
   --muted-foreground:  #5C7370;
   --accent:            #673147;
-  --accent-foreground: #2F4F4F;
+  --accent-foreground: #FAF3E6;
   --blueprint:         #673147;
   --destructive:       #8C3B3B;
   --destructive-foreground: #FAF3E6;
@@ -1625,9 +1625,9 @@ button.bg-accent:hover, a.bg-accent:hover { background: #52243A !important; colo
 .p-btn-ghost,
 .md-btn-ghost,
 .md-btn-gold-outline {
-  background: #FAF3E6 !important;
-  color: #2F4F4F !important;
-  border: 1px solid #E0D3BC !important;
+  background: var(--card) !important;
+  color: var(--foreground) !important;
+  border: 1px solid var(--border) !important;
   font-weight: 500 !important;
   padding: 9px 20px;
 }
@@ -1701,8 +1701,8 @@ select { appearance: none; -webkit-appearance: none; background-image: none; }
 [role="menu"],
 [role="listbox"],
 .cds-menu {
-  background: #FAF3E6 !important;
-  border: 1px solid #E0D3BC !important;
+  background: var(--popover) !important;
+  border: 1px solid var(--border) !important;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08) !important;
   min-width: 220px;
   padding: 6px 0;
@@ -1801,8 +1801,8 @@ tbody tr:hover, .p-table tbody tr:hover { background: #F3EAD9; }
 [data-slot="dialog-content"],
 [data-slot="alert-dialog-content"],
 [data-slot="sheet-content"] {
-  background: #FAF3E6 !important;
-  border: 1px solid #E0D3BC !important;
+  background: var(--card) !important;
+  border: 1px solid var(--border) !important;
   box-shadow: 0 16px 48px rgba(0, 0, 0, 0.12) !important;
   color: #2F4F4F;
 }
@@ -1859,13 +1859,14 @@ tbody tr:hover, .p-table tbody tr:hover { background: #F3EAD9; }
 /* ── Retire legacy palette remnants app-wide ── */
 [class*="bg-gradient"] { background-image: none !important; }
 .shadow, .shadow-sm, .shadow-md, .shadow-lg, .shadow-xl, .shadow-2xl { box-shadow: none !important; }
-.bg-white, .bg-card, .bg-paper, .bg-popover { background-color: #FAF3E6 !important; }
-.bg-secondary, .bg-muted, .bg-paper-warm, .bg-paper-deep { background-color: #F3EAD9 !important; }
-.bg-obsidian, .bg-obsidian-deep { background-color: #2F4F4F !important; color: #FAF3E6; }
-.text-obsidian, .text-ink, .text-foreground { color: #2F4F4F !important; }
-.text-muted-foreground { color: #5C7370 !important; }
-.text-sky, .text-brand, .text-accent, .text-primary { color: #673147 !important; }
-.border-obsidian\/10, .border-obsidian\/15, .border-obsidian\/20, .hairline, .border-border { border-color: #E0D3BC !important; }
+.bg-white, .bg-card, .bg-paper, .bg-popover { background-color: var(--card) !important; }
+.bg-secondary, .bg-muted, .bg-paper-warm, .bg-paper-deep { background-color: var(--muted) !important; }
+.bg-obsidian, .bg-obsidian-deep { background-color: var(--nl-slate) !important; color: var(--nl-oat); }
+.dark .bg-obsidian, .dark .bg-obsidian-deep { background-color: var(--obsidian) !important; }
+.text-obsidian, .text-ink, .text-foreground { color: var(--foreground) !important; }
+.text-muted-foreground { color: var(--muted-foreground) !important; }
+.text-sky, .text-brand, .text-accent, .text-primary { color: var(--primary) !important; }
+.border-obsidian\/10, .border-obsidian\/15, .border-obsidian\/20, .hairline, .border-border { border-color: var(--border) !important; }
 
 /* ── Scroll-triggered section fade-in (marketing) ── */
 @keyframes cds-fade-up {
@@ -1935,7 +1936,7 @@ tbody tr:hover, .p-table tbody tr:hover { background: #F3EAD9; }
   font-weight: 500 !important;
   letter-spacing: -0.025em !important;
   font-variation-settings: "SOFT" 0, "WONK" 1;
-  color: #673147;
+  color: inherit;
 }
 .marketing-dark .md-serif em,
 .marketing-dark h2 em, .cl-home h2 em {
@@ -2019,7 +2020,7 @@ tbody tr:hover, .p-table tbody tr:hover { background: #F3EAD9; }
    markup; the colours they ask for resolve to the four brand
    colours so a dialog, chip or banner can't drift off-theme.
    ========================================================= */
-.bg-white { background-color: var(--nl-oat) !important; }
+.bg-white { background-color: var(--card) !important; }
 .text-white { color: var(--nl-oat) !important; }
 .border-white { border-color: var(--nl-oat) !important; }
 .portal-ui .bg-white { background-color: var(--p-card) !important; }
@@ -2031,7 +2032,7 @@ tbody tr:hover, .p-table tbody tr:hover { background: #F3EAD9; }
 [class*="text-blue-"], [class*="text-sky-"], [class*="text-cyan-"], [class*="text-indigo-"],
 [class*="text-violet-"], [class*="text-purple-"], [class*="text-fuchsia-"], [class*="text-pink-"] { color: var(--nl-plum) !important; }
 [class*="text-slate-"], [class*="text-gray-"], [class*="text-zinc-"],
-[class*="text-neutral-"], [class*="text-stone-"] { color: var(--nl-slate-2) !important; }
+[class*="text-neutral-"], [class*="text-stone-"] { color: var(--muted-foreground) !important; }
 
 /* Borders */
 [class*="border-red-"], [class*="border-rose-"] { border-color: color-mix(in oklab, var(--nl-danger) 40%, transparent) !important; }
@@ -2040,7 +2041,7 @@ tbody tr:hover, .p-table tbody tr:hover { background: #F3EAD9; }
 [class*="border-blue-"], [class*="border-sky-"], [class*="border-cyan-"], [class*="border-indigo-"],
 [class*="border-violet-"], [class*="border-purple-"], [class*="border-fuchsia-"], [class*="border-pink-"] { border-color: color-mix(in oklab, var(--nl-plum) 40%, transparent) !important; }
 [class*="border-slate-"], [class*="border-gray-"], [class*="border-zinc-"],
-[class*="border-neutral-"], [class*="border-stone-"] { border-color: var(--nl-line) !important; }
+[class*="border-neutral-"], [class*="border-stone-"] { border-color: var(--border) !important; }
 
 /* Soft surfaces (50–200) stay tints */
 [class*="bg-red-50"], [class*="bg-red-100"], [class*="bg-red-200"],
@@ -2054,7 +2055,7 @@ tbody tr:hover, .p-table tbody tr:hover { background: #F3EAD9; }
 [class*="bg-purple-50"], [class*="bg-purple-100"], [class*="bg-pink-50"], [class*="bg-pink-100"] { background-color: var(--nl-lavender) !important; }
 [class*="bg-slate-50"], [class*="bg-slate-100"], [class*="bg-gray-50"], [class*="bg-gray-100"],
 [class*="bg-zinc-50"], [class*="bg-zinc-100"], [class*="bg-neutral-50"], [class*="bg-neutral-100"],
-[class*="bg-stone-50"], [class*="bg-stone-100"] { background-color: var(--nl-oat-2) !important; }
+[class*="bg-stone-50"], [class*="bg-stone-100"] { background-color: var(--muted) !important; }
 
 /* Solid fills (400+) keep their weight. These come after the tints on purpose:
    "bg-red-50" is a substring of "bg-red-500", so the full shade must win last. */
@@ -2071,3 +2072,45 @@ tbody tr:hover, .p-table tbody tr:hover { background: #F3EAD9; }
 
 /* Rings pick up the plum focus colour rather than Tailwind blue */
 [class*="ring-blue-"], [class*="ring-sky-"], [class*="ring-indigo-"] { --tw-ring-color: var(--nl-plum) !important; }
+
+/* ── Toasts (sonner) — same paper, same typeface as the rest ── */
+[data-sonner-toaster] {
+  --normal-bg: var(--nl-oat);
+  --normal-text: var(--nl-slate);
+  --normal-border: var(--nl-line);
+  --success-bg: var(--nl-oat);
+  --success-text: var(--nl-success);
+  --success-border: var(--nl-line);
+  --error-bg: var(--nl-oat);
+  --error-text: var(--nl-danger);
+  --error-border: var(--nl-line);
+  --warning-bg: var(--nl-oat);
+  --warning-text: var(--nl-warning);
+  --warning-border: var(--nl-line);
+  --info-bg: var(--nl-oat);
+  --info-text: var(--nl-plum);
+  --info-border: var(--nl-line);
+  font-family: var(--nl-font) !important;
+}
+[data-sonner-toast] {
+  background: var(--nl-oat) !important;
+  color: var(--nl-slate) !important;
+  border: 1px solid var(--nl-line) !important;
+  border-radius: 3px !important;
+  box-shadow: 0 8px 24px rgba(47, 79, 79, 0.10) !important;
+  font-family: var(--nl-font) !important;
+}
+[data-sonner-toast] [data-title] { color: var(--nl-slate) !important; font-weight: 600; }
+[data-sonner-toast] [data-description] { color: var(--nl-slate-2) !important; }
+[data-sonner-toast] [data-button] {
+  background: var(--nl-plum) !important;
+  color: var(--nl-oat) !important;
+  border-radius: 3px !important;
+}
+[data-sonner-toast] [data-cancel] {
+  background: var(--nl-oat-2) !important;
+  color: var(--nl-slate) !important;
+}
+[data-sonner-toast][data-type="success"] [data-icon] { color: var(--nl-success) !important; }
+[data-sonner-toast][data-type="error"] [data-icon] { color: var(--nl-danger) !important; }
+[data-sonner-toast][data-type="warning"] [data-icon] { color: var(--nl-warning) !important; }

@@ -69,7 +69,7 @@ export function QuickSavingsEstimate() {
           </span>
           <div
             className={`text-[20px] font-semibold leading-none tracking-[-0.03em] tabular-nums ${
-              savings > 0 ? "text-[#7FA98F]" : ""
+              savings > 0 ? "text-[#4E6B5C]" : ""
             }`}
           >
             {fmt(savings)}
