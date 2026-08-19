@@ -557,8 +557,10 @@ function AccessGate({ onUnlock }: { onUnlock: () => void }) {
       unlock("code_verified");
       return;
     }
-    setCodeMsg("This code is invalid or has already been used.");
+    setCodeMsg("Incorrect code — this code is invalid or has already been used.");
+    setCode("");
     setCodeError(false);
+
     requestAnimationFrame(() => setCodeError(true));
     if (shakeTimer.current) clearTimeout(shakeTimer.current);
     shakeTimer.current = setTimeout(() => setCodeError(false), 2600);
