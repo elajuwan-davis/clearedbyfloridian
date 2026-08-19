@@ -34,25 +34,11 @@ export async function checkEmailDomain(email: string): Promise<boolean> {
   return Boolean(data);
 }
 
-/** PATH 2 — validate a one-time code and burn it immediately. */
+/** PATH 2 — validate a one-time code and burn it atomically. */
 export async function redeemAccessCode(input: string): Promise<boolean> {
   const code = input.trim().toUpperCase();
   if (!code) return false;
-
-  const { data, error } = await supabase
-    .from("investor_access_codes")
-    .select("code, used, expires_at")
-    .eq("code", code)
-    .eq("used", false)
-    .maybeSingle();
-  if (error || !data) return false;
-  if (data.expires_at && new Date(data.expires_at).getTime() <= Date.now()) return false;
-
-  const { error: burnError } = await supabase
-    .from("investor_access_codes")
-    .update({ used: true, used_at: new Date().toISOString() })
-    .eq("code", code)
-    .eq("used", false);
-  if (burnError) return false;
-  return true;
+  const { data, error } = await supabase.rpc("redeem_investor_code", { _code: code });
+  if (error) return false;
+  return data === true;
 }
