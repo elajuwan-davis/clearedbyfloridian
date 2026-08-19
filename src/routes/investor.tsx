@@ -1,5 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
-import type { ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
+
+/** Change the investor deck passcode here. */
+const PASSCODE = "rainfall2026";
+const GATE_KEY = "cleard-investor-unlocked";
+
 
 export const Route = createFileRoute("/investor")({
   head: () => ({
@@ -21,7 +26,7 @@ export const Route = createFileRoute("/investor")({
       { name: "robots", content: "noindex" },
     ],
   }),
-  component: InvestorDeck,
+  component: InvestorPage,
 });
 
 const BG = "#0C0D0B";
@@ -487,7 +492,117 @@ function AskCell({ label, children }: { label: string; children: ReactNode }) {
 
 /* ---------------- Page ---------------- */
 
+function InvestorPage() {
+  const [unlocked, setUnlocked] = useState(false);
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    try {
+      if (sessionStorage.getItem(GATE_KEY) === "1") setUnlocked(true);
+    } catch {
+      /* sessionStorage unavailable */
+    }
+    setReady(true);
+  }, []);
+
+  if (!ready) return <div style={{ background: BG, minHeight: "100vh" }} />;
+  if (!unlocked) return <PasscodeGate onUnlock={() => setUnlocked(true)} />;
+  return <InvestorDeck />;
+}
+
+function PasscodeGate({ onUnlock }: { onUnlock: () => void }) {
+  const [value, setValue] = useState("");
+  const [error, setError] = useState(false);
+  const [leaving, setLeaving] = useState(false);
+  const shakeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(
+    () => () => {
+      if (shakeTimer.current) clearTimeout(shakeTimer.current);
+    },
+    [],
+  );
+
+  function submit(e: React.FormEvent) {
+    e.preventDefault();
+    if (value.trim() === PASSCODE) {
+      try {
+        sessionStorage.setItem(GATE_KEY, "1");
+      } catch {
+        /* ignore */
+      }
+      setLeaving(true);
+      setTimeout(onUnlock, 400);
+      return;
+    }
+    setError(false);
+    // re-arm so the shake replays on repeated wrong entries
+    requestAnimationFrame(() => setError(true));
+    if (shakeTimer.current) clearTimeout(shakeTimer.current);
+    shakeTimer.current = setTimeout(() => setError(false), 2600);
+  }
+
+  return (
+    <div
+      className={`flex min-h-screen items-center justify-center px-6 ${leaving ? "investor-gate-out" : ""}`}
+      style={{ background: BG, color: OFF, fontFamily: SANS }}
+    >
+      <div
+        className="pointer-events-none fixed -left-40 -top-40 h-[560px] w-[560px]"
+        style={{
+          background: `radial-gradient(circle, rgba(0,180,168,0.16) 0%, rgba(0,180,168,0) 68%)`,
+        }}
+      />
+      <div className="relative w-full max-w-[420px]">
+        <Eyebrow>Cleard · Investor Relations</Eyebrow>
+        <h1
+          className="mt-5 text-[34px] font-extrabold tracking-[-0.03em]"
+          style={{ color: OFF }}
+        >
+          Investor Deck
+        </h1>
+
+        <form onSubmit={submit} className="mt-8">
+          <label htmlFor="passcode" className="sr-only">
+            Passcode
+          </label>
+          <div className={error ? "investor-shake" : undefined} key={error ? "err" : "ok"}>
+            <input
+              id="passcode"
+              type="password"
+              autoFocus
+              autoComplete="off"
+              value={value}
+              onChange={(e) => setValue(e.target.value)}
+              placeholder="Passcode"
+              className="w-full px-4 py-3 text-[14px] outline-none"
+              style={{
+                background: SURFACE,
+                border: `1px solid ${error ? "#D24B4B" : BORDER}`,
+                color: OFF,
+                borderRadius: 0,
+              }}
+            />
+          </div>
+          <button
+            type="submit"
+            className="mt-3 w-full px-4 py-3 text-[14px] font-semibold"
+            style={{ background: TEAL, color: "#06110F", borderRadius: 0 }}
+          >
+            Enter →
+          </button>
+        </form>
+
+        <p className="mt-6 text-[11px]" style={{ fontFamily: MONO, color: MUTED }}>
+          Confidential · For discussion only · 2026
+        </p>
+      </div>
+    </div>
+  );
+}
+
 function InvestorDeck() {
+
   return (
     <div
       className="h-screen overflow-y-scroll"
