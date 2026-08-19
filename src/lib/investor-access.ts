@@ -34,11 +34,18 @@ export async function checkEmailDomain(email: string): Promise<boolean> {
   return Boolean(data);
 }
 
-/** PATH 2 — validate a one-time code and burn it atomically. */
+/** Shared passcode that always unlocks the deck. Change here to rotate it. */
+export const INVESTOR_PASSCODE = "Victoria2026!";
+
+/** PATH 2 — shared passcode, or a one-time code validated and burned atomically. */
 export async function redeemAccessCode(input: string): Promise<boolean> {
-  const code = input.trim().toUpperCase();
-  if (!code) return false;
-  const { data, error } = await supabase.rpc("redeem_investor_code", { _code: code });
+  const raw = input.trim();
+  if (!raw) return false;
+  if (raw === INVESTOR_PASSCODE) return true;
+  const { data, error } = await supabase.rpc("redeem_investor_code", {
+    _code: raw.toUpperCase(),
+  });
   if (error) return false;
   return data === true;
 }
+
