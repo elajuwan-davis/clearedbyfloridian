@@ -152,6 +152,18 @@ function MarketingFooter() {
           <Link to="/contact" className="no-underline" style={{ color: "rgba(255,255,255,0.7)" }}>Contact</Link>
         </nav>
 
+        <div className="flex flex-col gap-2">
+          <div className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: "rgba(255,255,255,0.45)" }}>
+            For Municipalities
+          </div>
+          <Link to="/municipalities" className="no-underline text-[13px]" style={{ color: "rgba(255,255,255,0.7)" }}>
+            [DEPT] — Building department services
+          </Link>
+          <span className="text-[12px]" style={{ color: "rgba(200,196,188,0.5)" }}>
+            cleard.io/municipalities
+          </span>
+        </div>
+
         <div className="text-[12px]" style={{ color: "rgba(200,196,188,0.6)" }}>
           © 2026 Cleard
         </div>
