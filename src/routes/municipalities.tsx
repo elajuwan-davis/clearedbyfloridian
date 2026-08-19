@@ -96,12 +96,36 @@ const STEPS = [
   },
 ];
 
+const DIFFERENTIATORS = [
+  {
+    t: "Platform-backed, not just staffing",
+    b: "Staffing agencies send people. CleardGov delivers licensed professionals plus the software that tracks every review, inspection, comment, and outcome in one auditable record.",
+  },
+  {
+    t: "National scale",
+    b: "A licensed bench across jurisdictions means surge capacity when your volume spikes, and continuity when it does not.",
+  },
+  {
+    t: "Victoria, the intelligence layer",
+    b: "Victoria reads plans, flags likely code issues before a reviewer opens the file, and drafts organized comments — so your reviewers spend time on judgment, not sorting.",
+  },
+  {
+    t: "Zero overhead to the city",
+    b: "No recruiting, no benefits, no software procurement, no permanent headcount added to your budget. Capacity turns on and off with your volume.",
+  },
+  {
+    t: "Fee-share model",
+    b: "CleardGov is funded by permit fees, not the general fund. The city retains 15% of collected fees; Cleard retains 85% and carries the people, the platform, and the liability.",
+  },
+];
+
 const TRUST = [
   "All results carry full legal standing",
   "Your department maintains oversight and final authority",
   "Professionals licensed in your jurisdiction",
   "Turnaround SLAs guaranteed by contract",
 ];
+
 
 function QueueMock() {
   const rows = [
