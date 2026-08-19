@@ -8,7 +8,7 @@ export function SiteFooter() {
           <div className="flex items-center gap-3 mb-4">
             <div
               className="h-10 w-10 rounded-xl flex items-center justify-center text-white font-bold text-base"
-              style={{ background: "linear-gradient(135deg, #1B84D4, #12A05C)" }}
+              style={{ background: "linear-gradient(135deg, #673147, #4E6B5C)" }}
             >
               C
             </div>
@@ -22,7 +22,7 @@ export function SiteFooter() {
           <Link
             to="/portal"
             className="inline-flex items-center gap-2 mt-5 px-4 py-2.5 rounded-lg text-sm font-semibold text-white transition-opacity hover:opacity-90"
-            style={{ background: "var(--green, #12A05C)" }}
+            style={{ background: "var(--green, #4E6B5C)" }}
           >
             Get early access →
           </Link>

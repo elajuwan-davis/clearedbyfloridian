@@ -54,7 +54,7 @@ function Yes() {
 function No() {
   return (
     <span className="inline-flex items-center justify-center h-5 w-5" aria-label="Not included">
-      <X className="h-3.5 w-3.5" style={{ color: "#DC2626", opacity: 0.7 }} strokeWidth={2.5} />
+      <X className="h-3.5 w-3.5" style={{ color: "#8C3B3B", opacity: 0.7 }} strokeWidth={2.5} />
     </span>
   );
 }

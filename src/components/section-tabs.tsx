@@ -45,7 +45,7 @@ export function SectionTabs() {
                 borderRadius: 0,
                 fontWeight: active ? 600 : 400,
                 color: active ? "var(--foreground)" : "var(--muted-foreground)",
-                borderBottom: `2px solid ${active ? "var(--teal, #00B4A8)" : "transparent"}`,
+                borderBottom: `2px solid ${active ? "var(--teal, #673147)" : "transparent"}`,
               }}
             >
               {tab.label}

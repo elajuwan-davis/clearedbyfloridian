@@ -70,7 +70,7 @@ export function CoChecklistPanel({ permitId, projectName, tenantId }: Props) {
           <div className="font-mono text-[11px] tabular-nums text-obsidian/60">{c.percent}%</div>
         </div>
         <div className="mt-3 h-2 bg-obsidian/10 rounded-full overflow-hidden">
-          <div className="h-full transition-all" style={{ width: `${c.percent}%`, background: c.issued ? "#10b981" : "#153157" }} />
+          <div className="h-full transition-all" style={{ width: `${c.percent}%`, background: c.issued ? "#10b981" : "#2F4F4F" }} />
         </div>
       </div>
 

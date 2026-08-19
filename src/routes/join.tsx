@@ -18,7 +18,7 @@ export const Route = createFileRoute("/join")({
   }),
 });
 
-const OBSIDIAN = "#153157";
+const OBSIDIAN = "#2F4F4F";
 const MUTED = `color-mix(in oklab, ${OBSIDIAN} 55%, transparent)`;
 const HAIRLINE = `color-mix(in oklab, ${OBSIDIAN} 12%, transparent)`;
 
@@ -57,7 +57,7 @@ function JoinPage() {
 
   return (
     <MarketingShell>
-    <div style={{ color: OBSIDIAN, fontFamily: "'DM Sans', sans-serif" }}>
+    <div style={{ color: OBSIDIAN, fontFamily: "'Fraunces', 'Iowan Old Style', Georgia, serif" }}>
 
 
       {/* HERO */}
@@ -90,7 +90,7 @@ function JoinPage() {
               <a
                 href="#request"
                 className="inline-flex items-center px-8 h-14 text-[12px] font-mono uppercase tracking-[0.24em] transition-opacity hover:opacity-85"
-                style={{ backgroundColor: OBSIDIAN, color: "#fff", borderRadius: 0 }}
+                style={{ backgroundColor: OBSIDIAN, color: "#FAF3E6", borderRadius: 0 }}
               >
                 Get Started
               </a>
@@ -110,7 +110,7 @@ function JoinPage() {
               className="relative bg-white p-6 lg:p-8"
               style={{
                 border: `1px solid ${HAIRLINE}`,
-                boxShadow: "0 30px 80px -30px rgba(21,49,87,0.25)",
+                boxShadow: "0 30px 80px -30px rgba(47, 79, 79,0.25)",
               }}
             >
               <div className="flex items-center justify-between mb-6 pb-4" style={{ borderBottom: `1px solid ${HAIRLINE}` }}>
@@ -128,7 +128,7 @@ function JoinPage() {
                   { name: "Lighthouse Point Residence", muni: "Palm Beach", status: "Issued", tone: "#0a7a3f" },
                   { name: "Wellington Estate", muni: "Wellington", status: "In Review", tone: "#a86a00" },
                   { name: "Jupiter Waterfront", muni: "Jupiter", status: "Submitted", tone: "#1e40af" },
-                  { name: "Vero Beach Custom", muni: "Indian River", status: "Corrections", tone: "#b91c1c" },
+                  { name: "Vero Beach Custom", muni: "Indian River", status: "Corrections", tone: "#8c3b3b" },
                 ].map((row) => (
                   <div key={row.name} className="flex items-center justify-between py-3" style={{ borderBottom: `1px solid ${HAIRLINE}` }}>
                     <div>
@@ -277,7 +277,7 @@ function JoinPage() {
             <div key={s.l}>
               <div
                 className="display-serif font-bold leading-none mb-4"
-                style={{ color: "#fff", fontSize: "clamp(2.25rem, 5vw, 3.75rem)", letterSpacing: "-0.02em" }}
+                style={{ color: "#FAF3E6", fontSize: "clamp(2.25rem, 5vw, 3.75rem)", letterSpacing: "-0.02em" }}
               >
                 {s.n}
               </div>
@@ -359,7 +359,7 @@ function JoinPage() {
               ))}
 
               {state === "error" && (
-                <div className="text-[12px]" style={{ color: "#b91c1c" }}>
+                <div className="text-[12px]" style={{ color: "#8c3b3b" }}>
                   {errorMsg || "Submission failed. Please try again."}
                 </div>
               )}
@@ -368,7 +368,7 @@ function JoinPage() {
                 type="submit"
                 disabled={state === "submitting"}
                 className="w-full h-14 text-[12px] font-mono uppercase tracking-[0.24em] transition-opacity hover:opacity-85 disabled:opacity-50"
-                style={{ backgroundColor: OBSIDIAN, color: "#fff", borderRadius: 0 }}
+                style={{ backgroundColor: OBSIDIAN, color: "#FAF3E6", borderRadius: 0 }}
               >
                 {state === "submitting" ? "Sending…" : "Get Started"}
               </button>

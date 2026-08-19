@@ -340,7 +340,7 @@ function FinancialsPage() {
                       name="Invoiced"
                       stroke={CDS.teal}
                       strokeWidth={2}
-                      fill="rgba(0,180,168,0.12)"
+                      fill="rgba(103, 49, 71,0.12)"
                     />
                     <Area
                       type="linear"
@@ -456,14 +456,14 @@ function FinancialsPage() {
                                 />
                                 <button
                                   onClick={() => saveEdit(p.id)}
-                                  className="text-[#4ADE80]"
+                                  className="text-[#4E6B5C]"
                                   aria-label="Save"
                                 >
                                   <Check className="h-3.5 w-3.5" />
                                 </button>
                                 <button
                                   onClick={() => setEditId(null)}
-                                  className="text-muted-foreground hover:text-[#F87171]"
+                                  className="text-muted-foreground hover:text-[#8C3B3B]"
                                   aria-label="Cancel"
                                 >
                                   <X className="h-3.5 w-3.5" />
@@ -523,7 +523,7 @@ function FinancialsPage() {
                     <td />
                     <td className="text-right tabular-nums">{fmtUsd(filteredTotals.permitFees)}</td>
                     <td className="text-right tabular-nums">{fmtUsd(filteredTotals.clearedFees)}</td>
-                    <td className="text-right font-semibold tabular-nums text-[#4ADE80]">
+                    <td className="text-right font-semibold tabular-nums text-[#4E6B5C]">
                       {fmtUsd(filteredTotals.combined)}
                     </td>
                     <td className="hidden lg:table-cell" />

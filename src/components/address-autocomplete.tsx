@@ -325,7 +325,7 @@ export function AddressAutocomplete({
               onMouseDown={(e) => { e.preventDefault(); selectSuggestion(s); }}
               onMouseEnter={() => setActiveIdx(i)}
               className={`flex items-start gap-2 px-3 py-2 cursor-pointer text-[13px] ${
-                i === activeIdx ? "bg-[#B6DAEA]/25" : "hover:bg-obsidian/[0.04]"
+                i === activeIdx ? "bg-[#E6E6FA]/25" : "hover:bg-obsidian/[0.04]"
               }`}
             >
               <MapPin className="mt-0.5 h-3.5 w-3.5 shrink-0 text-obsidian/50" />

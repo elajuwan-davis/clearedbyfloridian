@@ -32,17 +32,17 @@ export const Route = createFileRoute("/investor")({
   component: InvestorPage,
 });
 
-const BG = "#0C0D0B";
-const SURFACE = "#111310";
-const LIGHT = "#F5F4F0";
-const INK = "#111110";
-const BORDER = "#2A2E2C";
+const BG = "#2F4F4F";
+const SURFACE = "#2F4F4F";
+const LIGHT = "#F3EAD9";
+const INK = "#2F4F4F";
+const BORDER = "#3F5C5A";
 const BORDER_LT = "#DCD9D1";
-const TEAL = "#00B4A8";
-const OFF = "#F5F4F0";
-const MUTED = "#8C8B7A";
+const TEAL = "#E6E6FA";
+const OFF = "#F3EAD9";
+const MUTED = "rgba(250, 243, 230, 0.62)";
 const MUTED_LT = "#6B6A5E";
-const SANS = "system-ui, -apple-system, sans-serif";
+const SANS = "'Fraunces', 'Iowan Old Style', Georgia, serif";
 const MONO = "ui-monospace, Menlo, Monaco, monospace";
 
 const TOTAL = 11;
@@ -87,7 +87,7 @@ function Eyebrow({ children, light }: { children: ReactNode; light?: boolean }) 
   return (
     <div
       className="text-[11px] uppercase tracking-[0.22em]"
-      style={{ fontFamily: MONO, color: light ? "#0E8C84" : TEAL }}
+      style={{ fontFamily: MONO, color: light ? "#673147" : TEAL }}
     >
       {children}
     </div>
@@ -135,7 +135,7 @@ function NumRow({
       </div>
       <div
         className="text-[14px] leading-relaxed"
-        style={{ color: light ? "#3A3A33" : "#C9C8BC" }}
+        style={{ color: light ? "#2F4F4F" : "#CFBE9F" }}
       >
         {children}
       </div>
@@ -154,7 +154,7 @@ function Cover() {
       <div
         className="pointer-events-none absolute -left-40 -top-40 h-[620px] w-[620px]"
         style={{
-          background: `radial-gradient(circle, rgba(0,180,168,0.20) 0%, rgba(0,180,168,0) 68%)`,
+          background: `radial-gradient(circle, rgba(103, 49, 71,0.20) 0%, rgba(103, 49, 71,0) 68%)`,
         }}
       />
       <div className="relative mx-auto w-full max-w-6xl px-6 py-20 lg:px-10">
@@ -180,7 +180,7 @@ function Cover() {
         </div>
 
         <div className="mt-12" style={{ borderTop: `1px solid ${BORDER}` }} />
-        <p className="mt-8 max-w-2xl text-[15px] leading-relaxed" style={{ color: "#C9C8BC" }}>
+        <p className="mt-8 max-w-2xl text-[15px] leading-relaxed" style={{ color: "#CFBE9F" }}>
           From contractor back office to national building department infrastructure: the
           operating system for America&apos;s construction industry.
         </p>
@@ -225,7 +225,7 @@ function StackDiagram() {
               y={18}
               width={280}
               height={60}
-              fill={active ? "rgba(0,180,168,0.10)" : "#FFFFFF"}
+              fill={active ? "rgba(103, 49, 71,0.10)" : "#FAF3E6"}
               stroke={active ? TEAL : BORDER_LT}
             />
             <text
@@ -235,7 +235,7 @@ function StackDiagram() {
               fontSize="13"
               fontFamily={SANS}
               fontWeight={active ? 700 : 500}
-              fill={active ? "#0E8C84" : INK}
+              fill={active ? "#673147" : INK}
             >
               {b}
             </text>
@@ -385,7 +385,7 @@ function Quadrant() {
   const py = (v: number) => H - 44 - v * (H - 74);
   return (
     <svg viewBox={`0 0 ${W} ${H}`} className="w-full" role="img" aria-label="Competitive quadrant chart">
-      <rect x={46} y={26} width={W - 70} height={H - 70} fill="#FFFFFF" stroke={BORDER_LT} />
+      <rect x={46} y={26} width={W - 70} height={H - 70} fill="#FAF3E6" stroke={BORDER_LT} />
       <line x1={46 + (W - 70) / 2} y1={26} x2={46 + (W - 70) / 2} y2={H - 44} stroke={BORDER_LT} strokeDasharray="3 3" />
       <line x1={46} y1={26 + (H - 70) / 2} x2={W - 24} y2={26 + (H - 70) / 2} stroke={BORDER_LT} strokeDasharray="3 3" />
 
@@ -396,13 +396,13 @@ function Quadrant() {
 
       {DOTS.map((d) => (
         <g key={d.name}>
-          <circle cx={px(d.x)} cy={py(d.y)} r={5} fill={d.gray ? "#B7B4AA" : INK} />
+          <circle cx={px(d.x)} cy={py(d.y)} r={5} fill={d.gray ? "#8B9A97" : INK} />
           <text
             x={px(d.x) + 9}
             y={py(d.y) + 4}
             fontSize="10"
             fontFamily={SANS}
-            fill={d.gray ? "#8E8B82" : "#3A3A33"}
+            fill={d.gray ? "#8B9A97" : "#2F4F4F"}
           >
             {d.name}
           </text>
@@ -413,9 +413,9 @@ function Quadrant() {
         <line x1={px(0.66)} y1={py(0.5)} x2={px(0.84)} y2={py(0.86)} strokeDasharray="4 3" />
         <polyline points={`${px(0.84) - 7},${py(0.86) + 7} ${px(0.84)},${py(0.86)} ${px(0.84) - 9},${py(0.86) + 1}`} />
       </g>
-      <circle cx={px(0.86)} cy={py(0.88)} r={13} fill="rgba(0,180,168,0.18)" />
+      <circle cx={px(0.86)} cy={py(0.88)} r={13} fill="rgba(103, 49, 71,0.18)" />
       <circle cx={px(0.86)} cy={py(0.88)} r={7.5} fill={TEAL} />
-      <text x={px(0.86) - 16} y={py(0.88) - 20} fontSize="11" fontWeight={700} fontFamily={SANS} fill="#0E8C84" textAnchor="end">
+      <text x={px(0.86) - 16} y={py(0.88) - 20} fontSize="11" fontWeight={700} fontFamily={SANS} fill="#673147" textAnchor="end">
         Cleard (now → 5yr trajectory)
       </text>
     </svg>
@@ -568,7 +568,7 @@ function AccessGate({ onUnlock }: { onUnlock: () => void }) {
 
   const inputStyle = (bad?: boolean): React.CSSProperties => ({
     background: SURFACE,
-    border: `1px solid ${bad ? "#D24B4B" : BORDER}`,
+    border: `1px solid ${bad ? "#8C3B3B" : BORDER}`,
     color: OFF,
     borderRadius: 0,
   });
@@ -581,7 +581,7 @@ function AccessGate({ onUnlock }: { onUnlock: () => void }) {
       <div
         className="pointer-events-none fixed -left-40 -top-40 h-[560px] w-[560px]"
         style={{
-          background: `radial-gradient(circle, rgba(0,180,168,0.16) 0%, rgba(0,180,168,0) 68%)`,
+          background: `radial-gradient(circle, rgba(103, 49, 71,0.16) 0%, rgba(103, 49, 71,0) 68%)`,
         }}
       />
       <div className="relative w-full max-w-[760px]">
@@ -620,7 +620,7 @@ function AccessGate({ onUnlock }: { onUnlock: () => void }) {
               type="submit"
               disabled={busy === "email"}
               className="mt-3 w-full px-4 py-3 text-[14px] font-semibold disabled:opacity-60"
-              style={{ background: TEAL, color: "#06110F", borderRadius: 0 }}
+              style={{ background: TEAL, color: "#FAF3E6", borderRadius: 0 }}
             >
               {busy === "email" ? "Checking…" : "Request Access →"}
             </button>
@@ -683,7 +683,7 @@ function AccessGate({ onUnlock }: { onUnlock: () => void }) {
               {busy === "code" ? "Checking…" : "Enter →"}
             </button>
             {codeMsg && (
-              <p className="mt-3 text-[12px] leading-relaxed" style={{ color: "#D98A8A" }}>
+              <p className="mt-3 text-[12px] leading-relaxed" style={{ color: "#D08585" }}>
                 {codeMsg}
               </p>
             )}
@@ -853,7 +853,7 @@ function InvestorDeck() {
                     <dt className="text-[11px] uppercase tracking-[0.14em]" style={{ fontFamily: MONO, color: MUTED }}>
                       {k}
                     </dt>
-                    <dd className="text-[13.5px] leading-snug" style={{ color: "#C9C8BC" }}>
+                    <dd className="text-[13.5px] leading-snug" style={{ color: "#CFBE9F" }}>
                       {v}
                     </dd>
                   </div>
@@ -883,7 +883,7 @@ function InvestorDeck() {
                 <p className="mt-3 text-[13px] leading-relaxed" style={{ color: MUTED_LT }}>
                   {s.body}
                 </p>
-                <div className="mt-4 text-[12px] font-semibold" style={{ fontFamily: MONO, color: "#0E8C84" }}>
+                <div className="mt-4 text-[12px] font-semibold" style={{ fontFamily: MONO, color: "#673147" }}>
                   {s.target}
                 </div>
               </div>
@@ -901,7 +901,7 @@ function InvestorDeck() {
           <ul className="space-y-4">
             {DOTS.map((d) => (
               <li key={d.name} className="grid grid-cols-[10px_1fr] gap-3">
-                <span className="mt-[6px] h-2 w-2" style={{ background: d.gray ? "#B7B4AA" : INK }} />
+                <span className="mt-[6px] h-2 w-2" style={{ background: d.gray ? "#8B9A97" : INK }} />
                 <div>
                   <div className="text-[13px] font-semibold" style={{ color: INK }}>
                     {d.name}
@@ -915,7 +915,7 @@ function InvestorDeck() {
             <li className="grid grid-cols-[10px_1fr] gap-3 pt-2" style={{ borderTop: `1px solid ${BORDER_LT}` }}>
               <span className="mt-[6px] h-2 w-2" style={{ background: TEAL }} />
               <div>
-                <div className="text-[13px] font-semibold" style={{ color: "#0E8C84" }}>
+                <div className="text-[13px] font-semibold" style={{ color: "#673147" }}>
                   Cleard
                 </div>
                 <div className="text-[12.5px]" style={{ color: MUTED_LT }}>
@@ -948,7 +948,7 @@ function InvestorDeck() {
             <div className="text-[13px] uppercase tracking-[0.18em]" style={{ fontFamily: MONO, color: TEAL }}>
               Internal Validation
             </div>
-            <p className="mt-4 text-[13.5px] leading-relaxed" style={{ color: "#C9C8BC" }}>
+            <p className="mt-4 text-[13.5px] leading-relaxed" style={{ color: "#CFBE9F" }}>
               Floridian is the first live proof point. $3.5M in permitted project value run
               through Cleard&apos;s platform by Floridian&apos;s own team. Every workflow tested
               in production conditions — not in a sandbox.
@@ -958,7 +958,7 @@ function InvestorDeck() {
             <div className="text-[13px] uppercase tracking-[0.18em]" style={{ fontFamily: MONO, color: TEAL }}>
               Signal Engine
             </div>
-            <p className="mt-4 text-[13.5px] leading-relaxed" style={{ color: "#C9C8BC" }}>
+            <p className="mt-4 text-[13.5px] leading-relaxed" style={{ color: "#CFBE9F" }}>
               NationGraph powers jurisdiction-level permit history signals. DBPR contractor data
               feeds outbound sequences via Throxy. The data infrastructure to find and convert
               3.5M licensed contractors is built.
@@ -971,7 +971,7 @@ function InvestorDeck() {
       <Slide n={9} light>
         <Eyebrow light>Team</Eyebrow>
         <Headline light>Built by someone who lives this problem.</Headline>
-        <p className="mt-8 max-w-3xl text-[15px] leading-relaxed" style={{ color: "#3A3A33" }}>
+        <p className="mt-8 max-w-3xl text-[15px] leading-relaxed" style={{ color: "#2F4F4F" }}>
           Elajuwan Davis founded Floridian (Est. 1998), a full-service exterior hardscape and
           pool construction company serving Miami to Vero Beach. He has personally navigated 25+
           years of permitting delays, lien right disputes, COI collection, and license renewal —
@@ -985,7 +985,7 @@ function InvestorDeck() {
             { n: "Ramp", c: "Past: Finance operations" },
             { n: "Floridian", c: "Founded 1998: Internal proof point" },
           ].map((l) => (
-            <div key={l.n} className="p-6" style={{ background: "#FFFFFF", border: `1px solid ${BORDER_LT}` }}>
+            <div key={l.n} className="p-6" style={{ background: "#FAF3E6", border: `1px solid ${BORDER_LT}` }}>
               <div className="text-[16px] font-bold tracking-[-0.02em]" style={{ color: INK }}>
                 {l.n}
               </div>
@@ -1014,7 +1014,7 @@ function InvestorDeck() {
             <Donut />
           </AskCell>
           <AskCell label="12-Month Milestones">
-            <ul className="space-y-3 text-[13.5px]" style={{ color: "#C9C8BC" }}>
+            <ul className="space-y-3 text-[13.5px]" style={{ color: "#CFBE9F" }}>
               {[
                 "100 paying contractors by December 2026",
                 "Permit fee processing live by Q1 2027",
@@ -1028,7 +1028,7 @@ function InvestorDeck() {
             </ul>
           </AskCell>
           <AskCell label="Why Now">
-            <ul className="space-y-3 text-[13.5px]" style={{ color: "#C9C8BC" }}>
+            <ul className="space-y-3 text-[13.5px]" style={{ color: "#CFBE9F" }}>
               {[
                 "Municipal vacancy crisis is acute and accelerating",
                 "AI infrastructure cost has collapsed",

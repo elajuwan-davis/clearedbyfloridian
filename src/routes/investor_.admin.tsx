@@ -24,13 +24,13 @@ export const Route = createFileRoute("/investor_/admin")({
   component: InvestorAdminPage,
 });
 
-const BG = "#0C0D0B";
-const SURFACE = "#111310";
-const BORDER = "#2A2E2C";
-const TEAL = "#00B4A8";
-const OFF = "#F5F4F0";
-const MUTED = "#8C8B7A";
-const SANS = "system-ui, -apple-system, sans-serif";
+const BG = "#2F4F4F";
+const SURFACE = "#2F4F4F";
+const BORDER = "#3F5C5A";
+const TEAL = "#E6E6FA";
+const OFF = "#F3EAD9";
+const MUTED = "rgba(250, 243, 230, 0.62)";
+const SANS = "'Fraunces', 'Iowan Old Style', Georgia, serif";
 const MONO = "ui-monospace, Menlo, Monaco, monospace";
 const SESSION_KEY = "investor_admin_ok";
 
@@ -54,7 +54,7 @@ const inputStyle: React.CSSProperties = {
 
 const btnStyle: React.CSSProperties = {
   background: TEAL,
-  color: "#06110F",
+  color: "#FAF3E6",
   borderRadius: 0,
 };
 
@@ -130,13 +130,13 @@ function PasswordCard({ onOk }: { onOk: (pw: string) => void }) {
           }}
           placeholder="Password"
           className="mt-5 w-full px-4 py-3 text-[14px] outline-none"
-          style={{ ...inputStyle, border: `1px solid ${bad ? "#D24B4B" : BORDER}`, background: BG }}
+          style={{ ...inputStyle, border: `1px solid ${bad ? "#8C3B3B" : BORDER}`, background: BG }}
         />
         <button type="submit" className="mt-3 w-full px-4 py-3 text-[14px] font-semibold" style={btnStyle}>
           Enter →
         </button>
         {bad && (
-          <p className="mt-3 text-[12px]" style={{ color: "#D98A8A" }}>
+          <p className="mt-3 text-[12px]" style={{ color: "#D08585" }}>
             Incorrect password.
           </p>
         )}
@@ -176,9 +176,9 @@ function Td({ children }: { children: React.ReactNode }) {
 }
 
 function codeStatus(c: Code) {
-  if (c.used) return { label: "Used", color: "#8C8B7A" };
+  if (c.used) return { label: "Used", color: "#5C7370" };
   if (c.expires_at && new Date(c.expires_at).getTime() <= Date.now())
-    return { label: "Expired", color: "#D24B4B" };
+    return { label: "Expired", color: "#8C3B3B" };
   return { label: "Active", color: TEAL };
 }
 
@@ -236,7 +236,7 @@ function AdminConsole({ password }: { password: string }) {
         </div>
         <h1 className="mt-4 text-[30px] font-extrabold tracking-[-0.03em]">Access Administration</h1>
         {error && (
-          <p className="mt-5 px-4 py-3 text-[13px]" style={{ border: `1px solid #D24B4B`, color: "#D98A8A" }}>
+          <p className="mt-5 px-4 py-3 text-[13px]" style={{ border: `1px solid #8C3B3B`, color: "#D08585" }}>
             {error}
           </p>
         )}

@@ -60,9 +60,9 @@ export const DEADLINE_COLOR_CLASSES: Record<
     chip: "bg-[var(--green)]/10 text-[var(--green)] border-[var(--green)]/20",
   },
   grey: {
-    dot: "bg-obsidian/40",
-    badge: "bg-obsidian/5 text-obsidian/60 border-obsidian/15",
-    chip: "bg-obsidian/5 text-obsidian/60 border-obsidian/15",
+    dot: "bg-obsidian/70",
+    badge: "bg-obsidian/8 text-obsidian border-obsidian/20",
+    chip: "bg-obsidian/8 text-obsidian border-obsidian/20",
   },
 };
 

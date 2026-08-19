@@ -7,7 +7,7 @@ import mark2d from "@/assets/cleard-mark-2d.png.asset.json";
 
 const OAT = "#FAF3E6";
 const OAT_DEEP = "#F3EAD9";
-const SLATE = "#2B1620";
+const SLATE = "#2F4F4F";
 const PLUM = "#673147";
 const LAVENDER = "#E6E6FA";
 const GREEN = "#2F4F4F"; /* minor accent only: eyebrows, secondary CTA, metadata */

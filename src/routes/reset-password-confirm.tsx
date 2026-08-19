@@ -119,7 +119,7 @@ function ResetPasswordConfirmPage() {
           <h1
             className="text-4xl leading-[1.05] font-bold"
             style={{
-              fontFamily: "'Space Grotesk', 'Inter', sans-serif",
+              fontFamily: "'Fraunces', 'Iowan Old Style', Georgia, serif",
               letterSpacing: "-0.02em",
               color: "var(--foreground)",
             }}
@@ -165,7 +165,7 @@ function ResetPasswordConfirmPage() {
             <Link to="/reset-password">
               <Button
                 className="w-full h-11 rounded-[3px] font-subline tracking-wide gap-2"
-                style={{ backgroundColor: "#12A05C", color: "#FFFFFF" }}
+                style={{ backgroundColor: "#4E6B5C", color: "#FAF3E6" }}
               >
                 Request a new link <ArrowRight className="h-4 w-4" strokeWidth={1.5} />
               </Button>
@@ -216,7 +216,7 @@ function ResetPasswordConfirmPage() {
               type="submit"
               disabled={loading}
               className="w-full h-11 rounded-[3px] font-subline tracking-wide gap-2"
-              style={{ backgroundColor: "#12A05C", color: "#FFFFFF" }}
+              style={{ backgroundColor: "#4E6B5C", color: "#FAF3E6" }}
             >
               {loading ? (
                 <>

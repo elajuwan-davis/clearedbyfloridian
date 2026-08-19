@@ -352,7 +352,7 @@ function InspectionGroup({
                 index={idx}
                 style={{
                   borderLeft: `3px solid ${accent}`,
-                  background: passed ? "rgba(0,180,168,0.06)" : CDS.white,
+                  background: passed ? "rgba(103, 49, 71,0.06)" : CDS.white,
                   padding: 16,
                 }}
               >

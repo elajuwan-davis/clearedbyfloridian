@@ -112,7 +112,7 @@ function LienSettingsPage() {
               </Field>
             </div>
             {error && (
-              <p className="text-[12px]" style={{ color: "#B42318" }}>
+              <p className="text-[12px]" style={{ color: "#8C3B3B" }}>
                 {error}
               </p>
             )}
@@ -135,7 +135,7 @@ function LienSettingsPage() {
                   <div className="flex items-center gap-2 text-[13px] font-medium">
                     <span
                       className="inline-block h-2 w-2"
-                      style={{ backgroundColor: "#00B4A8" }}
+                      style={{ backgroundColor: "#673147" }}
                       aria-hidden
                     />
                     SignWell connected
@@ -190,7 +190,7 @@ function LienSettingsPage() {
               placeholder="sw_live_…"
             />
             {keyError && (
-              <p className="mt-2 text-[12px]" style={{ color: "#B42318" }}>
+              <p className="mt-2 text-[12px]" style={{ color: "#8C3B3B" }}>
                 {keyError}
               </p>
             )}

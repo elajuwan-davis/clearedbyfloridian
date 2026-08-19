@@ -110,7 +110,7 @@ function CensusField({ value, onChange, onResolved, className, required, id }: P
               <button
                 type="button"
                 onMouseDown={(e) => { e.preventDefault(); pick(m); }}
-                className="w-full flex items-start gap-2 px-3 py-2 text-left text-[13px] hover:bg-[#B6DAEA]/25"
+                className="w-full flex items-start gap-2 px-3 py-2 text-left text-[13px] hover:bg-[#E6E6FA]/25"
               >
                 <MapPin className="mt-0.5 h-3.5 w-3.5 shrink-0 text-obsidian/50" />
                 <div className="min-w-0">

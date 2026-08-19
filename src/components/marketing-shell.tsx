@@ -13,7 +13,7 @@ const NAV_LINKS: Array<{ to: string; label: string }> = [
 
 const NEAR_BLACK = "#FAF3E6";
 const BODY_GRAY = "#7A5C68";
-const INK = "#2B1620";
+const INK = "#2F4F4F";
 const TEAL = "#673147";
 const OAT = "#FAF3E6";
 const BORDER = "#E0D3BC";

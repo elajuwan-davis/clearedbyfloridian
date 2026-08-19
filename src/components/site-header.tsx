@@ -7,7 +7,7 @@ function LogoMark() {
   return (
     <div
       className="h-8 w-8 rounded-lg flex items-center justify-center text-white font-bold text-sm"
-      style={{ background: "linear-gradient(135deg, var(--brand, #1B84D4), var(--green, #12A05C))" }}
+      style={{ background: "linear-gradient(135deg, var(--brand, #673147), var(--green, #4E6B5C))" }}
     >
       C
     </div>

@@ -354,20 +354,20 @@ export type MetricTone = "neutral" | "info" | "success" | "warning" | "danger" |
 
 const toneText: Record<MetricTone, string> = {
   neutral: "text-foreground",
-  info: "text-[#1D4ED8]",
-  success: "text-[#007C74]",
-  warning: "text-[#FBBF24]",
-  danger: "text-[#F87171]",
-  purple: "text-[#C4B5FD]",
+  info: "text-[#673147]",
+  success: "text-[#4E6B5C]",
+  warning: "text-[#9A7B2E]",
+  danger: "text-[#8C3B3B]",
+  purple: "text-[#7A5C8A]",
 };
 
 const toneWash: Record<MetricTone, string> = {
   neutral: "bg-white/[0.06] text-muted-foreground",
-  info: "bg-[#1D4ED8]/12 text-[#1D4ED8]",
-  success: "bg-[#00B4A8]/12 text-[#007C74]",
-  warning: "bg-[#F59E0B]/12 text-[#FBBF24]",
-  danger: "bg-[#EF4444]/12 text-[#F87171]",
-  purple: "bg-[#A78BFA]/12 text-[#C4B5FD]",
+  info: "bg-[#673147]/12 text-[#673147]",
+  success: "bg-[#673147]/12 text-[#4E6B5C]",
+  warning: "bg-[#9A7B2E]/12 text-[#9A7B2E]",
+  danger: "bg-[#8C3B3B]/12 text-[#8C3B3B]",
+  purple: "bg-[#7A5C8A]/12 text-[#7A5C8A]",
 };
 
 /** Compact metric — label above, bold number, muted context. No card chrome. */

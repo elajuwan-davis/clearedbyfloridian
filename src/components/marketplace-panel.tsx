@@ -64,7 +64,7 @@ export function MarketplacePanel() {
       <section className="mt-8 rounded-[3px] border border-obsidian/15 bg-white">
         <div className="flex items-center justify-between gap-3 border-b border-obsidian/10 px-5 py-4">
           <div className="flex items-center gap-2">
-            <Store className="h-4 w-4 text-[#153157]" />
+            <Store className="h-4 w-4 text-[#2F4F4F]" />
             <span className="font-mono text-[11px] uppercase tracking-[0.16em] text-obsidian/70">
               Cleard Marketplace · {roster.length} subcontractor{roster.length === 1 ? "" : "s"}
             </span>
@@ -117,10 +117,10 @@ export function MarketplacePanel() {
 
   return (
     <>
-      <section className="mt-8 rounded-[3px] border border-[#153157]/30 bg-[#B6DAEA]/15 p-6 sm:p-8">
+      <section className="mt-8 rounded-[3px] border border-[#2F4F4F]/30 bg-[#E6E6FA]/15 p-6 sm:p-8">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div className="max-w-xl">
-            <div className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.16em] text-[#153157]">
+            <div className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.16em] text-[#2F4F4F]">
               <Lock className="h-3.5 w-3.5" /> Cleard Marketplace
             </div>
             <h2 className="display-serif mt-2 text-2xl text-obsidian">

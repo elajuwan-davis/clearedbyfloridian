@@ -296,7 +296,7 @@ export function BeforeClearedPanel({ withClearedTotal }: { withClearedTotal: num
                   <td>
                     <button
                       onClick={() => remove(r.id)}
-                      className="text-muted-foreground transition-colors hover:text-[#F87171]"
+                      className="text-muted-foreground transition-colors hover:text-[#8C3B3B]"
                       aria-label="Delete"
                     >
                       <Trash2 className="h-3 w-3" />

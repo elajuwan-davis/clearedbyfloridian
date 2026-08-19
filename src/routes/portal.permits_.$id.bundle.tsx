@@ -425,7 +425,7 @@ function BundleManagementPage() {
             className="h-full transition-all"
             style={{
               width: `${progress.percent}%`,
-              background: progress.percent === 100 ? "#16a34a" : "#153157",
+              background: progress.percent === 100 ? "#3f5749" : "#2F4F4F",
             }}
           />
         </div>

@@ -313,7 +313,7 @@ function TagPill({ label, tone = "default" }: { label: string; tone?: "default" 
   if (tone === "green" || l === "required") {
     style = { color: "oklch(0.45 0.14 145)", borderColor: "oklch(0.62 0.14 145 / 0.4)", backgroundColor: "oklch(0.62 0.14 145 / 0.1)" };
   } else if (l.includes("life safety") || l === "critical") {
-    style = { color: "var(--oxblood, #7a1e1e)", borderColor: "color-mix(in oklab, var(--oxblood, #7a1e1e) 40%, transparent)", backgroundColor: "color-mix(in oklab, var(--oxblood, #7a1e1e) 8%, transparent)" };
+    style = { color: "var(--oxblood, #8c3b3b)", borderColor: "color-mix(in oklab, var(--oxblood, #8c3b3b) 40%, transparent)", backgroundColor: "color-mix(in oklab, var(--oxblood, #8c3b3b) 8%, transparent)" };
   } else if (l === "electrical" || l === "plumbing" || l === "structural") {
     style = { color: "var(--obsidian)", borderColor: "color-mix(in oklab, var(--obsidian) 25%, transparent)", backgroundColor: "color-mix(in oklab, var(--sky) 14%, transparent)" };
   } else {

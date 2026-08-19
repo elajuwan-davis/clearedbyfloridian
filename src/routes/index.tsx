@@ -56,15 +56,15 @@ export const Route = createFileRoute("/")({
 const WHITE = "#FAF3E6";
 const OFF = "#F3EAD9";
 const OFF2 = "#EDE0C9";
-const INK = "#2B1620";
+const INK = "#2F4F4F";
 const GRAY = "#7A5C68";
-const LIGHT = "#9A8E7C";
+const LIGHT = "#8B9A97";
 const TEAL = "#673147";
 const PLUM_LT = "#D9AFC1"; /* accent legible on dark slate surfaces */
 const GREEN = "#2F4F4F"; /* minor accent: numerals, eyebrows, small labels */
 const GREEN_LT = "#9CBEB2"; /* same accent, legible on dark plum */
 const BORDER = "#E0D3BC";
-const SANS = "-apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif";
+const SANS = "'Fraunces', 'Iowan Old Style', Georgia, serif";
 
 /* --------------------------------- PAGE ---------------------------------- */
 
@@ -215,13 +215,13 @@ function statusStyle(status: string) {
     case "Alert":
     case "Expired":
     case "Failed":
-      return { background: "rgba(220,60,60,0.1)", color: "#C03030" };
+      return { background: "rgba(220,60,60,0.1)", color: "#8C3B3B" };
     case "Permit Issued":
     case "Active":
-      return { background: "rgba(0,95,163,0.1)", color: "#005fa3" };
+      return { background: "rgba(103, 49, 71,0.1)", color: "#673147" };
     case "En Route":
     case "In Progress":
-      return { background: "rgba(120,80,200,0.1)", color: "#6040a0" };
+      return { background: "rgba(122, 92, 138,0.1)", color: "#7a5c8a" };
     default:
       return { background: "rgba(0,0,0,0.06)", color: GRAY };
   }
@@ -560,9 +560,9 @@ function Services() {
 /* --------------------------- MUNICIPALITY TRACK -------------------------- */
 
 function MunicipalityTrack() {
-  const CARD_BG = "#111310";
-  const CARD_BORDER = "#2A2E2C";
-  const TEAL = "#00B4A8";
+  const CARD_BG = "#2F4F4F";
+  const CARD_BORDER = "#3F5C5A";
+  const TEAL = "#673147";
   return (
     <section style={{ background: WHITE }}>
       <div className="mx-auto max-w-7xl px-5 lg:px-8 pb-24 md:pb-28">
@@ -570,13 +570,13 @@ function MunicipalityTrack() {
           For municipalities
         </div>
         <div className="p-8 md:p-14" style={{ background: CARD_BG, borderLeft: `3px solid ${TEAL}` }}>
-          <div style={{ color: "#F5F4F0", fontSize: 32, fontWeight: 700, letterSpacing: "-0.03em" }}>
+          <div style={{ color: "#F3EAD9", fontSize: 32, fontWeight: 700, letterSpacing: "-0.03em" }}>
             CleardGov
           </div>
           <div className="mt-2 text-[17px] font-semibold" style={{ color: TEAL }}>
             The building department, outsourced.
           </div>
-          <p className="mt-6 max-w-3xl text-[15.5px] leading-relaxed" style={{ color: "#8C8B7A" }}>
+          <p className="mt-6 max-w-3xl text-[15.5px] leading-relaxed" style={{ color: "#5C7370" }}>
             Contract plan review, field inspections, backlog reduction, and staff augmentation for
             municipalities. You retain full oversight and final authority. Cleard provides the licensed
             professionals and the platform they work in.
@@ -590,7 +590,7 @@ function MunicipalityTrack() {
               <span
                 key={c}
                 className="px-4 py-2 text-[12.5px]"
-                style={{ border: `1px solid ${CARD_BORDER}`, color: "#F5F4F0" }}
+                style={{ border: `1px solid ${CARD_BORDER}`, color: "#F3EAD9" }}
               >
                 {c}
               </span>
@@ -599,7 +599,7 @@ function MunicipalityTrack() {
           <Link
             to="/contact"
             className="mt-10 inline-flex items-center gap-2 px-6 py-3 text-[14px] no-underline"
-            style={{ background: TEAL, color: "#0B0D0B", fontWeight: 700 }}
+            style={{ background: TEAL, color: "#FAF3E6", fontWeight: 700 }}
           >
             Talk to our team <ArrowUpRight className="h-4 w-4" strokeWidth={2} />
           </Link>
@@ -975,7 +975,7 @@ function MobileApp() {
                     <div className="text-[11px]" style={{ color: GRAY }}>Verified</div>
                   </div>
                   <div className="p-3" style={{ background: OFF, border: `1px solid ${BORDER}` }}>
-                    <div className="text-[24px] font-bold" style={{ color: "#C03030" }}>1</div>
+                    <div className="text-[24px] font-bold" style={{ color: "#8C3B3B" }}>1</div>
                     <div className="text-[11px]" style={{ color: GRAY }}>Alert</div>
                   </div>
                 </div>
