@@ -557,8 +557,10 @@ function AccessGate({ onUnlock }: { onUnlock: () => void }) {
       unlock("code_verified");
       return;
     }
-    setCodeMsg("This code is invalid or has already been used.");
+    setCodeMsg("Incorrect code — this code is invalid or has already been used.");
+    setCode("");
     setCodeError(false);
+
     requestAnimationFrame(() => setCodeError(true));
     if (shakeTimer.current) clearTimeout(shakeTimer.current);
     shakeTimer.current = setTimeout(() => setCodeError(false), 2600);
@@ -648,7 +650,7 @@ function AccessGate({ onUnlock }: { onUnlock: () => void }) {
               className="text-[11px] uppercase tracking-[0.2em]"
               style={{ fontFamily: MONO, color: MUTED }}
             >
-              Access code
+              Access code or passcode
             </label>
             <div
               className={codeError ? "investor-shake" : undefined}
@@ -656,13 +658,14 @@ function AccessGate({ onUnlock }: { onUnlock: () => void }) {
             >
               <input
                 id="investor-code"
-                type="text"
+                type="password"
                 autoComplete="off"
                 value={code}
-                onChange={(e) => setCode(e.target.value.toUpperCase())}
-                placeholder="RV2026XQ"
-                maxLength={16}
+                onChange={(e) => setCode(e.target.value)}
+                placeholder="Passcode or one-time code"
+                maxLength={32}
                 className="mt-3 w-full px-4 py-3 text-[14px] tracking-[0.18em] outline-none"
+
                 style={{ ...inputStyle(codeError), fontFamily: MONO }}
               />
             </div>
