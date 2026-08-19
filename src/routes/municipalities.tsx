@@ -1,130 +1,348 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { SiteHeader } from "@/components/site-header";
-import { SiteFooter } from "@/components/site-footer";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import {
+  ArrowRight,
+  CheckCircle2,
+  ClipboardCheck,
+  ClipboardList,
+  Gauge,
+  Users,
+} from "lucide-react";
+import type { LucideIcon } from "lucide-react";
+
+import { MarketingShell } from "@/components/marketing-shell";
 
 export const Route = createFileRoute("/municipalities")({
   head: () => ({
     meta: [
-      { title: "Nationwide Coverage — Cleard" },
+      { title: "[DEPT] by Cleard — Contract plan review and inspections" },
       {
         name: "description",
         content:
-          "Cleard operates across 160+ municipalities and counties nationwide as a registered private provider.",
+          "[DEPT] by Cleard provides licensed plan reviewers and inspectors to municipal building departments — contract plan review, contract inspections, backlog reduction, and staff augmentation under your oversight.",
       },
-      { property: "og:title", content: "Nationwide Coverage — Cleard" },
+      { property: "og:title", content: "Your backlog. Handled." },
       {
         property: "og:description",
-        content: "160+ Municipalities · Nationwide Coverage.",
+        content:
+          "Licensed professionals performing plan reviews and inspections under your department's oversight — on your timeline, at your standard.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
-  component: MunicipalitiesPublicPage,
+  component: MunicipalitiesPage,
 });
 
+const BG = "#0C0D0B";
+const SURFACE = "#111310";
+const BORDER = "#2A2E2C";
+const TEAL = "#00B4A8";
+const TITLE = "#F5F4F0";
+const MUTED = "#8C8B7A";
 
-function CoverageMark() {
+const PROBLEM = [
+  {
+    stat: "Understaffed",
+    label: "Municipal building departments are understaffed nationwide",
+  },
+  {
+    stat: "6–12 weeks",
+    label: "Permit queues in high-growth markets",
+  },
+  {
+    stat: "Real loss",
+    label: "Every week of backlog is carrying cost the contractor absorbs",
+  },
+];
+
+const FEATURES: { name: string; body: string; Icon: LucideIcon }[] = [
+  {
+    name: "Contract Plan Review",
+    body: "Licensed reviewers across all disciplines. Results submitted under your department's oversight, with organized comments and direct communication.",
+    Icon: ClipboardList,
+  },
+  {
+    name: "Contract Inspections",
+    body: "Same-day and next-day licensed inspections across all trades. Your department retains final authority on every result.",
+    Icon: ClipboardCheck,
+  },
+  {
+    name: "Backlog Reduction Programs",
+    body: "Surge capacity when volume spikes. We scale up with your demand without adding permanent headcount to your budget.",
+    Icon: Gauge,
+  },
+  {
+    name: "Staff Augmentation",
+    body: "Embed licensed professionals into your department's workflow during vacancies, leave, or high-volume periods. No recruiting, no benefits overhead.",
+    Icon: Users,
+  },
+];
+
+const STEPS = [
+  {
+    n: "01",
+    t: "Department contracts with Cleard",
+    b: "We agree on scope, disciplines, turnaround standards, and oversight protocols before any work begins.",
+  },
+  {
+    n: "02",
+    t: "Licensed professionals integrate with your workflow",
+    b: "Reviews and inspections are performed under your department's process and authority, not around it.",
+  },
+  {
+    n: "03",
+    t: "Results submitted, department issues",
+    b: "Your building official retains final review authority. We deliver the work, you make the call.",
+  },
+];
+
+const TRUST = [
+  "All results carry full legal standing",
+  "Your department maintains oversight and final authority",
+  "Professionals licensed in your jurisdiction",
+  "Turnaround SLAs guaranteed by contract",
+];
+
+function QueueMock() {
+  const rows = [
+    { id: "PR-4821", type: "Structural", who: "K. Alvarez, PE", status: "In review", tone: TEAL },
+    { id: "PR-4818", type: "Mechanical", who: "D. Whitfield", status: "Comments issued", tone: "#C9A227" },
+    { id: "PR-4809", type: "Electrical", who: "S. Ober, PE", status: "Complete", tone: TEAL },
+    { id: "PR-4802", type: "Plumbing", who: "Unassigned", status: "Queued", tone: MUTED },
+    { id: "PR-4795", type: "Building", who: "R. Nunez", status: "In review", tone: TEAL },
+  ];
   return (
-    <svg
-      viewBox="0 0 400 400"
-      className="w-full h-auto max-w-md mx-auto"
-      aria-hidden="true"
-    >
-      {/* Stylized coverage mark */}
-      <path
-        d="M50 60 L340 60 L340 120 L310 150 L305 190 L285 215 L270 235 L255 265 L235 295 L205 325 L175 355 L150 375 L130 380 L118 365 L128 335 L145 305 L155 275 L145 245 L120 215 L95 190 L75 165 L60 130 Z"
-        fill="none"
-        stroke="#153157"
-        strokeWidth="2"
-        strokeLinejoin="round"
-        opacity="0.35"
-      />
-      <path
-        d="M50 60 L340 60 L340 120 L310 150 L305 190 L285 215 L270 235 L255 265 L235 295 L205 325 L175 355 L150 375 L130 380 L118 365 L128 335 L145 305 L155 275 L145 245 L120 215 L95 190 L75 165 L60 130 Z"
-        fill="#153157"
-        opacity="0.06"
-      />
-    </svg>
+    <div style={{ background: SURFACE, border: `1px solid ${BORDER}` }}>
+      <div
+        className="flex items-center justify-between px-5 py-4"
+        style={{ borderBottom: `1px solid ${BORDER}` }}
+      >
+        <div className="text-[12px] font-semibold uppercase tracking-[0.16em]" style={{ color: TITLE }}>
+          Review queue
+        </div>
+        <div className="text-[11px]" style={{ color: MUTED }}>
+          5 open · avg 1.8 days
+        </div>
+      </div>
+      <div className="px-5 py-2">
+        {rows.map((r) => (
+          <div
+            key={r.id}
+            className="grid grid-cols-12 items-center gap-3 py-3 text-[12.5px]"
+            style={{ borderBottom: `1px solid ${BORDER}`, color: MUTED }}
+          >
+            <span className="col-span-3 tabular-nums" style={{ color: TITLE }}>
+              {r.id}
+            </span>
+            <span className="col-span-3">{r.type}</span>
+            <span className="col-span-3">{r.who}</span>
+            <span className="col-span-3 flex items-center justify-end gap-2" style={{ color: r.tone }}>
+              <span style={{ width: 6, height: 6, background: r.tone, display: "inline-block" }} />
+              {r.status}
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
   );
 }
 
-function MunicipalitiesPublicPage() {
+function MunicipalitiesPage() {
   return (
-    <div className="min-h-screen flex flex-col" style={{ background: "#FAFAF7" }}>
-      <SiteHeader />
-      <main className="flex-1">
-        <section className="border-b" style={{ borderColor: "rgba(21,49,87,0.12)" }}>
-          <div className="max-w-6xl mx-auto px-6 py-16 md:py-20">
-            <div className="font-mono text-[10px] tracking-[0.24em] uppercase text-[color:var(--muted-foreground)]">
-              Coverage · Nationwide
-            </div>
-            <h1
-              className="display-serif mt-4 leading-[0.95]"
-              style={{ fontSize: "clamp(44px, 6vw, 84px)", letterSpacing: "-0.02em" }}
+    <MarketingShell>
+      <div style={{ background: BG, color: TITLE }}>
+        {/* HERO */}
+        <section className="mx-auto max-w-7xl px-5 lg:px-8 pt-20 pb-20 md:pt-28">
+          <div className="text-[10.5px] font-bold uppercase tracking-[0.22em]" style={{ color: TEAL }}>
+            For building departments
+          </div>
+          <h1
+            className="mt-6 max-w-3xl"
+            style={{
+              fontWeight: 800,
+              fontSize: "clamp(2.5rem, 6vw, 4.25rem)",
+              lineHeight: 1.02,
+              letterSpacing: "-0.04em",
+            }}
+          >
+            Your backlog. Handled.
+          </h1>
+          <p className="mt-6 max-w-2xl text-[17px] leading-relaxed" style={{ color: MUTED }}>
+            When permit volume outpaces your staff, [DEPT] by Cleard provides licensed professionals
+            to perform plan reviews and inspections under your oversight — on your timeline, at your
+            standard.
+          </p>
+          <div className="mt-9 flex flex-wrap gap-3">
+            <Link
+              to="/contact"
+              className="inline-flex items-center gap-2 px-6 py-3 text-[14px] no-underline"
+              style={{ background: TEAL, color: "#0B0D0B", fontWeight: 700 }}
             >
-              160+ Municipalities <em>Nationwide</em>
-            </h1>
-            <p className="mt-6 max-w-2xl text-base md:text-lg text-muted-foreground">
-              Cleard is a registered private provider — delivering 2-day plan
-              review and same-day inspections across every jurisdiction we
-              operate in.
+              Schedule a conversation <ArrowRight className="h-4 w-4" strokeWidth={2} />
+            </Link>
+            <a
+              href="#how-it-works"
+              className="inline-flex items-center gap-2 px-6 py-3 text-[14px] no-underline"
+              style={{ border: `1px solid ${BORDER}`, color: TITLE, fontWeight: 600 }}
+            >
+              How it works ↓
+            </a>
+          </div>
+        </section>
+
+        {/* THE PROBLEM */}
+        <section className="px-5 lg:px-8 pb-20" style={{ borderTop: `1px solid ${BORDER}` }}>
+          <div className="mx-auto max-w-7xl pt-16">
+            <div className="grid gap-4 md:grid-cols-3">
+              {PROBLEM.map((p) => (
+                <div key={p.stat} className="p-7" style={{ background: SURFACE, border: `1px solid ${BORDER}` }}>
+                  <div
+                    style={{ color: TEAL, fontSize: 28, fontWeight: 700, letterSpacing: "-0.03em" }}
+                  >
+                    {p.stat}
+                  </div>
+                  <div className="mt-3 text-[13.5px] leading-relaxed" style={{ color: MUTED }}>
+                    {p.label}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* WHAT [DEPT] DOES */}
+        <section className="px-5 lg:px-8 py-20" style={{ borderTop: `1px solid ${BORDER}` }}>
+          <div className="mx-auto max-w-7xl">
+            <div className="text-[10.5px] font-bold uppercase tracking-[0.22em]" style={{ color: TEAL }}>
+              The product
+            </div>
+            <h2
+              className="mt-5 max-w-3xl font-bold"
+              style={{ fontSize: "clamp(1.875rem, 3.6vw, 2.75rem)", lineHeight: 1.06, letterSpacing: "-0.035em" }}
+            >
+              What [DEPT] does
+            </h2>
+            <div className="mt-12 grid gap-4 md:grid-cols-2">
+              {FEATURES.map((f) => (
+                <div key={f.name} className="p-7" style={{ background: SURFACE, border: `1px solid ${BORDER}` }}>
+                  <f.Icon size={24} strokeWidth={1.5} style={{ color: TEAL }} />
+                  <h3 className="mt-5 text-[16px] font-semibold" style={{ color: TITLE }}>
+                    {f.name}
+                  </h3>
+                  <p className="mt-2 text-[13.5px] leading-relaxed" style={{ color: MUTED }}>
+                    {f.body}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* HOW IT WORKS */}
+        <section id="how-it-works" className="px-5 lg:px-8 py-20" style={{ borderTop: `1px solid ${BORDER}` }}>
+          <div className="mx-auto max-w-7xl">
+            <div className="text-[10.5px] font-bold uppercase tracking-[0.22em]" style={{ color: TEAL }}>
+              How it works
+            </div>
+            <h2
+              className="mt-5 max-w-3xl font-bold"
+              style={{ fontSize: "clamp(1.875rem, 3.6vw, 2.75rem)", lineHeight: 1.06, letterSpacing: "-0.035em" }}
+            >
+              Three steps, under your authority.
+            </h2>
+            <div className="mt-14 grid gap-6 md:grid-cols-3">
+              {STEPS.map((s) => (
+                <div key={s.n} className="pt-6" style={{ borderTop: `1px solid ${BORDER}` }}>
+                  <div
+                    className="inline-flex h-11 w-11 items-center justify-center text-[14px] font-bold tabular-nums"
+                    style={{ background: TEAL, color: "#0B0D0B" }}
+                  >
+                    {s.n}
+                  </div>
+                  <h3 className="mt-5 text-[18px] font-bold" style={{ letterSpacing: "-0.02em" }}>
+                    {s.t}
+                  </h3>
+                  <p className="mt-3 text-[14px] leading-relaxed" style={{ color: MUTED }}>
+                    {s.b}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* WHY CLEARD */}
+        <section className="px-5 lg:px-8 py-20" style={{ borderTop: `1px solid ${BORDER}` }}>
+          <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-2 lg:items-center lg:gap-20">
+            <div>
+              <div className="text-[10.5px] font-bold uppercase tracking-[0.22em]" style={{ color: TEAL }}>
+                Why Cleard
+              </div>
+              <h2
+                className="mt-5 font-bold"
+                style={{ fontSize: "clamp(1.75rem, 3.2vw, 2.5rem)", lineHeight: 1.07, letterSpacing: "-0.03em" }}
+              >
+                Capacity and visibility. Not just bodies.
+              </h2>
+              <p className="mt-6 text-[16px] leading-relaxed" style={{ color: MUTED }}>
+                Unlike staffing agencies, we bring a platform. Every review and inspection is tracked,
+                logged, and accessible — assignment, timestamps, comments, and outcome. Your department
+                gets capacity and a complete record of the work performed on its behalf.
+              </p>
+            </div>
+            <QueueMock />
+          </div>
+        </section>
+
+        {/* FOR BUILDING OFFICIALS */}
+        <section className="px-5 lg:px-8 py-20" style={{ borderTop: `1px solid ${BORDER}` }}>
+          <div className="mx-auto max-w-7xl">
+            <div className="text-[10.5px] font-bold uppercase tracking-[0.22em]" style={{ color: TEAL }}>
+              For building officials
+            </div>
+            <div className="mt-10 grid gap-4 sm:grid-cols-2">
+              {TRUST.map((t) => (
+                <div
+                  key={t}
+                  className="flex items-start gap-3 p-6"
+                  style={{ background: SURFACE, border: `1px solid ${BORDER}` }}
+                >
+                  <CheckCircle2 size={20} strokeWidth={1.75} style={{ color: TEAL, flexShrink: 0 }} />
+                  <span className="text-[14.5px] leading-relaxed" style={{ color: TITLE }}>
+                    {t}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* CTA */}
+        <section className="px-5 lg:px-8 py-20" style={{ borderTop: `1px solid ${BORDER}` }}>
+          <div className="mx-auto max-w-3xl text-center">
+            <h2
+              className="font-bold"
+              style={{ fontSize: "clamp(1.875rem, 4vw, 2.75rem)", letterSpacing: "-0.03em" }}
+            >
+              Ready to talk capacity?
+            </h2>
+            <p className="mt-5 text-[16px] leading-relaxed" style={{ color: MUTED }}>
+              A 20-minute conversation with our team covers your volume, jurisdiction, and what a
+              contract arrangement looks like.
+            </p>
+            <Link
+              to="/contact"
+              className="mt-9 flex w-full items-center justify-center gap-2 px-6 py-4 text-[14px] no-underline"
+              style={{ background: TEAL, color: "#0B0D0B", fontWeight: 700 }}
+            >
+              Schedule a conversation <ArrowRight className="h-4 w-4" strokeWidth={2} />
+            </Link>
+            <p className="mt-4 text-[12.5px]" style={{ color: MUTED }}>
+              No commitment. We&apos;ll tell you honestly if we&apos;re the right fit.
             </p>
           </div>
         </section>
-
-        {/* Stat callout */}
-        <section className="max-w-6xl mx-auto px-6 py-12 md:py-16">
-          <div
-            className="grid md:grid-cols-3 border"
-            style={{ borderColor: "rgba(21,49,87,0.15)", background: "#fff" }}
-          >
-            {[
-              { k: "160+", v: "Municipalities" },
-              { k: "40+", v: "Counties" },
-              { k: "Nationwide", v: "Coverage" },
-            ].map((s, i) => (
-              <div
-                key={s.v}
-                className={`p-8 md:p-10 ${i < 2 ? "md:border-r" : ""} border-b md:border-b-0`}
-                style={{ borderColor: "rgba(21,49,87,0.15)" }}
-              >
-                <div
-                  className="display-serif leading-none"
-                  style={{ fontSize: "clamp(40px, 5vw, 64px)", color: "#153157" }}
-                >
-                  {s.k}
-                </div>
-                <div className="font-mono text-[11px] tracking-[0.22em] uppercase text-muted-foreground mt-4">
-                  {s.v}
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* Outline */}
-        <section className="max-w-6xl mx-auto px-6 pb-20">
-          <div className="grid md:grid-cols-2 gap-12 items-center">
-            <div>
-              <CoverageMark />
-            </div>
-            <div>
-              <div className="font-mono text-[11px] tracking-[0.22em] uppercase text-muted-foreground mb-3">
-                Operating Area
-              </div>
-              <p className="display-serif leading-tight" style={{ fontSize: "clamp(28px, 3.5vw, 44px)", letterSpacing: "-0.01em", color: "#153157" }}>
-                <em>Nationwide coverage.</em>
-              </p>
-              <p className="mt-6 text-base text-muted-foreground max-w-md">
-                A single private provider of record for every jurisdiction, from
-                the coast to the interior.
-              </p>
-            </div>
-          </div>
-        </section>
-      </main>
-      <SiteFooter />
-    </div>
+      </div>
+    </MarketingShell>
   );
 }
