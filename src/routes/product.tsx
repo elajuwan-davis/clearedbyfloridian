@@ -21,7 +21,7 @@ export const Route = createFileRoute("/product")({
       {
         name: "description",
         content:
-          "Cleard is one compliance platform with two tracks: five products for contractors and [DEPT] for municipalities, all backed by Victoria, the AI intelligence layer.",
+          "Cleard is one compliance platform with two tracks: five products for contractors and CleardGov for municipalities, all backed by Victoria, the AI intelligence layer.",
       },
       { property: "og:title", content: "One platform. Two tracks. Every compliance function handled." },
       {
@@ -207,7 +207,7 @@ function ProductPage() {
           </div>
         </section>
 
-        {/* MUNICIPALITY PRODUCT — [DEPT] */}
+        {/* MUNICIPALITY PRODUCT — CleardGov */}
         <section id="municipalities" className="px-5 lg:px-8 pb-20">
           <div className="mx-auto max-w-7xl">
             <div className="text-[10.5px] font-bold uppercase tracking-[0.22em]" style={{ color: GREEN }}>
@@ -231,13 +231,13 @@ function ProductPage() {
                 className="mt-5"
                 style={{ color: CARD_TITLE, fontSize: 32, fontWeight: 700, letterSpacing: "-0.03em" }}
               >
-                [DEPT]
+                CleardGov
               </div>
               <div className="mt-2 text-[17px] font-semibold" style={{ color: TEAL }}>
                 The building department, outsourced.
               </div>
               <p className="mt-6 max-w-3xl text-[15.5px] leading-relaxed" style={{ color: CARD_MUTED }}>
-                [DEPT] gives a municipality a full building department without the hiring cycle:
+                CleardGov gives a municipality a full building department without the hiring cycle:
                 contract plan review across every discipline, field inspections for every trade,
                 backlog reduction programs, and staff augmentation when your own reviewers are short.
                 Municipalities retain full oversight and final authority on every determination —
