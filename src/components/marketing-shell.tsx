@@ -157,7 +157,7 @@ function MarketingFooter() {
             For Municipalities
           </div>
           <Link to="/municipalities" className="no-underline text-[13px]" style={{ color: "rgba(255,255,255,0.7)" }}>
-            [DEPT] — Building department services
+            CleardGov — Building department services
           </Link>
           <span className="text-[12px]" style={{ color: "rgba(200,196,188,0.5)" }}>
             cleard.io/municipalities

@@ -571,7 +571,7 @@ function MunicipalityTrack() {
         </div>
         <div className="p-8 md:p-14" style={{ background: CARD_BG, borderLeft: `3px solid ${TEAL}` }}>
           <div style={{ color: "#F5F4F0", fontSize: 32, fontWeight: 700, letterSpacing: "-0.03em" }}>
-            [DEPT]
+            CleardGov
           </div>
           <div className="mt-2 text-[17px] font-semibold" style={{ color: TEAL }}>
             The building department, outsourced.

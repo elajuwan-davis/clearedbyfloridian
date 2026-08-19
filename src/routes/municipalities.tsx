@@ -14,11 +14,11 @@ import { MarketingShell } from "@/components/marketing-shell";
 export const Route = createFileRoute("/municipalities")({
   head: () => ({
     meta: [
-      { title: "[DEPT] by Cleard — Contract plan review and inspections" },
+      { title: "CleardGov by Cleard — Contract plan review and inspections" },
       {
         name: "description",
         content:
-          "[DEPT] by Cleard provides licensed plan reviewers and inspectors to municipal building departments — contract plan review, contract inspections, backlog reduction, and staff augmentation under your oversight.",
+          "CleardGov by Cleard provides licensed plan reviewers and inspectors to municipal building departments — contract plan review, contract inspections, backlog reduction, and staff augmentation under your oversight.",
       },
       { property: "og:title", content: "Your backlog. Handled." },
       {
@@ -168,7 +168,7 @@ function MunicipalitiesPage() {
             Your backlog. Handled.
           </h1>
           <p className="mt-6 max-w-2xl text-[17px] leading-relaxed" style={{ color: MUTED }}>
-            When permit volume outpaces your staff, [DEPT] by Cleard provides licensed professionals
+            When permit volume outpaces your staff, CleardGov by Cleard provides licensed professionals
             to perform plan reviews and inspections under your oversight — on your timeline, at your
             standard.
           </p>
@@ -210,7 +210,7 @@ function MunicipalitiesPage() {
           </div>
         </section>
 
-        {/* WHAT [DEPT] DOES */}
+        {/* WHAT CleardGov DOES */}
         <section className="px-5 lg:px-8 py-20" style={{ borderTop: `1px solid ${BORDER}` }}>
           <div className="mx-auto max-w-7xl">
             <div className="text-[10.5px] font-bold uppercase tracking-[0.22em]" style={{ color: TEAL }}>
@@ -220,7 +220,7 @@ function MunicipalitiesPage() {
               className="mt-5 max-w-3xl font-bold"
               style={{ fontSize: "clamp(1.875rem, 3.6vw, 2.75rem)", lineHeight: 1.06, letterSpacing: "-0.035em" }}
             >
-              What [DEPT] does
+              What CleardGov does
             </h2>
             <div className="mt-12 grid gap-4 md:grid-cols-2">
               {FEATURES.map((f) => (
