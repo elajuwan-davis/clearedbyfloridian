@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "@tanstack/react-router";
 import cLogo from "@/assets/cleard-c-copper.png.asset.json";
 
 /* Nordic Luxury tokens (marketing only) */
@@ -6,282 +7,422 @@ const OAT = "#FAF3E6";
 const BORDER = "#E0D3BC";
 const PLUM = "#673147";
 const GREEN = "#2F4F4F";
-const INK = "#2F4F4F";
+const BRONZE = "#9C6B3F";
 const MONO = '"JetBrains Mono", ui-monospace, monospace';
 const SERIF = '"Fraunces", "Iowan Old Style", Georgia, serif';
 
-/* --------------------------- act 1: capability boxes --------------------------- */
+const FRAME_H = 340;
 
-type Box = {
-  label: string;
-  meta: string;
-  /* final position, % of stage */
-  x: number;
-  y: number;
-};
+/* --------------------------------- scene 1 --------------------------------- */
 
-const BOXES: Box[] = [
-  { label: "Permitting Administration", meta: "Submitted · tracked", x: 6, y: 12 },
-  { label: "Private Plan Review", meta: "2-day plan review", x: 68, y: 8 },
-  { label: "Inspections", meta: "Same-day inspections", x: 74, y: 40 },
-  { label: "License Management", meta: "36 licenses current", x: 4, y: 46 },
-  { label: "Insurance Compliance", meta: "184 COIs valid", x: 10, y: 76 },
-  { label: "Lien Rights", meta: "NOC recorded", x: 66, y: 72 },
-];
-
-type Act = "boxes" | "app";
-
-function CapabilityStage({ live }: { live: boolean }) {
+function Eyebrow({ children, color = GREEN }: { children: React.ReactNode; color?: string }) {
   return (
-    <div className="absolute inset-0">
-      {/* the mark, hovering */}
-      <div
-        className="absolute left-1/2 top-1/2 h-[150px] w-[150px] -translate-x-1/2 -translate-y-1/2 lg:h-[190px] lg:w-[190px]"
-        style={{
-          animation: live ? "clHover 5s ease-in-out infinite" : undefined,
-          filter: "drop-shadow(0 26px 34px rgba(43,22,32,0.22))",
-        }}
-      >
-        <img src={cLogo.url} alt="Cleard" className="h-full w-full object-contain" />
-      </div>
-
-      {/* boxes popping out of the mark */}
-      {BOXES.map((b, i) => (
-        <div
-          key={b.label}
-          className="absolute w-[168px] px-3.5 py-3 lg:w-[196px]"
-          style={{
-            left: `${b.x}%`,
-            top: `${b.y}%`,
-            background: OAT,
-            border: `1px solid ${BORDER}`,
-            boxShadow: "0 14px 30px rgba(43,22,32,0.10)",
-            opacity: live ? 0 : 1,
-            animation: live
-              ? `clBoxPop 720ms cubic-bezier(0.16,1,0.3,1) ${360 + i * 150}ms both`
-              : undefined,
-          }}
-        >
-          <div
-            className="text-[11.5px] leading-tight"
-            style={{ color: PLUM, fontWeight: 600 }}
-          >
-            {b.label}
-          </div>
-          <div
-            className="mt-1.5 text-[9px] uppercase"
-            style={{ fontFamily: MONO, letterSpacing: "0.14em", color: GREEN, opacity: 0.75 }}
-          >
-            {b.meta}
-          </div>
-        </div>
-      ))}
+    <div
+      className="text-[8.5px] uppercase"
+      style={{ fontFamily: MONO, letterSpacing: "0.16em", color, opacity: 0.85 }}
+    >
+      {children}
     </div>
   );
 }
 
-/* ------------------------------ act 2: app window ----------------------------- */
+function Bar({ pct }: { pct: number }) {
+  return (
+    <div className="h-[3px] w-full" style={{ background: "rgba(43,22,32,0.10)" }}>
+      <div className="h-full" style={{ width: `${pct}%`, background: PLUM }} />
+    </div>
+  );
+}
 
-const TABS = ["Dashboard", "My Permits", "Inspections"] as const;
+function Card({
+  title,
+  children,
+  className,
+}: {
+  title: string;
+  children: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <div
+      className={`px-3 py-2.5 ${className ?? ""}`}
+      style={{ background: OAT, border: `1px solid ${BORDER}` }}
+    >
+      <Eyebrow>{title}</Eyebrow>
+      <div className="mt-2 space-y-1.5">{children}</div>
+    </div>
+  );
+}
 
-const DASH_METRICS = [
+function SceneOverview() {
+  return (
+    <div className="relative h-full w-full p-3">
+      <div className="grid h-full grid-cols-2 grid-rows-2 gap-8">
+        <Card title="Permits">
+          {[
+            ["CLR-2026-0208", 82],
+            ["CLR-2026-0211", 46],
+          ].map(([id, pct]) => (
+            <div key={id as string}>
+              <div className="flex items-baseline justify-between">
+                <span className="text-[10.5px]" style={{ color: PLUM, fontWeight: 600 }}>
+                  {id}
+                </span>
+                <span className="text-[9px]" style={{ fontFamily: MONO, color: GREEN }}>
+                  {pct}%
+                </span>
+              </div>
+              <div className="mt-1">
+                <Bar pct={pct as number} />
+              </div>
+            </div>
+          ))}
+        </Card>
+
+        <Card title="Inspections">
+          {[
+            ["14 Pelican Bay Ln", "Structural", "Approved"],
+            ["82 Harbour Ridge", "Electrical", "Denied"],
+          ].map(([addr, trade, status]) => (
+            <div key={addr} className="flex items-center gap-2">
+              <span className="min-w-0 flex-1 truncate text-[10.5px]" style={{ color: PLUM }}>
+                {addr}
+                <span style={{ color: GREEN, opacity: 0.7 }}> · {trade}</span>
+              </span>
+              <span
+                className="shrink-0 px-1.5 py-0.5 text-[8px] uppercase"
+                style={{
+                  fontFamily: MONO,
+                  letterSpacing: "0.12em",
+                  color: OAT,
+                  background: status === "Approved" ? GREEN : PLUM,
+                }}
+              >
+                {status}
+              </span>
+            </div>
+          ))}
+        </Card>
+
+        <Card title="Licenses & Insurance">
+          <div className="flex items-center justify-between">
+            <span className="text-[10.5px]" style={{ color: PLUM }}>
+              36 licenses
+            </span>
+            <span className="text-[9px] uppercase" style={{ fontFamily: MONO, color: GREEN }}>
+              Current
+            </span>
+          </div>
+          <div className="flex items-center justify-between">
+            <span className="text-[10.5px]" style={{ color: PLUM }}>
+              184 COIs
+            </span>
+            <span className="text-[9px] uppercase" style={{ fontFamily: MONO, color: GREEN }}>
+              Valid
+            </span>
+          </div>
+        </Card>
+
+        <Card title="Lien Rights">
+          {[
+            ["Notice of Commencement", "Recorded Aug 12"],
+            ["Conditional Waiver", "Recorded Aug 18"],
+          ].map(([doc, when]) => (
+            <div key={doc} className="flex items-center justify-between gap-2">
+              <span className="min-w-0 truncate text-[10.5px]" style={{ color: PLUM }}>
+                {doc}
+              </span>
+              <span
+                className="shrink-0 text-[8.5px] uppercase"
+                style={{ fontFamily: MONO, letterSpacing: "0.1em", color: GREEN }}
+              >
+                {when}
+              </span>
+            </div>
+          ))}
+        </Card>
+      </div>
+
+      {/* the mark, centered in the gap where the four cards meet */}
+      <div
+        className="pointer-events-none absolute left-1/2 top-1/2 h-[84px] w-[84px] -translate-x-1/2 -translate-y-1/2"
+        style={{ perspective: 600 }}
+      >
+        <img
+          src={cLogo.url}
+          alt="Cleard"
+          className="h-full w-full object-contain"
+          style={{ animation: "clSpin 9s linear infinite" }}
+        />
+      </div>
+    </div>
+  );
+}
+
+/* -------------------------- laptop chrome for 2 & 3 -------------------------- */
+
+const TABS = ["Dashboard", "My Permits", "Inspections", "Compliance"] as const;
+
+function Laptop({ activeTab, children }: { activeTab: number; children: React.ReactNode }) {
+  return (
+    <div className="flex h-full w-full items-center justify-center p-3">
+      <div
+        className="flex h-full w-full max-w-[600px] flex-col"
+        style={{ background: "#241017", border: "1px solid rgba(250,243,230,0.14)" }}
+      >
+        <div
+          className="flex items-center gap-3 px-3 py-2"
+          style={{ borderBottom: "1px solid rgba(250,243,230,0.12)" }}
+        >
+          <img src={cLogo.url} alt="" className="h-3.5 w-3.5 object-contain" />
+          <span style={{ fontFamily: SERIF, color: OAT, fontSize: 12, fontWeight: 600 }}>
+            Cleard
+          </span>
+          <div className="ml-auto hidden gap-3.5 sm:flex">
+            {TABS.map((t, i) => (
+              <span
+                key={t}
+                className="text-[9px] uppercase"
+                style={{
+                  fontFamily: MONO,
+                  letterSpacing: "0.14em",
+                  color: i === activeTab ? OAT : "rgba(250,243,230,0.42)",
+                  borderBottom: i === activeTab ? `1px solid ${OAT}` : "1px solid transparent",
+                  paddingBottom: 2,
+                }}
+              >
+                {t}
+              </span>
+            ))}
+          </div>
+        </div>
+        <div className="flex-1 p-3">{children}</div>
+      </div>
+      {/* laptop base */}
+    </div>
+  );
+}
+
+const DASH_METRICS: [string, string][] = [
   ["Active permits", "17"],
   ["On time", "94%"],
   ["Avg review", "48h"],
   ["Open corrections", "2"],
 ];
 
-const PERMIT_ROWS = [
-  ["CLR-2026-0208", "14 Pelican Bay Ln", "Approved"],
-  ["CLR-2026-0211", "82 Harbour Ridge", "In review"],
-  ["CLR-2026-0214", "6 Crosswind Ct", "Submitted"],
-  ["CLR-2026-0219", "331 Meridian Ave", "Approved"],
-];
-
-const INSPECTION_ROWS = [
-  ["Structural framing", "Today · 9:40 AM", "Passed"],
-  ["Electrical rough", "Today · 1:15 PM", "Scheduled"],
-  ["Plumbing top-out", "Tomorrow", "Scheduled"],
-  ["Final building", "Aug 27", "Queued"],
-];
-
-function statusTone(s: string) {
-  if (s === "Approved" || s === "Passed") return GREEN;
-  if (s === "In review" || s === "Scheduled") return PLUM;
-  return "#8B7A6B";
+function SceneDashboard() {
+  return (
+    <Laptop activeTab={0}>
+      <div className="grid h-full grid-cols-2 gap-2.5 sm:grid-cols-4">
+        {DASH_METRICS.map(([label, value]) => (
+          <div
+            key={label}
+            className="flex flex-col items-center justify-center px-2 py-3 text-center"
+            style={{ border: "1px solid rgba(250,243,230,0.14)" }}
+          >
+            <div
+              className="text-[8px] uppercase"
+              style={{ fontFamily: MONO, letterSpacing: "0.16em", color: "rgba(250,243,230,0.55)" }}
+            >
+              {label}
+            </div>
+            <div className="mt-2" style={{ fontFamily: SERIF, fontSize: 30, color: OAT, lineHeight: 1 }}>
+              {value}
+            </div>
+          </div>
+        ))}
+      </div>
+    </Laptop>
+  );
 }
 
-function AppWindow({ tab }: { tab: number }) {
+function DarkEyebrow({ children }: { children: React.ReactNode }) {
   return (
     <div
-      className="w-[min(100%,720px)]"
+      className="pb-1.5 text-[8px] uppercase"
       style={{
-        background: "#241017",
-        border: `1px solid rgba(250,243,230,0.14)`,
-        boxShadow: "0 40px 80px rgba(43,22,32,0.28)",
-        animation: "clAppIn 700ms cubic-bezier(0.16,1,0.3,1) both",
+        fontFamily: MONO,
+        letterSpacing: "0.16em",
+        color: "rgba(250,243,230,0.55)",
+        borderBottom: "1px solid rgba(250,243,230,0.12)",
       }}
     >
-      {/* chrome */}
-      <div
-        className="flex items-center gap-3 px-4 py-2.5"
-        style={{ borderBottom: "1px solid rgba(250,243,230,0.12)" }}
-      >
-        <img src={cLogo.url} alt="" className="h-4 w-4 object-contain" />
-        <span style={{ fontFamily: SERIF, color: OAT, fontSize: 13, fontWeight: 600 }}>
-          Cleard
-        </span>
-        <div className="ml-auto flex gap-4">
-          {TABS.map((t, i) => (
-            <span
-              key={t}
-              className="text-[10px] uppercase transition-all duration-300"
-              style={{
-                fontFamily: MONO,
-                letterSpacing: "0.14em",
-                color: i === tab ? OAT : "rgba(250,243,230,0.42)",
-                borderBottom: i === tab ? `1px solid ${OAT}` : "1px solid transparent",
-                paddingBottom: 3,
-              }}
-            >
-              {t}
-            </span>
-          ))}
+      {children}
+    </div>
+  );
+}
+
+function ScenePortal() {
+  return (
+    <Laptop activeTab={1}>
+      <div className="grid h-full grid-cols-1 gap-4 sm:grid-cols-3">
+        <div>
+          <DarkEyebrow>Permits</DarkEyebrow>
+          <div className="mt-2 space-y-2.5">
+            {[
+              ["CLR-2026-0208", 82],
+              ["CLR-2026-0211", 46],
+              ["CLR-2026-0214", 21],
+            ].map(([id, pct]) => (
+              <div key={id as string}>
+                <div className="flex items-baseline justify-between">
+                  <span className="text-[10px]" style={{ color: OAT }}>
+                    {id}
+                  </span>
+                  <span className="text-[8.5px]" style={{ fontFamily: MONO, color: "rgba(250,243,230,0.55)" }}>
+                    {pct}%
+                  </span>
+                </div>
+                <div className="mt-1 h-[3px] w-full" style={{ background: "rgba(250,243,230,0.14)" }}>
+                  <div className="h-full" style={{ width: `${pct}%`, background: OAT }} />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <DarkEyebrow>Inspections</DarkEyebrow>
+          <div className="mt-2 space-y-2">
+            {[
+              ["Structural framing", true],
+              ["Electrical rough", false],
+              ["Plumbing top-out", true],
+            ].map(([trade, ok]) => (
+              <div key={trade as string} className="flex items-center justify-between gap-2">
+                <span className="min-w-0 truncate text-[10px]" style={{ color: OAT }}>
+                  {trade}
+                </span>
+                <span
+                  className="shrink-0 text-[11px]"
+                  style={{ color: ok ? "#9BB8A6" : "#D89A9A" }}
+                  aria-hidden
+                >
+                  {ok ? "✓" : "✕"}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <DarkEyebrow>Compliance</DarkEyebrow>
+          <div className="mt-2 space-y-2">
+            {[
+              ["Licenses", "36 current"],
+              ["COIs", "184 valid"],
+              ["Expiring 30d", "0"],
+            ].map(([label, value]) => (
+              <div key={label} className="flex items-center justify-between gap-2">
+                <span className="text-[10px]" style={{ color: "rgba(250,243,230,0.62)" }}>
+                  {label}
+                </span>
+                <span className="text-[10px]" style={{ color: OAT, fontWeight: 500 }}>
+                  {value}
+                </span>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
-
-      <div key={tab} className="p-4" style={{ animation: "clTabIn 420ms ease-out both" }}>
-        {tab === 0 && (
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-            {DASH_METRICS.map(([label, value]) => (
-              <div
-                key={label}
-                className="px-3 py-4"
-                style={{ border: "1px solid rgba(250,243,230,0.12)" }}
-              >
-                <div
-                  className="text-[8.5px] uppercase"
-                  style={{ fontFamily: MONO, letterSpacing: "0.16em", color: "rgba(250,243,230,0.5)" }}
-                >
-                  {label}
-                </div>
-                <div
-                  className="mt-2"
-                  style={{ fontFamily: SERIF, fontSize: 30, color: OAT, lineHeight: 1 }}
-                >
-                  {value}
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {(tab === 1 || tab === 2) && (
-          <div>
-            {(tab === 1 ? PERMIT_ROWS : INSPECTION_ROWS).map((r) => (
-              <div
-                key={r[0]}
-                className="flex items-center gap-3 py-2.5"
-                style={{ borderBottom: "1px solid rgba(250,243,230,0.09)" }}
-              >
-                <span
-                  className="w-[42%] truncate text-[11px]"
-                  style={{ color: OAT, fontWeight: 500 }}
-                >
-                  {r[0]}
-                </span>
-                <span
-                  className="hidden flex-1 truncate text-[10px] sm:block"
-                  style={{ fontFamily: MONO, color: "rgba(250,243,230,0.5)" }}
-                >
-                  {r[1]}
-                </span>
-                <span
-                  className="ml-auto px-2 py-1 text-[8.5px] uppercase"
-                  style={{
-                    fontFamily: MONO,
-                    letterSpacing: "0.14em",
-                    color: OAT,
-                    background: statusTone(r[2]),
-                  }}
-                >
-                  {r[2]}
-                </span>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-    </div>
+    </Laptop>
   );
 }
 
 /* --------------------------------- the stage --------------------------------- */
 
+const SCENES = [SceneOverview, SceneDashboard, ScenePortal];
+
 export function HeroStage() {
-  const [act, setAct] = useState<Act>("boxes");
-  const [tab, setTab] = useState(0);
+  const [scene, setScene] = useState(0);
   const [reduced, setReduced] = useState(false);
 
   useEffect(() => {
-    const r =
+    if (
       typeof window !== "undefined" &&
-      window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
-    if (r) {
+      window.matchMedia?.("(prefers-reduced-motion: reduce)").matches
+    ) {
       setReduced(true);
       return;
     }
-    let t: number;
-    const toApp = () => {
-      setAct("app");
-      setTab(0);
-      t = window.setTimeout(() => setTab(1), 2600);
-      t = window.setTimeout(() => setTab(2), 5000);
-      t = window.setTimeout(() => setAct("boxes"), 7600);
-      t = window.setTimeout(toApp, 13600);
-    };
-    t = window.setTimeout(toApp, 5200);
-    return () => window.clearTimeout(t);
+    const id = window.setInterval(() => setScene((s) => (s + 1) % SCENES.length), 4000);
+    return () => window.clearInterval(id);
   }, []);
 
+  const Active = SCENES[scene];
+
   return (
-    <div className="relative w-full">
+    <div className="mx-auto w-full max-w-4xl">
       <style>{`
-        @keyframes clHover {
-          0%,100% { transform: translateY(-6px) rotate(-1.5deg); }
-          50% { transform: translateY(8px) rotate(1.5deg); }
-        }
-        @keyframes clBoxPop {
-          from { opacity: 0; transform: translate(calc(var(--dx,0) * 1px), 0) scale(0.72); filter: blur(3px); }
-          to { opacity: 1; transform: none; scale: 1; filter: blur(0); }
-        }
-        @keyframes clAppIn {
-          from { opacity: 0; transform: translateY(14px) scale(0.94); }
-          to { opacity: 1; transform: none; }
-        }
-        @keyframes clTabIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+        @keyframes clSpin { from { transform: rotateY(0deg); } to { transform: rotateY(360deg); } }
+        @keyframes clSceneIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
       `}</style>
 
-      {/* dotted field, Ramp-style */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0"
+      {/* header */}
+      <h2
+        className="text-center"
         style={{
-          backgroundImage: `radial-gradient(${INK}22 1px, transparent 1px)`,
-          backgroundSize: "16px 16px",
-          maskImage: "radial-gradient(60% 60% at 50% 50%, #000 0%, transparent 100%)",
-          WebkitMaskImage: "radial-gradient(60% 60% at 50% 50%, #000 0%, transparent 100%)",
+          fontFamily: SERIF,
+          fontWeight: 500,
+          fontSize: "clamp(1.9rem, 4vw, 3rem)",
+          lineHeight: 1.02,
+          letterSpacing: "-0.03em",
+          color: PLUM,
         }}
-      />
+      >
+        Run projects, not paperwork.
+      </h2>
+      <p className="mx-auto mt-3 max-w-[52ch] text-center text-[15px] leading-[1.65]" style={{ color: GREEN }}>
+        Permits, inspections, licenses, and lien rights — cleared automatically.
+      </p>
 
-      <div className="relative h-[420px] sm:h-[460px] lg:h-[520px]">
-        {reduced || act === "boxes" ? (
-          <CapabilityStage live={!reduced} />
-        ) : (
-          <div className="absolute inset-0 flex items-center justify-center">
-            <AppWindow tab={tab} />
-          </div>
-        )}
+      {/* the frame */}
+      <div
+        className="mt-8 overflow-hidden"
+        style={{
+          height: FRAME_H,
+          background: "#FFFFFF",
+          border: `1px solid ${BORDER}`,
+          borderRadius: 12,
+        }}
+      >
+        <div
+          key={scene}
+          className="h-full w-full"
+          style={{ animation: reduced ? undefined : "clSceneIn 600ms cubic-bezier(0.16,1,0.3,1) both" }}
+        >
+          <Active />
+        </div>
+      </div>
+
+      {/* dots */}
+      <div className="mt-4 flex items-center justify-center gap-2">
+        {SCENES.map((_, i) => (
+          <span
+            key={i}
+            className="h-1.5 w-1.5 rounded-full transition-opacity duration-300"
+            style={{ background: i === scene ? BRONZE : PLUM, opacity: i === scene ? 1 : 0.22 }}
+          />
+        ))}
+      </div>
+
+      {/* pills */}
+      <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+        <Link
+          to="/contact"
+          className="inline-flex items-center rounded-full px-5 py-2 text-[12.5px] no-underline"
+          style={{ border: `1px solid ${GREEN}`, color: GREEN, fontWeight: 600 }}
+        >
+          See it in action
+        </Link>
+        <Link
+          to="/join"
+          hash="request"
+          className="inline-flex items-center rounded-full px-5 py-2 text-[12.5px] no-underline"
+          style={{ background: BRONZE, color: OAT, fontWeight: 600 }}
+        >
+          Get early access
+        </Link>
       </div>
     </div>
   );
