@@ -374,7 +374,9 @@ function BentoCard({
           />
         )}
       </div>
-      <div className={padded ? "min-h-0 flex-1 px-3 py-2.5" : "min-h-0 flex-1"}>{children}</div>
+      <div className={padded ? "flex min-h-0 flex-1 flex-col justify-center px-3 py-2.5" : "min-h-0 flex-1"}>
+        <div className="min-h-0">{children}</div>
+      </div>
     </div>
   );
 }
@@ -552,7 +554,7 @@ function SceneOrbit() {
     <div className="relative h-full w-full">
       {/* desktop: asymmetric bento with the mark seated in the middle column */}
       <div
-        className="absolute inset-0 hidden p-4 pb-[46px] md:block"
+        className="absolute inset-0 hidden px-4 pb-[46px] pt-7 md:block"
         style={{ perspective: 1200 }}
       >
         <div
