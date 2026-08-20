@@ -776,24 +776,8 @@ function TrustBar() {
           ))}
         </div>
 
-        <div className="mt-14 grid gap-4 md:grid-cols-3">
-          {TESTIMONIALS.map((t) => (
-            <figure key={t.name} className="flex flex-col p-7" style={{ background: OFF, border: `1px solid ${BORDER}` }}>
-              <div className="text-[28px] font-bold leading-none" style={{ color: GREEN }}>
-                &ldquo;
-              </div>
-              <blockquote className="mt-4 flex-1 text-[15px] leading-relaxed" style={{ color: INK }}>
-                {t.quote}
-              </blockquote>
-              <figcaption className="mt-6 pt-5 text-[12.5px]" style={{ borderTop: `1px solid ${BORDER}`, color: GRAY }}>
-                <span className="font-bold" style={{ color: INK }}>
-                  {t.name}
-                </span>
-                <br />
-                {t.role}
-              </figcaption>
-            </figure>
-          ))}
+        <div className="mt-20">
+          <FeaturedTestimonial items={TESTIMONIALS} />
         </div>
       </div>
     </section>
