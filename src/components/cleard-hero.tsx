@@ -256,6 +256,8 @@ export function ClearedHero() {
         @keyframes clGloss { 0% { transform: translateX(-140%) skewX(-16deg); opacity: 0; }
           35% { opacity: 1; } 100% { transform: translateX(180%) skewX(-16deg); opacity: 0; } }
       `}</style>
+      <HomeMotionStyles />
+
 
       <HeroNav logoSlot={navSlot} logoVisible={!running} />
 
