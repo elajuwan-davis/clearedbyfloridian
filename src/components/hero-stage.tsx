@@ -329,6 +329,7 @@ function BentoCard({
   active,
   children,
   padded = true,
+  fill = false,
 }: {
   title: string;
   hint?: string;
@@ -337,6 +338,7 @@ function BentoCard({
   active?: boolean;
   children: React.ReactNode;
   padded?: boolean;
+  fill?: boolean;
 }) {
   const reduced = useReducedMotion();
   return (
@@ -374,8 +376,14 @@ function BentoCard({
           />
         )}
       </div>
-      <div className={padded ? "flex min-h-0 flex-1 flex-col justify-center px-3 py-2.5" : "min-h-0 flex-1"}>
-        <div className="min-h-0">{children}</div>
+      <div
+        className={
+          padded
+            ? `flex min-h-0 flex-1 flex-col px-3 py-2.5 ${fill ? "" : "justify-center"}`
+            : "min-h-0 flex-1"
+        }
+      >
+        <div className={fill ? "flex min-h-0 w-full flex-1 flex-col" : "min-h-0 w-full"}>{children}</div>
       </div>
     </div>
   );
@@ -572,7 +580,7 @@ function SceneOrbit() {
             `,
           }}
         >
-          <BentoCard title="Permit report" hint="Live" area="report" delay={0} padded>
+          <BentoCard title="Permit report" hint="Live" area="report" delay={0} fill>
             <ReportCard />
           </BentoCard>
 
@@ -653,7 +661,7 @@ function SceneOrbit() {
           />
         </div>
         <div className="min-h-0 flex-1">
-          <BentoCard title="Permit report" hint="Live" area="auto" delay={0}>
+          <BentoCard title="Permit report" hint="Live" area="auto" delay={0} fill>
             <ReportCard />
           </BentoCard>
         </div>
