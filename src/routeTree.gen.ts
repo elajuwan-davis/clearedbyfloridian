@@ -95,7 +95,6 @@ import { Route as PortalUtilityLocatesRouteImport } from './routes/portal.utilit
 import { Route as SubIntakeTokenRouteImport } from './routes/sub-intake.$token'
 import { Route as SubPortalTokenRouteImport } from './routes/sub-portal_.$token'
 import { Route as TradesSlugRouteImport } from './routes/trades.$slug'
-import { Route as TradesGeneralContractorsRouteImport } from './routes/trades.general-contractors'
 import { Route as VersusIndexRouteImport } from './routes/versus.index'
 import { Route as VersusSlugRouteImport } from './routes/versus.$slug'
 import { Route as AdminBlogIndexRouteImport } from './routes/admin.blog.index'
@@ -568,12 +567,6 @@ const TradesSlugRoute = TradesSlugRouteImport.update({
   path: '/trades/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
-const TradesGeneralContractorsRoute =
-  TradesGeneralContractorsRouteImport.update({
-    id: '/trades/general-contractors',
-    path: '/trades/general-contractors',
-    getParentRoute: () => rootRouteImport,
-  } as any)
 const VersusIndexRoute = VersusIndexRouteImport.update({
   id: '/versus/',
   path: '/versus/',
@@ -859,7 +852,6 @@ export interface FileRoutesByFullPath {
   '/sub-intake/$token': typeof SubIntakeTokenRoute
   '/sub-portal/$token': typeof SubPortalTokenRoute
   '/trades/$slug': typeof TradesSlugRoute
-  '/trades/general-contractors': typeof TradesGeneralContractorsRoute
   '/versus/$slug': typeof VersusSlugRoute
   '/admin/': typeof AdminIndexRoute
   '/blog/': typeof BlogIndexRoute
@@ -982,7 +974,6 @@ export interface FileRoutesByTo {
   '/sub-intake/$token': typeof SubIntakeTokenRoute
   '/sub-portal/$token': typeof SubPortalTokenRoute
   '/trades/$slug': typeof TradesSlugRoute
-  '/trades/general-contractors': typeof TradesGeneralContractorsRoute
   '/versus/$slug': typeof VersusSlugRoute
   '/admin': typeof AdminIndexRoute
   '/blog': typeof BlogIndexRoute
@@ -1110,7 +1101,6 @@ export interface FileRoutesById {
   '/sub-intake/$token': typeof SubIntakeTokenRoute
   '/sub-portal_/$token': typeof SubPortalTokenRoute
   '/trades/$slug': typeof TradesSlugRoute
-  '/trades/general-contractors': typeof TradesGeneralContractorsRoute
   '/versus/$slug': typeof VersusSlugRoute
   '/admin/': typeof AdminIndexRoute
   '/blog/': typeof BlogIndexRoute
@@ -1239,7 +1229,6 @@ export interface FileRouteTypes {
     | '/sub-intake/$token'
     | '/sub-portal/$token'
     | '/trades/$slug'
-    | '/trades/general-contractors'
     | '/versus/$slug'
     | '/admin/'
     | '/blog/'
@@ -1362,7 +1351,6 @@ export interface FileRouteTypes {
     | '/sub-intake/$token'
     | '/sub-portal/$token'
     | '/trades/$slug'
-    | '/trades/general-contractors'
     | '/versus/$slug'
     | '/admin'
     | '/blog'
@@ -1489,7 +1477,6 @@ export interface FileRouteTypes {
     | '/sub-intake/$token'
     | '/sub-portal_/$token'
     | '/trades/$slug'
-    | '/trades/general-contractors'
     | '/versus/$slug'
     | '/admin/'
     | '/blog/'
@@ -1590,7 +1577,6 @@ export interface RootRouteChildren {
   SubIntakeTokenRoute: typeof SubIntakeTokenRoute
   SubPortalTokenRoute: typeof SubPortalTokenRoute
   TradesSlugRoute: typeof TradesSlugRoute
-  TradesGeneralContractorsRoute: typeof TradesGeneralContractorsRoute
   VersusSlugRoute: typeof VersusSlugRoute
   AdminIndexRoute: typeof AdminIndexRoute
   BlogIndexRoute: typeof BlogIndexRoute
@@ -2217,13 +2203,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TradesSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/trades/general-contractors': {
-      id: '/trades/general-contractors'
-      path: '/trades/general-contractors'
-      fullPath: '/trades/general-contractors'
-      preLoaderRoute: typeof TradesGeneralContractorsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/versus/': {
       id: '/versus/'
       path: '/versus'
@@ -2693,7 +2672,6 @@ const rootRouteChildren: RootRouteChildren = {
   SubIntakeTokenRoute: SubIntakeTokenRoute,
   SubPortalTokenRoute: SubPortalTokenRoute,
   TradesSlugRoute: TradesSlugRoute,
-  TradesGeneralContractorsRoute: TradesGeneralContractorsRoute,
   VersusSlugRoute: VersusSlugRoute,
   AdminIndexRoute: AdminIndexRoute,
   BlogIndexRoute: BlogIndexRoute,
