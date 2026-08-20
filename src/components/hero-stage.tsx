@@ -388,7 +388,7 @@ function SceneOrbit() {
             <div
               key={card.key}
               className="absolute"
-              style={{ transform: `rotate(${angle}deg) translate(232px) rotate(${-angle}deg)` }}
+              style={{ transform: `rotate(${angle}deg) translate(214px) rotate(${-angle}deg)` }}
             >
               <div
                 style={{
@@ -442,7 +442,7 @@ function SceneOrbit() {
       </div>
 
       {/* the story line — sits inside the ring, under the mark */}
-      <div className="pointer-events-none absolute left-1/2 top-1/2 z-10 hidden w-[300px] -translate-x-1/2 justify-center md:flex" style={{ marginTop: 96 }}>
+      <div className="pointer-events-none absolute left-1/2 top-1/2 z-10 hidden w-[300px] -translate-x-1/2 justify-center md:flex" style={{ marginTop: 88 }}>
         <div
           key={focus}
           className="px-2 text-center text-[12px] leading-relaxed"
