@@ -17,11 +17,11 @@ const GREEN = "#2F4F4F"; /* minor accent only: eyebrows, secondary CTA, metadata
 const SERIF = '"Fraunces", "Iowan Old Style", Georgia, serif';
 
 const NAV = [
+  { to: "/", label: "Home", hash: undefined },
   { to: "/product", label: "Product", hash: undefined },
-  { to: "/", label: "Victoria", hash: "victoria" },
-  { to: "/", label: "How it works", hash: "watch-it-run" },
   { to: "/pricing", label: "Pricing", hash: undefined },
-  { to: "/join", label: "Contractors", hash: undefined },
+  { to: "/compare", label: "Compare", hash: undefined },
+  { to: "/pitch-deck", label: "Pitch Deck", hash: undefined },
 ] as const;
 
 /* ------------------------- HERO MOMENT SEQUENCE -------------------------- */
