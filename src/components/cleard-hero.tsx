@@ -2,7 +2,9 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react
 import { Link } from "@tanstack/react-router";
 import mark3d from "@/assets/cleard-3d-mark.png.asset.json";
 import mark2d from "@/assets/cleard-mark-2d.png.asset.json";
-import { HomeMotionStyles, LiveCommandCenter } from "@/components/home-command-center";
+import { HomeMotionStyles } from "@/components/home-command-center";
+import { HeroStage } from "@/components/hero-stage";
+
 
 /* ---------------------- NORDIC LUXURY BRAND TOKENS ---------------------- */
 
@@ -235,7 +237,8 @@ export function ClearedHero() {
   const navSlot = useRef<HTMLDivElement | null>(null);
   const { beat, dockTf, stageMark, skip } = useHeroSequence(navSlot);
 
-  const running = beat !== "done";
+  /* The hero moment now lives in HeroStage (mark + capability boxes + app). */
+  const running = false;
   const assembled = beat !== "assemble";
   const swept = beat === "sweep" || beat === "dock";
   /* content is revealed right-to-left in the wake of the mark */
@@ -311,14 +314,15 @@ export function ClearedHero() {
       )}
 
       <div
-        className="relative z-10 mx-auto grid max-w-7xl items-center gap-16 px-5 pb-24 pt-36 lg:grid-cols-[1.05fr_0.95fr] lg:gap-10 lg:px-10 lg:pb-32 lg:pt-44"
+        className="relative z-10 mx-auto max-w-6xl px-5 pb-16 pt-36 text-center lg:px-10 lg:pb-24 lg:pt-40"
         style={{
           clipPath: contentInset,
           transition: running ? "clip-path 1150ms cubic-bezier(0.7, 0, 0.2, 1)" : undefined,
         }}
       >
+
         {/* copy */}
-        <div>
+        <div className="mx-auto max-w-3xl">
           <div
             className="text-[10.5px] uppercase"
             style={{ letterSpacing: "0.32em", color: GREEN, fontWeight: 600 }}
@@ -327,7 +331,7 @@ export function ClearedHero() {
           </div>
 
           <h1
-            className="mt-7 max-w-[14ch]"
+            className="mx-auto mt-7 max-w-[16ch]"
             style={{
               fontFamily: SERIF,
               fontWeight: 500,
@@ -343,12 +347,15 @@ export function ClearedHero() {
             <span style={{ fontStyle: "italic", color: SLATE }}>Not paperwork.</span>
           </h1>
 
-          <p className="mt-8 max-w-[34ch] text-[17px] leading-[1.7]" style={{ color: SLATE }}>
+          <p
+            className="mx-auto mt-8 max-w-[46ch] text-[17px] leading-[1.7]"
+            style={{ color: SLATE }}
+          >
             Cleard runs permits, inspections, licenses, insurance and lien compliance from one
             command center.
           </p>
 
-          <div className="mt-10 flex flex-wrap items-center gap-4">
+          <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
             <Link
               to="/join"
               hash="request"
@@ -368,22 +375,23 @@ export function ClearedHero() {
               Get early access
             </Link>
           </div>
-
-          <div
-            className="mt-12 flex flex-wrap gap-x-10 gap-y-4 pt-8 text-[11px] uppercase"
-            style={{ borderTop: "1px solid #E0D3BC", letterSpacing: "0.16em", color: GREEN }}
-          >
-            <span>2-day plan review</span>
-            <span>Same-day inspections</span>
-            <span>By invitation</span>
-          </div>
         </div>
 
-        {/* the product itself, running */}
-        <div className="relative flex justify-center lg:justify-end">
-          <LiveCommandCenter />
+        {/* the platform itself: mark hovering, capabilities popping out, then the app */}
+        <div className="mt-10 lg:mt-14">
+          <HeroStage />
+        </div>
+
+        <div
+          className="mx-auto flex max-w-3xl flex-wrap justify-center gap-x-10 gap-y-4 pt-8 text-[11px] uppercase"
+          style={{ borderTop: "1px solid #E0D3BC", letterSpacing: "0.16em", color: GREEN }}
+        >
+          <span>2-day plan review</span>
+          <span>Same-day inspections</span>
+          <span>By invitation</span>
         </div>
       </div>
+
 
       {/* Beats 1-4 — the mark itself, above everything, one arc, one direction */}
       {running && (
