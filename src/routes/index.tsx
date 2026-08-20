@@ -367,10 +367,10 @@ function MunicipalityTrack() {
           <div style={{ color: "#F3EAD9", fontSize: 32, fontWeight: 700, letterSpacing: "-0.03em" }}>
             CleardGov
           </div>
-          <div className="mt-2 text-[17px] font-semibold" style={{ color: TEAL }}>
+          <div className="mt-2 text-[17px] font-semibold" style={{ color: "#FFFFFF" }}>
             The building department, outsourced.
           </div>
-          <p className="mt-6 max-w-3xl text-[15.5px] leading-relaxed" style={{ color: "#5C7370" }}>
+          <p className="mt-6 max-w-3xl text-[15.5px] leading-relaxed" style={{ color: "rgba(255,255,255,0.86)" }}>
             Contract plan review, field inspections, backlog reduction, and staff augmentation for
             municipalities. You retain full oversight and final authority. Cleard provides the licensed
             professionals and the platform they work in.

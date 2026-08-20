@@ -35,8 +35,8 @@ export function MarketingNav() {
   const [tradesOpen, setTradesOpen] = useState(false);
   return (
     <header
-      className="sticky top-0 z-50"
-      style={{ background: NEAR_BLACK, borderBottom: `1px solid ${BORDER}` }}
+      className="sticky top-0 z-[100]"
+      style={{ background: NEAR_BLACK, borderBottom: `1px solid ${BORDER}`, isolation: "isolate" }}
     >
       <div className="mx-auto flex h-[58px] max-w-7xl items-center justify-between gap-4 px-5 lg:px-8">
         <div className="flex min-w-0 items-center gap-6">

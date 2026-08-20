@@ -138,7 +138,7 @@ function HeroNav({ logoSlot, logoVisible }: { logoSlot: React.Ref<HTMLDivElement
     <header
       className="fixed inset-x-0 top-0 z-[100] transition-all duration-300"
       style={{
-        background: scrolled || open ? "#FAF3E6" : "transparent",
+        background: "#FAF3E6",
         boxShadow: scrolled || open ? "0 1px 0 rgba(43,22,32,0.06)" : "none",
         borderBottom: `1px solid ${scrolled || open ? "#E0D3BC" : "transparent"}`,
       }}
