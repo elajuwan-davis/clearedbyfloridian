@@ -10,7 +10,6 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as AboutRouteImport } from './routes/about'
 import { Route as AskVictoriaRouteImport } from './routes/ask-victoria'
 import { Route as BuildingDeptLoginsRouteImport } from './routes/building-dept-logins'
 import { Route as CompareRouteImport } from './routes/compare'
@@ -138,11 +137,6 @@ import { Route as PortalPermitsIdBundleRouteImport } from './routes/portal.permi
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AboutRoute = AboutRouteImport.update({
-  id: '/about',
-  path: '/about',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AskVictoriaRoute = AskVictoriaRouteImport.update({
@@ -778,7 +772,6 @@ const PortalPermitsIdBundleRoute = PortalPermitsIdBundleRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/about': typeof AboutRoute
   '/ask-victoria': typeof AskVictoriaRoute
   '/building-dept-logins': typeof BuildingDeptLoginsRouteWithChildren
   '/compare': typeof CompareRoute
@@ -905,7 +898,6 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/about': typeof AboutRoute
   '/ask-victoria': typeof AskVictoriaRoute
   '/building-dept-logins': typeof BuildingDeptLoginsRouteWithChildren
   '/compare': typeof CompareRoute
@@ -1029,7 +1021,6 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/about': typeof AboutRoute
   '/ask-victoria': typeof AskVictoriaRoute
   '/building-dept-logins': typeof BuildingDeptLoginsRouteWithChildren
   '/compare': typeof CompareRoute
@@ -1158,7 +1149,6 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/about'
     | '/ask-victoria'
     | '/building-dept-logins'
     | '/compare'
@@ -1285,7 +1275,6 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/about'
     | '/ask-victoria'
     | '/building-dept-logins'
     | '/compare'
@@ -1408,7 +1397,6 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
-    | '/about'
     | '/ask-victoria'
     | '/building-dept-logins'
     | '/compare'
@@ -1536,7 +1524,6 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AboutRoute: typeof AboutRoute
   AskVictoriaRoute: typeof AskVictoriaRoute
   BuildingDeptLoginsRoute: typeof BuildingDeptLoginsRouteWithChildren
   CompareRoute: typeof CompareRoute
@@ -1619,13 +1606,6 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/about': {
-      id: '/about'
-      path: '/about'
-      fullPath: '/about'
-      preLoaderRoute: typeof AboutRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/ask-victoria': {
@@ -2639,7 +2619,6 @@ const PortalRouteWithChildren =
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AboutRoute: AboutRoute,
   AskVictoriaRoute: AskVictoriaRoute,
   BuildingDeptLoginsRoute: BuildingDeptLoginsRouteWithChildren,
   CompareRoute: CompareRoute,
