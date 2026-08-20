@@ -13,7 +13,7 @@ const BRONZE = "#9C6B3F";
 const MONO = '"JetBrains Mono", ui-monospace, monospace';
 const SERIF = '"Fraunces", "Iowan Old Style", Georgia, serif';
 
-const FRAME_H = 580;
+const FRAME_H = 600;
 
 /* ------------------------------ small helpers ------------------------------ */
 
@@ -388,7 +388,7 @@ function SceneOrbit() {
             <div
               key={card.key}
               className="absolute"
-              style={{ transform: `rotate(${angle}deg) translate(214px) rotate(${-angle}deg)` }}
+              style={{ transform: `rotate(${angle}deg) translate(190px) rotate(${-angle}deg)` }}
             >
               <div
                 style={{
@@ -424,7 +424,7 @@ function SceneOrbit() {
       </div>
 
       {/* mobile: stacked pair of cards, no orbit */}
-      <div className="absolute inset-x-3 bottom-3 grid grid-cols-1 gap-2 md:hidden">
+      <div className="absolute inset-x-3 bottom-4 grid grid-cols-1 gap-2 md:hidden">
         {[ORBIT[focus], ORBIT[(focus + 1) % ORBIT.length]].map((card, idx) => (
           <div
             key={card.key}
@@ -441,17 +441,28 @@ function SceneOrbit() {
         ))}
       </div>
 
-      {/* the story line — sits inside the ring, under the mark */}
-      <div className="pointer-events-none absolute left-1/2 top-1/2 z-10 hidden w-[300px] -translate-x-1/2 justify-center md:flex" style={{ marginTop: 88 }}>
+      {/* the story line — a caption band across the bottom of the frame */}
+      <div
+        className="pointer-events-none absolute inset-x-0 bottom-0 z-30 hidden items-center justify-center md:flex"
+        style={{
+          height: 46,
+          background: "rgba(250,243,230,0.94)",
+          backdropFilter: "blur(3px)",
+          borderTop: `1px solid ${BORDER}`,
+        }}
+      >
         <div
           key={focus}
-          className="px-2 text-center text-[12px] leading-relaxed"
+          className="px-6 text-center text-[12.5px]"
           style={{
             color: INK,
-            opacity: 0.78,
+            opacity: 0.8,
             animation: reduced ? undefined : "clSceneIn 500ms cubic-bezier(0.16,1,0.3,1) both",
           }}
         >
+          <span style={{ fontFamily: MONO, fontSize: 8, letterSpacing: "0.2em", color: BRONZE, textTransform: "uppercase", marginRight: 10 }}>
+            {ORBIT[focus].title}
+          </span>
           {ORBIT[focus].story}
         </div>
       </div>
