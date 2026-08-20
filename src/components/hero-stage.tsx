@@ -1186,7 +1186,7 @@ function ScenePortal() {
             }}
           >
             <DarkEyebrow>Filed today</DarkEyebrow>
-            <div className="relative mt-2 h-[calc(100%-26px)] overflow-hidden">
+            <div className="relative mt-2 overflow-hidden" style={{ height: 150 }}>
               <div
                 style={{
                   animation: reduced ? undefined : "clMarquee 14s linear infinite",
