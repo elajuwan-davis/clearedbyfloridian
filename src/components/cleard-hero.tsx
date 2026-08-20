@@ -19,7 +19,7 @@ const SERIF = '"Fraunces", "Iowan Old Style", Georgia, serif';
 
 const NAV = [
   { to: "/", label: "Home", hash: undefined },
-  { to: "/for-contractors", label: "For Contractors", hash: undefined },
+  { to: "/join", label: "For Contractors", hash: undefined },
   { to: "/pricing", label: "Pricing", hash: undefined },
   { to: "/compare", label: "Compare", hash: undefined },
   { to: "/pitch-deck", label: "Pitch Deck", hash: undefined },

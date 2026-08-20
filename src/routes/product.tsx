@@ -2,6 +2,6 @@ import { createFileRoute, redirect } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/product")({
   beforeLoad: () => {
-    throw redirect({ to: "/for-contractors" });
+    throw redirect({ to: "/join" });
   },
 });

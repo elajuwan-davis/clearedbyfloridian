@@ -93,7 +93,7 @@ function VersusDetail() {
             <Link to="/join" hash="request" className="md-btn-primary">
               Get early access <ArrowRight className="h-4 w-4" />
             </Link>
-            <Link to="/for-contractors" className="md-btn-ghost">
+            <Link to="/join" className="md-btn-ghost">
               See a demo
             </Link>
           </div>

@@ -39,7 +39,7 @@ export function SiteFooter() {
         <div>
           <div className="label-eyebrow mb-4">Navigate</div>
           <ul className="space-y-2 text-sm">
-            <li><Link to="/for-contractors" className="hover:opacity-70 transition-opacity">For Contractors</Link></li>
+            <li><Link to="/join" className="hover:opacity-70 transition-opacity">For Contractors</Link></li>
             
             <li><Link to="/contact" className="hover:opacity-70 transition-opacity">Contact</Link></li>
             <li><Link to="/portal" className="hover:opacity-70 transition-opacity">Client portal</Link></li>
