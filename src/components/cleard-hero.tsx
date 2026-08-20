@@ -257,7 +257,7 @@ export function ClearedHero() {
           35% { opacity: 1; } 100% { transform: translateX(180%) skewX(-16deg); opacity: 0; } }
       `}</style>
 
-      <HeroNav logoSlot={navSlot} logoVisible={!running || beat === "dock"} />
+      <HeroNav logoSlot={navSlot} logoVisible={!running} />
 
       {/* fine slate line-art: quiet drafting grid, no glow, no gradients */}
       <div
