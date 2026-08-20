@@ -1,14 +1,19 @@
 import { useState, type ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
-import { Menu, X, ArrowRight } from "lucide-react";
+import { Menu, X, ArrowRight, ChevronDown } from "lucide-react";
 import mark2d from "@/assets/cleard-mark-2d.png.asset.json";
-/** Flat nav links — no dropdowns anywhere on the marketing site. */
+/** Flat nav links — the only dropdown is Trades. */
 const NAV_LINKS: Array<{ to: string; label: string }> = [
   { to: "/product", label: "Product" },
   { to: "/join", label: "For Contractors" },
   { to: "/pricing", label: "Pricing" },
   { to: "/compare", label: "Compare" },
   { to: "/about", label: "About" },
+];
+
+/** Trade-specific landing pages. */
+const TRADE_LINKS: Array<{ to: string; label: string }> = [
+  { to: "/trades/general-contractors", label: "General Contractors" },
 ];
 
 const NEAR_BLACK = "#FAF3E6";
@@ -19,9 +24,11 @@ const OAT = "#FAF3E6";
 const BORDER = "#E0D3BC";
 const SERIF = '"Fraunces", "Iowan Old Style", Georgia, serif';
 
+
 /** The single marketing nav — identical on every public page. */
 export function MarketingNav() {
   const [open, setOpen] = useState(false);
+  const [tradesOpen, setTradesOpen] = useState(false);
   return (
     <header
       className="sticky top-0 z-50"
@@ -63,7 +70,45 @@ export function MarketingNav() {
                 {l.label}
               </Link>
             ))}
+
+            <div
+              className="relative"
+              onMouseEnter={() => setTradesOpen(true)}
+              onMouseLeave={() => setTradesOpen(false)}
+            >
+              <button
+                type="button"
+                onClick={() => setTradesOpen((s) => !s)}
+                className="inline-flex items-center gap-1 text-[14px] transition-opacity hover:opacity-70"
+                style={{ color: BODY_GRAY, whiteSpace: "nowrap" }}
+                aria-expanded={tradesOpen}
+              >
+                Trades
+                <ChevronDown className="h-3.5 w-3.5" />
+              </button>
+              {tradesOpen && (
+                <div
+                  className="absolute left-0 top-full min-w-[220px] pt-2"
+                  style={{ zIndex: 60 }}
+                >
+                  <div style={{ background: NEAR_BLACK, border: `1px solid ${BORDER}` }}>
+                    {TRADE_LINKS.map((t) => (
+                      <Link
+                        key={t.to}
+                        to={t.to}
+                        onClick={() => setTradesOpen(false)}
+                        className="block px-4 py-3 text-[14px] no-underline transition-opacity hover:opacity-70"
+                        style={{ color: INK }}
+                      >
+                        {t.label}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
           </nav>
+
         </div>
 
         <div className="flex items-center gap-3" style={{ flexShrink: 0 }}>
@@ -98,6 +143,7 @@ export function MarketingNav() {
           <div className="space-y-4 px-6 py-6">
             {[
               ...NAV_LINKS,
+              ...TRADE_LINKS,
               { to: "/login", label: "Sign in" },
             ].map((l) => (
               <Link
