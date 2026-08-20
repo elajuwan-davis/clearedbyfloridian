@@ -10,13 +10,13 @@ export const Route = createFileRoute("/pricing")({
       {
         name: "description",
         content:
-          "Five services, one subscription. Starter $99/mo, Pro $249/mo, Back Office $499/mo. 14-day free trial, no credit card required.",
+          "Simple, transparent pricing. Blueprint $99/mo, Foundation $249/mo, Complete $499/mo, plus per-project permit administration and plan review add-ons.",
       },
-      { property: "og:title", content: "One subscription. Your entire back office." },
+      { property: "og:title", content: "Simple, transparent pricing." },
       {
         property: "og:description",
         content:
-          "Permitting administration, private plan review, license management, insurance compliance, and lien rights from $99/month.",
+          "The platform runs year-round. Add services when you need them. Subscriptions from $99/month plus per-project add-ons.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -36,69 +36,108 @@ const OFF = "#F3EAD9";
 type Plan = {
   name: string;
   price: string;
+  tagline: string;
+  blurb?: string;
   inherits?: string;
   features: string[];
-  limits: string;
   popular?: boolean;
 };
 
 const PLANS: Plan[] = [
   {
-    name: "Starter",
+    name: "Blueprint",
     price: "$99",
+    tagline: "Stay licensed. Stay protected. Stay ready.",
+    blurb:
+      "For solo contractors and small operators who need compliance infrastructure year-round — not just when they're pulling permits.",
     features: [
-      "Permitting Administration — tracking & pipeline",
-      "Insurance Compliance — basic COI monitoring & expiration alerts",
-      "Contractor License Management — verification dashboard",
-      "Building department portal hub",
+      "Permit tracking dashboard (all active permits, status, milestones, alerts)",
+      "License expiration alerts (90/60/30-day)",
+      "COI storage + expiration monitoring",
+      "Lien rights calendar (deadline alerts)",
+      "Document vault (license, insurance, W-9, sub agreements)",
+      "Project Guides (permit knowledge base)",
+      "Victoria AI — 25 questions/day",
     ],
-    limits: "Up to 5 active projects · 1 user seat",
   },
   {
-    name: "Pro",
+    name: "Foundation",
     price: "$249",
     popular: true,
-    inherits: "Everything in Starter, plus:",
+    tagline: "For growing contractors who need compliance operations, not just tracking.",
+    inherits: "Everything in Blueprint, plus:",
     features: [
-      "Permitting Administration — full submission, corrections & CO management",
-      "Private Plan Review & Inspections — 2-day plan review, same-day inspections",
-      "Contractor License Management — renewal alerts and CE hour tracking",
-      "Insurance Compliance — coverage validation and automated sub follow-up",
-      "Lien rights documents — NOC, Preliminary Notices, and waivers",
+      "Lien document generation + filing deadlines",
+      "Continuing education (CE) hour tracking",
+      "Qualifying Agent status monitoring",
+      "Sub license verification dashboard",
+      "Building Department login manager",
+      "Project-threaded messaging inbox",
+      "Victoria AI — 100 questions/day",
     ],
-    limits: "Up to 25 active projects · 3 user seats",
   },
   {
-    name: "Back Office",
+    name: "Complete",
     price: "$499",
-    inherits: "Everything in Pro, plus:",
+    tagline: "Your entire back office. One platform.",
+    inherits: "Everything in Foundation, plus:",
     features: [
-      "Contractor License Management — Cleard submits renewals on your behalf",
-      "Contractor License Management — qualifying agent oversight",
-      "Insurance Compliance — full subcontractor roster at any size",
-      "Private Plan Review & Inspections — priority scheduling",
-      "Lien rights — statutory deadline tracking and county e-recording",
+      "Marketplace access (subcontractor network, trade referrals)",
+      "License renewal management (Cleard files on your behalf)",
+      "Worker's comp exemption tracking",
+      "DBPR filing support",
+      "COI auto-request for all subs",
+      "Unlimited sub roster",
+      "Priority support",
+      "Victoria AI — unlimited",
     ],
-    limits: "Unlimited projects · Unlimited user seats",
   },
 ];
 
+type AddOn = {
+  name: string;
+  description: string;
+  rows: { label: string; price: string; detail?: string }[];
+  footnote?: { title: string; items: string[] };
+};
 
-type MatrixRow = { feature: string; cells: string[] }; // [Starter, Pro, Back Office]
-
-const PLAN_MATRIX: MatrixRow[] = [
-  { feature: "Permitting Administration", cells: ["yes", "yes", "yes"] },
-  { feature: "Active permits included", cells: ["5", "25", "Unlimited"] },
-  { feature: "Private Plan Review & Inspections", cells: ["—", "yes", "yes"] },
-  { feature: "Contractor License Management", cells: ["—", "yes", "yes"] },
-  { feature: "Insurance Compliance (COI tracking)", cells: ["—", "yes", "yes"] },
-  { feature: "Lien Rights documents & deadlines", cells: ["—", "yes", "yes"] },
-  { feature: "Victoria AI assistant", cells: ["yes", "yes", "yes"] },
-  { feature: "Document vault & closeout packages", cells: ["yes", "yes", "yes"] },
-  { feature: "Team seats", cells: ["2", "10", "Unlimited"] },
-  { feature: "E-recording & notary queue", cells: ["—", "—", "yes"] },
-  { feature: "Dedicated permit coordinator", cells: ["—", "—", "yes"] },
-  { feature: "Support", cells: ["Email", "Priority", "Named account team"] },
+const ADD_ONS: AddOn[] = [
+  {
+    name: "Permit Administration",
+    description:
+      "Cleard prepares and submits the permit application, coordinates with the municipality, and manages the process through to issuance.",
+    rows: [
+      {
+        label: "Standard",
+        price: "$249/permit",
+        detail: "Residential, single trade, straightforward jurisdiction",
+      },
+      {
+        label: "Complex",
+        price: "$449/permit",
+        detail: "Multi-trade, difficult jurisdiction, larger project scope",
+      },
+      {
+        label: "Enterprise",
+        price: "Custom",
+        detail: "Commercial, multi-site, high-volume GC portfolios",
+      },
+    ],
+    footnote: {
+      title: "Volume discounts for Foundation + Complete subscribers",
+      items: ["3–5 permits/month: 10% off", "6+ permits/month: 15% off"],
+    },
+  },
+  {
+    name: "Private Plan Review & Inspections",
+    description:
+      "Licensed professionals review plans and conduct inspections under applicable private provider statutes.",
+    rows: [
+      { label: "Residential plan review", price: "$399/project" },
+      { label: "Inspection (per visit)", price: "$199/visit" },
+      { label: "Full inspection package (3 visits)", price: "$499" },
+    ],
+  },
 ];
 
 function PricingPage() {
@@ -119,10 +158,10 @@ function PricingPage() {
               letterSpacing: "-0.04em",
             }}
           >
-            One subscription. Your entire back office.
+            Simple, transparent pricing.
           </h1>
           <p className="mt-6 max-w-2xl text-[17px] leading-relaxed" style={{ color: GRAY }}>
-            Start with what you need today. Upgrade as your operation grows.
+            The platform runs year-round. Add services when you need them.
           </p>
         </section>
 
@@ -139,7 +178,10 @@ function PricingPage() {
                 }}
               >
                 <div className="flex items-center justify-between gap-3">
-                  <div className="text-[13px] uppercase tracking-[0.16em]" style={{ color: INK, fontWeight: 700 }}>
+                  <div
+                    className="text-[13px] uppercase tracking-[0.16em]"
+                    style={{ color: INK, fontWeight: 700 }}
+                  >
                     {p.name}
                   </div>
                   {p.popular && (
@@ -161,6 +203,16 @@ function PricingPage() {
                   </span>
                 </div>
 
+                <p className="mt-4 text-[14px] italic leading-snug" style={{ color: TEAL }}>
+                  {p.tagline}
+                </p>
+
+                {p.blurb && (
+                  <p className="mt-3 text-[13.5px] leading-relaxed" style={{ color: GRAY }}>
+                    {p.blurb}
+                  </p>
+                )}
+
                 {p.inherits && (
                   <p className="mt-5 text-[13px]" style={{ color: INK, fontWeight: 600 }}>
                     {p.inherits}
@@ -178,18 +230,19 @@ function PricingPage() {
                   ))}
                 </ul>
 
-                <p className="mt-6 pt-5 text-[13px]" style={{ color: GRAY, borderTop: `1px solid ${BORDER}` }}>
-                  {p.limits}
-                </p>
-
                 <Link
                   to="/join"
                   hash="request"
-                  className="mt-6 inline-flex items-center justify-center px-5 py-3 text-[14px] no-underline"
+                  className="mt-7 inline-flex items-center justify-center px-5 py-3 text-[14px] no-underline"
                   style={
                     p.popular
                       ? { background: TEAL, color: "#FAF3E6", fontWeight: 700 }
-                      : { background: "#FAF3E6", color: INK, border: `1px solid ${BORDER}`, fontWeight: 600 }
+                      : {
+                          background: "#FAF3E6",
+                          color: INK,
+                          border: `1px solid ${BORDER}`,
+                          fontWeight: 600,
+                        }
                   }
                 >
                   Get started
@@ -198,81 +251,93 @@ function PricingPage() {
             ))}
           </div>
 
-
-          {/* Feature comparison table */}
-          <div className="mt-16">
+          {/* Add-on services */}
+          <div className="mt-20">
             <h2
-              style={{ color: INK, fontWeight: 800, fontSize: "clamp(1.5rem, 3vw, 2.25rem)", letterSpacing: "-0.03em" }}
+              style={{
+                color: INK,
+                fontWeight: 800,
+                fontSize: "clamp(1.5rem, 3vw, 2.25rem)",
+                letterSpacing: "-0.03em",
+              }}
             >
-              Compare plans
+              Add-on services
             </h2>
-            <div className="mt-8 overflow-x-auto" style={{ border: `1px solid ${BORDER}` }}>
-              <table className="w-full" style={{ borderCollapse: "collapse", minWidth: 720 }}>
-                <thead>
-                  <tr style={{ background: OFF }}>
-                    <th
-                      className="px-4 py-3 text-left text-[10px] uppercase tracking-[0.16em]"
-                      style={{ color: GRAY, borderBottom: `1px solid ${BORDER}` }}
-                    >
-                      Feature
-                    </th>
-                    {PLANS.map((p) => (
-                      <th
-                        key={p.name}
-                        className="px-4 py-3 text-center text-[11px] uppercase tracking-[0.16em]"
-                        style={{
-                          color: INK,
-                          fontWeight: p.popular ? 800 : 700,
-                          whiteSpace: "nowrap",
-                          background: p.popular ? "rgba(103,49,71,0.14)" : "transparent",
-                          borderBottom: p.popular ? `2px solid ${TEAL}` : `1px solid ${BORDER}`,
-                        }}
-                      >
-                        {p.name}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {PLAN_MATRIX.map((row) => (
-                    <tr key={row.feature}>
-                      <td
-                        className="px-4 py-3 text-[14px]"
-                        style={{ color: INK, borderBottom: `1px solid ${BORDER}` }}
-                      >
-                        {row.feature}
-                      </td>
-                      {row.cells.map((cell, i) => (
-                        <td
-                          key={`${row.feature}-${i}`}
-                          className="px-4 py-3 text-center text-[13px]"
-                          style={{
-                            borderBottom: `1px solid ${BORDER}`,
-                            background: PLANS[i]?.popular ? "rgba(103,49,71,0.06)" : "transparent",
-                            color: cell === "—" ? LIGHT : INK,
-                            fontWeight: 600,
-                          }}
-                        >
-                          {cell === "yes" ? (
-                            <Check className="mx-auto h-4 w-4" style={{ color: TEAL }} />
-                          ) : (
-                            cell
-                          )}
-                        </td>
+            <p className="mt-4 max-w-2xl text-[15px] leading-relaxed" style={{ color: GRAY }}>
+              Available to all subscribers. Billed per project — not included in monthly
+              subscription.
+            </p>
+
+            <div className="mt-8 grid gap-5 md:grid-cols-2 items-start">
+              {ADD_ONS.map((a) => (
+                <div key={a.name} className="p-7" style={{ border: `1px solid ${BORDER}` }}>
+                  <div
+                    className="text-[13px] uppercase tracking-[0.16em]"
+                    style={{ color: INK, fontWeight: 700 }}
+                  >
+                    {a.name}
+                  </div>
+                  <p className="mt-4 text-[14px] leading-relaxed" style={{ color: GRAY }}>
+                    {a.description}
+                  </p>
+
+                  <table className="mt-6 w-full" style={{ borderCollapse: "collapse" }}>
+                    <tbody>
+                      {a.rows.map((r) => (
+                        <tr key={r.label}>
+                          <td
+                            className="py-3 pr-4 align-top text-[14px]"
+                            style={{ color: INK, borderTop: `1px solid ${BORDER}`, fontWeight: 600 }}
+                          >
+                            {r.label}
+                            {r.detail && (
+                              <div
+                                className="mt-1 text-[12.5px] leading-snug"
+                                style={{ color: LIGHT, fontWeight: 400 }}
+                              >
+                                {r.detail}
+                              </div>
+                            )}
+                          </td>
+                          <td
+                            className="py-3 align-top text-right text-[14px] whitespace-nowrap"
+                            style={{ color: TEAL, borderTop: `1px solid ${BORDER}`, fontWeight: 700 }}
+                          >
+                            {r.price}
+                          </td>
+                        </tr>
                       ))}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+                    </tbody>
+                  </table>
+
+                  {a.footnote && (
+                    <div className="mt-6 p-4" style={{ background: OFF }}>
+                      <div
+                        className="text-[11px] uppercase tracking-[0.16em]"
+                        style={{ color: GREEN, fontWeight: 700 }}
+                      >
+                        {a.footnote.title}
+                      </div>
+                      <ul className="mt-3 space-y-1.5">
+                        {a.footnote.items.map((i) => (
+                          <li key={i} className="text-[13.5px]" style={{ color: INK }}>
+                            {i}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              ))}
             </div>
           </div>
 
-          <p className="mt-8 text-[14px]" style={{ color: GRAY }}>
-            All plans include a 14-day free trial. No credit card required. Cancel anytime.
+          <p className="mt-10 text-[14px]" style={{ color: GRAY }}>
+            All pricing in USD. Monthly billing, cancel anytime.
           </p>
 
           <p className="mt-3 text-[14px]" style={{ color: GRAY }}>
-            Need something custom? Volume plans and specialty services are available on request.{" "}
+            Need something custom? Volume plans and enterprise portfolios are available on request.{" "}
             <Link to="/contact" className="underline" style={{ color: INK, fontWeight: 600 }}>
               Talk to us →
             </Link>
