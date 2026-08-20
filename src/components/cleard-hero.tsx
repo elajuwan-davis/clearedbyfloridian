@@ -181,6 +181,7 @@ function HeroNav({ logoSlot, logoVisible }: { logoSlot: React.Ref<HTMLDivElement
               {l.label}
             </Link>
           ))}
+          <HeroTrades />
         </nav>
 
         <div className="flex items-center gap-4" style={{ flexShrink: 0 }}>
