@@ -69,7 +69,45 @@ export function MarketingNav() {
                 {l.label}
               </Link>
             ))}
+
+            <div
+              className="relative"
+              onMouseEnter={() => setTradesOpen(true)}
+              onMouseLeave={() => setTradesOpen(false)}
+            >
+              <button
+                type="button"
+                onClick={() => setTradesOpen((s) => !s)}
+                className="inline-flex items-center gap-1 text-[14px] transition-opacity hover:opacity-70"
+                style={{ color: BODY_GRAY, whiteSpace: "nowrap" }}
+                aria-expanded={tradesOpen}
+              >
+                Trades
+                <ChevronDown className="h-3.5 w-3.5" />
+              </button>
+              {tradesOpen && (
+                <div
+                  className="absolute left-0 top-full min-w-[220px] pt-2"
+                  style={{ zIndex: 60 }}
+                >
+                  <div style={{ background: NEAR_BLACK, border: `1px solid ${BORDER}` }}>
+                    {TRADE_LINKS.map((t) => (
+                      <Link
+                        key={t.to}
+                        to={t.to}
+                        onClick={() => setTradesOpen(false)}
+                        className="block px-4 py-3 text-[14px] no-underline transition-opacity hover:opacity-70"
+                        style={{ color: INK }}
+                      >
+                        {t.label}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
           </nav>
+
         </div>
 
         <div className="flex items-center gap-3" style={{ flexShrink: 0 }}>
