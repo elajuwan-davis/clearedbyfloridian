@@ -317,7 +317,7 @@ const ORBIT: OrbitCard[] = [
   },
 ];
 
-const ORBIT_SECONDS = 46;
+
 
 function SceneOrbit() {
   const reduced = useReducedMotion();
