@@ -29,7 +29,6 @@ import {
   VictoriaChatMock,
 } from "@/components/marketing-mockups";
 import {
-  AskVictoriaLauncher,
   FeaturedTestimonial,
   ReplaceThePermitOffice,
   VictoriaSpotlight,
@@ -88,7 +87,7 @@ function HomePage() {
         @keyframes clWordIn { from { opacity: 0; transform: translateY(0.5em); } to { opacity: 1; transform: translateY(0); } }
         @keyframes clSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
         @keyframes clFade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
-        @keyframes clMarquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+        @keyframes clMarqueeX { from { transform: translateX(0); } to { transform: translateX(-50%); } }
       `}</style>
 
       <div className="cl-home">
@@ -107,7 +106,6 @@ function HomePage() {
         <MobileApp />
         <BottomCTA />
         <Footer />
-        <AskVictoriaLauncher />
       </div>
     </div>
   );
@@ -488,7 +486,7 @@ function TrustBar() {
         >
           <div
             className="flex w-max items-center gap-16"
-            style={{ animation: "clMarquee 34s linear infinite" }}
+            style={{ animation: "clMarqueeX 34s linear infinite" }}
           >
             {marquee.map((l, i) => (
               <span
@@ -851,33 +849,6 @@ function Footer() {
               </div>
             ))}
           </div>
-        </div>
-
-        <div
-          className="flex flex-col gap-6 py-10 md:flex-row md:items-center md:justify-between"
-          style={{ borderTop: "1px solid rgba(255,255,255,0.12)" }}
-        >
-          <h2
-            className="max-w-lg"
-            style={{ fontSize: "clamp(1.5rem, 2.8vw, 2.125rem)", lineHeight: 1.1, letterSpacing: "-0.035em", color: WHITE, fontWeight: 800 }}
-          >
-            Stop running permits. Start building.
-          </h2>
-          <Link
-            to="/join"
-            hash="request"
-            className="cl-glass inline-flex items-center gap-2 self-start px-7 py-3.5 text-[14px] font-bold no-underline transition-transform duration-200 hover:scale-[1.03]"
-            style={{
-              background: "rgba(103,49,71,0.9)",
-              border: "1px solid rgba(217,175,193,0.35)",
-              backdropFilter: "blur(12px) saturate(140%)",
-              WebkitBackdropFilter: "blur(12px) saturate(140%)",
-              color: WHITE,
-              boxShadow: "inset 0 1px 0 rgba(255,255,255,0.22), 0 18px 34px -20px rgba(0,0,0,0.6)",
-            }}
-          >
-            Get early access <ArrowRight className="h-4 w-4" />
-          </Link>
         </div>
 
         <div className="pb-10 text-[12px]" style={{ color: "rgba(255,255,255,0.45)" }}>

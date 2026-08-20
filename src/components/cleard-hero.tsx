@@ -2,7 +2,7 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react
 import { Link } from "@tanstack/react-router";
 import mark3d from "@/assets/cleard-3d-mark.png.asset.json";
 import mark2d from "@/assets/cleard-mark-2d.png.asset.json";
-import heroBackdrop from "@/assets/hero-construction.jpg.asset.json";
+import heroBackdrop from "@/assets/hero-construction.jpg";
 import { HomeMotionStyles } from "@/components/home-command-center";
 import { HeroStage } from "@/components/hero-stage";
 
@@ -136,10 +136,10 @@ function HeroNav({ logoSlot, logoVisible }: { logoSlot: React.Ref<HTMLDivElement
 
   return (
     <header
-      className="fixed inset-x-0 top-0 z-50 transition-all duration-300"
+      className="fixed inset-x-0 top-0 z-[100] transition-all duration-300"
       style={{
-        background: scrolled || open ? "rgba(250,243,230,0.92)" : "transparent",
-        backdropFilter: scrolled || open ? "blur(10px)" : "none",
+        background: scrolled || open ? "#FAF3E6" : "transparent",
+        boxShadow: scrolled || open ? "0 1px 0 rgba(43,22,32,0.06)" : "none",
         borderBottom: `1px solid ${scrolled || open ? "#E0D3BC" : "transparent"}`,
       }}
     >
@@ -280,7 +280,7 @@ export function ClearedHero() {
         aria-hidden
         className="pointer-events-none absolute inset-x-0 bottom-0 top-0"
         style={{
-          backgroundImage: `url(${heroBackdrop.url})`,
+          backgroundImage: `url(${heroBackdrop})`,
           backgroundSize: "cover",
           backgroundPosition: "center bottom",
           backgroundRepeat: "no-repeat",
