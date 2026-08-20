@@ -2,14 +2,13 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react
 import { Link } from "@tanstack/react-router";
 import mark3d from "@/assets/cleard-3d-mark.png.asset.json";
 import mark2d from "@/assets/cleard-mark-2d.png.asset.json";
+import { HomeMotionStyles, LiveCommandCenter } from "@/components/home-command-center";
 
 /* ---------------------- NORDIC LUXURY BRAND TOKENS ---------------------- */
 
 const OAT = "#FAF3E6";
-const OAT_DEEP = "#F3EAD9";
 const SLATE = "#2F4F4F";
 const PLUM = "#673147";
-const LAVENDER = "#E6E6FA";
 const GREEN = "#2F4F4F"; /* minor accent only: eyebrows, secondary CTA, metadata */
 
 const SERIF = '"Fraunces", "Iowan Old Style", Georgia, serif';
