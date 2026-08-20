@@ -97,8 +97,13 @@ function Gate({ onPass }: { onPass: () => void }) {
             setError(false);
           }}
           placeholder="Passcode"
-          className="mt-6 w-full bg-transparent px-3 py-2.5 text-sm outline-none"
-          style={{ border: "1px solid rgba(250,243,230,0.35)", color: OAT }}
+          className="mt-6 w-full px-3 py-2.5 text-sm outline-none"
+          style={{
+            border: "1px solid rgba(250,243,230,0.35)",
+            background: OAT,
+            color: "#111110",
+            caretColor: "#111110",
+          }}
         />
         {error && (
           <div className="mt-2 text-[12.5px]" style={{ color: "#E9A0A0" }}>
