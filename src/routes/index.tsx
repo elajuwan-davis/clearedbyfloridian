@@ -528,8 +528,8 @@ function Services() {
           className="max-w-3xl"
           style={{ fontSize: "clamp(2rem, 3.6vw, 2.875rem)", lineHeight: 1.08, letterSpacing: "-0.035em" }}
         >
-          <span style={{ color: INK, fontWeight: 800 }}>One team runs it all. </span>
-          <span style={{ color: GREEN, fontWeight: 600 }}>So yours doesn&apos;t have to.</span>
+          <span style={{ color: INK, fontWeight: 800 }}>Your team builds. </span>
+          <span style={{ color: GREEN, fontWeight: 600 }}>Cleard handles everything around it.</span>
         </h2>
         <p className="mt-5 max-w-2xl text-[16px] leading-relaxed" style={{ color: GRAY }}>
           Most contractors spread this across 4–6 vendors, two admins, and a lot of phone calls. Cleard
