@@ -1271,68 +1271,56 @@ export function HeroStage() {
         @keyframes clMarquee { from { transform: translateY(0); } to { transform: translateY(-50%); } }
       `}</style>
 
-      <div
-        className="relative mt-8 overflow-hidden"
-        style={{
-          height: FRAME_H,
-          background: `radial-gradient(120% 90% at 50% 40%, ${PAPER} 0%, ${OAT} 62%, #F3E9D6 100%)`,
-          border: `1px solid ${BORDER}`,
-          borderRadius: 14,
-          boxShadow: "0 40px 80px -60px rgba(43,22,32,0.45)",
-        }}
-      >
-        {/* drafting grid */}
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0"
-          style={{
-            backgroundImage: `linear-gradient(to right, rgba(43,22,32,0.045) 1px, transparent 1px),
-              linear-gradient(to bottom, rgba(43,22,32,0.045) 1px, transparent 1px)`,
-            backgroundSize: "44px 44px",
-          }}
+      <div className="mt-8 flex items-center justify-center gap-3 sm:gap-5">
+        <SceneArrow
+          label="Previous scene"
+          glyph="‹"
+          onClick={() => setScene((v) => (v - 1 + SCENES.length) % SCENES.length)}
         />
 
         <div
-          key={scene}
-          className="relative h-full w-full"
-          style={{ animation: reduced ? undefined : "clSceneIn 640ms cubic-bezier(0.16,1,0.3,1) both" }}
+          className="relative min-w-0 flex-1 overflow-hidden"
+          style={{
+            height: FRAME_H,
+            background: `radial-gradient(120% 90% at 50% 40%, ${PAPER} 0%, ${OAT} 62%, #F3E9D6 100%)`,
+            border: `1px solid ${BORDER}`,
+            borderRadius: 14,
+            boxShadow: "0 40px 80px -60px rgba(43,22,32,0.45)",
+          }}
         >
-          <Active />
-        </div>
-
-        {/* scene label */}
-        <div
-          className="pointer-events-none absolute left-4 top-4 text-[8px] uppercase"
-          style={{ fontFamily: MONO, letterSpacing: "0.2em", color: GREEN, opacity: 0.7 }}
-        >
-          {SCENES[scene].label}
-        </div>
-
-        {/* scene arrows */}
-        {(
-          [
-            ["Previous scene", -1, "‹", "left-3"],
-            ["Next scene", 1, "›", "right-3"],
-          ] as const
-        ).map(([label, dir, glyph, pos]) => (
-          <button
-            key={label}
-            type="button"
-            aria-label={label}
-            onClick={() => setScene((v) => (v + dir + SCENES.length) % SCENES.length)}
-            className={`cl-glass absolute ${pos} top-1/2 z-20 inline-flex h-11 w-11 -translate-y-1/2 items-center justify-center text-[22px] leading-none transition-all duration-200 hover:scale-105`}
+          {/* drafting grid */}
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-0"
             style={{
-              background: "rgba(250,243,230,0.55)",
-              border: "1px solid rgba(43,22,32,0.14)",
-              backdropFilter: "blur(12px) saturate(150%)",
-              color: PLUM,
-              borderRadius: 999,
-              cursor: "pointer",
+              backgroundImage: `linear-gradient(to right, rgba(43,22,32,0.045) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(43,22,32,0.045) 1px, transparent 1px)`,
+              backgroundSize: "44px 44px",
             }}
+          />
+
+          <div
+            key={scene}
+            className="relative h-full w-full"
+            style={{ animation: reduced ? undefined : "clSceneIn 640ms cubic-bezier(0.16,1,0.3,1) both" }}
           >
-            {glyph}
-          </button>
-        ))}
+            <Active />
+          </div>
+
+          {/* scene label */}
+          <div
+            className="pointer-events-none absolute left-4 top-4 text-[8px] uppercase"
+            style={{ fontFamily: MONO, letterSpacing: "0.2em", color: GREEN, opacity: 0.7 }}
+          >
+            {SCENES[scene].label}
+          </div>
+        </div>
+
+        <SceneArrow
+          label="Next scene"
+          glyph="›"
+          onClick={() => setScene((v) => (v + 1) % SCENES.length)}
+        />
       </div>
 
       {/* pills */}
