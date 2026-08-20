@@ -454,13 +454,13 @@ function ReportCard() {
               style={{ top: `${(g / 3) * 100}%`, height: 1, background: "rgba(43,22,32,0.07)" }}
             />
           ))}
-          <div className="absolute inset-0 flex items-end gap-[6px]">
+          <div className="absolute inset-0 flex gap-[6px]">
             {REPORT_BARS.map((b, i) => {
               const hot = hoverIdx === i;
               return (
                 <div
                   key={b.key}
-                  className="flex min-w-0 flex-1 cursor-default flex-col items-center justify-end gap-1"
+                  className="flex h-full min-w-0 flex-1 cursor-default flex-col items-center justify-end gap-1"
                   onMouseEnter={() => setHoverIdx(i)}
                   onMouseLeave={() => setHoverIdx(null)}
                 >
