@@ -94,7 +94,7 @@ import { Route as PortalSubmissionsRouteImport } from './routes/portal.submissio
 import { Route as PortalUtilityLocatesRouteImport } from './routes/portal.utility-locates'
 import { Route as SubIntakeTokenRouteImport } from './routes/sub-intake.$token'
 import { Route as SubPortalTokenRouteImport } from './routes/sub-portal_.$token'
-import { Route as TradesGeneralContractorsRouteImport } from './routes/trades.general-contractors'
+import { Route as TradesSlugRouteImport } from './routes/trades.$slug'
 import { Route as VersusIndexRouteImport } from './routes/versus.index'
 import { Route as VersusSlugRouteImport } from './routes/versus.$slug'
 import { Route as AdminBlogIndexRouteImport } from './routes/admin.blog.index'
@@ -562,12 +562,11 @@ const SubPortalTokenRoute = SubPortalTokenRouteImport.update({
   path: '/sub-portal/$token',
   getParentRoute: () => rootRouteImport,
 } as any)
-const TradesGeneralContractorsRoute =
-  TradesGeneralContractorsRouteImport.update({
-    id: '/trades/general-contractors',
-    path: '/trades/general-contractors',
-    getParentRoute: () => rootRouteImport,
-  } as any)
+const TradesSlugRoute = TradesSlugRouteImport.update({
+  id: '/trades/$slug',
+  path: '/trades/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const VersusIndexRoute = VersusIndexRouteImport.update({
   id: '/versus/',
   path: '/versus/',
@@ -852,7 +851,7 @@ export interface FileRoutesByFullPath {
   '/portal/utility-locates': typeof PortalUtilityLocatesRoute
   '/sub-intake/$token': typeof SubIntakeTokenRoute
   '/sub-portal/$token': typeof SubPortalTokenRoute
-  '/trades/general-contractors': typeof TradesGeneralContractorsRoute
+  '/trades/$slug': typeof TradesSlugRoute
   '/versus/$slug': typeof VersusSlugRoute
   '/admin/': typeof AdminIndexRoute
   '/blog/': typeof BlogIndexRoute
@@ -974,7 +973,7 @@ export interface FileRoutesByTo {
   '/portal/utility-locates': typeof PortalUtilityLocatesRoute
   '/sub-intake/$token': typeof SubIntakeTokenRoute
   '/sub-portal/$token': typeof SubPortalTokenRoute
-  '/trades/general-contractors': typeof TradesGeneralContractorsRoute
+  '/trades/$slug': typeof TradesSlugRoute
   '/versus/$slug': typeof VersusSlugRoute
   '/admin': typeof AdminIndexRoute
   '/blog': typeof BlogIndexRoute
@@ -1101,7 +1100,7 @@ export interface FileRoutesById {
   '/portal/utility-locates': typeof PortalUtilityLocatesRoute
   '/sub-intake/$token': typeof SubIntakeTokenRoute
   '/sub-portal_/$token': typeof SubPortalTokenRoute
-  '/trades/general-contractors': typeof TradesGeneralContractorsRoute
+  '/trades/$slug': typeof TradesSlugRoute
   '/versus/$slug': typeof VersusSlugRoute
   '/admin/': typeof AdminIndexRoute
   '/blog/': typeof BlogIndexRoute
@@ -1229,7 +1228,7 @@ export interface FileRouteTypes {
     | '/portal/utility-locates'
     | '/sub-intake/$token'
     | '/sub-portal/$token'
-    | '/trades/general-contractors'
+    | '/trades/$slug'
     | '/versus/$slug'
     | '/admin/'
     | '/blog/'
@@ -1351,7 +1350,7 @@ export interface FileRouteTypes {
     | '/portal/utility-locates'
     | '/sub-intake/$token'
     | '/sub-portal/$token'
-    | '/trades/general-contractors'
+    | '/trades/$slug'
     | '/versus/$slug'
     | '/admin'
     | '/blog'
@@ -1477,7 +1476,7 @@ export interface FileRouteTypes {
     | '/portal/utility-locates'
     | '/sub-intake/$token'
     | '/sub-portal_/$token'
-    | '/trades/general-contractors'
+    | '/trades/$slug'
     | '/versus/$slug'
     | '/admin/'
     | '/blog/'
@@ -1577,7 +1576,7 @@ export interface RootRouteChildren {
   PermitCardIdRoute: typeof PermitCardIdRoute
   SubIntakeTokenRoute: typeof SubIntakeTokenRoute
   SubPortalTokenRoute: typeof SubPortalTokenRoute
-  TradesGeneralContractorsRoute: typeof TradesGeneralContractorsRoute
+  TradesSlugRoute: typeof TradesSlugRoute
   VersusSlugRoute: typeof VersusSlugRoute
   AdminIndexRoute: typeof AdminIndexRoute
   BlogIndexRoute: typeof BlogIndexRoute
@@ -2197,11 +2196,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SubPortalTokenRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/trades/general-contractors': {
-      id: '/trades/general-contractors'
-      path: '/trades/general-contractors'
-      fullPath: '/trades/general-contractors'
-      preLoaderRoute: typeof TradesGeneralContractorsRouteImport
+    '/trades/$slug': {
+      id: '/trades/$slug'
+      path: '/trades/$slug'
+      fullPath: '/trades/$slug'
+      preLoaderRoute: typeof TradesSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/versus/': {
@@ -2672,7 +2671,7 @@ const rootRouteChildren: RootRouteChildren = {
   PermitCardIdRoute: PermitCardIdRoute,
   SubIntakeTokenRoute: SubIntakeTokenRoute,
   SubPortalTokenRoute: SubPortalTokenRoute,
-  TradesGeneralContractorsRoute: TradesGeneralContractorsRoute,
+  TradesSlugRoute: TradesSlugRoute,
   VersusSlugRoute: VersusSlugRoute,
   AdminIndexRoute: AdminIndexRoute,
   BlogIndexRoute: BlogIndexRoute,

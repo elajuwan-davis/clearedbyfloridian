@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import {
   AlertTriangle,
   Bot,
@@ -10,28 +10,7 @@ import {
 } from "lucide-react";
 
 import { MarketingShell } from "@/components/marketing-shell";
-
-export const Route = createFileRoute("/trades/general-contractors")({
-  head: () => ({
-    meta: [
-      { title: "Cleard for General Contractors — Permitting Back Office" },
-      {
-        name: "description",
-        content:
-          "Permitting, plan review, inspections, lien rights, license and insurance compliance for general contractors — one back office for every jurisdiction you build in.",
-      },
-      { property: "og:title", content: "Your back office. Every jurisdiction you build in." },
-      {
-        property: "og:description",
-        content:
-          "Cleard runs permitting, plan review, inspections, lien rights, and compliance so your PMs and supers can run the job.",
-      },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary_large_image" },
-    ],
-  }),
-  component: GeneralContractorsPage,
-});
+import type { Trade } from "@/lib/trades";
 
 const INK = "#2F4F4F";
 const GRAY = "#7A5C68";
@@ -41,14 +20,6 @@ const TEAL = "#673147";
 const BORDER = "#E0D3BC";
 const OFF = "#F3EAD9";
 const PAPER = "#FAF3E6";
-
-const PAINS = [
-  "Permit delays pushing starts, pours, and roughs off schedule",
-  "Correction cycles turning one permit into three more weeks of waiting",
-  "Chasing sub licenses and expired COIs before every pull",
-  "Lien deadlines falling through the cracks on multi-phase projects",
-  "Inspection timing forcing crews to sit on site",
-];
 
 const SERVICES = [
   {
@@ -86,7 +57,7 @@ const SERVICES = [
 const STATS = [
   {
     value: "6–8",
-    body: "Tools the average GC uses to manage permits, insurance, and lien rights. Cleard replaces all of them.",
+    body: "Tools the average contractor uses to manage permits, insurance, and lien rights. Cleard replaces all of them.",
   },
   {
     value: "$50B+",
@@ -98,7 +69,7 @@ const STATS = [
   },
 ];
 
-function GeneralContractorsPage() {
+export function TradePage({ trade }: { trade: Trade }) {
   return (
     <MarketingShell>
       <div style={{ background: PAPER, color: INK }}>
@@ -110,7 +81,7 @@ function GeneralContractorsPage() {
                 className="text-[10.5px] uppercase tracking-[0.22em]"
                 style={{ color: GREEN, fontWeight: 700 }}
               >
-                General Contractors
+                {trade.eyebrow}
               </div>
               <h1
                 className="mt-6 max-w-2xl"
@@ -121,12 +92,10 @@ function GeneralContractorsPage() {
                   letterSpacing: "-0.04em",
                 }}
               >
-                Your back office. Every jurisdiction you build in.
+                {trade.headline}
               </h1>
               <p className="mt-6 max-w-2xl text-[17px] leading-relaxed" style={{ color: GRAY }}>
-                Cleard handles permitting, plan review, inspections, lien rights, license
-                compliance, and insurance — so your PMs and supers can run the job, not the
-                paperwork.
+                {trade.subhead}
               </p>
 
               <div className="mt-9 flex flex-wrap items-center gap-3">
@@ -141,7 +110,12 @@ function GeneralContractorsPage() {
                 <Link
                   to="/product"
                   className="inline-flex items-center px-5 py-3 text-[14px] no-underline"
-                  style={{ background: PAPER, color: INK, border: `1px solid ${BORDER}`, fontWeight: 600 }}
+                  style={{
+                    background: PAPER,
+                    color: INK,
+                    border: `1px solid ${BORDER}`,
+                    fontWeight: 600,
+                  }}
                 >
                   See how it works
                 </Link>
@@ -160,7 +134,7 @@ function GeneralContractorsPage() {
                 </div>
               </div>
               <ul className="mt-6 space-y-4">
-                {PAINS.map((p) => (
+                {trade.pains.map((p) => (
                   <li key={p} className="flex items-start gap-3">
                     <span
                       className="mt-2 h-1.5 w-1.5 shrink-0"
@@ -270,7 +244,10 @@ function GeneralContractorsPage() {
             >
               Ready to run a cleaner back office?
             </h2>
-            <p className="mx-auto mt-5 max-w-xl text-[16px] leading-relaxed" style={{ color: LIGHT }}>
+            <p
+              className="mx-auto mt-5 max-w-xl text-[16px] leading-relaxed"
+              style={{ color: LIGHT }}
+            >
               Join contractors already using Cleard to keep jobs moving.
             </p>
             <Link
