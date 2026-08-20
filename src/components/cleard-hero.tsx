@@ -250,7 +250,7 @@ export function ClearedHero() {
         : "translate3d(0, 0, 0)";
 
   return (
-    <section className="relative isolate overflow-hidden" style={{ background: OAT, color: SLATE }}>
+    <section data-beat={beat} className="relative isolate overflow-hidden" style={{ background: OAT, color: SLATE }}>
       <style>{`
         @keyframes clShardIn { to { transform: none; opacity: 1; } }
         @keyframes clGloss { 0% { transform: translateX(-140%) skewX(-16deg); opacity: 0; }
