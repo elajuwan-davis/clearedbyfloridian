@@ -780,9 +780,7 @@ const FOOTER_COLS: Array<{ head: string; links: Array<{ label: string; to?: stri
   {
     head: "Company",
     links: [
-      { label: "About", to: "/about" },
       { label: "Contact", to: "/contact" },
-      { label: "Pricing", to: "/pricing" },
       { label: "Compare", to: "/compare" },
     ],
   },
