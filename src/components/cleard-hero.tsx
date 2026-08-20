@@ -311,12 +311,13 @@ export function ClearedHero() {
       )}
 
       <div
-        className="relative z-10 mx-auto grid max-w-7xl items-center gap-16 px-5 pb-24 pt-36 lg:grid-cols-[1.05fr_0.95fr] lg:gap-10 lg:px-10 lg:pb-32 lg:pt-44"
+        className="relative z-10 mx-auto max-w-6xl px-5 pb-16 pt-36 text-center lg:px-10 lg:pb-24 lg:pt-40"
         style={{
           clipPath: contentInset,
           transition: running ? "clip-path 1150ms cubic-bezier(0.7, 0, 0.2, 1)" : undefined,
         }}
       >
+
         {/* copy */}
         <div>
           <div
