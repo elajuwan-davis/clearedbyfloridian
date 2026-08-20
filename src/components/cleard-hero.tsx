@@ -5,6 +5,7 @@ import mark2d from "@/assets/cleard-mark-2d.png.asset.json";
 import heroBackdrop from "@/assets/hero-construction.jpg";
 import { HomeMotionStyles } from "@/components/home-command-center";
 import { HeroStage } from "@/components/hero-stage";
+import { TRADES } from "@/lib/trades";
 
 
 /* ---------------------- NORDIC LUXURY BRAND TOKENS ---------------------- */
@@ -307,6 +308,8 @@ export function ClearedHero() {
         : "translate3d(0, 0, 0)";
 
   return (
+    <>
+      <HeroNav logoSlot={navSlot} logoVisible={!running} />
     <section data-beat={beat} className="relative isolate overflow-hidden" style={{ background: OAT, color: SLATE }}>
       <style>{`
         @keyframes clShardIn { to { transform: none; opacity: 1; } }
@@ -316,7 +319,6 @@ export function ClearedHero() {
       <HomeMotionStyles />
 
 
-      <HeroNav logoSlot={navSlot} logoVisible={!running} />
 
       {/* muted construction-site backdrop, bottom-anchored and washed out so copy stays legible */}
       <div
@@ -486,6 +488,7 @@ export function ClearedHero() {
         </button>
       )}
     </section>
+    </>
   );
 }
 
