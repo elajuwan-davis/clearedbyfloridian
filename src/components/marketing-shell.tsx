@@ -5,11 +5,10 @@ import mark2d from "@/assets/cleard-mark-2d.png.asset.json";
 import { TRADES } from "@/lib/trades";
 /** Flat nav links — the only dropdown is Trades. */
 const NAV_LINKS: Array<{ to: string; label: string }> = [
+  { to: "/", label: "Home" },
   { to: "/product", label: "Product" },
-  { to: "/join", label: "For Contractors" },
   { to: "/pricing", label: "Pricing" },
   { to: "/compare", label: "Compare" },
-  { to: "/about", label: "About" },
   { to: "/pitch-deck", label: "Pitch Deck" },
 ];
 
