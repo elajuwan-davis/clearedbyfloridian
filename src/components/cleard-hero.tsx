@@ -331,51 +331,28 @@ export function ClearedHero() {
           </div>
 
           <h1
-            className="mx-auto mt-7 max-w-[16ch]"
+            className="mx-auto mt-7 max-w-[22ch]"
             style={{
               fontFamily: SERIF,
               fontWeight: 500,
-              fontSize: "clamp(3.1rem, 7.4vw, 5.9rem)",
-              lineHeight: 0.92,
+              fontSize: "clamp(2.5rem, 6vw, 4.6rem)",
+              lineHeight: 0.98,
               letterSpacing: "-0.035em",
               color: PLUM,
               fontVariationSettings: '"SOFT" 0, "WONK" 1',
             }}
           >
-            <span style={{ fontSize: "0.72em", opacity: 0.9 }}>Run projects.</span>
-            <br />
-            <span style={{ fontStyle: "italic", color: SLATE }}>Not paperwork.</span>
+            Run projects, not paperwork.
           </h1>
 
           <p
-            className="mx-auto mt-8 max-w-[46ch] text-[17px] leading-[1.7]"
+            className="mx-auto mt-6 max-w-[52ch] text-[17px] leading-[1.7]"
             style={{ color: SLATE }}
           >
-            Cleard runs permits, inspections, licenses, insurance and lien compliance from one
-            command center.
+            Permits, inspections, licenses, and lien rights — cleared automatically.
           </p>
-
-          <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
-            <Link
-              to="/join"
-              hash="request"
-              className="cl-hoverable inline-flex items-center gap-2 px-7 py-3.5 text-[13.5px] no-underline"
-              style={{ background: GREEN, color: OAT, fontWeight: 600 }}
-            >
-              See Cleard in action
-              <span className="cl-arrow" aria-hidden>
-                →
-              </span>
-            </Link>
-            <Link
-              to="/contact"
-              className="inline-flex items-center px-7 py-3.5 text-[13.5px] no-underline"
-              style={{ border: `1px solid ${GREEN}`, color: GREEN, fontWeight: 600 }}
-            >
-              Get early access
-            </Link>
-          </div>
         </div>
+
 
         {/* the platform itself: mark hovering, capabilities popping out, then the app */}
         <div className="mt-10 lg:mt-14">
