@@ -81,10 +81,16 @@ function HomePage() {
       <style>{`
         .cl-home *, .cl-home *::before, .cl-home *::after { border-radius: 0 !important; }
         .cl-home .cl-dot { border-radius: 999px !important; }
+        .cl-home .cl-glass, .cl-home .cl-glass * { border-radius: 999px !important; }
+        .cl-home .cl-phone { border-radius: 44px !important; }
+        .cl-home .cl-phone-screen { border-radius: 34px !important; }
+        .cl-home .cl-phone-notch { border-radius: 999px !important; }
         @keyframes clWordIn { from { opacity: 0; transform: translateY(0.5em); } to { opacity: 1; transform: translateY(0); } }
         @keyframes clSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
         @keyframes clFade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+        @keyframes clMarquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
       `}</style>
+
       <div className="cl-home">
         <ClearedHero />
         <HeroStatBar />
@@ -388,8 +394,16 @@ function MunicipalityTrack() {
           </div>
           <Link
             to="/contact"
-            className="mt-10 inline-flex items-center gap-2 px-6 py-3 text-[14px] no-underline"
-            style={{ background: TEAL, color: "#FAF3E6", fontWeight: 700 }}
+            className="cl-glass mt-10 inline-flex items-center gap-2 px-7 py-3 text-[14px] no-underline transition-transform duration-200 hover:scale-[1.03]"
+            style={{
+              background: "rgba(103,49,71,0.9)",
+              border: "1px solid rgba(217,175,193,0.35)",
+              backdropFilter: "blur(12px) saturate(140%)",
+              WebkitBackdropFilter: "blur(12px) saturate(140%)",
+              color: "#FAF3E6",
+              fontWeight: 700,
+              boxShadow: "inset 0 1px 0 rgba(255,255,255,0.22), 0 18px 34px -20px rgba(0,0,0,0.5)",
+            }}
           >
             Talk to our team <ArrowUpRight className="h-4 w-4" strokeWidth={2} />
           </Link>
@@ -457,22 +471,35 @@ function VictoriaLayer() {
 /* ------------------------------- TRUST BAR ------------------------------- */
 
 function TrustBar() {
+  const marquee = [...TRUST_LOGOS, ...TRUST_LOGOS];
   return (
     <section style={{ background: WHITE, borderTop: `1px solid ${BORDER}` }}>
-      <div className="mx-auto max-w-7xl px-5 lg:px-8 py-24 md:py-32">
+      <div className="mx-auto max-w-7xl px-5 lg:px-8 py-20 md:py-24">
         <div className="text-center text-[10.5px] font-bold uppercase tracking-[0.2em]" style={{ color: LIGHT }}>
           Trusted by contractors across the country
         </div>
-        <div className="mt-10 grid grid-cols-2 gap-px sm:grid-cols-3 lg:grid-cols-6" style={{ background: BORDER }}>
-          {TRUST_LOGOS.map((l) => (
-            <div
-              key={l}
-              className="flex items-center justify-center px-4 py-7 text-center text-[11px] font-bold uppercase tracking-[0.12em]"
-              style={{ background: WHITE, color: INK }}
-            >
-              {l}
-            </div>
-          ))}
+
+        <div
+          className="relative mt-10 overflow-hidden"
+          style={{
+            maskImage: "linear-gradient(to right, transparent, #000 8%, #000 92%, transparent)",
+            WebkitMaskImage: "linear-gradient(to right, transparent, #000 8%, #000 92%, transparent)",
+          }}
+        >
+          <div
+            className="flex w-max items-center gap-16"
+            style={{ animation: "clMarquee 34s linear infinite" }}
+          >
+            {marquee.map((l, i) => (
+              <span
+                key={`${l}-${i}`}
+                className="whitespace-nowrap text-[clamp(1.25rem,2.4vw,2rem)] font-bold uppercase"
+                style={{ color: INK, letterSpacing: "-0.02em", opacity: 0.82 }}
+              >
+                {l}
+              </span>
+            ))}
+          </div>
         </div>
 
         <div className="mt-20">
@@ -482,6 +509,7 @@ function TrustBar() {
     </section>
   );
 }
+
 
 /* --------------------------- PORTAL SHOWCASE ----------------------------- */
 
@@ -516,7 +544,35 @@ function MobileApp() {
   return (
     <section style={{ background: WHITE }}>
       <div className="mx-auto max-w-7xl px-5 lg:px-8 py-24 md:py-28 grid gap-16 lg:grid-cols-2 lg:items-center">
-        <div className="mx-auto w-[300px]" style={{ border: `1px solid ${BORDER}`, background: WHITE, boxShadow: "0 2px 12px rgba(0,0,0,0.06)" }}>
+        <div className="mx-auto flex justify-center">
+          {/* iPhone shell */}
+          <div
+            className="cl-phone relative p-[11px]"
+            style={{
+              width: 326,
+              background: "linear-gradient(160deg, #34302E 0%, #17171A 42%, #3A3532 100%)",
+              boxShadow:
+                "0 60px 90px -40px rgba(43,22,32,0.55), 0 24px 40px -24px rgba(43,22,32,0.4), inset 0 0 0 1px rgba(255,255,255,0.12)",
+            }}
+          >
+            {/* side buttons */}
+            <span aria-hidden className="cl-dot absolute -left-[2px] top-[110px] h-14 w-[3px]" style={{ background: "#4A4441" }} />
+            <span aria-hidden className="cl-dot absolute -left-[2px] top-[184px] h-9 w-[3px]" style={{ background: "#4A4441" }} />
+            <span aria-hidden className="cl-dot absolute -right-[2px] top-[140px] h-20 w-[3px]" style={{ background: "#4A4441" }} />
+
+            <div
+              className="cl-phone-screen relative overflow-hidden"
+              style={{ background: WHITE, boxShadow: "inset 0 0 0 1px rgba(0,0,0,0.35)" }}
+            >
+              {/* dynamic island */}
+              <div
+                aria-hidden
+                className="cl-phone-notch absolute left-1/2 top-2 z-10 h-[22px] w-[86px] -translate-x-1/2"
+                style={{ background: "#111014" }}
+              />
+              <div className="pt-9">
+        <div className="w-full" style={{ background: WHITE }}>
+
           <div className="px-4 py-3 flex items-center justify-between" style={{ borderBottom: `1px solid ${BORDER}` }}>
             <span className="text-[15px] font-bold" style={{ color: INK, letterSpacing: "-0.03em" }}>
               Cleard
@@ -621,11 +677,16 @@ function MobileApp() {
                 style={{ color: i === screen ? INK : LIGHT, background: i === screen ? OFF2 : "transparent" }}
               >
                 <div className="text-[14px]">{t.icon}</div>
-                <div className="text-[9.5px] uppercase tracking-[0.08em]">{t.label}</div>
+                <div className="text-[8px] uppercase tracking-[0.04em] leading-tight">{t.label}</div>
               </div>
             ))}
           </div>
+            </div>
+              </div>
+            </div>
+          </div>
         </div>
+
 
         <div>
           <h2 style={{ fontSize: "clamp(2rem, 3.6vw, 2.875rem)", lineHeight: 1.08, letterSpacing: "-0.035em" }}>
@@ -671,13 +732,31 @@ function BottomCTA() {
           <Link
             to="/join"
             hash="request"
-            className="inline-flex items-center gap-2 px-6 py-3 text-[14px] font-bold no-underline"
-            style={{ background: GREEN, color: WHITE }}
+            className="cl-glass inline-flex items-center gap-2 px-7 py-3 text-[14px] font-bold no-underline transition-transform duration-200 hover:scale-[1.03]"
+            style={{
+              background: "rgba(103,49,71,0.9)",
+              border: "1px solid rgba(217,175,193,0.35)",
+              backdropFilter: "blur(12px) saturate(140%)",
+              WebkitBackdropFilter: "blur(12px) saturate(140%)",
+              color: WHITE,
+              boxShadow: "inset 0 1px 0 rgba(255,255,255,0.22), 0 18px 34px -20px rgba(0,0,0,0.6)",
+            }}
           >
             Get started <ArrowRight className="h-4 w-4" />
           </Link>
-          <Link to="/product" className="text-[14px] no-underline" style={{ color: "rgba(255,255,255,0.72)" }}>
-            See a demo →
+          <Link
+            to="/product"
+            className="cl-glass inline-flex items-center gap-2 px-6 py-3 text-[14px] no-underline transition-transform duration-200 hover:scale-[1.03]"
+            style={{
+              background: "rgba(255,255,255,0.08)",
+              border: "1px solid rgba(255,255,255,0.24)",
+              backdropFilter: "blur(12px) saturate(140%)",
+              WebkitBackdropFilter: "blur(12px) saturate(140%)",
+              color: "rgba(255,255,255,0.9)",
+              fontWeight: 600,
+            }}
+          >
+            See a demo
           </Link>
         </div>
       </div>
@@ -787,8 +866,15 @@ function Footer() {
           <Link
             to="/join"
             hash="request"
-            className="inline-flex items-center gap-2 self-start px-7 py-3.5 text-[14px] font-bold no-underline"
-            style={{ background: GREEN_LT, color: INK }}
+            className="cl-glass inline-flex items-center gap-2 self-start px-7 py-3.5 text-[14px] font-bold no-underline transition-transform duration-200 hover:scale-[1.03]"
+            style={{
+              background: "rgba(103,49,71,0.9)",
+              border: "1px solid rgba(217,175,193,0.35)",
+              backdropFilter: "blur(12px) saturate(140%)",
+              WebkitBackdropFilter: "blur(12px) saturate(140%)",
+              color: WHITE,
+              boxShadow: "inset 0 1px 0 rgba(255,255,255,0.22), 0 18px 34px -20px rgba(0,0,0,0.6)",
+            }}
           >
             Get early access <ArrowRight className="h-4 w-4" />
           </Link>

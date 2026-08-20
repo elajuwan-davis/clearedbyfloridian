@@ -568,6 +568,18 @@ export function ReplaceThePermitOffice() {
           <span style={{ fontStyle: "italic", color: INK }}>With Cleard.</span>
         </h2>
 
+        <div
+          className="mt-8 flex flex-wrap items-center gap-x-8 gap-y-3 pt-6 text-[11px] uppercase"
+          style={{ borderTop: `1px solid ${BORDER}`, fontFamily: MONO, letterSpacing: "0.16em", color: GREEN }}
+        >
+          <span>2-day plan review</span>
+          <span aria-hidden style={{ color: LIGHT }}>·</span>
+          <span>Same-day inspections</span>
+          <span aria-hidden style={{ color: LIGHT }}>·</span>
+          <span>By invitation</span>
+        </div>
+
+
         <div className="mt-14 grid gap-4 lg:grid-cols-[0.85fr_1.15fr]">
           {/* BEFORE — a chain */}
           <div className="p-7" style={{ background: OFF, border: `1px solid ${BORDER}` }}>
@@ -643,6 +655,10 @@ export function FeaturedTestimonial({
   items: { quote: string; name: string; role: string }[];
 }) {
   const [i, setI] = useState(0);
+  useEffect(() => {
+    const t = setInterval(() => setI((v) => (v + 1) % items.length), 6000);
+    return () => clearInterval(t);
+  }, [items.length]);
   const t = items[i];
   return (
     <div className="mx-auto max-w-4xl text-center">
@@ -678,6 +694,7 @@ export function FeaturedTestimonial({
     </div>
   );
 }
+
 
 /* ======================= 6 · ASK VICTORIA (MARKETING) =================== */
 
