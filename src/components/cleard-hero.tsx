@@ -14,10 +14,11 @@ const GREEN = "#2F4F4F"; /* minor accent only: eyebrows, secondary CTA, metadata
 const SERIF = '"Fraunces", "Iowan Old Style", Georgia, serif';
 
 const NAV = [
-  { to: "/product", label: "Product" },
-  { to: "/pricing", label: "Victoria" },
-  { to: "/compare", label: "How it works" },
-  { to: "/join", label: "Contractors" },
+  { to: "/product", label: "Product", hash: undefined },
+  { to: "/", label: "Victoria", hash: "victoria" },
+  { to: "/", label: "How it works", hash: "watch-it-run" },
+  { to: "/pricing", label: "Pricing", hash: undefined },
+  { to: "/join", label: "Contractors", hash: undefined },
 ] as const;
 
 /* ------------------------- HERO MOMENT SEQUENCE -------------------------- */
