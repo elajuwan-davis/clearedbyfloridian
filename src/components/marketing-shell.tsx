@@ -5,11 +5,10 @@ import mark2d from "@/assets/cleard-mark-2d.png.asset.json";
 import { TRADES } from "@/lib/trades";
 /** Flat nav links — the only dropdown is Trades. */
 const NAV_LINKS: Array<{ to: string; label: string }> = [
+  { to: "/", label: "Home" },
   { to: "/product", label: "Product" },
-  { to: "/join", label: "For Contractors" },
   { to: "/pricing", label: "Pricing" },
   { to: "/compare", label: "Compare" },
-  { to: "/about", label: "About" },
   { to: "/pitch-deck", label: "Pitch Deck" },
 ];
 
@@ -235,9 +234,6 @@ function MarketingFooter() {
           <div className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: "rgba(255,255,255,0.45)" }}>
             Company
           </div>
-          <Link to="/about" className="no-underline text-[13px]" style={{ color: "rgba(255,255,255,0.7)" }}>
-            About
-          </Link>
           <Link to="/investor" className="no-underline text-[13px]" style={{ color: "rgba(255,255,255,0.7)" }}>
             Investor Deck
           </Link>

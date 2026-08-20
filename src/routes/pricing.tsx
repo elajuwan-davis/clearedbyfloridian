@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Check } from "lucide-react";
+import { Check, Lock } from "lucide-react";
 
 import { MarketingShell } from "@/components/marketing-shell";
 
@@ -20,6 +20,7 @@ export const Route = createFileRoute("/pricing")({
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "robots", content: "noindex" },
     ],
   }),
   component: PricingPage,
@@ -140,10 +141,55 @@ const ADD_ONS: AddOn[] = [
   },
 ];
 
+function PricingLockOverlay() {
+  return (
+    <div className="absolute inset-0 z-30 flex items-start justify-center px-5 pt-32">
+      <div
+        className="sticky top-40 w-full max-w-md p-8 text-center"
+        style={{
+          background: "rgba(250,243,230,0.92)",
+          border: `1px solid ${BORDER}`,
+          backdropFilter: "blur(6px)",
+          WebkitBackdropFilter: "blur(6px)",
+          boxShadow: "0 30px 60px -30px rgba(43,22,32,0.35)",
+        }}
+      >
+        <div className="flex justify-center" style={{ color: TEAL }}>
+          <Lock className="h-6 w-6" strokeWidth={1.5} />
+        </div>
+        <div className="mt-4 text-[10.5px] uppercase tracking-[0.22em]" style={{ color: GREEN }}>
+          Locked
+        </div>
+        <h2 className="mt-3 text-[24px]" style={{ fontWeight: 700, letterSpacing: "-0.02em" }}>
+          Pricing is locked at the moment.
+        </h2>
+        <p className="mt-3 text-[14.5px] leading-relaxed" style={{ color: GRAY }}>
+          Plans and rates are shared directly with contractors during onboarding. Request access and
+          we&apos;ll walk you through the numbers.
+        </p>
+        <Link
+          to="/join"
+          hash="request"
+          className="mt-6 inline-flex items-center px-5 py-3 text-[14px] no-underline"
+          style={{ background: TEAL, color: "#FAF3E6", fontWeight: 600 }}
+        >
+          Request access
+        </Link>
+      </div>
+    </div>
+  );
+}
+
 function PricingPage() {
   return (
     <MarketingShell>
-      <div style={{ background: "#FAF3E6", color: INK }}>
+      <div className="relative" style={{ background: "#FAF3E6", color: INK }}>
+        <PricingLockOverlay />
+        <div
+          aria-hidden
+          className="pointer-events-none select-none"
+          style={{ filter: "blur(9px)", opacity: 0.5 }}
+        >
         {/* Hero */}
         <section className="mx-auto max-w-7xl px-5 lg:px-8 pt-20 pb-10 md:pt-28">
           <div className="text-[10.5px] uppercase tracking-[0.22em]" style={{ color: GREEN }}>
@@ -343,6 +389,7 @@ function PricingPage() {
             </Link>
           </p>
         </section>
+        </div>
       </div>
     </MarketingShell>
   );

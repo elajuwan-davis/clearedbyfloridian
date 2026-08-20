@@ -5,6 +5,7 @@ import mark2d from "@/assets/cleard-mark-2d.png.asset.json";
 import heroBackdrop from "@/assets/hero-construction.jpg";
 import { HomeMotionStyles } from "@/components/home-command-center";
 import { HeroStage } from "@/components/hero-stage";
+import { TRADES } from "@/lib/trades";
 
 
 /* ---------------------- NORDIC LUXURY BRAND TOKENS ---------------------- */
@@ -17,11 +18,11 @@ const GREEN = "#2F4F4F"; /* minor accent only: eyebrows, secondary CTA, metadata
 const SERIF = '"Fraunces", "Iowan Old Style", Georgia, serif';
 
 const NAV = [
+  { to: "/", label: "Home", hash: undefined },
   { to: "/product", label: "Product", hash: undefined },
-  { to: "/", label: "Victoria", hash: "victoria" },
-  { to: "/", label: "How it works", hash: "watch-it-run" },
   { to: "/pricing", label: "Pricing", hash: undefined },
-  { to: "/join", label: "Contractors", hash: undefined },
+  { to: "/compare", label: "Compare", hash: undefined },
+  { to: "/pitch-deck", label: "Pitch Deck", hash: undefined },
 ] as const;
 
 /* ------------------------- HERO MOMENT SEQUENCE -------------------------- */
@@ -124,6 +125,48 @@ function useHeroSequence(navSlot: React.RefObject<HTMLElement | null>) {
 
 /* ---------------------------------- NAV ---------------------------------- */
 
+function HeroTrades() {
+  const [open, setOpen] = useState(false);
+  return (
+    <div
+      className="relative"
+      onMouseEnter={() => setOpen(true)}
+      onMouseLeave={() => setOpen(false)}
+    >
+      <button
+        type="button"
+        onClick={() => setOpen((s) => !s)}
+        className="text-[13.5px] transition-colors"
+        style={{ color: SLATE, whiteSpace: "nowrap" }}
+        aria-expanded={open}
+      >
+        Trades
+      </button>
+      {open && (
+        <div className="absolute left-0 top-full pt-3" style={{ zIndex: 10 }}>
+          <div
+            className="grid grid-cols-2"
+            style={{ background: OAT, border: "1px solid #E0D3BC", minWidth: 460 }}
+          >
+            {TRADES.map((t) => (
+              <Link
+                key={t.slug}
+                to="/trades/$slug"
+                params={{ slug: t.slug }}
+                onClick={() => setOpen(false)}
+                className="block px-4 py-3 text-[13.5px] no-underline transition-opacity hover:opacity-70"
+                style={{ color: SLATE }}
+              >
+                {t.navLabel}
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function HeroNav({ logoSlot, logoVisible }: { logoSlot: React.Ref<HTMLDivElement>; logoVisible: boolean }) {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
@@ -181,6 +224,7 @@ function HeroNav({ logoSlot, logoVisible }: { logoSlot: React.Ref<HTMLDivElement
               {l.label}
             </Link>
           ))}
+          <HeroTrades />
         </nav>
 
         <div className="flex items-center gap-4" style={{ flexShrink: 0 }}>
@@ -264,6 +308,8 @@ export function ClearedHero() {
         : "translate3d(0, 0, 0)";
 
   return (
+    <>
+      <HeroNav logoSlot={navSlot} logoVisible={!running} />
     <section data-beat={beat} className="relative isolate overflow-hidden" style={{ background: OAT, color: SLATE }}>
       <style>{`
         @keyframes clShardIn { to { transform: none; opacity: 1; } }
@@ -273,7 +319,6 @@ export function ClearedHero() {
       <HomeMotionStyles />
 
 
-      <HeroNav logoSlot={navSlot} logoVisible={!running} />
 
       {/* muted construction-site backdrop, bottom-anchored and washed out so copy stays legible */}
       <div
@@ -443,6 +488,7 @@ export function ClearedHero() {
         </button>
       )}
     </section>
+    </>
   );
 }
 

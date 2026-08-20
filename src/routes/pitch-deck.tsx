@@ -19,7 +19,6 @@ const SLIDES = [s01, s02, s03, s04, s05, s06, s07, s08, s09, s10, s11, s12].map(
 
 const SLATE = "#2F4F4F";
 const OAT = "#FAF3E6";
-const UNLOCK_KEY = "pitch_deck_unlocked";
 
 export const Route = createFileRoute("/pitch-deck")({
   head: () => ({
@@ -35,30 +34,10 @@ export const Route = createFileRoute("/pitch-deck")({
 });
 
 function PitchDeckPage() {
+  /* Deliberately not persisted: the passcode is required on every visit. */
   const [unlocked, setUnlocked] = useState(false);
 
-  useEffect(() => {
-    try {
-      if (sessionStorage.getItem(UNLOCK_KEY) === "1") setUnlocked(true);
-    } catch {
-      /* storage unavailable */
-    }
-  }, []);
-
-  return unlocked ? (
-    <Deck />
-  ) : (
-    <Gate
-      onPass={() => {
-        try {
-          sessionStorage.setItem(UNLOCK_KEY, "1");
-        } catch {
-          /* storage unavailable */
-        }
-        setUnlocked(true);
-      }}
-    />
-  );
+  return unlocked ? <Deck /> : <Gate onPass={() => setUnlocked(true)} />;
 }
 
 function Gate({ onPass }: { onPass: () => void }) {
