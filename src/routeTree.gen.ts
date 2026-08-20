@@ -17,6 +17,7 @@ import { Route as ComplianceRouteImport } from './routes/compliance'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as FeeCalculatorRouteImport } from './routes/fee-calculator'
+import { Route as ForContractorsRouteImport } from './routes/for-contractors'
 import { Route as FormsRouteImport } from './routes/forms'
 import { Route as InsuranceRouteImport } from './routes/insurance'
 import { Route as InvestorRouteImport } from './routes/investor'
@@ -172,6 +173,11 @@ const DashboardRoute = DashboardRouteImport.update({
 const FeeCalculatorRoute = FeeCalculatorRouteImport.update({
   id: '/fee-calculator',
   path: '/fee-calculator',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ForContractorsRoute = ForContractorsRouteImport.update({
+  id: '/for-contractors',
+  path: '/for-contractors',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FormsRoute = FormsRouteImport.update({
@@ -779,6 +785,7 @@ export interface FileRoutesByFullPath {
   '/contact': typeof ContactRoute
   '/dashboard': typeof DashboardRoute
   '/fee-calculator': typeof FeeCalculatorRoute
+  '/for-contractors': typeof ForContractorsRoute
   '/forms': typeof FormsRouteWithChildren
   '/insurance': typeof InsuranceRoute
   '/investor': typeof InvestorRoute
@@ -905,6 +912,7 @@ export interface FileRoutesByTo {
   '/contact': typeof ContactRoute
   '/dashboard': typeof DashboardRoute
   '/fee-calculator': typeof FeeCalculatorRoute
+  '/for-contractors': typeof ForContractorsRoute
   '/insurance': typeof InsuranceRoute
   '/investor': typeof InvestorRoute
   '/invoices': typeof InvoicesRoute
@@ -1028,6 +1036,7 @@ export interface FileRoutesById {
   '/contact': typeof ContactRoute
   '/dashboard': typeof DashboardRoute
   '/fee-calculator': typeof FeeCalculatorRoute
+  '/for-contractors': typeof ForContractorsRoute
   '/forms': typeof FormsRouteWithChildren
   '/insurance': typeof InsuranceRoute
   '/investor': typeof InvestorRoute
@@ -1156,6 +1165,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/dashboard'
     | '/fee-calculator'
+    | '/for-contractors'
     | '/forms'
     | '/insurance'
     | '/investor'
@@ -1282,6 +1292,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/dashboard'
     | '/fee-calculator'
+    | '/for-contractors'
     | '/insurance'
     | '/investor'
     | '/invoices'
@@ -1404,6 +1415,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/dashboard'
     | '/fee-calculator'
+    | '/for-contractors'
     | '/forms'
     | '/insurance'
     | '/investor'
@@ -1531,6 +1543,7 @@ export interface RootRouteChildren {
   ContactRoute: typeof ContactRoute
   DashboardRoute: typeof DashboardRoute
   FeeCalculatorRoute: typeof FeeCalculatorRoute
+  ForContractorsRoute: typeof ForContractorsRoute
   FormsRoute: typeof FormsRouteWithChildren
   InsuranceRoute: typeof InsuranceRoute
   InvestorRoute: typeof InvestorRoute
@@ -1655,6 +1668,13 @@ declare module '@tanstack/react-router' {
       path: '/fee-calculator'
       fullPath: '/fee-calculator'
       preLoaderRoute: typeof FeeCalculatorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/for-contractors': {
+      id: '/for-contractors'
+      path: '/for-contractors'
+      fullPath: '/for-contractors'
+      preLoaderRoute: typeof ForContractorsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/forms': {
@@ -2626,6 +2646,7 @@ const rootRouteChildren: RootRouteChildren = {
   ContactRoute: ContactRoute,
   DashboardRoute: DashboardRoute,
   FeeCalculatorRoute: FeeCalculatorRoute,
+  ForContractorsRoute: ForContractorsRoute,
   FormsRoute: FormsRouteWithChildren,
   InsuranceRoute: InsuranceRoute,
   InvestorRoute: InvestorRoute,

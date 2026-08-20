@@ -318,7 +318,7 @@ function ComparePage() {
               See Cleard in action
             </h2>
             <Link
-              to="/product"
+              to="/for-contractors"
               className="mt-8 inline-flex items-center px-6 py-3 text-[14px] no-underline"
               style={{ background: TEAL, color: "#FAF3E6", fontWeight: 700 }}
             >
