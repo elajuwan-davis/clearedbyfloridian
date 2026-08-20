@@ -81,18 +81,24 @@ function HomePage() {
       <div className="cl-home">
         <ClearedHero />
         <HeroStatBar />
-        <Circle360 />
-        <StatsStrip />
+        <div id="watch-it-run">
+          <WatchItRun />
+        </div>
+        <div id="victoria">
+          <VictoriaSpotlight />
+        </div>
         <Services />
+        <ReplaceThePermitOffice />
         <MunicipalityTrack />
-        <ThreeSteps />
-        <VictoriaLayer />
-        <TrustBar />
         <PortalShowcase />
+        <StatsStrip />
+        <ThreeSteps />
+        <TrustBar />
         <MobileApp />
         <HowItWorks />
         <BottomCTA />
         <Footer />
+        <AskVictoriaLauncher />
       </div>
     </div>
   );
