@@ -234,9 +234,6 @@ function MarketingFooter() {
           <div className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: "rgba(255,255,255,0.45)" }}>
             Company
           </div>
-          <Link to="/about" className="no-underline text-[13px]" style={{ color: "rgba(255,255,255,0.7)" }}>
-            About
-          </Link>
           <Link to="/investor" className="no-underline text-[13px]" style={{ color: "rgba(255,255,255,0.7)" }}>
             Investor Deck
           </Link>
