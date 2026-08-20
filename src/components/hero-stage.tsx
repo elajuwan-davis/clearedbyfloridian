@@ -388,7 +388,7 @@ function SceneOrbit() {
             <div
               key={card.key}
               className="absolute"
-              style={{ transform: `rotate(${angle}deg) translate(190px) rotate(${-angle}deg)` }}
+              style={{ transform: `rotate(${angle}deg) translate(174px) rotate(${-angle}deg)` }}
             >
               <div
                 style={{
