@@ -68,6 +68,7 @@ function useHeroSequence(navSlot: React.RefObject<HTMLElement | null>) {
   }, []);
 
   useEffect(() => {
+    console.log("SEQ effect ran");
     const reduced =
       typeof window !== "undefined" &&
       window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
