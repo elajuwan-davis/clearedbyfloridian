@@ -6,7 +6,7 @@ import { TRADES } from "@/lib/trades";
 /** Flat nav links — the only dropdown is Trades. */
 const NAV_LINKS: Array<{ to: string; label: string }> = [
   { to: "/", label: "Home" },
-  { to: "/for-contractors", label: "For Contractors" },
+  { to: "/join", label: "For Contractors" },
   { to: "/pricing", label: "Pricing" },
   { to: "/compare", label: "Compare" },
   { to: "/pitch-deck", label: "Pitch Deck" },
@@ -224,7 +224,7 @@ function MarketingFooter() {
         </Link>
 
         <nav className="flex flex-wrap items-center gap-x-8 gap-y-2 text-[13px]">
-          <Link to="/for-contractors" className="no-underline" style={{ color: "rgba(255,255,255,0.7)" }}>For Contractors</Link>
+          <Link to="/join" className="no-underline" style={{ color: "rgba(255,255,255,0.7)" }}>For Contractors</Link>
           <a href="https://floridianinc.com/privacy" className="no-underline" style={{ color: "rgba(255,255,255,0.7)" }}>Privacy</a>
           <a href="https://floridianinc.com/terms" className="no-underline" style={{ color: "rgba(255,255,255,0.7)" }}>Terms</a>
           <Link to="/contact" className="no-underline" style={{ color: "rgba(255,255,255,0.7)" }}>Contact</Link>
