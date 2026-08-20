@@ -1239,6 +1239,35 @@ const SCENES = [
   { render: () => <ScenePortal />, ms: 9000, label: "Permits filed" },
 ];
 
+function SceneArrow({
+  label,
+  glyph,
+  onClick,
+}: {
+  label: string;
+  glyph: string;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      aria-label={label}
+      onClick={onClick}
+      className="cl-glass inline-flex h-11 w-11 shrink-0 items-center justify-center text-[22px] leading-none transition-all duration-200 hover:scale-105"
+      style={{
+        background: "rgba(47,79,79,0.08)",
+        border: "1px solid rgba(43,22,32,0.16)",
+        backdropFilter: "blur(12px) saturate(150%)",
+        color: PLUM,
+        borderRadius: 999,
+        cursor: "pointer",
+      }}
+    >
+      {glyph}
+    </button>
+  );
+}
+
 export function HeroStage() {
   const [scene, setScene] = useState(0);
   const reduced = useReducedMotion();
