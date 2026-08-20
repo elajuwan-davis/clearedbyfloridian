@@ -13,7 +13,7 @@ const BRONZE = "#9C6B3F";
 const MONO = '"JetBrains Mono", ui-monospace, monospace';
 const SERIF = '"Fraunces", "Iowan Old Style", Georgia, serif';
 
-const FRAME_H = 560;
+const FRAME_H = 580;
 
 /* ------------------------------ small helpers ------------------------------ */
 
@@ -388,7 +388,7 @@ function SceneOrbit() {
             <div
               key={card.key}
               className="absolute"
-              style={{ transform: `rotate(${angle}deg) translate(258px) rotate(${-angle}deg)` }}
+              style={{ transform: `rotate(${angle}deg) translate(232px) rotate(${-angle}deg)` }}
             >
               <div
                 style={{
@@ -398,7 +398,7 @@ function SceneOrbit() {
                 <div
                   className="-translate-x-1/2 -translate-y-1/2 px-3 py-2.5"
                   style={{
-                    width: 186,
+                    width: 178,
                     background: active ? PAPER : OAT,
                     border: `1px solid ${active ? BRONZE : BORDER}`,
                     boxShadow: active
@@ -441,11 +441,11 @@ function SceneOrbit() {
         ))}
       </div>
 
-      {/* the story line */}
-      <div className="absolute inset-x-0 bottom-2 hidden justify-center md:flex">
+      {/* the story line — sits inside the ring, under the mark */}
+      <div className="pointer-events-none absolute left-1/2 top-1/2 z-10 hidden w-[300px] -translate-x-1/2 justify-center md:flex" style={{ marginTop: 96 }}>
         <div
           key={focus}
-          className="max-w-[46ch] px-4 text-center text-[12.5px] leading-relaxed"
+          className="px-2 text-center text-[12px] leading-relaxed"
           style={{
             color: INK,
             opacity: 0.78,
