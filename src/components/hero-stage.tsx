@@ -319,6 +319,222 @@ const ORBIT: OrbitCard[] = [
 
 
 
+/* ------------------------- bento card chrome + chart ------------------------- */
+
+function BentoCard({
+  title,
+  hint,
+  area,
+  delay,
+  active,
+  children,
+  padded = true,
+}: {
+  title: string;
+  hint?: string;
+  area: string;
+  delay: number;
+  active?: boolean;
+  children: React.ReactNode;
+  padded?: boolean;
+}) {
+  const reduced = useReducedMotion();
+  return (
+    <div
+      className="group relative flex min-h-0 min-w-0 flex-col overflow-hidden"
+      style={{
+        gridArea: area,
+        background: active ? PAPER : OAT,
+        border: `1px solid ${active ? BRONZE : BORDER}`,
+        borderRadius: 10,
+        boxShadow: active
+          ? "0 26px 44px -24px rgba(43,22,32,0.34)"
+          : "0 14px 30px -24px rgba(43,22,32,0.30)",
+        transform: active ? "translateY(-2px)" : "none",
+        transition: "all 700ms cubic-bezier(0.16,1,0.3,1)",
+        animation: reduced ? undefined : `clRise 700ms ${delay}ms cubic-bezier(0.16,1,0.3,1) both`,
+      }}
+    >
+      <div
+        className="flex shrink-0 items-center justify-between px-3 pb-1.5 pt-2.5"
+        style={{ borderBottom: `1px solid ${active ? "rgba(156,107,63,0.28)" : "rgba(43,22,32,0.07)"}` }}
+      >
+        <Eyebrow color={active ? BRONZE : GREEN}>{title}</Eyebrow>
+        {hint ? (
+          <span
+            className="shrink-0 text-[7.5px] uppercase"
+            style={{ fontFamily: MONO, letterSpacing: "0.14em", color: GREEN, opacity: 0.65 }}
+          >
+            {hint}
+          </span>
+        ) : (
+          <span
+            className="h-1 w-1 rounded-full"
+            style={{ background: active ? BRONZE : "rgba(43,22,32,0.18)" }}
+          />
+        )}
+      </div>
+      <div className={padded ? "min-h-0 flex-1 px-3 py-2.5" : "min-h-0 flex-1"}>{children}</div>
+    </div>
+  );
+}
+
+const REPORT_BARS = [
+  { key: "Palm Bch", value: 22, color: PLUM },
+  { key: "Martin", value: 14, color: BRONZE },
+  { key: "St Lucie", value: 18, color: GREEN },
+  { key: "Broward", value: 9, color: "#8E5A76" },
+  { key: "Ind River", value: 12, color: "#B4854F" },
+  { key: "Sarasota", value: 16, color: "#4C6E68" },
+  { key: "Collier", value: 7, color: "#7A4258" },
+];
+
+function TrendArrow({ dir }: { dir: "up" | "down" }) {
+  const color = dir === "down" ? GREEN : BRONZE;
+  return (
+    <svg width="9" height="9" viewBox="0 0 10 10" aria-hidden style={{ overflow: "visible" }}>
+      <path
+        d={dir === "down" ? "M5 1 L5 9 M2 6 L5 9 L8 6" : "M5 9 L5 1 M2 4 L5 1 L8 4"}
+        fill="none"
+        stroke={color}
+        strokeWidth="1.4"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
+/** Tall "Permit Report" card: animated bar chart + response metrics. */
+function ReportCard() {
+  const reduced = useReducedMotion();
+  const [grown, setGrown] = useState(false);
+  const [hoverIdx, setHoverIdx] = useState<number | null>(null);
+  const filed = useLiveNumber(88, { live: 1, period: 2800 });
+
+  useEffect(() => {
+    if (reduced) {
+      setGrown(true);
+      return;
+    }
+    const id = window.setTimeout(() => setGrown(true), 220);
+    return () => window.clearTimeout(id);
+  }, [reduced]);
+
+  const max = Math.max(...REPORT_BARS.map((b) => b.value));
+
+  const metrics: Array<[string, string, "up" | "down"]> = [
+    ["Time to permit", "8 days", "down"],
+    ["Plan review", "48 hours", "down"],
+    ["Correction rate", "4%", "down"],
+  ];
+
+  return (
+    <div className="flex h-full min-h-0 flex-col">
+      <div className="flex items-end justify-between">
+        <div>
+          <div style={{ fontFamily: SERIF, fontSize: 30, lineHeight: 1, color: PLUM }}>{filed}</div>
+          <div
+            className="mt-1 text-[8px] uppercase"
+            style={{ fontFamily: MONO, letterSpacing: "0.16em", color: GREEN }}
+          >
+            permits filed · 30 days
+          </div>
+        </div>
+        <Chip label="On track" />
+      </div>
+
+      {/* bar chart */}
+      <div className="mt-3 min-h-0 flex-1">
+        <div className="relative h-full w-full">
+          {[0, 1, 2, 3].map((g) => (
+            <div
+              key={g}
+              aria-hidden
+              className="absolute inset-x-0"
+              style={{ top: `${(g / 3) * 100}%`, height: 1, background: "rgba(43,22,32,0.07)" }}
+            />
+          ))}
+          <div className="absolute inset-0 flex items-end gap-[6px]">
+            {REPORT_BARS.map((b, i) => {
+              const hot = hoverIdx === i;
+              return (
+                <div
+                  key={b.key}
+                  className="flex min-w-0 flex-1 cursor-default flex-col items-center justify-end gap-1"
+                  onMouseEnter={() => setHoverIdx(i)}
+                  onMouseLeave={() => setHoverIdx(null)}
+                >
+                  <span
+                    className="text-[8px]"
+                    style={{
+                      fontFamily: MONO,
+                      color: b.color,
+                      opacity: hot ? 1 : 0,
+                      transition: "opacity 220ms ease",
+                    }}
+                  >
+                    {b.value}
+                  </span>
+                  <div
+                    style={{
+                      width: "100%",
+                      height: grown ? `${(b.value / max) * 100}%` : 0,
+                      background: b.color,
+                      opacity: hoverIdx === null || hot ? 1 : 0.42,
+                      borderRadius: "3px 3px 0 0",
+                      transition: `height 900ms ${i * 70}ms cubic-bezier(0.16,1,0.3,1), opacity 220ms ease`,
+                    }}
+                  />
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+      <div className="mt-1.5 flex gap-[6px]">
+        {REPORT_BARS.map((b) => (
+          <span
+            key={b.key}
+            className="min-w-0 flex-1 truncate text-center text-[6.5px] uppercase"
+            style={{ fontFamily: MONO, letterSpacing: "0.06em", color: INK, opacity: 0.5 }}
+          >
+            {b.key}
+          </span>
+        ))}
+      </div>
+
+      {/* metric rows */}
+      <div className="mt-3 space-y-1.5 border-t pt-2.5" style={{ borderColor: "rgba(43,22,32,0.08)" }}>
+        {metrics.map(([label, value, dir], i) => (
+          <div
+            key={label}
+            className="flex items-center justify-between gap-2"
+            style={{
+              animation: reduced ? undefined : `clSceneIn 500ms ${400 + i * 90}ms cubic-bezier(0.16,1,0.3,1) both`,
+            }}
+          >
+            <div className="flex min-w-0 items-center gap-1.5">
+              <span
+                className="h-1.5 w-1.5 shrink-0"
+                style={{ background: i === 2 ? GREEN : i === 1 ? BRONZE : PLUM, transform: "rotate(45deg)" }}
+              />
+              <span className="min-w-0 truncate text-[9.5px]" style={{ color: INK, opacity: 0.75 }}>
+                {label}
+              </span>
+            </div>
+            <div className="flex shrink-0 items-center gap-1.5">
+              <span className="text-[10.5px]" style={{ color: INK, fontWeight: 600 }}>
+                {value}
+              </span>
+              <TrendArrow dir={dir} />
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function SceneOrbit() {
   const reduced = useReducedMotion();
   const [focus, setFocus] = useState(0);
@@ -329,114 +545,121 @@ function SceneOrbit() {
     return () => window.clearInterval(id);
   }, [reduced]);
 
+  const byKey = (k: string) => ORBIT.find((c) => c.key === k)!;
+  const isActive = (k: string) => ORBIT[focus]?.key === k;
+
   return (
     <div className="relative h-full w-full">
-      {/* orbit rings */}
+      {/* desktop: asymmetric bento with the mark seated in the middle column */}
       <div
-        aria-hidden
-        className="pointer-events-none absolute left-1/2 top-1/2 hidden -translate-x-1/2 -translate-y-1/2 md:block"
-        style={{
-          width: 520,
-          height: 520,
-          marginTop: -24,
-          borderRadius: "50%",
-          border: `1px solid rgba(43,22,32,0.08)`,
-        }}
-      />
-      <div
-        aria-hidden
-        className="pointer-events-none absolute left-1/2 top-1/2 hidden -translate-x-1/2 -translate-y-1/2 md:block"
-        style={{
-          width: 340,
-          height: 340,
-          marginTop: -24,
-          borderRadius: "50%",
-          border: `1px dashed rgba(43,22,32,0.10)`,
-        }}
-      />
-
-      {/* centre mark */}
-      <div
-        className="pointer-events-none absolute left-1/2 top-1/2 z-20 -translate-x-1/2 -translate-y-1/2"
-        style={{ perspective: 900, marginTop: -24 }}
+        className="absolute inset-0 hidden p-4 pb-[46px] md:block"
+        style={{ perspective: 1200 }}
       >
-        <div>
-          <img
-            src={cLogo.url}
-            alt="Cleard"
-            className="h-[104px] w-[104px] object-contain md:h-[132px] md:w-[132px]"
-            style={{
-              animation: reduced ? undefined : "clSpin 14s linear infinite",
-              filter: "drop-shadow(0 18px 30px rgba(43,22,32,0.22))",
-            }}
-          />
+        <div
+          className="grid h-full w-full gap-2.5"
+          style={{
+            gridTemplateColumns: "minmax(0,1.12fr) minmax(0,1.05fr) minmax(0,0.92fr)",
+            gridTemplateRows: "repeat(6, minmax(0,1fr))",
+            gridTemplateAreas: `
+              "report inspect license"
+              "report inspect license"
+              "report mark insure"
+              "report mark insure"
+              "report lien permit"
+              "report lien permit"
+            `,
+          }}
+        >
+          <BentoCard title="Permit report" hint="Live" area="report" delay={0} padded>
+            <ReportCard />
+          </BentoCard>
+
+          <BentoCard
+            title="Inspections"
+            hint="Same day"
+            area="inspect"
+            delay={90}
+            active={isActive("inspections")}
+          >
+            <InspectionBody />
+          </BentoCard>
+
+          <BentoCard
+            title="Licenses"
+            area="license"
+            delay={150}
+            active={isActive("licenses")}
+          >
+            <LicenseBody />
+          </BentoCard>
+
+          {/* centre mark — no card chrome, seated in the gap */}
+          <div
+            className="relative flex items-center justify-center"
+            style={{ gridArea: "mark" }}
+          >
+            <img
+              src={cLogo.url}
+              alt="Cleard"
+              className="h-[128px] w-[128px] object-contain"
+              style={{
+                animation: reduced ? undefined : "clSpin 14s linear infinite",
+                filter: "drop-shadow(0 18px 30px rgba(43,22,32,0.22))",
+              }}
+            />
+          </div>
+
+          <BentoCard
+            title="Insurance"
+            hint="Verified"
+            area="insure"
+            delay={210}
+            active={isActive("insurance")}
+          >
+            <InsuranceBody />
+          </BentoCard>
+
+          <BentoCard
+            title="Lien rights"
+            area="lien"
+            delay={270}
+            active={isActive("lien")}
+          >
+            <LienBody />
+          </BentoCard>
+
+          <BentoCard
+            title="Permitting"
+            hint="Tracking"
+            area="permit"
+            delay={330}
+            active={isActive("permitting")}
+          >
+            {byKey("permitting").body(isActive("permitting"))}
+          </BentoCard>
         </div>
       </div>
 
-      {/* desktop: static ring of cards */}
-      <div
-        className="absolute left-1/2 top-1/2 hidden -translate-x-1/2 -translate-y-1/2 md:block"
-        style={{
-          width: 0,
-          height: 0,
-          marginTop: -24,
-        }}
-      >
-        {ORBIT.map((card, i) => {
-          const angle = (360 / ORBIT.length) * i;
-          const active = focus === i;
-          return (
-            <div
-              key={card.key}
-              className="absolute"
-              style={{ transform: `rotate(${angle}deg) translate(182px) rotate(${-angle}deg)` }}
-            >
-              <div>
-
-                <div
-                  className="-translate-x-1/2 -translate-y-1/2 px-3 py-2.5"
-                  style={{
-                    width: 178,
-                    background: active ? PAPER : OAT,
-                    border: `1px solid ${active ? BRONZE : BORDER}`,
-                    boxShadow: active
-                      ? "0 22px 40px -18px rgba(43,22,32,0.35)"
-                      : "0 10px 22px -18px rgba(43,22,32,0.30)",
-                    transform: active ? "scale(1.07)" : "scale(1)",
-                    transition: "all 700ms cubic-bezier(0.16,1,0.3,1)",
-                  }}
-                >
-                  <div className="flex items-center justify-between">
-                    <Eyebrow color={active ? BRONZE : GREEN}>{card.title}</Eyebrow>
-                    <span
-                      className="h-1 w-1 rounded-full"
-                      style={{ background: active ? BRONZE : "rgba(43,22,32,0.18)" }}
-                    />
-                  </div>
-                  <div className="mt-2">{card.body(active)}</div>
-                </div>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-
-      {/* mobile: stacked pair of cards, no orbit */}
-      <div className="absolute inset-x-3 bottom-4 grid grid-cols-1 gap-2 md:hidden">
-        {[ORBIT[focus], ORBIT[(focus + 1) % ORBIT.length]].map((card, idx) => (
-          <div
-            key={card.key}
-            className="px-3 py-2.5"
-            style={{
-              background: idx === 0 ? PAPER : OAT,
-              border: `1px solid ${idx === 0 ? BRONZE : BORDER}`,
-              animation: reduced ? undefined : "clSceneIn 500ms cubic-bezier(0.16,1,0.3,1) both",
-            }}
-          >
-            <Eyebrow color={idx === 0 ? BRONZE : GREEN}>{card.title}</Eyebrow>
-            <div className="mt-2">{card.body(idx === 0)}</div>
-          </div>
-        ))}
+      {/* mobile: mark + report card + the focused capability */}
+      <div className="absolute inset-0 flex flex-col gap-2.5 p-3 md:hidden">
+        <div className="flex shrink-0 items-center justify-center">
+          <img
+            src={cLogo.url}
+            alt="Cleard"
+            className="h-[88px] w-[88px] object-contain"
+            style={{ animation: reduced ? undefined : "clSpin 14s linear infinite" }}
+          />
+        </div>
+        <div className="min-h-0 flex-1">
+          <BentoCard title="Permit report" hint="Live" area="auto" delay={0}>
+            <ReportCard />
+          </BentoCard>
+        </div>
+        <div className="shrink-0">
+          <BentoCard title={ORBIT[focus].title} area="auto" delay={80} active>
+            {ORBIT[focus].body(true)}
+          </BentoCard>
+        </div>
       </div>
 
       {/* the story line — a caption band across the bottom of the frame */}
@@ -467,6 +690,7 @@ function SceneOrbit() {
     </div>
   );
 }
+
 
 /* -------------------------- laptop chrome for 2 & 3 -------------------------- */
 
