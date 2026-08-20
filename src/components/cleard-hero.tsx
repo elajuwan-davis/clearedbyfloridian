@@ -169,8 +169,9 @@ function HeroNav({ logoSlot, logoVisible }: { logoSlot: React.Ref<HTMLDivElement
         >
           {NAV.map((l) => (
             <Link
-              key={l.to}
+              key={l.label}
               to={l.to}
+              hash={l.hash}
               className="text-[13.5px] no-underline transition-colors"
               style={{ color: SLATE, whiteSpace: "nowrap" }}
             >
