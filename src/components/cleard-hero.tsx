@@ -124,6 +124,48 @@ function useHeroSequence(navSlot: React.RefObject<HTMLElement | null>) {
 
 /* ---------------------------------- NAV ---------------------------------- */
 
+function HeroTrades() {
+  const [open, setOpen] = useState(false);
+  return (
+    <div
+      className="relative"
+      onMouseEnter={() => setOpen(true)}
+      onMouseLeave={() => setOpen(false)}
+    >
+      <button
+        type="button"
+        onClick={() => setOpen((s) => !s)}
+        className="text-[13.5px] transition-colors"
+        style={{ color: SLATE, whiteSpace: "nowrap" }}
+        aria-expanded={open}
+      >
+        Trades
+      </button>
+      {open && (
+        <div className="absolute left-0 top-full pt-3" style={{ zIndex: 10 }}>
+          <div
+            className="grid grid-cols-2"
+            style={{ background: OAT, border: "1px solid #E0D3BC", minWidth: 460 }}
+          >
+            {TRADES.map((t) => (
+              <Link
+                key={t.slug}
+                to="/trades/$slug"
+                params={{ slug: t.slug }}
+                onClick={() => setOpen(false)}
+                className="block px-4 py-3 text-[13.5px] no-underline transition-opacity hover:opacity-70"
+                style={{ color: SLATE }}
+              >
+                {t.navLabel}
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function HeroNav({ logoSlot, logoVisible }: { logoSlot: React.Ref<HTMLDivElement>; logoVisible: boolean }) {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
