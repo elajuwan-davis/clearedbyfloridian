@@ -749,44 +749,301 @@ function Laptop({ activeTab, children }: { activeTab: number; children: React.Re
   );
 }
 
-const DASH_METRICS: Array<[string, number, string]> = [
-  ["Active permits", 17, ""],
-  ["On time", 94, "%"],
-  ["Avg review", 48, "h"],
-  ["Open corrections", 2, ""],
+/* ------------------------------- status system ------------------------------- */
+
+const STATUS = {
+  enroute: { label: "En Route", color: "#4F9CF9" },
+  delayed: { label: "Delayed", color: "#FF6B6B" },
+  completed: { label: "Completed", color: "#3ECF8E" },
+  review: { label: "In Review", color: "#C08A4E" },
+} as const;
+type StatusKey = keyof typeof STATUS;
+
+function StatusPill({ k }: { k: StatusKey }) {
+  const s = STATUS[k];
+  return (
+    <span
+      className="inline-flex shrink-0 items-center gap-1 px-1.5 py-[2px] text-[7.5px] uppercase"
+      style={{
+        fontFamily: MONO,
+        letterSpacing: "0.13em",
+        color: s.color,
+        background: `${s.color}1F`,
+        border: `1px solid ${s.color}59`,
+        borderRadius: 3,
+      }}
+    >
+      <span className="h-1 w-1 rounded-full" style={{ background: s.color, boxShadow: `0 0 6px ${s.color}` }} />
+      {s.label}
+    </span>
+  );
+}
+
+const DASH_METRICS: Array<[string, number, string, string]> = [
+  ["Active permits", 17, "", STATUS.enroute.color],
+  ["On time", 94, "%", STATUS.completed.color],
+  ["Avg review", 48, "h", BRONZE],
+  ["Corrections", 2, "", STATUS.delayed.color],
 ];
 
-function Metric({ label, value, suffix, delay }: { label: string; value: number; suffix: string; delay: number }) {
+function Metric({
+  label,
+  value,
+  suffix,
+  color,
+  delay,
+}: {
+  label: string;
+  value: number;
+  suffix: string;
+  color: string;
+  delay: number;
+}) {
   const n = useLiveNumber(value);
   return (
     <div
-      className="flex flex-col items-center justify-center px-2 py-4 text-center"
+      className="group flex flex-col justify-center px-2.5 py-2.5 transition-colors duration-300"
       style={{
         border: "1px solid rgba(250,243,230,0.14)",
+        borderRadius: 6,
+        background: "rgba(250,243,230,0.02)",
         animation: `clRise 640ms cubic-bezier(0.16,1,0.3,1) ${delay}ms both`,
       }}
     >
       <div
-        className="text-[8px] uppercase"
+        className="flex items-center gap-1.5 text-[7.5px] uppercase"
         style={{ fontFamily: MONO, letterSpacing: "0.16em", color: "rgba(250,243,230,0.55)" }}
       >
+        <span className="h-1 w-1 rounded-full" style={{ background: color, boxShadow: `0 0 6px ${color}` }} />
         {label}
       </div>
-      <div className="mt-2" style={{ fontFamily: SERIF, fontSize: 34, color: OAT, lineHeight: 1 }}>
-        {n}
-        {suffix}
+      <div className="mt-1 flex items-baseline gap-1">
+        <span style={{ fontFamily: SERIF, fontSize: 26, color: OAT, lineHeight: 1 }}>
+          {n}
+          {suffix}
+        </span>
       </div>
     </div>
   );
 }
 
+/* ------------------------------ interactive chart ---------------------------- */
+
+const CHART_SERIES: Array<{ key: string; color: string; points: number[] }> = [
+  { key: "Filed", color: "#4F9CF9", points: [8, 12, 10, 16, 14, 21, 19, 26] },
+  { key: "Issued", color: "#3ECF8E", points: [4, 7, 9, 8, 12, 13, 17, 22] },
+  { key: "Corrections", color: "#FF6B6B", points: [3, 2, 4, 2, 3, 1, 2, 1] },
+];
+const CHART_LABELS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug"];
+
+function PermitAreaChart() {
+  const [hover, setHover] = useState<number | null>(null);
+  const W = 320;
+  const H = 96;
+  const max = 30;
+  const n = CHART_LABELS.length;
+  const x = (i: number) => (i / (n - 1)) * W;
+  const y = (v: number) => H - (v / max) * H;
+
+  return (
+    <div className="relative w-full">
+      <svg
+        viewBox={`0 0 ${W} ${H}`}
+        preserveAspectRatio="none"
+        className="w-full"
+        style={{ height: 108, overflow: "visible" }}
+        onMouseLeave={() => setHover(null)}
+      >
+        <defs>
+          {CHART_SERIES.map((s) => (
+            <linearGradient key={s.key} id={`clg-${s.key}`} x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor={s.color} stopOpacity="0.42" />
+              <stop offset="100%" stopColor={s.color} stopOpacity="0" />
+            </linearGradient>
+          ))}
+        </defs>
+
+        {[0.25, 0.5, 0.75, 1].map((g) => (
+          <line
+            key={g}
+            x1={0}
+            x2={W}
+            y1={H * g}
+            y2={H * g}
+            stroke="rgba(250,243,230,0.09)"
+            strokeWidth={0.6}
+          />
+        ))}
+
+        {CHART_SERIES.map((s, si) => {
+          const line = s.points.map((v, i) => `${i === 0 ? "M" : "L"}${x(i)},${y(v)}`).join(" ");
+          return (
+            <g key={s.key}>
+              <path d={`${line} L${W},${H} L0,${H} Z`} fill={`url(#clg-${s.key})`} opacity={0.9}>
+                <animate attributeName="opacity" from="0" to="0.9" dur="900ms" fill="freeze" />
+              </path>
+              <path
+                d={line}
+                fill="none"
+                stroke={s.color}
+                strokeWidth={1.6}
+                strokeLinecap="round"
+                style={{
+                  strokeDasharray: 900,
+                  animation: `clDraw 1400ms ${si * 160}ms cubic-bezier(0.16,1,0.3,1) both`,
+                }}
+              />
+              {hover !== null && (
+                <circle cx={x(hover)} cy={y(s.points[hover])} r={2.6} fill={s.color} stroke="#241017" strokeWidth={1} />
+              )}
+            </g>
+          );
+        })}
+
+        {hover !== null && (
+          <line x1={x(hover)} x2={x(hover)} y1={0} y2={H} stroke="rgba(250,243,230,0.35)" strokeWidth={0.7} />
+        )}
+
+        {CHART_LABELS.map((_, i) => (
+          <rect
+            key={i}
+            x={x(i) - W / (n * 2)}
+            y={0}
+            width={W / n}
+            height={H}
+            fill="transparent"
+            onMouseEnter={() => setHover(i)}
+          />
+        ))}
+      </svg>
+
+      <div className="mt-1 flex items-center justify-between">
+        <div className="flex gap-2.5">
+          {CHART_SERIES.map((s) => (
+            <span
+              key={s.key}
+              className="flex items-center gap-1 text-[7.5px] uppercase"
+              style={{ fontFamily: MONO, letterSpacing: "0.13em", color: "rgba(250,243,230,0.6)" }}
+            >
+              <span className="h-[5px] w-[5px] rounded-full" style={{ background: s.color }} />
+              {s.key}
+            </span>
+          ))}
+        </div>
+        <span
+          className="text-[7.5px] uppercase tabular-nums"
+          style={{ fontFamily: MONO, letterSpacing: "0.13em", color: hover === null ? "rgba(250,243,230,0.4)" : OAT }}
+        >
+          {hover === null
+            ? "Hover for detail"
+            : `${CHART_LABELS[hover]} · ${CHART_SERIES.map((s) => s.points[hover]).join(" / ")}`}
+        </span>
+      </div>
+    </div>
+  );
+}
+
+/* --------------------------------- scene 2 ---------------------------------- */
+
+const DASH_PERMITS: Array<{ id: string; addr: string; status: StatusKey; pct: number }> = [
+  { id: "CLR-2026-0208", addr: "1217 S Ocean Blvd", status: "enroute", pct: 82 },
+  { id: "CLR-2026-0211", addr: "88 N County Rd", status: "completed", pct: 100 },
+  { id: "CLR-2026-0214", addr: "1402 Banyan Rd", status: "delayed", pct: 34 },
+  { id: "CLR-2026-0219", addr: "27 S Beach Rd", status: "review", pct: 58 },
+];
+
 function SceneDashboard() {
+  const [sel, setSel] = useState(0);
   return (
     <Laptop activeTab={0}>
-      <div className="grid h-full grid-cols-2 gap-3 sm:grid-cols-4">
-        {DASH_METRICS.map(([label, value, suffix], i) => (
-          <Metric key={label} label={label} value={value} suffix={suffix} delay={i * 110} />
-        ))}
+      <div className="flex h-full min-h-0 flex-col gap-3">
+        <div className="grid shrink-0 grid-cols-2 gap-2 sm:grid-cols-4">
+          {DASH_METRICS.map(([label, value, suffix, color], i) => (
+            <Metric
+              key={label}
+              label={label}
+              value={value}
+              suffix={suffix}
+              color={color}
+              delay={i * 90}
+            />
+          ))}
+        </div>
+
+        <div className="grid min-h-0 flex-1 grid-cols-1 gap-3 sm:grid-cols-5">
+          <div
+            className="min-w-0 sm:col-span-3"
+            style={{
+              border: "1px solid rgba(250,243,230,0.14)",
+              borderRadius: 6,
+              padding: 10,
+              animation: "clRise 700ms 220ms cubic-bezier(0.16,1,0.3,1) both",
+            }}
+          >
+            <DarkEyebrow>Permit throughput · 8 mo</DarkEyebrow>
+            <div className="mt-2">
+              <PermitAreaChart />
+            </div>
+          </div>
+
+          <div
+            className="min-w-0 sm:col-span-2"
+            style={{
+              border: "1px solid rgba(250,243,230,0.14)",
+              borderRadius: 6,
+              padding: 10,
+              animation: "clRise 700ms 320ms cubic-bezier(0.16,1,0.3,1) both",
+            }}
+          >
+            <DarkEyebrow>Live permits</DarkEyebrow>
+            <div className="mt-2 space-y-1.5">
+              {DASH_PERMITS.map((p, i) => {
+                const on = sel === i;
+                return (
+                  <button
+                    key={p.id}
+                    type="button"
+                    onMouseEnter={() => setSel(i)}
+                    onFocus={() => setSel(i)}
+                    className="w-full cursor-default px-1.5 py-1 text-left transition-all duration-300"
+                    style={{
+                      background: on ? "rgba(250,243,230,0.07)" : "transparent",
+                      border: `1px solid ${on ? `${STATUS[p.status].color}55` : "transparent"}`,
+                      borderRadius: 4,
+                    }}
+                  >
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="truncate text-[9px]" style={{ fontFamily: MONO, color: OAT }}>
+                        {p.id}
+                      </span>
+                      <StatusPill k={p.status} />
+                    </div>
+                    <div className="mt-1 flex items-center gap-2">
+                      <div className="h-[3px] flex-1" style={{ background: "rgba(250,243,230,0.14)" }}>
+                        <div
+                          className="h-full transition-all duration-700"
+                          style={{ background: STATUS[p.status].color, width: on ? `${p.pct}%` : `${p.pct * 0.9}%` }}
+                        />
+                      </div>
+                      <span
+                        className="shrink-0 text-[7.5px] tabular-nums"
+                        style={{ fontFamily: MONO, color: "rgba(250,243,230,0.55)" }}
+                      >
+                        {p.pct}%
+                      </span>
+                    </div>
+                    <div
+                      className="truncate text-[8px]"
+                      style={{ color: "rgba(250,243,230,0.45)", height: on ? 12 : 0, overflow: "hidden", transition: "height 300ms ease" }}
+                    >
+                      {p.addr}
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </div>
       </div>
     </Laptop>
   );
@@ -808,79 +1065,165 @@ function DarkEyebrow({ children }: { children: React.ReactNode }) {
   );
 }
 
+/* --------------------------------- scene 3 ---------------------------------- */
+
+const FILING_STEPS = [
+  "Project details",
+  "Scope & valuation",
+  "Stamped plans",
+  "Private provider affidavit",
+  "Filed with jurisdiction",
+];
+
+const FILED_FEED: Array<{ id: string; addr: string; juris: string; status: StatusKey }> = [
+  { id: "CLR-2026-0231", addr: "3012 Payson Way", juris: "Wellington", status: "completed" },
+  { id: "CLR-2026-0230", addr: "9399 SE Delafield St", juris: "Hobe Sound", status: "enroute" },
+  { id: "CLR-2026-0229", addr: "104 Manor Circle", juris: "Jupiter", status: "review" },
+  { id: "CLR-2026-0228", addr: "8566 SW Felicita Wy", juris: "Port St. Lucie", status: "delayed" },
+  { id: "CLR-2026-0227", addr: "123 Fairview W", juris: "Tequesta", status: "completed" },
+  { id: "CLR-2026-0226", addr: "1261 Spanish River Rd", juris: "Boca Raton", status: "enroute" },
+];
+
 function ScenePortal() {
+  const reduced = useReducedMotion();
+  const [step, setStep] = useState(0);
+
+  useEffect(() => {
+    if (reduced) return;
+    const t = window.setInterval(() => setStep((s) => (s + 1) % (FILING_STEPS.length + 1)), 850);
+    return () => window.clearInterval(t);
+  }, [reduced]);
+
+  const feed = [...FILED_FEED, ...FILED_FEED];
+
   return (
     <Laptop activeTab={1}>
-      <div className="grid h-full grid-cols-1 gap-5 sm:grid-cols-3">
-        <div style={{ animation: "clRise 640ms cubic-bezier(0.16,1,0.3,1) both" }}>
-          <DarkEyebrow>Permits</DarkEyebrow>
-          <div className="mt-2.5 space-y-3">
-            {(
-              [
-                ["CLR-2026-0208", 82],
-                ["CLR-2026-0211", 46],
-                ["CLR-2026-0214", 21],
-              ] as Array<[string, number]>
-            ).map(([id, pct]) => (
-              <div key={id}>
-                <div className="flex items-baseline justify-between">
-                  <span className="text-[10px]" style={{ color: OAT }}>
-                    {id}
-                  </span>
-                  <span className="text-[8.5px]" style={{ fontFamily: MONO, color: "rgba(250,243,230,0.55)" }}>
-                    {pct}%
-                  </span>
-                </div>
-                <div className="mt-1 h-[3px] w-full" style={{ background: "rgba(250,243,230,0.14)" }}>
+      <div className="flex h-full min-h-0 flex-col">
+        <div className="flex shrink-0 items-center justify-between pb-2">
+          <span style={{ fontFamily: SERIF, fontSize: 15, color: OAT }}>Permits filed</span>
+          <span
+            className="text-[7.5px] uppercase"
+            style={{ fontFamily: MONO, letterSpacing: "0.16em", color: STATUS.completed.color }}
+          >
+            Live · 231 this year
+          </span>
+        </div>
+
+        <div className="grid min-h-0 flex-1 grid-cols-1 gap-3 sm:grid-cols-5">
+          {/* filing wizard */}
+          <div
+            className="min-w-0 sm:col-span-2"
+            style={{
+              border: "1px solid rgba(250,243,230,0.14)",
+              borderRadius: 6,
+              padding: 10,
+              animation: "clRise 640ms cubic-bezier(0.16,1,0.3,1) both",
+            }}
+          >
+            <DarkEyebrow>New permit</DarkEyebrow>
+            <div className="mt-2.5 space-y-2">
+              {FILING_STEPS.map((s, i) => {
+                const done = i < step;
+                const now = i === step;
+                return (
+                  <div key={s} className="flex items-center gap-2">
+                    <span
+                      className="flex h-[13px] w-[13px] shrink-0 items-center justify-center text-[7px] transition-all duration-400"
+                      style={{
+                        borderRadius: 3,
+                        border: `1px solid ${done ? STATUS.completed.color : now ? BRONZE : "rgba(250,243,230,0.22)"}`,
+                        background: done ? `${STATUS.completed.color}26` : "transparent",
+                        color: STATUS.completed.color,
+                        fontFamily: MONO,
+                      }}
+                    >
+                      {done ? "✓" : ""}
+                    </span>
+                    <span
+                      className="min-w-0 truncate text-[9.5px] transition-colors duration-400"
+                      style={{ color: done || now ? OAT : "rgba(250,243,230,0.4)" }}
+                    >
+                      {s}
+                    </span>
+                    {now && (
+                      <span
+                        className="ml-auto h-[3px] w-6 shrink-0 overflow-hidden"
+                        style={{ background: "rgba(250,243,230,0.16)" }}
+                      >
+                        <span
+                          className="block h-full"
+                          style={{ background: BRONZE, animation: "clGrow 800ms linear both", width: "100%" }}
+                        />
+                      </span>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+            <div
+              className="mt-3 px-2 py-1.5 text-center text-[8px] uppercase transition-all duration-500"
+              style={{
+                fontFamily: MONO,
+                letterSpacing: "0.16em",
+                borderRadius: 4,
+                border: `1px solid ${step >= FILING_STEPS.length ? STATUS.completed.color : "rgba(250,243,230,0.2)"}`,
+                color: step >= FILING_STEPS.length ? STATUS.completed.color : "rgba(250,243,230,0.45)",
+                background: step >= FILING_STEPS.length ? `${STATUS.completed.color}1A` : "transparent",
+              }}
+            >
+              {step >= FILING_STEPS.length ? "Submitted · CLR-2026-0232" : "Submitting…"}
+            </div>
+          </div>
+
+          {/* sliding filed feed */}
+          <div
+            className="relative min-w-0 overflow-hidden sm:col-span-3"
+            style={{
+              border: "1px solid rgba(250,243,230,0.14)",
+              borderRadius: 6,
+              padding: 10,
+              animation: "clRise 640ms 140ms cubic-bezier(0.16,1,0.3,1) both",
+            }}
+          >
+            <DarkEyebrow>Filed today</DarkEyebrow>
+            <div className="relative mt-2 h-[calc(100%-26px)] overflow-hidden">
+              <div
+                style={{
+                  animation: reduced ? undefined : "clMarquee 14s linear infinite",
+                }}
+              >
+                {feed.map((p, i) => (
                   <div
-                    className="h-full"
-                    style={{ background: BRONZE, animation: `clGrow 1100ms cubic-bezier(0.16,1,0.3,1) both`, width: `${pct}%` }}
-                  />
-                </div>
+                    key={`${p.id}-${i}`}
+                    className="mb-1.5 flex items-center gap-2 px-2 py-1.5"
+                    style={{
+                      border: "1px solid rgba(250,243,230,0.1)",
+                      borderLeft: `2px solid ${STATUS[p.status].color}`,
+                      borderRadius: 4,
+                      background: "rgba(250,243,230,0.03)",
+                    }}
+                  >
+                    <span className="shrink-0 text-[9px]" style={{ fontFamily: MONO, color: OAT }}>
+                      {p.id}
+                    </span>
+                    <span className="min-w-0 flex-1 truncate text-[8.5px]" style={{ color: "rgba(250,243,230,0.55)" }}>
+                      {p.addr} · {p.juris}
+                    </span>
+                    <StatusPill k={p.status} />
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
-        </div>
-
-        <div style={{ animation: "clRise 640ms cubic-bezier(0.16,1,0.3,1) 120ms both" }}>
-          <DarkEyebrow>Inspections</DarkEyebrow>
-          <div className="mt-2.5 space-y-2.5">
-            {(
-              [
-                ["Structural framing", true],
-                ["Electrical rough", false],
-                ["Plumbing top-out", true],
-              ] as Array<[string, boolean]>
-            ).map(([trade, ok]) => (
-              <div key={trade} className="flex items-center justify-between gap-2">
-                <span className="min-w-0 truncate text-[10px]" style={{ color: OAT }}>
-                  {trade}
-                </span>
-                <span className="shrink-0 text-[11px]" style={{ color: ok ? "#9BB8A6" : "#D89A9A" }} aria-hidden>
-                  {ok ? "✓" : "✕"}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div style={{ animation: "clRise 640ms cubic-bezier(0.16,1,0.3,1) 240ms both" }}>
-          <DarkEyebrow>Compliance</DarkEyebrow>
-          <div className="mt-2.5 space-y-2.5">
-            {[
-              ["Licenses", "36 current"],
-              ["COIs", "184 valid"],
-              ["Expiring 30d", "0"],
-            ].map(([label, value]) => (
-              <div key={label} className="flex items-center justify-between gap-2">
-                <span className="text-[10px]" style={{ color: "rgba(250,243,230,0.62)" }}>
-                  {label}
-                </span>
-                <span className="text-[10px]" style={{ color: OAT, fontWeight: 500 }}>
-                  {value}
-                </span>
-              </div>
-            ))}
+              <div
+                aria-hidden
+                className="pointer-events-none absolute inset-x-0 top-0 h-5"
+                style={{ background: "linear-gradient(to bottom, #241017, transparent)" }}
+              />
+              <div
+                aria-hidden
+                className="pointer-events-none absolute inset-x-0 bottom-0 h-5"
+                style={{ background: "linear-gradient(to top, #241017, transparent)" }}
+              />
+            </div>
           </div>
         </div>
       </div>
