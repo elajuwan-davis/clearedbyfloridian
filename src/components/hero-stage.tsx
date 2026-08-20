@@ -13,7 +13,7 @@ const BRONZE = "#9C6B3F";
 const MONO = '"JetBrains Mono", ui-monospace, monospace';
 const SERIF = '"Fraunces", "Iowan Old Style", Georgia, serif';
 
-const FRAME_H = 600;
+const FRAME_H = 640;
 
 /* ------------------------------ small helpers ------------------------------ */
 
@@ -391,7 +391,7 @@ function SceneOrbit() {
             <div
               key={card.key}
               className="absolute"
-              style={{ transform: `rotate(${angle}deg) translate(174px) rotate(${-angle}deg)` }}
+              style={{ transform: `rotate(${angle}deg) translate(182px) rotate(${-angle}deg)` }}
             >
               <div
                 style={{
@@ -448,7 +448,7 @@ function SceneOrbit() {
       <div
         className="pointer-events-none absolute inset-x-0 bottom-0 z-30 hidden items-center justify-center md:flex"
         style={{
-          height: 46,
+          height: 38,
           background: "rgba(250,243,230,0.94)",
           backdropFilter: "blur(3px)",
           borderTop: `1px solid ${BORDER}`,
