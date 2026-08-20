@@ -1334,20 +1334,37 @@ export function HeroStage() {
       <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
         <Link
           to="/contact"
-          className="inline-flex items-center rounded-full px-5 py-2 text-[12.5px] no-underline transition-transform duration-200 hover:scale-[1.03]"
-          style={{ border: `1px solid ${GREEN}`, color: GREEN, fontWeight: 600 }}
+          className="cl-glass inline-flex items-center px-6 py-2.5 text-[12.5px] no-underline transition-all duration-200 hover:scale-[1.03]"
+          style={{
+            background: "rgba(47,79,79,0.10)",
+            border: "1px solid rgba(47,79,79,0.28)",
+            backdropFilter: "blur(12px) saturate(140%)",
+            WebkitBackdropFilter: "blur(12px) saturate(140%)",
+            color: GREEN,
+            fontWeight: 600,
+            boxShadow: "inset 0 1px 0 rgba(255,255,255,0.55), 0 10px 24px -16px rgba(43,22,32,0.4)",
+          }}
         >
           See it in action
         </Link>
         <Link
           to="/join"
           hash="request"
-          className="inline-flex items-center rounded-full px-5 py-2 text-[12.5px] no-underline transition-transform duration-200 hover:scale-[1.03]"
-          style={{ background: BRONZE, color: OAT, fontWeight: 600 }}
+          className="cl-glass inline-flex items-center px-6 py-2.5 text-[12.5px] no-underline transition-all duration-200 hover:scale-[1.03]"
+          style={{
+            background: "rgba(103,49,71,0.82)",
+            border: "1px solid rgba(103,49,71,0.55)",
+            backdropFilter: "blur(12px) saturate(140%)",
+            WebkitBackdropFilter: "blur(12px) saturate(140%)",
+            color: OAT,
+            fontWeight: 600,
+            boxShadow: "inset 0 1px 0 rgba(255,255,255,0.28), 0 14px 30px -18px rgba(43,22,32,0.6)",
+          }}
         >
           Get early access
         </Link>
       </div>
+
     </div>
   );
 }

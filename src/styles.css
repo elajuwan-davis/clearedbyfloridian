@@ -2114,3 +2114,12 @@ tbody tr:hover, .p-table tbody tr:hover { background: #F3EAD9; }
 [data-sonner-toast][data-type="success"] [data-icon] { color: var(--nl-success) !important; }
 [data-sonner-toast][data-type="error"] [data-icon] { color: var(--nl-danger) !important; }
 [data-sonner-toast][data-type="warning"] [data-icon] { color: var(--nl-warning) !important; }
+
+/* ── Marketing glass CTAs: the one rounded exception on the public site ── */
+html body .cl-glass.cl-glass,
+html body .cl-glass.cl-glass::before,
+html body .cl-glass.cl-glass::after { border-radius: 999px !important; }
+html body .cl-phone.cl-phone { border-radius: 44px !important; }
+html body .cl-phone-screen.cl-phone-screen { border-radius: 34px !important; }
+html body .cl-phone-notch.cl-phone-notch,
+html body .cl-dot.cl-dot { border-radius: 999px !important; }

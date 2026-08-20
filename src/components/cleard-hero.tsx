@@ -194,11 +194,21 @@ function HeroNav({ logoSlot, logoVisible }: { logoSlot: React.Ref<HTMLDivElement
           <Link
             to="/join"
             hash="request"
-            className="inline-flex items-center px-5 py-2.5 text-[13px] no-underline"
-            style={{ background: PLUM, color: OAT, fontWeight: 600, whiteSpace: "nowrap" }}
+            className="cl-glass inline-flex items-center px-5 py-2.5 text-[13px] no-underline transition-transform duration-200 hover:scale-[1.03]"
+            style={{
+              background: "rgba(103,49,71,0.86)",
+              border: "1px solid rgba(103,49,71,0.5)",
+              backdropFilter: "blur(12px) saturate(140%)",
+              WebkitBackdropFilter: "blur(12px) saturate(140%)",
+              color: OAT,
+              fontWeight: 600,
+              whiteSpace: "nowrap",
+              boxShadow: "inset 0 1px 0 rgba(255,255,255,0.25), 0 12px 26px -18px rgba(43,22,32,0.6)",
+            }}
           >
             Get early access
           </Link>
+
           <button
             type="button"
             className="-mr-1 p-2 text-[13px] md:hidden"
@@ -320,7 +330,7 @@ export function ClearedHero() {
       )}
 
       <div
-        className="relative z-10 mx-auto max-w-6xl px-5 pb-16 pt-36 text-center lg:px-10 lg:pb-24 lg:pt-40"
+        className="relative z-10 mx-auto max-w-5xl px-5 pb-10 pt-24 text-center lg:px-8 lg:pb-14 lg:pt-28"
         style={{
           clipPath: contentInset,
           transition: running ? "clip-path 1150ms cubic-bezier(0.7, 0, 0.2, 1)" : undefined,
@@ -337,12 +347,12 @@ export function ClearedHero() {
           </div>
 
           <h1
-            className="mx-auto mt-7 max-w-[22ch]"
+            className="mx-auto mt-5 max-w-[20ch]"
             style={{
               fontFamily: SERIF,
               fontWeight: 500,
-              fontSize: "clamp(2.5rem, 6vw, 4.6rem)",
-              lineHeight: 0.98,
+              fontSize: "clamp(2.3rem, 5vw, 3.9rem)",
+              lineHeight: 0.99,
               letterSpacing: "-0.035em",
               color: PLUM,
               fontVariationSettings: '"SOFT" 0, "WONK" 1',
@@ -352,7 +362,7 @@ export function ClearedHero() {
           </h1>
 
           <p
-            className="mx-auto mt-6 max-w-[52ch] text-[17px] leading-[1.7]"
+            className="mx-auto mt-5 max-w-[52ch] text-[16px] leading-[1.65]"
             style={{ color: SLATE }}
           >
             Permits, inspections, licenses, and lien rights — cleared automatically.
@@ -361,19 +371,11 @@ export function ClearedHero() {
 
 
         {/* the platform itself: mark hovering, capabilities popping out, then the app */}
-        <div className="mt-10 lg:mt-14">
+        <div className="mt-8 lg:mt-10">
           <HeroStage />
         </div>
-
-        <div
-          className="mx-auto flex max-w-3xl flex-wrap justify-center gap-x-10 gap-y-4 pt-8 text-[11px] uppercase"
-          style={{ borderTop: "1px solid #E0D3BC", letterSpacing: "0.16em", color: GREEN }}
-        >
-          <span>2-day plan review</span>
-          <span>Same-day inspections</span>
-          <span>By invitation</span>
-        </div>
       </div>
+
 
 
       {/* Beats 1-4 — the mark itself, above everything, one arc, one direction */}
