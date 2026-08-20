@@ -28,6 +28,13 @@ import {
   TRUST_LOGOS,
   VictoriaChatMock,
 } from "@/components/marketing-mockups";
+import {
+  AskVictoriaLauncher,
+  FeaturedTestimonial,
+  ReplaceThePermitOffice,
+  VictoriaSpotlight,
+  WatchItRun,
+} from "@/components/home-command-center";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -81,18 +88,24 @@ function HomePage() {
       <div className="cl-home">
         <ClearedHero />
         <HeroStatBar />
-        <Circle360 />
-        <StatsStrip />
+        <div id="watch-it-run">
+          <WatchItRun />
+        </div>
+        <div id="victoria">
+          <VictoriaSpotlight />
+        </div>
         <Services />
+        <ReplaceThePermitOffice />
         <MunicipalityTrack />
-        <ThreeSteps />
-        <VictoriaLayer />
-        <TrustBar />
         <PortalShowcase />
+        <StatsStrip />
+        <ThreeSteps />
+        <TrustBar />
         <MobileApp />
         <HowItWorks />
         <BottomCTA />
         <Footer />
+        <AskVictoriaLauncher />
       </div>
     </div>
   );
@@ -515,8 +528,8 @@ function Services() {
           className="max-w-3xl"
           style={{ fontSize: "clamp(2rem, 3.6vw, 2.875rem)", lineHeight: 1.08, letterSpacing: "-0.035em" }}
         >
-          <span style={{ color: INK, fontWeight: 800 }}>One team runs it all. </span>
-          <span style={{ color: GREEN, fontWeight: 600 }}>So yours doesn&apos;t have to.</span>
+          <span style={{ color: INK, fontWeight: 800 }}>Your team builds. </span>
+          <span style={{ color: GREEN, fontWeight: 600 }}>Cleard handles everything around it.</span>
         </h2>
         <p className="mt-5 max-w-2xl text-[16px] leading-relaxed" style={{ color: GRAY }}>
           Most contractors spread this across 4–6 vendors, two admins, and a lot of phone calls. Cleard
@@ -763,24 +776,8 @@ function TrustBar() {
           ))}
         </div>
 
-        <div className="mt-14 grid gap-4 md:grid-cols-3">
-          {TESTIMONIALS.map((t) => (
-            <figure key={t.name} className="flex flex-col p-7" style={{ background: OFF, border: `1px solid ${BORDER}` }}>
-              <div className="text-[28px] font-bold leading-none" style={{ color: GREEN }}>
-                &ldquo;
-              </div>
-              <blockquote className="mt-4 flex-1 text-[15px] leading-relaxed" style={{ color: INK }}>
-                {t.quote}
-              </blockquote>
-              <figcaption className="mt-6 pt-5 text-[12.5px]" style={{ borderTop: `1px solid ${BORDER}`, color: GRAY }}>
-                <span className="font-bold" style={{ color: INK }}>
-                  {t.name}
-                </span>
-                <br />
-                {t.role}
-              </figcaption>
-            </figure>
-          ))}
+        <div className="mt-20">
+          <FeaturedTestimonial items={TESTIMONIALS} />
         </div>
       </div>
     </section>
@@ -1132,33 +1129,115 @@ function BottomCTA() {
 
 /* -------------------------------- FOOTER --------------------------------- */
 
+const FOOTER_COLS: Array<{ head: string; links: Array<{ label: string; to?: string; href?: string; hash?: string }> }> = [
+  {
+    head: "Product",
+    links: [
+      { label: "Platform overview", to: "/product" },
+      { label: "Permitting administration", to: "/product" },
+      { label: "Plan review & inspections", to: "/product" },
+      { label: "License management", to: "/product" },
+      { label: "Insurance compliance", to: "/product" },
+      { label: "Lien rights", to: "/product" },
+      { label: "Victoria", to: "/", hash: "victoria" },
+    ],
+  },
+  {
+    head: "Company",
+    links: [
+      { label: "About", to: "/about" },
+      { label: "Contact", to: "/contact" },
+      { label: "Pricing", to: "/pricing" },
+      { label: "Compare", to: "/compare" },
+    ],
+  },
+  {
+    head: "For municipalities",
+    links: [
+      { label: "CleardGov", to: "/municipalities" },
+      { label: "Talk to our team", to: "/contact" },
+    ],
+  },
+  {
+    head: "Resources",
+    links: [
+      { label: "How it works", to: "/", hash: "watch-it-run" },
+      { label: "Client portal", to: "/login" },
+      { label: "Privacy", href: "https://floridianinc.com/privacy" },
+      { label: "Terms", href: "https://floridianinc.com/terms" },
+    ],
+  },
+];
+
 function Footer() {
   return (
     <footer style={{ background: INK, borderTop: "1px solid rgba(255,255,255,0.12)" }}>
-      <div className="mx-auto max-w-7xl px-5 lg:px-8 py-12 flex flex-col gap-8 md:flex-row md:items-center md:justify-between">
-        <Link
-          to="/"
-          className="no-underline"
-          style={{ color: WHITE, fontWeight: 700, fontSize: 18, letterSpacing: "-0.03em" }}
+      <div className="mx-auto max-w-7xl px-5 lg:px-8">
+        <div className="grid gap-12 py-16 md:grid-cols-[1.2fr_2.8fr]">
+          <div>
+            <Link
+              to="/"
+              className="no-underline"
+              style={{ color: WHITE, fontWeight: 700, fontSize: 22, letterSpacing: "-0.03em" }}
+            >
+              Cleard
+            </Link>
+            <p className="mt-4 max-w-xs text-[13.5px] leading-relaxed" style={{ color: "rgba(255,255,255,0.55)" }}>
+              The operating system that runs everything behind your construction projects.
+            </p>
+          </div>
+          <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
+            {FOOTER_COLS.map((c) => (
+              <div key={c.head}>
+                <div className="text-[10px] font-bold uppercase" style={{ letterSpacing: "0.18em", color: "rgba(255,255,255,0.45)" }}>
+                  {c.head}
+                </div>
+                <div className="mt-4 space-y-2.5">
+                  {c.links.map((l) =>
+                    l.href ? (
+                      <a key={l.label} href={l.href} className="block text-[13px] no-underline" style={{ color: "rgba(255,255,255,0.72)" }}>
+                        {l.label}
+                      </a>
+                    ) : (
+                      <Link
+                        key={l.label}
+                        to={l.to!}
+                        hash={l.hash}
+                        className="block text-[13px] no-underline"
+                        style={{ color: "rgba(255,255,255,0.72)" }}
+                      >
+                        {l.label}
+                      </Link>
+                    ),
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div
+          className="flex flex-col gap-6 py-10 md:flex-row md:items-center md:justify-between"
+          style={{ borderTop: "1px solid rgba(255,255,255,0.12)" }}
         >
-          Cleard
-        </Link>
-        <nav className="flex flex-wrap items-center gap-x-8 gap-y-2 text-[13px]">
-          <Link to="/product" className="no-underline" style={{ color: "rgba(255,255,255,0.7)" }}>
-            Product
+          <h2
+            className="max-w-lg"
+            style={{ fontSize: "clamp(1.5rem, 2.8vw, 2.125rem)", lineHeight: 1.1, letterSpacing: "-0.035em", color: WHITE, fontWeight: 800 }}
+          >
+            Stop running permits. Start building.
+          </h2>
+          <Link
+            to="/join"
+            hash="request"
+            className="inline-flex items-center gap-2 self-start px-7 py-3.5 text-[14px] font-bold no-underline"
+            style={{ background: GREEN_LT, color: INK }}
+          >
+            Get early access <ArrowRight className="h-4 w-4" />
           </Link>
-          <Link to="/join" className="no-underline" style={{ color: "rgba(255,255,255,0.7)" }}>
-            Contractors
-          </Link>
-          <a href="https://floridianinc.com/privacy" className="no-underline" style={{ color: "rgba(255,255,255,0.7)" }}>
-            Privacy
-          </a>
-          <a href="https://floridianinc.com/terms" className="no-underline" style={{ color: "rgba(255,255,255,0.7)" }}>
-            Terms
-          </a>
-        </nav>
-        <div className="text-[12px]" style={{ color: "rgba(255,255,255,0.5)" }}>
-          © 2026 Cleard
+        </div>
+
+        <div className="pb-10 text-[12px]" style={{ color: "rgba(255,255,255,0.45)" }}>
+          © 2026 Cleard · Built by Flōridian
         </div>
       </div>
     </footer>

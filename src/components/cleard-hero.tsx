@@ -2,24 +2,23 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react
 import { Link } from "@tanstack/react-router";
 import mark3d from "@/assets/cleard-3d-mark.png.asset.json";
 import mark2d from "@/assets/cleard-mark-2d.png.asset.json";
+import { HomeMotionStyles, LiveCommandCenter } from "@/components/home-command-center";
 
 /* ---------------------- NORDIC LUXURY BRAND TOKENS ---------------------- */
 
 const OAT = "#FAF3E6";
-const OAT_DEEP = "#F3EAD9";
 const SLATE = "#2F4F4F";
 const PLUM = "#673147";
-const LAVENDER = "#E6E6FA";
 const GREEN = "#2F4F4F"; /* minor accent only: eyebrows, secondary CTA, metadata */
 
 const SERIF = '"Fraunces", "Iowan Old Style", Georgia, serif';
 
 const NAV = [
-  { to: "/product", label: "Product" },
-  { to: "/join", label: "For Contractors" },
-  { to: "/pricing", label: "Pricing" },
-  { to: "/compare", label: "Compare" },
-  { to: "/about", label: "About" },
+  { to: "/product", label: "Product", hash: undefined },
+  { to: "/", label: "Victoria", hash: "victoria" },
+  { to: "/", label: "How it works", hash: "watch-it-run" },
+  { to: "/pricing", label: "Pricing", hash: undefined },
+  { to: "/join", label: "Contractors", hash: undefined },
 ] as const;
 
 /* ------------------------- HERO MOMENT SEQUENCE -------------------------- */
@@ -170,8 +169,9 @@ function HeroNav({ logoSlot, logoVisible }: { logoSlot: React.Ref<HTMLDivElement
         >
           {NAV.map((l) => (
             <Link
-              key={l.to}
+              key={l.label}
               to={l.to}
+              hash={l.hash}
               className="text-[13.5px] no-underline transition-colors"
               style={{ color: SLATE, whiteSpace: "nowrap" }}
             >
@@ -256,6 +256,8 @@ export function ClearedHero() {
         @keyframes clGloss { 0% { transform: translateX(-140%) skewX(-16deg); opacity: 0; }
           35% { opacity: 1; } 100% { transform: translateX(180%) skewX(-16deg); opacity: 0; } }
       `}</style>
+      <HomeMotionStyles />
+
 
       <HeroNav logoSlot={navSlot} logoVisible={!running} />
 
@@ -321,47 +323,49 @@ export function ClearedHero() {
             className="text-[10.5px] uppercase"
             style={{ letterSpacing: "0.32em", color: GREEN, fontWeight: 600 }}
           >
-            Private provider permitting
+            The operating system for contractors
           </div>
 
           <h1
-            className="mt-7 max-w-[15ch]"
+            className="mt-7 max-w-[14ch]"
             style={{
               fontFamily: SERIF,
               fontWeight: 500,
-              fontSize: "clamp(2.9rem, 6.4vw, 5.1rem)",
-              lineHeight: 0.98,
-              letterSpacing: "-0.03em",
+              fontSize: "clamp(3.1rem, 7.4vw, 5.9rem)",
+              lineHeight: 0.92,
+              letterSpacing: "-0.035em",
               color: PLUM,
               fontVariationSettings: '"SOFT" 0, "WONK" 1',
             }}
           >
-            Run projects.
+            <span style={{ fontSize: "0.72em", opacity: 0.9 }}>Run projects.</span>
             <br />
             <span style={{ fontStyle: "italic", color: SLATE }}>Not paperwork.</span>
           </h1>
 
-          <p className="mt-8 max-w-xl text-[16px] leading-[1.75]" style={{ color: SLATE }}>
-            Permitting administration, private plan review and inspections, license
-            management, insurance compliance and lien rights. One back office, every
-            jurisdiction you build in.
+          <p className="mt-8 max-w-[34ch] text-[17px] leading-[1.7]" style={{ color: SLATE }}>
+            Cleard runs permits, inspections, licenses, insurance and lien compliance from one
+            command center.
           </p>
 
           <div className="mt-10 flex flex-wrap items-center gap-4">
             <Link
               to="/join"
               hash="request"
-              className="inline-flex items-center px-7 py-3.5 text-[13.5px] no-underline"
+              className="cl-hoverable inline-flex items-center gap-2 px-7 py-3.5 text-[13.5px] no-underline"
               style={{ background: GREEN, color: OAT, fontWeight: 600 }}
             >
-              Get early access
+              See Cleard in action
+              <span className="cl-arrow" aria-hidden>
+                →
+              </span>
             </Link>
             <Link
               to="/contact"
               className="inline-flex items-center px-7 py-3.5 text-[13.5px] no-underline"
               style={{ border: `1px solid ${GREEN}`, color: GREEN, fontWeight: 600 }}
             >
-              See a live demo
+              Get early access
             </Link>
           </div>
 
@@ -375,30 +379,9 @@ export function ClearedHero() {
           </div>
         </div>
 
-        {/* 3D mark, set on a lavender plate like a pressed seal */}
+        {/* the product itself, running */}
         <div className="relative flex justify-center lg:justify-end">
-          <div
-            className="relative flex aspect-square w-full max-w-[430px] items-center justify-center"
-            style={{ background: LAVENDER, border: `1px solid ${OAT_DEEP}` }}
-          >
-            <div
-              aria-hidden
-              className="pointer-events-none absolute inset-6"
-              style={{ border: "1px solid rgba(43,22,32,0.14)" }}
-            />
-            <img
-              src={mark3d.url}
-              alt="Cleard mark"
-              className="relative w-[62%] object-contain transition-opacity duration-500"
-              style={{ opacity: running ? 0 : 1 }}
-            />
-            <div
-              className="absolute bottom-5 left-6 text-[10px] uppercase"
-              style={{ letterSpacing: "0.28em", color: SLATE }}
-            >
-              Cleard · private provider · by invitation
-            </div>
-          </div>
+          <LiveCommandCenter />
         </div>
       </div>
 
