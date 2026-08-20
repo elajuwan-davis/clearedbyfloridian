@@ -562,7 +562,7 @@ function SceneOrbit() {
     <div className="relative h-full w-full">
       {/* desktop: asymmetric bento with the mark seated in the middle column */}
       <div
-        className="absolute inset-0 hidden px-4 pb-[46px] pt-7 md:block"
+        className="absolute inset-0 hidden px-4 pb-[46px] pt-9 md:block"
         style={{ perspective: 1200 }}
       >
         <div
