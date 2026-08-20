@@ -88,7 +88,7 @@ function HomePage() {
         @keyframes clWordIn { from { opacity: 0; transform: translateY(0.5em); } to { opacity: 1; transform: translateY(0); } }
         @keyframes clSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
         @keyframes clFade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
-        @keyframes clMarquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+        @keyframes clMarqueeX { from { transform: translateX(0); } to { transform: translateX(-50%); } }
       `}</style>
 
       <div className="cl-home">
@@ -107,7 +107,6 @@ function HomePage() {
         <MobileApp />
         <BottomCTA />
         <Footer />
-        <AskVictoriaLauncher />
       </div>
     </div>
   );
@@ -488,7 +487,7 @@ function TrustBar() {
         >
           <div
             className="flex w-max items-center gap-16"
-            style={{ animation: "clMarquee 34s linear infinite" }}
+            style={{ animation: "clMarqueeX 34s linear infinite" }}
           >
             {marquee.map((l, i) => (
               <span
