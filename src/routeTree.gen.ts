@@ -29,6 +29,7 @@ import { Route as MessagesRouteImport } from './routes/messages'
 import { Route as MunicipalitiesRouteImport } from './routes/municipalities'
 import { Route as MyPermitsRouteImport } from './routes/my-permits'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
+import { Route as PitchDeckRouteImport } from './routes/pitch-deck'
 import { Route as PortalRouteImport } from './routes/portal'
 import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as ProcessRouteImport } from './routes/process'
@@ -232,6 +233,11 @@ const MyPermitsRoute = MyPermitsRouteImport.update({
 const OnboardingRoute = OnboardingRouteImport.update({
   id: '/onboarding',
   path: '/onboarding',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PitchDeckRoute = PitchDeckRouteImport.update({
+  id: '/pitch-deck',
+  path: '/pitch-deck',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PortalRoute = PortalRouteImport.update({
@@ -791,6 +797,7 @@ export interface FileRoutesByFullPath {
   '/municipalities': typeof MunicipalitiesRoute
   '/my-permits': typeof MyPermitsRoute
   '/onboarding': typeof OnboardingRoute
+  '/pitch-deck': typeof PitchDeckRoute
   '/portal': typeof PortalRouteWithChildren
   '/pricing': typeof PricingRoute
   '/process': typeof ProcessRoute
@@ -916,6 +923,7 @@ export interface FileRoutesByTo {
   '/municipalities': typeof MunicipalitiesRoute
   '/my-permits': typeof MyPermitsRoute
   '/onboarding': typeof OnboardingRoute
+  '/pitch-deck': typeof PitchDeckRoute
   '/pricing': typeof PricingRoute
   '/process': typeof ProcessRoute
   '/product': typeof ProductRoute
@@ -1040,6 +1048,7 @@ export interface FileRoutesById {
   '/municipalities': typeof MunicipalitiesRoute
   '/my-permits': typeof MyPermitsRoute
   '/onboarding': typeof OnboardingRoute
+  '/pitch-deck': typeof PitchDeckRoute
   '/portal': typeof PortalRouteWithChildren
   '/pricing': typeof PricingRoute
   '/process': typeof ProcessRoute
@@ -1168,6 +1177,7 @@ export interface FileRouteTypes {
     | '/municipalities'
     | '/my-permits'
     | '/onboarding'
+    | '/pitch-deck'
     | '/portal'
     | '/pricing'
     | '/process'
@@ -1293,6 +1303,7 @@ export interface FileRouteTypes {
     | '/municipalities'
     | '/my-permits'
     | '/onboarding'
+    | '/pitch-deck'
     | '/pricing'
     | '/process'
     | '/product'
@@ -1416,6 +1427,7 @@ export interface FileRouteTypes {
     | '/municipalities'
     | '/my-permits'
     | '/onboarding'
+    | '/pitch-deck'
     | '/portal'
     | '/pricing'
     | '/process'
@@ -1543,6 +1555,7 @@ export interface RootRouteChildren {
   MunicipalitiesRoute: typeof MunicipalitiesRoute
   MyPermitsRoute: typeof MyPermitsRoute
   OnboardingRoute: typeof OnboardingRoute
+  PitchDeckRoute: typeof PitchDeckRoute
   PortalRoute: typeof PortalRouteWithChildren
   PricingRoute: typeof PricingRoute
   ProcessRoute: typeof ProcessRoute
@@ -1739,6 +1752,13 @@ declare module '@tanstack/react-router' {
       path: '/onboarding'
       fullPath: '/onboarding'
       preLoaderRoute: typeof OnboardingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pitch-deck': {
+      id: '/pitch-deck'
+      path: '/pitch-deck'
+      fullPath: '/pitch-deck'
+      preLoaderRoute: typeof PitchDeckRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/portal': {
@@ -2638,6 +2658,7 @@ const rootRouteChildren: RootRouteChildren = {
   MunicipalitiesRoute: MunicipalitiesRoute,
   MyPermitsRoute: MyPermitsRoute,
   OnboardingRoute: OnboardingRoute,
+  PitchDeckRoute: PitchDeckRoute,
   PortalRoute: PortalRouteWithChildren,
   PricingRoute: PricingRoute,
   ProcessRoute: ProcessRoute,
