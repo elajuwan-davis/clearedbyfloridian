@@ -352,7 +352,6 @@ function SceneOrbit() {
           marginTop: -24,
           borderRadius: "50%",
           border: `1px dashed rgba(43,22,32,0.10)`,
-          animation: reduced ? undefined : `clSpinZ ${ORBIT_SECONDS * 1.6}s linear infinite`,
         }}
       />
 
@@ -361,7 +360,7 @@ function SceneOrbit() {
         className="pointer-events-none absolute left-1/2 top-1/2 z-20 -translate-x-1/2 -translate-y-1/2"
         style={{ perspective: 900, marginTop: -24 }}
       >
-        <div style={{ animation: reduced ? undefined : "clFloat 6s ease-in-out infinite" }}>
+        <div>
           <img
             src={cLogo.url}
             alt="Cleard"
@@ -374,14 +373,13 @@ function SceneOrbit() {
         </div>
       </div>
 
-      {/* desktop: true orbit */}
+      {/* desktop: static ring of cards */}
       <div
         className="absolute left-1/2 top-1/2 hidden -translate-x-1/2 -translate-y-1/2 md:block"
         style={{
           width: 0,
           height: 0,
           marginTop: -24,
-          animation: reduced ? undefined : `clSpinZ ${ORBIT_SECONDS}s linear infinite`,
         }}
       >
         {ORBIT.map((card, i) => {
@@ -393,11 +391,8 @@ function SceneOrbit() {
               className="absolute"
               style={{ transform: `rotate(${angle}deg) translate(182px) rotate(${-angle}deg)` }}
             >
-              <div
-                style={{
-                  animation: reduced ? undefined : `clSpinZRev ${ORBIT_SECONDS}s linear infinite`,
-                }}
-              >
+              <div>
+
                 <div
                   className="-translate-x-1/2 -translate-y-1/2 px-3 py-2.5"
                   style={{
