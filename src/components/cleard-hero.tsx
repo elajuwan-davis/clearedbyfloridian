@@ -242,7 +242,7 @@ export function ClearedHero() {
   const assembled = beat !== "assemble";
   const swept = beat === "sweep" || beat === "dock";
   /* content is revealed right-to-left in the wake of the mark */
-  const contentInset = swept || beat === "done" ? "inset(0 0 0 0)" : "inset(0 0 0 100%)";
+  const contentInset = "inset(0 0 0 0)";
   const clutterInset = swept || beat === "done" ? "inset(0 100% 0 0)" : "inset(0 0 0 0)";
 
   const stageTf =
