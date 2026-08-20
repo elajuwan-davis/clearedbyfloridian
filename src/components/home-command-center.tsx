@@ -17,7 +17,6 @@ import {
 
 const OAT = "#FAF3E6";
 const OFF = "#F3EAD9";
-const OFF2 = "#EDE0C9";
 const INK = "#2F4F4F";
 const GRAY = "#7A5C68";
 const LIGHT = "#8B9A97";
