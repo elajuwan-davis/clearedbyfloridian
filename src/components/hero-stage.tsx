@@ -358,23 +358,8 @@ export function HeroStage() {
         @keyframes clSceneIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
       `}</style>
 
-      {/* header */}
-      <h2
-        className="text-center"
-        style={{
-          fontFamily: SERIF,
-          fontWeight: 500,
-          fontSize: "clamp(1.9rem, 4vw, 3rem)",
-          lineHeight: 1.02,
-          letterSpacing: "-0.03em",
-          color: PLUM,
-        }}
-      >
-        Run projects, not paperwork.
-      </h2>
-      <p className="mx-auto mt-3 max-w-[52ch] text-center text-[15px] leading-[1.65]" style={{ color: GREEN }}>
-        Permits, inspections, licenses, and lien rights — cleared automatically.
-      </p>
+
+
 
       {/* the frame */}
       <div
