@@ -15,10 +15,9 @@ const SERIF = '"Fraunces", "Iowan Old Style", Georgia, serif';
 
 const NAV = [
   { to: "/product", label: "Product" },
-  { to: "/join", label: "For Contractors" },
-  { to: "/pricing", label: "Pricing" },
-  { to: "/compare", label: "Compare" },
-  { to: "/about", label: "About" },
+  { to: "/pricing", label: "Victoria" },
+  { to: "/compare", label: "How it works" },
+  { to: "/join", label: "Contractors" },
 ] as const;
 
 /* ------------------------- HERO MOMENT SEQUENCE -------------------------- */
