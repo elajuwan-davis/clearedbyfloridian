@@ -1307,26 +1307,31 @@ export function HeroStage() {
         >
           {SCENES[scene].label}
         </div>
-      </div>
 
-      {/* scene selectors */}
-      <div className="mt-4 flex items-center justify-center gap-2.5">
-        {SCENES.map((s, i) => (
+        {/* scene arrows */}
+        {(
+          [
+            ["Previous scene", -1, "‹", "left-3"],
+            ["Next scene", 1, "›", "right-3"],
+          ] as const
+        ).map(([label, dir, glyph, pos]) => (
           <button
-            key={s.label}
+            key={label}
             type="button"
-            aria-label={s.label}
-            onClick={() => setScene(i)}
-            className="h-1.5 rounded-full transition-all duration-500"
+            aria-label={label}
+            onClick={() => setScene((v) => (v + dir + SCENES.length) % SCENES.length)}
+            className={`cl-glass absolute ${pos} top-1/2 z-20 inline-flex h-11 w-11 -translate-y-1/2 items-center justify-center text-[22px] leading-none transition-all duration-200 hover:scale-105`}
             style={{
-              width: i === scene ? 26 : 6,
-              background: i === scene ? BRONZE : PLUM,
-              opacity: i === scene ? 1 : 0.22,
-              border: "none",
-              padding: 0,
+              background: "rgba(250,243,230,0.55)",
+              border: "1px solid rgba(43,22,32,0.14)",
+              backdropFilter: "blur(12px) saturate(150%)",
+              color: PLUM,
+              borderRadius: 999,
               cursor: "pointer",
             }}
-          />
+          >
+            {glyph}
+          </button>
         ))}
       </div>
 

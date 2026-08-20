@@ -219,10 +219,10 @@ function ProductPage() {
               style={{ background: CARD_BG, borderLeft: `3px solid ${TEAL}`, borderRadius: 0 }}
             >
               <div className="flex items-center gap-3">
-                <Building2 size={22} strokeWidth={1.5} style={{ color: TEAL }} />
+                <Building2 size={22} strokeWidth={1.5} style={{ color: CARD_TITLE }} />
                 <span
                   className="text-[10px] font-bold uppercase tracking-[0.22em]"
-                  style={{ color: TEAL }}
+                  style={{ color: CARD_TITLE, opacity: 0.7 }}
                 >
                   Government track
                 </span>
@@ -233,10 +233,10 @@ function ProductPage() {
               >
                 CleardGov
               </div>
-              <div className="mt-2 text-[17px] font-semibold" style={{ color: TEAL }}>
+              <div className="mt-2 text-[17px] font-semibold" style={{ color: CARD_TITLE, opacity: 0.88 }}>
                 The building department, outsourced.
               </div>
-              <p className="mt-6 max-w-3xl text-[15.5px] leading-relaxed" style={{ color: CARD_MUTED }}>
+              <p className="mt-6 max-w-3xl text-[15.5px] leading-relaxed" style={{ color: CARD_TITLE, opacity: 0.78 }}>
                 CleardGov gives a municipality a full building department without the hiring cycle:
                 contract plan review across every discipline, field inspections for every trade,
                 backlog reduction programs, and staff augmentation when your own reviewers are short.
@@ -259,7 +259,7 @@ function ProductPage() {
               <Link
                 to="/contact"
                 className="mt-10 inline-flex items-center gap-2 px-6 py-3 text-[14px] no-underline"
-                style={{ background: TEAL, color: "#FAF3E6", fontWeight: 700, borderRadius: 0 }}
+                style={{ background: CARD_TITLE, color: CARD_BG, fontWeight: 700, borderRadius: 0 }}
               >
                 Talk to our team <ArrowRight className="h-4 w-4" strokeWidth={2} />
               </Link>
