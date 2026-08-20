@@ -743,7 +743,7 @@ function BottomCTA() {
             Get started <ArrowRight className="h-4 w-4" />
           </Link>
           <Link
-            to="/product"
+            to="/for-contractors"
             className="cl-glass inline-flex items-center gap-2 px-6 py-3 text-[14px] no-underline transition-transform duration-200 hover:scale-[1.03]"
             style={{
               background: "rgba(255,255,255,0.08)",
@@ -768,12 +768,12 @@ const FOOTER_COLS: Array<{ head: string; links: Array<{ label: string; to?: stri
   {
     head: "Product",
     links: [
-      { label: "Platform overview", to: "/product" },
-      { label: "Permitting administration", to: "/product" },
-      { label: "Plan review & inspections", to: "/product" },
-      { label: "License management", to: "/product" },
-      { label: "Insurance compliance", to: "/product" },
-      { label: "Lien rights", to: "/product" },
+      { label: "Platform overview", to: "/for-contractors" },
+      { label: "Permitting administration", to: "/for-contractors" },
+      { label: "Plan review & inspections", to: "/for-contractors" },
+      { label: "License management", to: "/for-contractors" },
+      { label: "Insurance compliance", to: "/for-contractors" },
+      { label: "Lien rights", to: "/for-contractors" },
       { label: "Victoria", to: "/", hash: "victoria" },
     ],
   },

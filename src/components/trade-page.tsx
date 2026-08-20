@@ -108,7 +108,7 @@ export function TradePage({ trade }: { trade: Trade }) {
                   Get early access
                 </Link>
                 <Link
-                  to="/product"
+                  to="/for-contractors"
                   className="inline-flex items-center px-5 py-3 text-[14px] no-underline"
                   style={{
                     background: PAPER,
