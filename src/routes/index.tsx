@@ -28,6 +28,13 @@ import {
   TRUST_LOGOS,
   VictoriaChatMock,
 } from "@/components/marketing-mockups";
+import {
+  AskVictoriaLauncher,
+  FeaturedTestimonial,
+  ReplaceThePermitOffice,
+  VictoriaSpotlight,
+  WatchItRun,
+} from "@/components/home-command-center";
 
 export const Route = createFileRoute("/")({
   head: () => ({
