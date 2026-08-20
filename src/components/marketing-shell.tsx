@@ -1,14 +1,19 @@
 import { useState, type ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
-import { Menu, X, ArrowRight } from "lucide-react";
+import { Menu, X, ArrowRight, ChevronDown } from "lucide-react";
 import mark2d from "@/assets/cleard-mark-2d.png.asset.json";
-/** Flat nav links — no dropdowns anywhere on the marketing site. */
+/** Flat nav links — the only dropdown is Trades. */
 const NAV_LINKS: Array<{ to: string; label: string }> = [
   { to: "/product", label: "Product" },
   { to: "/join", label: "For Contractors" },
   { to: "/pricing", label: "Pricing" },
   { to: "/compare", label: "Compare" },
   { to: "/about", label: "About" },
+];
+
+/** Trade-specific landing pages. */
+const TRADE_LINKS: Array<{ to: string; label: string }> = [
+  { to: "/trades/general-contractors", label: "General Contractors" },
 ];
 
 const NEAR_BLACK = "#FAF3E6";
@@ -18,6 +23,7 @@ const TEAL = "#673147";
 const OAT = "#FAF3E6";
 const BORDER = "#E0D3BC";
 const SERIF = '"Fraunces", "Iowan Old Style", Georgia, serif';
+
 
 /** The single marketing nav — identical on every public page. */
 export function MarketingNav() {
