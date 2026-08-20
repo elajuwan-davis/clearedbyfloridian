@@ -2,6 +2,7 @@ import { useState, type ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
 import { Menu, X, ArrowRight, ChevronDown } from "lucide-react";
 import mark2d from "@/assets/cleard-mark-2d.png.asset.json";
+import { TRADES } from "@/lib/trades";
 /** Flat nav links — the only dropdown is Trades. */
 const NAV_LINKS: Array<{ to: string; label: string }> = [
   { to: "/product", label: "Product" },
@@ -12,9 +13,11 @@ const NAV_LINKS: Array<{ to: string; label: string }> = [
 ];
 
 /** Trade-specific landing pages. */
-const TRADE_LINKS: Array<{ to: string; label: string }> = [
-  { to: "/trades/general-contractors", label: "General Contractors" },
-];
+const TRADE_LINKS = TRADES.map((t) => ({
+  to: "/trades/$slug" as const,
+  params: { slug: t.slug },
+  label: t.navLabel,
+}));
 
 const NEAR_BLACK = "#FAF3E6";
 const BODY_GRAY = "#7A5C68";
@@ -94,8 +97,9 @@ export function MarketingNav() {
                   <div style={{ background: NEAR_BLACK, border: `1px solid ${BORDER}` }}>
                     {TRADE_LINKS.map((t) => (
                       <Link
-                        key={t.to}
+                        key={t.label}
                         to={t.to}
+                        params={t.params}
                         onClick={() => setTradesOpen(false)}
                         className="block px-4 py-3 text-[14px] no-underline transition-opacity hover:opacity-70"
                         style={{ color: INK }}
@@ -141,11 +145,7 @@ export function MarketingNav() {
       {open && (
         <div className="md:hidden" style={{ background: NEAR_BLACK, borderTop: `1px solid ${BORDER}` }}>
           <div className="space-y-4 px-6 py-6">
-            {[
-              ...NAV_LINKS,
-              ...TRADE_LINKS,
-              { to: "/login", label: "Sign in" },
-            ].map((l) => (
+            {[...NAV_LINKS, { to: "/login", label: "Sign in" }].map((l) => (
               <Link
                 key={l.label}
                 to={l.to}

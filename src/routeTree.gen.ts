@@ -94,6 +94,7 @@ import { Route as PortalSubmissionsRouteImport } from './routes/portal.submissio
 import { Route as PortalUtilityLocatesRouteImport } from './routes/portal.utility-locates'
 import { Route as SubIntakeTokenRouteImport } from './routes/sub-intake.$token'
 import { Route as SubPortalTokenRouteImport } from './routes/sub-portal_.$token'
+import { Route as TradesSlugRouteImport } from './routes/trades.$slug'
 import { Route as TradesGeneralContractorsRouteImport } from './routes/trades.general-contractors'
 import { Route as VersusIndexRouteImport } from './routes/versus.index'
 import { Route as VersusSlugRouteImport } from './routes/versus.$slug'
@@ -562,6 +563,11 @@ const SubPortalTokenRoute = SubPortalTokenRouteImport.update({
   path: '/sub-portal/$token',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TradesSlugRoute = TradesSlugRouteImport.update({
+  id: '/trades/$slug',
+  path: '/trades/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TradesGeneralContractorsRoute =
   TradesGeneralContractorsRouteImport.update({
     id: '/trades/general-contractors',
@@ -852,6 +858,7 @@ export interface FileRoutesByFullPath {
   '/portal/utility-locates': typeof PortalUtilityLocatesRoute
   '/sub-intake/$token': typeof SubIntakeTokenRoute
   '/sub-portal/$token': typeof SubPortalTokenRoute
+  '/trades/$slug': typeof TradesSlugRoute
   '/trades/general-contractors': typeof TradesGeneralContractorsRoute
   '/versus/$slug': typeof VersusSlugRoute
   '/admin/': typeof AdminIndexRoute
@@ -974,6 +981,7 @@ export interface FileRoutesByTo {
   '/portal/utility-locates': typeof PortalUtilityLocatesRoute
   '/sub-intake/$token': typeof SubIntakeTokenRoute
   '/sub-portal/$token': typeof SubPortalTokenRoute
+  '/trades/$slug': typeof TradesSlugRoute
   '/trades/general-contractors': typeof TradesGeneralContractorsRoute
   '/versus/$slug': typeof VersusSlugRoute
   '/admin': typeof AdminIndexRoute
@@ -1101,6 +1109,7 @@ export interface FileRoutesById {
   '/portal/utility-locates': typeof PortalUtilityLocatesRoute
   '/sub-intake/$token': typeof SubIntakeTokenRoute
   '/sub-portal_/$token': typeof SubPortalTokenRoute
+  '/trades/$slug': typeof TradesSlugRoute
   '/trades/general-contractors': typeof TradesGeneralContractorsRoute
   '/versus/$slug': typeof VersusSlugRoute
   '/admin/': typeof AdminIndexRoute
@@ -1229,6 +1238,7 @@ export interface FileRouteTypes {
     | '/portal/utility-locates'
     | '/sub-intake/$token'
     | '/sub-portal/$token'
+    | '/trades/$slug'
     | '/trades/general-contractors'
     | '/versus/$slug'
     | '/admin/'
@@ -1351,6 +1361,7 @@ export interface FileRouteTypes {
     | '/portal/utility-locates'
     | '/sub-intake/$token'
     | '/sub-portal/$token'
+    | '/trades/$slug'
     | '/trades/general-contractors'
     | '/versus/$slug'
     | '/admin'
@@ -1477,6 +1488,7 @@ export interface FileRouteTypes {
     | '/portal/utility-locates'
     | '/sub-intake/$token'
     | '/sub-portal_/$token'
+    | '/trades/$slug'
     | '/trades/general-contractors'
     | '/versus/$slug'
     | '/admin/'
@@ -1577,6 +1589,7 @@ export interface RootRouteChildren {
   PermitCardIdRoute: typeof PermitCardIdRoute
   SubIntakeTokenRoute: typeof SubIntakeTokenRoute
   SubPortalTokenRoute: typeof SubPortalTokenRoute
+  TradesSlugRoute: typeof TradesSlugRoute
   TradesGeneralContractorsRoute: typeof TradesGeneralContractorsRoute
   VersusSlugRoute: typeof VersusSlugRoute
   AdminIndexRoute: typeof AdminIndexRoute
@@ -2197,6 +2210,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SubPortalTokenRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/trades/$slug': {
+      id: '/trades/$slug'
+      path: '/trades/$slug'
+      fullPath: '/trades/$slug'
+      preLoaderRoute: typeof TradesSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/trades/general-contractors': {
       id: '/trades/general-contractors'
       path: '/trades/general-contractors'
@@ -2672,6 +2692,7 @@ const rootRouteChildren: RootRouteChildren = {
   PermitCardIdRoute: PermitCardIdRoute,
   SubIntakeTokenRoute: SubIntakeTokenRoute,
   SubPortalTokenRoute: SubPortalTokenRoute,
+  TradesSlugRoute: TradesSlugRoute,
   TradesGeneralContractorsRoute: TradesGeneralContractorsRoute,
   VersusSlugRoute: VersusSlugRoute,
   AdminIndexRoute: AdminIndexRoute,
