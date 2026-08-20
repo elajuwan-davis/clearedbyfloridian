@@ -237,7 +237,8 @@ export function ClearedHero() {
   const navSlot = useRef<HTMLDivElement | null>(null);
   const { beat, dockTf, stageMark, skip } = useHeroSequence(navSlot);
 
-  const running = beat !== "done";
+  /* The hero moment now lives in HeroStage (mark + capability boxes + app). */
+  const running = false;
   const assembled = beat !== "assemble";
   const swept = beat === "sweep" || beat === "dock";
   /* content is revealed right-to-left in the wake of the mark */

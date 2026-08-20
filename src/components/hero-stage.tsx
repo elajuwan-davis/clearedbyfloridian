@@ -114,7 +114,7 @@ function statusTone(s: string) {
 function AppWindow({ tab }: { tab: number }) {
   return (
     <div
-      className="absolute left-1/2 top-1/2 w-[min(100%,720px)] -translate-x-1/2 -translate-y-1/2"
+      className="w-[min(100%,720px)]"
       style={{
         background: "#241017",
         border: `1px solid rgba(250,243,230,0.14)`,
@@ -256,8 +256,8 @@ export function HeroStage() {
           to { opacity: 1; transform: none; scale: 1; filter: blur(0); }
         }
         @keyframes clAppIn {
-          from { opacity: 0; transform: translate(-50%, -46%) scale(0.94); }
-          to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+          from { opacity: 0; transform: translateY(14px) scale(0.94); }
+          to { opacity: 1; transform: none; }
         }
         @keyframes clTabIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
       `}</style>
@@ -275,7 +275,13 @@ export function HeroStage() {
       />
 
       <div className="relative h-[420px] sm:h-[460px] lg:h-[520px]">
-        {reduced || act === "boxes" ? <CapabilityStage live={!reduced} /> : <AppWindow tab={tab} />}
+        {reduced || act === "boxes" ? (
+          <CapabilityStage live={!reduced} />
+        ) : (
+          <div className="absolute inset-0 flex items-center justify-center">
+            <AppWindow tab={tab} />
+          </div>
+        )}
       </div>
     </div>
   );
