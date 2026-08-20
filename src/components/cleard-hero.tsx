@@ -274,15 +274,15 @@ export function ClearedHero() {
           backgroundSize: "cover",
           backgroundPosition: "center bottom",
           backgroundRepeat: "no-repeat",
-          opacity: 0.3,
-          filter: "saturate(0.7)",
+          opacity: 0.72,
+          filter: "saturate(0.9)",
         }}
       />
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0"
         style={{
-          background: `linear-gradient(to bottom, ${OAT} 0%, rgba(250,243,230,0.82) 38%, rgba(250,243,230,0.62) 70%, rgba(250,243,230,0.78) 100%)`,
+          background: `linear-gradient(to bottom, rgba(250,243,230,0.86) 0%, rgba(250,243,230,0.62) 38%, rgba(250,243,230,0.28) 72%, rgba(250,243,230,0.42) 100%)`,
         }}
       />
 
