@@ -28,6 +28,7 @@ const SERIF = '"Fraunces", "Iowan Old Style", Georgia, serif';
 /** The single marketing nav — identical on every public page. */
 export function MarketingNav() {
   const [open, setOpen] = useState(false);
+  const [tradesOpen, setTradesOpen] = useState(false);
   return (
     <header
       className="sticky top-0 z-50"
@@ -142,6 +143,7 @@ export function MarketingNav() {
           <div className="space-y-4 px-6 py-6">
             {[
               ...NAV_LINKS,
+              ...TRADE_LINKS,
               { to: "/login", label: "Sign in" },
             ].map((l) => (
               <Link
