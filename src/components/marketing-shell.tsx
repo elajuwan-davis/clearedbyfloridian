@@ -94,7 +94,15 @@ export function MarketingNav() {
                   className="absolute left-0 top-full min-w-[220px] pt-2"
                   style={{ zIndex: 60 }}
                 >
-                  <div style={{ background: NEAR_BLACK, border: `1px solid ${BORDER}` }}>
+                  <div
+                    className="grid grid-cols-2 gap-x-2"
+                    style={{
+                      background: NEAR_BLACK,
+                      border: `1px solid ${BORDER}`,
+                      minWidth: 460,
+                    }}
+                  >
+
                     {TRADE_LINKS.map((t) => (
                       <Link
                         key={t.label}
