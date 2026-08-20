@@ -388,6 +388,7 @@ function PricingPage() {
             </Link>
           </p>
         </section>
+        </div>
       </div>
     </MarketingShell>
   );
