@@ -1235,8 +1235,8 @@ function ScenePortal() {
 
 const SCENES = [
   { render: () => <SceneOrbit />, ms: 16000, label: "Everything Cleard runs" },
-  { render: () => <SceneDashboard />, ms: 5200, label: "Your dashboard" },
-  { render: () => <ScenePortal />, ms: 5600, label: "Inside the portal" },
+  { render: () => <SceneDashboard />, ms: 8000, label: "Your dashboard" },
+  { render: () => <ScenePortal />, ms: 9000, label: "Permits filed" },
 ];
 
 export function HeroStage() {
@@ -1267,6 +1267,8 @@ export function HeroStage() {
         @keyframes clSceneIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
         @keyframes clRise { from { opacity: 0; transform: translateY(14px) scale(0.98); } to { opacity: 1; transform: none; } }
         @keyframes clGrow { from { width: 0; } }
+        @keyframes clDraw { from { stroke-dashoffset: 900; } to { stroke-dashoffset: 0; } }
+        @keyframes clMarquee { from { transform: translateY(0); } to { transform: translateY(-50%); } }
       `}</style>
 
       <div
