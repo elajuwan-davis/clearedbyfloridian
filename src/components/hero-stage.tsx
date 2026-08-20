@@ -710,7 +710,7 @@ function Laptop({ activeTab, children }: { activeTab: number; children: React.Re
   return (
     <div className="flex h-full w-full items-center justify-center p-5">
       <div
-        className="flex h-full max-h-[400px] w-full max-w-[720px] flex-col"
+        className="flex h-full max-h-[400px] w-full max-w-[720px] flex-col overflow-hidden"
         style={{
           background: "#241017",
           border: "1px solid rgba(250,243,230,0.14)",
@@ -743,7 +743,7 @@ function Laptop({ activeTab, children }: { activeTab: number; children: React.Re
             ))}
           </div>
         </div>
-        <div className="flex-1 p-4">{children}</div>
+        <div className="min-h-0 flex-1 overflow-hidden p-4">{children}</div>
       </div>
     </div>
   );
