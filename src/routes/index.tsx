@@ -94,15 +94,11 @@ function HomePage() {
         <div id="victoria">
           <VictoriaSpotlight />
         </div>
-        <Services />
         <ReplaceThePermitOffice />
         <MunicipalityTrack />
-        <PortalShowcase />
         <StatsStrip />
-        <ThreeSteps />
         <TrustBar />
         <MobileApp />
-        <HowItWorks />
         <BottomCTA />
         <Footer />
         <AskVictoriaLauncher />
@@ -247,97 +243,6 @@ function Tag({ children }: { children: string }) {
     </span>
   );
 }
-
-function BrowserChrome({ path }: { path: string }) {
-  return (
-    <div className="flex items-center gap-3 px-3 py-2.5" style={{ background: OFF, borderBottom: `1px solid ${BORDER}` }}>
-      <div className="flex items-center gap-1.5">
-        <span className="cl-dot h-2.5 w-2.5" style={{ background: "#FF5F57" }} />
-        <span className="cl-dot h-2.5 w-2.5" style={{ background: "#FEBC2E" }} />
-        <span className="cl-dot h-2.5 w-2.5" style={{ background: "#28C840" }} />
-      </div>
-      <div className="flex-1 px-3 py-1 text-[11px]" style={{ background: WHITE, border: `1px solid ${BORDER}`, color: LIGHT }}>
-        {path}
-      </div>
-    </div>
-  );
-}
-
-function AppSidebar({ active }: { active: string }) {
-  return (
-    <div className="hidden sm:block py-3" style={{ background: OFF, borderRight: `1px solid ${BORDER}` }}>
-      <div className="px-4 pb-3 text-[16px] font-bold" style={{ color: INK, letterSpacing: "-0.03em" }}>
-        Cleard
-      </div>
-      {APP_NAV.map((n) => (
-        <div
-          key={n}
-          className="px-4 py-2 text-[12px]"
-          style={n === active ? { color: INK, fontWeight: 600, background: OFF2 } : { color: GRAY }}
-        >
-          {n}
-        </div>
-      ))}
-    </div>
-  );
-}
-
-function PermitsTable() {
-  return (
-    <div className="min-w-0">
-      <div className="flex items-center justify-between px-4 py-3" style={{ borderBottom: `1px solid ${BORDER}` }}>
-        <span className="text-[13px] font-semibold" style={{ color: INK }}>
-          Active permits
-        </span>
-        <span className="px-2.5 py-1 text-[11px] font-bold" style={{ background: TEAL, color: WHITE }}>
-          + New permit
-        </span>
-      </div>
-      <div
-        className="hidden sm:grid grid-cols-[104px_1fr_96px_100px] gap-2 px-4 py-2 text-[10px] font-bold uppercase tracking-[0.06em]"
-        style={{ color: LIGHT, borderBottom: `1px solid ${BORDER}` }}
-      >
-        <span>ID</span>
-        <span>Address</span>
-        <span>Jurisdiction</span>
-        <span>Status</span>
-      </div>
-      {ROWS.map((r) => (
-        <div
-          key={r.id}
-          className="grid grid-cols-[1fr_auto] sm:grid-cols-[104px_1fr_96px_100px] items-center gap-2 px-4 py-2.5"
-          style={{ borderBottom: `1px solid ${OFF2}` }}
-        >
-          <span className="text-[11px] font-semibold tabular-nums" style={{ color: GREEN }}>
-            {r.id}
-          </span>
-          <span className="hidden sm:block truncate text-[12px]" style={{ color: INK }}>
-            {r.addr}
-          </span>
-          <span className="hidden sm:block text-[11px]" style={{ color: GRAY }}>
-            {r.juris}
-          </span>
-          <span className="justify-self-end sm:justify-self-start">
-            <Tag>{r.status}</Tag>
-          </span>
-        </div>
-      ))}
-    </div>
-  );
-}
-
-/* ------------------------------ 360 SECTION ------------------------------ */
-
-const NODES = [
-  "Permit Submission",
-  "Private Provider Plan Review",
-  "Correction Management",
-  "Inspection Scheduling",
-  "Subcontractor Coordination",
-  "License Verification",
-  "Insurance & COI Tracking",
-  "Document Management",
-];
 
 function Circle360() {
   return (
@@ -517,59 +422,6 @@ const SERVICES = [
 ];
 
 
-function Services() {
-  return (
-    <section style={{ background: WHITE }}>
-      <div className="mx-auto max-w-7xl px-5 lg:px-8 py-24 md:py-28">
-        <div className="mb-6 text-[10.5px] font-bold uppercase tracking-[0.22em]" style={{ color: GREEN }}>
-          For contractors
-        </div>
-        <h2
-          className="max-w-3xl"
-          style={{ fontSize: "clamp(2rem, 3.6vw, 2.875rem)", lineHeight: 1.08, letterSpacing: "-0.035em" }}
-        >
-          <span style={{ color: INK, fontWeight: 800 }}>Your team builds. </span>
-          <span style={{ color: GREEN, fontWeight: 600 }}>Cleard handles everything around it.</span>
-        </h2>
-        <p className="mt-5 max-w-2xl text-[16px] leading-relaxed" style={{ color: GRAY }}>
-          Most contractors spread this across 4–6 vendors, two admins, and a lot of phone calls. Cleard
-          consolidates the entire compliance and administrative operation — under one roof, in one portal.
-        </p>
-
-        <div className="mt-14 grid gap-4 md:grid-cols-2 lg:grid-cols-6">
-          {SERVICES.map((s, i) => (
-            <div
-              key={s.title}
-              className={`relative p-6 lg:p-7 ${i < 2 ? "lg:col-span-3" : "lg:col-span-2"}`}
-              style={{ background: OFF, border: `1px solid ${BORDER}` }}
-            >
-              <ArrowUpRight className="absolute right-5 top-5 h-4 w-4" style={{ color: LIGHT }} />
-              <span
-                className="inline-flex h-11 w-11 items-center justify-center"
-                style={{ background: M.bg0 }}
-              >
-                <s.icon className="h-[19px] w-[19px]" style={{ color: GREEN_LT }} strokeWidth={1.5} />
-              </span>
-              <h3 className={`mt-5 font-bold ${i < 2 ? "text-[19px]" : "text-[17px]"}`} style={{ color: INK, letterSpacing: "-0.02em" }}>
-                {s.title}
-              </h3>
-              <p className="mt-3 text-[14px] leading-relaxed" style={{ color: GRAY }}>
-                {s.body}
-              </p>
-              <span
-                className="mt-5 inline-block px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.06em]"
-                style={{ background: "rgba(103,49,71,0.12)", color: "#52243A" }}
-              >
-                {s.tag}
-              </span>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
 /* --------------------------- MUNICIPALITY TRACK -------------------------- */
 
 function MunicipalityTrack() {
@@ -677,84 +529,6 @@ function VictoriaLayer() {
   );
 }
 
-/* ------------------------------- 3 STEPS --------------------------------- */
-
-function ThreeSteps() {
-  const steps = [
-    {
-      n: "01",
-      t: "Submit",
-      b: "Send scope and drawings once. We build the application, run the document checklist, and file it.",
-      visual: (
-        <AppFrame path="app.cleard.io/permits/new" active="Permits">
-          <IntakeFormMock />
-        </AppFrame>
-      ),
-    },
-    {
-      n: "02",
-      t: "Track",
-      b: "Every permit, correction, and inspection moves across one live pipeline — no status calls.",
-      visual: (
-        <AppFrame path="app.cleard.io/permits" active="Permits">
-          <KanbanMock />
-        </AppFrame>
-      ),
-    },
-    {
-      n: "03",
-      t: "Close",
-      b: "Final inspections clear, the CO is issued, and your full closeout package is archived.",
-      visual: (
-        <AppFrame path="app.cleard.io/permits/CLR-2026-0212" active="Documents">
-          <CertificateMock />
-        </AppFrame>
-      ),
-    },
-  ];
-  return (
-    <section style={{ background: M.bg1 }}>
-      <div className="mx-auto max-w-7xl px-5 lg:px-8 py-24 md:py-32">
-        <div className="text-[10.5px] font-bold uppercase tracking-[0.2em]" style={{ color: GREEN_LT }}>
-          How it works
-        </div>
-        <h2
-          className="mt-6 max-w-3xl"
-          style={{ fontSize: "clamp(2rem, 3.8vw, 3rem)", lineHeight: 1.06, letterSpacing: "-0.035em" }}
-        >
-          <span style={{ color: M.text, fontWeight: 800 }}>Submit. Track. Close. </span>
-          <span style={{ color: M.muted, fontWeight: 600 }}>That&apos;s your part.</span>
-        </h2>
-
-        <div className="mt-16 space-y-16 md:space-y-24">
-          {steps.map((s, i) => (
-            <div key={s.t} className="grid gap-10 lg:grid-cols-12 lg:items-center">
-              <div className={`lg:col-span-4 ${i % 2 === 1 ? "lg:order-2" : ""}`}>
-                <div
-                  className="inline-flex h-12 w-12 items-center justify-center text-[15px] font-bold tabular-nums"
-                  style={{ background: TEAL, color: M.bg0 }}
-                >
-                  {s.n}
-                </div>
-                <h3
-                  className="mt-6 font-bold"
-                  style={{ color: M.text, fontSize: "clamp(1.5rem, 2.4vw, 2rem)", letterSpacing: "-0.03em" }}
-                >
-                  {s.t}
-                </h3>
-                <p className="mt-4 text-[15px] leading-relaxed" style={{ color: M.muted }}>
-                  {s.b}
-                </p>
-              </div>
-              <div className={`lg:col-span-8 ${i % 2 === 1 ? "lg:order-1" : ""}`}>{s.visual}</div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
 /* ------------------------------- TRUST BAR ------------------------------- */
 
 function TrustBar() {
@@ -799,103 +573,6 @@ const COMPLIANCE = [
   { id: "SUB-0131", name: "Coastal Roofing LLC", license: "CCC1331902", ins: "Expired", status: "Alert" },
   { id: "SUB-0127", name: "Meridian Mechanical", license: "CAC1819330", ins: "Verified", status: "Clear" },
 ];
-
-const TABS = ["My Permits", "Inspections", "License & Insurance"] as const;
-
-function PortalShowcase() {
-  const [tab, setTab] = useState<(typeof TABS)[number]>("My Permits");
-  return (
-    <section style={{ background: OFF, borderTop: `1px solid ${BORDER}`, borderBottom: `1px solid ${BORDER}` }}>
-      <div className="mx-auto max-w-7xl px-5 lg:px-8 py-24 md:py-28">
-        <h2
-          className="max-w-3xl"
-          style={{ fontSize: "clamp(2rem, 3.6vw, 2.875rem)", lineHeight: 1.08, letterSpacing: "-0.035em" }}
-        >
-          <span style={{ color: INK, fontWeight: 800 }}>One dashboard. </span>
-          <span style={{ color: GREEN, fontWeight: 600 }}>Every moving part.</span>
-        </h2>
-
-        <div className="mt-9 flex flex-wrap gap-0" style={{ border: `1px solid ${BORDER}`, background: WHITE, width: "fit-content" }}>
-          {TABS.map((t) => (
-            <button
-              key={t}
-              type="button"
-              onClick={() => setTab(t)}
-              className="px-5 py-2.5 text-[13px]"
-              style={
-                tab === t
-                  ? { background: INK, color: WHITE, fontWeight: 600 }
-                  : { background: WHITE, color: GRAY }
-              }
-            >
-              {t}
-            </button>
-          ))}
-        </div>
-
-        <div key={tab} className="mt-8" style={{ animation: "clFade 400ms ease-out both" }}>
-          <div style={{ background: WHITE, border: `1px solid ${BORDER}` }}>
-            <BrowserChrome path={`app.cleard.io/${tab.toLowerCase().replace(/[^a-z]+/g, "-")}`} />
-            <div className="grid grid-cols-[1fr] sm:grid-cols-[160px_1fr]">
-              <AppSidebar active={tab === "License & Insurance" ? "Licenses" : tab} />
-              {tab === "My Permits" && <PermitsTable />}
-              {tab === "Inspections" && <MockTable
-                title="Scheduled inspections"
-                cols={["ID", "Project", "Type", "Status"]}
-                rows={INSPECTIONS.map((r) => [r.id, r.addr, `${r.type} · ${r.when}`, r.status])}
-              />}
-              {tab === "License & Insurance" && <MockTable
-                title="Subcontractor compliance"
-                cols={["ID", "Subcontractor", "License / Insurance", "Status"]}
-                rows={COMPLIANCE.map((r) => [r.id, r.name, `${r.license} · COI ${r.ins}`, r.status])}
-              />}
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function MockTable({ title, cols, rows }: { title: string; cols: string[]; rows: string[][] }) {
-  return (
-    <div className="min-w-0">
-      <div className="flex items-center justify-between px-4 py-3" style={{ borderBottom: `1px solid ${BORDER}` }}>
-        <span className="text-[13px] font-semibold" style={{ color: INK }}>
-          {title}
-        </span>
-      </div>
-      <div
-        className="hidden sm:grid grid-cols-[112px_1fr_1fr_104px] gap-2 px-4 py-2 text-[10px] font-bold uppercase tracking-[0.06em]"
-        style={{ color: LIGHT, borderBottom: `1px solid ${BORDER}` }}
-      >
-        {cols.map((c) => (
-          <span key={c}>{c}</span>
-        ))}
-      </div>
-      {rows.map((r) => (
-        <div
-          key={r[0]}
-          className="grid grid-cols-[1fr_auto] sm:grid-cols-[112px_1fr_1fr_104px] items-center gap-2 px-4 py-2.5"
-          style={{ borderBottom: `1px solid ${OFF2}` }}
-        >
-          <span className="text-[11px] font-semibold tabular-nums" style={{ color: GREEN }}>
-            {r[0]}
-          </span>
-          <span className="hidden sm:block truncate text-[12px]" style={{ color: INK }}>
-            {r[1]}
-          </span>
-          <span className="hidden sm:block truncate text-[11px]" style={{ color: GRAY }}>
-            {r[2]}
-          </span>
-          <span className="justify-self-end sm:justify-self-start">
-            <Tag>{r[3]}</Tag>
-          </span>
-        </div>
-      ))}
-    </div>
-  );
-}
 
 /* ------------------------------ MOBILE APP ------------------------------- */
 
@@ -1052,50 +729,6 @@ function MobileApp() {
 }
 
 /* ------------------------------ HOW IT WORKS ----------------------------- */
-
-const STEPS = [
-  { t: "Send the plans", b: "Share drawings and scope. We intake, review, and prep for submission — including sub license and insurance collection." },
-  { t: "We submit", b: "We submit through licensed private providers — bypassing county review queues and compressing your approval window." },
-  { t: "Manage corrections", b: "If the building department flags issues, we handle it — drafting responses, coordinating revised drawings, resubmitting." },
-  { t: "Inspections coordinated", b: "We schedule and confirm every required inspection. Your super gets the date, type, and what to have staged." },
-  { t: "Inspections approved", b: "Each trade passes. We track every result, flag failures, and coordinate resolution before the next phase moves." },
-  { t: "Certificate of Occupancy", b: "Final inspections clear. CO is issued. Full documentation stored in your portal — project closed, cleanly." },
-];
-
-function HowItWorks() {
-  return (
-    <section style={{ background: OFF, borderTop: `1px solid ${BORDER}` }}>
-      <div className="mx-auto max-w-7xl px-5 lg:px-8 py-24 md:py-28">
-        <div className="text-[10.5px] uppercase tracking-[0.18em] font-bold" style={{ color: GREEN }}>
-          How it works
-        </div>
-        <h2
-          className="mt-6 max-w-3xl"
-          style={{ fontSize: "clamp(2rem, 3.6vw, 2.875rem)", lineHeight: 1.08, letterSpacing: "-0.035em" }}
-        >
-          <span style={{ color: INK, fontWeight: 800 }}>Six steps. </span>
-          <span style={{ color: GREEN, fontWeight: 600 }}>Contract to certificate.</span>
-        </h2>
-
-        <div className="mt-14 grid gap-px sm:grid-cols-2 lg:grid-cols-6" style={{ background: BORDER, border: `1px solid ${BORDER}` }}>
-          {STEPS.map((s, i) => (
-            <div key={s.t} className="p-5" style={{ background: WHITE }}>
-              <div className="text-[11px] font-bold tabular-nums" style={{ color: GREEN }}>
-                {String(i + 1).padStart(2, "0")}
-              </div>
-              <div className="mt-3 text-[14.5px] font-bold" style={{ color: INK, letterSpacing: "-0.02em" }}>
-                {s.t}
-              </div>
-              <p className="mt-2.5 text-[12.5px] leading-relaxed" style={{ color: GRAY }}>
-                {s.b}
-              </p>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
 
 /* --------------------------------- CTA ----------------------------------- */
 
