@@ -2,6 +2,7 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react
 import { Link } from "@tanstack/react-router";
 import mark3d from "@/assets/cleard-3d-mark.png.asset.json";
 import mark2d from "@/assets/cleard-mark-2d.png.asset.json";
+import heroBackdrop from "@/assets/hero-construction.jpg.asset.json";
 import { HomeMotionStyles } from "@/components/home-command-center";
 import { HeroStage } from "@/components/hero-stage";
 
@@ -264,20 +265,25 @@ export function ClearedHero() {
 
       <HeroNav logoSlot={navSlot} logoVisible={!running} />
 
-      {/* fine slate line-art: quiet drafting grid, no glow, no gradients */}
+      {/* muted construction-site backdrop, bottom-anchored and washed out so copy stays legible */}
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0"
+        className="pointer-events-none absolute inset-x-0 bottom-0 top-0"
         style={{
-          backgroundImage: `linear-gradient(to right, rgba(43,22,32,0.06) 1px, transparent 1px),
-            linear-gradient(to bottom, rgba(43,22,32,0.06) 1px, transparent 1px)`,
-          backgroundSize: "88px 88px",
+          backgroundImage: `url(${heroBackdrop.url})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center bottom",
+          backgroundRepeat: "no-repeat",
+          opacity: 0.3,
+          filter: "saturate(0.7)",
         }}
       />
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-y-0 left-1/2 hidden w-px lg:block"
-        style={{ background: "rgba(43,22,32,0.10)" }}
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background: `linear-gradient(to bottom, ${OAT} 0%, rgba(250,243,230,0.82) 38%, rgba(250,243,230,0.62) 70%, rgba(250,243,230,0.78) 100%)`,
+        }}
       />
 
       {/* Beat 3 — the paperwork mess that the mark clears away */}
