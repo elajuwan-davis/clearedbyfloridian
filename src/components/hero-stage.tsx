@@ -338,6 +338,7 @@ function SceneOrbit() {
         style={{
           width: 520,
           height: 520,
+          marginTop: -24,
           borderRadius: "50%",
           border: `1px solid rgba(43,22,32,0.08)`,
         }}
@@ -348,6 +349,7 @@ function SceneOrbit() {
         style={{
           width: 340,
           height: 340,
+          marginTop: -24,
           borderRadius: "50%",
           border: `1px dashed rgba(43,22,32,0.10)`,
           animation: reduced ? undefined : `clSpinZ ${ORBIT_SECONDS * 1.6}s linear infinite`,
@@ -357,7 +359,7 @@ function SceneOrbit() {
       {/* centre mark */}
       <div
         className="pointer-events-none absolute left-1/2 top-1/2 z-20 -translate-x-1/2 -translate-y-1/2"
-        style={{ perspective: 900 }}
+        style={{ perspective: 900, marginTop: -24 }}
       >
         <div style={{ animation: reduced ? undefined : "clFloat 6s ease-in-out infinite" }}>
           <img
@@ -378,6 +380,7 @@ function SceneOrbit() {
         style={{
           width: 0,
           height: 0,
+          marginTop: -24,
           animation: reduced ? undefined : `clSpinZ ${ORBIT_SECONDS}s linear infinite`,
         }}
       >
