@@ -2,7 +2,9 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react
 import { Link } from "@tanstack/react-router";
 import mark3d from "@/assets/cleard-3d-mark.png.asset.json";
 import mark2d from "@/assets/cleard-mark-2d.png.asset.json";
-import { HomeMotionStyles, LiveCommandCenter } from "@/components/home-command-center";
+import { HomeMotionStyles } from "@/components/home-command-center";
+import { HeroStage } from "@/components/hero-stage";
+
 
 /* ---------------------- NORDIC LUXURY BRAND TOKENS ---------------------- */
 
