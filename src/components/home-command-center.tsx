@@ -679,16 +679,28 @@ export function FeaturedTestimonial({
       <div className="mt-8 text-[12px] uppercase" style={{ fontFamily: MONO, letterSpacing: "0.16em", color: GRAY }}>
         {t.name} · {t.role}
       </div>
-      <div className="mt-8 flex items-center justify-center gap-2.5">
-        {items.map((x, idx) => (
+      <div className="mt-8 flex items-center justify-center gap-4">
+        {(
+          [
+            ["Previous review", -1, "‹"],
+            ["Next review", 1, "›"],
+          ] as const
+        ).map(([label, dir, glyph]) => (
           <button
-            key={x.name}
+            key={label}
             type="button"
-            aria-label={`Testimonial ${idx + 1}`}
-            onClick={() => setI(idx)}
-            className="h-1.5 w-8"
-            style={{ background: idx === i ? PLUM : OFF2, transition: "background 250ms ease" }}
-          />
+            aria-label={label}
+            onClick={() => setI((v) => (v + dir + items.length) % items.length)}
+            className="cl-glass inline-flex h-10 w-10 items-center justify-center text-[20px] leading-none transition-all duration-200 hover:scale-105"
+            style={{
+              background: "rgba(103,49,71,0.10)",
+              border: "1px solid rgba(103,49,71,0.26)",
+              backdropFilter: "blur(10px) saturate(140%)",
+              color: PLUM,
+            }}
+          >
+            {glyph}
+          </button>
         ))}
       </div>
     </div>
