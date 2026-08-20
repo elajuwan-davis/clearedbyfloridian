@@ -61,6 +61,7 @@ function useHeroSequence(navSlot: React.RefObject<HTMLElement | null>) {
   const skipped = useRef(false);
 
   const skip = useCallback(() => {
+    console.log("SKIP called");
     if (skipped.current) return;
     skipped.current = true;
     setBeat("done");
@@ -89,6 +90,7 @@ function useHeroSequence(navSlot: React.RefObject<HTMLElement | null>) {
 
     const timers = BEAT_TIMING.map(([b, at]) =>
       window.setTimeout(() => {
+        console.log("BEAT", b, skipped.current);
         if (!skipped.current) setBeat(b);
       }, at),
     );
