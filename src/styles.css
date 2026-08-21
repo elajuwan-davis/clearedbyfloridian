@@ -2248,3 +2248,94 @@ html body .cl-public button:not([data-plain])::after { border-radius: 999px !imp
   background-image: var(--gradient-copper);
   opacity: 0.75;
 }
+
+/* =========================================================
+   OATMILK CANVAS + ROUNDED CONTROLS (final layer)
+   The page canvas is Oatmilk on every route. Lavender is an
+   accent only — never a page or section background.
+   ========================================================= */
+html,
+body,
+#root,
+html body .portal-ui,
+html body .marketing-dark,
+html body .cl-home,
+html body .cl-public {
+  background-color: #faf3e6;
+}
+
+/* Section washes step in oat, not in lavender or grey */
+html body .marketing-dark .md-section-alt,
+html body .marketing-dark .md-card:hover {
+  background: #f3ead9 !important;
+}
+.marketing-dark .md-grain {
+  background-image:
+    radial-gradient(circle at 12% 8%, rgba(103, 49, 71, 0.05) 0%, transparent 55%),
+    radial-gradient(circle at 88% 92%, rgba(103, 49, 71, 0.04) 0%, transparent 60%);
+}
+
+/* Lavender stays for small accents: popovers, hovers, chips */
+html body .portal-ui .p-accent-soft,
+html body .p-lavender {
+  background-color: var(--nl-lavender);
+}
+
+/* ── Buttons: hero-style rounded corners, everywhere ───────────────────── */
+html body button:not([data-plain]):not([role="tab"]):not([role="checkbox"]):not([role="radio"]):not([role="switch"]):not([role="menuitem"]):not([role="menuitemcheckbox"]):not([role="menuitemradio"]):not([role="option"]):not([role="columnheader"]),
+html body [type="submit"],
+html body [type="button"]:not([data-plain]),
+html body a.md-btn-primary,
+html body a.md-btn-ghost,
+html body a.md-btn-gold,
+html body a.md-btn-gold-outline,
+html body a.p-btn,
+html body a.p-btn-primary,
+html body a.p-btn-ghost,
+html body a.p-btn-quiet,
+html body .p-btn,
+html body .p-btn-primary,
+html body .p-btn-ghost,
+html body .p-btn-quiet,
+html body .cds-btn,
+html body .cds-btn-primary,
+html body .cds-btn-ghost,
+html body a[class*="inline-flex"][class*="py-3"],
+html body a[class*="inline-flex"][class*="py-2.5"],
+html body a[class*="inline-flex"][class*="py-2"],
+html body a[class*="inline-flex"][class*="h-9"],
+html body a[class*="inline-flex"][class*="h-10"] {
+  border-radius: 999px !important;
+}
+html body button:not([data-plain])::before,
+html body button:not([data-plain])::after,
+html body .p-btn::before,
+html body .p-btn::after {
+  border-radius: 999px !important;
+}
+
+/* Square-ish exceptions that would look wrong as pills */
+html body .p-nav-item,
+html body .p-seg button,
+html body .p-tab,
+html body [role="tablist"] button,
+html body button.p-chip,
+html body table button {
+  border-radius: 3px !important;
+}
+
+/* Legacy blue/indigo/violet/purple tints are accents, not canvases */
+html body [class*="bg-blue-50"],
+html body [class*="bg-blue-100"],
+html body [class*="bg-sky-50"],
+html body [class*="bg-sky-100"],
+html body [class*="bg-indigo-50"],
+html body [class*="bg-indigo-100"],
+html body [class*="bg-violet-50"],
+html body [class*="bg-violet-100"],
+html body [class*="bg-purple-50"],
+html body [class*="bg-purple-100"],
+html body [class*="bg-pink-50"],
+html body [class*="bg-pink-100"] {
+  background-color: color-mix(in oklab, var(--nl-lavender) 40%, var(--nl-oat)) !important;
+}

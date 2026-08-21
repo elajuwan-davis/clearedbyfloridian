@@ -19,6 +19,7 @@ const SLIDES = [s01, s02, s03, s04, s05, s06, s07, s08, s09, s10, s11, s12].map(
 
 const SLATE = "#2F4F4F";
 const OAT = "#FAF3E6";
+const PLUM = "#673147";
 
 export const Route = createFileRoute("/pitch-deck")({
   head: () => ({
@@ -47,7 +48,7 @@ function Gate({ onPass }: { onPass: () => void }) {
   return (
     <div
       className="cl-public flex min-h-screen items-center justify-center px-6"
-      style={{ background: SLATE }}
+      style={{ background: OAT }}
     >
       <form
         onSubmit={(e) => {
@@ -57,14 +58,14 @@ function Gate({ onPass }: { onPass: () => void }) {
         }}
         className="w-full max-w-sm"
       >
-        <div className="flex items-center gap-2" style={{ color: OAT }}>
+        <div className="flex items-center gap-2" style={{ color: SLATE }}>
           <Lock className="h-4 w-4" strokeWidth={1.5} />
           <span className="text-[11px] uppercase tracking-[0.22em]">Private</span>
         </div>
-        <h1 className="mt-4 text-2xl" style={{ color: OAT, fontWeight: 500 }}>
+        <h1 className="mt-4 text-2xl" style={{ color: SLATE, fontWeight: 500 }}>
           Pitch deck
         </h1>
-        <p className="mt-2 text-sm" style={{ color: "rgba(250,243,230,0.7)" }}>
+        <p className="mt-2 text-sm" style={{ color: "rgba(47,79,79,0.72)" }}>
           Enter the passcode to view the deck.
         </p>
         <input
@@ -78,21 +79,21 @@ function Gate({ onPass }: { onPass: () => void }) {
           placeholder="Passcode"
           className="mt-6 w-full px-3 py-2.5 text-sm outline-none"
           style={{
-            border: "1px solid rgba(250,243,230,0.35)",
-            background: OAT,
-            color: "#111110",
-            caretColor: "#111110",
+            border: "1px solid #E0D3BC",
+            background: "#F3EAD9",
+            color: SLATE,
+            caretColor: SLATE,
           }}
         />
         {error && (
-          <div className="mt-2 text-[12.5px]" style={{ color: "#E9A0A0" }}>
+          <div className="mt-2 text-[12.5px]" style={{ color: "#A33A3A" }}>
             Incorrect passcode.
           </div>
         )}
         <button
           type="submit"
           className="mt-4 w-full px-4 py-2.5 text-[13.5px]"
-          style={{ background: OAT, color: SLATE, fontWeight: 600 }}
+          style={{ background: PLUM, color: OAT, fontWeight: 600 }}
         >
           View deck
         </button>
@@ -146,7 +147,7 @@ function Deck() {
     <div
       ref={containerRef}
       className="cl-public relative flex h-screen w-full flex-col items-center justify-center overflow-hidden"
-      style={{ background: SLATE }}
+      style={{ background: OAT }}
     >
       <div
         className="relative w-full"
@@ -194,7 +195,7 @@ function Deck() {
         aria-label="Previous slide"
         onClick={() => go(-1)}
         className="absolute left-3 top-1/2 -translate-y-1/2 p-2 opacity-30 transition-opacity hover:opacity-100"
-        style={{ color: OAT }}
+        style={{ color: SLATE }}
       >
         <ChevronLeft className="h-8 w-8" strokeWidth={1.5} />
       </button>
@@ -203,7 +204,7 @@ function Deck() {
         aria-label="Next slide"
         onClick={() => go(1)}
         className="absolute right-3 top-1/2 -translate-y-1/2 p-2 opacity-30 transition-opacity hover:opacity-100"
-        style={{ color: OAT }}
+        style={{ color: SLATE }}
       >
         <ChevronRight className="h-8 w-8" strokeWidth={1.5} />
       </button>
@@ -211,7 +212,7 @@ function Deck() {
       {/* counter + fullscreen */}
       <div
         className="absolute right-4 top-4 flex items-center gap-4 text-[12px]"
-        style={{ color: "rgba(250,243,230,0.7)" }}
+        style={{ color: "rgba(47,79,79,0.7)" }}
       >
         <span>
           {i + 1} / {SLIDES.length}
@@ -230,7 +231,7 @@ function Deck() {
             aria-label={`Go to slide ${idx + 1}`}
             onClick={() => setI(idx)}
             className="h-1.5 w-6 transition-opacity"
-            style={{ background: OAT, opacity: idx === i ? 1 : 0.28 }}
+            style={{ background: SLATE, opacity: idx === i ? 1 : 0.28 }}
           />
         ))}
       </div>

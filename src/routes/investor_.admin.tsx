@@ -24,12 +24,12 @@ export const Route = createFileRoute("/investor_/admin")({
   component: InvestorAdminPage,
 });
 
-const BG = "#2F4F4F";
-const SURFACE = "#2F4F4F";
-const BORDER = "#3F5C5A";
-const TEAL = "#E6E6FA";
-const OFF = "#F3EAD9";
-const MUTED = "rgba(250, 243, 230, 0.62)";
+const BG = "#FAF3E6";
+const SURFACE = "#F3EAD9";
+const BORDER = "#E0D3BC";
+const TEAL = "#673147";
+const OFF = "#2F4F4F";
+const MUTED = "rgba(47, 79, 79, 0.68)";
 const SANS = "'Fraunces', 'Iowan Old Style', Georgia, serif";
 const MONO = "ui-monospace, Menlo, Monaco, monospace";
 const SESSION_KEY = "investor_admin_ok";
