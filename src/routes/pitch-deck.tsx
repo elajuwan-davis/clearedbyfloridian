@@ -176,15 +176,17 @@ function Deck() {
         {/* click-through halves */}
         <button
           type="button"
+          data-plain
           aria-label="Previous slide"
           onClick={() => go(-1)}
-          className="absolute inset-y-0 left-0 w-1/2 cursor-w-resize"
+          className="absolute inset-y-0 left-0 w-1/2 cursor-w-resize bg-transparent"
         />
         <button
           type="button"
+          data-plain
           aria-label="Next slide"
           onClick={() => go(1)}
-          className="absolute inset-y-0 right-0 w-1/2 cursor-e-resize"
+          className="absolute inset-y-0 right-0 w-1/2 cursor-e-resize bg-transparent"
         />
       </div>
 
