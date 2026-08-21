@@ -3,12 +3,15 @@ import { Link } from "@tanstack/react-router";
 import mark3d from "@/assets/cleard-3d-mark.png.asset.json";
 import mark2d from "@/assets/cleard-mark-2d.png.asset.json";
 import heroBackdrop from "@/assets/hero-construction.jpg";
-import heroVideo from "@/assets/hero-site.mp4.asset.json";
+import heroVideoMp4 from "@/assets/hero-loop.mp4.asset.json";
+import heroVideoWebm from "@/assets/hero-loop.webm.asset.json";
 import { HomeMotionStyles } from "@/components/home-command-center";
 import { HeroStage } from "@/components/hero-stage";
 import { TRADES } from "@/lib/trades";
 
-const HERO_VIDEO_URL = `https://project--0b3e81be-56ac-4636-ba0c-f0ab606037c7.lovable.app${heroVideo.url}`;
+const HERO_ASSET_ORIGIN = "https://project--0b3e81be-56ac-4636-ba0c-f0ab606037c7.lovable.app";
+const HERO_VIDEO_MP4_URL = `${HERO_ASSET_ORIGIN}${heroVideoMp4.url}`;
+const HERO_VIDEO_WEBM_URL = `${HERO_ASSET_ORIGIN}${heroVideoWebm.url}`;
 
 /* ---------------------- NORDIC LUXURY BRAND TOKENS ---------------------- */
 
@@ -307,9 +310,16 @@ export function ClearedHero() {
       const p = v.play();
       if (p && typeof p.catch === "function") p.catch(() => {});
     };
+    const keepLooping = () => {
+      if (Number.isFinite(v.duration) && v.duration - v.currentTime < 0.12) {
+        v.currentTime = 0;
+        kick();
+      }
+    };
     kick();
     v.addEventListener("pause", kick);
     v.addEventListener("ended", kick);
+    v.addEventListener("timeupdate", keepLooping);
     document.addEventListener("visibilitychange", kick);
     const id = window.setInterval(() => {
       if (v.paused || v.ended) kick();
@@ -317,6 +327,7 @@ export function ClearedHero() {
     return () => {
       v.removeEventListener("pause", kick);
       v.removeEventListener("ended", kick);
+      v.removeEventListener("timeupdate", keepLooping);
       document.removeEventListener("visibilitychange", kick);
       window.clearInterval(id);
     };
@@ -364,7 +375,8 @@ export function ClearedHero() {
         className="pointer-events-none absolute inset-x-0 bottom-0 top-0 h-full w-full"
         style={{ objectFit: "cover", objectPosition: "center", opacity: 1, transform: "translateZ(0)" }}
       >
-        <source src={HERO_VIDEO_URL} type="video/mp4" />
+        <source src={HERO_VIDEO_WEBM_URL} type="video/webm" />
+        <source src={HERO_VIDEO_MP4_URL} type="video/mp4" />
       </video>
       <div
         aria-hidden
