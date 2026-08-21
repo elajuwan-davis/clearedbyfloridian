@@ -145,7 +145,7 @@ function Deck() {
   return (
     <div
       ref={containerRef}
-      className="relative flex h-screen w-full flex-col items-center justify-center overflow-hidden"
+      className="cl-public relative flex h-screen w-full flex-col items-center justify-center overflow-hidden"
       style={{ background: SLATE }}
     >
       <div
