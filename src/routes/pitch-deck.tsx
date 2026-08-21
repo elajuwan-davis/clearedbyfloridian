@@ -177,14 +177,14 @@ function Deck() {
         <button
           type="button"
           data-plain
-          data-plain aria-label="Previous slide"
+          aria-label="Previous slide"
           onClick={() => go(-1)}
           className="absolute inset-y-0 left-0 w-1/2 cursor-w-resize bg-transparent"
         />
         <button
           type="button"
           data-plain
-          data-plain aria-label="Next slide"
+          aria-label="Next slide"
           onClick={() => go(1)}
           className="absolute inset-y-0 right-0 w-1/2 cursor-e-resize bg-transparent"
         />
@@ -229,7 +229,7 @@ function Deck() {
           <button
             key={src}
             type="button"
-            aria-label={`Go to slide ${idx + 1}`}
+            data-plain aria-label={`Go to slide ${idx + 1}`}
             onClick={() => setI(idx)}
             className="h-1.5 w-6 transition-opacity"
             style={{ background: OAT, opacity: idx === i ? 1 : 0.28 }}
