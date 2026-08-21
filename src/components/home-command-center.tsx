@@ -374,9 +374,8 @@ export function WatchItRun() {
                         marginTop: now ? 0 : 2,
                         borderRadius: 999,
                         border: `1px solid ${done ? COPPER : "rgba(250,243,230,0.3)"}`,
-                        backgroundImage: done ? "var(--gradient-copper)" : "none",
-                        background: done ? undefined : GREEN,
-                        boxShadow: now ? `0 0 0 5px ${COPPER}22` : "none",
+                        backgroundColor: done ? COPPER : "transparent",
+                        boxShadow: now ? `0 0 0 5px ${COPPER}22, 0 0 10px ${COPPER}88` : "none",
                         transition: "all 320ms cubic-bezier(0.22,1,0.36,1)",
                       }}
                     />
