@@ -56,8 +56,8 @@ export function DeckSharePanel({ onClose }: { onClose: () => void }) {
       await createDeckInvite({ data: { password, label: label.trim() } });
       setLabel("");
       await load(password);
-    } catch {
-      setError("Could not create the invite.");
+    } catch (e) {
+      setError(`Could not create the invite: ${e instanceof Error ? e.message : "unknown error"}`);
     } finally {
       setBusy(false);
     }
