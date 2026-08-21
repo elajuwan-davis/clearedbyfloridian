@@ -16,9 +16,10 @@ type Invite = {
   last_viewed_at: string | null;
 };
 
+const SHARE_ORIGIN = "https://cleardinc.com";
+
 function linkFor(token: string) {
-  const origin = typeof window !== "undefined" ? window.location.origin : "";
-  return `${origin}/pitch-deck/${token}`;
+  return `${SHARE_ORIGIN}/pitch-deck/${token}`;
 }
 
 function copy(text: string) {
