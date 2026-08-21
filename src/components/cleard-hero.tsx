@@ -322,19 +322,23 @@ export function ClearedHero() {
 
 
 
-      {/* muted construction-site backdrop, bottom-anchored and washed out so copy stays legible */}
-      <div
+      {/* muted construction-site backdrop video — always autoplaying, silent, endlessly looping */}
+      <video
+        ref={bgVideo}
         aria-hidden
-        className="pointer-events-none absolute inset-x-0 bottom-0 top-0"
-        style={{
-          backgroundImage: `url(${heroBackdrop})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center bottom",
-          backgroundRepeat: "no-repeat",
-          opacity: 0.72,
-          filter: "saturate(0.9)",
-        }}
-      />
+        autoPlay
+        muted
+        defaultMuted
+        loop
+        playsInline
+        preload="auto"
+        disablePictureInPicture
+        poster={heroBackdrop}
+        className="pointer-events-none absolute inset-x-0 bottom-0 top-0 h-full w-full object-cover"
+        style={{ opacity: 0.72, filter: "saturate(0.9)" }}
+      >
+        <source src={heroVideo.url} type="video/mp4" />
+      </video>
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0"
