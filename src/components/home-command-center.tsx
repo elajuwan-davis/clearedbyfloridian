@@ -294,102 +294,99 @@ const RUN_STEPS = [
 
 export function WatchItRun() {
   const [active, setActive] = useState(0);
-  const rowRefs = useRef<Array<HTMLDivElement | null>>([]);
+  const [progress, setProgress] = useState(0);
+  const wrapRef = useRef<HTMLDivElement | null>(null);
   const reduced = useReducedMotion();
 
   useEffect(() => {
     if (reduced) {
       setActive(RUN_STEPS.length - 1);
+      setProgress(1);
       return;
     }
-    const io = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((e) => {
-          if (e.isIntersecting) {
-            const idx = Number((e.target as HTMLElement).dataset.idx);
-            setActive((prev) => (idx > prev ? idx : prev));
-          }
-        });
-      },
-      { rootMargin: "-45% 0px -45% 0px" },
-    );
-    rowRefs.current.forEach((el) => el && io.observe(el));
-    return () => io.disconnect();
+    let raf = 0;
+    const onScroll = () => {
+      if (raf) return;
+      raf = requestAnimationFrame(() => {
+        raf = 0;
+        const el = wrapRef.current;
+        if (!el) return;
+        const r = el.getBoundingClientRect();
+        const span = r.height - window.innerHeight;
+        const p = span <= 0 ? 0 : Math.min(1, Math.max(0, -r.top / span));
+        setProgress(p);
+        setActive(Math.min(RUN_STEPS.length - 1, Math.floor(p * RUN_STEPS.length * 0.999)));
+      });
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+      if (raf) cancelAnimationFrame(raf);
+    };
   }, [reduced]);
 
-  return (
-    <section style={{ background: DARK }}>
-      <div className="mx-auto max-w-7xl px-5 py-24 lg:px-8 md:py-32">
-        <div className="copper-text text-[10.5px] font-bold uppercase" style={{ letterSpacing: "0.22em" }}>
-          Watch it run
-        </div>
-        <h2
-          className="mt-6 max-w-3xl"
-          style={{ fontFamily: SERIF, fontSize: "clamp(2rem, 3.9vw, 3.05rem)", lineHeight: 1.05, letterSpacing: "-0.035em", color: OFF, fontWeight: 600 }}
-        >
-          From signed contract
-          <br />
-          <span className="copper-text" style={{ fontStyle: "italic" }}>to certificate of occupancy.</span>
-        </h2>
-        <p className="mt-6 max-w-xl text-[16px] leading-relaxed" style={{ color: "rgba(250,243,230,0.58)" }}>
-          One project, start to finish, without a single status call. Scroll it.
-        </p>
+  const step = RUN_STEPS[active];
+  const fill = reduced ? 100 : Math.max(2, progress * 100);
 
-        {/* scroll progress rail */}
-        <div className="mt-10 flex items-center gap-4">
-          <div className="h-px flex-1" style={{ background: "rgba(250,243,230,0.14)" }}>
+  return (
+    <section ref={wrapRef} style={{ background: GREEN, position: "relative", height: reduced ? "auto" : `${RUN_STEPS.length * 62}vh` }}>
+      <div className={reduced ? "" : "sticky top-0"} style={{ minHeight: reduced ? undefined : "100vh", display: "flex", alignItems: "center", overflow: "hidden" }}>
+        <div className="mx-auto w-full max-w-7xl px-5 py-20 lg:px-8">
+          <div className="copper-text text-[10.5px] font-bold uppercase" style={{ letterSpacing: "0.22em" }}>
+            Watch it run
+          </div>
+          <h2
+            className="mt-5 max-w-3xl"
+            style={{ fontFamily: SERIF, fontSize: "clamp(1.9rem, 3.6vw, 2.9rem)", lineHeight: 1.05, letterSpacing: "-0.035em", color: OAT, fontWeight: 600 }}
+          >
+            From signed contract to
+            <br />
+            <span style={{ fontStyle: "italic", color: GREEN_LT }}>certificate of occupancy.</span>
+          </h2>
+
+          {/* horizontal scroll rail */}
+          <div className="relative mt-12">
+            <div className="absolute left-0 right-0 h-px" style={{ top: 7, background: "rgba(250,243,230,0.18)" }} />
             <div
-              className="h-px"
+              className="absolute left-0 h-px"
               style={{
-                width: `${((active + 1) / RUN_STEPS.length) * 100}%`,
+                top: 7,
+                width: `${fill}%`,
                 backgroundImage: "var(--gradient-copper)",
-                transition: "width 600ms cubic-bezier(0.22,1,0.36,1)",
+                boxShadow: `0 0 12px ${COPPER}66`,
+                transition: "width 220ms linear",
               }}
             />
-          </div>
-          <span className="copper-text text-[10.5px] tabular-nums" style={{ fontFamily: MONO, letterSpacing: "0.18em" }}>
-            {String(active + 1).padStart(2, "0")} / {String(RUN_STEPS.length).padStart(2, "0")}
-          </span>
-        </div>
-
-
-
-        <div className="mt-16 grid gap-10 lg:grid-cols-[300px_1fr] lg:gap-16">
-          {/* spine */}
-          <div className="hidden lg:block">
-            <div className="sticky top-28">
+            <div className="relative flex justify-between">
               {RUN_STEPS.map((s, idx) => {
-                const on = idx <= active;
+                const done = idx <= active;
+                const now = idx === active;
                 return (
-                  <div key={s.k} className="flex items-start gap-4">
-                    <div className="flex flex-col items-center">
-                      <span
-                        className="grid h-6 w-6 place-items-center text-[9px] tabular-nums"
-                        style={{
-                          fontFamily: MONO,
-                          border: `1px solid ${on ? COPPER : "rgba(250,243,230,0.2)"}`,
-                          backgroundImage: idx === active ? "var(--gradient-copper)" : "none",
-                          color: idx === active ? "#1B1206" : on ? COPPER : "rgba(250,243,230,0.3)",
-                          transition: "all 350ms ease",
-                        }}
-                      >
-                        {String(idx + 1).padStart(2, "0")}
-                      </span>
-                      {idx < RUN_STEPS.length - 1 && (
-                        <span
-                          className="w-px flex-1"
-                          style={{ height: 46, background: on ? COPPER : "rgba(250,243,230,0.16)", transition: "background 350ms ease" }}
-                        />
-                      )}
-
-                    </div>
+                  <div key={s.k} className="flex min-w-0 flex-col items-center" style={{ flex: 1 }}>
                     <span
-                      className="pt-1 text-[11px] uppercase"
+                      className="grid place-items-center"
+                      style={{
+                        width: now ? 15 : 11,
+                        height: now ? 15 : 11,
+                        marginTop: now ? 0 : 2,
+                        borderRadius: 999,
+                        border: `1px solid ${done ? COPPER : "rgba(250,243,230,0.3)"}`,
+                        backgroundImage: done ? "var(--gradient-copper)" : "none",
+                        background: done ? undefined : GREEN,
+                        boxShadow: now ? `0 0 0 5px ${COPPER}22` : "none",
+                        transition: "all 320ms cubic-bezier(0.22,1,0.36,1)",
+                      }}
+                    />
+                    <span
+                      className="mt-3 hidden truncate text-[10px] uppercase sm:block"
                       style={{
                         fontFamily: MONO,
-                        letterSpacing: "0.18em",
-                        color: idx === active ? OFF : on ? "rgba(250,243,230,0.6)" : "rgba(250,243,230,0.28)",
-                        transition: "color 350ms ease",
+                        letterSpacing: "0.16em",
+                        color: now ? OAT : done ? "rgba(250,243,230,0.62)" : "rgba(250,243,230,0.3)",
+                        transition: "color 320ms ease",
                       }}
                     >
                       {s.k}
@@ -400,48 +397,42 @@ export function WatchItRun() {
             </div>
           </div>
 
-          {/* stages */}
-          <div className="space-y-6">
-            {RUN_STEPS.map((s, idx) => {
-              const on = idx <= active;
-              const accent = s.tone === "ok" ? GREEN_LT : s.tone === "ai" || s.tone === "warn" ? PLUM_LT : "rgba(250,243,230,0.22)";
-              return (
-                <div
-                  key={s.k}
-                  data-idx={idx}
-                  ref={(el) => {
-                    rowRefs.current[idx] = el;
-                  }}
-                  className="p-6 md:p-8"
-                  style={{
-                    background: on ? DARK_2 : "transparent",
-                    borderLeft: `2px solid ${on ? accent : "rgba(250,243,230,0.12)"}`,
-                    opacity: on ? 1 : 0.42,
-                    transition: "all 500ms cubic-bezier(0.16,1,0.3,1)",
-                  }}
-                >
-                  <div className="flex items-center gap-3">
-                    <span className="text-[10px] uppercase lg:hidden" style={{ fontFamily: MONO, letterSpacing: "0.2em", color: accent }}>
-                      {String(idx + 1).padStart(2, "0")} · {s.k}
-                    </span>
-                    {s.tone === "ai" && (
-                      <span className="hidden items-center gap-1.5 text-[10px] uppercase lg:inline-flex" style={{ fontFamily: MONO, letterSpacing: "0.18em", color: PLUM_LT }}>
-                        <Sparkle className="h-3 w-3" strokeWidth={1.75} /> Victoria
-                      </span>
-                    )}
-                  </div>
-                  <h3
-                    className="mt-3 text-[22px] md:text-[27px]"
-                    style={{ fontFamily: SERIF, fontWeight: 600, letterSpacing: "-0.03em", color: idx === RUN_STEPS.length - 1 && on ? GREEN_LT : OFF }}
-                  >
-                    {s.t}
-                  </h3>
-                  <p className="mt-3 max-w-2xl text-[14.5px] leading-relaxed" style={{ color: "rgba(250,243,230,0.56)" }}>
-                    {s.b}
-                  </p>
-                </div>
-              );
-            })}
+          {/* active step panel */}
+          <div className="mt-14 grid items-start gap-6 md:grid-cols-[minmax(0,180px)_1fr] md:gap-12">
+            <div
+              key={`n-${active}`}
+              className="copper-text"
+              style={{ fontFamily: SERIF, fontWeight: 600, fontSize: "clamp(4rem, 9vw, 7.5rem)", lineHeight: 0.85, letterSpacing: "-0.05em", animation: "clRise 520ms cubic-bezier(0.16,1,0.3,1) both" }}
+            >
+              {String(active + 1).padStart(2, "0")}
+            </div>
+            <div key={`c-${active}`} style={{ animation: "clRise 560ms cubic-bezier(0.16,1,0.3,1) both" }}>
+              <div className="flex items-center gap-3">
+                <span className="text-[10px] uppercase" style={{ fontFamily: MONO, letterSpacing: "0.2em", color: COPPER }}>
+                  {step.k}
+                </span>
+                {step.tone === "ai" && (
+                  <span className="inline-flex items-center gap-1.5 text-[10px] uppercase" style={{ fontFamily: MONO, letterSpacing: "0.18em", color: GREEN_LT }}>
+                    <Sparkle className="h-3 w-3" strokeWidth={1.75} /> Victoria
+                  </span>
+                )}
+                {step.tone === "ok" && (
+                  <span className="inline-flex items-center gap-1.5 text-[10px] uppercase" style={{ fontFamily: MONO, letterSpacing: "0.18em", color: GREEN_LT }}>
+                    <Check className="h-3 w-3" strokeWidth={2.5} /> Closed
+                  </span>
+                )}
+              </div>
+              <h3 className="mt-3" style={{ fontFamily: SERIF, fontWeight: 600, fontSize: "clamp(1.6rem, 3vw, 2.35rem)", letterSpacing: "-0.03em", color: OAT }}>
+                {step.t}
+              </h3>
+              <p className="mt-4 max-w-2xl text-[15.5px] leading-relaxed" style={{ color: "rgba(250,243,230,0.66)" }}>
+                {step.b}
+              </p>
+              <div
+                className="mt-8 h-px max-w-md"
+                style={{ background: `linear-gradient(90deg, ${COPPER}88, transparent)` }}
+              />
+            </div>
           </div>
         </div>
       </div>
