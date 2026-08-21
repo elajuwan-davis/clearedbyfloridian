@@ -360,8 +360,8 @@ export function ClearedHero() {
         preload="auto"
         disablePictureInPicture
         poster={heroBackdrop}
-        className="pointer-events-none absolute inset-x-0 bottom-0 top-0 h-full w-full object-cover"
-        style={{ opacity: 0.85, filter: "saturate(1.02) contrast(1.04)", transform: "translateZ(0)" }}
+        className="pointer-events-none absolute inset-x-0 bottom-0 top-0 h-full w-full"
+        style={{ objectFit: "cover", objectPosition: "center", opacity: 1, transform: "translateZ(0)" }}
       >
         <source src={heroVideo.url} type="video/mp4" />
       </video>
@@ -369,9 +369,10 @@ export function ClearedHero() {
         aria-hidden
         className="pointer-events-none absolute inset-0"
         style={{
-          background: `linear-gradient(to bottom, rgba(250,243,230,0.86) 0%, rgba(250,243,230,0.62) 38%, rgba(250,243,230,0.28) 72%, rgba(250,243,230,0.42) 100%)`,
+          background: `linear-gradient(to bottom, rgba(250,243,230,0.42) 0%, rgba(250,243,230,0.18) 40%, rgba(250,243,230,0.06) 72%, rgba(250,243,230,0.12) 100%)`,
         }}
       />
+
 
       {/* Beat 3 — the paperwork mess that the mark clears away */}
       {running && (
