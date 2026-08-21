@@ -8,6 +8,7 @@ import { HomeMotionStyles } from "@/components/home-command-center";
 import { HeroStage } from "@/components/hero-stage";
 import { TRADES } from "@/lib/trades";
 
+const HERO_VIDEO_URL = `https://project--0b3e81be-56ac-4636-ba0c-f0ab606037c7.lovable.app${heroVideo.url}`;
 
 /* ---------------------- NORDIC LUXURY BRAND TOKENS ---------------------- */
 
@@ -363,7 +364,7 @@ export function ClearedHero() {
         className="pointer-events-none absolute inset-x-0 bottom-0 top-0 h-full w-full"
         style={{ objectFit: "cover", objectPosition: "center", opacity: 1, transform: "translateZ(0)" }}
       >
-        <source src={heroVideo.url} type="video/mp4" />
+        <source src={HERO_VIDEO_URL} type="video/mp4" />
       </video>
       <div
         aria-hidden
