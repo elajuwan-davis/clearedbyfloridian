@@ -361,7 +361,7 @@ export function ClearedHero() {
         disablePictureInPicture
         poster={heroBackdrop}
         className="pointer-events-none absolute inset-x-0 bottom-0 top-0 h-full w-full object-cover"
-        style={{ opacity: 0.72, filter: "saturate(0.9)" }}
+        style={{ opacity: 0.85, filter: "saturate(1.02) contrast(1.04)", transform: "translateZ(0)" }}
       >
         <source src={heroVideo.url} type="video/mp4" />
       </video>
