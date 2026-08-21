@@ -40,8 +40,9 @@ export function DeckSharePanel({ onClose }: { onClose: () => void }) {
       const rows = (await listDeckInvites({ data: { password: pw } })) as Invite[];
       setInvites(rows);
       setAuthed(true);
-    } catch {
-      setError("Incorrect admin password.");
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : "";
+      setError(/unauthorized/i.test(msg) ? "Incorrect password." : `Could not load invites: ${msg || "unknown error"}`);
     } finally {
       setBusy(false);
     }
