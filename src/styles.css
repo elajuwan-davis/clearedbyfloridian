@@ -2123,3 +2123,50 @@ html body .cl-phone.cl-phone { border-radius: 44px !important; }
 html body .cl-phone-screen.cl-phone-screen { border-radius: 34px !important; }
 html body .cl-phone-notch.cl-phone-notch,
 html body .cl-dot.cl-dot { border-radius: 999px !important; }
+
+/* ── Copper / gold premium accents (public marketing site) ───────────── */
+:root {
+  --copper: oklch(0.605 0.098 55);
+  --copper-light: oklch(0.755 0.088 66);
+  --copper-deep: oklch(0.47 0.09 45);
+  --gradient-copper: linear-gradient(
+    135deg,
+    var(--copper-deep) 0%,
+    var(--copper) 38%,
+    var(--copper-light) 55%,
+    var(--copper) 72%,
+    var(--copper-deep) 100%
+  );
+}
+
+@utility foil-sheen {
+  position: relative;
+  overflow: hidden;
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      100deg,
+      transparent 30%,
+      color-mix(in oklab, white 45%, transparent) 48%,
+      transparent 62%
+    );
+    transform: translateX(-120%);
+    transition: transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+    pointer-events: none;
+  }
+  &:hover::after {
+    transform: translateX(120%);
+  }
+}
+
+@utility copper-text {
+  background: var(--gradient-copper);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+/* keep the foil sweep inside the rounded glass CTAs */
+html body .cl-glass.foil-sheen::after { border-radius: 999px !important; }

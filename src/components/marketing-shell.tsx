@@ -134,11 +134,19 @@ export function MarketingNav() {
           <Link
             to="/join"
             hash="request"
-            className="inline-flex items-center px-4 py-2 text-[13.5px] no-underline"
-            style={{ background: TEAL, color: OAT, fontWeight: 600, whiteSpace: "nowrap" }}
+            className="cl-glass foil-sheen inline-flex items-center px-5 py-2 text-[13.5px] no-underline transition-transform duration-200 hover:scale-[1.03]"
+            style={{
+              backgroundImage: "var(--gradient-copper)",
+              border: "1px solid color-mix(in oklab, var(--copper-deep) 70%, transparent)",
+              color: "#FFF8EC",
+              fontWeight: 600,
+              whiteSpace: "nowrap",
+              boxShadow: "inset 0 1px 0 rgba(255,255,255,0.45)",
+            }}
           >
             Get early access
           </Link>
+
           <button
             className="-mr-2 p-2 md:hidden"
             onClick={() => setOpen((s) => !s)}
@@ -192,11 +200,18 @@ export function MarketingNav() {
               to="/join"
               hash="request"
               onClick={() => setOpen(false)}
-              className="inline-flex w-full items-center justify-center px-4 py-2.5 text-sm no-underline"
-              style={{ color: OAT, background: TEAL, fontWeight: 600 }}
+              className="cl-glass foil-sheen inline-flex w-full items-center justify-center px-4 py-2.5 text-sm no-underline"
+              style={{
+                color: "#FFF8EC",
+                backgroundImage: "var(--gradient-copper)",
+                border: "1px solid color-mix(in oklab, var(--copper-deep) 70%, transparent)",
+                fontWeight: 600,
+                boxShadow: "inset 0 1px 0 rgba(255,255,255,0.45)",
+              }}
             >
               Get early access
             </Link>
+
           </div>
         </div>
       )}

@@ -238,20 +238,22 @@ function HeroNav({ logoSlot, logoVisible }: { logoSlot: React.Ref<HTMLDivElement
           <Link
             to="/join"
             hash="request"
-            className="cl-glass inline-flex items-center px-5 py-2.5 text-[13px] no-underline transition-transform duration-200 hover:scale-[1.03]"
+            className="cl-glass foil-sheen inline-flex items-center px-5 py-2.5 text-[13px] no-underline transition-transform duration-200 hover:scale-[1.03]"
             style={{
-              background: "rgba(103,49,71,0.86)",
-              border: "1px solid rgba(103,49,71,0.5)",
+              backgroundImage: "var(--gradient-copper)",
+              border: "1px solid color-mix(in oklab, var(--copper-deep) 70%, transparent)",
               backdropFilter: "blur(12px) saturate(140%)",
               WebkitBackdropFilter: "blur(12px) saturate(140%)",
-              color: OAT,
+              color: "#FFF8EC",
               fontWeight: 600,
               whiteSpace: "nowrap",
-              boxShadow: "inset 0 1px 0 rgba(255,255,255,0.25), 0 12px 26px -18px rgba(43,22,32,0.6)",
+              boxShadow:
+                "inset 0 1px 0 rgba(255,255,255,0.45), 0 12px 26px -16px color-mix(in oklab, var(--copper-deep) 70%, transparent)",
             }}
           >
             Get early access
           </Link>
+
 
           <button
             type="button"

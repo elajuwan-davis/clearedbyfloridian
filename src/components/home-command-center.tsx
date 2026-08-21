@@ -28,6 +28,7 @@ const BORDER = "#E0D3BC";
 const DARK = "#241017";
 const DARK_2 = "#2F4F4F";
 const DARK_LINE = "rgba(250,243,230,0.14)";
+const COPPER = "#C98A5B";
 const SERIF = '"Fraunces", "Iowan Old Style", Georgia, serif';
 const MONO = '"JetBrains Mono", ui-monospace, monospace';
 
@@ -319,7 +320,7 @@ export function WatchItRun() {
   return (
     <section style={{ background: DARK }}>
       <div className="mx-auto max-w-7xl px-5 py-24 lg:px-8 md:py-32">
-        <div className="text-[10.5px] font-bold uppercase" style={{ letterSpacing: "0.22em", color: PLUM_LT }}>
+        <div className="copper-text text-[10.5px] font-bold uppercase" style={{ letterSpacing: "0.22em" }}>
           Watch it run
         </div>
         <h2
@@ -328,11 +329,30 @@ export function WatchItRun() {
         >
           From signed contract
           <br />
-          <span style={{ fontStyle: "italic", color: GREEN_LT }}>to certificate of occupancy.</span>
+          <span className="copper-text" style={{ fontStyle: "italic" }}>to certificate of occupancy.</span>
         </h2>
         <p className="mt-6 max-w-xl text-[16px] leading-relaxed" style={{ color: "rgba(250,243,230,0.58)" }}>
           One project, start to finish, without a single status call. Scroll it.
         </p>
+
+        {/* scroll progress rail */}
+        <div className="mt-10 flex items-center gap-4">
+          <div className="h-px flex-1" style={{ background: "rgba(250,243,230,0.14)" }}>
+            <div
+              className="h-px"
+              style={{
+                width: `${((active + 1) / RUN_STEPS.length) * 100}%`,
+                backgroundImage: "var(--gradient-copper)",
+                transition: "width 600ms cubic-bezier(0.22,1,0.36,1)",
+              }}
+            />
+          </div>
+          <span className="copper-text text-[10.5px] tabular-nums" style={{ fontFamily: MONO, letterSpacing: "0.18em" }}>
+            {String(active + 1).padStart(2, "0")} / {String(RUN_STEPS.length).padStart(2, "0")}
+          </span>
+        </div>
+
+
 
         <div className="mt-16 grid gap-10 lg:grid-cols-[300px_1fr] lg:gap-16">
           {/* spine */}
@@ -347,9 +367,9 @@ export function WatchItRun() {
                         className="grid h-6 w-6 place-items-center text-[9px] tabular-nums"
                         style={{
                           fontFamily: MONO,
-                          border: `1px solid ${on ? GREEN_LT : "rgba(250,243,230,0.2)"}`,
-                          background: idx === active ? GREEN_LT : "transparent",
-                          color: idx === active ? DARK : on ? GREEN_LT : "rgba(250,243,230,0.3)",
+                          border: `1px solid ${on ? COPPER : "rgba(250,243,230,0.2)"}`,
+                          backgroundImage: idx === active ? "var(--gradient-copper)" : "none",
+                          color: idx === active ? "#1B1206" : on ? COPPER : "rgba(250,243,230,0.3)",
                           transition: "all 350ms ease",
                         }}
                       >
@@ -358,9 +378,10 @@ export function WatchItRun() {
                       {idx < RUN_STEPS.length - 1 && (
                         <span
                           className="w-px flex-1"
-                          style={{ height: 46, background: on ? GREEN_LT : "rgba(250,243,230,0.16)", transition: "background 350ms ease" }}
+                          style={{ height: 46, background: on ? COPPER : "rgba(250,243,230,0.16)", transition: "background 350ms ease" }}
                         />
                       )}
+
                     </div>
                     <span
                       className="pt-1 text-[11px] uppercase"
