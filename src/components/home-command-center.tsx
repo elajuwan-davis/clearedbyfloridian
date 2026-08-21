@@ -401,7 +401,7 @@ export function WatchItRun() {
           <div className="mt-14 grid items-start gap-6 md:grid-cols-[minmax(0,180px)_1fr] md:gap-12">
             <div
               key={`n-${active}`}
-              className="copper-text"
+              className="copper-shine"
               style={{ fontFamily: SERIF, fontWeight: 600, fontSize: "clamp(4rem, 9vw, 7.5rem)", lineHeight: 0.85, letterSpacing: "-0.05em", animation: "clRise 520ms cubic-bezier(0.16,1,0.3,1) both" }}
             >
               {String(active + 1).padStart(2, "0")}
