@@ -474,7 +474,8 @@ export function VictoriaSpotlight() {
       <div className="mx-auto grid max-w-7xl items-center gap-14 px-5 py-24 lg:grid-cols-2 lg:px-8 md:py-32">
         <div>
           <div className="flex items-center gap-2 text-[10.5px] font-bold uppercase" style={{ letterSpacing: "0.22em", color: PLUM }}>
-            <Sparkle className="h-3.5 w-3.5" strokeWidth={1.75} /> The intelligence layer
+            <span className="copper-hairline inline-block h-px w-7" />
+            <Sparkle className="h-3.5 w-3.5" style={{ color: COPPER }} strokeWidth={1.75} /> The intelligence layer
           </div>
           <h2
             className="mt-6"
