@@ -28,6 +28,7 @@ const BORDER = "#E0D3BC";
 const DARK = "#241017";
 const DARK_2 = "#2F4F4F";
 const DARK_LINE = "rgba(250,243,230,0.14)";
+const COPPER = "#C98A5B";
 const SERIF = '"Fraunces", "Iowan Old Style", Georgia, serif';
 const MONO = '"JetBrains Mono", ui-monospace, monospace';
 
