@@ -475,9 +475,12 @@ function TrustBar() {
   return (
     <section style={{ background: WHITE, borderTop: `1px solid ${BORDER}` }}>
       <div className="mx-auto max-w-7xl px-5 lg:px-8 py-20 md:py-24">
-        <div className="text-center text-[10.5px] font-bold uppercase tracking-[0.2em]" style={{ color: LIGHT }}>
+        <div className="flex items-center justify-center gap-3 text-[10.5px] font-bold uppercase tracking-[0.2em]" style={{ color: LIGHT }}>
+          <span className="copper-hairline inline-block h-px w-7" />
           Trusted by contractors across the country
+          <span className="copper-hairline inline-block h-px w-7" />
         </div>
+
 
         <div
           className="relative mt-10 overflow-hidden"
