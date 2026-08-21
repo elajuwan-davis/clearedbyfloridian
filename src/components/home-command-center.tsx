@@ -335,7 +335,7 @@ export function WatchItRun() {
     <section ref={wrapRef} style={{ background: GREEN, position: "relative", height: reduced ? "auto" : `${RUN_STEPS.length * 62}vh` }}>
       <div className={reduced ? "" : "sticky top-0"} style={{ minHeight: reduced ? undefined : "100vh", display: "flex", alignItems: "center", overflow: "hidden" }}>
         <div className="mx-auto w-full max-w-7xl px-5 py-20 lg:px-8">
-          <div className="copper-text text-[10.5px] font-bold uppercase" style={{ letterSpacing: "0.22em" }}>
+          <div className="text-[10.5px] font-bold uppercase" style={{ letterSpacing: "0.22em", color: "#FFFFFF", fontFamily: MONO }}>
             Watch it run
           </div>
           <h2
