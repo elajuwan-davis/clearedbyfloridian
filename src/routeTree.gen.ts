@@ -69,6 +69,7 @@ import { Route as JoinTokenRouteImport } from './routes/join_.$token'
 import { Route as LegalIndexRouteImport } from './routes/legal.index'
 import { Route as LegalNotaryQueueRouteImport } from './routes/legal.notary-queue'
 import { Route as PermitCardIdRouteImport } from './routes/permit-card.$id'
+import { Route as PitchDeckTokenRouteImport } from './routes/pitch-deck_.$token'
 import { Route as PortalIndexRouteImport } from './routes/portal.index'
 import { Route as PortalAlertsRouteImport } from './routes/portal.alerts'
 import { Route as PortalBidReviewRouteImport } from './routes/portal.bid-review'
@@ -435,6 +436,11 @@ const LegalNotaryQueueRoute = LegalNotaryQueueRouteImport.update({
 const PermitCardIdRoute = PermitCardIdRouteImport.update({
   id: '/permit-card/$id',
   path: '/permit-card/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PitchDeckTokenRoute = PitchDeckTokenRouteImport.update({
+  id: '/pitch-deck_/$token',
+  path: '/pitch-deck/$token',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PortalIndexRoute = PortalIndexRouteImport.update({
@@ -833,6 +839,7 @@ export interface FileRoutesByFullPath {
   '/join/$token': typeof JoinTokenRoute
   '/legal/notary-queue': typeof LegalNotaryQueueRoute
   '/permit-card/$id': typeof PermitCardIdRoute
+  '/pitch-deck/$token': typeof PitchDeckTokenRoute
   '/portal/alerts': typeof PortalAlertsRoute
   '/portal/bid-review': typeof PortalBidReviewRoute
   '/portal/billing': typeof PortalBillingRoute
@@ -958,6 +965,7 @@ export interface FileRoutesByTo {
   '/join/$token': typeof JoinTokenRoute
   '/legal/notary-queue': typeof LegalNotaryQueueRoute
   '/permit-card/$id': typeof PermitCardIdRoute
+  '/pitch-deck/$token': typeof PitchDeckTokenRoute
   '/portal/alerts': typeof PortalAlertsRoute
   '/portal/bid-review': typeof PortalBidReviewRoute
   '/portal/billing': typeof PortalBillingRoute
@@ -1084,6 +1092,7 @@ export interface FileRoutesById {
   '/join_/$token': typeof JoinTokenRoute
   '/legal/notary-queue': typeof LegalNotaryQueueRoute
   '/permit-card/$id': typeof PermitCardIdRoute
+  '/pitch-deck_/$token': typeof PitchDeckTokenRoute
   '/portal/alerts': typeof PortalAlertsRoute
   '/portal/bid-review': typeof PortalBidReviewRoute
   '/portal/billing': typeof PortalBillingRoute
@@ -1213,6 +1222,7 @@ export interface FileRouteTypes {
     | '/join/$token'
     | '/legal/notary-queue'
     | '/permit-card/$id'
+    | '/pitch-deck/$token'
     | '/portal/alerts'
     | '/portal/bid-review'
     | '/portal/billing'
@@ -1338,6 +1348,7 @@ export interface FileRouteTypes {
     | '/join/$token'
     | '/legal/notary-queue'
     | '/permit-card/$id'
+    | '/pitch-deck/$token'
     | '/portal/alerts'
     | '/portal/bid-review'
     | '/portal/billing'
@@ -1463,6 +1474,7 @@ export interface FileRouteTypes {
     | '/join_/$token'
     | '/legal/notary-queue'
     | '/permit-card/$id'
+    | '/pitch-deck_/$token'
     | '/portal/alerts'
     | '/portal/bid-review'
     | '/portal/billing'
@@ -1587,6 +1599,7 @@ export interface RootRouteChildren {
   JoinTokenRoute: typeof JoinTokenRoute
   LegalNotaryQueueRoute: typeof LegalNotaryQueueRoute
   PermitCardIdRoute: typeof PermitCardIdRoute
+  PitchDeckTokenRoute: typeof PitchDeckTokenRoute
   SubIntakeTokenRoute: typeof SubIntakeTokenRoute
   SubPortalTokenRoute: typeof SubPortalTokenRoute
   TradesSlugRoute: typeof TradesSlugRoute
@@ -2032,6 +2045,13 @@ declare module '@tanstack/react-router' {
       path: '/permit-card/$id'
       fullPath: '/permit-card/$id'
       preLoaderRoute: typeof PermitCardIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pitch-deck_/$token': {
+      id: '/pitch-deck_/$token'
+      path: '/pitch-deck/$token'
+      fullPath: '/pitch-deck/$token'
+      preLoaderRoute: typeof PitchDeckTokenRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/portal/': {
@@ -2690,6 +2710,7 @@ const rootRouteChildren: RootRouteChildren = {
   JoinTokenRoute: JoinTokenRoute,
   LegalNotaryQueueRoute: LegalNotaryQueueRoute,
   PermitCardIdRoute: PermitCardIdRoute,
+  PitchDeckTokenRoute: PitchDeckTokenRoute,
   SubIntakeTokenRoute: SubIntakeTokenRoute,
   SubPortalTokenRoute: SubPortalTokenRoute,
   TradesSlugRoute: TradesSlugRoute,

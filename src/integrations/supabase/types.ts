@@ -583,6 +583,45 @@ export type Database = {
           },
         ]
       }
+      deck_invites: {
+        Row: {
+          created_at: string
+          expires_at: string
+          first_opened_at: string | null
+          id: string
+          label: string
+          last_viewed_at: string | null
+          passcode: string
+          revoked: boolean
+          token: string
+          view_count: number
+        }
+        Insert: {
+          created_at?: string
+          expires_at: string
+          first_opened_at?: string | null
+          id?: string
+          label?: string
+          last_viewed_at?: string | null
+          passcode: string
+          revoked?: boolean
+          token: string
+          view_count?: number
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string
+          first_opened_at?: string | null
+          id?: string
+          label?: string
+          last_viewed_at?: string | null
+          passcode?: string
+          revoked?: boolean
+          token?: string
+          view_count?: number
+        }
+        Relationships: []
+      }
       design_professionals: {
         Row: {
           contact_name: string | null
