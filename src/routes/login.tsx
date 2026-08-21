@@ -90,7 +90,7 @@ function LoginPage() {
 
 
   return (
-    <div className="min-h-screen grid grid-cols-1 lg:grid-cols-2 bg-background">
+    <div className="cl-public min-h-screen grid grid-cols-1 lg:grid-cols-2 bg-background">
       {/* Left — obsidian panel with wave */}
       <aside
         className="relative hidden lg:flex flex-col justify-between p-12 overflow-hidden"

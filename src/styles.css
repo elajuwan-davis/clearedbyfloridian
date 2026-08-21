@@ -2208,3 +2208,43 @@ html body .cl-dot.cl-dot { border-radius: 999px !important; }
 
 /* keep the foil sweep inside the rounded glass CTAs */
 html body .cl-glass.foil-sheen::after { border-radius: 999px !important; }
+
+/* ── Public-site button consistency: rounded + glass, everywhere ───────── */
+html body .marketing-dark button:not([data-plain]),
+html body .marketing-dark a.cl-hoverable,
+html body .marketing-dark [type="submit"],
+html body .cl-home button:not([data-plain]),
+html body .cl-home a.cl-hoverable,
+html body .cl-home [type="submit"],
+html body .cl-public button:not([data-plain]),
+html body .cl-public a.cl-hoverable,
+html body .cl-public [type="submit"] {
+  border-radius: 999px !important;
+  backdrop-filter: blur(10px) saturate(140%);
+  box-shadow:
+    0 8px 22px rgba(47, 79, 79, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.26);
+  border-color: color-mix(in oklab, var(--copper) 26%, transparent);
+  transition: box-shadow 220ms ease, transform 220ms ease;
+}
+html body .marketing-dark button:not([data-plain]):hover,
+html body .cl-home button:not([data-plain]):hover,
+html body .cl-public button:not([data-plain]):hover,
+html body .marketing-dark a.cl-hoverable:hover,
+html body .cl-home a.cl-hoverable:hover,
+html body .cl-public a.cl-hoverable:hover {
+  box-shadow:
+    0 10px 26px rgba(47, 79, 79, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.34),
+    0 0 0 1px color-mix(in oklab, var(--copper) 34%, transparent);
+}
+html body .marketing-dark button:not([data-plain])::before,
+html body .marketing-dark button:not([data-plain])::after,
+html body .cl-home button:not([data-plain])::after,
+html body .cl-public button:not([data-plain])::after { border-radius: 999px !important; }
+
+/* copper accent: minimal, intentional */
+@utility copper-hairline {
+  background-image: var(--gradient-copper);
+  opacity: 0.75;
+}

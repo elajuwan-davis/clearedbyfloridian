@@ -367,7 +367,7 @@ export function WatchItRun() {
                 return (
                   <div key={s.k} className="flex min-w-0 flex-col items-center" style={{ flex: 1 }}>
                     <span
-                      className="grid place-items-center"
+                      className={done ? "cl-dot grid place-items-center copper-metal" : "cl-dot grid place-items-center"}
                       style={{
                         width: now ? 15 : 11,
                         height: now ? 15 : 11,
@@ -375,10 +375,15 @@ export function WatchItRun() {
                         borderRadius: 999,
                         border: `1px solid ${done ? COPPER : "rgba(250,243,230,0.3)"}`,
                         backgroundColor: done ? COPPER : "transparent",
-                        boxShadow: now ? `0 0 0 5px ${COPPER}22, 0 0 10px ${COPPER}88` : "none",
+                        boxShadow: now
+                          ? `0 0 0 5px ${COPPER}22, 0 0 10px ${COPPER}88, inset 0 1px 0 rgba(255,255,255,0.4)`
+                          : done
+                            ? "inset 0 1px 0 rgba(255,255,255,0.35)"
+                            : "none",
                         transition: "all 320ms cubic-bezier(0.22,1,0.36,1)",
                       }}
                     />
+
                     <span
                       className="mt-3 hidden truncate text-[10px] uppercase sm:block"
                       style={{
@@ -469,7 +474,8 @@ export function VictoriaSpotlight() {
       <div className="mx-auto grid max-w-7xl items-center gap-14 px-5 py-24 lg:grid-cols-2 lg:px-8 md:py-32">
         <div>
           <div className="flex items-center gap-2 text-[10.5px] font-bold uppercase" style={{ letterSpacing: "0.22em", color: PLUM }}>
-            <Sparkle className="h-3.5 w-3.5" strokeWidth={1.75} /> The intelligence layer
+            <span className="copper-hairline inline-block h-px w-7" />
+            <Sparkle className="h-3.5 w-3.5" style={{ color: COPPER }} strokeWidth={1.75} /> The intelligence layer
           </div>
           <h2
             className="mt-6"
@@ -516,11 +522,19 @@ export function VictoriaSpotlight() {
                 {card.body}
               </p>
               <span
-                className="cl-hoverable mt-6 inline-flex cursor-default items-center gap-2 px-4 py-2.5 text-[12.5px]"
-                style={{ background: PLUM, color: OAT, fontWeight: 600 }}
+                className="cl-glass foil-sheen cl-hoverable mt-6 inline-flex cursor-default items-center gap-2 px-5 py-2.5 text-[12.5px]"
+                style={{
+                  background: "rgba(103,49,71,0.55)",
+                  color: OAT,
+                  fontWeight: 600,
+                  border: "1px solid rgba(250,243,230,0.22)",
+                  backdropFilter: "blur(12px) saturate(150%)",
+                  boxShadow: "0 10px 26px rgba(43,22,32,0.3), inset 0 1px 0 rgba(255,255,255,0.24)",
+                }}
               >
                 {card.action} <ArrowRight className="cl-arrow h-3.5 w-3.5" strokeWidth={2} />
               </span>
+
             </div>
 
             <div className="grid grid-cols-3" style={{ borderTop: `1px solid ${DARK_LINE}` }}>

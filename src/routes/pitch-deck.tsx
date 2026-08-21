@@ -46,7 +46,7 @@ function Gate({ onPass }: { onPass: () => void }) {
 
   return (
     <div
-      className="flex min-h-screen items-center justify-center px-6"
+      className="cl-public flex min-h-screen items-center justify-center px-6"
       style={{ background: SLATE }}
     >
       <form
@@ -145,7 +145,7 @@ function Deck() {
   return (
     <div
       ref={containerRef}
-      className="relative flex h-screen w-full flex-col items-center justify-center overflow-hidden"
+      className="cl-public relative flex h-screen w-full flex-col items-center justify-center overflow-hidden"
       style={{ background: SLATE }}
     >
       <div
