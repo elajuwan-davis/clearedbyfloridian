@@ -3,6 +3,7 @@ import { Link } from "@tanstack/react-router";
 import mark3d from "@/assets/cleard-3d-mark.png.asset.json";
 import mark2d from "@/assets/cleard-mark-2d.png.asset.json";
 import heroBackdrop from "@/assets/hero-construction.jpg";
+import heroVideo from "@/assets/hero-site.mp4.asset.json";
 import { HomeMotionStyles } from "@/components/home-command-center";
 import { HeroStage } from "@/components/hero-stage";
 import { TRADES } from "@/lib/trades";
@@ -292,7 +293,33 @@ function HeroNav({ logoSlot, logoVisible }: { logoSlot: React.Ref<HTMLDivElement
 
 export function ClearedHero() {
   const navSlot = useRef<HTMLDivElement | null>(null);
+  const bgVideo = useRef<HTMLVideoElement | null>(null);
   const { beat, dockTf, stageMark, skip } = useHeroSequence(navSlot);
+
+  /* keep the backdrop video playing forever, whatever the browser does */
+  useEffect(() => {
+    const v = bgVideo.current;
+    if (!v) return;
+    const kick = () => {
+      v.muted = true;
+      v.loop = true;
+      const p = v.play();
+      if (p && typeof p.catch === "function") p.catch(() => {});
+    };
+    kick();
+    v.addEventListener("pause", kick);
+    v.addEventListener("ended", kick);
+    document.addEventListener("visibilitychange", kick);
+    const id = window.setInterval(() => {
+      if (v.paused || v.ended) kick();
+    }, 1500);
+    return () => {
+      v.removeEventListener("pause", kick);
+      v.removeEventListener("ended", kick);
+      document.removeEventListener("visibilitychange", kick);
+      window.clearInterval(id);
+    };
+  }, []);
 
   /* The hero moment now lives in HeroStage (mark + capability boxes + app). */
   const running = false;
@@ -328,7 +355,6 @@ export function ClearedHero() {
         aria-hidden
         autoPlay
         muted
-        defaultMuted
         loop
         playsInline
         preload="auto"
