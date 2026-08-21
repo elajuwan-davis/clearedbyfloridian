@@ -1374,7 +1374,7 @@ export function HeroStage() {
           hash="request"
           className="cl-glass foil-sheen inline-flex items-center px-6 py-2.5 text-[12.5px] no-underline transition-all duration-200 hover:scale-[1.03]"
           style={{
-            backgroundImage: "var(--gradient-copper)",
+            backgroundImage: "var(--gradient-copper-shine)", backgroundSize: "200% 100%", animation: "copperSweep 7s linear infinite",
             border: "1px solid color-mix(in oklab, var(--copper-deep) 70%, transparent)",
             backdropFilter: "blur(12px) saturate(140%)",
             WebkitBackdropFilter: "blur(12px) saturate(140%)",

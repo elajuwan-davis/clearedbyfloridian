@@ -2126,9 +2126,9 @@ html body .cl-dot.cl-dot { border-radius: 999px !important; }
 
 /* ── Copper / gold premium accents (public marketing site) ───────────── */
 :root {
-  --copper: oklch(0.605 0.098 55);
-  --copper-light: oklch(0.755 0.088 66);
-  --copper-deep: oklch(0.47 0.09 45);
+  --copper: oklch(0.555 0.107 47);
+  --copper-light: oklch(0.715 0.096 58);
+  --copper-deep: oklch(0.405 0.088 38);
   --gradient-copper: linear-gradient(
     135deg,
     var(--copper-deep) 0%,
@@ -2137,6 +2137,44 @@ html body .cl-dot.cl-dot { border-radius: 999px !important; }
     var(--copper) 72%,
     var(--copper-deep) 100%
   );
+  --gradient-copper-shine: linear-gradient(
+    100deg,
+    var(--copper-deep) 0%,
+    var(--copper) 22%,
+    var(--copper-light) 34%,
+    color-mix(in oklab, white 62%, var(--copper-light)) 42%,
+    var(--copper-light) 50%,
+    var(--copper) 64%,
+    var(--copper-deep) 82%,
+    var(--copper) 100%
+  );
+}
+
+@keyframes copperSweep {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
+}
+
+/* reflective copper text (numbers, numerals) */
+@utility copper-shine {
+  background-image: var(--gradient-copper-shine);
+  background-size: 200% 100%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  animation: copperSweep 6s linear infinite;
+}
+
+/* reflective copper surface for CTAs */
+@utility copper-metal {
+  background-image: var(--gradient-copper-shine);
+  background-size: 200% 100%;
+  animation: copperSweep 7s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .copper-shine,
+  .copper-metal { animation: none; }
 }
 
 @utility foil-sheen {

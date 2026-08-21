@@ -335,7 +335,7 @@ export function WatchItRun() {
     <section ref={wrapRef} style={{ background: GREEN, position: "relative", height: reduced ? "auto" : `${RUN_STEPS.length * 62}vh` }}>
       <div className={reduced ? "" : "sticky top-0"} style={{ minHeight: reduced ? undefined : "100vh", display: "flex", alignItems: "center", overflow: "hidden" }}>
         <div className="mx-auto w-full max-w-7xl px-5 py-20 lg:px-8">
-          <div className="copper-text text-[10.5px] font-bold uppercase" style={{ letterSpacing: "0.22em" }}>
+          <div className="text-[10.5px] font-bold uppercase" style={{ letterSpacing: "0.22em", color: "#FFFFFF", fontFamily: MONO }}>
             Watch it run
           </div>
           <h2
@@ -401,7 +401,7 @@ export function WatchItRun() {
           <div className="mt-14 grid items-start gap-6 md:grid-cols-[minmax(0,180px)_1fr] md:gap-12">
             <div
               key={`n-${active}`}
-              className="copper-text"
+              className="copper-shine"
               style={{ fontFamily: SERIF, fontWeight: 600, fontSize: "clamp(4rem, 9vw, 7.5rem)", lineHeight: 0.85, letterSpacing: "-0.05em", animation: "clRise 520ms cubic-bezier(0.16,1,0.3,1) both" }}
             >
               {String(active + 1).padStart(2, "0")}
