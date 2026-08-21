@@ -521,11 +521,19 @@ export function VictoriaSpotlight() {
                 {card.body}
               </p>
               <span
-                className="cl-hoverable mt-6 inline-flex cursor-default items-center gap-2 px-4 py-2.5 text-[12.5px]"
-                style={{ background: PLUM, color: OAT, fontWeight: 600 }}
+                className="cl-glass foil-sheen cl-hoverable mt-6 inline-flex cursor-default items-center gap-2 px-5 py-2.5 text-[12.5px]"
+                style={{
+                  background: "rgba(103,49,71,0.55)",
+                  color: OAT,
+                  fontWeight: 600,
+                  border: "1px solid rgba(250,243,230,0.22)",
+                  backdropFilter: "blur(12px) saturate(150%)",
+                  boxShadow: "0 10px 26px rgba(43,22,32,0.3), inset 0 1px 0 rgba(255,255,255,0.24)",
+                }}
               >
                 {card.action} <ArrowRight className="cl-arrow h-3.5 w-3.5" strokeWidth={2} />
               </span>
+
             </div>
 
             <div className="grid grid-cols-3" style={{ borderTop: `1px solid ${DARK_LINE}` }}>
