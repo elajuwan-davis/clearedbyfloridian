@@ -46,7 +46,7 @@ function Gate({ onPass }: { onPass: () => void }) {
 
   return (
     <div
-      className="flex min-h-screen items-center justify-center px-6"
+      className="cl-public flex min-h-screen items-center justify-center px-6"
       style={{ background: SLATE }}
     >
       <form
