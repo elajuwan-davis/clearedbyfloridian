@@ -2,7 +2,7 @@ import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { Lock, Share2 } from "lucide-react";
 import { INVESTOR_PASSCODE } from "@/lib/investor-access";
-import { DeckViewer, OAT, SLATE } from "@/components/pitch-deck-viewer";
+import { DeckViewer, OAT, PLUM, SLATE } from "@/components/pitch-deck-viewer";
 import { DeckSharePanel } from "@/components/deck-share-panel";
 
 export const Route = createFileRoute("/pitch-deck")({
@@ -49,7 +49,7 @@ function Gate({ onPass }: { onPass: () => void }) {
   const [error, setError] = useState(false);
 
   return (
-    <div className="cl-public flex min-h-screen items-center justify-center px-6" style={{ background: SLATE }}>
+    <div className="cl-public flex min-h-screen items-center justify-center px-6" style={{ background: OAT }}>
       <form
         onSubmit={(e) => {
           e.preventDefault();
@@ -58,14 +58,14 @@ function Gate({ onPass }: { onPass: () => void }) {
         }}
         className="w-full max-w-sm"
       >
-        <div className="flex items-center gap-2" style={{ color: OAT }}>
+        <div className="flex items-center gap-2" style={{ color: SLATE }}>
           <Lock className="h-4 w-4" strokeWidth={1.5} />
           <span className="text-[11px] uppercase tracking-[0.22em]">Private</span>
         </div>
-        <h1 className="mt-4 text-2xl" style={{ color: OAT, fontWeight: 500 }}>
+        <h1 className="mt-4 text-2xl" style={{ color: SLATE, fontWeight: 500 }}>
           Pitch deck
         </h1>
-        <p className="mt-2 text-sm" style={{ color: "rgba(250,243,230,0.7)" }}>
+        <p className="mt-2 text-sm" style={{ color: "rgba(47,79,79,0.72)" }}>
           Enter the passcode to view the deck.
         </p>
         <input
@@ -79,18 +79,18 @@ function Gate({ onPass }: { onPass: () => void }) {
           placeholder="Passcode"
           className="mt-6 w-full px-3 py-2.5 text-sm outline-none"
           style={{
-            border: "1px solid rgba(250,243,230,0.35)",
-            background: OAT,
-            color: "#111110",
-            caretColor: "#111110",
+            border: "1px solid #E0D3BC",
+            background: "#F3EAD9",
+            color: SLATE,
+            caretColor: SLATE,
           }}
         />
         {error && (
-          <div className="mt-2 text-[12.5px]" style={{ color: "#E9A0A0" }}>
+          <div className="mt-2 text-[12.5px]" style={{ color: "#A33A3A" }}>
             Incorrect passcode.
           </div>
         )}
-        <button type="submit" className="mt-4 w-full px-4 py-2.5 text-[13.5px]" style={{ background: OAT, color: SLATE, fontWeight: 600 }}>
+        <button type="submit" className="mt-4 w-full px-4 py-2.5 text-[13.5px]" style={{ background: PLUM, color: OAT, fontWeight: 600 }}>
           View deck
         </button>
       </form>

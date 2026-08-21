@@ -32,15 +32,15 @@ export const Route = createFileRoute("/investor")({
   component: InvestorPage,
 });
 
-const BG = "#2F4F4F";
-const SURFACE = "#2F4F4F";
-const LIGHT = "#F3EAD9";
+const BG = "#FAF3E6";
+const SURFACE = "#F3EAD9";
+const LIGHT = "#FAF3E6";
 const INK = "#2F4F4F";
-const BORDER = "#3F5C5A";
+const BORDER = "#E0D3BC";
 const BORDER_LT = "#DCD9D1";
-const TEAL = "#E6E6FA";
-const OFF = "#F3EAD9";
-const MUTED = "rgba(250, 243, 230, 0.62)";
+const TEAL = "#673147";
+const OFF = "#2F4F4F";
+const MUTED = "rgba(47, 79, 79, 0.68)";
 const MUTED_LT = "#6B6A5E";
 const SANS = "'Fraunces', 'Iowan Old Style', Georgia, serif";
 const MONO = "ui-monospace, Menlo, Monaco, monospace";

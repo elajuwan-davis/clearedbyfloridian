@@ -75,7 +75,6 @@ def run_assessment(diff: str, spec: str, model: str, api_key: str) -> dict:
     message = client.messages.create(
         model=model,
         max_tokens=4096,
-        temperature=0,
         system="You are a QA code reviewer. Always call the qa_assessment tool.",
         messages=[
             {

@@ -17,6 +17,7 @@ export const SLIDES = [s01, s02, s03, s04, s05, s06, s07, s08, s09, s10, s11, s1
 
 export const SLATE = "#2F4F4F";
 export const OAT = "#FAF3E6";
+export const PLUM = "#673147";
 
 export function DeckViewer({ footer }: { footer?: React.ReactNode }) {
   const [i, setI] = useState(0);
@@ -62,7 +63,7 @@ export function DeckViewer({ footer }: { footer?: React.ReactNode }) {
     <div
       ref={containerRef}
       className="cl-public relative flex h-screen w-full flex-col items-center justify-center overflow-hidden"
-      style={{ background: SLATE }}
+      style={{ background: OAT }}
     >
       <div
         className="relative w-full"
@@ -111,7 +112,7 @@ export function DeckViewer({ footer }: { footer?: React.ReactNode }) {
         aria-label="Previous slide"
         onClick={() => go(-1)}
         className="absolute left-3 top-1/2 -translate-y-1/2 p-2 opacity-30 transition-opacity hover:opacity-100"
-        style={{ color: OAT }}
+        style={{ color: SLATE }}
       >
         <ChevronLeft className="h-8 w-8" strokeWidth={1.5} />
       </button>
@@ -121,14 +122,14 @@ export function DeckViewer({ footer }: { footer?: React.ReactNode }) {
         aria-label="Next slide"
         onClick={() => go(1)}
         className="absolute right-3 top-1/2 -translate-y-1/2 p-2 opacity-30 transition-opacity hover:opacity-100"
-        style={{ color: OAT }}
+        style={{ color: SLATE }}
       >
         <ChevronRight className="h-8 w-8" strokeWidth={1.5} />
       </button>
 
       <div
         className="absolute right-4 top-4 flex items-center gap-4 text-[12px]"
-        style={{ color: "rgba(250,243,230,0.7)" }}
+        style={{ color: "rgba(47,79,79,0.7)" }}
       >
         {footer}
         <span>
@@ -148,7 +149,7 @@ export function DeckViewer({ footer }: { footer?: React.ReactNode }) {
             aria-label={`Go to slide ${idx + 1}`}
             onClick={() => setI(idx)}
             className="h-1.5 w-6 transition-opacity"
-            style={{ background: OAT, opacity: idx === i ? 1 : 0.28 }}
+            style={{ background: SLATE, opacity: idx === i ? 1 : 0.28 }}
           />
         ))}
       </div>
