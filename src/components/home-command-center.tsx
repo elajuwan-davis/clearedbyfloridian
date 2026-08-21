@@ -367,7 +367,7 @@ export function WatchItRun() {
                 return (
                   <div key={s.k} className="flex min-w-0 flex-col items-center" style={{ flex: 1 }}>
                     <span
-                      className="grid place-items-center"
+                      className={done ? "cl-dot grid place-items-center copper-metal" : "cl-dot grid place-items-center"}
                       style={{
                         width: now ? 15 : 11,
                         height: now ? 15 : 11,
@@ -375,10 +375,15 @@ export function WatchItRun() {
                         borderRadius: 999,
                         border: `1px solid ${done ? COPPER : "rgba(250,243,230,0.3)"}`,
                         backgroundColor: done ? COPPER : "transparent",
-                        boxShadow: now ? `0 0 0 5px ${COPPER}22, 0 0 10px ${COPPER}88` : "none",
+                        boxShadow: now
+                          ? `0 0 0 5px ${COPPER}22, 0 0 10px ${COPPER}88, inset 0 1px 0 rgba(255,255,255,0.4)`
+                          : done
+                            ? "inset 0 1px 0 rgba(255,255,255,0.35)"
+                            : "none",
                         transition: "all 320ms cubic-bezier(0.22,1,0.36,1)",
                       }}
                     />
+
                     <span
                       className="mt-3 hidden truncate text-[10px] uppercase sm:block"
                       style={{
