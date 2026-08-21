@@ -1356,19 +1356,21 @@ export function HeroStage() {
       <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
         <Link
           to="/contact"
-          className="cl-glass inline-flex items-center px-6 py-2.5 text-[12.5px] no-underline transition-all duration-200 hover:scale-[1.03]"
+          className="cl-glass foil-sheen inline-flex items-center px-6 py-2.5 text-[12.5px] no-underline transition-all duration-200 hover:scale-[1.03]"
           style={{
-            background: "rgba(47,79,79,0.10)",
-            border: "1px solid rgba(47,79,79,0.28)",
+            backgroundImage: "var(--gradient-copper)",
+            border: "1px solid color-mix(in oklab, var(--copper-deep) 70%, transparent)",
             backdropFilter: "blur(12px) saturate(140%)",
             WebkitBackdropFilter: "blur(12px) saturate(140%)",
-            color: GREEN,
+            color: "#FFF8EC",
             fontWeight: 600,
-            boxShadow: "inset 0 1px 0 rgba(255,255,255,0.55), 0 10px 24px -16px rgba(43,22,32,0.4)",
+            boxShadow:
+              "inset 0 1px 0 rgba(255,255,255,0.45), 0 14px 30px -16px color-mix(in oklab, var(--copper-deep) 70%, transparent)",
           }}
         >
           See it in action
         </Link>
+
         <Link
           to="/join"
           hash="request"
