@@ -3,10 +3,15 @@ import { Link } from "@tanstack/react-router";
 import mark3d from "@/assets/cleard-3d-mark.png.asset.json";
 import mark2d from "@/assets/cleard-mark-2d.png.asset.json";
 import heroBackdrop from "@/assets/hero-construction.jpg";
+import heroVideoMp4 from "@/assets/hero-loop.mp4.asset.json";
+import heroVideoWebm from "@/assets/hero-loop.webm.asset.json";
 import { HomeMotionStyles } from "@/components/home-command-center";
 import { HeroStage } from "@/components/hero-stage";
 import { TRADES } from "@/lib/trades";
 
+const HERO_ASSET_ORIGIN = "https://project--0b3e81be-56ac-4636-ba0c-f0ab606037c7.lovable.app";
+const HERO_VIDEO_MP4_URL = `${HERO_ASSET_ORIGIN}${heroVideoMp4.url}`;
+const HERO_VIDEO_WEBM_URL = `${HERO_ASSET_ORIGIN}${heroVideoWebm.url}`;
 
 /* ---------------------- NORDIC LUXURY BRAND TOKENS ---------------------- */
 
@@ -240,7 +245,7 @@ function HeroNav({ logoSlot, logoVisible }: { logoSlot: React.Ref<HTMLDivElement
             hash="request"
             className="cl-glass foil-sheen inline-flex items-center px-5 py-2.5 text-[13px] no-underline transition-transform duration-200 hover:scale-[1.03]"
             style={{
-              backgroundImage: "var(--gradient-copper-shine)", backgroundSize: "200% 100%", animation: "copperSweep 7s linear infinite",
+              backgroundImage: "var(--gradient-copper)",
               border: "1px solid color-mix(in oklab, var(--copper-deep) 70%, transparent)",
               backdropFilter: "blur(12px) saturate(140%)",
               WebkitBackdropFilter: "blur(12px) saturate(140%)",
@@ -292,7 +297,41 @@ function HeroNav({ logoSlot, logoVisible }: { logoSlot: React.Ref<HTMLDivElement
 
 export function ClearedHero() {
   const navSlot = useRef<HTMLDivElement | null>(null);
+  const bgVideo = useRef<HTMLVideoElement | null>(null);
   const { beat, dockTf, stageMark, skip } = useHeroSequence(navSlot);
+
+  /* keep the backdrop video playing forever, whatever the browser does */
+  useEffect(() => {
+    const v = bgVideo.current;
+    if (!v) return;
+    const kick = () => {
+      v.muted = true;
+      v.loop = true;
+      const p = v.play();
+      if (p && typeof p.catch === "function") p.catch(() => {});
+    };
+    const keepLooping = () => {
+      if (Number.isFinite(v.duration) && v.duration - v.currentTime < 0.12) {
+        v.currentTime = 0;
+        kick();
+      }
+    };
+    kick();
+    v.addEventListener("pause", kick);
+    v.addEventListener("ended", kick);
+    v.addEventListener("timeupdate", keepLooping);
+    document.addEventListener("visibilitychange", kick);
+    const id = window.setInterval(() => {
+      if (v.paused || v.ended) kick();
+    }, 1500);
+    return () => {
+      v.removeEventListener("pause", kick);
+      v.removeEventListener("ended", kick);
+      v.removeEventListener("timeupdate", keepLooping);
+      document.removeEventListener("visibilitychange", kick);
+      window.clearInterval(id);
+    };
+  }, []);
 
   /* The hero moment now lives in HeroStage (mark + capability boxes + app). */
   const running = false;
@@ -322,26 +361,31 @@ export function ClearedHero() {
 
 
 
-      {/* muted construction-site backdrop, bottom-anchored and washed out so copy stays legible */}
-      <div
+      {/* muted construction-site backdrop video — always autoplaying, silent, endlessly looping */}
+      <video
+        ref={bgVideo}
         aria-hidden
-        className="pointer-events-none absolute inset-x-0 bottom-0 top-0"
-        style={{
-          backgroundImage: `url(${heroBackdrop})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center bottom",
-          backgroundRepeat: "no-repeat",
-          opacity: 0.72,
-          filter: "saturate(0.9)",
-        }}
-      />
+        autoPlay
+        muted
+        loop
+        playsInline
+        preload="auto"
+        disablePictureInPicture
+        poster={heroBackdrop}
+        className="pointer-events-none absolute inset-x-0 bottom-0 top-0 h-full w-full"
+        style={{ objectFit: "cover", objectPosition: "center", opacity: 1, transform: "translateZ(0)" }}
+      >
+        <source src={HERO_VIDEO_WEBM_URL} type="video/webm" />
+        <source src={HERO_VIDEO_MP4_URL} type="video/mp4" />
+      </video>
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0"
         style={{
-          background: `linear-gradient(to bottom, rgba(250,243,230,0.86) 0%, rgba(250,243,230,0.62) 38%, rgba(250,243,230,0.28) 72%, rgba(250,243,230,0.42) 100%)`,
+          background: `linear-gradient(to bottom, rgba(250,243,230,0.42) 0%, rgba(250,243,230,0.18) 40%, rgba(250,243,230,0.06) 72%, rgba(250,243,230,0.12) 100%)`,
         }}
       />
+
 
       {/* Beat 3 — the paperwork mess that the mark clears away */}
       {running && (
