@@ -319,7 +319,7 @@ export function WatchItRun() {
   return (
     <section style={{ background: DARK }}>
       <div className="mx-auto max-w-7xl px-5 py-24 lg:px-8 md:py-32">
-        <div className="text-[10.5px] font-bold uppercase" style={{ letterSpacing: "0.22em", color: PLUM_LT }}>
+        <div className="copper-text text-[10.5px] font-bold uppercase" style={{ letterSpacing: "0.22em" }}>
           Watch it run
         </div>
         <h2
@@ -328,11 +328,30 @@ export function WatchItRun() {
         >
           From signed contract
           <br />
-          <span style={{ fontStyle: "italic", color: GREEN_LT }}>to certificate of occupancy.</span>
+          <span className="copper-text" style={{ fontStyle: "italic" }}>to certificate of occupancy.</span>
         </h2>
         <p className="mt-6 max-w-xl text-[16px] leading-relaxed" style={{ color: "rgba(250,243,230,0.58)" }}>
           One project, start to finish, without a single status call. Scroll it.
         </p>
+
+        {/* scroll progress rail */}
+        <div className="mt-10 flex items-center gap-4">
+          <div className="h-px flex-1" style={{ background: "rgba(250,243,230,0.14)" }}>
+            <div
+              className="h-px"
+              style={{
+                width: `${((active + 1) / RUN_STEPS.length) * 100}%`,
+                backgroundImage: "var(--gradient-copper)",
+                transition: "width 600ms cubic-bezier(0.22,1,0.36,1)",
+              }}
+            />
+          </div>
+          <span className="copper-text text-[10.5px] tabular-nums" style={{ fontFamily: MONO, letterSpacing: "0.18em" }}>
+            {String(active + 1).padStart(2, "0")} / {String(RUN_STEPS.length).padStart(2, "0")}
+          </span>
+        </div>
+
+
 
         <div className="mt-16 grid gap-10 lg:grid-cols-[300px_1fr] lg:gap-16">
           {/* spine */}
