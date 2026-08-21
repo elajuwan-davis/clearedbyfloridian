@@ -177,14 +177,14 @@ function Deck() {
         <button
           type="button"
           data-plain
-          aria-label="Previous slide"
+          data-plain aria-label="Previous slide"
           onClick={() => go(-1)}
           className="absolute inset-y-0 left-0 w-1/2 cursor-w-resize bg-transparent"
         />
         <button
           type="button"
           data-plain
-          aria-label="Next slide"
+          data-plain aria-label="Next slide"
           onClick={() => go(1)}
           className="absolute inset-y-0 right-0 w-1/2 cursor-e-resize bg-transparent"
         />
@@ -193,7 +193,7 @@ function Deck() {
       {/* arrows */}
       <button
         type="button"
-        aria-label="Previous slide"
+        data-plain aria-label="Previous slide"
         onClick={() => go(-1)}
         className="absolute left-3 top-1/2 -translate-y-1/2 p-2 opacity-30 transition-opacity hover:opacity-100"
         style={{ color: OAT }}
@@ -202,7 +202,7 @@ function Deck() {
       </button>
       <button
         type="button"
-        aria-label="Next slide"
+        data-plain aria-label="Next slide"
         onClick={() => go(1)}
         className="absolute right-3 top-1/2 -translate-y-1/2 p-2 opacity-30 transition-opacity hover:opacity-100"
         style={{ color: OAT }}
@@ -218,7 +218,7 @@ function Deck() {
         <span>
           {i + 1} / {SLIDES.length}
         </span>
-        <button type="button" aria-label="Fullscreen" onClick={fullscreen} className="p-1 hover:opacity-100">
+        <button type="button" data-plain aria-label="Fullscreen" onClick={fullscreen} className="p-1 hover:opacity-100">
           <Maximize2 className="h-4 w-4" strokeWidth={1.5} />
         </button>
       </div>
