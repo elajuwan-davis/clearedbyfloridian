@@ -366,9 +366,9 @@ export function WatchItRun() {
                         className="grid h-6 w-6 place-items-center text-[9px] tabular-nums"
                         style={{
                           fontFamily: MONO,
-                          border: `1px solid ${on ? GREEN_LT : "rgba(250,243,230,0.2)"}`,
-                          background: idx === active ? GREEN_LT : "transparent",
-                          color: idx === active ? DARK : on ? GREEN_LT : "rgba(250,243,230,0.3)",
+                          border: `1px solid ${on ? COPPER : "rgba(250,243,230,0.2)"}`,
+                          backgroundImage: idx === active ? "var(--gradient-copper)" : "none",
+                          color: idx === active ? "#1B1206" : on ? COPPER : "rgba(250,243,230,0.3)",
                           transition: "all 350ms ease",
                         }}
                       >
@@ -377,9 +377,10 @@ export function WatchItRun() {
                       {idx < RUN_STEPS.length - 1 && (
                         <span
                           className="w-px flex-1"
-                          style={{ height: 46, background: on ? GREEN_LT : "rgba(250,243,230,0.16)", transition: "background 350ms ease" }}
+                          style={{ height: 46, background: on ? COPPER : "rgba(250,243,230,0.16)", transition: "background 350ms ease" }}
                         />
                       )}
+
                     </div>
                     <span
                       className="pt-1 text-[11px] uppercase"
