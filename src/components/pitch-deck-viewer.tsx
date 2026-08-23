@@ -50,9 +50,11 @@ export function DeckViewer({ footer }: { footer?: React.ReactNode }) {
 
   useEffect(() => {
     const t = window.setTimeout(() => {
-      SLIDES.forEach((src) => {
-        const img = new Image();
-        img.src = src;
+      SLIDES.forEach((s) => {
+        const a = new Image();
+        a.src = s.img;
+        const b = new Image();
+        b.src = s.photo;
       });
     }, 800);
     return () => window.clearTimeout(t);
@@ -85,16 +87,35 @@ export function DeckViewer({ footer }: { footer?: React.ReactNode }) {
           if (Math.abs(end - start) > 40) go(end < start ? 1 : -1);
         }}
       >
-        {SLIDES.map((src, idx) => (
-          <img
-            key={src}
-            src={src}
-            alt={`Slide ${idx + 1} of ${SLIDES.length}`}
-            loading={idx <= i + 1 ? "eager" : "lazy"}
-            className="absolute inset-0 h-full w-full object-contain transition-opacity duration-300"
-            style={{ opacity: idx === i ? 1 : 0, pointerEvents: "none" }}
-          />
+        {SLIDES.map((s, idx) => (
+          <div
+            key={s.img}
+            className="absolute inset-0 overflow-hidden transition-opacity duration-300"
+            style={{
+              opacity: idx === i ? 1 : 0,
+              pointerEvents: "none",
+              backgroundColor: s.light ? OAT : SLATE,
+              backgroundImage: `url(${s.photo})`,
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+            }}
+          >
+            {/* Dark (or light-tinted, on light slides) overlay so slide text stays legible */}
+            <div
+              className="absolute inset-0"
+              style={{
+                background: s.light ? "rgba(250,243,230,0.82)" : "rgba(20,34,34,0.62)",
+              }}
+            />
+            <img
+              src={s.img}
+              alt={`Slide ${idx + 1} of ${SLIDES.length}`}
+              loading={idx <= i + 1 ? "eager" : "lazy"}
+              className="absolute inset-0 h-full w-full object-contain"
+            />
+          </div>
         ))}
+
 
         <button
           type="button"
