@@ -8,19 +8,20 @@ type Slide = { img: string; bgImage: string };
 
 /** Slide artwork + themed background photo, both served locally from /public/deck. */
 export const SLIDES: Slide[] = [
-  { img: "/deck/slide-01.png", bgImage: "/deck/bg/bg-01.jpg" },
-  { img: "/deck/slide-02.png", bgImage: "/deck/bg/bg-02.jpg" },
-  { img: "/deck/slide-03.png", bgImage: "/deck/bg/bg-03.jpg" },
-  { img: "/deck/slide-04.png", bgImage: "/deck/bg/bg-04.jpg" },
-  { img: "/deck/slide-05.png", bgImage: "/deck/bg/bg-05.jpg" },
-  { img: "/deck/slide-06.png", bgImage: "/deck/bg/bg-06.jpg" },
-  { img: "/deck/slide-07.png", bgImage: "/deck/bg/bg-07.jpg" },
-  { img: "/deck/slide-08.png", bgImage: "/deck/bg/bg-08.jpg" },
-  { img: "/deck/slide-09.png", bgImage: "/deck/bg/bg-09.jpg" },
-  { img: "/deck/slide-10.png", bgImage: "/deck/bg/bg-10.jpg" },
-  { img: "/deck/slide-11.png", bgImage: "/deck/bg/bg-11.jpg" },
-  { img: "/deck/slide-12.png", bgImage: "/deck/bg/bg-12.jpg" },
+  { img: "/__l5e/assets-v1/611a17c5-135d-42e1-a740-3877fc0dac1c/slide-01.png", bgImage: "/deck/bg/bg-01.jpg" },
+  { img: "/__l5e/assets-v1/2744df98-a0c2-4aaf-a0c8-805d88087994/slide-02.png", bgImage: "/deck/bg/bg-02.jpg" },
+  { img: "/__l5e/assets-v1/89a46683-2c0f-446d-aa85-a4fdb8913d60/slide-03.png", bgImage: "/deck/bg/bg-03.jpg" },
+  { img: "/__l5e/assets-v1/b588f044-41ea-469d-8cc7-829aa69a2dd0/slide-04.png", bgImage: "/deck/bg/bg-04.jpg" },
+  { img: "/__l5e/assets-v1/b91c1551-e8c7-4404-8d3b-d0758ac22620/slide-05.png", bgImage: "/deck/bg/bg-05.jpg" },
+  { img: "/__l5e/assets-v1/80a60ccf-da4d-4198-beb1-eb9e58ce9df0/slide-06.png", bgImage: "/deck/bg/bg-06.jpg" },
+  { img: "/__l5e/assets-v1/b8845560-bc11-449a-a96f-1ef1f611d361/slide-07.png", bgImage: "/deck/bg/bg-07.jpg" },
+  { img: "/__l5e/assets-v1/bbe59328-efdb-43ac-9197-bcf4ed6a369b/slide-08.png", bgImage: "/deck/bg/bg-08.jpg" },
+  { img: "/__l5e/assets-v1/1ac8be61-fb62-4506-92af-c0c1a516474d/slide-09.png", bgImage: "/deck/bg/bg-09.jpg" },
+  { img: "/__l5e/assets-v1/e04efe09-d41a-48a2-a2df-d550ede96e7c/slide-10.png", bgImage: "/deck/bg/bg-10.jpg" },
+  { img: "/__l5e/assets-v1/9af5dc30-8837-451e-ad8c-d8c6701a85fd/slide-11.png", bgImage: "/deck/bg/bg-11.jpg" },
+  { img: "/__l5e/assets-v1/d11b06d4-0c90-4456-974b-2db69833d6e8/slide-12.png", bgImage: "/deck/bg/bg-12.jpg" },
 ];
+
 
 
 
