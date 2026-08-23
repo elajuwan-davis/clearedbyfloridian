@@ -4,25 +4,26 @@ import { ChevronLeft, ChevronRight, Maximize2 } from "lucide-react";
 export const SLATE = "#2F4F4F";
 export const OAT = "#FAF3E6";
 
-const U = (id: string) => `https://images.unsplash.com/${id}?auto=format&fit=crop&w=1600&q=80`;
+const P = (seed: string) => `https://picsum.photos/seed/${seed}/1600/900`;
 
 type Slide = { img: string; photo: string; light: boolean };
 
-/** Slide artwork (transparent text/graphics layer) over an Unsplash photo + dark overlay. */
+/** Slide artwork (transparent text/graphics layer) over a photo background + overlay. */
 export const SLIDES: Slide[] = [
-  { img: "/deck/slide-01.png", photo: U("photo-1504307651254-35680f356dfd"), light: false },
-  { img: "/deck/slide-02.png", photo: U("photo-1568992687947-868a62a9f521"), light: true },
-  { img: "/deck/slide-03.png", photo: U("photo-1486325212027-8081e485255e"), light: false },
-  { img: "/deck/slide-04.png", photo: U("photo-1555441630-57e4f2e5f5c7"), light: true },
-  { img: "/deck/slide-05.png", photo: U("photo-1581094794329-c8112a89af12"), light: false },
-  { img: "/deck/slide-06.png", photo: U("photo-1558618666-fcd25c85cd64"), light: false },
-  { img: "/deck/slide-07.png", photo: U("photo-1477959858617-67f85cf4f1df"), light: true },
-  { img: "/deck/slide-08.png", photo: U("photo-1590846406792-0adc7f938f1d"), light: true },
-  { img: "/deck/slide-09.png", photo: U("photo-1521791136064-7986c2920216"), light: false },
-  { img: "/deck/slide-10.png", photo: U("photo-1480714378408-67cf0d13bc1b"), light: true },
-  { img: "/deck/slide-11.png", photo: U("photo-1541888946425-d81bb19240f5"), light: false },
-  { img: "/deck/slide-12.png", photo: U("photo-1449824913935-59a10b8d2000"), light: false },
+  { img: "/deck/slide-01.png", photo: P("construction-crane"), light: false },
+  { img: "/deck/slide-02.png", photo: P("office-paperwork"), light: true },
+  { img: "/deck/slide-03.png", photo: P("city-skyline"), light: false },
+  { img: "/deck/slide-04.png", photo: P("government-building"), light: true },
+  { img: "/deck/slide-05.png", photo: P("contractor-work"), light: false },
+  { img: "/deck/slide-06.png", photo: P("highway-infrastructure"), light: false },
+  { img: "/deck/slide-07.png", photo: P("aerial-city"), light: true },
+  { img: "/deck/slide-08.png", photo: P("commercial-building"), light: true },
+  { img: "/deck/slide-09.png", photo: P("business-meeting"), light: false },
+  { img: "/deck/slide-10.png", photo: P("city-night"), light: true },
+  { img: "/deck/slide-11.png", photo: P("steel-glass-building"), light: false },
+  { img: "/deck/slide-12.png", photo: P("aerial-neighborhood"), light: false },
 ];
+
 
 
 export function DeckViewer({ footer }: { footer?: React.ReactNode }) {
@@ -95,24 +96,18 @@ export function DeckViewer({ footer }: { footer?: React.ReactNode }) {
               opacity: idx === i ? 1 : 0,
               pointerEvents: "none",
               backgroundColor: s.light ? OAT : SLATE,
+              backgroundImage: `url('${s.photo}')`,
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+              backgroundRepeat: "no-repeat",
             }}
           >
-            {/* Photo layer — cover / center, softened so slide content reads cleanly */}
-            <div
-              className="absolute inset-0"
-              style={{
-                backgroundImage: `url(${s.photo})`,
-                backgroundSize: "cover",
-                backgroundPosition: "center",
-                filter: "blur(2px) saturate(0.7)",
-                transform: "scale(1.03)",
-              }}
-            />
             {/* Overlay so slide text stays fully legible */}
             <div
               className="absolute inset-0"
               style={{
-                background: s.light ? "rgba(250,243,230,0.9)" : "rgba(18,32,32,0.6)",
+                background: s.light ? "rgba(250,243,230,0.88)" : "rgba(0,0,0,0.6)",
+                zIndex: 0,
               }}
             />
             <img
@@ -120,8 +115,10 @@ export function DeckViewer({ footer }: { footer?: React.ReactNode }) {
               alt={`Slide ${idx + 1} of ${SLIDES.length}`}
               loading={idx <= i + 1 ? "eager" : "lazy"}
               className="absolute inset-0 h-full w-full object-contain"
+              style={{ position: "absolute", zIndex: 1 }}
             />
           </div>
+
         ))}
 
 
