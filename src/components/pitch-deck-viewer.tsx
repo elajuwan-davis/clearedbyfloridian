@@ -1,22 +1,29 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight, Maximize2 } from "lucide-react";
-import s01 from "@/assets/deck/slide-01.png.asset.json";
-import s02 from "@/assets/deck/slide-02.png.asset.json";
-import s03 from "@/assets/deck/slide-03.png.asset.json";
-import s04 from "@/assets/deck/slide-04.png.asset.json";
-import s05 from "@/assets/deck/slide-05.png.asset.json";
-import s06 from "@/assets/deck/slide-06.png.asset.json";
-import s07 from "@/assets/deck/slide-07.png.asset.json";
-import s08 from "@/assets/deck/slide-08.png.asset.json";
-import s09 from "@/assets/deck/slide-09.png.asset.json";
-import s10 from "@/assets/deck/slide-10.png.asset.json";
-import s11 from "@/assets/deck/slide-11.png.asset.json";
-import s12 from "@/assets/deck/slide-12.png.asset.json";
-
-export const SLIDES = [s01, s02, s03, s04, s05, s06, s07, s08, s09, s10, s11, s12].map((a) => a.url);
 
 export const SLATE = "#2F4F4F";
 export const OAT = "#FAF3E6";
+
+const U = (id: string) => `https://images.unsplash.com/${id}?auto=format&fit=crop&w=1600&q=80`;
+
+type Slide = { img: string; photo: string; light: boolean };
+
+/** Slide artwork (transparent text/graphics layer) over an Unsplash photo + dark overlay. */
+export const SLIDES: Slide[] = [
+  { img: "/deck/slide-01.png", photo: U("photo-1504307651254-35680f356dfd"), light: false },
+  { img: "/deck/slide-02.png", photo: U("photo-1568992687947-868a62a9f521"), light: true },
+  { img: "/deck/slide-03.png", photo: U("photo-1486325212027-8081e485255e"), light: false },
+  { img: "/deck/slide-04.png", photo: U("photo-1555441630-57e4f2e5f5c7"), light: true },
+  { img: "/deck/slide-05.png", photo: U("photo-1581094794329-c8112a89af12"), light: false },
+  { img: "/deck/slide-06.png", photo: U("photo-1558618666-fcd25c85cd64"), light: false },
+  { img: "/deck/slide-07.png", photo: U("photo-1477959858617-67f85cf4f1df"), light: true },
+  { img: "/deck/slide-08.png", photo: U("photo-1590846406792-0adc7f938f1d"), light: true },
+  { img: "/deck/slide-09.png", photo: U("photo-1521791136064-7986c2920216"), light: false },
+  { img: "/deck/slide-10.png", photo: U("photo-1480714378408-67cf0d13bc1b"), light: true },
+  { img: "/deck/slide-11.png", photo: U("photo-1541888946425-d81bb19240f5"), light: false },
+  { img: "/deck/slide-12.png", photo: U("photo-1449824913935-59a10b8d2000"), light: false },
+];
+
 
 export function DeckViewer({ footer }: { footer?: React.ReactNode }) {
   const [i, setI] = useState(0);
