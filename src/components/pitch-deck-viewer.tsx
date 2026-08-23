@@ -168,9 +168,10 @@ export function DeckViewer({ footer }: { footer?: React.ReactNode }) {
       </div>
 
       <div className="absolute bottom-5 left-0 right-0 flex items-center justify-center gap-2">
-        {SLIDES.map((src, idx) => (
+        {SLIDES.map((s, idx) => (
           <button
-            key={src}
+            key={s.img}
+
             type="button"
             data-plain
             aria-label={`Go to slide ${idx + 1}`}
