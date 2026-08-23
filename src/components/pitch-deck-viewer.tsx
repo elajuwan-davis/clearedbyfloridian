@@ -4,23 +4,24 @@ import { ChevronLeft, ChevronRight, Maximize2 } from "lucide-react";
 export const SLATE = "#2F4F4F";
 export const OAT = "#FAF3E6";
 
-type Slide = { img: string; light: boolean };
+type Slide = { img: string; bgImage: string; light: boolean };
 
-/** Slide artwork served locally from /public/deck — no external image URLs. */
+/** Slide artwork served locally from /public/deck over a photo background. */
 export const SLIDES: Slide[] = [
-  { img: "/deck/slide-01.png", light: false },
-  { img: "/deck/slide-02.png", light: true },
-  { img: "/deck/slide-03.png", light: false },
-  { img: "/deck/slide-04.png", light: true },
-  { img: "/deck/slide-05.png", light: false },
-  { img: "/deck/slide-06.png", light: false },
-  { img: "/deck/slide-07.png", light: true },
-  { img: "/deck/slide-08.png", light: true },
-  { img: "/deck/slide-09.png", light: false },
-  { img: "/deck/slide-10.png", light: true },
-  { img: "/deck/slide-11.png", light: false },
-  { img: "/deck/slide-12.png", light: false },
+  { img: "/deck/slide-01.png", bgImage: "https://picsum.photos/seed/construction-crane-steel/1600/900", light: false },
+  { img: "/deck/slide-02.png", bgImage: "https://picsum.photos/seed/ancient-rome-ruins-columns/1600/900", light: true },
+  { img: "/deck/slide-03.png", bgImage: "https://picsum.photos/seed/city-aerial-skyscraper/1600/900", light: false },
+  { img: "/deck/slide-04.png", bgImage: "https://picsum.photos/seed/government-capitol-building/1600/900", light: true },
+  { img: "/deck/slide-05.png", bgImage: "https://picsum.photos/seed/ai-technology-circuit/1600/900", light: false },
+  { img: "/deck/slide-06.png", bgImage: "https://picsum.photos/seed/blueprint-architecture-plan/1600/900", light: false },
+  { img: "/deck/slide-07.png", bgImage: "https://picsum.photos/seed/urban-construction-site/1600/900", light: true },
+  { img: "/deck/slide-08.png", bgImage: "https://picsum.photos/seed/ancient-greek-parthenon/1600/900", light: true },
+  { img: "/deck/slide-09.png", bgImage: "https://picsum.photos/seed/crane-skyline-workers/1600/900", light: false },
+  { img: "/deck/slide-10.png", bgImage: "https://picsum.photos/seed/glass-modern-tower/1600/900", light: true },
+  { img: "/deck/slide-11.png", bgImage: "https://picsum.photos/seed/concrete-steel-bridge/1600/900", light: false },
+  { img: "/deck/slide-12.png", bgImage: "https://picsum.photos/seed/future-city-horizon/1600/900", light: false },
 ];
+
 
 
 
