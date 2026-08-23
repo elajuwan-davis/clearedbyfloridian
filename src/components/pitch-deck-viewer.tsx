@@ -4,22 +4,22 @@ import { ChevronLeft, ChevronRight, Maximize2 } from "lucide-react";
 export const SLATE = "#2F4F4F";
 export const OAT = "#FAF3E6";
 
-type Slide = { img: string; bgImage: string; light: boolean };
+type Slide = { img: string; bgImage: string };
 
 /** Slide artwork + themed background photo, both served locally from /public/deck. */
 export const SLIDES: Slide[] = [
-  { img: "/deck/slide-01.png", bgImage: "/deck/bg/bg-01.jpg", light: false },
-  { img: "/deck/slide-02.png", bgImage: "/deck/bg/bg-02.jpg", light: true },
-  { img: "/deck/slide-03.png", bgImage: "/deck/bg/bg-03.jpg", light: false },
-  { img: "/deck/slide-04.png", bgImage: "/deck/bg/bg-04.jpg", light: true },
-  { img: "/deck/slide-05.png", bgImage: "/deck/bg/bg-05.jpg", light: false },
-  { img: "/deck/slide-06.png", bgImage: "/deck/bg/bg-06.jpg", light: false },
-  { img: "/deck/slide-07.png", bgImage: "/deck/bg/bg-07.jpg", light: true },
-  { img: "/deck/slide-08.png", bgImage: "/deck/bg/bg-08.jpg", light: true },
-  { img: "/deck/slide-09.png", bgImage: "/deck/bg/bg-09.jpg", light: false },
-  { img: "/deck/slide-10.png", bgImage: "/deck/bg/bg-10.jpg", light: true },
-  { img: "/deck/slide-11.png", bgImage: "/deck/bg/bg-11.jpg", light: false },
-  { img: "/deck/slide-12.png", bgImage: "/deck/bg/bg-12.jpg", light: false },
+  { img: "/deck/slide-01.png", bgImage: "/deck/bg/bg-01.jpg" },
+  { img: "/deck/slide-02.png", bgImage: "/deck/bg/bg-02.jpg" },
+  { img: "/deck/slide-03.png", bgImage: "/deck/bg/bg-03.jpg" },
+  { img: "/deck/slide-04.png", bgImage: "/deck/bg/bg-04.jpg" },
+  { img: "/deck/slide-05.png", bgImage: "/deck/bg/bg-05.jpg" },
+  { img: "/deck/slide-06.png", bgImage: "/deck/bg/bg-06.jpg" },
+  { img: "/deck/slide-07.png", bgImage: "/deck/bg/bg-07.jpg" },
+  { img: "/deck/slide-08.png", bgImage: "/deck/bg/bg-08.jpg" },
+  { img: "/deck/slide-09.png", bgImage: "/deck/bg/bg-09.jpg" },
+  { img: "/deck/slide-10.png", bgImage: "/deck/bg/bg-10.jpg" },
+  { img: "/deck/slide-11.png", bgImage: "/deck/bg/bg-11.jpg" },
+  { img: "/deck/slide-12.png", bgImage: "/deck/bg/bg-12.jpg" },
 ];
 
 
