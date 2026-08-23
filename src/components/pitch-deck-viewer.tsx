@@ -4,25 +4,24 @@ import { ChevronLeft, ChevronRight, Maximize2 } from "lucide-react";
 export const SLATE = "#2F4F4F";
 export const OAT = "#FAF3E6";
 
-const P = (seed: string) => `https://picsum.photos/seed/${seed}/1600/900`;
+type Slide = { img: string; light: boolean };
 
-type Slide = { img: string; photo: string; light: boolean };
-
-/** Slide artwork (transparent text/graphics layer) over a photo background + overlay. */
+/** Slide artwork served locally from /public/deck — no external image URLs. */
 export const SLIDES: Slide[] = [
-  { img: "/deck/slide-01.png", photo: P("construction-crane"), light: false },
-  { img: "/deck/slide-02.png", photo: P("office-paperwork"), light: true },
-  { img: "/deck/slide-03.png", photo: P("city-skyline"), light: false },
-  { img: "/deck/slide-04.png", photo: P("government-building"), light: true },
-  { img: "/deck/slide-05.png", photo: P("contractor-work"), light: false },
-  { img: "/deck/slide-06.png", photo: P("highway-infrastructure"), light: false },
-  { img: "/deck/slide-07.png", photo: P("aerial-city"), light: true },
-  { img: "/deck/slide-08.png", photo: P("commercial-building"), light: true },
-  { img: "/deck/slide-09.png", photo: P("business-meeting"), light: false },
-  { img: "/deck/slide-10.png", photo: P("city-night"), light: true },
-  { img: "/deck/slide-11.png", photo: P("steel-glass-building"), light: false },
-  { img: "/deck/slide-12.png", photo: P("aerial-neighborhood"), light: false },
+  { img: "/deck/slide-01.png", light: false },
+  { img: "/deck/slide-02.png", light: true },
+  { img: "/deck/slide-03.png", light: false },
+  { img: "/deck/slide-04.png", light: true },
+  { img: "/deck/slide-05.png", light: false },
+  { img: "/deck/slide-06.png", light: false },
+  { img: "/deck/slide-07.png", light: true },
+  { img: "/deck/slide-08.png", light: true },
+  { img: "/deck/slide-09.png", light: false },
+  { img: "/deck/slide-10.png", light: true },
+  { img: "/deck/slide-11.png", light: false },
+  { img: "/deck/slide-12.png", light: false },
 ];
+
 
 
 
@@ -54,8 +53,6 @@ export function DeckViewer({ footer }: { footer?: React.ReactNode }) {
       SLIDES.forEach((s) => {
         const a = new Image();
         a.src = s.img;
-        const b = new Image();
-        b.src = s.photo;
       });
     }, 800);
     return () => window.clearTimeout(t);
@@ -96,28 +93,18 @@ export function DeckViewer({ footer }: { footer?: React.ReactNode }) {
               opacity: idx === i ? 1 : 0,
               pointerEvents: "none",
               backgroundColor: s.light ? OAT : SLATE,
-              backgroundImage: `url('${s.photo}')`,
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-              backgroundRepeat: "no-repeat",
             }}
           >
-            {/* Overlay so slide text stays fully legible */}
-            <div
-              className="absolute inset-0"
-              style={{
-                background: s.light ? "rgba(250,243,230,0.88)" : "rgba(0,0,0,0.6)",
-                zIndex: 0,
-              }}
-            />
             <img
               src={s.img}
               alt={`Slide ${idx + 1} of ${SLIDES.length}`}
               loading={idx <= i + 1 ? "eager" : "lazy"}
+              width="100%"
               className="absolute inset-0 h-full w-full object-contain"
-              style={{ position: "absolute", zIndex: 1 }}
+              style={{ display: "block" }}
             />
           </div>
+
 
         ))}
 
