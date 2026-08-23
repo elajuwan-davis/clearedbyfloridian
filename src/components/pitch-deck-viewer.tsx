@@ -99,7 +99,7 @@ export function DeckViewer({ footer }: { footer?: React.ReactNode }) {
               backgroundSize: "cover",
               backgroundPosition: "center",
               backgroundRepeat: "no-repeat",
-              backgroundColor: s.light ? OAT : SLATE,
+              backgroundColor: SLATE,
             }}
           >
             <img
@@ -112,7 +112,6 @@ export function DeckViewer({ footer }: { footer?: React.ReactNode }) {
                 display: "block",
                 position: "absolute",
                 zIndex: 1,
-                mixBlendMode: s.light ? "multiply" : "screen",
               }}
             />
           </div>
