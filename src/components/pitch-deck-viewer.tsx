@@ -103,7 +103,9 @@ export function DeckViewer({ footer }: { footer?: React.ReactNode }) {
               backgroundColor: SLATE,
             }}
           >
+            <div className="absolute inset-0" style={{ background: "rgba(0,0,0,0.45)", zIndex: 0 }} />
             <img
+
               src={s.img}
               alt={`Slide ${idx + 1} of ${SLIDES.length}`}
               loading={idx <= i + 1 ? "eager" : "lazy"}
