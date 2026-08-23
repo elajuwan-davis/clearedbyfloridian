@@ -73,7 +73,14 @@ export function DeckViewer({ footer }: { footer?: React.ReactNode }) {
     <div
       ref={containerRef}
       className="cl-public relative flex h-screen w-full flex-col items-center justify-center overflow-hidden"
-      style={{ background: SLATE }}
+      style={{
+        backgroundColor: SLATE,
+        backgroundImage: `url(${SLIDES[i].bgImage})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+        transition: "background-image 0.3s ease",
+      }}
     >
       <div
         className="relative w-full"
@@ -96,14 +103,9 @@ export function DeckViewer({ footer }: { footer?: React.ReactNode }) {
             style={{
               opacity: idx === i ? 1 : 0,
               pointerEvents: "none",
-              backgroundImage: `url(${s.bgImage})`,
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-              backgroundRepeat: "no-repeat",
-              backgroundColor: SLATE,
             }}
           >
-            <div className="absolute inset-0" style={{ background: "rgba(0,0,0,0.45)", zIndex: 0 }} />
+
             <img
 
               src={s.img}
