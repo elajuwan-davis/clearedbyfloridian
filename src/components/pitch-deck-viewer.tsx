@@ -4,25 +4,24 @@ import { ChevronLeft, ChevronRight, Maximize2 } from "lucide-react";
 export const SLATE = "#2F4F4F";
 export const OAT = "#FAF3E6";
 
-const P = (seed: string) => `https://picsum.photos/seed/${seed}/1600/900`;
+type Slide = { img: string; light: boolean };
 
-type Slide = { img: string; photo: string; light: boolean };
-
-/** Slide artwork (transparent text/graphics layer) over a photo background + overlay. */
+/** Slide artwork served locally from /public/deck — no external image URLs. */
 export const SLIDES: Slide[] = [
-  { img: "/deck/slide-01.png", photo: P("construction-crane"), light: false },
-  { img: "/deck/slide-02.png", photo: P("office-paperwork"), light: true },
-  { img: "/deck/slide-03.png", photo: P("city-skyline"), light: false },
-  { img: "/deck/slide-04.png", photo: P("government-building"), light: true },
-  { img: "/deck/slide-05.png", photo: P("contractor-work"), light: false },
-  { img: "/deck/slide-06.png", photo: P("highway-infrastructure"), light: false },
-  { img: "/deck/slide-07.png", photo: P("aerial-city"), light: true },
-  { img: "/deck/slide-08.png", photo: P("commercial-building"), light: true },
-  { img: "/deck/slide-09.png", photo: P("business-meeting"), light: false },
-  { img: "/deck/slide-10.png", photo: P("city-night"), light: true },
-  { img: "/deck/slide-11.png", photo: P("steel-glass-building"), light: false },
-  { img: "/deck/slide-12.png", photo: P("aerial-neighborhood"), light: false },
+  { img: "/deck/slide-01.png", light: false },
+  { img: "/deck/slide-02.png", light: true },
+  { img: "/deck/slide-03.png", light: false },
+  { img: "/deck/slide-04.png", light: true },
+  { img: "/deck/slide-05.png", light: false },
+  { img: "/deck/slide-06.png", light: false },
+  { img: "/deck/slide-07.png", light: true },
+  { img: "/deck/slide-08.png", light: true },
+  { img: "/deck/slide-09.png", light: false },
+  { img: "/deck/slide-10.png", light: true },
+  { img: "/deck/slide-11.png", light: false },
+  { img: "/deck/slide-12.png", light: false },
 ];
+
 
 
 
