@@ -53,8 +53,6 @@ export function DeckViewer({ footer }: { footer?: React.ReactNode }) {
       SLIDES.forEach((s) => {
         const a = new Image();
         a.src = s.img;
-        const b = new Image();
-        b.src = s.photo;
       });
     }, 800);
     return () => window.clearTimeout(t);
