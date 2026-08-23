@@ -93,6 +93,10 @@ export function DeckViewer({ footer }: { footer?: React.ReactNode }) {
             style={{
               opacity: idx === i ? 1 : 0,
               pointerEvents: "none",
+              backgroundImage: `url(${s.bgImage})`,
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+              backgroundRepeat: "no-repeat",
               backgroundColor: s.light ? OAT : SLATE,
             }}
           >
@@ -102,7 +106,12 @@ export function DeckViewer({ footer }: { footer?: React.ReactNode }) {
               loading={idx <= i + 1 ? "eager" : "lazy"}
               width="100%"
               className="absolute inset-0 h-full w-full object-contain"
-              style={{ display: "block" }}
+              style={{
+                display: "block",
+                position: "absolute",
+                zIndex: 1,
+                mixBlendMode: s.light ? "multiply" : "screen",
+              }}
             />
           </div>
 
