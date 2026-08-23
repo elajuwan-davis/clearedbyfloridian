@@ -96,24 +96,18 @@ export function DeckViewer({ footer }: { footer?: React.ReactNode }) {
               opacity: idx === i ? 1 : 0,
               pointerEvents: "none",
               backgroundColor: s.light ? OAT : SLATE,
+              backgroundImage: `url('${s.photo}')`,
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+              backgroundRepeat: "no-repeat",
             }}
           >
-            {/* Photo layer — cover / center, softened so slide content reads cleanly */}
-            <div
-              className="absolute inset-0"
-              style={{
-                backgroundImage: `url(${s.photo})`,
-                backgroundSize: "cover",
-                backgroundPosition: "center",
-                filter: "blur(2px) saturate(0.7)",
-                transform: "scale(1.03)",
-              }}
-            />
             {/* Overlay so slide text stays fully legible */}
             <div
               className="absolute inset-0"
               style={{
-                background: s.light ? "rgba(250,243,230,0.9)" : "rgba(18,32,32,0.6)",
+                background: s.light ? "rgba(250,243,230,0.88)" : "rgba(0,0,0,0.6)",
+                zIndex: 0,
               }}
             />
             <img
@@ -121,8 +115,10 @@ export function DeckViewer({ footer }: { footer?: React.ReactNode }) {
               alt={`Slide ${idx + 1} of ${SLIDES.length}`}
               loading={idx <= i + 1 ? "eager" : "lazy"}
               className="absolute inset-0 h-full w-full object-contain"
+              style={{ position: "absolute", zIndex: 1 }}
             />
           </div>
+
         ))}
 
 
