@@ -57,10 +57,11 @@ export function MarketingNav() {
               Cleard
             </span>
           </Link>
+        </div>
 
-          <nav
-            className="hidden items-center gap-5 md:flex"
-            style={{ flexWrap: "nowrap", whiteSpace: "nowrap" }}
+        <nav
+            className="hidden items-center justify-center gap-8 md:flex"
+            style={{ flexWrap: "nowrap", whiteSpace: "nowrap", gridColumn: 2 }}
           >
             {NAV_LINKS.map((l) => (
               <Link
