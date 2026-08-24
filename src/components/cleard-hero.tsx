@@ -27,7 +27,6 @@ const NAV = [
   { to: "/join", label: "For Contractors", hash: undefined },
   { to: "/pricing", label: "Pricing", hash: undefined },
   { to: "/compare", label: "Compare", hash: undefined },
-  { to: "/pitch-deck", label: "Pitch Deck", hash: undefined },
 ] as const;
 
 /* ------------------------- HERO MOMENT SEQUENCE -------------------------- */
