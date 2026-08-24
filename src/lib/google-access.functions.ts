@@ -40,8 +40,9 @@ export const evaluatePortalAccessFn = createServerFn({ method: "POST" })
     const roleList = (roles ?? []).map((r: any) => r.role as string);
     if (roleList.length > 0) {
       const role =
-        roleList.find((r) => r === "admin") ??
-        roleList.find((r) => r === "gc_owner") ??
+        roleList.find((r: string) => r === "admin") ??
+        roleList.find((r: string) => r === "gc_owner") ??
+
         roleList[0];
       return { allowed: true, reason: "approved", email: emailKey, role };
     }
