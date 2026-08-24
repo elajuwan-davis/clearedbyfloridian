@@ -294,6 +294,36 @@ function LoginPage() {
             </Button>
           </form>
 
+          <div className="flex items-center gap-3 my-6">
+            <div className="h-px flex-1 hairline border-t" />
+            <span className="font-subline text-[10px] tracking-[0.2em] uppercase text-muted-foreground">
+              or
+            </span>
+            <div className="h-px flex-1 hairline border-t" />
+          </div>
+
+          <Button
+            type="button"
+            variant="outline"
+            onClick={handleGoogle}
+            disabled={googleLoading || loading}
+            className="w-full h-11 rounded-[3px] font-subline tracking-wide gap-2"
+          >
+            {googleLoading ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <svg className="h-4 w-4" viewBox="0 0 48 48" aria-hidden>
+                <path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9 3.6l6.7-6.7C35.6 2.6 30.2.5 24 .5 14.6.5 6.5 5.8 2.6 13.6l7.8 6.1C12.3 13.6 17.6 9.5 24 9.5Z" />
+                <path fill="#4285F4" d="M46.1 24.6c0-1.6-.2-3.2-.5-4.6H24v9h12.4c-.6 3-2.3 5.5-4.8 7.2l7.6 5.9c4.4-4.1 6.9-10.1 6.9-17.5Z" />
+                <path fill="#FBBC05" d="M10.4 28.3a14.6 14.6 0 0 1 0-8.6l-7.8-6.1a24 24 0 0 0 0 20.8l7.8-6.1Z" />
+                <path fill="#34A853" d="M24 47.5c6.2 0 11.5-2 15.2-5.5l-7.6-5.9c-2.1 1.4-4.8 2.3-7.6 2.3-6.4 0-11.7-4.1-13.6-9.9l-7.8 6.1C6.5 42.2 14.6 47.5 24 47.5Z" />
+              </svg>
+            )}
+            Continue with Google
+          </Button>
+
+
+
           <div className="mt-10 pt-6 border-t hairline">
             <p className="text-xs text-muted-foreground leading-relaxed">
               New here? Contact us at permits@floridianinc.com to set up your firm's portal access.
