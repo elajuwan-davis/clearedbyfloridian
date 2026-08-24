@@ -87,6 +87,24 @@ function LoginPage() {
     navigate({ to: target as never, replace: true });
   }
 
+  async function handleGoogle() {
+    setError(null);
+    setGoogleLoading(true);
+    const result = await lovable.auth.signInWithOAuth("google", {
+      redirect_uri: `${window.location.origin}/auth/callback`,
+    });
+    if (result.error) {
+      setGoogleLoading(false);
+      setError(result.error.message);
+      return;
+    }
+    if (result.redirected) return; // browser is navigating to Google
+    // Popup flow (editor preview): session is set — verify approval here.
+    navigate({ to: "/auth/callback" as never, replace: true });
+  }
+
+
+
 
 
   return (
