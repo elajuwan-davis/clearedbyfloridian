@@ -32,6 +32,7 @@ import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as PitchDeckRouteImport } from './routes/pitch-deck'
 import { Route as PortalRouteImport } from './routes/portal'
 import { Route as PricingRouteImport } from './routes/pricing'
+import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as ProcessRouteImport } from './routes/process'
 import { Route as ProductRouteImport } from './routes/product'
 import { Route as ProductsRouteImport } from './routes/products'
@@ -41,6 +42,7 @@ import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as ResetPasswordConfirmRouteImport } from './routes/reset-password-confirm'
 import { Route as ServicesRouteImport } from './routes/services'
 import { Route as SubPortalRouteImport } from './routes/sub-portal'
+import { Route as TermsRouteImport } from './routes/terms'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminAccessRequestsRouteImport } from './routes/admin.access-requests'
 import { Route as AdminActivityRouteImport } from './routes/admin.activity'
@@ -252,6 +254,11 @@ const PricingRoute = PricingRouteImport.update({
   path: '/pricing',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProcessRoute = ProcessRouteImport.update({
   id: '/process',
   path: '/process',
@@ -295,6 +302,11 @@ const ServicesRoute = ServicesRouteImport.update({
 const SubPortalRoute = SubPortalRouteImport.update({
   id: '/sub-portal',
   path: '/sub-portal',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminIndexRoute = AdminIndexRouteImport.update({
@@ -812,6 +824,7 @@ export interface FileRoutesByFullPath {
   '/pitch-deck': typeof PitchDeckRoute
   '/portal': typeof PortalRouteWithChildren
   '/pricing': typeof PricingRoute
+  '/privacy': typeof PrivacyRoute
   '/process': typeof ProcessRoute
   '/product': typeof ProductRoute
   '/products': typeof ProductsRoute
@@ -821,6 +834,7 @@ export interface FileRoutesByFullPath {
   '/reset-password-confirm': typeof ResetPasswordConfirmRoute
   '/services': typeof ServicesRoute
   '/sub-portal': typeof SubPortalRoute
+  '/terms': typeof TermsRoute
   '/admin/access-requests': typeof AdminAccessRequestsRoute
   '/admin/activity': typeof AdminActivityRoute
   '/admin/audit': typeof AdminAuditRoute
@@ -939,6 +953,7 @@ export interface FileRoutesByTo {
   '/onboarding': typeof OnboardingRoute
   '/pitch-deck': typeof PitchDeckRoute
   '/pricing': typeof PricingRoute
+  '/privacy': typeof PrivacyRoute
   '/process': typeof ProcessRoute
   '/product': typeof ProductRoute
   '/products': typeof ProductsRoute
@@ -948,6 +963,7 @@ export interface FileRoutesByTo {
   '/reset-password-confirm': typeof ResetPasswordConfirmRoute
   '/services': typeof ServicesRoute
   '/sub-portal': typeof SubPortalRoute
+  '/terms': typeof TermsRoute
   '/admin/access-requests': typeof AdminAccessRequestsRoute
   '/admin/activity': typeof AdminActivityRoute
   '/admin/audit': typeof AdminAuditRoute
@@ -1067,6 +1083,7 @@ export interface FileRoutesById {
   '/pitch-deck': typeof PitchDeckRoute
   '/portal': typeof PortalRouteWithChildren
   '/pricing': typeof PricingRoute
+  '/privacy': typeof PrivacyRoute
   '/process': typeof ProcessRoute
   '/product': typeof ProductRoute
   '/products': typeof ProductsRoute
@@ -1076,6 +1093,7 @@ export interface FileRoutesById {
   '/reset-password-confirm': typeof ResetPasswordConfirmRoute
   '/services': typeof ServicesRoute
   '/sub-portal': typeof SubPortalRoute
+  '/terms': typeof TermsRoute
   '/admin/access-requests': typeof AdminAccessRequestsRoute
   '/admin/activity': typeof AdminActivityRoute
   '/admin/audit': typeof AdminAuditRoute
@@ -1198,6 +1216,7 @@ export interface FileRouteTypes {
     | '/pitch-deck'
     | '/portal'
     | '/pricing'
+    | '/privacy'
     | '/process'
     | '/product'
     | '/products'
@@ -1207,6 +1226,7 @@ export interface FileRouteTypes {
     | '/reset-password-confirm'
     | '/services'
     | '/sub-portal'
+    | '/terms'
     | '/admin/access-requests'
     | '/admin/activity'
     | '/admin/audit'
@@ -1325,6 +1345,7 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/pitch-deck'
     | '/pricing'
+    | '/privacy'
     | '/process'
     | '/product'
     | '/products'
@@ -1334,6 +1355,7 @@ export interface FileRouteTypes {
     | '/reset-password-confirm'
     | '/services'
     | '/sub-portal'
+    | '/terms'
     | '/admin/access-requests'
     | '/admin/activity'
     | '/admin/audit'
@@ -1452,6 +1474,7 @@ export interface FileRouteTypes {
     | '/pitch-deck'
     | '/portal'
     | '/pricing'
+    | '/privacy'
     | '/process'
     | '/product'
     | '/products'
@@ -1461,6 +1484,7 @@ export interface FileRouteTypes {
     | '/reset-password-confirm'
     | '/services'
     | '/sub-portal'
+    | '/terms'
     | '/admin/access-requests'
     | '/admin/activity'
     | '/admin/audit'
@@ -1582,6 +1606,7 @@ export interface RootRouteChildren {
   PitchDeckRoute: typeof PitchDeckRoute
   PortalRoute: typeof PortalRouteWithChildren
   PricingRoute: typeof PricingRoute
+  PrivacyRoute: typeof PrivacyRoute
   ProcessRoute: typeof ProcessRoute
   ProductRoute: typeof ProductRoute
   ProductsRoute: typeof ProductsRoute
@@ -1591,6 +1616,7 @@ export interface RootRouteChildren {
   ResetPasswordConfirmRoute: typeof ResetPasswordConfirmRoute
   ServicesRoute: typeof ServicesRoute
   SubPortalRoute: typeof SubPortalRoute
+  TermsRoute: typeof TermsRoute
   AdminAccessRequestsRoute: typeof AdminAccessRequestsRoute
   AdminActivityRoute: typeof AdminActivityRoute
   AdminAuditRoute: typeof AdminAuditRoute
@@ -1801,6 +1827,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PricingRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/process': {
       id: '/process'
       path: '/process'
@@ -1862,6 +1895,13 @@ declare module '@tanstack/react-router' {
       path: '/sub-portal'
       fullPath: '/sub-portal'
       preLoaderRoute: typeof SubPortalRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/': {
@@ -2701,6 +2741,7 @@ const rootRouteChildren: RootRouteChildren = {
   PitchDeckRoute: PitchDeckRoute,
   PortalRoute: PortalRouteWithChildren,
   PricingRoute: PricingRoute,
+  PrivacyRoute: PrivacyRoute,
   ProcessRoute: ProcessRoute,
   ProductRoute: ProductRoute,
   ProductsRoute: ProductsRoute,
@@ -2710,6 +2751,7 @@ const rootRouteChildren: RootRouteChildren = {
   ResetPasswordConfirmRoute: ResetPasswordConfirmRoute,
   ServicesRoute: ServicesRoute,
   SubPortalRoute: SubPortalRoute,
+  TermsRoute: TermsRoute,
   AdminAccessRequestsRoute: AdminAccessRequestsRoute,
   AdminActivityRoute: AdminActivityRoute,
   AdminAuditRoute: AdminAuditRoute,

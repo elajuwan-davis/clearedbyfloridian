@@ -9,7 +9,6 @@ const NAV_LINKS: Array<{ to: string; label: string }> = [
   { to: "/join", label: "For Contractors" },
   { to: "/pricing", label: "Pricing" },
   { to: "/compare", label: "Compare" },
-  { to: "/pitch-deck", label: "Pitch Deck" },
 ];
 
 /** Trade-specific landing pages. */
@@ -37,8 +36,8 @@ export function MarketingNav() {
       className="sticky top-0 z-[100]"
       style={{ background: NEAR_BLACK, borderBottom: `1px solid ${BORDER}`, isolation: "isolate" }}
     >
-      <div className="mx-auto flex h-[58px] max-w-7xl items-center justify-between gap-4 px-5 lg:px-8">
-        <div className="flex min-w-0 items-center gap-6">
+      <div className="mx-auto grid h-[68px] max-w-7xl grid-cols-[1fr_auto_1fr] items-center gap-4 px-5 lg:px-10">
+        <div className="flex min-w-0 items-center" style={{ gridColumn: 1 }}>
           <Link
             to="/"
             className="flex items-center gap-2.5 no-underline"
@@ -58,10 +57,11 @@ export function MarketingNav() {
               Cleard
             </span>
           </Link>
+        </div>
 
-          <nav
-            className="hidden items-center gap-5 md:flex"
-            style={{ flexWrap: "nowrap", whiteSpace: "nowrap" }}
+        <nav
+            className="hidden items-center justify-center gap-8 md:flex"
+            style={{ flexWrap: "nowrap", whiteSpace: "nowrap", gridColumn: 2 }}
           >
             {NAV_LINKS.map((l) => (
               <Link
@@ -81,9 +81,20 @@ export function MarketingNav() {
             >
               <button
                 type="button"
+                data-plain
                 onClick={() => setTradesOpen((s) => !s)}
                 className="inline-flex items-center gap-1 text-[14px] transition-opacity hover:opacity-70"
-                style={{ color: BODY_GRAY, whiteSpace: "nowrap" }}
+                style={{
+                  color: BODY_GRAY,
+                  whiteSpace: "nowrap",
+                  background: "none",
+                  border: "none",
+                  padding: 0,
+                  borderRadius: 0,
+                  boxShadow: "none",
+                  backdropFilter: "none",
+                  WebkitBackdropFilter: "none",
+                }}
                 aria-expanded={tradesOpen}
               >
                 Trades
@@ -121,9 +132,7 @@ export function MarketingNav() {
             </div>
           </nav>
 
-        </div>
-
-        <div className="flex items-center gap-3" style={{ flexShrink: 0 }}>
+        <div className="flex items-center justify-end gap-3" style={{ flexShrink: 0, gridColumn: 3 }}>
           <Link
             to="/login"
             className="hidden text-[14px] no-underline sm:inline"
@@ -221,54 +230,82 @@ export function MarketingNav() {
 
 
 
-function MarketingFooter() {
+const FOOT_HEAD = "text-[10px] font-bold uppercase";
+const FOOT_HEAD_STYLE = { letterSpacing: "0.18em", color: "rgba(255,255,255,0.45)" } as const;
+const FOOT_LINK = "block text-[13px] no-underline";
+const FOOT_LINK_STYLE = { color: "rgba(255,255,255,0.72)" } as const;
+
+/** The single public footer — identical on every marketing page. */
+export function MarketingFooter() {
   return (
     <footer style={{ background: INK, borderTop: "1px solid rgba(255,255,255,0.12)" }}>
-      <div className="mx-auto max-w-7xl px-6 lg:px-10 py-12 flex flex-col gap-8 md:flex-row md:items-center md:justify-between">
-        <Link to="/" className="flex items-center no-underline">
-          <span
-            className="text-[18px] tracking-[-0.03em]"
-            style={{
-              fontFamily: SERIF,
-              fontWeight: 600,
-              color: "#FAF3E6",
-            }}
-          >
-            Cleard
-          </span>
-        </Link>
-
-        <nav className="flex flex-wrap items-center gap-x-8 gap-y-2 text-[13px]">
-          <Link to="/join" className="no-underline" style={{ color: "rgba(255,255,255,0.7)" }}>For Contractors</Link>
-          <a href="https://floridianinc.com/privacy" className="no-underline" style={{ color: "rgba(255,255,255,0.7)" }}>Privacy</a>
-          <a href="https://floridianinc.com/terms" className="no-underline" style={{ color: "rgba(255,255,255,0.7)" }}>Terms</a>
-          <Link to="/contact" className="no-underline" style={{ color: "rgba(255,255,255,0.7)" }}>Contact</Link>
-        </nav>
-
-        <div className="flex flex-col gap-2">
-          <div className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: "rgba(255,255,255,0.45)" }}>
-            Company
+      <div className="mx-auto max-w-7xl px-5 lg:px-10">
+        <div className="grid gap-12 py-16 md:grid-cols-[1.2fr_2.8fr]">
+          <div>
+            <Link to="/" className="no-underline">
+              <span
+                className="text-[22px] tracking-[-0.03em]"
+                style={{ fontFamily: SERIF, fontWeight: 600, color: "#FAF3E6" }}
+              >
+                Cleard
+              </span>
+            </Link>
+            <p className="mt-4 max-w-xs text-[13.5px] leading-relaxed" style={{ color: "rgba(255,255,255,0.55)" }}>
+              The operating system that runs everything behind your construction projects.
+            </p>
           </div>
-          <Link to="/investor" className="no-underline text-[13px]" style={{ color: "rgba(255,255,255,0.7)" }}>
-            Investor Deck
-          </Link>
+
+          <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
+            <div>
+              <div className={FOOT_HEAD} style={FOOT_HEAD_STYLE}>Platform</div>
+              <div className="mt-4 space-y-2.5">
+                <Link to="/join" className={FOOT_LINK} style={FOOT_LINK_STYLE}>For Contractors</Link>
+                <Link to="/pricing" className={FOOT_LINK} style={FOOT_LINK_STYLE}>Pricing</Link>
+                <Link to="/compare" className={FOOT_LINK} style={FOOT_LINK_STYLE}>Compare</Link>
+                <Link to="/" hash="watch-it-run" className={FOOT_LINK} style={FOOT_LINK_STYLE}>How it works</Link>
+              </div>
+            </div>
+
+            <div>
+              <div className={FOOT_HEAD} style={FOOT_HEAD_STYLE}>Trades</div>
+              <div className="mt-4 space-y-2.5">
+                {TRADE_LINKS.slice(0, 7).map((t) => (
+                  <Link
+                    key={t.label}
+                    to={t.to}
+                    params={t.params}
+                    className={FOOT_LINK}
+                    style={FOOT_LINK_STYLE}
+                  >
+                    {t.label}
+                  </Link>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <div className={FOOT_HEAD} style={FOOT_HEAD_STYLE}>Company</div>
+              <div className="mt-4 space-y-2.5">
+                <Link to="/contact" className={FOOT_LINK} style={FOOT_LINK_STYLE}>Contact</Link>
+                <Link to="/pitch-deck" className={FOOT_LINK} style={FOOT_LINK_STYLE}>Pitch Deck</Link>
+                <Link to="/investor" className={FOOT_LINK} style={FOOT_LINK_STYLE}>Investor Deck</Link>
+              </div>
+            </div>
+
+            <div>
+              <div className={FOOT_HEAD} style={FOOT_HEAD_STYLE}>Resources</div>
+              <div className="mt-4 space-y-2.5">
+                <Link to="/municipalities" className={FOOT_LINK} style={FOOT_LINK_STYLE}>CleardGov — For municipalities</Link>
+                <Link to="/login" className={FOOT_LINK} style={FOOT_LINK_STYLE}>Client portal</Link>
+                <Link to="/privacy" className={FOOT_LINK} style={FOOT_LINK_STYLE}>Privacy Policy</Link>
+                <Link to="/terms" className={FOOT_LINK} style={FOOT_LINK_STYLE}>Terms of Service</Link>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div className="flex flex-col gap-2">
-          <div className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: "rgba(255,255,255,0.45)" }}>
-            For Municipalities
-          </div>
-          <Link to="/municipalities" className="no-underline text-[13px]" style={{ color: "rgba(255,255,255,0.7)" }}>
-            CleardGov — Building department services
-          </Link>
-          <span className="text-[12px]" style={{ color: "rgba(200,196,188,0.5)" }}>
-            cleard.io/municipalities
-          </span>
-        </div>
-
-
-        <div className="text-[12px]" style={{ color: "rgba(200,196,188,0.6)" }}>
-          © 2026 Cleard
+        <div className="pb-10 text-[12px]" style={{ color: "rgba(255,255,255,0.45)" }}>
+          © 2026 Cleard · Built by Flōridian
         </div>
       </div>
     </footer>

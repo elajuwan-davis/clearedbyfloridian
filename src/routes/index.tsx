@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ClearedHero } from "@/components/cleard-hero";
+import { MarketingFooter } from "@/components/marketing-shell";
 import {
   ArrowRight,
   ArrowUpRight,
@@ -769,95 +770,8 @@ function BottomCTA() {
 
 /* -------------------------------- FOOTER --------------------------------- */
 
-const FOOTER_COLS: Array<{ head: string; links: Array<{ label: string; to?: string; href?: string; hash?: string }> }> = [
-  {
-    head: "Product",
-    links: [
-      { label: "Platform overview", to: "/join" },
-      { label: "Permitting administration", to: "/join" },
-      { label: "Plan review & inspections", to: "/join" },
-      { label: "License management", to: "/join" },
-      { label: "Insurance compliance", to: "/join" },
-      { label: "Lien rights", to: "/join" },
-      { label: "Victoria", to: "/", hash: "victoria" },
-    ],
-  },
-  {
-    head: "Company",
-    links: [
-      { label: "Contact", to: "/contact" },
-      { label: "Compare", to: "/compare" },
-    ],
-  },
-  {
-    head: "For municipalities",
-    links: [
-      { label: "CleardGov", to: "/municipalities" },
-      { label: "Talk to our team", to: "/contact" },
-    ],
-  },
-  {
-    head: "Resources",
-    links: [
-      { label: "How it works", to: "/", hash: "watch-it-run" },
-      { label: "Client portal", to: "/login" },
-      { label: "Privacy", href: "https://floridianinc.com/privacy" },
-      { label: "Terms", href: "https://floridianinc.com/terms" },
-    ],
-  },
-];
-
 function Footer() {
-  return (
-    <footer style={{ background: INK, borderTop: "1px solid rgba(255,255,255,0.12)" }}>
-      <div className="mx-auto max-w-7xl px-5 lg:px-8">
-        <div className="grid gap-12 py-16 md:grid-cols-[1.2fr_2.8fr]">
-          <div>
-            <Link
-              to="/"
-              className="no-underline"
-              style={{ color: WHITE, fontWeight: 700, fontSize: 22, letterSpacing: "-0.03em" }}
-            >
-              Cleard
-            </Link>
-            <p className="mt-4 max-w-xs text-[13.5px] leading-relaxed" style={{ color: "rgba(255,255,255,0.55)" }}>
-              The operating system that runs everything behind your construction projects.
-            </p>
-          </div>
-          <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
-            {FOOTER_COLS.map((c) => (
-              <div key={c.head}>
-                <div className="text-[10px] font-bold uppercase" style={{ letterSpacing: "0.18em", color: "rgba(255,255,255,0.45)" }}>
-                  {c.head}
-                </div>
-                <div className="mt-4 space-y-2.5">
-                  {c.links.map((l) =>
-                    l.href ? (
-                      <a key={l.label} href={l.href} className="block text-[13px] no-underline" style={{ color: "rgba(255,255,255,0.72)" }}>
-                        {l.label}
-                      </a>
-                    ) : (
-                      <Link
-                        key={l.label}
-                        to={l.to!}
-                        hash={l.hash}
-                        className="block text-[13px] no-underline"
-                        style={{ color: "rgba(255,255,255,0.72)" }}
-                      >
-                        {l.label}
-                      </Link>
-                    ),
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="pb-10 text-[12px]" style={{ color: "rgba(255,255,255,0.45)" }}>
-          © 2026 Cleard · Built by Flōridian
-        </div>
-      </div>
-    </footer>
-  );
+  return <MarketingFooter />;
 }
+
+
