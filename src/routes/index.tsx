@@ -769,45 +769,11 @@ function BottomCTA() {
 
 /* -------------------------------- FOOTER --------------------------------- */
 
-const FOOTER_COLS: Array<{ head: string; links: Array<{ label: string; to?: string; href?: string; hash?: string }> }> = [
-  {
-    head: "Product",
-    links: [
-      { label: "Platform overview", to: "/join" },
-      { label: "Permitting administration", to: "/join" },
-      { label: "Plan review & inspections", to: "/join" },
-      { label: "License management", to: "/join" },
-      { label: "Insurance compliance", to: "/join" },
-      { label: "Lien rights", to: "/join" },
-      { label: "Victoria", to: "/", hash: "victoria" },
-    ],
-  },
-  {
-    head: "Company",
-    links: [
-      { label: "Contact", to: "/contact" },
-      { label: "Compare", to: "/compare" },
-    ],
-  },
-  {
-    head: "For municipalities",
-    links: [
-      { label: "CleardGov", to: "/municipalities" },
-      { label: "Talk to our team", to: "/contact" },
-    ],
-  },
-  {
-    head: "Resources",
-    links: [
-      { label: "How it works", to: "/", hash: "watch-it-run" },
-      { label: "Client portal", to: "/login" },
-      { label: "Privacy", href: "https://floridianinc.com/privacy" },
-      { label: "Terms", href: "https://floridianinc.com/terms" },
-    ],
-  },
-];
-
 function Footer() {
+  return <MarketingFooter />;
+}
+
+function LegacyFooter() {
   return (
     <footer style={{ background: INK, borderTop: "1px solid rgba(255,255,255,0.12)" }}>
       <div className="mx-auto max-w-7xl px-5 lg:px-8">
