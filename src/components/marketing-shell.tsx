@@ -132,9 +132,7 @@ export function MarketingNav() {
             </div>
           </nav>
 
-        </div>
-
-        <div className="flex items-center gap-3" style={{ flexShrink: 0 }}>
+        <div className="flex items-center justify-end gap-3" style={{ flexShrink: 0, gridColumn: 3 }}>
           <Link
             to="/login"
             className="hidden text-[14px] no-underline sm:inline"
