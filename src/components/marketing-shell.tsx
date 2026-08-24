@@ -9,7 +9,6 @@ const NAV_LINKS: Array<{ to: string; label: string }> = [
   { to: "/join", label: "For Contractors" },
   { to: "/pricing", label: "Pricing" },
   { to: "/compare", label: "Compare" },
-  { to: "/pitch-deck", label: "Pitch Deck" },
 ];
 
 /** Trade-specific landing pages. */
