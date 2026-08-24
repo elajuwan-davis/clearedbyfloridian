@@ -56,6 +56,7 @@ import { Route as AdminWorkloadRouteImport } from './routes/admin.workload'
 import { Route as AdminContractorsRouteImport } from './routes/admin_.contractors'
 import { Route as ApiGeocodeCensusRouteImport } from './routes/api/geocode-census'
 import { Route as ApiVerifyLicenseRouteImport } from './routes/api/verify-license'
+import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
 import { Route as BlogIndexRouteImport } from './routes/blog.index'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 import { Route as BuildingDeptLoginsSubmitRouteImport } from './routes/building-dept-logins.submit'
@@ -369,6 +370,11 @@ const ApiGeocodeCensusRoute = ApiGeocodeCensusRouteImport.update({
 const ApiVerifyLicenseRoute = ApiVerifyLicenseRouteImport.update({
   id: '/api/verify-license',
   path: '/api/verify-license',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthCallbackRoute = AuthCallbackRouteImport.update({
+  id: '/auth/callback',
+  path: '/auth/callback',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BlogIndexRoute = BlogIndexRouteImport.update({
@@ -829,6 +835,7 @@ export interface FileRoutesByFullPath {
   '/admin/contractors': typeof AdminContractorsRoute
   '/api/geocode-census': typeof ApiGeocodeCensusRoute
   '/api/verify-license': typeof ApiVerifyLicenseRoute
+  '/auth/callback': typeof AuthCallbackRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/building-dept-logins/submit': typeof BuildingDeptLoginsSubmitRoute
   '/forms/payment-authorization': typeof FormsPaymentAuthorizationRoute
@@ -955,6 +962,7 @@ export interface FileRoutesByTo {
   '/admin/contractors': typeof AdminContractorsRoute
   '/api/geocode-census': typeof ApiGeocodeCensusRoute
   '/api/verify-license': typeof ApiVerifyLicenseRoute
+  '/auth/callback': typeof AuthCallbackRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/building-dept-logins/submit': typeof BuildingDeptLoginsSubmitRoute
   '/forms/payment-authorization': typeof FormsPaymentAuthorizationRoute
@@ -1082,6 +1090,7 @@ export interface FileRoutesById {
   '/admin_/contractors': typeof AdminContractorsRoute
   '/api/geocode-census': typeof ApiGeocodeCensusRoute
   '/api/verify-license': typeof ApiVerifyLicenseRoute
+  '/auth/callback': typeof AuthCallbackRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/building-dept-logins/submit': typeof BuildingDeptLoginsSubmitRoute
   '/forms/payment-authorization': typeof FormsPaymentAuthorizationRoute
@@ -1212,6 +1221,7 @@ export interface FileRouteTypes {
     | '/admin/contractors'
     | '/api/geocode-census'
     | '/api/verify-license'
+    | '/auth/callback'
     | '/blog/$slug'
     | '/building-dept-logins/submit'
     | '/forms/payment-authorization'
@@ -1338,6 +1348,7 @@ export interface FileRouteTypes {
     | '/admin/contractors'
     | '/api/geocode-census'
     | '/api/verify-license'
+    | '/auth/callback'
     | '/blog/$slug'
     | '/building-dept-logins/submit'
     | '/forms/payment-authorization'
@@ -1464,6 +1475,7 @@ export interface FileRouteTypes {
     | '/admin_/contractors'
     | '/api/geocode-census'
     | '/api/verify-license'
+    | '/auth/callback'
     | '/blog/$slug'
     | '/building-dept-logins/submit'
     | '/forms/payment-authorization'
@@ -1593,6 +1605,7 @@ export interface RootRouteChildren {
   AdminContractorsRoute: typeof AdminContractorsRoute
   ApiGeocodeCensusRoute: typeof ApiGeocodeCensusRoute
   ApiVerifyLicenseRoute: typeof ApiVerifyLicenseRoute
+  AuthCallbackRoute: typeof AuthCallbackRoute
   BlogSlugRoute: typeof BlogSlugRoute
   HomeownerTokenRoute: typeof HomeownerTokenRoute
   InvestorAdminRoute: typeof InvestorAdminRoute
@@ -1954,6 +1967,13 @@ declare module '@tanstack/react-router' {
       path: '/api/verify-license'
       fullPath: '/api/verify-license'
       preLoaderRoute: typeof ApiVerifyLicenseRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth/callback': {
+      id: '/auth/callback'
+      path: '/auth/callback'
+      fullPath: '/auth/callback'
+      preLoaderRoute: typeof AuthCallbackRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/blog/': {
@@ -2704,6 +2724,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminContractorsRoute: AdminContractorsRoute,
   ApiGeocodeCensusRoute: ApiGeocodeCensusRoute,
   ApiVerifyLicenseRoute: ApiVerifyLicenseRoute,
+  AuthCallbackRoute: AuthCallbackRoute,
   BlogSlugRoute: BlogSlugRoute,
   HomeownerTokenRoute: HomeownerTokenRoute,
   InvestorAdminRoute: InvestorAdminRoute,
