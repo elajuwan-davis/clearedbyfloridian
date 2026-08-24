@@ -288,7 +288,7 @@ export function MarketingFooter() {
               <div className="mt-4 space-y-2.5">
                 <Link to="/contact" className={FOOT_LINK} style={FOOT_LINK_STYLE}>Contact</Link>
                 <Link to="/pitch-deck" className={FOOT_LINK} style={FOOT_LINK_STYLE}>Pitch Deck</Link>
-                <Link to="/investor" className={FOOT_LINK} style={FOOT_LINK_STYLE}>Investor Deck</Link>
+                
               </div>
             </div>
 
