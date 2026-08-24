@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ClearedHero } from "@/components/cleard-hero";
+import { MarketingFooter } from "@/components/marketing-shell";
 import {
   ArrowRight,
   ArrowUpRight,
