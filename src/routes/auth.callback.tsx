@@ -1,0 +1,123 @@
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import { Loader2 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { evaluatePortalAccessFn } from "@/lib/google-access.functions";
+
+export const Route = createFileRoute("/auth/callback")({
+  ssr: false,
+  head: () => ({
+    meta: [
+      { title: "Signing in — Cleard" },
+      { name: "description", content: "Completing sign in to the Cleard builder portal." },
+      { name: "robots", content: "noindex" },
+    ],
+  }),
+  component: AuthCallback,
+});
+
+type State =
+  | { kind: "working" }
+  | { kind: "pending"; email: string | null; filed: boolean }
+  | { kind: "error"; message: string };
+
+function AuthCallback() {
+  const navigate = useNavigate();
+  const [state, setState] = useState<State>({ kind: "working" });
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function run() {
+      // Wait briefly for the session set by the OAuth redirect to hydrate.
+      let session = null;
+      for (let i = 0; i < 20 && !session; i++) {
+        const { data } = await supabase.auth.getSession();
+        session = data.session;
+        if (!session) await new Promise((r) => setTimeout(r, 150));
+      }
+      if (cancelled) return;
+      if (!session) {
+        setState({ kind: "error", message: "Sign in did not complete. Please try again." });
+        return;
+      }
+
+      try {
+        const decision = await evaluatePortalAccessFn();
+        if (cancelled) return;
+        if (!decision.allowed) {
+          await supabase.auth.signOut();
+          setState({ kind: "pending", email: decision.email, filed: decision.reason === "filed" });
+          return;
+        }
+        const target =
+          decision.role === "admin"
+            ? "/dashboard"
+            : decision.role === "subcontractor"
+              ? "/sub-portal"
+              : "/dashboard";
+        navigate({ to: target as never, replace: true });
+      } catch (e) {
+        if (cancelled) return;
+        setState({
+          kind: "error",
+          message: e instanceof Error ? e.message : "Could not verify your access.",
+        });
+      }
+    }
+
+    run();
+    return () => {
+      cancelled = true;
+    };
+  }, [navigate]);
+
+  return (
+    <div className="cl-public min-h-screen flex items-center justify-center px-6 bg-background">
+      <div className="w-full max-w-md space-y-4 text-center">
+        {state.kind === "working" && (
+          <>
+            <Loader2 className="h-5 w-5 animate-spin mx-auto" />
+            <p className="text-sm text-muted-foreground">Verifying your access…</p>
+          </>
+        )}
+
+        {state.kind === "pending" && (
+          <>
+            <div className="label-eyebrow">Access pending</div>
+            <h1
+              className="text-3xl font-bold"
+              style={{ fontFamily: "'Fraunces', 'Iowan Old Style', Georgia, serif" }}
+            >
+              We're reviewing your request.
+            </h1>
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              {state.filed
+                ? "Cleard is invitation-only while we onboard firms. We've submitted an access request"
+                : "Your access request is still under review"}
+              {state.email ? ` for ${state.email}` : ""}. Our team will email you as soon as your
+              portal access is approved.
+            </p>
+            <p className="text-xs text-muted-foreground">
+              Questions? permits@floridianinc.com
+            </p>
+            <Link to="/login" className="inline-block text-sm underline">
+              Back to sign in
+            </Link>
+          </>
+        )}
+
+        {state.kind === "error" && (
+          <>
+            <p className="text-sm" style={{ color: "var(--destructive)" }}>
+              {state.message}
+            </p>
+            <Link to="/login" className="inline-block text-sm underline">
+              Back to sign in
+            </Link>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
