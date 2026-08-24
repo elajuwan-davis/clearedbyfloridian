@@ -139,9 +139,20 @@ function HeroTrades() {
     >
       <button
         type="button"
+        data-plain
         onClick={() => setOpen((s) => !s)}
         className="text-[13.5px] transition-colors"
-        style={{ color: SLATE, whiteSpace: "nowrap" }}
+        style={{
+          color: SLATE,
+          whiteSpace: "nowrap",
+          background: "none",
+          border: "none",
+          padding: 0,
+          borderRadius: 0,
+          boxShadow: "none",
+          backdropFilter: "none",
+          WebkitBackdropFilter: "none",
+        }}
         aria-expanded={open}
       >
         Trades
