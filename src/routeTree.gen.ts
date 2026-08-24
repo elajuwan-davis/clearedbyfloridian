@@ -32,6 +32,7 @@ import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as PitchDeckRouteImport } from './routes/pitch-deck'
 import { Route as PortalRouteImport } from './routes/portal'
 import { Route as PricingRouteImport } from './routes/pricing'
+import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as ProcessRouteImport } from './routes/process'
 import { Route as ProductRouteImport } from './routes/product'
 import { Route as ProductsRouteImport } from './routes/products'
@@ -250,6 +251,11 @@ const PortalRoute = PortalRouteImport.update({
 const PricingRoute = PricingRouteImport.update({
   id: '/pricing',
   path: '/pricing',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProcessRoute = ProcessRouteImport.update({
@@ -812,6 +818,7 @@ export interface FileRoutesByFullPath {
   '/pitch-deck': typeof PitchDeckRoute
   '/portal': typeof PortalRouteWithChildren
   '/pricing': typeof PricingRoute
+  '/privacy': typeof PrivacyRoute
   '/process': typeof ProcessRoute
   '/product': typeof ProductRoute
   '/products': typeof ProductsRoute
@@ -939,6 +946,7 @@ export interface FileRoutesByTo {
   '/onboarding': typeof OnboardingRoute
   '/pitch-deck': typeof PitchDeckRoute
   '/pricing': typeof PricingRoute
+  '/privacy': typeof PrivacyRoute
   '/process': typeof ProcessRoute
   '/product': typeof ProductRoute
   '/products': typeof ProductsRoute
@@ -1067,6 +1075,7 @@ export interface FileRoutesById {
   '/pitch-deck': typeof PitchDeckRoute
   '/portal': typeof PortalRouteWithChildren
   '/pricing': typeof PricingRoute
+  '/privacy': typeof PrivacyRoute
   '/process': typeof ProcessRoute
   '/product': typeof ProductRoute
   '/products': typeof ProductsRoute
@@ -1198,6 +1207,7 @@ export interface FileRouteTypes {
     | '/pitch-deck'
     | '/portal'
     | '/pricing'
+    | '/privacy'
     | '/process'
     | '/product'
     | '/products'
@@ -1325,6 +1335,7 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/pitch-deck'
     | '/pricing'
+    | '/privacy'
     | '/process'
     | '/product'
     | '/products'
@@ -1452,6 +1463,7 @@ export interface FileRouteTypes {
     | '/pitch-deck'
     | '/portal'
     | '/pricing'
+    | '/privacy'
     | '/process'
     | '/product'
     | '/products'
@@ -1582,6 +1594,7 @@ export interface RootRouteChildren {
   PitchDeckRoute: typeof PitchDeckRoute
   PortalRoute: typeof PortalRouteWithChildren
   PricingRoute: typeof PricingRoute
+  PrivacyRoute: typeof PrivacyRoute
   ProcessRoute: typeof ProcessRoute
   ProductRoute: typeof ProductRoute
   ProductsRoute: typeof ProductsRoute
@@ -1799,6 +1812,13 @@ declare module '@tanstack/react-router' {
       path: '/pricing'
       fullPath: '/pricing'
       preLoaderRoute: typeof PricingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/process': {
@@ -2701,6 +2721,7 @@ const rootRouteChildren: RootRouteChildren = {
   PitchDeckRoute: PitchDeckRoute,
   PortalRoute: PortalRouteWithChildren,
   PricingRoute: PricingRoute,
+  PrivacyRoute: PrivacyRoute,
   ProcessRoute: ProcessRoute,
   ProductRoute: ProductRoute,
   ProductsRoute: ProductsRoute,
