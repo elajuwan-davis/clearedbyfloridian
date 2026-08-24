@@ -225,8 +225,8 @@ function HeroNav({ logoSlot, logoVisible }: { logoSlot: React.Ref<HTMLDivElement
         </Link>
 
         <nav
-          className="hidden items-center gap-8 md:flex"
-          style={{ whiteSpace: "nowrap", flexWrap: "nowrap" }}
+          className="hidden items-center justify-center gap-8 md:flex"
+          style={{ whiteSpace: "nowrap", flexWrap: "nowrap", gridColumn: 2 }}
         >
           {NAV.map((l) => (
             <Link
