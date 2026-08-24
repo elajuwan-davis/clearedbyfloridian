@@ -36,8 +36,8 @@ export function MarketingNav() {
       className="sticky top-0 z-[100]"
       style={{ background: NEAR_BLACK, borderBottom: `1px solid ${BORDER}`, isolation: "isolate" }}
     >
-      <div className="mx-auto flex h-[58px] max-w-7xl items-center justify-between gap-4 px-5 lg:px-8">
-        <div className="flex min-w-0 items-center gap-6">
+      <div className="mx-auto grid h-[68px] max-w-7xl grid-cols-[1fr_auto_1fr] items-center gap-4 px-5 lg:px-10">
+        <div className="flex min-w-0 items-center" style={{ gridColumn: 1 }}>
           <Link
             to="/"
             className="flex items-center gap-2.5 no-underline"
