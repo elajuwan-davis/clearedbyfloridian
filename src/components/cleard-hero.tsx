@@ -242,7 +242,7 @@ function HeroNav({ logoSlot, logoVisible }: { logoSlot: React.Ref<HTMLDivElement
           <HeroTrades />
         </nav>
 
-        <div className="flex items-center gap-4" style={{ flexShrink: 0 }}>
+        <div className="flex items-center justify-end gap-4" style={{ flexShrink: 0, gridColumn: 3 }}>
           <Link
             to="/login"
             className="hidden text-[13.5px] no-underline sm:inline"
