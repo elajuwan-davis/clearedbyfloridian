@@ -42,6 +42,7 @@ import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as ResetPasswordConfirmRouteImport } from './routes/reset-password-confirm'
 import { Route as ServicesRouteImport } from './routes/services'
 import { Route as SubPortalRouteImport } from './routes/sub-portal'
+import { Route as TermsRouteImport } from './routes/terms'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminAccessRequestsRouteImport } from './routes/admin.access-requests'
 import { Route as AdminActivityRouteImport } from './routes/admin.activity'
@@ -301,6 +302,11 @@ const ServicesRoute = ServicesRouteImport.update({
 const SubPortalRoute = SubPortalRouteImport.update({
   id: '/sub-portal',
   path: '/sub-portal',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminIndexRoute = AdminIndexRouteImport.update({
@@ -828,6 +834,7 @@ export interface FileRoutesByFullPath {
   '/reset-password-confirm': typeof ResetPasswordConfirmRoute
   '/services': typeof ServicesRoute
   '/sub-portal': typeof SubPortalRoute
+  '/terms': typeof TermsRoute
   '/admin/access-requests': typeof AdminAccessRequestsRoute
   '/admin/activity': typeof AdminActivityRoute
   '/admin/audit': typeof AdminAuditRoute
@@ -956,6 +963,7 @@ export interface FileRoutesByTo {
   '/reset-password-confirm': typeof ResetPasswordConfirmRoute
   '/services': typeof ServicesRoute
   '/sub-portal': typeof SubPortalRoute
+  '/terms': typeof TermsRoute
   '/admin/access-requests': typeof AdminAccessRequestsRoute
   '/admin/activity': typeof AdminActivityRoute
   '/admin/audit': typeof AdminAuditRoute
@@ -1085,6 +1093,7 @@ export interface FileRoutesById {
   '/reset-password-confirm': typeof ResetPasswordConfirmRoute
   '/services': typeof ServicesRoute
   '/sub-portal': typeof SubPortalRoute
+  '/terms': typeof TermsRoute
   '/admin/access-requests': typeof AdminAccessRequestsRoute
   '/admin/activity': typeof AdminActivityRoute
   '/admin/audit': typeof AdminAuditRoute
@@ -1217,6 +1226,7 @@ export interface FileRouteTypes {
     | '/reset-password-confirm'
     | '/services'
     | '/sub-portal'
+    | '/terms'
     | '/admin/access-requests'
     | '/admin/activity'
     | '/admin/audit'
@@ -1345,6 +1355,7 @@ export interface FileRouteTypes {
     | '/reset-password-confirm'
     | '/services'
     | '/sub-portal'
+    | '/terms'
     | '/admin/access-requests'
     | '/admin/activity'
     | '/admin/audit'
@@ -1473,6 +1484,7 @@ export interface FileRouteTypes {
     | '/reset-password-confirm'
     | '/services'
     | '/sub-portal'
+    | '/terms'
     | '/admin/access-requests'
     | '/admin/activity'
     | '/admin/audit'
@@ -1604,6 +1616,7 @@ export interface RootRouteChildren {
   ResetPasswordConfirmRoute: typeof ResetPasswordConfirmRoute
   ServicesRoute: typeof ServicesRoute
   SubPortalRoute: typeof SubPortalRoute
+  TermsRoute: typeof TermsRoute
   AdminAccessRequestsRoute: typeof AdminAccessRequestsRoute
   AdminActivityRoute: typeof AdminActivityRoute
   AdminAuditRoute: typeof AdminAuditRoute
@@ -1882,6 +1895,13 @@ declare module '@tanstack/react-router' {
       path: '/sub-portal'
       fullPath: '/sub-portal'
       preLoaderRoute: typeof SubPortalRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/': {
@@ -2731,6 +2751,7 @@ const rootRouteChildren: RootRouteChildren = {
   ResetPasswordConfirmRoute: ResetPasswordConfirmRoute,
   ServicesRoute: ServicesRoute,
   SubPortalRoute: SubPortalRoute,
+  TermsRoute: TermsRoute,
   AdminAccessRequestsRoute: AdminAccessRequestsRoute,
   AdminActivityRoute: AdminActivityRoute,
   AdminAuditRoute: AdminAuditRoute,
