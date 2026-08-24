@@ -81,9 +81,20 @@ export function MarketingNav() {
             >
               <button
                 type="button"
+                data-plain
                 onClick={() => setTradesOpen((s) => !s)}
                 className="inline-flex items-center gap-1 text-[14px] transition-opacity hover:opacity-70"
-                style={{ color: BODY_GRAY, whiteSpace: "nowrap" }}
+                style={{
+                  color: BODY_GRAY,
+                  whiteSpace: "nowrap",
+                  background: "none",
+                  border: "none",
+                  padding: 0,
+                  borderRadius: 0,
+                  boxShadow: "none",
+                  backdropFilter: "none",
+                  WebkitBackdropFilter: "none",
+                }}
                 aria-expanded={tradesOpen}
               >
                 Trades
