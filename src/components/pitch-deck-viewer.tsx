@@ -56,8 +56,6 @@ export function DeckViewer({ footer }: { footer?: React.ReactNode }) {
       SLIDES.forEach((s) => {
         const a = new Image();
         a.src = s.img;
-        const b = new Image();
-        b.src = s.bgImage;
       });
     }, 800);
     return () => window.clearTimeout(t);
@@ -74,15 +72,9 @@ export function DeckViewer({ footer }: { footer?: React.ReactNode }) {
     <div
       ref={containerRef}
       className="cl-public relative flex h-screen w-full flex-col items-center justify-center overflow-hidden"
-      style={{
-        backgroundColor: SLATE,
-        backgroundImage: `url(${SLIDES[i].bgImage})`,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundRepeat: "no-repeat",
-        transition: "background-image 0.3s ease",
-      }}
+      style={{ backgroundColor: "#2A4442" }}
     >
+
       <div
         className="relative w-full"
         style={{ maxWidth: 1400, maxHeight: "calc(100vh - 96px)", aspectRatio: "16 / 9" }}
