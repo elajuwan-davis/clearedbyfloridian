@@ -614,7 +614,7 @@ const NODES: {
     tip: "Plan review: 2-day cycle, rev 04",
     status: "Plan review",
     coord: "Lat -16.36.88.668",
-    cx: 72,
+    cx: 68,
     cy: 50,
     labelPos: "top-full mt-2 left-1/2 -translate-x-1/2",
     tipPos: "top-full mt-[26px] left-1/2 -translate-x-1/2",
@@ -640,7 +640,7 @@ const NODES: {
     tip: "Documents: 148 reviewed",
     status: "Documents",
     coord: "Lat/Long 31.371.15",
-    cx: 28,
+    cx: 32,
     cy: 50,
     labelPos: "top-full mt-2 left-1/2 -translate-x-1/2",
     tipPos: "top-full mt-[26px] left-1/2 -translate-x-1/2",
@@ -813,13 +813,13 @@ export function ReplaceThePermitOffice() {
               </span>
               <span
                 className="absolute text-[7.5px] uppercase"
-                style={{ left: "33%", top: "44%", fontFamily: MONO, letterSpacing: "0.14em", color: "rgba(142,90,56,0.7)" }}
+                style={{ left: "37%", top: "43%", fontFamily: MONO, letterSpacing: "0.14em", color: "rgba(142,90,56,0.7)" }}
               >
                 Lat -11.35.59.688
               </span>
               <span
                 className="absolute text-[7.5px] uppercase"
-                style={{ right: "17%", top: "44%", fontFamily: MONO, letterSpacing: "0.14em", color: "rgba(142,90,56,0.7)" }}
+                style={{ right: "20%", top: "43%", fontFamily: MONO, letterSpacing: "0.14em", color: "rgba(142,90,56,0.7)" }}
               >
                 Lat/Long 21.392.27
               </span>
@@ -855,10 +855,10 @@ export function ReplaceThePermitOffice() {
                   src={copperMark.url}
                   alt="Cleard"
                   className="h-[34px] w-[34px] object-contain"
-                  style={{ filter: "brightness(1.25) saturate(0.85)" }}
+                  style={{ filter: "brightness(0) invert(1) opacity(0.92)" }}
                 />
               </div>
-              <div className="mt-2 text-[8.5px] uppercase" style={{ fontFamily: MONO, letterSpacing: "0.16em", color: PLUM }}>
+              <div className="absolute top-full mt-2 whitespace-nowrap text-[8.5px] uppercase" style={{ fontFamily: MONO, letterSpacing: "0.16em", color: PLUM }}>
                 Cleard engine
               </div>
             </div>
