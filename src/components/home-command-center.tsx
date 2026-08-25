@@ -592,7 +592,7 @@ const NODES: {
 }[] = [
   { key: "permits", label: "Permits", icon: FileText, layer: "CAD LAYER 17.1", coord: "N 26.71 · W 80.05", pos: "left-1/2 top-[6%] -translate-x-1/2", side: "top" },
   { key: "review", label: "Plan review", icon: Map, layer: "CAD LAYER 17.2", coord: "REV 04 · 2-DAY", pos: "right-[6%] top-1/2 -translate-y-1/2", side: "right" },
-  { key: "licenses", label: "Licenses", icon: BadgeCheck, layer: "CAD LAYER 17.3", coord: "CGC · ACTIVE", pos: "left-1/2 bottom-[6%] -translate-x-1/2", side: "bottom" },
+  { key: "licenses", label: "Licenses", icon: BadgeCheck, layer: "CAD LAYER 17.3", coord: "CGC · ACTIVE", pos: "left-1/2 bottom-[18%] -translate-x-1/2", side: "bottom" },
   { key: "documents", label: "Documents", icon: FolderOpen, layer: "CAD LAYER 17.4", coord: "4,821 FILES", pos: "left-[6%] top-1/2 -translate-y-1/2", side: "left" },
 ];
 
