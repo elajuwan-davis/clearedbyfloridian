@@ -1,17 +1,25 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
+import { motion } from "framer-motion";
 import {
   ArrowRight,
+  BadgeCheck,
   Check,
   FileCheck2,
+  FileText,
   FolderOpen,
+  Hammer,
+  LogIn,
+  Map,
   Scale,
   Send,
   ShieldCheck,
   Sparkle,
+  TrendingUp,
   Users,
   X,
 } from "lucide-react";
+
 
 /* ----------------------- LOCKED NORDIC LUXURY TOKENS ---------------------- */
 
