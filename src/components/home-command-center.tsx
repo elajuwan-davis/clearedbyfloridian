@@ -766,13 +766,13 @@ export function ReplaceThePermitOffice() {
                       </motion.div>
                     </div>
                     <div
-                      className={`whitespace-nowrap text-[10.5px] uppercase transition-colors duration-300 ${n.key === "permits" ? "absolute left-full top-[26px] ml-4" : ""}`}
+                      className={`whitespace-nowrap text-[10.5px] uppercase transition-colors duration-300 ${n.key === "permits" ? "absolute left-full top-[24px] ml-4" : "absolute top-full mt-3"}`}
                       style={{ fontFamily: MONO, letterSpacing: "0.18em", color: on ? CU_TXT : INK }}
                     >
                       {n.label}
                     </div>
                     <motion.div
-                      className="whitespace-nowrap text-center text-[8.5px] uppercase leading-[1.6]"
+                      className={`absolute whitespace-nowrap text-center text-[8.5px] uppercase leading-[1.6] ${n.key === "permits" ? "left-full top-[44px] ml-4" : "top-full mt-9"}`}
                       style={{ fontFamily: MONO, letterSpacing: "0.14em", color: CU_TXT }}
                       initial={false}
                       animate={{ opacity: on ? 1 : 0, y: on ? 0 : -4 }}
