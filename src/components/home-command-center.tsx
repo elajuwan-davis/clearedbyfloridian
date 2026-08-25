@@ -733,15 +733,16 @@ export function ReplaceThePermitOffice() {
               {BEFORE.map((b, i) => (
                 <div
                   key={b}
-                  className="cl-handoff flex items-center gap-3 py-[7px] text-[13px]"
+                  className="cl-handoff flex items-center gap-3 py-[7px] text-[14.5px]"
                   style={{ borderBottom: `1px solid ${HAIR_SOFT}`, color: INK, transition: "color 200ms ease" }}
                 >
-                  <span className="text-[10px] tabular-nums" style={{ fontFamily: MONO, color: TAN }}>
+                  <span className="text-[11px] tabular-nums" style={{ fontFamily: MONO, color: TAN }}>
                     {String(i + 1).padStart(2, "0")}
                   </span>
                   {b}
                 </div>
               ))}
+
             </div>
             <div
               className="mt-4 pt-3 text-[13px] leading-snug"
@@ -922,13 +923,12 @@ export function ReplaceThePermitOffice() {
               whileHover={{ y: -6 }}
               transition={{ type: "spring", stiffness: 300, damping: 20 }}
             >
-              <span className="cl-round cl-copper grid h-[34px] w-[34px] shrink-0 place-items-center">
-                <c.icon
-                  className="h-[15px] w-[15px]"
-                  strokeWidth={1.6}
-                  style={{ color: "#FFF6E8", filter: "drop-shadow(0 1px 1px rgba(70,35,15,0.5))" }}
-                />
-              </span>
+              <c.icon
+                className="h-[22px] w-[22px] shrink-0"
+                strokeWidth={1.4}
+                style={{ color: PLUM }}
+              />
+
               <div
                 className="text-[15px] leading-none"
                 style={{ fontFamily: SERIF, fontWeight: 600, color: PLUM, letterSpacing: "-0.02em" }}
