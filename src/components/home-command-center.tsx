@@ -649,9 +649,9 @@ export function ReplaceThePermitOffice() {
 
 
         {/* --------------------------- SPLIT GRID -------------------------- */}
-        <div className="mt-12 grid gap-5 lg:grid-cols-[38fr_62fr]">
+        <div className="mt-9 grid gap-5 lg:grid-cols-[38fr_62fr]">
           {/* LEFT — before, eight handoffs */}
-          <div className="p-7" style={{ background: OFF, border: `1px solid ${HAIR}`, borderRadius: 6 }}>
+          <div className="cl-soft p-7" style={{ background: OFF, border: `1px solid ${HAIR}` }}>
             <div className="text-[10px] uppercase" style={{ fontFamily: MONO, letterSpacing: "0.2em", color: GRAY }}>
               Before · eight handoffs
             </div>
@@ -679,8 +679,8 @@ export function ReplaceThePermitOffice() {
 
           {/* RIGHT — blueprint canvas */}
           <div
-            className="relative min-h-[430px] overflow-hidden md:min-h-[520px]"
-            style={{ background: PAPER, border: `1px solid ${CAD_LINE}`, borderRadius: 8 }}
+            className="cl-soft relative min-h-[430px] overflow-hidden md:min-h-[520px]"
+            style={{ background: PAPER, border: `1px solid ${CAD_LINE}` }}
             onMouseLeave={() => setActive(null)}
           >
             {/* blueprint grid */}
@@ -688,8 +688,8 @@ export function ReplaceThePermitOffice() {
               className="pointer-events-none absolute inset-0"
               style={{
                 backgroundImage: `linear-gradient(${CAD_LINE} 1px, transparent 1px), linear-gradient(90deg, ${CAD_LINE} 1px, transparent 1px)`,
-                backgroundSize: "56px 56px",
-                opacity: 0.5,
+                backgroundSize: "68px 68px",
+                opacity: 0.28,
               }}
             />
             <div
@@ -727,7 +727,7 @@ export function ReplaceThePermitOffice() {
                 );
               })}
               <span
-                className="absolute left-1/2 top-1/2 h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full transition-all duration-500"
+                className="absolute left-1/2 top-1/2 h-2 w-2 -translate-x-1/2 -translate-y-1/2 cl-round transition-all duration-500"
                 style={{ background: active ? CU_DK : CAD_LINE }}
               />
             </div>
@@ -739,20 +739,20 @@ export function ReplaceThePermitOffice() {
               return (
                 <div key={n.key} className={`absolute ${n.pos}`}>
                   <div
-                    className="flex flex-col items-center gap-3"
+                    className={`flex gap-3 ${n.key === "permits" ? "flex-row items-center" : "flex-col items-center"}`}
                     onMouseEnter={() => setActive(n.key)}
                   >
                     <div className="relative">
                       {(on || soft) && (
                         <motion.span
-                          className="absolute inset-0 rounded-full"
+                          className="cl-round absolute inset-0"
                           style={{ background: "rgba(192,122,95,0.2)" }}
                           animate={{ scale: [1, on ? 2.1 : 1.6], opacity: [0.5, 0] }}
                           transition={{ duration: on ? 1.8 : 2.4, repeat: Infinity, ease: "easeOut" }}
                         />
                       )}
                       <motion.div
-                        className="relative grid h-[62px] w-[62px] place-items-center rounded-full"
+                        className="cl-round relative grid h-[62px] w-[62px] place-items-center"
                         style={{
                           background: `linear-gradient(145deg, ${CU_LT}, ${CU_DK})`,
                           boxShadow: on
