@@ -627,32 +627,26 @@ export function ReplaceThePermitOffice() {
     <section style={{ background: OAT }}>
       <div className="mx-auto max-w-7xl px-5 py-24 lg:px-8 md:py-28">
         {/* ---------------------------- TOP BAR ---------------------------- */}
-        <div className="flex flex-wrap items-end justify-between gap-4 pb-5" style={{ borderBottom: `1px solid ${HAIR}` }}>
-          <div>
-            <div className="text-[11px] uppercase" style={{ fontFamily: MONO, letterSpacing: "0.22em", color: CU_TXT }}>
-              02 / The architectural engine
-            </div>
-            <h2
-              className="mt-5 max-w-3xl"
-              style={{ fontFamily: SERIF, fontSize: "clamp(2rem, 3.9vw, 3.05rem)", lineHeight: 1.04, letterSpacing: "-0.035em", color: PLUM, fontWeight: 600 }}
-            >
-              Replace the permit office.
-              <br />
-              <span style={{ fontStyle: "italic", color: INK }}>With Cleard.</span>
-            </h2>
-          </div>
-          <div className="flex items-center gap-2.5 pb-1">
+        <div>
+          <h2
+            className="uppercase"
+            style={{ fontFamily: MONO, fontSize: "clamp(1.15rem, 2.1vw, 1.7rem)", letterSpacing: "0.05em", color: INK, fontWeight: 500 }}
+          >
+            02 / The architectural engine
+          </h2>
+          <div className="mt-3 flex items-center gap-2.5">
             <motion.span
-              className="inline-block h-[7px] w-[7px] rounded-full"
+              className="cl-round inline-block h-[7px] w-[7px]"
               style={{ background: CU_LT }}
               animate={{ opacity: [1, 0.25, 1], scale: [1, 1.35, 1] }}
               transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut" }}
             />
-            <span className="text-[10px] uppercase" style={{ fontFamily: MONO, letterSpacing: "0.2em", color: GRAY }}>
+            <span className="text-[10px] uppercase" style={{ fontFamily: MONO, letterSpacing: "0.2em", color: CU_TXT }}>
               Victoria active
             </span>
           </div>
         </div>
+
 
         {/* --------------------------- SPLIT GRID -------------------------- */}
         <div className="mt-12 grid gap-5 lg:grid-cols-[38fr_62fr]">
