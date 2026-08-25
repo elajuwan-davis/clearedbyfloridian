@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ClearedHero } from "@/components/cleard-hero";
 import { MarketingFooter } from "@/components/marketing-shell";
+import { VictoriaSection } from "@/components/victoria-section";
 import {
   ArrowRight,
   ArrowUpRight,
@@ -32,7 +33,6 @@ import {
 import {
   FeaturedTestimonial,
   ReplaceThePermitOffice,
-  VictoriaSpotlight,
   WatchItRun,
 } from "@/components/home-command-center";
 
@@ -97,9 +97,7 @@ function HomePage() {
         <div id="watch-it-run">
           <WatchItRun />
         </div>
-        <div id="victoria">
-          <VictoriaSpotlight />
-        </div>
+        <VictoriaSection />
         <ReplaceThePermitOffice />
         <MunicipalityTrack />
         <StatsStrip />
