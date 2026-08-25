@@ -733,15 +733,16 @@ export function ReplaceThePermitOffice() {
               {BEFORE.map((b, i) => (
                 <div
                   key={b}
-                  className="cl-handoff flex items-center gap-3 py-[7px] text-[13px]"
+                  className="cl-handoff flex items-center gap-3 py-[7px] text-[14.5px]"
                   style={{ borderBottom: `1px solid ${HAIR_SOFT}`, color: INK, transition: "color 200ms ease" }}
                 >
-                  <span className="text-[10px] tabular-nums" style={{ fontFamily: MONO, color: TAN }}>
+                  <span className="text-[11px] tabular-nums" style={{ fontFamily: MONO, color: TAN }}>
                     {String(i + 1).padStart(2, "0")}
                   </span>
                   {b}
                 </div>
               ))}
+
             </div>
             <div
               className="mt-4 pt-3 text-[13px] leading-snug"
