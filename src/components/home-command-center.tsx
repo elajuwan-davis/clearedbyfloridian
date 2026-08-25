@@ -559,9 +559,12 @@ export function VictoriaSpotlight() {
 
 /* ================== 4 · THE ARCHITECTURAL ENGINE ======================== */
 
-const LAV = "#E6E6FA";
-const HAIR = "rgba(47,79,79,0.20)";
-const HAIR_SOFT = "rgba(47,79,79,0.14)";
+const CREAM = "#F4EADB";
+const TAN = "#B98055";
+const TAN_DEEP = "#8E5A38";
+const HAIR = "rgba(103,49,71,0.20)";
+const HAIR_SOFT = "rgba(103,49,71,0.13)";
+const CAD = "rgba(142,90,56,0.55)";
 
 const BEFORE = [
   "Permit expediter",
