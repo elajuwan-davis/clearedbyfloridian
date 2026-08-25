@@ -149,20 +149,14 @@ const MATRIX_ROWS: { feature: string; cleard: boolean | string; cells: (boolean 
 function Logo({ src, name, size = 34 }: { src: string; name: string; size?: number }) {
   return (
     <span
-      className="inline-flex shrink-0 items-center justify-center overflow-hidden"
-      style={{
-        width: size,
-        height: size,
-        borderRadius: 8,
-        background: "#FFFFFF",
-        border: `1px solid ${BORDER}`,
-      }}
+      className="inline-flex shrink-0 overflow-hidden"
+      style={{ width: size, height: size, borderRadius: 6 }}
     >
       <img
         src={src}
         alt={`${name} logo`}
         loading="lazy"
-        style={{ width: "82%", height: "82%", objectFit: "contain" }}
+        style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
       />
     </span>
   );
