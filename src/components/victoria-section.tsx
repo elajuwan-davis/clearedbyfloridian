@@ -321,7 +321,7 @@ export function VictoriaSection() {
 
           {/* top bar */}
           <div
-            className="absolute inset-x-0 top-0 flex items-center justify-between px-5 py-4 sm:px-7"
+            className="absolute inset-x-0 top-0 flex items-center justify-between px-5 pb-4 pt-6 sm:px-7"
             style={{ fontFamily: MONO, fontSize: 9.5, letterSpacing: "0.2em", color: "rgba(250,243,230,0.72)" }}
           >
             <span className="flex items-center gap-2 uppercase">
