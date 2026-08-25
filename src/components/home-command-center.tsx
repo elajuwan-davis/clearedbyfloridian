@@ -720,30 +720,28 @@ export function ReplaceThePermitOffice() {
         </div>
 
         {/* --------------------------- SPLIT GRID -------------------------- */}
-        <div className="grid gap-6 lg:grid-cols-12">
+        <div className="grid gap-6 lg:grid-cols-2">
           {/* LEFT — before, eight handoffs */}
           <div
-            className="flex flex-col justify-between lg:col-span-4 lg:border-r lg:pr-5"
+            className="flex min-h-[420px] flex-col lg:border-r lg:pr-6"
             style={{ borderColor: HAIR }}
           >
-            <div>
-              <div className="text-[10px] uppercase" style={{ fontFamily: MONO, letterSpacing: "0.2em", color: "rgba(103,49,71,0.7)" }}>
-                Before · eight handoffs
-              </div>
-              <div className="mt-3">
-                {BEFORE.map((b, i) => (
-                  <div
-                    key={b}
-                    className="cl-handoff flex items-center gap-3 py-[6px] text-xs"
-                    style={{ borderBottom: `1px solid ${HAIR_SOFT}`, color: INK, transition: "color 200ms ease" }}
-                  >
-                    <span className="text-[10px] tabular-nums" style={{ fontFamily: MONO, color: TAN }}>
-                      {String(i + 1).padStart(2, "0")}
-                    </span>
-                    {b}
-                  </div>
-                ))}
-              </div>
+            <div className="text-[10px] uppercase" style={{ fontFamily: MONO, letterSpacing: "0.2em", color: "rgba(103,49,71,0.7)" }}>
+              Before · eight handoffs
+            </div>
+            <div className="mt-3 flex flex-1 flex-col justify-between">
+              {BEFORE.map((b, i) => (
+                <div
+                  key={b}
+                  className="cl-handoff flex items-center gap-3 py-[7px] text-[13px]"
+                  style={{ borderBottom: `1px solid ${HAIR_SOFT}`, color: INK, transition: "color 200ms ease" }}
+                >
+                  <span className="text-[10px] tabular-nums" style={{ fontFamily: MONO, color: TAN }}>
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  {b}
+                </div>
+              ))}
             </div>
             <div
               className="mt-4 pt-3 text-[13px] leading-snug"
@@ -755,7 +753,7 @@ export function ReplaceThePermitOffice() {
 
           {/* RIGHT — compact orrery canvas */}
           <div
-            className="cl-soft relative h-[392px] overflow-hidden lg:col-span-8"
+            className="cl-soft relative min-h-[420px] overflow-hidden"
             style={{ background: CREAM, border: `1px solid ${HAIR}` }}
           >
             {/* blueprint grid */}
@@ -763,17 +761,17 @@ export function ReplaceThePermitOffice() {
               className="pointer-events-none absolute inset-0"
               style={{
                 backgroundImage: `linear-gradient(rgba(142,90,56,0.10) 1px, transparent 1px), linear-gradient(90deg, rgba(142,90,56,0.10) 1px, transparent 1px)`,
-                backgroundSize: "48px 48px",
+                backgroundSize: "44px 44px",
               }}
             />
             <div
               className="absolute left-4 top-3 z-20 text-[9.5px] uppercase"
-              style={{ fontFamily: MONO, letterSpacing: "0.16em", color: "rgba(142,90,56,0.75)" }}
+              style={{ fontFamily: MONO, letterSpacing: "0.18em", color: "rgba(142,90,56,0.8)" }}
             >
-              Orrery architectural canvas
+              After Cleard
             </div>
 
-            {/* short orthogonal CAD legs + micro labels */}
+            {/* short orthogonal CAD legs */}
             <div className="pointer-events-none absolute inset-0">
               {NODES.map((n) => {
                 const on = active === n.key;
@@ -799,35 +797,23 @@ export function ReplaceThePermitOffice() {
                   />
                 );
               })}
-              {/* micro CAD annotations */}
+              {/* micro CAD annotations — offset clear of the legs */}
               <span
-                className="absolute -translate-x-1/2 rotate-90 text-[7.5px] uppercase"
-                style={{ left: "51.5%", top: "32%", fontFamily: MONO, letterSpacing: "0.14em", color: "rgba(142,90,56,0.7)", transformOrigin: "center" }}
-              >
-                CAD layer 17.1
-              </span>
-              <span
-                className="absolute -translate-x-1/2 rotate-90 text-[7.5px] uppercase"
-                style={{ left: "51.5%", top: "64%", fontFamily: MONO, letterSpacing: "0.14em", color: "rgba(142,90,56,0.7)", transformOrigin: "center" }}
+                className="absolute text-[7.5px] uppercase"
+                style={{ left: "6%", bottom: "16%", fontFamily: MONO, letterSpacing: "0.14em", color: "rgba(142,90,56,0.55)" }}
               >
                 CAD layer 17.1
               </span>
               <span
                 className="absolute text-[7.5px] uppercase"
-                style={{ left: "37%", top: "43%", fontFamily: MONO, letterSpacing: "0.14em", color: "rgba(142,90,56,0.7)" }}
-              >
-                Lat -11.35.59.688
-              </span>
-              <span
-                className="absolute text-[7.5px] uppercase"
-                style={{ right: "20%", top: "43%", fontFamily: MONO, letterSpacing: "0.14em", color: "rgba(142,90,56,0.7)" }}
+                style={{ right: "6%", top: "12%", fontFamily: MONO, letterSpacing: "0.14em", color: "rgba(142,90,56,0.55)" }}
               >
                 Lat/Long 21.392.27
               </span>
             </div>
 
-            {/* rotating sonar sweep — confined to canvas, maroon/tan */}
-            <div className="pointer-events-none absolute left-1/2 top-1/2 h-[300px] w-[300px] -translate-x-1/2 -translate-y-1/2 overflow-hidden">
+            {/* rotating sonar sweep — copper hue, confined */}
+            <div className="pointer-events-none absolute left-1/2 top-1/2 h-[290px] w-[290px] -translate-x-1/2 -translate-y-1/2 overflow-hidden">
               <motion.div
                 className="absolute inset-0"
                 animate={{ rotate: 360 }}
@@ -836,26 +822,27 @@ export function ReplaceThePermitOffice() {
                 <div
                   className="cl-round absolute inset-0"
                   style={{
-                    background: `conic-gradient(from 0deg, rgba(103,49,71,0.15), rgba(185,128,85,0.09) 55deg, transparent 90deg, transparent 360deg)`,
+                    background: `conic-gradient(from 0deg, rgba(185,128,85,0.26), rgba(226,178,124,0.14) 50deg, transparent 88deg, transparent 360deg)`,
                   }}
                 />
                 <div
                   className="absolute left-1/2 top-0 h-1/2 w-px origin-bottom"
-                  style={{ background: `linear-gradient(to bottom, rgba(103,49,71,0.04), ${PLUM})` }}
+                  style={{ background: `linear-gradient(to bottom, rgba(185,128,85,0.05), ${TAN_DEEP})` }}
                 />
               </motion.div>
             </div>
 
             {/* central hub — real Cleard mark */}
-            <div className="absolute left-1/2 top-1/2 z-20 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center">
+            <div className="absolute left-1/2 top-1/2 z-20 -translate-x-1/2 -translate-y-1/2">
               <div
-                className="cl-round grid h-[58px] w-[58px] place-items-center overflow-hidden"
-                style={{ background: CREAM, border: `2px solid ${PLUM}` }}
+                className="cl-round grid h-[62px] w-[62px] place-items-center overflow-hidden"
+                style={{
+                  background: CREAM,
+                  border: `2px solid ${PLUM}`,
+                  boxShadow: "0 0 0 6px rgba(185,128,85,0.10)",
+                }}
               >
-                <img src={copperMark.url} alt="Cleard" className="h-[36px] w-[36px] object-contain" />
-              </div>
-              <div className="absolute top-full mt-2 whitespace-nowrap text-[8.5px] uppercase" style={{ fontFamily: MONO, letterSpacing: "0.16em", color: PLUM }}>
-                Cleard engine
+                <img src={copperMark.url} alt="Cleard" className="h-[38px] w-[38px] object-contain" />
               </div>
             </div>
 
@@ -881,16 +868,16 @@ export function ReplaceThePermitOffice() {
                         />
                       )}
                       <motion.div
-                        className="cl-round relative grid h-[42px] w-[42px] place-items-center"
-                        style={{
-                          background: on
-                            ? `radial-gradient(circle at 32% 28%, ${TAN}, ${PLUM})`
-                            : `radial-gradient(circle at 32% 28%, ${TAN}, ${TAN_DEEP})`,
-                        }}
+                        className="cl-round cl-copper relative grid h-[44px] w-[44px] place-items-center"
+                        data-on={on ? "true" : "false"}
                         animate={{ scale: on ? 1.12 : 1 }}
                         transition={{ type: "spring", stiffness: 240, damping: 18 }}
                       >
-                        <n.icon className="h-[16px] w-[16px]" strokeWidth={1.5} style={{ color: OAT }} />
+                        <n.icon
+                          className="relative h-[17px] w-[17px]"
+                          strokeWidth={1.6}
+                          style={{ color: "#FFF6E8", filter: "drop-shadow(0 1px 1px rgba(70,35,15,0.55))" }}
+                        />
                       </motion.div>
                     </div>
                     <div
@@ -926,27 +913,67 @@ export function ReplaceThePermitOffice() {
         </div>
 
         {/* --------------------------- BOTTOM ROW --------------------------- */}
-        <div className="grid grid-cols-2 gap-3 pt-4 lg:grid-cols-4" style={{ borderTop: `1px solid ${HAIR}` }}>
+        <div className="grid grid-cols-2 gap-3 pt-5 lg:grid-cols-4" style={{ borderTop: `1px solid ${HAIR}` }}>
           {ONE_CARDS.map((c) => (
-            <div
+            <motion.div
               key={c.head}
-              className="flex flex-col gap-1.5 px-3 py-2.5"
+              className="cl-onecard flex flex-col items-center gap-2 px-4 py-5 text-center"
               style={{ background: CREAM, border: `1px solid ${HAIR_SOFT}` }}
+              whileHover={{ y: -6 }}
+              transition={{ type: "spring", stiffness: 300, damping: 20 }}
             >
-              <c.icon className="h-[16px] w-[16px] shrink-0" strokeWidth={1.4} style={{ color: TAN_DEEP }} />
-              <div className="text-[10px] uppercase" style={{ fontFamily: MONO, letterSpacing: "0.16em", color: PLUM }}>
+              <span className="cl-round cl-copper grid h-[34px] w-[34px] shrink-0 place-items-center">
+                <c.icon
+                  className="h-[15px] w-[15px]"
+                  strokeWidth={1.6}
+                  style={{ color: "#FFF6E8", filter: "drop-shadow(0 1px 1px rgba(70,35,15,0.5))" }}
+                />
+              </span>
+              <div
+                className="text-[15px] leading-none"
+                style={{ fontFamily: SERIF, fontWeight: 600, color: PLUM, letterSpacing: "-0.02em" }}
+              >
                 {c.head}
               </div>
-              <p className="text-[11px] leading-snug" style={{ color: INK }}>
+              <p className="text-[11.5px] leading-snug" style={{ color: INK }}>
                 {c.body}
               </p>
-            </div>
+            </motion.div>
           ))}
         </div>
       </div>
 
       <style>{`
         .cl-handoff:hover { color: ${PLUM} !important; }
+        .cl-copper {
+          background:
+            linear-gradient(145deg, #F6DCB6 0%, #D79A62 24%, #A9683C 52%, #8E5A38 68%, #E9C49B 86%, #7A4A2C 100%);
+          box-shadow:
+            inset 0 1px 1px rgba(255,244,224,0.75),
+            inset 0 -2px 4px rgba(70,35,15,0.55),
+            0 2px 6px rgba(103,49,71,0.22);
+          position: relative;
+          overflow: hidden;
+        }
+        .cl-copper::after {
+          content: "";
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(115deg, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0) 38%, rgba(255,255,255,0) 62%, rgba(255,255,255,0.28) 100%);
+          pointer-events: none;
+        }
+        .cl-copper[data-on="true"] {
+          box-shadow:
+            inset 0 1px 1px rgba(255,246,230,0.85),
+            inset 0 -2px 5px rgba(70,35,15,0.5),
+            0 0 0 4px rgba(185,128,85,0.18),
+            0 4px 12px rgba(103,49,71,0.28);
+        }
+        .cl-onecard { transition: box-shadow 220ms ease, border-color 220ms ease; }
+        .cl-onecard:hover {
+          border-color: rgba(103,49,71,0.35) !important;
+          box-shadow: 0 12px 26px -14px rgba(103,49,71,0.4);
+        }
       `}</style>
     </section>
   );
