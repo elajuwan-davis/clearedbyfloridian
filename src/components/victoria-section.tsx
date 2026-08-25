@@ -128,6 +128,8 @@ export function VictoriaSection() {
         @keyframes vBlink { 0%,100% { opacity:1;} 50% { opacity:.25;} }
         @keyframes vDrift { 0%,100% { transform: translateY(0);} 50% { transform: translateY(-6px);} }
         @keyframes vFlow { to { stroke-dashoffset: -240; } }
+        .v-cta .cl-arrow, .v-card .cl-arrow { transition: transform 220ms cubic-bezier(0.16,1,0.3,1); }
+        .v-cta:hover .cl-arrow { transform: translateX(5px); }
         .v-card { animation: vDrift 9s ease-in-out infinite; }
         .v-card:nth-child(2n) { animation-duration: 11s; animation-delay: -3s; }
         @media (prefers-reduced-motion: reduce) {
@@ -201,7 +203,7 @@ export function VictoriaSection() {
 
             <a
               href="#watch-it-run"
-              className="cl-hoverable mt-14 inline-flex items-center gap-3 pb-2 text-[15px]"
+              className="v-cta mt-14 inline-flex items-center gap-3 pb-2 text-[15px]"
               style={{ color: PLUM, borderBottom: `1px solid ${COPPER}`, fontFamily: SERIF }}
             >
               See Victoria in action
