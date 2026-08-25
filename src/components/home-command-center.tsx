@@ -15,6 +15,7 @@ import {
   Users,
   X,
 } from "lucide-react";
+import copperMark from "@/assets/cleard-c-copper.png.asset.json";
 
 
 /* ----------------------- LOCKED NORDIC LUXURY TOKENS ---------------------- */
@@ -559,9 +560,12 @@ export function VictoriaSpotlight() {
 
 /* ================== 4 · THE ARCHITECTURAL ENGINE ======================== */
 
-const LAV = "#E6E6FA";
-const HAIR = "rgba(47,79,79,0.20)";
-const HAIR_SOFT = "rgba(47,79,79,0.14)";
+const CREAM = "#F4EADB";
+const TAN = "#B98055";
+const TAN_DEEP = "#8E5A38";
+const HAIR = "rgba(103,49,71,0.20)";
+const HAIR_SOFT = "rgba(103,49,71,0.13)";
+const CAD = "rgba(142,90,56,0.55)";
 
 const BEFORE = [
   "Permit expediter",
@@ -582,7 +586,10 @@ const NODES: {
   icon: typeof FileText;
   tip: string;
   status: string;
-  pos: string;
+  coord: string;
+  /** node center as % of canvas */
+  cx: number;
+  cy: number;
   labelPos: string;
   tipPos: string;
   side: "top" | "right" | "bottom" | "left";
@@ -593,9 +600,11 @@ const NODES: {
     icon: FileText,
     tip: "Permits: 2 COIs expiring",
     status: "Permits",
-    pos: "left-1/2 top-[9%] -translate-x-1/2",
-    labelPos: "top-full mt-2",
-    tipPos: "left-full top-1 ml-3",
+    coord: "Lat -11.35.59.688",
+    cx: 50,
+    cy: 22,
+    labelPos: "left-full top-1/2 ml-3 -translate-y-1/2",
+    tipPos: "left-full top-1/2 ml-3 mt-4 -translate-y-1/2",
     side: "top",
   },
   {
@@ -604,9 +613,11 @@ const NODES: {
     icon: Map,
     tip: "Plan review: 2-day cycle, rev 04",
     status: "Plan review",
-    pos: "right-[10%] top-1/2 -translate-y-1/2",
-    labelPos: "top-full mt-2",
-    tipPos: "right-full top-1 mr-3",
+    coord: "Lat -16.36.88.668",
+    cx: 68,
+    cy: 50,
+    labelPos: "top-full mt-2 left-1/2 -translate-x-1/2",
+    tipPos: "top-full mt-[26px] left-1/2 -translate-x-1/2",
     side: "right",
   },
   {
@@ -615,9 +626,11 @@ const NODES: {
     icon: BadgeCheck,
     tip: "Licenses: 14 active, 1 renewing",
     status: "Licenses",
-    pos: "left-1/2 bottom-[16%] -translate-x-1/2",
-    labelPos: "top-full mt-2",
-    tipPos: "left-full top-1 ml-3",
+    coord: "Lat/Long 21.392.27",
+    cx: 50,
+    cy: 78,
+    labelPos: "top-full mt-2 left-1/2 -translate-x-1/2",
+    tipPos: "top-full mt-[26px] left-1/2 -translate-x-1/2",
     side: "bottom",
   },
   {
@@ -626,9 +639,11 @@ const NODES: {
     icon: FolderOpen,
     tip: "Documents: 148 reviewed",
     status: "Documents",
-    pos: "left-[10%] top-1/2 -translate-y-1/2",
-    labelPos: "top-full mt-2",
-    tipPos: "left-full top-1 ml-3",
+    coord: "Lat/Long 31.371.15",
+    cx: 32,
+    cy: 50,
+    labelPos: "top-full mt-2 left-1/2 -translate-x-1/2",
+    tipPos: "top-full mt-[26px] left-1/2 -translate-x-1/2",
     side: "left",
   },
 ];
@@ -644,19 +659,20 @@ const SWEEP = 3.5; // seconds per full radar rotation
 
 export function ReplaceThePermitOffice() {
   const [idx, setIdx] = useState(0);
+  const [hover, setHover] = useState<NodeKey | null>(null);
   useEffect(() => {
     const t = setInterval(() => setIdx((v) => (v + 1) % NODES.length), (SWEEP * 1000) / NODES.length);
     return () => clearInterval(t);
   }, []);
   const activeNode = NODES[idx];
-  const active = activeNode.key;
+  const active = hover ?? activeNode.key;
 
   return (
     <section
-      className="flex max-h-[860px] min-h-[720px] flex-col overflow-hidden lg:h-screen"
+      className="flex flex-col overflow-hidden"
       style={{ background: OAT, color: INK }}
     >
-      <div className="mx-auto flex h-full w-full max-w-7xl flex-col justify-between gap-4 px-5 py-6 lg:px-8">
+      <div className="mx-auto flex w-full max-w-6xl flex-col gap-4 px-5 py-8 lg:px-8">
         {/* ---------------------------- HEADER ---------------------------- */}
         <div className="flex flex-wrap items-end justify-between gap-4 pb-3" style={{ borderBottom: `1px solid ${HAIR}` }}>
           <div>
@@ -667,7 +683,7 @@ export function ReplaceThePermitOffice() {
               className="mt-3 max-w-3xl"
               style={{
                 fontFamily: SERIF,
-                fontSize: "clamp(1.6rem, 2.9vw, 2.35rem)",
+                fontSize: "clamp(1.5rem, 2.6vw, 2.1rem)",
                 lineHeight: 1.05,
                 letterSpacing: "-0.035em",
                 color: PLUM,
@@ -689,10 +705,7 @@ export function ReplaceThePermitOffice() {
             </div>
           </div>
 
-          <div
-            className="cl-soft flex items-center gap-2 px-3 py-1.5"
-            style={{ background: LAV, border: `1px solid ${HAIR}` }}
-          >
+          <div className="flex items-center gap-2">
             <motion.span
               className="cl-round inline-block h-[7px] w-[7px]"
               style={{ background: PLUM }}
@@ -706,14 +719,14 @@ export function ReplaceThePermitOffice() {
         </div>
 
         {/* --------------------------- SPLIT GRID -------------------------- */}
-        <div className="grid min-h-0 flex-1 gap-6 lg:grid-cols-12">
+        <div className="grid gap-6 lg:grid-cols-12">
           {/* LEFT — before, eight handoffs */}
           <div
             className="flex flex-col justify-between lg:col-span-4 lg:border-r lg:pr-5"
             style={{ borderColor: HAIR }}
           >
             <div>
-              <div className="text-[10px] uppercase" style={{ fontFamily: MONO, letterSpacing: "0.2em", color: "rgba(47,79,79,0.7)" }}>
+              <div className="text-[10px] uppercase" style={{ fontFamily: MONO, letterSpacing: "0.2em", color: "rgba(103,49,71,0.7)" }}>
                 Before · eight handoffs
               </div>
               <div className="mt-3">
@@ -723,7 +736,7 @@ export function ReplaceThePermitOffice() {
                     className="cl-handoff flex items-center gap-3 py-[6px] text-xs"
                     style={{ borderBottom: `1px solid ${HAIR_SOFT}`, color: INK, transition: "color 200ms ease" }}
                   >
-                    <span className="text-[10px] tabular-nums" style={{ fontFamily: MONO, color: LIGHT }}>
+                    <span className="text-[10px] tabular-nums" style={{ fontFamily: MONO, color: TAN }}>
                       {String(i + 1).padStart(2, "0")}
                     </span>
                     {b}
@@ -732,83 +745,115 @@ export function ReplaceThePermitOffice() {
               </div>
             </div>
             <div
-              className="mt-4 pt-3 text-sm leading-snug"
+              className="mt-4 pt-3 text-[13px] leading-snug"
               style={{ borderTop: `1px solid ${HAIR}`, color: PLUM, fontFamily: SERIF, fontStyle: "italic" }}
             >
               Each handoff is a delay, a re-explanation, and another invoice.
             </div>
           </div>
 
-          {/* RIGHT — sonar canvas */}
+          {/* RIGHT — compact orrery canvas */}
           <div
-            className="cl-soft relative min-h-[380px] overflow-hidden lg:col-span-8"
-            style={{ background: OAT, border: `1px solid rgba(47,79,79,0.30)`, boxShadow: "0 1px 2px rgba(47,79,79,0.06)" }}
+            className="cl-soft relative h-[392px] overflow-hidden lg:col-span-8"
+            style={{ background: CREAM, border: `1px solid ${HAIR}` }}
           >
             {/* blueprint grid */}
             <div
               className="pointer-events-none absolute inset-0"
               style={{
-                backgroundImage: `linear-gradient(rgba(47,79,79,0.10) 1px, transparent 1px), linear-gradient(90deg, rgba(47,79,79,0.10) 1px, transparent 1px)`,
-                backgroundSize: "56px 56px",
+                backgroundImage: `linear-gradient(rgba(142,90,56,0.10) 1px, transparent 1px), linear-gradient(90deg, rgba(142,90,56,0.10) 1px, transparent 1px)`,
+                backgroundSize: "48px 48px",
               }}
             />
             <div
-              className="absolute left-4 top-3 z-10 text-[10px] uppercase"
-              style={{ fontFamily: MONO, letterSpacing: "0.16em", color: "rgba(47,79,79,0.6)" }}
+              className="absolute left-4 top-3 z-20 text-[9.5px] uppercase"
+              style={{ fontFamily: MONO, letterSpacing: "0.16em", color: "rgba(142,90,56,0.75)" }}
             >
-              Orrery architectural canvas // Victoria scanner
+              Orrery architectural canvas
             </div>
 
-            {/* orthogonal CAD legs */}
+            {/* short orthogonal CAD legs + micro labels */}
             <div className="pointer-events-none absolute inset-0">
               {NODES.map((n) => {
                 const on = active === n.key;
-                const base =
-                  "absolute transition-all duration-400 " +
-                  (n.side === "top"
-                    ? "left-1/2 top-[18%] h-[32%] w-px -translate-x-1/2"
-                    : n.side === "bottom"
-                      ? "left-1/2 bottom-[22%] h-[28%] w-px -translate-x-1/2"
-                      : n.side === "left"
-                        ? "left-[18%] top-1/2 h-px w-[32%] -translate-y-1/2"
-                        : "right-[18%] top-1/2 h-px w-[32%] -translate-y-1/2");
+                const vertical = n.side === "top" || n.side === "bottom";
+                const style: React.CSSProperties = vertical
+                  ? {
+                      left: `${n.cx}%`,
+                      top: `${Math.min(n.cy, 50)}%`,
+                      height: `${Math.abs(50 - n.cy)}%`,
+                      width: 1,
+                    }
+                  : {
+                      top: `${n.cy}%`,
+                      left: `${Math.min(n.cx, 50)}%`,
+                      width: `${Math.abs(50 - n.cx)}%`,
+                      height: 1,
+                    };
                 return (
                   <span
                     key={n.key}
-                    className={base}
-                    style={{ background: on ? PLUM : "rgba(47,79,79,0.22)" }}
+                    className="absolute transition-colors duration-300"
+                    style={{ ...style, background: on ? PLUM : CAD }}
                   />
                 );
               })}
+              {/* micro CAD annotations */}
+              <span
+                className="absolute -translate-x-1/2 rotate-90 text-[7.5px] uppercase"
+                style={{ left: "51.5%", top: "32%", fontFamily: MONO, letterSpacing: "0.14em", color: "rgba(142,90,56,0.7)", transformOrigin: "center" }}
+              >
+                CAD layer 17.1
+              </span>
+              <span
+                className="absolute -translate-x-1/2 rotate-90 text-[7.5px] uppercase"
+                style={{ left: "51.5%", top: "64%", fontFamily: MONO, letterSpacing: "0.14em", color: "rgba(142,90,56,0.7)", transformOrigin: "center" }}
+              >
+                CAD layer 17.1
+              </span>
+              <span
+                className="absolute text-[7.5px] uppercase"
+                style={{ left: "37%", top: "43%", fontFamily: MONO, letterSpacing: "0.14em", color: "rgba(142,90,56,0.7)" }}
+              >
+                Lat -11.35.59.688
+              </span>
+              <span
+                className="absolute text-[7.5px] uppercase"
+                style={{ right: "20%", top: "43%", fontFamily: MONO, letterSpacing: "0.14em", color: "rgba(142,90,56,0.7)" }}
+              >
+                Lat/Long 21.392.27
+              </span>
             </div>
 
-            {/* rotating sonar sweep */}
-            <motion.div
-              className="pointer-events-none absolute left-1/2 top-1/2 h-[520px] w-[520px] -translate-x-1/2 -translate-y-1/2"
-              animate={{ rotate: 360 }}
-              transition={{ duration: SWEEP, repeat: Infinity, ease: "linear" }}
-            >
-              <div
-                className="cl-round absolute inset-0"
-                style={{
-                  background: `conic-gradient(from 0deg, rgba(103,49,71,0.16), rgba(230,230,250,0.10) 55deg, transparent 90deg, transparent 360deg)`,
-                }}
-              />
-              <div
-                className="absolute left-1/2 top-0 h-1/2 w-px origin-bottom"
-                style={{ background: `linear-gradient(to bottom, rgba(103,49,71,0.05), ${PLUM})` }}
-              />
-            </motion.div>
-
-            {/* central hub */}
-            <div className="absolute left-1/2 top-1/2 z-10 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center">
-              <div
-                className="cl-round grid h-16 w-16 place-items-center"
-                style={{ background: PLUM, boxShadow: "0 10px 26px rgba(103,49,71,0.30)" }}
+            {/* rotating sonar sweep — confined to canvas, maroon/tan */}
+            <div className="pointer-events-none absolute left-1/2 top-1/2 h-[300px] w-[300px] -translate-x-1/2 -translate-y-1/2 overflow-hidden">
+              <motion.div
+                className="absolute inset-0"
+                animate={{ rotate: 360 }}
+                transition={{ duration: SWEEP, repeat: Infinity, ease: "linear" }}
               >
-                <span style={{ fontFamily: SERIF, fontWeight: 600, fontSize: 26, color: OAT, lineHeight: 1 }}>C</span>
+                <div
+                  className="cl-round absolute inset-0"
+                  style={{
+                    background: `conic-gradient(from 0deg, rgba(103,49,71,0.15), rgba(185,128,85,0.09) 55deg, transparent 90deg, transparent 360deg)`,
+                  }}
+                />
+                <div
+                  className="absolute left-1/2 top-0 h-1/2 w-px origin-bottom"
+                  style={{ background: `linear-gradient(to bottom, rgba(103,49,71,0.04), ${PLUM})` }}
+                />
+              </motion.div>
+            </div>
+
+            {/* central hub — real Cleard mark */}
+            <div className="absolute left-1/2 top-1/2 z-20 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center">
+              <div
+                className="cl-round grid h-[58px] w-[58px] place-items-center overflow-hidden"
+                style={{ background: CREAM, border: `2px solid ${PLUM}` }}
+              >
+                <img src={copperMark.url} alt="Cleard" className="h-[36px] w-[36px] object-contain" />
               </div>
-              <div className="mt-2 text-[9px] uppercase" style={{ fontFamily: MONO, letterSpacing: "0.16em", color: INK }}>
+              <div className="absolute top-full mt-2 whitespace-nowrap text-[8.5px] uppercase" style={{ fontFamily: MONO, letterSpacing: "0.16em", color: PLUM }}>
                 Cleard engine
               </div>
             </div>
@@ -817,78 +862,83 @@ export function ReplaceThePermitOffice() {
             {NODES.map((n) => {
               const on = active === n.key;
               return (
-                <div key={n.key} className={`absolute z-10 ${n.pos}`}>
+                <div
+                  key={n.key}
+                  className="absolute z-10 -translate-x-1/2 -translate-y-1/2"
+                  style={{ left: `${n.cx}%`, top: `${n.cy}%` }}
+                  onMouseEnter={() => setHover(n.key)}
+                  onMouseLeave={() => setHover(null)}
+                >
                   <div className="relative flex flex-col items-center">
                     <div className="relative">
                       {on && (
                         <motion.span
                           className="cl-round absolute inset-0"
-                          style={{ background: LAV, border: `1px solid ${HAIR}` }}
-                          animate={{ scale: [1, 2], opacity: [0.7, 0] }}
+                          style={{ border: `1px solid ${TAN}` }}
+                          animate={{ scale: [1, 1.9], opacity: [0.6, 0] }}
                           transition={{ duration: 1.4, repeat: Infinity, ease: "easeOut" }}
                         />
                       )}
                       <motion.div
-                        className="cl-round relative grid h-12 w-12 place-items-center"
-                        style={{ background: on ? PLUM : LAV, border: `1px solid rgba(47,79,79,0.55)` }}
-                        animate={{ scale: on ? 1.25 : 1 }}
+                        className="cl-round relative grid h-[42px] w-[42px] place-items-center"
+                        style={{
+                          background: on
+                            ? `radial-gradient(circle at 32% 28%, ${TAN}, ${PLUM})`
+                            : `radial-gradient(circle at 32% 28%, ${TAN}, ${TAN_DEEP})`,
+                        }}
+                        animate={{ scale: on ? 1.12 : 1 }}
                         transition={{ type: "spring", stiffness: 240, damping: 18 }}
                       >
-                        <n.icon className="h-[18px] w-[18px]" strokeWidth={1.5} style={{ color: on ? OAT : INK }} />
+                        <n.icon className="h-[16px] w-[16px]" strokeWidth={1.5} style={{ color: OAT }} />
                       </motion.div>
                     </div>
                     <div
-                      className={`absolute whitespace-nowrap text-xs font-semibold ${n.labelPos}`}
-                      style={{ fontFamily: SERIF, color: on ? PLUM : INK }}
+                      className={`absolute whitespace-nowrap text-[10px] uppercase ${n.labelPos}`}
+                      style={{ fontFamily: MONO, letterSpacing: "0.16em", color: on ? PLUM : INK }}
                     >
                       {n.label}
                     </div>
-                    <motion.div
-                      className={`absolute whitespace-nowrap px-2 py-1 text-[9.5px] uppercase ${n.tipPos}`}
-                      style={{ background: LAV, border: `1px solid ${HAIR}`, color: INK, fontFamily: MONO, letterSpacing: "0.1em" }}
-                      initial={false}
-                      animate={{ opacity: on ? 1 : 0, y: on ? 0 : -4 }}
-                      transition={{ duration: 0.3 }}
+                    <div
+                      className={`absolute whitespace-nowrap text-[8px] uppercase transition-opacity duration-200 ${n.tipPos}`}
+                      style={{
+                        fontFamily: MONO,
+                        letterSpacing: "0.12em",
+                        color: TAN_DEEP,
+                        opacity: on ? 1 : 0,
+                      }}
                     >
                       {n.tip}
-                    </motion.div>
+                    </div>
                   </div>
                 </div>
               );
             })}
 
-            {/* floating overlay pill */}
-            <div className="absolute inset-x-0 bottom-3 z-10 flex justify-center px-3">
-              <div
-                className="cl-soft flex items-center gap-2 px-3 py-1.5"
-                style={{ background: LAV, border: `1px solid rgba(47,79,79,0.30)` }}
-              >
-                <Sparkle className="h-3 w-3 shrink-0" strokeWidth={1.7} style={{ color: PLUM }} />
-                <span className="text-[10px] uppercase" style={{ fontFamily: MONO, letterSpacing: "0.12em", color: PLUM }}>
-                  Victoria overlay — currently analyzing {activeNode.status}...
-                </span>
-              </div>
+            {/* overlay annotation line */}
+            <div className="absolute inset-x-0 bottom-3 z-20 flex items-center justify-center gap-2 px-4">
+              <Sparkle className="h-3 w-3 shrink-0" strokeWidth={1.7} style={{ color: TAN_DEEP }} />
+              <span className="truncate text-[8.5px] uppercase" style={{ fontFamily: MONO, letterSpacing: "0.14em", color: TAN_DEEP }}>
+                Victoria intelligence overlay — analyzing {activeNode.status}
+              </span>
             </div>
           </div>
         </div>
 
         {/* --------------------------- BOTTOM ROW --------------------------- */}
-        <div className="grid grid-cols-2 gap-3 pt-3 lg:grid-cols-4" style={{ borderTop: `1px solid ${HAIR}` }}>
+        <div className="grid grid-cols-2 gap-3 pt-4 lg:grid-cols-4" style={{ borderTop: `1px solid ${HAIR}` }}>
           {ONE_CARDS.map((c) => (
             <div
               key={c.head}
-              className="cl-soft flex items-center gap-3 px-3 py-2.5"
-              style={{ background: LAV, border: `1px solid rgba(47,79,79,0.35)` }}
+              className="flex flex-col gap-1.5 px-3 py-2.5"
+              style={{ background: CREAM, border: `1px solid ${HAIR_SOFT}` }}
             >
-              <c.icon className="h-[18px] w-[18px] shrink-0" strokeWidth={1.4} style={{ color: PLUM }} />
-              <div className="min-w-0">
-                <div className="text-[10px] uppercase" style={{ fontFamily: MONO, letterSpacing: "0.16em", color: PLUM }}>
-                  {c.head}
-                </div>
-                <p className="truncate text-[11.5px]" style={{ color: INK }}>
-                  {c.body}
-                </p>
+              <c.icon className="h-[16px] w-[16px] shrink-0" strokeWidth={1.4} style={{ color: TAN_DEEP }} />
+              <div className="text-[10px] uppercase" style={{ fontFamily: MONO, letterSpacing: "0.16em", color: PLUM }}>
+                {c.head}
               </div>
+              <p className="text-[11px] leading-snug" style={{ color: INK }}>
+                {c.body}
+              </p>
             </div>
           ))}
         </div>
