@@ -15,6 +15,7 @@ import {
   Users,
   X,
 } from "lucide-react";
+import copperMark from "@/assets/cleard-c-copper.png.asset.json";
 
 
 /* ----------------------- LOCKED NORDIC LUXURY TOKENS ---------------------- */
