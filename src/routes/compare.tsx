@@ -147,16 +147,26 @@ const MATRIX_ROWS: { feature: string; cleard: boolean | string; cells: (boolean 
 ];
 
 function Logo({ src, name, size = 34 }: { src: string; name: string; size?: number }) {
+  // Fixed-height, aspect-preserving slot: no white plate, no border, logo art
+  // fills its own bounds edge to edge.
   return (
     <span
-      className="inline-flex shrink-0 overflow-hidden"
-      style={{ width: size, height: size, borderRadius: 6 }}
+      className="inline-flex shrink-0 items-center justify-start overflow-hidden"
+      style={{ width: Math.round(size * 2.4), height: size }}
     >
       <img
         src={src}
         alt={`${name} logo`}
         loading="lazy"
-        style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+        style={{
+          maxWidth: "100%",
+          maxHeight: "100%",
+          width: "auto",
+          height: "auto",
+          objectFit: "contain",
+          display: "block",
+          borderRadius: 4,
+        }}
       />
     </span>
   );
