@@ -561,7 +561,14 @@ export function VictoriaSpotlight() {
   );
 }
 
-/* ================== 4 · BEFORE / AFTER + ARCHITECTURE =================== */
+/* ================== 4 · THE ARCHITECTURAL ENGINE ======================== */
+
+const CU_LT = "#C07A5F";
+const CU_DK = "#8C4A34";
+const CU_TXT = "#A85D43";
+const CAD_LINE = "#D8CEBE";
+const HAIR = "#E2DACD";
+const PAPER = "#FAF7F2";
 
 const BEFORE = [
   "Permit expediter",
@@ -574,109 +581,268 @@ const BEFORE = [
   "Phone calls and email",
 ];
 
-const PILLARS = [
-  { icon: Send, label: "Permits" },
-  { icon: FileCheck2, label: "Plan review & inspections" },
-  { icon: ShieldCheck, label: "Licenses" },
-  { icon: Users, label: "Insurance" },
-  { icon: Scale, label: "Lien rights" },
-  { icon: FolderOpen, label: "Documents" },
+type NodeKey = "permits" | "review" | "licenses" | "documents";
+
+const NODES: {
+  key: NodeKey;
+  label: string;
+  icon: typeof FileText;
+  layer: string;
+  coord: string;
+  /** wrapper position inside the canvas */
+  pos: string;
+  /** which side the orthogonal leg comes from */
+  side: "top" | "right" | "bottom" | "left";
+}[] = [
+  { key: "permits", label: "Permits", icon: FileText, layer: "CAD LAYER 17.1", coord: "N 26.71 · W 80.05", pos: "left-1/2 top-[6%] -translate-x-1/2", side: "top" },
+  { key: "review", label: "Plan review", icon: Map, layer: "CAD LAYER 17.2", coord: "REV 04 · 2-DAY", pos: "right-[6%] top-1/2 -translate-y-1/2", side: "right" },
+  { key: "licenses", label: "Licenses", icon: BadgeCheck, layer: "CAD LAYER 17.3", coord: "CGC · ACTIVE", pos: "left-1/2 bottom-[6%] -translate-x-1/2", side: "bottom" },
+  { key: "documents", label: "Documents", icon: FolderOpen, layer: "CAD LAYER 17.4", coord: "4,821 FILES", pos: "left-[6%] top-1/2 -translate-y-1/2", side: "left" },
+];
+
+const ADJACENT: Record<NodeKey, NodeKey[]> = {
+  permits: ["review", "documents"],
+  review: ["permits", "licenses"],
+  licenses: ["review", "documents"],
+  documents: ["permits", "licenses"],
+};
+
+const ONE_CARDS = [
+  { icon: LogIn, head: "One login", body: "Every jurisdiction, every permit, every document behind a single sign-in." },
+  { icon: Users, head: "One team", body: "The same coordinators on every project. No re-explaining your job." },
+  { icon: Hammer, head: "One trades", body: "Subs, licenses and insurance tracked in the same place as the permit." },
+  { icon: TrendingUp, head: "One results", body: "2-day plan review and same-day inspections, measured on every job." },
 ];
 
 export function ReplaceThePermitOffice() {
+  const [active, setActive] = useState<NodeKey | null>(null);
+  const [echo, setEcho] = useState<NodeKey[]>([]);
+
+  useEffect(() => {
+    if (!active) {
+      setEcho([]);
+      return;
+    }
+    const t = setTimeout(() => setEcho(ADJACENT[active]), 1500);
+    return () => clearTimeout(t);
+  }, [active]);
+
   return (
     <section style={{ background: OAT }}>
       <div className="mx-auto max-w-7xl px-5 py-24 lg:px-8 md:py-28">
-        <div className="text-[10.5px] font-bold uppercase" style={{ letterSpacing: "0.22em", color: GREEN }}>
-          Before and after
+        {/* ---------------------------- TOP BAR ---------------------------- */}
+        <div className="flex flex-wrap items-end justify-between gap-4 pb-5" style={{ borderBottom: `1px solid ${HAIR}` }}>
+          <div>
+            <div className="text-[11px] uppercase" style={{ fontFamily: MONO, letterSpacing: "0.22em", color: CU_TXT }}>
+              02 / The architectural engine
+            </div>
+            <h2
+              className="mt-5 max-w-3xl"
+              style={{ fontFamily: SERIF, fontSize: "clamp(2rem, 3.9vw, 3.05rem)", lineHeight: 1.04, letterSpacing: "-0.035em", color: PLUM, fontWeight: 600 }}
+            >
+              Replace the permit office.
+              <br />
+              <span style={{ fontStyle: "italic", color: INK }}>With Cleard.</span>
+            </h2>
+          </div>
+          <div className="flex items-center gap-2.5 pb-1">
+            <motion.span
+              className="inline-block h-[7px] w-[7px] rounded-full"
+              style={{ background: CU_LT }}
+              animate={{ opacity: [1, 0.25, 1], scale: [1, 1.35, 1] }}
+              transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut" }}
+            />
+            <span className="text-[10px] uppercase" style={{ fontFamily: MONO, letterSpacing: "0.2em", color: GRAY }}>
+              Victoria active
+            </span>
+          </div>
         </div>
-        <h2
-          className="mt-6 max-w-3xl"
-          style={{ fontFamily: SERIF, fontSize: "clamp(2rem, 3.9vw, 3.05rem)", lineHeight: 1.04, letterSpacing: "-0.035em", color: PLUM, fontWeight: 600 }}
-        >
-          Replace the permit office.
-          <br />
-          <span style={{ fontStyle: "italic", color: INK }}>With Cleard.</span>
-        </h2>
 
-        <div
-          className="mt-8 flex flex-wrap items-center gap-x-8 gap-y-3 pt-6 text-[11px] uppercase"
-          style={{ borderTop: `1px solid ${BORDER}`, fontFamily: MONO, letterSpacing: "0.16em", color: GREEN }}
-        >
-          <span>2-day plan review</span>
-          <span aria-hidden style={{ color: LIGHT }}>·</span>
-          <span>Same-day inspections</span>
-          <span aria-hidden style={{ color: LIGHT }}>·</span>
-          <span>By invitation</span>
-        </div>
-
-
-        <div className="mt-14 grid gap-4 lg:grid-cols-[0.85fr_1.15fr]">
-          {/* BEFORE — a chain */}
-          <div className="p-7" style={{ background: OFF, border: `1px solid ${BORDER}` }}>
+        {/* --------------------------- SPLIT GRID -------------------------- */}
+        <div className="mt-12 grid gap-5 lg:grid-cols-[38fr_62fr]">
+          {/* LEFT — before, eight handoffs */}
+          <div className="p-7" style={{ background: OFF, border: `1px solid ${HAIR}`, borderRadius: 6 }}>
             <div className="text-[10px] uppercase" style={{ fontFamily: MONO, letterSpacing: "0.2em", color: GRAY }}>
               Before · eight handoffs
             </div>
-            <div className="mt-6 space-y-0">
+            <div className="mt-6">
               {BEFORE.map((b, idx) => (
-                <div key={b}>
-                  <div className="flex items-center gap-3 py-1.5 text-[13.5px]" style={{ color: GRAY }}>
-                    <span className="text-[10px] tabular-nums" style={{ fontFamily: MONO, color: LIGHT }}>
-                      {String(idx + 1).padStart(2, "0")}
-                    </span>
-                    {b}
-                  </div>
-                  {idx < BEFORE.length - 1 && (
-                    <span className="ml-[9px] block h-3 w-px" style={{ background: BORDER }} />
-                  )}
+                <div
+                  key={b}
+                  className="cl-handoff flex items-center gap-3.5 py-3 text-[13.5px]"
+                  style={{ borderTop: idx === 0 ? "none" : `1px solid ${HAIR}`, color: GRAY, transition: "color 220ms ease" }}
+                >
+                  <span className="text-[10px] tabular-nums" style={{ fontFamily: MONO, color: LIGHT }}>
+                    {String(idx + 1).padStart(2, "0")}
+                  </span>
+                  {b}
                 </div>
               ))}
             </div>
-            <div className="mt-6 pt-5 text-[12px]" style={{ borderTop: `1px solid ${BORDER}`, color: LIGHT }}>
+            <div
+              className="mt-7 pt-5 text-[14.5px] leading-relaxed"
+              style={{ borderTop: `1px solid ${HAIR}`, color: INK, fontFamily: SERIF }}
+            >
               Each handoff is a delay, a re-explanation, and another invoice.
             </div>
           </div>
 
-          {/* AFTER — one system */}
-          <div className="relative p-7 md:p-10" style={{ background: DARK, border: `1px solid ${DARK_LINE}` }}>
-            <div className="text-[10px] uppercase" style={{ fontFamily: MONO, letterSpacing: "0.2em", color: GREEN_LT }}>
-              After · one system
+          {/* RIGHT — blueprint canvas */}
+          <div
+            className="relative min-h-[430px] overflow-hidden md:min-h-[520px]"
+            style={{ background: PAPER, border: `1px solid ${CAD_LINE}`, borderRadius: 8 }}
+            onMouseLeave={() => setActive(null)}
+          >
+            {/* blueprint grid */}
+            <div
+              className="pointer-events-none absolute inset-0"
+              style={{
+                backgroundImage: `linear-gradient(${CAD_LINE} 1px, transparent 1px), linear-gradient(90deg, ${CAD_LINE} 1px, transparent 1px)`,
+                backgroundSize: "56px 56px",
+                opacity: 0.5,
+              }}
+            />
+            <div
+              className="absolute left-5 top-4 text-[9.5px] uppercase"
+              style={{ fontFamily: MONO, letterSpacing: "0.2em", color: LIGHT }}
+            >
+              Orrery architectural canvas
             </div>
-            <div className="mt-8 text-center">
-              <div className="inline-block px-7 py-4" style={{ background: DARK_2, border: `1px solid ${DARK_LINE}` }}>
-                <span style={{ fontFamily: SERIF, fontSize: 26, fontWeight: 600, color: OFF, letterSpacing: "-0.03em" }}>
-                  Cleard
-                </span>
-              </div>
-              <div className="mx-auto h-8 w-px" style={{ background: "rgba(250,243,230,0.2)" }} />
-              <div className="grid gap-px sm:grid-cols-3" style={{ background: DARK_LINE }}>
-                {PILLARS.map((p) => (
-                  <div key={p.label} className="flex flex-col items-center gap-2.5 px-3 py-6" style={{ background: DARK_2 }}>
-                    <p.icon className="h-[18px] w-[18px]" style={{ color: GREEN_LT }} strokeWidth={1.5} />
-                    <span className="text-[11px] uppercase" style={{ fontFamily: MONO, letterSpacing: "0.12em", color: "rgba(250,243,230,0.7)" }}>
-                      {p.label}
-                    </span>
+
+            {/* orthogonal CAD legs meeting in the centre */}
+            <div className="pointer-events-none absolute inset-0">
+              {NODES.map((n) => {
+                const on = active === n.key;
+                const soft = echo.includes(n.key);
+                const stroke = on ? CU_DK : soft ? CU_LT : CAD_LINE;
+                const base =
+                  "absolute transition-all duration-500 " +
+                  (n.side === "top"
+                    ? "left-1/2 top-[16%] h-[34%] w-px -translate-x-1/2"
+                    : n.side === "bottom"
+                      ? "left-1/2 bottom-[16%] h-[34%] w-px -translate-x-1/2"
+                      : n.side === "left"
+                        ? "left-[16%] top-1/2 h-px w-[34%] -translate-y-1/2"
+                        : "right-[16%] top-1/2 h-px w-[34%] -translate-y-1/2");
+                return (
+                  <span
+                    key={n.key}
+                    className={base}
+                    style={{
+                      background: stroke,
+                      boxShadow: on ? `0 0 10px ${CU_LT}` : soft ? `0 0 6px rgba(192,122,95,0.4)` : "none",
+                      opacity: on ? 1 : soft ? 0.85 : 0.9,
+                    }}
+                  />
+                );
+              })}
+              <span
+                className="absolute left-1/2 top-1/2 h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full transition-all duration-500"
+                style={{ background: active ? CU_DK : CAD_LINE }}
+              />
+            </div>
+
+            {/* nodes */}
+            {NODES.map((n) => {
+              const on = active === n.key;
+              const soft = echo.includes(n.key);
+              return (
+                <div key={n.key} className={`absolute ${n.pos}`}>
+                  <div
+                    className="flex flex-col items-center gap-3"
+                    onMouseEnter={() => setActive(n.key)}
+                  >
+                    <div className="relative">
+                      {(on || soft) && (
+                        <motion.span
+                          className="absolute inset-0 rounded-full"
+                          style={{ background: "rgba(192,122,95,0.2)" }}
+                          animate={{ scale: [1, on ? 2.1 : 1.6], opacity: [0.5, 0] }}
+                          transition={{ duration: on ? 1.8 : 2.4, repeat: Infinity, ease: "easeOut" }}
+                        />
+                      )}
+                      <motion.div
+                        className="relative grid h-[62px] w-[62px] place-items-center rounded-full"
+                        style={{
+                          background: `linear-gradient(145deg, ${CU_LT}, ${CU_DK})`,
+                          boxShadow: on
+                            ? "0 14px 34px rgba(140,74,52,0.42)"
+                            : "0 8px 20px rgba(140,74,52,0.22)",
+                        }}
+                        animate={{ scale: on ? 1.08 : soft ? 1.04 : 1 }}
+                        transition={{ type: "spring", stiffness: 260, damping: 18 }}
+                      >
+                        <n.icon className="h-[22px] w-[22px]" strokeWidth={1.5} style={{ color: PAPER }} />
+                      </motion.div>
+                    </div>
+                    <div
+                      className="whitespace-nowrap text-[10.5px] uppercase transition-colors duration-300"
+                      style={{ fontFamily: MONO, letterSpacing: "0.18em", color: on ? CU_TXT : INK }}
+                    >
+                      {n.label}
+                    </div>
+                    <motion.div
+                      className="whitespace-nowrap text-center text-[8.5px] uppercase leading-[1.6]"
+                      style={{ fontFamily: MONO, letterSpacing: "0.14em", color: CU_TXT }}
+                      initial={false}
+                      animate={{ opacity: on ? 1 : 0, y: on ? 0 : -4 }}
+                      transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+                    >
+                      {n.layer} · active
+                      <br />
+                      {n.coord}
+                    </motion.div>
                   </div>
-                ))}
-              </div>
-              <div className="mx-auto h-8 w-px" style={{ background: "rgba(250,243,230,0.2)" }} />
-              <div className="inline-flex items-center gap-2 px-6 py-3" style={{ border: `1px solid ${PLUM_LT}` }}>
-                <Sparkle className="h-3.5 w-3.5" style={{ color: PLUM_LT }} strokeWidth={1.75} />
-                <span className="text-[11px] uppercase" style={{ fontFamily: MONO, letterSpacing: "0.18em", color: PLUM_LT }}>
-                  Victoria · across all of it
-                </span>
-              </div>
+                </div>
+              );
+            })}
+
+            {/* footer overlay */}
+            <div
+              className="absolute inset-x-3 bottom-3 flex items-center gap-2.5 px-4 py-2.5"
+              style={{
+                background: "rgba(250,247,242,0.72)",
+                border: `1px solid ${HAIR}`,
+                backdropFilter: "blur(8px) saturate(140%)",
+                borderRadius: 4,
+              }}
+            >
+              <Sparkle className="h-3 w-3 shrink-0" strokeWidth={1.7} style={{ color: CU_LT }} />
+              <span className="text-[9px] uppercase leading-[1.6]" style={{ fontFamily: MONO, letterSpacing: "0.16em", color: GRAY }}>
+                Victoria intelligence overlay — auto-correlating 6 operational nodes into 1 continuous stream.
+              </span>
             </div>
-            <p className="mt-9 text-[14px] leading-relaxed" style={{ color: "rgba(250,243,230,0.56)" }}>
-              Your team builds. Cleard handles everything around it — one login, one team, one
-              invoice, every jurisdiction you work in.
-            </p>
           </div>
         </div>
+
+        {/* --------------------------- BOTTOM ROW --------------------------- */}
+        <div className="mt-5 grid gap-px sm:grid-cols-2 lg:grid-cols-4" style={{ background: HAIR }}>
+          {ONE_CARDS.map((c) => (
+            <div
+              key={c.head}
+              className="cl-one-card p-6"
+              style={{ background: OFF, borderTop: "2px solid transparent", transition: "transform 260ms cubic-bezier(0.16,1,0.3,1), border-color 260ms ease, box-shadow 260ms ease" }}
+            >
+              <c.icon className="h-[19px] w-[19px]" strokeWidth={1.4} style={{ color: CU_TXT }} />
+              <div className="mt-5 text-[10.5px] uppercase" style={{ fontFamily: MONO, letterSpacing: "0.2em", color: INK }}>
+                {c.head}
+              </div>
+              <p className="mt-3 text-[13.5px] leading-[1.7]" style={{ color: GRAY }}>
+                {c.body}
+              </p>
+            </div>
+          ))}
+        </div>
       </div>
+
+      <style>{`
+        .cl-handoff:hover { color: ${CU_TXT} !important; }
+        .cl-one-card:hover { transform: translateY(-4px); border-top-color: ${CU_LT}; box-shadow: 0 18px 36px rgba(140,74,52,0.12); }
+      `}</style>
     </section>
   );
 }
+
 
 /* ========================= 5 · FEATURED TESTIMONIAL ===================== */
 
