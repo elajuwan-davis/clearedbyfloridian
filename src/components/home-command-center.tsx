@@ -592,7 +592,7 @@ const NODES: {
 }[] = [
   { key: "permits", label: "Permits", icon: FileText, layer: "CAD LAYER 17.1", coord: "N 26.71 · W 80.05", pos: "left-1/2 top-[6%] -translate-x-1/2", side: "top" },
   { key: "review", label: "Plan review", icon: Map, layer: "CAD LAYER 17.2", coord: "REV 04 · 2-DAY", pos: "right-[6%] top-1/2 -translate-y-1/2", side: "right" },
-  { key: "licenses", label: "Licenses", icon: BadgeCheck, layer: "CAD LAYER 17.3", coord: "CGC · ACTIVE", pos: "left-1/2 bottom-[6%] -translate-x-1/2", side: "bottom" },
+  { key: "licenses", label: "Licenses", icon: BadgeCheck, layer: "CAD LAYER 17.3", coord: "CGC · ACTIVE", pos: "left-1/2 bottom-[18%] -translate-x-1/2", side: "bottom" },
   { key: "documents", label: "Documents", icon: FolderOpen, layer: "CAD LAYER 17.4", coord: "4,821 FILES", pos: "left-[6%] top-1/2 -translate-y-1/2", side: "left" },
 ];
 
@@ -627,37 +627,31 @@ export function ReplaceThePermitOffice() {
     <section style={{ background: OAT }}>
       <div className="mx-auto max-w-7xl px-5 py-24 lg:px-8 md:py-28">
         {/* ---------------------------- TOP BAR ---------------------------- */}
-        <div className="flex flex-wrap items-end justify-between gap-4 pb-5" style={{ borderBottom: `1px solid ${HAIR}` }}>
-          <div>
-            <div className="text-[11px] uppercase" style={{ fontFamily: MONO, letterSpacing: "0.22em", color: CU_TXT }}>
-              02 / The architectural engine
-            </div>
-            <h2
-              className="mt-5 max-w-3xl"
-              style={{ fontFamily: SERIF, fontSize: "clamp(2rem, 3.9vw, 3.05rem)", lineHeight: 1.04, letterSpacing: "-0.035em", color: PLUM, fontWeight: 600 }}
-            >
-              Replace the permit office.
-              <br />
-              <span style={{ fontStyle: "italic", color: INK }}>With Cleard.</span>
-            </h2>
-          </div>
-          <div className="flex items-center gap-2.5 pb-1">
+        <div>
+          <h2
+            className="cl-eng-title uppercase"
+            style={{ fontFamily: MONO, fontSize: "clamp(1.15rem, 2.1vw, 1.7rem)", letterSpacing: "0.05em", color: INK, fontWeight: 500 }}
+          >
+            02 / The architectural engine
+          </h2>
+          <div className="mt-3 flex items-center gap-2.5">
             <motion.span
-              className="inline-block h-[7px] w-[7px] rounded-full"
+              className="cl-round inline-block h-[7px] w-[7px]"
               style={{ background: CU_LT }}
               animate={{ opacity: [1, 0.25, 1], scale: [1, 1.35, 1] }}
               transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut" }}
             />
-            <span className="text-[10px] uppercase" style={{ fontFamily: MONO, letterSpacing: "0.2em", color: GRAY }}>
+            <span className="text-[10px] uppercase" style={{ fontFamily: MONO, letterSpacing: "0.2em", color: CU_TXT }}>
               Victoria active
             </span>
           </div>
         </div>
 
+
         {/* --------------------------- SPLIT GRID -------------------------- */}
-        <div className="mt-12 grid gap-5 lg:grid-cols-[38fr_62fr]">
+        <div className="mt-9 grid gap-5 lg:grid-cols-[38fr_62fr]">
           {/* LEFT — before, eight handoffs */}
-          <div className="p-7" style={{ background: OFF, border: `1px solid ${HAIR}`, borderRadius: 6 }}>
+          <div className="cl-soft p-7" style={{ background: OFF, border: `1px solid ${HAIR}` }}>
             <div className="text-[10px] uppercase" style={{ fontFamily: MONO, letterSpacing: "0.2em", color: GRAY }}>
               Before · eight handoffs
             </div>
@@ -685,8 +679,8 @@ export function ReplaceThePermitOffice() {
 
           {/* RIGHT — blueprint canvas */}
           <div
-            className="relative min-h-[430px] overflow-hidden md:min-h-[520px]"
-            style={{ background: PAPER, border: `1px solid ${CAD_LINE}`, borderRadius: 8 }}
+            className="cl-soft relative min-h-[430px] overflow-hidden md:min-h-[520px]"
+            style={{ background: PAPER, border: `1px solid ${CAD_LINE}` }}
             onMouseLeave={() => setActive(null)}
           >
             {/* blueprint grid */}
@@ -694,8 +688,8 @@ export function ReplaceThePermitOffice() {
               className="pointer-events-none absolute inset-0"
               style={{
                 backgroundImage: `linear-gradient(${CAD_LINE} 1px, transparent 1px), linear-gradient(90deg, ${CAD_LINE} 1px, transparent 1px)`,
-                backgroundSize: "56px 56px",
-                opacity: 0.5,
+                backgroundSize: "68px 68px",
+                opacity: 0.28,
               }}
             />
             <div
@@ -710,7 +704,7 @@ export function ReplaceThePermitOffice() {
               {NODES.map((n) => {
                 const on = active === n.key;
                 const soft = echo.includes(n.key);
-                const stroke = on ? CU_DK : soft ? CU_LT : CAD_LINE;
+                const stroke = on ? CU_DK : soft ? CU_LT : "#C9B79E";
                 const base =
                   "absolute transition-all duration-500 " +
                   (n.side === "top"
@@ -727,13 +721,13 @@ export function ReplaceThePermitOffice() {
                     style={{
                       background: stroke,
                       boxShadow: on ? `0 0 10px ${CU_LT}` : soft ? `0 0 6px rgba(192,122,95,0.4)` : "none",
-                      opacity: on ? 1 : soft ? 0.85 : 0.9,
+                      opacity: 1,
                     }}
                   />
                 );
               })}
               <span
-                className="absolute left-1/2 top-1/2 h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full transition-all duration-500"
+                className="absolute left-1/2 top-1/2 h-2 w-2 -translate-x-1/2 -translate-y-1/2 cl-round transition-all duration-500"
                 style={{ background: active ? CU_DK : CAD_LINE }}
               />
             </div>
@@ -745,20 +739,20 @@ export function ReplaceThePermitOffice() {
               return (
                 <div key={n.key} className={`absolute ${n.pos}`}>
                   <div
-                    className="flex flex-col items-center gap-3"
+                    className="relative flex flex-col items-center gap-3"
                     onMouseEnter={() => setActive(n.key)}
                   >
                     <div className="relative">
                       {(on || soft) && (
                         <motion.span
-                          className="absolute inset-0 rounded-full"
+                          className="cl-round absolute inset-0"
                           style={{ background: "rgba(192,122,95,0.2)" }}
                           animate={{ scale: [1, on ? 2.1 : 1.6], opacity: [0.5, 0] }}
                           transition={{ duration: on ? 1.8 : 2.4, repeat: Infinity, ease: "easeOut" }}
                         />
                       )}
                       <motion.div
-                        className="relative grid h-[62px] w-[62px] place-items-center rounded-full"
+                        className="cl-round relative grid h-[62px] w-[62px] place-items-center"
                         style={{
                           background: `linear-gradient(145deg, ${CU_LT}, ${CU_DK})`,
                           boxShadow: on
@@ -772,13 +766,13 @@ export function ReplaceThePermitOffice() {
                       </motion.div>
                     </div>
                     <div
-                      className="whitespace-nowrap text-[10.5px] uppercase transition-colors duration-300"
+                      className={`whitespace-nowrap text-[10.5px] uppercase transition-colors duration-300 ${n.key === "permits" ? "absolute left-full top-[24px] ml-4" : "absolute top-full mt-3"}`}
                       style={{ fontFamily: MONO, letterSpacing: "0.18em", color: on ? CU_TXT : INK }}
                     >
                       {n.label}
                     </div>
                     <motion.div
-                      className="whitespace-nowrap text-center text-[8.5px] uppercase leading-[1.6]"
+                      className={`absolute whitespace-nowrap text-center text-[8.5px] uppercase leading-[1.6] ${n.key === "permits" ? "left-full top-[44px] ml-4" : "top-full mt-9"}`}
                       style={{ fontFamily: MONO, letterSpacing: "0.14em", color: CU_TXT }}
                       initial={false}
                       animate={{ opacity: on ? 1 : 0, y: on ? 0 : -4 }}
@@ -832,6 +826,7 @@ export function ReplaceThePermitOffice() {
       </div>
 
       <style>{`
+        .cl-home h2.cl-eng-title, h2.cl-eng-title { font-family: ${MONO} !important; font-weight: 500 !important; letter-spacing: 0.05em !important; }
         .cl-handoff:hover { color: ${CU_TXT} !important; }
         .cl-one-card:hover { transform: translateY(-4px); border-top-color: ${CU_LT}; box-shadow: 0 18px 36px rgba(140,74,52,0.12); }
       `}</style>

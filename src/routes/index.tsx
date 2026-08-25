@@ -85,6 +85,9 @@ function HomePage() {
         .cl-home .cl-phone { border-radius: 44px !important; }
         .cl-home .cl-phone-screen { border-radius: 34px !important; }
         .cl-home .cl-phone-notch { border-radius: 999px !important; }
+        .cl-home .cl-round, .cl-home .cl-round::before, .cl-home .cl-round::after { border-radius: 999px !important; }
+        .cl-home .cl-soft { border-radius: 8px !important; }
+
         @keyframes clWordIn { from { opacity: 0; transform: translateY(0.5em); } to { opacity: 1; transform: translateY(0); } }
         @keyframes clSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
         @keyframes clFade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
