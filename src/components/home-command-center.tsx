@@ -559,22 +559,19 @@ export function VictoriaSpotlight() {
 
 /* ================== 4 · THE ARCHITECTURAL ENGINE ======================== */
 
-const CU_LT = "#C07A5F";
-const CU_DK = "#8C4A34";
-const CU_TXT = "#A85D43";
-const CAD_LINE = "#D8CEBE";
-const HAIR = "#E2DACD";
-const PAPER = "#FAF7F2";
+const LAV = "#E6E6FA";
+const HAIR = "rgba(47,79,79,0.20)";
+const HAIR_SOFT = "rgba(47,79,79,0.14)";
 
 const BEFORE = [
   "Permit expediter",
-  "County counter",
   "Plan reviewer",
   "Inspector scheduling",
   "License tracker",
   "COI spreadsheet",
   "Lien service",
-  "Phone calls and email",
+  "Phone calls",
+  "Manual emails",
 ];
 
 type NodeKey = "permits" | "review" | "licenses" | "documents";
@@ -583,256 +580,327 @@ const NODES: {
   key: NodeKey;
   label: string;
   icon: typeof FileText;
-  layer: string;
-  coord: string;
-  /** wrapper position inside the canvas */
+  tip: string;
+  status: string;
   pos: string;
-  /** which side the orthogonal leg comes from */
+  labelPos: string;
+  tipPos: string;
   side: "top" | "right" | "bottom" | "left";
 }[] = [
-  { key: "permits", label: "Permits", icon: FileText, layer: "CAD LAYER 17.1", coord: "N 26.71 · W 80.05", pos: "left-1/2 top-[6%] -translate-x-1/2", side: "top" },
-  { key: "review", label: "Plan review", icon: Map, layer: "CAD LAYER 17.2", coord: "REV 04 · 2-DAY", pos: "right-[6%] top-1/2 -translate-y-1/2", side: "right" },
-  { key: "licenses", label: "Licenses", icon: BadgeCheck, layer: "CAD LAYER 17.3", coord: "CGC · ACTIVE", pos: "left-1/2 bottom-[18%] -translate-x-1/2", side: "bottom" },
-  { key: "documents", label: "Documents", icon: FolderOpen, layer: "CAD LAYER 17.4", coord: "4,821 FILES", pos: "left-[6%] top-1/2 -translate-y-1/2", side: "left" },
+  {
+    key: "permits",
+    label: "Permits",
+    icon: FileText,
+    tip: "Permits: 2 COIs expiring",
+    status: "Permits",
+    pos: "left-1/2 top-[9%] -translate-x-1/2",
+    labelPos: "top-full mt-2",
+    tipPos: "left-full top-1 ml-3",
+    side: "top",
+  },
+  {
+    key: "review",
+    label: "Plan review",
+    icon: Map,
+    tip: "Plan review: 2-day cycle, rev 04",
+    status: "Plan review",
+    pos: "right-[10%] top-1/2 -translate-y-1/2",
+    labelPos: "top-full mt-2",
+    tipPos: "right-full top-1 mr-3",
+    side: "right",
+  },
+  {
+    key: "licenses",
+    label: "Licenses",
+    icon: BadgeCheck,
+    tip: "Licenses: 14 active, 1 renewing",
+    status: "Licenses",
+    pos: "left-1/2 bottom-[16%] -translate-x-1/2",
+    labelPos: "top-full mt-2",
+    tipPos: "left-full top-1 ml-3",
+    side: "bottom",
+  },
+  {
+    key: "documents",
+    label: "Documents",
+    icon: FolderOpen,
+    tip: "Documents: 148 reviewed",
+    status: "Documents",
+    pos: "left-[10%] top-1/2 -translate-y-1/2",
+    labelPos: "top-full mt-2",
+    tipPos: "left-full top-1 ml-3",
+    side: "left",
+  },
 ];
-
-const ADJACENT: Record<NodeKey, NodeKey[]> = {
-  permits: ["review", "documents"],
-  review: ["permits", "licenses"],
-  licenses: ["review", "documents"],
-  documents: ["permits", "licenses"],
-};
 
 const ONE_CARDS = [
-  { icon: LogIn, head: "One login", body: "Every jurisdiction, every permit, every document behind a single sign-in." },
-  { icon: Users, head: "One team", body: "The same coordinators on every project. No re-explaining your job." },
-  { icon: Hammer, head: "One trades", body: "Subs, licenses and insurance tracked in the same place as the permit." },
-  { icon: TrendingUp, head: "One results", body: "2-day plan review and same-day inspections, measured on every job." },
+  { icon: LogIn, head: "One login", body: "Every jurisdiction behind a single sign-in." },
+  { icon: Users, head: "One team", body: "The same coordinators on every project." },
+  { icon: Hammer, head: "One trades", body: "Subs, licenses and insurance in one place." },
+  { icon: TrendingUp, head: "One results", body: "2-day plan review, same-day inspections." },
 ];
 
-export function ReplaceThePermitOffice() {
-  const [active, setActive] = useState<NodeKey | null>(null);
-  const [echo, setEcho] = useState<NodeKey[]>([]);
+const SWEEP = 3.5; // seconds per full radar rotation
 
+export function ReplaceThePermitOffice() {
+  const [idx, setIdx] = useState(0);
   useEffect(() => {
-    if (!active) {
-      setEcho([]);
-      return;
-    }
-    const t = setTimeout(() => setEcho(ADJACENT[active]), 1500);
-    return () => clearTimeout(t);
-  }, [active]);
+    const t = setInterval(() => setIdx((v) => (v + 1) % NODES.length), (SWEEP * 1000) / NODES.length);
+    return () => clearInterval(t);
+  }, []);
+  const activeNode = NODES[idx];
+  const active = activeNode.key;
 
   return (
-    <section style={{ background: OAT }}>
-      <div className="mx-auto max-w-7xl px-5 py-24 lg:px-8 md:py-28">
-        {/* ---------------------------- TOP BAR ---------------------------- */}
-        <div>
-          <h2
-            className="cl-eng-title uppercase"
-            style={{ fontFamily: MONO, fontSize: "clamp(1.15rem, 2.1vw, 1.7rem)", letterSpacing: "0.05em", color: INK, fontWeight: 500 }}
+    <section
+      className="flex max-h-[860px] min-h-[720px] flex-col overflow-hidden lg:h-screen"
+      style={{ background: OAT, color: INK }}
+    >
+      <div className="mx-auto flex h-full w-full max-w-7xl flex-col justify-between gap-4 px-5 py-6 lg:px-8">
+        {/* ---------------------------- HEADER ---------------------------- */}
+        <div className="flex flex-wrap items-end justify-between gap-4 pb-3" style={{ borderBottom: `1px solid ${HAIR}` }}>
+          <div>
+            <div className="text-[10.5px] font-bold uppercase" style={{ letterSpacing: "0.22em", color: GREEN }}>
+              Before and after
+            </div>
+            <h2
+              className="mt-3 max-w-3xl"
+              style={{
+                fontFamily: SERIF,
+                fontSize: "clamp(1.6rem, 2.9vw, 2.35rem)",
+                lineHeight: 1.05,
+                letterSpacing: "-0.035em",
+                color: PLUM,
+                fontWeight: 600,
+              }}
+            >
+              Replace the permit office.{" "}
+              <span style={{ fontStyle: "italic", color: INK }}>With Cleard.</span>
+            </h2>
+            <div
+              className="mt-3 flex flex-wrap items-center gap-x-6 gap-y-2 text-[11px] uppercase"
+              style={{ fontFamily: MONO, letterSpacing: "0.16em", color: GREEN }}
+            >
+              <span>2-day plan review</span>
+              <span aria-hidden style={{ color: LIGHT }}>·</span>
+              <span>Same-day inspections</span>
+              <span aria-hidden style={{ color: LIGHT }}>·</span>
+              <span>By invitation</span>
+            </div>
+          </div>
+
+          <div
+            className="cl-soft flex items-center gap-2 px-3 py-1.5"
+            style={{ background: LAV, border: `1px solid ${HAIR}` }}
           >
-            02 / The architectural engine
-          </h2>
-          <div className="mt-3 flex items-center gap-2.5">
             <motion.span
               className="cl-round inline-block h-[7px] w-[7px]"
-              style={{ background: CU_LT }}
+              style={{ background: PLUM }}
               animate={{ opacity: [1, 0.25, 1], scale: [1, 1.35, 1] }}
-              transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut" }}
+              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
             />
-            <span className="text-[10px] uppercase" style={{ fontFamily: MONO, letterSpacing: "0.2em", color: CU_TXT }}>
-              Victoria active
+            <span className="text-[9.5px] uppercase" style={{ fontFamily: MONO, letterSpacing: "0.16em", color: PLUM }}>
+              Victoria active — continuous scan
             </span>
           </div>
         </div>
 
-
         {/* --------------------------- SPLIT GRID -------------------------- */}
-        <div className="mt-9 grid gap-5 lg:grid-cols-[38fr_62fr]">
+        <div className="grid min-h-0 flex-1 gap-6 lg:grid-cols-12">
           {/* LEFT — before, eight handoffs */}
-          <div className="cl-soft p-7" style={{ background: OFF, border: `1px solid ${HAIR}` }}>
-            <div className="text-[10px] uppercase" style={{ fontFamily: MONO, letterSpacing: "0.2em", color: GRAY }}>
-              Before · eight handoffs
-            </div>
-            <div className="mt-6">
-              {BEFORE.map((b, idx) => (
-                <div
-                  key={b}
-                  className="cl-handoff flex items-center gap-3.5 py-3 text-[13.5px]"
-                  style={{ borderTop: idx === 0 ? "none" : `1px solid ${HAIR}`, color: GRAY, transition: "color 220ms ease" }}
-                >
-                  <span className="text-[10px] tabular-nums" style={{ fontFamily: MONO, color: LIGHT }}>
-                    {String(idx + 1).padStart(2, "0")}
-                  </span>
-                  {b}
-                </div>
-              ))}
+          <div
+            className="flex flex-col justify-between lg:col-span-4 lg:border-r lg:pr-5"
+            style={{ borderColor: HAIR }}
+          >
+            <div>
+              <div className="text-[10px] uppercase" style={{ fontFamily: MONO, letterSpacing: "0.2em", color: "rgba(47,79,79,0.7)" }}>
+                Before · eight handoffs
+              </div>
+              <div className="mt-3">
+                {BEFORE.map((b, i) => (
+                  <div
+                    key={b}
+                    className="cl-handoff flex items-center gap-3 py-[6px] text-xs"
+                    style={{ borderBottom: `1px solid ${HAIR_SOFT}`, color: INK, transition: "color 200ms ease" }}
+                  >
+                    <span className="text-[10px] tabular-nums" style={{ fontFamily: MONO, color: LIGHT }}>
+                      {String(i + 1).padStart(2, "0")}
+                    </span>
+                    {b}
+                  </div>
+                ))}
+              </div>
             </div>
             <div
-              className="mt-7 pt-5 text-[14.5px] leading-relaxed"
-              style={{ borderTop: `1px solid ${HAIR}`, color: INK, fontFamily: SERIF }}
+              className="mt-4 pt-3 text-sm leading-snug"
+              style={{ borderTop: `1px solid ${HAIR}`, color: PLUM, fontFamily: SERIF, fontStyle: "italic" }}
             >
               Each handoff is a delay, a re-explanation, and another invoice.
             </div>
           </div>
 
-          {/* RIGHT — blueprint canvas */}
+          {/* RIGHT — sonar canvas */}
           <div
-            className="cl-soft relative min-h-[430px] overflow-hidden md:min-h-[520px]"
-            style={{ background: PAPER, border: `1px solid ${CAD_LINE}` }}
-            onMouseLeave={() => setActive(null)}
+            className="cl-soft relative min-h-[380px] overflow-hidden lg:col-span-8"
+            style={{ background: OAT, border: `1px solid rgba(47,79,79,0.30)`, boxShadow: "0 1px 2px rgba(47,79,79,0.06)" }}
           >
             {/* blueprint grid */}
             <div
               className="pointer-events-none absolute inset-0"
               style={{
-                backgroundImage: `linear-gradient(${CAD_LINE} 1px, transparent 1px), linear-gradient(90deg, ${CAD_LINE} 1px, transparent 1px)`,
-                backgroundSize: "68px 68px",
-                opacity: 0.28,
+                backgroundImage: `linear-gradient(rgba(47,79,79,0.10) 1px, transparent 1px), linear-gradient(90deg, rgba(47,79,79,0.10) 1px, transparent 1px)`,
+                backgroundSize: "56px 56px",
               }}
             />
             <div
-              className="absolute left-5 top-4 text-[9.5px] uppercase"
-              style={{ fontFamily: MONO, letterSpacing: "0.2em", color: LIGHT }}
+              className="absolute left-4 top-3 z-10 text-[10px] uppercase"
+              style={{ fontFamily: MONO, letterSpacing: "0.16em", color: "rgba(47,79,79,0.6)" }}
             >
-              Orrery architectural canvas
+              Orrery architectural canvas // Victoria scanner
             </div>
 
-            {/* orthogonal CAD legs meeting in the centre */}
+            {/* orthogonal CAD legs */}
             <div className="pointer-events-none absolute inset-0">
               {NODES.map((n) => {
                 const on = active === n.key;
-                const soft = echo.includes(n.key);
-                const stroke = on ? CU_DK : soft ? CU_LT : "#C9B79E";
                 const base =
-                  "absolute transition-all duration-500 " +
+                  "absolute transition-all duration-400 " +
                   (n.side === "top"
-                    ? "left-1/2 top-[16%] h-[34%] w-px -translate-x-1/2"
+                    ? "left-1/2 top-[18%] h-[32%] w-px -translate-x-1/2"
                     : n.side === "bottom"
-                      ? "left-1/2 bottom-[16%] h-[34%] w-px -translate-x-1/2"
+                      ? "left-1/2 bottom-[22%] h-[28%] w-px -translate-x-1/2"
                       : n.side === "left"
-                        ? "left-[16%] top-1/2 h-px w-[34%] -translate-y-1/2"
-                        : "right-[16%] top-1/2 h-px w-[34%] -translate-y-1/2");
+                        ? "left-[18%] top-1/2 h-px w-[32%] -translate-y-1/2"
+                        : "right-[18%] top-1/2 h-px w-[32%] -translate-y-1/2");
                 return (
                   <span
                     key={n.key}
                     className={base}
-                    style={{
-                      background: stroke,
-                      boxShadow: on ? `0 0 10px ${CU_LT}` : soft ? `0 0 6px rgba(192,122,95,0.4)` : "none",
-                      opacity: 1,
-                    }}
+                    style={{ background: on ? PLUM : "rgba(47,79,79,0.22)" }}
                   />
                 );
               })}
-              <span
-                className="absolute left-1/2 top-1/2 h-2 w-2 -translate-x-1/2 -translate-y-1/2 cl-round transition-all duration-500"
-                style={{ background: active ? CU_DK : CAD_LINE }}
+            </div>
+
+            {/* rotating sonar sweep */}
+            <motion.div
+              className="pointer-events-none absolute left-1/2 top-1/2 h-[520px] w-[520px] -translate-x-1/2 -translate-y-1/2"
+              animate={{ rotate: 360 }}
+              transition={{ duration: SWEEP, repeat: Infinity, ease: "linear" }}
+            >
+              <div
+                className="cl-round absolute inset-0"
+                style={{
+                  background: `conic-gradient(from 0deg, rgba(103,49,71,0.16), rgba(230,230,250,0.10) 55deg, transparent 90deg, transparent 360deg)`,
+                }}
               />
+              <div
+                className="absolute left-1/2 top-0 h-1/2 w-px origin-bottom"
+                style={{ background: `linear-gradient(to bottom, rgba(103,49,71,0.05), ${PLUM})` }}
+              />
+            </motion.div>
+
+            {/* central hub */}
+            <div className="absolute left-1/2 top-1/2 z-10 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center">
+              <div
+                className="cl-round grid h-16 w-16 place-items-center"
+                style={{ background: PLUM, boxShadow: "0 10px 26px rgba(103,49,71,0.30)" }}
+              >
+                <span style={{ fontFamily: SERIF, fontWeight: 600, fontSize: 26, color: OAT, lineHeight: 1 }}>C</span>
+              </div>
+              <div className="mt-2 text-[9px] uppercase" style={{ fontFamily: MONO, letterSpacing: "0.16em", color: INK }}>
+                Cleard engine
+              </div>
             </div>
 
             {/* nodes */}
             {NODES.map((n) => {
               const on = active === n.key;
-              const soft = echo.includes(n.key);
               return (
-                <div key={n.key} className={`absolute ${n.pos}`}>
-                  <div
-                    className="relative flex flex-col items-center gap-3"
-                    onMouseEnter={() => setActive(n.key)}
-                  >
+                <div key={n.key} className={`absolute z-10 ${n.pos}`}>
+                  <div className="relative flex flex-col items-center">
                     <div className="relative">
-                      {(on || soft) && (
+                      {on && (
                         <motion.span
                           className="cl-round absolute inset-0"
-                          style={{ background: "rgba(192,122,95,0.2)" }}
-                          animate={{ scale: [1, on ? 2.1 : 1.6], opacity: [0.5, 0] }}
-                          transition={{ duration: on ? 1.8 : 2.4, repeat: Infinity, ease: "easeOut" }}
+                          style={{ background: LAV, border: `1px solid ${HAIR}` }}
+                          animate={{ scale: [1, 2], opacity: [0.7, 0] }}
+                          transition={{ duration: 1.4, repeat: Infinity, ease: "easeOut" }}
                         />
                       )}
                       <motion.div
-                        className="cl-round relative grid h-[62px] w-[62px] place-items-center"
-                        style={{
-                          background: `linear-gradient(145deg, ${CU_LT}, ${CU_DK})`,
-                          boxShadow: on
-                            ? "0 14px 34px rgba(140,74,52,0.42)"
-                            : "0 8px 20px rgba(140,74,52,0.22)",
-                        }}
-                        animate={{ scale: on ? 1.08 : soft ? 1.04 : 1 }}
-                        transition={{ type: "spring", stiffness: 260, damping: 18 }}
+                        className="cl-round relative grid h-12 w-12 place-items-center"
+                        style={{ background: on ? PLUM : LAV, border: `1px solid rgba(47,79,79,0.55)` }}
+                        animate={{ scale: on ? 1.25 : 1 }}
+                        transition={{ type: "spring", stiffness: 240, damping: 18 }}
                       >
-                        <n.icon className="h-[22px] w-[22px]" strokeWidth={1.5} style={{ color: PAPER }} />
+                        <n.icon className="h-[18px] w-[18px]" strokeWidth={1.5} style={{ color: on ? OAT : INK }} />
                       </motion.div>
                     </div>
                     <div
-                      className={`whitespace-nowrap text-[10.5px] uppercase transition-colors duration-300 ${n.key === "permits" ? "absolute left-full top-[24px] ml-4" : "absolute top-full mt-3"}`}
-                      style={{ fontFamily: MONO, letterSpacing: "0.18em", color: on ? CU_TXT : INK }}
+                      className={`absolute whitespace-nowrap text-xs font-semibold ${n.labelPos}`}
+                      style={{ fontFamily: SERIF, color: on ? PLUM : INK }}
                     >
                       {n.label}
                     </div>
                     <motion.div
-                      className={`absolute whitespace-nowrap text-center text-[8.5px] uppercase leading-[1.6] ${n.key === "permits" ? "left-full top-[44px] ml-4" : "top-full mt-9"}`}
-                      style={{ fontFamily: MONO, letterSpacing: "0.14em", color: CU_TXT }}
+                      className={`absolute whitespace-nowrap px-2 py-1 text-[9.5px] uppercase ${n.tipPos}`}
+                      style={{ background: LAV, border: `1px solid ${HAIR}`, color: INK, fontFamily: MONO, letterSpacing: "0.1em" }}
                       initial={false}
                       animate={{ opacity: on ? 1 : 0, y: on ? 0 : -4 }}
-                      transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+                      transition={{ duration: 0.3 }}
                     >
-                      {n.layer} · active
-                      <br />
-                      {n.coord}
+                      {n.tip}
                     </motion.div>
                   </div>
                 </div>
               );
             })}
 
-            {/* footer overlay */}
-            <div
-              className="absolute inset-x-3 bottom-3 flex items-center gap-2.5 px-4 py-2.5"
-              style={{
-                background: "rgba(250,247,242,0.72)",
-                border: `1px solid ${HAIR}`,
-                backdropFilter: "blur(8px) saturate(140%)",
-                borderRadius: 4,
-              }}
-            >
-              <Sparkle className="h-3 w-3 shrink-0" strokeWidth={1.7} style={{ color: CU_LT }} />
-              <span className="text-[9px] uppercase leading-[1.6]" style={{ fontFamily: MONO, letterSpacing: "0.16em", color: GRAY }}>
-                Victoria intelligence overlay — auto-correlating 6 operational nodes into 1 continuous stream.
-              </span>
+            {/* floating overlay pill */}
+            <div className="absolute inset-x-0 bottom-3 z-10 flex justify-center px-3">
+              <div
+                className="cl-soft flex items-center gap-2 px-3 py-1.5"
+                style={{ background: LAV, border: `1px solid rgba(47,79,79,0.30)` }}
+              >
+                <Sparkle className="h-3 w-3 shrink-0" strokeWidth={1.7} style={{ color: PLUM }} />
+                <span className="text-[10px] uppercase" style={{ fontFamily: MONO, letterSpacing: "0.12em", color: PLUM }}>
+                  Victoria overlay — currently analyzing {activeNode.status}...
+                </span>
+              </div>
             </div>
           </div>
         </div>
 
         {/* --------------------------- BOTTOM ROW --------------------------- */}
-        <div className="mt-5 grid gap-px sm:grid-cols-2 lg:grid-cols-4" style={{ background: HAIR }}>
+        <div className="grid grid-cols-2 gap-3 pt-3 lg:grid-cols-4" style={{ borderTop: `1px solid ${HAIR}` }}>
           {ONE_CARDS.map((c) => (
             <div
               key={c.head}
-              className="cl-one-card p-6"
-              style={{ background: OFF, borderTop: "2px solid transparent", transition: "transform 260ms cubic-bezier(0.16,1,0.3,1), border-color 260ms ease, box-shadow 260ms ease" }}
+              className="cl-soft flex items-center gap-3 px-3 py-2.5"
+              style={{ background: LAV, border: `1px solid rgba(47,79,79,0.35)` }}
             >
-              <c.icon className="h-[19px] w-[19px]" strokeWidth={1.4} style={{ color: CU_TXT }} />
-              <div className="mt-5 text-[10.5px] uppercase" style={{ fontFamily: MONO, letterSpacing: "0.2em", color: INK }}>
-                {c.head}
+              <c.icon className="h-[18px] w-[18px] shrink-0" strokeWidth={1.4} style={{ color: PLUM }} />
+              <div className="min-w-0">
+                <div className="text-[10px] uppercase" style={{ fontFamily: MONO, letterSpacing: "0.16em", color: PLUM }}>
+                  {c.head}
+                </div>
+                <p className="truncate text-[11.5px]" style={{ color: INK }}>
+                  {c.body}
+                </p>
               </div>
-              <p className="mt-3 text-[13.5px] leading-[1.7]" style={{ color: GRAY }}>
-                {c.body}
-              </p>
             </div>
           ))}
         </div>
       </div>
 
       <style>{`
-        .cl-home h2.cl-eng-title, h2.cl-eng-title { font-family: ${MONO} !important; font-weight: 500 !important; letter-spacing: 0.05em !important; }
-        .cl-handoff:hover { color: ${CU_TXT} !important; }
-        .cl-one-card:hover { transform: translateY(-4px); border-top-color: ${CU_LT}; box-shadow: 0 18px 36px rgba(140,74,52,0.12); }
+        .cl-handoff:hover { color: ${PLUM} !important; }
       `}</style>
     </section>
   );
 }
+
 
 
 /* ========================= 5 · FEATURED TESTIMONIAL ===================== */
