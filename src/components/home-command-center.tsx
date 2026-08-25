@@ -704,7 +704,7 @@ export function ReplaceThePermitOffice() {
               {NODES.map((n) => {
                 const on = active === n.key;
                 const soft = echo.includes(n.key);
-                const stroke = on ? CU_DK : soft ? CU_LT : CAD_LINE;
+                const stroke = on ? CU_DK : soft ? CU_LT : "#C9B79E";
                 const base =
                   "absolute transition-all duration-500 " +
                   (n.side === "top"
@@ -721,7 +721,7 @@ export function ReplaceThePermitOffice() {
                     style={{
                       background: stroke,
                       boxShadow: on ? `0 0 10px ${CU_LT}` : soft ? `0 0 6px rgba(192,122,95,0.4)` : "none",
-                      opacity: on ? 1 : soft ? 0.85 : 0.9,
+                      opacity: 1,
                     }}
                   />
                 );
@@ -739,7 +739,7 @@ export function ReplaceThePermitOffice() {
               return (
                 <div key={n.key} className={`absolute ${n.pos}`}>
                   <div
-                    className={`flex gap-3 ${n.key === "permits" ? "flex-row items-center" : "flex-col items-center"}`}
+                    className="relative flex flex-col items-center gap-3"
                     onMouseEnter={() => setActive(n.key)}
                   >
                     <div className="relative">
@@ -766,7 +766,7 @@ export function ReplaceThePermitOffice() {
                       </motion.div>
                     </div>
                     <div
-                      className="whitespace-nowrap text-[10.5px] uppercase transition-colors duration-300"
+                      className={`whitespace-nowrap text-[10.5px] uppercase transition-colors duration-300 ${n.key === "permits" ? "absolute left-full top-[26px] ml-4" : ""}`}
                       style={{ fontFamily: MONO, letterSpacing: "0.18em", color: on ? CU_TXT : INK }}
                     >
                       {n.label}
