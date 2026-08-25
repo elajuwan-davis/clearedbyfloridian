@@ -4,23 +4,24 @@ import { ChevronLeft, ChevronRight, Maximize2 } from "lucide-react";
 export const SLATE = "#2F4F4F";
 export const OAT = "#FAF3E6";
 
-type Slide = { img: string; bgImage: string };
+type Slide = { img: string };
 
-/** Slide artwork + themed background photo, both served locally from /public/deck. */
+/** Slide artwork, served from the Lovable CDN. */
 export const SLIDES: Slide[] = [
-  { img: "/__l5e/assets-v1/611a17c5-135d-42e1-a740-3877fc0dac1c/slide-01.png", bgImage: "/deck/bg/bg-01.jpg" },
-  { img: "/__l5e/assets-v1/2744df98-a0c2-4aaf-a0c8-805d88087994/slide-02.png", bgImage: "/deck/bg/bg-02.jpg" },
-  { img: "/__l5e/assets-v1/89a46683-2c0f-446d-aa85-a4fdb8913d60/slide-03.png", bgImage: "/deck/bg/bg-03.jpg" },
-  { img: "/__l5e/assets-v1/b588f044-41ea-469d-8cc7-829aa69a2dd0/slide-04.png", bgImage: "/deck/bg/bg-04.jpg" },
-  { img: "/__l5e/assets-v1/b91c1551-e8c7-4404-8d3b-d0758ac22620/slide-05.png", bgImage: "/deck/bg/bg-05.jpg" },
-  { img: "/__l5e/assets-v1/80a60ccf-da4d-4198-beb1-eb9e58ce9df0/slide-06.png", bgImage: "/deck/bg/bg-06.jpg" },
-  { img: "/__l5e/assets-v1/b8845560-bc11-449a-a96f-1ef1f611d361/slide-07.png", bgImage: "/deck/bg/bg-07.jpg" },
-  { img: "/__l5e/assets-v1/bbe59328-efdb-43ac-9197-bcf4ed6a369b/slide-08.png", bgImage: "/deck/bg/bg-08.jpg" },
-  { img: "/__l5e/assets-v1/1ac8be61-fb62-4506-92af-c0c1a516474d/slide-09.png", bgImage: "/deck/bg/bg-09.jpg" },
-  { img: "/__l5e/assets-v1/e04efe09-d41a-48a2-a2df-d550ede96e7c/slide-10.png", bgImage: "/deck/bg/bg-10.jpg" },
-  { img: "/__l5e/assets-v1/9af5dc30-8837-451e-ad8c-d8c6701a85fd/slide-11.png", bgImage: "/deck/bg/bg-11.jpg" },
-  { img: "/__l5e/assets-v1/d11b06d4-0c90-4456-974b-2db69833d6e8/slide-12.png", bgImage: "/deck/bg/bg-12.jpg" },
+  { img: "/__l5e/assets-v1/6f4005ef-4e74-4c9e-8a45-a8f3a3af1bc8/slide-01-v2.png" },
+  { img: "/__l5e/assets-v1/20bee46c-85be-409d-aa73-9fa5468ea395/slide-02-v2.png" },
+  { img: "/__l5e/assets-v1/ff0f499a-598d-4178-b6a7-47cbdb30f89b/slide-03-v2.png" },
+  { img: "/__l5e/assets-v1/8a021ac5-483b-4e37-88cc-87e3cf5de994/slide-04-v2.png" },
+  { img: "/__l5e/assets-v1/fc5b90b5-0344-4ba5-aed4-d5bf7231d307/slide-05-v2.png" },
+  { img: "/__l5e/assets-v1/13f4b59e-a8bf-4dbe-9e01-c443fbd07bcc/slide-06-v2.png" },
+  { img: "/__l5e/assets-v1/5e4edbf8-bdf3-4362-979a-78ac2c5443db/slide-07-v2.png" },
+  { img: "/__l5e/assets-v1/b0d97de8-3738-4222-94a9-a295fee7e2a5/slide-08-v2.png" },
+  { img: "/__l5e/assets-v1/59857a9c-6c36-4997-b334-6fba91eba642/slide-09-v2.png" },
+  { img: "/__l5e/assets-v1/a489e6d8-5981-4754-9563-8b70ee88f1cf/slide-10-v2.png" },
+  { img: "/__l5e/assets-v1/bd0e06df-7a82-4ed7-bdc8-01b6eb8f2469/slide-11-v2.png" },
+  { img: "/__l5e/assets-v1/b362cabb-8b2e-43cd-99d0-f182b20d3b47/slide-12-v2.png" },
 ];
+
 
 
 
