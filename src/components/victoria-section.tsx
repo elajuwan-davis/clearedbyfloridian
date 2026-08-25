@@ -325,12 +325,12 @@ export function VictoriaSection() {
             <span className="flex items-center gap-2 uppercase">
               Victoria / Live
               <span
-                className="v-blink inline-block h-[5px] w-[5px] rounded-full"
+                className="v-blink inline-block h-[5px] w-[5px] rounded-full cl-dot"
                 style={{ background: COPPER, animation: "vBlink 2.2s ease-in-out infinite" }}
               />
             </span>
             <span className="hidden items-center gap-2 uppercase sm:flex">
-              <span className="inline-block h-[5px] w-[5px] rounded-full" style={{ background: COPPER }} />
+              <span className="inline-block h-[5px] w-[5px] rounded-full cl-dot" style={{ background: COPPER }} />
               Monitoring 17 projects
             </span>
           </div>
@@ -363,7 +363,7 @@ export function VictoriaSection() {
               style={{ fontFamily: MONO, fontSize: 9.5, letterSpacing: "0.2em", color: "rgba(250,243,230,0.6)" }}
             >
               <span
-                className="v-blink inline-block h-[5px] w-[5px] rounded-full"
+                className="v-blink inline-block h-[5px] w-[5px] rounded-full cl-dot"
                 style={{ background: COPPER, animation: "vBlink 3s ease-in-out infinite" }}
               />
               Last updated 2 min ago
@@ -391,7 +391,7 @@ export function VictoriaSection() {
               {STEPS.map((s, i) => (
                 <div key={s.n} className="relative">
                   <div
-                    className="grid h-11 w-11 place-items-center rounded-full"
+                    className="grid h-11 w-11 place-items-center rounded-full cl-dot"
                     style={{ border: "1px solid rgba(201,138,91,0.45)" }}
                   >
                     <s.icon className="h-[17px] w-[17px]" strokeWidth={1.4} style={{ color: OAT }} />
@@ -453,7 +453,7 @@ function IntelCard({ card }: { card: Card }) {
           <AlertTriangle className="mt-[2px] h-3 w-3 shrink-0" strokeWidth={1.6} style={{ color: dot }} />
         ) : (
           <span
-            className="v-blink mt-[5px] inline-block h-[5px] w-[5px] shrink-0 rounded-full"
+            className="v-blink mt-[5px] inline-block h-[5px] w-[5px] shrink-0 rounded-full cl-dot"
             style={{ background: dot, animation: "vBlink 2.6s ease-in-out infinite" }}
           />
         )}
