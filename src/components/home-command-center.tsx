@@ -849,14 +849,9 @@ export function ReplaceThePermitOffice() {
             <div className="absolute left-1/2 top-1/2 z-20 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center">
               <div
                 className="cl-round grid h-[58px] w-[58px] place-items-center overflow-hidden"
-                style={{ background: PLUM }}
+                style={{ background: CREAM, border: `2px solid ${PLUM}` }}
               >
-                <img
-                  src={copperMark.url}
-                  alt="Cleard"
-                  className="h-[34px] w-[34px] object-contain"
-                  style={{ filter: "brightness(0) invert(1) opacity(0.92)" }}
-                />
+                <img src={copperMark.url} alt="Cleard" className="h-[36px] w-[36px] object-contain" />
               </div>
               <div className="absolute top-full mt-2 whitespace-nowrap text-[8.5px] uppercase" style={{ fontFamily: MONO, letterSpacing: "0.16em", color: PLUM }}>
                 Cleard engine
