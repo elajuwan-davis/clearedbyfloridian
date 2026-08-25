@@ -629,7 +629,7 @@ export function ReplaceThePermitOffice() {
         {/* ---------------------------- TOP BAR ---------------------------- */}
         <div>
           <h2
-            className="uppercase"
+            className="cl-eng-title uppercase"
             style={{ fontFamily: MONO, fontSize: "clamp(1.15rem, 2.1vw, 1.7rem)", letterSpacing: "0.05em", color: INK, fontWeight: 500 }}
           >
             02 / The architectural engine
@@ -826,6 +826,7 @@ export function ReplaceThePermitOffice() {
       </div>
 
       <style>{`
+        .cl-eng-title { font-family: ${MONO} !important; font-weight: 500 !important; letter-spacing: 0.05em !important; }
         .cl-handoff:hover { color: ${CU_TXT} !important; }
         .cl-one-card:hover { transform: translateY(-4px); border-top-color: ${CU_LT}; box-shadow: 0 18px 36px rgba(140,74,52,0.12); }
       `}</style>
