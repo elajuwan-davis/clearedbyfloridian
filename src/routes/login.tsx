@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ArrowRight, Loader2 } from "lucide-react";
+import { isPermitsOnlyEmail, PERMITS_ONLY_HOME } from "@/lib/permits-only";
 
 
 export const Route = createFileRoute("/login")({
@@ -61,7 +62,10 @@ function LoginPage() {
           /* ignore */
         }
         setLoading(false);
-        navigate({ to: getSafeNext("/dashboard") as never, replace: true });
+        const target = isPermitsOnlyEmail(emailKey)
+          ? PERMITS_ONLY_HOME
+          : getSafeNext("/dashboard");
+        navigate({ to: target as never, replace: true });
         return;
       }
       setLoading(false);

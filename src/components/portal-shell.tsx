@@ -601,6 +601,7 @@ function PortalShellInner({ children }: { children: ReactNode }) {
   const signingOutRef = useRef(false);
   const session = useSession();
   const me = useMyIdentity();
+  const permitsOnly = isPermitsOnlyEmail(session.email);
 
   useEffect(() => {
     let cancelled = false;
@@ -769,8 +770,8 @@ function PortalShellInner({ children }: { children: ReactNode }) {
               </button>
             )}
             <ThemeToggle />
-            <BookmarkToggle />
-            <NotificationBell />
+            {!permitsOnly && <BookmarkToggle />}
+            {!permitsOnly && <NotificationBell />}
             <div className="hidden sm:block">
               <DropdownMenu>
                 <DropdownMenuTrigger className="flex h-8 items-center gap-1.5 rounded-lg px-1 outline-none hover:bg-[var(--rail-hover)]">
@@ -796,14 +797,18 @@ function PortalShellInner({ children }: { children: ReactNode }) {
                       </div>
                     )}
                   </DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  {(settingsForRole(session.role).items ?? []).map((item, i) => (
-                    <DropdownMenuItem key={`${item.to}-${i}`} asChild>
-                      <Link to={item.to as never} className="cursor-pointer rounded-lg px-3 py-2 text-[13px]" style={{ color: "var(--foreground)" }}>
-                        {item.label}
-                      </Link>
-                    </DropdownMenuItem>
-                  ))}
+                  {!permitsOnly && (
+                    <>
+                      <DropdownMenuSeparator />
+                      {(settingsForRole(session.role).items ?? []).map((item, i) => (
+                        <DropdownMenuItem key={`${item.to}-${i}`} asChild>
+                          <Link to={item.to as never} className="cursor-pointer rounded-lg px-3 py-2 text-[13px]" style={{ color: "var(--foreground)" }}>
+                            {item.label}
+                          </Link>
+                        </DropdownMenuItem>
+                      ))}
+                    </>
+                  )}
                   <DropdownMenuSeparator />
                   <DropdownMenuItem
                     onSelect={() => handleSignOut()}
@@ -819,18 +824,18 @@ function PortalShellInner({ children }: { children: ReactNode }) {
           </div>
         </header>
 
-        <SectionTabs />
+        {!permitsOnly && <SectionTabs />}
 
         <main className="min-h-[calc(100vh-3rem)] min-w-0 overflow-x-hidden pb-20 md:pb-0">
           {children}
         </main>
 
-        <MobileBottomNav pathname={pathname} />
+        <MobileBottomNav pathname={pathname} permitsOnly={permitsOnly} />
       </div>
 
 
-      <AskVictoriaDock />
-      <InternalOnlyVictoria />
+      {!permitsOnly && <AskVictoriaDock />}
+      {!permitsOnly && <InternalOnlyVictoria />}
 
     </div>
   );
@@ -959,7 +964,8 @@ const MOBILE_NAV_ITEMS: Array<{ to: string; label: string; icon: typeof FileText
 ];
 
 /** Fixed bottom tab bar for phones (< md). Mirrors the desktop rail's top-level destinations. */
-function MobileBottomNav({ pathname }: { pathname: string }) {
+function MobileBottomNav({ pathname, permitsOnly = false }: { pathname: string; permitsOnly?: boolean }) {
+  const items = permitsOnly ? MOBILE_NAV_ITEMS.slice(0, 1) : MOBILE_NAV_ITEMS;
   return (
     <nav
       className="md:hidden fixed inset-x-0 bottom-0 z-40 border-t"
@@ -970,8 +976,8 @@ function MobileBottomNav({ pathname }: { pathname: string }) {
       }}
       aria-label="Primary"
     >
-      <div className="grid grid-cols-4">
-        {MOBILE_NAV_ITEMS.map((item) => {
+      <div className={permitsOnly ? "grid grid-cols-1" : "grid grid-cols-4"}>
+        {items.map((item) => {
           const active = item.match(pathname);
           const Icon = item.icon;
           return (

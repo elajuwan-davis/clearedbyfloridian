@@ -12,6 +12,7 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 /* Design system lockdown: one system font stack app-wide — no webfont imports. */
 import { Toaster } from "@/components/ui/sonner";
+import { PermitsOnlyBoundary } from "@/components/permits-only-boundary";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 
 function NotFoundComponent() {
@@ -151,7 +152,9 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <Outlet />
+      <PermitsOnlyBoundary>
+        <Outlet />
+      </PermitsOnlyBoundary>
       <Toaster />
     </QueryClientProvider>
   );
