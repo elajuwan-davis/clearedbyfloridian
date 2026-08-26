@@ -1,4 +1,4 @@
-import { supabaseAdmin } from "@/integrations/supabase/client.server";
+import { createClient } from "@supabase/supabase-js";
 import { INVESTOR_ADMIN_PASSWORD } from "./investor-admin-password";
 
 export type DeckInvite = {
@@ -16,49 +16,52 @@ export type DeckInvite = {
 
 export const DECK_INVITE_DAYS = 7;
 
+function getDeckClient() {
+  const url = process.env.SUPABASE_URL || import.meta.env.VITE_SUPABASE_URL;
+  const key = process.env.SUPABASE_PUBLISHABLE_KEY || import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+  if (!url || !key) throw new Error("Pitch deck sharing is temporarily unavailable.");
+
+  return createClient(url, key, {
+    auth: { storage: undefined, persistSession: false, autoRefreshToken: false },
+    global: {
+      fetch: (input, init) => {
+        const headers = new Headers(init?.headers);
+        if (key.startsWith("sb_") && headers.get("Authorization") === `Bearer ${key}`) {
+          headers.delete("Authorization");
+        }
+        headers.set("apikey", key);
+        return fetch(input, { ...init, headers });
+      },
+    },
+  });
+}
+
 export function assertDeckAdmin(password: string) {
   if (password !== INVESTOR_ADMIN_PASSWORD) throw new Error("Unauthorized");
 }
 
-const ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-
-function randomString(len: number) {
-  const bytes = new Uint8Array(len);
-  crypto.getRandomValues(bytes);
-  return Array.from(bytes, (b) => ALPHABET[b % ALPHABET.length]).join("");
-}
-
 export async function createInvite(label: string) {
-  const expires = new Date(Date.now() + DECK_INVITE_DAYS * 24 * 60 * 60 * 1000).toISOString();
-  for (let attempt = 0; attempt < 6; attempt++) {
-    const token = crypto.randomUUID().replace(/-/g, "");
-    const passcode = randomString(8);
-    const { data, error } = await supabaseAdmin
-      .from("deck_invites" as never)
-      .insert({ token, passcode, label, expires_at: expires } as never)
-      .select("token, passcode, expires_at, label")
-      .single();
-    if (!error && data) return data as unknown as { token: string; passcode: string; expires_at: string; label: string };
-    if (!error?.message?.toLowerCase().includes("duplicate")) throw new Error(error?.message ?? "Insert failed");
-  }
-  throw new Error("Could not generate a unique invite, please try again.");
+  const { data, error } = await getDeckClient().rpc("deck_invites_admin_create", {
+    _password: INVESTOR_ADMIN_PASSWORD,
+    _label: label,
+  });
+  if (error) throw new Error(error.message);
+  return data as unknown as { token: string; passcode: string; expires_at: string; label: string };
 }
 
 export async function listInvites(): Promise<DeckInvite[]> {
-  const { data, error } = await supabaseAdmin
-    .from("deck_invites" as never)
-    .select("id, token, passcode, label, expires_at, revoked, view_count, first_opened_at, last_viewed_at, created_at")
-    .order("created_at", { ascending: false })
-    .limit(200);
+  const { data, error } = await getDeckClient().rpc("deck_invites_admin_list", {
+    _password: INVESTOR_ADMIN_PASSWORD,
+  });
   if (error) throw new Error(error.message);
   return (data ?? []) as unknown as DeckInvite[];
 }
 
 export async function revokeInvite(id: string) {
-  const { error } = await supabaseAdmin
-    .from("deck_invites" as never)
-    .update({ revoked: true } as never)
-    .eq("id", id);
+  const { error } = await getDeckClient().rpc("deck_invites_admin_revoke", {
+    _password: INVESTOR_ADMIN_PASSWORD,
+    _id: id,
+  });
   if (error) throw new Error(error.message);
   return { ok: true as const };
 }
@@ -66,12 +69,19 @@ export async function revokeInvite(id: string) {
 type Row = { id: string; passcode: string; label: string; expires_at: string; revoked: boolean; view_count: number; first_opened_at: string | null };
 
 async function loadByToken(token: string): Promise<Row | null> {
-  const { data } = await supabaseAdmin
-    .from("deck_invites" as never)
-    .select("id, passcode, label, expires_at, revoked, view_count, first_opened_at")
-    .eq("token", token)
-    .maybeSingle();
-  return (data as unknown as Row | null) ?? null;
+  const { data, error } = await getDeckClient().rpc("deck_invites_peek", { _token: token });
+  if (error) throw new Error(error.message);
+  const result = Array.isArray(data) ? data[0] : data;
+  if (!result || result.status === "invalid") return null;
+  return {
+    id: token,
+    passcode: result.passcode ?? "",
+    label: result.label ?? "",
+    expires_at: result.expires_at ?? new Date(0).toISOString(),
+    revoked: result.status === "revoked",
+    view_count: 0,
+    first_opened_at: null,
+  };
 }
 
 export type InviteState =
@@ -90,20 +100,11 @@ export async function peekInvite(token: string): Promise<InviteState> {
 }
 
 export async function verifyInvite(token: string, passcode: string): Promise<{ ok: boolean; reason?: string }> {
-  const row = await loadByToken(token);
-  if (!row) return { ok: false, reason: "This link is not valid." };
-  if (row.revoked) return { ok: false, reason: "Access to this link has been revoked." };
-  if (new Date(row.expires_at).getTime() <= Date.now()) return { ok: false, reason: "This link has expired." };
-  if (passcode.trim().toUpperCase() !== row.passcode.toUpperCase()) return { ok: false, reason: "Incorrect passcode." };
-
-  const now = new Date().toISOString();
-  await supabaseAdmin
-    .from("deck_invites" as never)
-    .update({
-      view_count: (row.view_count ?? 0) + 1,
-      last_viewed_at: now,
-      first_opened_at: row.first_opened_at ?? now,
-    } as never)
-    .eq("id", row.id);
-  return { ok: true };
+  const { data, error } = await getDeckClient().rpc("deck_invites_verify", {
+    _token: token,
+    _passcode: passcode,
+  });
+  if (error) throw new Error(error.message);
+  const result = Array.isArray(data) ? data[0] : data;
+  return result?.ok ? { ok: true } : { ok: false, reason: result?.reason ?? "This link is not valid." };
 }

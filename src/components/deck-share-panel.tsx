@@ -16,9 +16,10 @@ type Invite = {
   last_viewed_at: string | null;
 };
 
+const SHARE_ORIGIN = "https://cleardinc.com";
+
 function linkFor(token: string) {
-  const origin = typeof window !== "undefined" ? window.location.origin : "";
-  return `${origin}/pitch-deck/${token}`;
+  return `${SHARE_ORIGIN}/pitch-deck/${token}`;
 }
 
 function copy(text: string) {
@@ -40,8 +41,9 @@ export function DeckSharePanel({ onClose }: { onClose: () => void }) {
       const rows = (await listDeckInvites({ data: { password: pw } })) as Invite[];
       setInvites(rows);
       setAuthed(true);
-    } catch {
-      setError("Incorrect admin password.");
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : "";
+      setError(/unauthorized/i.test(msg) ? "Incorrect password." : `Could not load invites: ${msg || "unknown error"}`);
     } finally {
       setBusy(false);
     }
@@ -55,8 +57,8 @@ export function DeckSharePanel({ onClose }: { onClose: () => void }) {
       await createDeckInvite({ data: { password, label: label.trim() } });
       setLabel("");
       await load(password);
-    } catch {
-      setError("Could not create the invite.");
+    } catch (e) {
+      setError(`Could not create the invite: ${e instanceof Error ? e.message : "unknown error"}`);
     } finally {
       setBusy(false);
     }

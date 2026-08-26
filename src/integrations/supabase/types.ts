@@ -5096,6 +5096,68 @@ export type Database = {
       }
       current_tenant_id: { Args: never; Returns: string }
       current_user_email: { Args: never; Returns: string }
+      deck_invites_admin_create: {
+        Args: { _label: string; _password: string }
+        Returns: {
+          created_at: string
+          expires_at: string
+          first_opened_at: string | null
+          id: string
+          label: string
+          last_viewed_at: string | null
+          passcode: string
+          revoked: boolean
+          token: string
+          view_count: number
+        }
+        SetofOptions: {
+          from: "*"
+          to: "deck_invites"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      deck_invites_admin_list: {
+        Args: { _password: string }
+        Returns: {
+          created_at: string
+          expires_at: string
+          first_opened_at: string | null
+          id: string
+          label: string
+          last_viewed_at: string | null
+          passcode: string
+          revoked: boolean
+          token: string
+          view_count: number
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "deck_invites"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
+      deck_invites_admin_revoke: {
+        Args: { _id: string; _password: string }
+        Returns: boolean
+      }
+      deck_invites_peek: {
+        Args: { _token: string }
+        Returns: {
+          expires_at: string
+          label: string
+          passcode: string
+          status: string
+        }[]
+      }
+      deck_invites_verify: {
+        Args: { _passcode: string; _token: string }
+        Returns: {
+          ok: boolean
+          reason: string
+        }[]
+      }
       delete_email: {
         Args: { message_id: number; queue_name: string }
         Returns: boolean

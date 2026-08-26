@@ -1954,6 +1954,10 @@ tbody tr:hover, .p-table tbody tr:hover { background: #F3EAD9; }
 .marketing-dark, .marketing-dark *, .marketing-dark *::before, .marketing-dark *::after,
 .cl-home, .cl-home *, .cl-home *::before, .cl-home *::after { border-radius: 0 !important; }
 .cl-home .cl-dot, .marketing-dark .cl-dot { border-radius: 999px !important; }
+/* Architectural engine: circular nodes + soft canvas corners */
+.cl-home .cl-round, .cl-home .cl-round::before, .cl-home .cl-round::after { border-radius: 999px !important; }
+.cl-home .cl-soft { border-radius: 8px !important; }
+
 
 .marketing-dark .md-btn-primary,
 .marketing-dark .md-btn-gold {

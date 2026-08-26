@@ -35,7 +35,7 @@ export async function checkEmailDomain(email: string): Promise<boolean> {
 }
 
 /** Shared passcode that always unlocks the deck. Change here to rotate it. */
-export const INVESTOR_PASSCODE = "Victoria2026!";
+export const INVESTOR_PASSCODE = "Helloworld26!";
 
 /** PATH 2 — shared passcode, or a one-time code validated and burned atomically. */
 export async function redeemAccessCode(input: string): Promise<boolean> {

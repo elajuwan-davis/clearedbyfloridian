@@ -56,9 +56,9 @@ function InvitePitchDeck() {
   }
 
   return (
-    <div className="cl-public flex min-h-screen items-center justify-center px-6" style={{ background: OAT }}>
+    <div className="cl-public flex min-h-screen items-center justify-center px-6" style={{ background: SLATE }}>
       {state.status === "loading" && (
-        <div className="text-sm" style={{ color: "rgba(47,79,79,0.7)" }}>
+        <div className="text-sm" style={{ color: "rgba(250,243,230,0.7)" }}>
           Checking your invitation…
         </div>
       )}
@@ -79,14 +79,14 @@ function Dead({ state }: { state: Extract<State, { status: "invalid" | "revoked"
         : "This invitation link is not valid.";
   return (
     <div className="w-full max-w-sm text-center">
-      <Lock className="mx-auto h-5 w-5" strokeWidth={1.5} style={{ color: SLATE }} />
-      <h1 className="mt-4 text-2xl" style={{ color: SLATE, fontWeight: 500 }}>
+      <Lock className="mx-auto h-5 w-5" strokeWidth={1.5} style={{ color: OAT }} />
+      <h1 className="mt-4 text-2xl" style={{ color: OAT, fontWeight: 500 }}>
         Access closed
       </h1>
-      <p className="mt-2 text-sm" style={{ color: "rgba(47,79,79,0.7)" }}>
+      <p className="mt-2 text-sm" style={{ color: "rgba(250,243,230,0.7)" }}>
         {copy} Please request a new link from the Cleard team.
       </p>
-      <Link to="/" className="mt-6 inline-block px-4 py-2.5 text-[13.5px]" style={{ background: "#673147", color: OAT, fontWeight: 600 }}>
+      <Link to="/" className="mt-6 inline-block px-4 py-2.5 text-[13.5px]" style={{ background: OAT, color: SLATE, fontWeight: 600 }}>
         Back to cleardinc.com
       </Link>
     </div>
@@ -123,7 +123,7 @@ function Unlock({
   }
 
   return (
-    <div className="w-full max-w-md p-7" style={{ background: "#F3EAD9", border: "1px solid #E0D3BC", color: SLATE }}>
+    <div className="w-full max-w-md p-7" style={{ background: OAT, color: "#111110" }}>
       <div className="flex items-center gap-2" style={{ color: SLATE }}>
         <ShieldCheck className="h-4 w-4" strokeWidth={1.6} />
         <span className="text-[11px] uppercase tracking-[0.22em]">Your one-time password</span>
@@ -181,7 +181,7 @@ function Unlock({
           type="submit"
           disabled={busy || !code.trim()}
           className="mt-4 w-full px-4 py-2.5 text-[13.5px]"
-          style={{ background: "#673147", color: OAT, fontWeight: 600, opacity: busy || !code.trim() ? 0.6 : 1 }}
+          style={{ background: SLATE, color: OAT, fontWeight: 600, opacity: busy || !code.trim() ? 0.6 : 1 }}
         >
           {busy ? "Verifying…" : "Open the deck"}
         </button>

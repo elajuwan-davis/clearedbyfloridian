@@ -1,17 +1,22 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
+import { motion } from "framer-motion";
 import {
   ArrowRight,
+  BadgeCheck,
   Check,
-  FileCheck2,
+  FileText,
   FolderOpen,
-  Scale,
-  Send,
-  ShieldCheck,
+  Hammer,
+  LogIn,
+  Map,
   Sparkle,
+  TrendingUp,
   Users,
   X,
 } from "lucide-react";
+import copperMark from "@/assets/cleard-c-copper.png.asset.json";
+
 
 /* ----------------------- LOCKED NORDIC LUXURY TOKENS ---------------------- */
 
@@ -553,122 +558,428 @@ export function VictoriaSpotlight() {
   );
 }
 
-/* ================== 4 · BEFORE / AFTER + ARCHITECTURE =================== */
+/* ================== 4 · THE ARCHITECTURAL ENGINE ======================== */
+
+const CREAM = "#F4EADB";
+const TAN = "#B98055";
+const TAN_DEEP = "#8E5A38";
+const HAIR = "rgba(103,49,71,0.20)";
+const HAIR_SOFT = "rgba(103,49,71,0.13)";
+const CAD = "rgba(142,90,56,0.55)";
 
 const BEFORE = [
   "Permit expediter",
-  "County counter",
   "Plan reviewer",
   "Inspector scheduling",
   "License tracker",
   "COI spreadsheet",
   "Lien service",
-  "Phone calls and email",
+  "Phone calls",
+  "Manual emails",
 ];
 
-const PILLARS = [
-  { icon: Send, label: "Permits" },
-  { icon: FileCheck2, label: "Plan review & inspections" },
-  { icon: ShieldCheck, label: "Licenses" },
-  { icon: Users, label: "Insurance" },
-  { icon: Scale, label: "Lien rights" },
-  { icon: FolderOpen, label: "Documents" },
+type NodeKey = "permits" | "review" | "licenses" | "documents";
+
+const NODES: {
+  key: NodeKey;
+  label: string;
+  icon: typeof FileText;
+  tip: string;
+  status: string;
+  coord: string;
+  /** node center as % of canvas */
+  cx: number;
+  cy: number;
+  labelPos: string;
+  tipPos: string;
+  side: "top" | "right" | "bottom" | "left";
+}[] = [
+  {
+    key: "permits",
+    label: "Permits",
+    icon: FileText,
+    tip: "2 COIs expiring",
+    status: "Permits",
+    coord: "Lat -11.35.59.688",
+    cx: 50,
+    cy: 20,
+    labelPos: "bottom-full mb-2 left-1/2 -translate-x-1/2",
+    tipPos: "bottom-full mb-[20px] left-1/2 -translate-x-1/2",
+    side: "top",
+  },
+  {
+    key: "review",
+    label: "Plan review",
+    icon: Map,
+    tip: "2-day cycle, rev 04",
+    status: "Plan review",
+    coord: "Lat -16.36.88.668",
+    cx: 76,
+    cy: 50,
+    labelPos: "left-full ml-3 top-1/2 -translate-y-1/2",
+    tipPos: "left-full ml-3 top-1/2 translate-y-[8px]",
+    side: "right",
+  },
+  {
+    key: "licenses",
+    label: "Licenses",
+    icon: BadgeCheck,
+    tip: "14 active, 1 renewing",
+    status: "Licenses",
+    coord: "Lat/Long 21.392.27",
+    cx: 50,
+    cy: 80,
+    labelPos: "top-full mt-2 left-1/2 -translate-x-1/2",
+    tipPos: "top-full mt-[20px] left-1/2 -translate-x-1/2",
+    side: "bottom",
+  },
+  {
+    key: "documents",
+    label: "Documents",
+    icon: FolderOpen,
+    tip: "148 reviewed",
+    status: "Documents",
+    coord: "Lat/Long 31.371.15",
+    cx: 24,
+    cy: 50,
+    labelPos: "right-full mr-3 top-1/2 -translate-y-1/2",
+    tipPos: "right-full mr-3 top-1/2 translate-y-[8px]",
+    side: "left",
+  },
 ];
+
+
+const ONE_CARDS = [
+  { icon: LogIn, head: "One login", body: "Every jurisdiction behind a single sign-in." },
+  { icon: Users, head: "One team", body: "The same coordinators on every project." },
+  { icon: Hammer, head: "One trades", body: "Subs, licenses and insurance in one place." },
+  { icon: TrendingUp, head: "One results", body: "2-day plan review, same-day inspections." },
+];
+
+const SWEEP = 3.5; // seconds per full radar rotation
 
 export function ReplaceThePermitOffice() {
+  const [idx, setIdx] = useState(0);
+  const [hover, setHover] = useState<NodeKey | null>(null);
+  useEffect(() => {
+    const t = setInterval(() => setIdx((v) => (v + 1) % NODES.length), (SWEEP * 1000) / NODES.length);
+    return () => clearInterval(t);
+  }, []);
+  const activeNode = NODES[idx];
+  const active = hover ?? activeNode.key;
+
   return (
-    <section style={{ background: OAT }}>
-      <div className="mx-auto max-w-7xl px-5 py-24 lg:px-8 md:py-28">
-        <div className="text-[10.5px] font-bold uppercase" style={{ letterSpacing: "0.22em", color: GREEN }}>
-          Before and after
+    <section
+      className="flex flex-col overflow-hidden"
+      style={{ background: OAT, color: INK }}
+    >
+      <div className="mx-auto flex w-full max-w-6xl flex-col gap-4 px-5 py-8 lg:px-8">
+        {/* ---------------------------- HEADER ---------------------------- */}
+        <div className="flex flex-wrap items-end justify-between gap-4 pb-3" style={{ borderBottom: `1px solid ${HAIR}` }}>
+          <div>
+            <div className="text-[10.5px] font-bold uppercase" style={{ letterSpacing: "0.22em", color: GREEN }}>
+              Before and after
+            </div>
+            <h2
+              className="mt-3 max-w-3xl"
+              style={{
+                fontFamily: SERIF,
+                fontSize: "clamp(1.5rem, 2.6vw, 2.1rem)",
+                lineHeight: 1.05,
+                letterSpacing: "-0.035em",
+                color: PLUM,
+                fontWeight: 600,
+              }}
+            >
+              Replace the permit office.{" "}
+              <span style={{ fontStyle: "italic", color: INK }}>With Cleard.</span>
+            </h2>
+            <div
+              className="mt-3 flex flex-wrap items-center gap-x-6 gap-y-2 text-[11px] uppercase"
+              style={{ fontFamily: MONO, letterSpacing: "0.16em", color: GREEN }}
+            >
+              <span>2-day plan review</span>
+              <span aria-hidden style={{ color: LIGHT }}>·</span>
+              <span>Same-day inspections</span>
+              <span aria-hidden style={{ color: LIGHT }}>·</span>
+              <span>By invitation</span>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <motion.span
+              className="cl-round inline-block h-[7px] w-[7px]"
+              style={{ background: PLUM }}
+              animate={{ opacity: [1, 0.25, 1], scale: [1, 1.35, 1] }}
+              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+            />
+            <span className="text-[9.5px] uppercase" style={{ fontFamily: MONO, letterSpacing: "0.16em", color: PLUM }}>
+              Victoria active — continuous scan
+            </span>
+          </div>
         </div>
-        <h2
-          className="mt-6 max-w-3xl"
-          style={{ fontFamily: SERIF, fontSize: "clamp(2rem, 3.9vw, 3.05rem)", lineHeight: 1.04, letterSpacing: "-0.035em", color: PLUM, fontWeight: 600 }}
-        >
-          Replace the permit office.
-          <br />
-          <span style={{ fontStyle: "italic", color: INK }}>With Cleard.</span>
-        </h2>
 
-        <div
-          className="mt-8 flex flex-wrap items-center gap-x-8 gap-y-3 pt-6 text-[11px] uppercase"
-          style={{ borderTop: `1px solid ${BORDER}`, fontFamily: MONO, letterSpacing: "0.16em", color: GREEN }}
-        >
-          <span>2-day plan review</span>
-          <span aria-hidden style={{ color: LIGHT }}>·</span>
-          <span>Same-day inspections</span>
-          <span aria-hidden style={{ color: LIGHT }}>·</span>
-          <span>By invitation</span>
-        </div>
-
-
-        <div className="mt-14 grid gap-4 lg:grid-cols-[0.85fr_1.15fr]">
-          {/* BEFORE — a chain */}
-          <div className="p-7" style={{ background: OFF, border: `1px solid ${BORDER}` }}>
-            <div className="text-[10px] uppercase" style={{ fontFamily: MONO, letterSpacing: "0.2em", color: GRAY }}>
+        {/* --------------------------- SPLIT GRID -------------------------- */}
+        <div className="grid gap-6 lg:grid-cols-2">
+          {/* LEFT — before, eight handoffs */}
+          <div
+            className="flex min-h-[420px] flex-col lg:border-r lg:pr-6"
+            style={{ borderColor: HAIR }}
+          >
+            <div className="text-[10px] uppercase" style={{ fontFamily: MONO, letterSpacing: "0.2em", color: "rgba(103,49,71,0.7)" }}>
               Before · eight handoffs
             </div>
-            <div className="mt-6 space-y-0">
-              {BEFORE.map((b, idx) => (
-                <div key={b}>
-                  <div className="flex items-center gap-3 py-1.5 text-[13.5px]" style={{ color: GRAY }}>
-                    <span className="text-[10px] tabular-nums" style={{ fontFamily: MONO, color: LIGHT }}>
-                      {String(idx + 1).padStart(2, "0")}
-                    </span>
-                    {b}
-                  </div>
-                  {idx < BEFORE.length - 1 && (
-                    <span className="ml-[9px] block h-3 w-px" style={{ background: BORDER }} />
-                  )}
+            <div className="mt-3 flex flex-1 flex-col justify-between">
+              {BEFORE.map((b, i) => (
+                <div
+                  key={b}
+                  className="cl-handoff flex items-center gap-3 py-[7px] text-[14.5px]"
+                  style={{ borderBottom: `1px solid ${HAIR_SOFT}`, color: INK, transition: "color 200ms ease" }}
+                >
+                  <span className="text-[11px] tabular-nums" style={{ fontFamily: MONO, color: TAN }}>
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  {b}
                 </div>
               ))}
+
             </div>
-            <div className="mt-6 pt-5 text-[12px]" style={{ borderTop: `1px solid ${BORDER}`, color: LIGHT }}>
+            <div
+              className="mt-4 pt-3 text-[13px] leading-snug"
+              style={{ borderTop: `1px solid ${HAIR}`, color: PLUM, fontFamily: SERIF, fontStyle: "italic" }}
+            >
               Each handoff is a delay, a re-explanation, and another invoice.
             </div>
           </div>
 
-          {/* AFTER — one system */}
-          <div className="relative p-7 md:p-10" style={{ background: DARK, border: `1px solid ${DARK_LINE}` }}>
-            <div className="text-[10px] uppercase" style={{ fontFamily: MONO, letterSpacing: "0.2em", color: GREEN_LT }}>
-              After · one system
+          {/* RIGHT — compact orrery canvas */}
+          <div
+            className="cl-soft relative min-h-[420px] overflow-hidden"
+            style={{ background: CREAM, border: `1px solid ${HAIR}` }}
+          >
+            {/* blueprint grid */}
+            <div
+              className="pointer-events-none absolute inset-0"
+              style={{
+                backgroundImage: `linear-gradient(rgba(142,90,56,0.10) 1px, transparent 1px), linear-gradient(90deg, rgba(142,90,56,0.10) 1px, transparent 1px)`,
+                backgroundSize: "44px 44px",
+              }}
+            />
+            <div
+              className="absolute left-4 top-3 z-20 text-[9.5px] uppercase"
+              style={{ fontFamily: MONO, letterSpacing: "0.18em", color: "rgba(142,90,56,0.8)" }}
+            >
+              After Cleard
             </div>
-            <div className="mt-8 text-center">
-              <div className="inline-block px-7 py-4" style={{ background: DARK_2, border: `1px solid ${DARK_LINE}` }}>
-                <span style={{ fontFamily: SERIF, fontSize: 26, fontWeight: 600, color: OFF, letterSpacing: "-0.03em" }}>
-                  Cleard
-                </span>
+
+            {/* short orthogonal CAD legs */}
+            <div className="pointer-events-none absolute inset-0">
+              {NODES.map((n) => {
+                const on = active === n.key;
+                const vertical = n.side === "top" || n.side === "bottom";
+                const style: React.CSSProperties = vertical
+                  ? {
+                      left: `${n.cx}%`,
+                      top: `${Math.min(n.cy, 50)}%`,
+                      height: `${Math.abs(50 - n.cy)}%`,
+                      width: 1,
+                    }
+                  : {
+                      top: `${n.cy}%`,
+                      left: `${Math.min(n.cx, 50)}%`,
+                      width: `${Math.abs(50 - n.cx)}%`,
+                      height: 1,
+                    };
+                return (
+                  <span
+                    key={n.key}
+                    className="absolute transition-colors duration-300"
+                    style={{ ...style, background: on ? PLUM : CAD }}
+                  />
+                );
+              })}
+              {/* micro CAD annotations — offset clear of the legs */}
+              <span
+                className="absolute text-[7.5px] uppercase"
+                style={{ left: "6%", bottom: "16%", fontFamily: MONO, letterSpacing: "0.14em", color: "rgba(142,90,56,0.55)" }}
+              >
+                CAD layer 17.1
+              </span>
+              <span
+                className="absolute text-[7.5px] uppercase"
+                style={{ right: "6%", top: "12%", fontFamily: MONO, letterSpacing: "0.14em", color: "rgba(142,90,56,0.55)" }}
+              >
+                Lat/Long 21.392.27
+              </span>
+            </div>
+
+            {/* rotating sonar sweep — copper hue, confined */}
+            <div className="pointer-events-none absolute left-1/2 top-1/2 h-[290px] w-[290px] -translate-x-1/2 -translate-y-1/2 overflow-hidden">
+              <motion.div
+                className="absolute inset-0"
+                animate={{ rotate: 360 }}
+                transition={{ duration: SWEEP, repeat: Infinity, ease: "linear" }}
+              >
+                <div
+                  className="cl-round absolute inset-0"
+                  style={{
+                    background: `conic-gradient(from 0deg, rgba(185,128,85,0.26), rgba(226,178,124,0.14) 50deg, transparent 88deg, transparent 360deg)`,
+                  }}
+                />
+                <div
+                  className="absolute left-1/2 top-0 h-1/2 w-px origin-bottom"
+                  style={{ background: `linear-gradient(to bottom, rgba(185,128,85,0.05), ${TAN_DEEP})` }}
+                />
+              </motion.div>
+            </div>
+
+            {/* central hub — real Cleard mark */}
+            <div className="absolute left-1/2 top-1/2 z-20 -translate-x-1/2 -translate-y-1/2">
+              <div
+                className="cl-round grid h-[62px] w-[62px] place-items-center overflow-hidden"
+                style={{
+                  background: CREAM,
+                  border: `2px solid ${PLUM}`,
+                  boxShadow: "0 0 0 6px rgba(185,128,85,0.10)",
+                }}
+              >
+                <img src={copperMark.url} alt="Cleard" className="h-[38px] w-[38px] object-contain" />
               </div>
-              <div className="mx-auto h-8 w-px" style={{ background: "rgba(250,243,230,0.2)" }} />
-              <div className="grid gap-px sm:grid-cols-3" style={{ background: DARK_LINE }}>
-                {PILLARS.map((p) => (
-                  <div key={p.label} className="flex flex-col items-center gap-2.5 px-3 py-6" style={{ background: DARK_2 }}>
-                    <p.icon className="h-[18px] w-[18px]" style={{ color: GREEN_LT }} strokeWidth={1.5} />
-                    <span className="text-[11px] uppercase" style={{ fontFamily: MONO, letterSpacing: "0.12em", color: "rgba(250,243,230,0.7)" }}>
-                      {p.label}
-                    </span>
+            </div>
+
+            {/* nodes */}
+            {NODES.map((n) => {
+              const on = active === n.key;
+              return (
+                <div
+                  key={n.key}
+                  className="absolute z-10 -translate-x-1/2 -translate-y-1/2"
+                  style={{ left: `${n.cx}%`, top: `${n.cy}%` }}
+                  onMouseEnter={() => setHover(n.key)}
+                  onMouseLeave={() => setHover(null)}
+                >
+                  <div className="relative flex flex-col items-center">
+                    <div className="relative">
+                      {on && (
+                        <motion.span
+                          className="cl-round absolute inset-0"
+                          style={{ border: `1px solid ${TAN}` }}
+                          animate={{ scale: [1, 1.9], opacity: [0.6, 0] }}
+                          transition={{ duration: 1.4, repeat: Infinity, ease: "easeOut" }}
+                        />
+                      )}
+                      <motion.div
+                        className="cl-round cl-copper relative grid h-[44px] w-[44px] place-items-center"
+                        data-on={on ? "true" : "false"}
+                        animate={{ scale: on ? 1.12 : 1 }}
+                        transition={{ type: "spring", stiffness: 240, damping: 18 }}
+                      >
+                        <n.icon
+                          className="relative h-[17px] w-[17px]"
+                          strokeWidth={1.6}
+                          style={{ color: "#FFF6E8", filter: "drop-shadow(0 1px 1px rgba(70,35,15,0.55))" }}
+                        />
+                      </motion.div>
+                    </div>
+                    <div
+                      className={`absolute whitespace-nowrap text-[10px] uppercase ${n.labelPos}`}
+                      style={{ fontFamily: MONO, letterSpacing: "0.16em", color: on ? PLUM : INK }}
+                    >
+                      {n.label}
+                    </div>
+                    <div
+                      className={`absolute whitespace-nowrap text-[8px] uppercase transition-opacity duration-200 ${n.tipPos}`}
+                      style={{
+                        fontFamily: MONO,
+                        letterSpacing: "0.12em",
+                        color: TAN_DEEP,
+                        opacity: on ? 1 : 0,
+                      }}
+                    >
+                      {n.tip}
+                    </div>
                   </div>
-                ))}
-              </div>
-              <div className="mx-auto h-8 w-px" style={{ background: "rgba(250,243,230,0.2)" }} />
-              <div className="inline-flex items-center gap-2 px-6 py-3" style={{ border: `1px solid ${PLUM_LT}` }}>
-                <Sparkle className="h-3.5 w-3.5" style={{ color: PLUM_LT }} strokeWidth={1.75} />
-                <span className="text-[11px] uppercase" style={{ fontFamily: MONO, letterSpacing: "0.18em", color: PLUM_LT }}>
-                  Victoria · across all of it
-                </span>
-              </div>
+                </div>
+              );
+            })}
+
+            {/* overlay annotation line */}
+            <div className="absolute inset-x-0 bottom-3 z-20 flex items-center justify-center gap-2 px-4">
+              <Sparkle className="h-3 w-3 shrink-0" strokeWidth={1.7} style={{ color: TAN_DEEP }} />
+              <span className="truncate text-[8.5px] uppercase" style={{ fontFamily: MONO, letterSpacing: "0.14em", color: TAN_DEEP }}>
+                Victoria intelligence overlay — analyzing {activeNode.status}
+              </span>
             </div>
-            <p className="mt-9 text-[14px] leading-relaxed" style={{ color: "rgba(250,243,230,0.56)" }}>
-              Your team builds. Cleard handles everything around it — one login, one team, one
-              invoice, every jurisdiction you work in.
-            </p>
           </div>
         </div>
+
+        {/* --------------------------- BOTTOM ROW --------------------------- */}
+        <div className="grid grid-cols-2 gap-3 pt-5 lg:grid-cols-4" style={{ borderTop: `1px solid ${HAIR}` }}>
+          {ONE_CARDS.map((c) => (
+            <motion.div
+              key={c.head}
+              className="cl-onecard flex flex-col items-center gap-2 px-4 py-5 text-center"
+              style={{ background: CREAM, border: `1px solid ${HAIR_SOFT}` }}
+              whileHover={{ y: -6 }}
+              transition={{ type: "spring", stiffness: 300, damping: 20 }}
+            >
+              <c.icon
+                className="h-[22px] w-[22px] shrink-0"
+                strokeWidth={1.4}
+                style={{ color: PLUM }}
+              />
+
+              <div
+                className="text-[15px] leading-none"
+                style={{ fontFamily: SERIF, fontWeight: 600, color: PLUM, letterSpacing: "-0.02em" }}
+              >
+                {c.head}
+              </div>
+              <p className="text-[11.5px] leading-snug" style={{ color: INK }}>
+                {c.body}
+              </p>
+            </motion.div>
+          ))}
+        </div>
       </div>
+
+      <style>{`
+        .cl-handoff:hover { color: ${PLUM} !important; }
+        .cl-copper {
+          background:
+            linear-gradient(145deg, #F6DCB6 0%, #D79A62 24%, #A9683C 52%, #8E5A38 68%, #E9C49B 86%, #7A4A2C 100%);
+          box-shadow:
+            inset 0 1px 1px rgba(255,244,224,0.75),
+            inset 0 -2px 4px rgba(70,35,15,0.55),
+            0 2px 6px rgba(103,49,71,0.22);
+          position: relative;
+          overflow: hidden;
+        }
+        .cl-copper::after {
+          content: "";
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(115deg, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0) 38%, rgba(255,255,255,0) 62%, rgba(255,255,255,0.28) 100%);
+          pointer-events: none;
+        }
+        .cl-copper[data-on="true"] {
+          box-shadow:
+            inset 0 1px 1px rgba(255,246,230,0.85),
+            inset 0 -2px 5px rgba(70,35,15,0.5),
+            0 0 0 4px rgba(185,128,85,0.18),
+            0 4px 12px rgba(103,49,71,0.28);
+        }
+        .cl-onecard { transition: box-shadow 220ms ease, border-color 220ms ease; }
+        .cl-onecard:hover {
+          border-color: rgba(103,49,71,0.35) !important;
+          box-shadow: 0 12px 26px -14px rgba(103,49,71,0.4);
+        }
+      `}</style>
     </section>
   );
 }
+
+
 
 /* ========================= 5 · FEATURED TESTIMONIAL ===================== */
 
