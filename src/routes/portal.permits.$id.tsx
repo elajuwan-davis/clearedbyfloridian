@@ -29,6 +29,7 @@ import { PageShell, Panel } from "@/components/ui-kit";
 
 import { getPermit, updatePermit, deletePermit, permitCompleteness, getEffectiveDocs, getHiddenFieldKeys, withHiddenFieldKeys, ensureSubTokens, type PermitRow, type PermitStatus, type PermitDoc, type PermitSub } from "@/lib/permits-api";
 import { PermitDocUploader } from "@/components/permit-doc-uploader";
+import { BulkDocUpload } from "@/components/bulk-doc-upload";
 import { deletePermitFile } from "@/lib/permit-storage";
 import { supabase } from "@/integrations/supabase/client";
 import { generatePermitExportPdf, suggestExportFilename } from "@/lib/permit-export";
@@ -701,6 +702,9 @@ function PermitDetailPage() {
             >
               <Plus className="h-3.5 w-3.5" /> Add custom document field
             </button>
+            <div className="mt-4">
+              <BulkDocUpload permit={row} onChange={(u) => { setRow(u); setEdit(u); }} />
+            </div>
           </div>
         )}
       </div>
