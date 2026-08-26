@@ -29,6 +29,7 @@ import {
   type PermitRow,
   type PermitSub,
 } from "@/lib/permits-api";
+import { bulkUploadPermitDocs } from "@/lib/bulk-permit-docs";
 import { listSubs, createSub, type SubRow } from "@/lib/subs-api";
 import {
   listDesignPros,
