@@ -93,7 +93,12 @@ export function MultiSelectCombobox({
               <button
                 key={o}
                 type="button"
-                onClick={() => onToggle(o)}
+                onMouseDown={(e) => e.preventDefault()}
+                onClick={() => {
+                  onToggle(o);
+                  setQuery("");
+                  setOpen(true);
+                }}
                 title={hint?.(o)}
                 className="flex w-full items-start justify-between gap-2 px-3 py-2 text-left text-[13px] text-obsidian hover:bg-obsidian/[0.04]"
               >
@@ -102,6 +107,7 @@ export function MultiSelectCombobox({
               </button>
             );
           })}
+
         </div>
       )}
     </div>
