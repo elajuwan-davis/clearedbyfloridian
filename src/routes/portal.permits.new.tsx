@@ -32,6 +32,7 @@ import {
   type PermitSub,
 } from "@/lib/permits-api";
 import { bulkUploadPermitDocs } from "@/lib/bulk-permit-docs";
+import { BulkDocUpload } from "@/components/bulk-doc-upload";
 import { uploadPermitFile } from "@/lib/permit-storage";
 import { listSubs, createSub, type SubRow } from "@/lib/subs-api";
 import {
@@ -841,7 +842,10 @@ function NewPermitPage() {
         form.engineerEmail,
       );
 
-      const priorDocs = originalRow?.documents ?? [];
+      // Always merge against the freshest documents in the database — files may
+// have been uploaded (bulk or otherwise) after this form was loaded.
+      const latestRow = isEditing && editId ? await getPermit(editId).catch(() => null) : null;
+      const priorDocs = (latestRow ?? originalRow)?.documents ?? [];
       const priorByKey = new Map(priorDocs.map((d) => [d.key, d]));
       const checklistKeys = new Set(checklist.map((d) => d.key));
       const documents: PermitDoc[] = checklist.map((d) => {
@@ -2088,47 +2092,67 @@ function NewPermitPage() {
 
                   <div className="pt-2">
                     <div className={sectionCls}>Additional Documents — Bulk Upload</div>
-                    <p className="mt-1 text-[12px] text-obsidian/60">
-                      Pick or drop as many files as you like. Each one is saved as-is and filed
-                      under its own file name once the submission is saved.
-                    </p>
-                    <div
-                      onDragOver={(e) => e.preventDefault()}
-                      onDrop={handleExtraDrop}
-                      className="mt-3 border-2 border-dashed border-obsidian/20 hover:border-obsidian/40 bg-obsidian/[0.02] rounded-[3px] px-4 py-5 text-center transition-colors"
-                    >
-                      <label className="inline-flex items-center gap-2 cursor-pointer border border-obsidian/20 bg-white px-3 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian rounded-[3px] hover:bg-obsidian/5">
-                        <Upload className="h-3.5 w-3.5" /> Choose files ({form.extraDocs.length}/30)
-                        <input type="file" multiple className="hidden" onChange={handleExtraFiles} />
-                      </label>
-                      <div className="mt-2 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/45">
-                        or drop them here
-                      </div>
-                    </div>
-                    {form.extraDocs.length > 0 && (
-                      <ul className="mt-3 space-y-1">
-                        {form.extraDocs.map((name, i) => {
-                          const staged = extraFiles.some((f) => f.name === name);
-                          return (
-                            <li
-                              key={i}
-                              className="flex items-center justify-between gap-2 text-[12px] text-obsidian/70 bg-obsidian/5 px-2 py-1 rounded-[3px]"
-                            >
-                              <span className="truncate">
-                                {name}
-                                {!staged && (
-                                  <span className="ml-2 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/40">
-                                    name only — re-attach to upload
+                    {isEditing && originalRow ? (
+                      <>
+                        <p className="mt-1 text-[12px] text-obsidian/60">
+                          Files upload straight to this permit — no need to save the submission
+                          first. Each one is filed under its own file name.
+                        </p>
+                        <div className="mt-3">
+                          <BulkDocUpload permit={originalRow} onChange={setOriginalRow} />
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <p className="mt-1 text-[12px] text-obsidian/60">
+                          Pick or drop as many files as you like. Each one is saved as-is and filed
+                          under its own file name once the submission is saved.
+                        </p>
+                        <div
+                          onDragOver={(e) => e.preventDefault()}
+                          onDrop={handleExtraDrop}
+                          className="mt-3 border-2 border-dashed border-obsidian/20 hover:border-obsidian/40 bg-obsidian/[0.02] rounded-[3px] px-4 py-5 text-center transition-colors"
+                        >
+                          <label className="inline-flex items-center gap-2 cursor-pointer border border-obsidian/20 bg-white px-3 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian rounded-[3px] hover:bg-obsidian/5">
+                            <Upload className="h-3.5 w-3.5" /> Choose files (
+                            {form.extraDocs.length}/30)
+                            <input
+                              type="file"
+                              multiple
+                              className="hidden"
+                              onChange={handleExtraFiles}
+                            />
+                          </label>
+                          <div className="mt-2 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/45">
+                            or drop them here
+                          </div>
+                        </div>
+                        {form.extraDocs.length > 0 && (
+                          <ul className="mt-3 space-y-1">
+                            {form.extraDocs.map((name, i) => {
+                              const staged = extraFiles.some((f) => f.name === name);
+                              return (
+                                <li
+                                  key={i}
+                                  className="flex items-center justify-between gap-2 text-[12px] text-obsidian/70 bg-obsidian/5 px-2 py-1 rounded-[3px]"
+                                >
+                                  <span className="truncate">
+                                    {name}
+                                    {!staged && (
+                                      <span className="ml-2 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/40">
+                                        name only — re-attach to upload
+                                      </span>
+                                    )}
                                   </span>
-                                )}
-                              </span>
-                              <button type="button" onClick={() => removeExtra(i)}>
-                                <X className="h-3 w-3" />
-                              </button>
-                            </li>
-                          );
-                        })}
-                      </ul>
+                                  <button type="button" onClick={() => removeExtra(i)}>
+                                    <X className="h-3 w-3" />
+                                  </button>
+                                </li>
+                              );
+                            })}
+                          </ul>
+                        )}
+                      </>
                     )}
                   </div>
                 </>
