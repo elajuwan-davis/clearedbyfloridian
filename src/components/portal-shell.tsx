@@ -18,6 +18,11 @@ import { useExpirationAlerts } from "@/hooks/use-expiration-alerts";
 import { NotificationBell } from "@/components/notification-bell";
 import { BookmarkToggle } from "@/components/bookmark-toggle";
 import { AdminOnly } from "@/components/admin-only";
+import {
+  isPermitsOnlyEmail,
+  isPermitsOnlyPathAllowed,
+  PERMITS_ONLY_HOME,
+} from "@/lib/permits-only";
 
 import { useBookmarks, normalizePath } from "@/lib/bookmarks-api";
 import { VictoriaWidget } from "@/components/victoria-widget";
