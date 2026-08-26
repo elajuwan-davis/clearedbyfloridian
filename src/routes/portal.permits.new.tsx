@@ -720,9 +720,30 @@ function NewPermitPage() {
     const file = e.dataTransfer.files?.[0];
     if (file) updateDoc(key, { uploaded: file.name, na: false, deferred: false });
   }
+  function addExtraFiles(incoming: File[]) {
+    const files = incoming.slice(0, 30 - form.extraDocs.length);
+    if (!files.length) return;
+    setExtraFiles((prev) => [...prev, ...files]);
+    update("extraDocs", [...form.extraDocs, ...files.map((f) => f.name)]);
+  }
   function handleExtraFiles(e: ChangeEvent<HTMLInputElement>) {
-    const files = Array.from(e.target.files ?? []).slice(0, 30 - form.extraDocs.length);
-    if (files.length) update("extraDocs", [...form.extraDocs, ...files.map((f) => f.name)]);
+    addExtraFiles(Array.from(e.target.files ?? []));
+    e.target.value = "";
+  }
+  function handleExtraDrop(e: DragEvent<HTMLDivElement>) {
+    e.preventDefault();
+    addExtraFiles(Array.from(e.dataTransfer.files ?? []));
+  }
+  function removeExtra(index: number) {
+    const name = form.extraDocs[index];
+    update(
+      "extraDocs",
+      form.extraDocs.filter((_, j) => j !== index),
+    );
+    setExtraFiles((prev) => {
+      const at = prev.findIndex((f) => f.name === name);
+      return at === -1 ? prev : prev.filter((_, j) => j !== at);
+    });
   }
 
   async function maybeSaveDesignPro(
