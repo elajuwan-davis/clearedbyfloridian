@@ -557,7 +557,7 @@ function NewPermitPage() {
           .map((g) => g.message)
           .join("; ")}.`,
       });
-      setCoverageAsked((prev) => [...prev, s.scope]);
+      setCoverageAsked((prev) => [...prev, s.key]);
       toast.success(`Cleard will ask ${s.companyName} to upgrade coverage`);
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Could not send the request");
