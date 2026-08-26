@@ -88,6 +88,9 @@ environment problem; do not mass-reformat unrelated files to "fix" lint.
 ### Building Dept Logins (`/building-dept-logins`)
 - Credentials live in `gc_portal_logins` (AES-256-GCM via `APP_USER_CONNECTION_KEY_SECRET`).
   List returns metadata only; plaintext only via `revealOwnPortalLogin` / admin `revealPortalLogin`.
+- Sharing is internal-only: `listPortalLoginFlags({ scope: "all" })` and admin `revealPortalLogin`
+  cover logins owned by `@cleared.com`/`@floridianinc.com` accounts (Cleard files its own permits
+  here). A customer GC's credentials are never listed or decrypted for staff — do not widen this.
 - Documents: `portal_login_documents` + private bucket `portal-login-docs`. Expired status uses
   real `expiration_date` vs today (`isDocExpired`).
 - Submit route writes through `savePortalLogin` + document uploads — not a fake toast.
