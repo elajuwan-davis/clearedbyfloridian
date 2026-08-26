@@ -72,10 +72,11 @@ def run_assessment(diff: str, spec: str, model: str, api_key: str) -> dict:
     if len(diff) > max_diff_chars:
         diff = diff[:max_diff_chars] + "\n\n[diff truncated]"
 
+    # Current Anthropic SDK / models reject `temperature` on Messages.create
+    # (`TypeError: unexpected keyword argument 'temperature'`). Do not pass it.
     message = client.messages.create(
         model=model,
         max_tokens=4096,
-        temperature=0,
         system="You are a QA code reviewer. Always call the qa_assessment tool.",
         messages=[
             {
