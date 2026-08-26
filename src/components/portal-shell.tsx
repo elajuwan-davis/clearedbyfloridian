@@ -60,6 +60,19 @@ const protectedPortalPrefixes = [
   "/lpoa-signing",
 ];
 
+/** Bounce a permits-only seat back to the Permits workspace. */
+function PermitsOnlyRedirect() {
+  const navigate = useNavigate();
+  useEffect(() => {
+    navigate({ to: PERMITS_ONLY_HOME as never, replace: true });
+  }, [navigate]);
+  return (
+    <div className="portal-ui dark grid min-h-screen place-items-center bg-background">
+      <div className="text-[13px] text-muted-foreground">Taking you to Permits…</div>
+    </div>
+  );
+}
+
 function isProtectedPortalPath(pathname: string) {
   return protectedPortalPrefixes.some((p) => pathname === p || pathname.startsWith(`${p}/`));
 }
