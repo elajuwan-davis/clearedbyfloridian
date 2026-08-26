@@ -75,7 +75,10 @@ import { LogPermitFeeDialog } from "@/components/log-permit-fee-dialog";
 import { loadSubLibrary, coiStatus, coiLifecycleStatus, type SubRecord } from "@/lib/subcontractor-library";
 import { addNote, deleteNote, listNotes, type ProjectNote } from "@/lib/project-notes";
 import { DOC_TYPES, addDocFile, addDocPlaceholder, deleteDoc, listDocs, getDocViewUrl, getDocDownloadUrl, type DocType, type ProjectDoc } from "@/lib/project-documents";
-import { Eye, Loader2 } from "lucide-react";
+import { Eye, EyeOff, KeyRound, Loader2 } from "lucide-react";
+import { useServerFn } from "@tanstack/react-start";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { revealOwnPortalLogin, savePortalLogin } from "@/lib/portal-logins.functions";
 import { toast } from "sonner";
 import { isInternalUser } from "@/lib/is-internal-user";
 import { notificationsEnabled, setNotificationsEnabled } from "@/lib/client-notifications";
@@ -208,6 +211,8 @@ export function ProjectDetail({ project }: { project: Project }) {
                 City portal link unavailable
               </span>
             )}
+            <PortalLoginPopover project={project} />
+
             {internal && <ClientNotificationsToggle projectId={project.id} />}
             <HeaderExtras project={project} />
           </div>
@@ -1175,5 +1180,149 @@ function HoaSubmittalTab({ project }: { project: Project }) {
         </ul>
       )}
     </section>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* Portal login popover — zero-scroll access to building-dept creds.  */
+/* Credentials live in the encrypted vault (gc_portal_logins), never  */
+/* in localStorage: plaintext passwords in browser storage are        */
+/* readable by any script on the page.                                */
+/* ------------------------------------------------------------------ */
+function PortalLoginPopover({ project }: { project: Project }) {
+  const slug = project.city.toLowerCase().replace(/\s+/g, "-");
+  const reveal = useServerFn(revealOwnPortalLogin);
+  const save = useServerFn(savePortalLogin);
+
+  const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [creds, setCreds] = useState<{ username: string; password: string } | null>(null);
+  const [show, setShow] = useState(false);
+  const [adding, setAdding] = useState(false);
+  const [form, setForm] = useState({ username: "", password: "" });
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    if (!open) return;
+    let alive = true;
+    setLoading(true);
+    setShow(false);
+    reveal({ data: { municipality_slug: slug } })
+      .then((row) => {
+        if (!alive) return;
+        setCreds(row ? { username: row.username, password: row.password } : null);
+      })
+      .catch(() => alive && setCreds(null))
+      .finally(() => alive && setLoading(false));
+    return () => {
+      alive = false;
+    };
+  }, [open, slug, reveal]);
+
+  async function onSave() {
+    if (!form.username.trim() || !form.password.trim()) {
+      toast.error("Username and password are both required");
+      return;
+    }
+    setSaving(true);
+    try {
+      await save({
+        data: {
+          municipality_slug: slug,
+          city_name: project.city,
+          username: form.username.trim(),
+          password: form.password,
+        },
+      });
+      setCreds({ username: form.username.trim(), password: form.password });
+      setForm({ username: "", password: "" });
+      setAdding(false);
+      toast.success("Portal login saved");
+    } catch {
+      toast.error("Could not save those credentials");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  const inputCls =
+    "border border-obsidian/15 bg-paper-warm px-2.5 py-1.5 text-sm font-mono rounded-[3px] w-full";
+  const labelCls = "font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/55";
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <button
+          type="button"
+          className="inline-flex items-center gap-1.5 border border-[#2F4F4F] bg-[#2F4F4F] px-3 py-1.5 text-xs font-medium text-white rounded-[3px] hover:opacity-90"
+        >
+          <KeyRound className="h-3.5 w-3.5" /> Portal Login
+        </button>
+      </PopoverTrigger>
+      <PopoverContent
+        align="start"
+        className="w-72 rounded-[3px] border border-obsidian/15 bg-white p-4 shadow-md"
+      >
+        <div className={labelCls}>{project.city}</div>
+
+        {loading ? (
+          <div className="mt-3 inline-flex items-center gap-2 text-xs text-obsidian/55">
+            <Loader2 className="h-3.5 w-3.5 animate-spin" /> Loading credentials…
+          </div>
+        ) : creds ? (
+          <div className="mt-3 space-y-3">
+            <div>
+              <div className={labelCls}>Username</div>
+              <input readOnly value={creds.username} className={`mt-1 ${inputCls}`} />
+            </div>
+            <div>
+              <div className={labelCls}>Password</div>
+              <div className="mt-1 flex items-center gap-1.5">
+                <input
+                  readOnly
+                  type={show ? "text" : "password"}
+                  value={creds.password}
+                  className={inputCls}
+                />
+                <button
+                  type="button"
+                  aria-label={show ? "Hide password" : "Show password"}
+                  onClick={() => setShow((v) => !v)}
+                  className="shrink-0 border border-obsidian/15 bg-paper-warm p-1.5 rounded-[3px] text-obsidian/70 hover:text-obsidian"
+                >
+                  {show ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
+                </button>
+              </div>
+            </div>
+          </div>
+        ) : adding ? (
+          <div className="mt-3 space-y-2">
+            <input
+              placeholder="Username"
+              value={form.username}
+              onChange={(e) => setForm((f) => ({ ...f, username: e.target.value }))}
+              className={inputCls}
+            />
+            <input
+              placeholder="Password"
+              type="password"
+              value={form.password}
+              onChange={(e) => setForm((f) => ({ ...f, password: e.target.value }))}
+              className={inputCls}
+            />
+            <Button variant="dark" size="sm" className="rounded-[3px]" disabled={saving} onClick={onSave}>
+              {saving ? <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" /> : null} Save
+            </Button>
+          </div>
+        ) : (
+          <div className="mt-3 space-y-2">
+            <p className="text-xs text-obsidian/60">No portal login saved yet.</p>
+            <Button variant="dark" size="sm" className="rounded-[3px]" onClick={() => setAdding(true)}>
+              Add credentials
+            </Button>
+          </div>
+        )}
+      </PopoverContent>
+    </Popover>
   );
 }
