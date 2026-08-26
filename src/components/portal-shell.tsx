@@ -650,6 +650,15 @@ function PortalShellInner({ children }: { children: ReactNode }) {
     return <AdminOnly>{children}</AdminOnly>;
   }
 
+  // Permits-only seats: any portal path outside Permits bounces back to Permits.
+  if (
+    !session.loading &&
+    isPermitsOnlyEmail(session.email) &&
+    !isPermitsOnlyPathAllowed(pathname)
+  ) {
+    return <PermitsOnlyRedirect />;
+  }
+
 
   return (
     <div className="portal-ui dark min-h-screen bg-background">
