@@ -276,7 +276,11 @@ function SidebarNav({
   onNavigate?: () => void;
   onSignOut: () => void;
 }) {
-  const { allSections, isBookmarked, toggleBookmark } = useNavSections(role, isAdmin);
+  const { allSections, isBookmarked, toggleBookmark } = useNavSections(
+    role,
+    isAdmin,
+    isPermitsOnlyEmail(email),
+  );
   const [openKey, setOpenKey] = useState<string | null>(null);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isRail = mode === "rail";
