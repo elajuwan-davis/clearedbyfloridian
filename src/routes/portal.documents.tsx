@@ -143,13 +143,57 @@ function DocumentsPage() {
       </KpiBar>
 
       <Reveal className="mb-4">
-        <DropZone
-          hint="Documents attach to a permit. Drop files here or"
-          onFiles={() =>
-            toast.info("Open the permit and use its Documents tab so the file is filed to the right record.")
-          }
-        />
+        <div style={{ background: CDS.white, border: `1px solid ${CDS.border}`, padding: 12 }}>
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <div
+                style={{
+                  fontSize: 10,
+                  fontWeight: 700,
+                  letterSpacing: "0.08em",
+                  textTransform: "uppercase",
+                  color: CDS.grayLt,
+                }}
+              >
+                Bulk upload
+              </div>
+              <div style={{ fontSize: 12.5, color: CDS.gray, marginTop: 2 }}>
+                {bulkPermit
+                  ? `Filing to ${bulkPermit.project_name}`
+                  : "Choose the permit these documents belong to, then upload as many files as you need."}
+              </div>
+            </div>
+            <button type="button" className="p-btn p-btn-ghost" onClick={() => setPickerOpen(true)}>
+              <FolderOpen className="h-3.5 w-3.5" strokeWidth={1.75} />
+              {bulkPermit ? "Change permit" : "Select permit"}
+            </button>
+          </div>
+          {bulkPermit && (
+            <div className="mt-3">
+              <BulkDocUpload
+                permit={bulkPermit}
+                onChange={(updated) => {
+                  setBulkPermit(updated);
+                  setPermits((prev) => prev.map((p) => (p.id === updated.id ? updated : p)));
+                }}
+              />
+            </div>
+          )}
+        </div>
       </Reveal>
+
+      {pickerOpen && (
+        <PermitPicker
+          permits={permits}
+          title="File documents to"
+          eyebrow="Bulk upload"
+          onClose={() => setPickerOpen(false)}
+          onPick={(p) => {
+            setBulkPermit(p);
+            setPickerOpen(false);
+          }}
+        />
+      )}
 
       <Reveal>
         <div style={{ background: CDS.white, border: `1px solid ${CDS.border}` }}>
