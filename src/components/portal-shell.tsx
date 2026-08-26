@@ -770,8 +770,8 @@ function PortalShellInner({ children }: { children: ReactNode }) {
               </button>
             )}
             <ThemeToggle />
-            <BookmarkToggle />
-            <NotificationBell />
+            {!permitsOnly && <BookmarkToggle />}
+            {!permitsOnly && <NotificationBell />}
             <div className="hidden sm:block">
               <DropdownMenu>
                 <DropdownMenuTrigger className="flex h-8 items-center gap-1.5 rounded-lg px-1 outline-none hover:bg-[var(--rail-hover)]">
@@ -797,14 +797,18 @@ function PortalShellInner({ children }: { children: ReactNode }) {
                       </div>
                     )}
                   </DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  {(settingsForRole(session.role).items ?? []).map((item, i) => (
-                    <DropdownMenuItem key={`${item.to}-${i}`} asChild>
-                      <Link to={item.to as never} className="cursor-pointer rounded-lg px-3 py-2 text-[13px]" style={{ color: "var(--foreground)" }}>
-                        {item.label}
-                      </Link>
-                    </DropdownMenuItem>
-                  ))}
+                  {!permitsOnly && (
+                    <>
+                      <DropdownMenuSeparator />
+                      {(settingsForRole(session.role).items ?? []).map((item, i) => (
+                        <DropdownMenuItem key={`${item.to}-${i}`} asChild>
+                          <Link to={item.to as never} className="cursor-pointer rounded-lg px-3 py-2 text-[13px]" style={{ color: "var(--foreground)" }}>
+                            {item.label}
+                          </Link>
+                        </DropdownMenuItem>
+                      ))}
+                    </>
+                  )}
                   <DropdownMenuSeparator />
                   <DropdownMenuItem
                     onSelect={() => handleSignOut()}
