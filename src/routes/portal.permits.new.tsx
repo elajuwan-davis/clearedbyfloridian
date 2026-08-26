@@ -313,13 +313,14 @@ function NewPermitPage() {
           };
         }
         const loadedScopes = r.permit_type ? r.permit_type.split(" · ").filter(Boolean) : [];
-        // Reunite persisted subs with the scopes that spawned them; scopes
-        // with no matching persisted sub get an empty row.
-        const loadedSubs: SubIntake[] = loadedScopes.map((scope) => {
+        // Reunite persisted subs with the scopes that spawned them; a trade may
+        // carry several subs, and scopes with none get an empty row.
+        const loadedSubs: SubIntake[] = loadedScopes.flatMap((scope) => {
           const trade = SCOPE_TO_TRADE[scope] ?? scope;
-          const match = (r.subs ?? []).find((s) => (s.trade ?? "") === trade);
-          if (!match) return emptySub(scope);
-          return {
+          const matches = (r.subs ?? []).filter((s) => (s.trade ?? "") === trade);
+          if (matches.length === 0) return [emptySub(scope)];
+          return matches.map((match) => ({
+            key: newSubKey(),
             scope,
             trade,
             companyName: match.companyName ?? "",
@@ -329,8 +330,9 @@ function NewPermitPage() {
             skipped: false,
             marketplaceSubId:
               (match as { marketplaceSubId?: string | null }).marketplaceSubId ?? null,
-          };
+          }));
         });
+
         setForm((f) => ({
           ...f,
           projectName: r.project_name ?? "",
