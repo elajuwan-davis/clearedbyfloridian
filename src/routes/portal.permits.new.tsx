@@ -1241,16 +1241,20 @@ function NewPermitPage() {
                 <div className="pt-4 space-y-4 border-t border-obsidian/10">
                   <div className={sectionCls}>Subcontractor per Trade</div>
                   <p className="text-[12px] text-obsidian/60 -mt-2">
-                    Who is doing each trade — company, licence and contact. The{" "}
-                    <strong>Other</strong> row is for a subcontractor whose trade isn't in the list
-                    above; it is not where you describe the work (that's Scope Narrative).
+                    Who is doing each trade — company, licence and contact. Add as many
+                    subcontractors per trade as the job needs. The <strong>Other</strong> row is for
+                    a subcontractor whose trade isn't in the list above; it is not where you
+                    describe the work (that's Scope Narrative).
                   </p>
                   {form.subs.map((s) => {
-                    const idx = form.subs.findIndex((x) => x.scope === s.scope);
-                    const reuse = reuseCandidateFor(idx);
+                    const reuse = reuseCandidateFor(s.key);
                     const optional = OPTIONAL_SCOPES.has(s.scope);
+                    const sameScopeRows = form.subs.filter((x) => x.scope === s.scope);
+                    const rowNumber = sameScopeRows.findIndex((x) => x.key === s.key) + 1;
+                    const isLastOfScope = sameScopeRows[sameScopeRows.length - 1]?.key === s.key;
                     return (
-                      <div key={s.scope} className="space-y-2">
+                      <div key={s.key} className="space-y-2">
+
                         {reuse && !s.skipped && (
                           <div className="flex items-start gap-3 border border-[#2F4F4F]/30 bg-[#E6E6FA]/15 rounded-[3px] px-4 py-3">
                             <Sparkles className="mt-0.5 h-4 w-4 shrink-0 text-[#2F4F4F]" />
