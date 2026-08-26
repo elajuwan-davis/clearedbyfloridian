@@ -11,6 +11,26 @@ const PERMITS_ONLY_PATTERN = /^(?:[^@]*\.guest|guest(?:\..*)?)@(?:cleared|florid
 /** Paths a permits-only seat may open. Everything else redirects to Permits. */
 const ALLOWED_PREFIXES = ["/portal/permits"];
 
+const PROTECTED_APP_PREFIXES = [
+  "/dashboard",
+  "/my-permits",
+  "/messages",
+  "/forms",
+  "/invoices",
+  "/profile",
+  "/building-dept-logins",
+  "/ask-victoria",
+  "/project-guides",
+  "/fee-calculator",
+  "/insurance",
+  "/admin",
+  "/admin_",
+  "/portal",
+  "/sub-portal",
+  "/lpoa-signing",
+  "/legal",
+];
+
 export const PERMITS_ONLY_HOME = "/portal/permits";
 
 export function isPermitsOnlyEmail(email: string | null | undefined): boolean {
@@ -20,4 +40,10 @@ export function isPermitsOnlyEmail(email: string | null | undefined): boolean {
 
 export function isPermitsOnlyPathAllowed(pathname: string): boolean {
   return ALLOWED_PREFIXES.some((p) => pathname === p || pathname.startsWith(`${p}/`));
+}
+
+export function isProtectedAppPath(pathname: string): boolean {
+  return PROTECTED_APP_PREFIXES.some(
+    (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
+  );
 }
