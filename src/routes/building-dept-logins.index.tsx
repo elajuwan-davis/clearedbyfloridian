@@ -20,6 +20,7 @@ import {
   type PortalLoginDocument,
 } from "@/lib/portal-login-docs";
 import { toast } from "sonner";
+import { friendlyServerError } from "@/lib/server-fn-error";
 import {
   ChevronDown, Copy, Eye, EyeOff, FileText, Plus, Search, Check, ExternalLink, Loader2, Upload,
 } from "lucide-react";
@@ -101,7 +102,7 @@ function BuildingDeptLoginsPage() {
         return enriched[0]?.key ?? null;
       });
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Failed to load portal logins");
+      toast.error(friendlyServerError(e, "Failed to load portal logins"));
       setRows([]);
     } finally {
       setLoading(false);
@@ -214,6 +215,11 @@ function BuildingDeptLoginsPage() {
                         <MunicipalityContactsTab muni={l.city_name} />
                       </TabsContent>
                       <TabsContent value="credentials" className="mt-3 space-y-4">
+                        <QuickSignIn
+                          municipalitySlug={l.municipality_slug}
+                          ownerUserId={othersLogin ? l.user_id : null}
+                          portalUrl={l.resolvedPortalUrl}
+                        />
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
                           <Field label="Portal">
                             {l.resolvedPortalUrl ? (
@@ -336,6 +342,99 @@ function CopyButton({ value }: { value: string }) {
 }
 
 /**
+ * Password-manager style hand-off: one click copies the username and opens the portal,
+ * the next swaps the clipboard to the password. A page cannot type into another origin's
+ * login form, so this is deliberately paste-paste rather than autofill.
+ */
+function QuickSignIn({
+  municipalitySlug,
+  ownerUserId,
+  portalUrl,
+}: {
+  municipalitySlug: string;
+  ownerUserId: string | null;
+  portalUrl: string | null;
+}) {
+  const revealOwn = useServerFn(revealOwnPortalLogin);
+  const revealAsStaff = useServerFn(revealPortalLogin);
+  const [creds, setCreds] = useState<{ username: string; password: string } | null>(null);
+  const [stage, setStage] = useState<"username" | "password">("username");
+  const [busy, setBusy] = useState(false);
+
+  async function load() {
+    if (creds) return creds;
+    const res = ownerUserId
+      ? await revealAsStaff({ data: { user_id: ownerUserId, municipality_slug: municipalitySlug } })
+      : await revealOwn({ data: { municipality_slug: municipalitySlug } });
+    if (!res) throw new Error("No credentials on file");
+    const next = { username: res.username, password: res.password };
+    setCreds(next);
+    return next;
+  }
+
+  async function handleClick() {
+    setBusy(true);
+    try {
+      const c = await load();
+      if (stage === "username") {
+        await navigator.clipboard.writeText(c.username);
+        const opened = portalUrl ? window.open(portalUrl, "_blank", "noopener,noreferrer") : null;
+        if (portalUrl && !opened) {
+          toast.warning(
+            "Username copied — your browser blocked the new tab, use the Portal link below.",
+          );
+        } else {
+          toast.success("Username copied. Paste it, then click Copy password.");
+        }
+        setStage("password");
+      } else {
+        await navigator.clipboard.writeText(c.password);
+        toast.success("Password copied. Paste it to sign in.");
+        setStage("username");
+      }
+    } catch (e) {
+      toast.error(friendlyServerError(e, "Could not copy credentials"));
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  const label =
+    stage === "password"
+      ? "Copy password"
+      : portalUrl
+        ? "Copy username & open portal"
+        : "Copy username";
+
+  return (
+    <div className="p-surface-flat flex flex-wrap items-center gap-3 px-4 py-3">
+      <button
+        type="button"
+        onClick={() => void handleClick()}
+        disabled={busy}
+        className="p-btn p-btn-primary"
+      >
+        {busy ? (
+          <Loader2 className="h-3.5 w-3.5 animate-spin" />
+        ) : stage === "password" ? (
+          <Copy className="h-3.5 w-3.5" strokeWidth={2} />
+        ) : (
+          <ExternalLink className="h-3.5 w-3.5" strokeWidth={2} />
+        )}
+        {label}
+      </button>
+      <span className="text-[11.5px] text-muted-foreground">
+        {stage === "password"
+          ? "Username is on your clipboard — paste it, then copy the password."
+          : portalUrl
+            ? "Opens the department portal with the username copied, password one click behind."
+            : "No portal link saved for this jurisdiction — add one on the login."}
+      </span>
+    </div>
+  );
+}
+
+/**
  * Username/password only appear after a controlled reveal call: the owner's own row
  * goes through revealOwnPortalLogin, another GC's row through the staff-only reveal.
  */
@@ -370,7 +469,7 @@ function RevealedSecretField({
       setValue(field === "username" ? res.username : res.password);
       setShown(true);
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Reveal failed");
+      toast.error(friendlyServerError(e, "Could not reveal this credential"));
     } finally {
       setLoading(false);
     }
@@ -415,7 +514,7 @@ function ViewDocButton({ path }: { path: string }) {
       const { url } = await getUrl({ data: { path } });
       window.open(url, "_blank", "noopener,noreferrer");
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Could not open file");
+      toast.error(friendlyServerError(e, "Could not open file"));
     } finally {
       setOpening(false);
     }

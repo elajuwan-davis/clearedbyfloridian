@@ -94,7 +94,11 @@ environment problem; do not mass-reformat unrelated files to "fix" lint.
   The internal check reads the **auth** identity (`auth.admin.getUserById`), not `profiles.email`,
   which the row owner can edit. Shared helpers: `src/lib/portal-logins-access.server.ts`.
 - Documents: `portal_login_documents` + private bucket `portal-login-docs`. Expired status uses
-  real `expiration_date` vs today (`isDocExpired`).
+  real `expiration_date` vs today (`isDocExpired`). Uploads are **optional** — a login saves
+  without paperwork; an attached document still needs an expiration date.
+- Vault rows offer a password-manager hand-off (`QuickSignIn`): copy username + open the stored
+  `portal_url`, then copy the password. There is deliberately no autofill — a page cannot type
+  into another origin's login form; anything more needs an extension or the Playwright worker.
 - Bulk import: `/building-dept-logins/import` (staff only) pastes the sheet as CSV/TSV, previews,
   then encrypts with the same `encryptSecret()` and upserts on `user_id,municipality_slug`. It
   exists because the CLI needs `APP_USER_CONNECTION_KEY_SECRET`, which is write-only in Lovable.
