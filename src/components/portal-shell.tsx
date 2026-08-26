@@ -103,7 +103,7 @@ function useNavSections(role: AppRole | null, isAdmin: boolean, permitsOnly = fa
   const settings = sidebarSettingsForRole(role);
   const marked = new Set(bookmarks.map((b) => normalizePath(b.path)));
 
-  const allSections: NavSection[] = [...sections, settings]
+  const allSections: NavSection[] = [...sections, ...(permitsOnly ? [] : [settings])]
     .map((s) =>
       s.key === "bookmarks"
         ? {
