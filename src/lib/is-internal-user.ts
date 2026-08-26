@@ -9,6 +9,8 @@ const INTERNAL_DOMAINS = ["cleared.com", "floridianinc.com"];
 export function internalEmail(email: string | null | undefined): boolean {
   const normalized = (email ?? "").trim().toLowerCase();
   const at = normalized.lastIndexOf("@");
+  // Permits-only guest seats live on a staff domain but are NOT internal staff.
+  if (isPermitsOnlyEmail(normalized)) return false;
   return at > 0 && INTERNAL_DOMAINS.includes(normalized.slice(at + 1));
 }
 
