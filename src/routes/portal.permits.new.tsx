@@ -110,7 +110,9 @@ const OPTIONAL_SCOPES = new Set(["Hardscape / Pavers", "Structural", "Demolition
 type DocState = { uploaded: string | null; na: boolean; deferred: boolean };
 
 type SubIntake = {
-  /** The scope name that spawned this row (stable key). */
+  /** Stable row id — a scope can carry several subcontractor rows. */
+  key: string;
+  /** The scope name that spawned this row. */
   scope: string;
   trade: string;
   companyName: string;
@@ -123,7 +125,11 @@ type SubIntake = {
   marketplaceSubId: string | null;
 };
 
+let subKeySeq = 0;
+const newSubKey = () => `sub-${Date.now().toString(36)}-${subKeySeq++}`;
+
 const emptySub = (scope: string): SubIntake => ({
+  key: newSubKey(),
   scope,
   trade: SCOPE_TO_TRADE[scope] ?? scope,
   companyName: "",
@@ -133,6 +139,7 @@ const emptySub = (scope: string): SubIntake => ({
   skipped: false,
   marketplaceSubId: null,
 });
+
 
 /** A row the GC has started filling in must be finished, or explicitly skipped. */
 function subRowMissingFields(s: SubIntake): string[] {
@@ -306,13 +313,14 @@ function NewPermitPage() {
           };
         }
         const loadedScopes = r.permit_type ? r.permit_type.split(" · ").filter(Boolean) : [];
-        // Reunite persisted subs with the scopes that spawned them; scopes
-        // with no matching persisted sub get an empty row.
-        const loadedSubs: SubIntake[] = loadedScopes.map((scope) => {
+        // Reunite persisted subs with the scopes that spawned them; a trade may
+        // carry several subs, and scopes with none get an empty row.
+        const loadedSubs: SubIntake[] = loadedScopes.flatMap((scope) => {
           const trade = SCOPE_TO_TRADE[scope] ?? scope;
-          const match = (r.subs ?? []).find((s) => (s.trade ?? "") === trade);
-          if (!match) return emptySub(scope);
-          return {
+          const matches = (r.subs ?? []).filter((s) => (s.trade ?? "") === trade);
+          if (matches.length === 0) return [emptySub(scope)];
+          return matches.map((match) => ({
+            key: newSubKey(),
             scope,
             trade,
             companyName: match.companyName ?? "",
@@ -322,8 +330,9 @@ function NewPermitPage() {
             skipped: false,
             marketplaceSubId:
               (match as { marketplaceSubId?: string | null }).marketplaceSubId ?? null,
-          };
+          }));
         });
+
         setForm((f) => ({
           ...f,
           projectName: r.project_name ?? "",
@@ -419,7 +428,7 @@ function NewPermitPage() {
     }
   }
 
-  /** Toggling a scope also spawns / retires its inline sub row (1:1). */
+  /** Toggling a scope spawns / retires its inline sub row(s). */
   function toggleScope(scope: string) {
     setForm((f) => {
       const has = f.scopes.includes(scope);
@@ -434,23 +443,47 @@ function NewPermitPage() {
       // If a filled sub already exists for the same trade (e.g. Pool
       // and Pool/Spa both mapping to Pool trade), reuse its data.
       const existing = f.subs.find((s) => s.trade === trade && s.companyName.trim() && !s.skipped);
-      const seed: SubIntake = existing ? { ...existing, scope, skipped: false } : emptySub(scope);
+      const seed: SubIntake = existing
+        ? { ...existing, key: newSubKey(), scope, skipped: false }
+        : emptySub(scope);
       return { ...f, scopes: [...f.scopes, scope], subs: [...f.subs, seed] };
     });
   }
 
-  function updateSubByScope(scope: string, patch: Partial<SubIntake>) {
+  /** Add another subcontractor row for the same trade. */
+  function addSubForScope(scope: string) {
+    setForm((f) => {
+      const last = f.subs.map((s, i) => ({ s, i })).filter((x) => x.s.scope === scope).pop();
+      const row = emptySub(scope);
+      const subs = [...f.subs];
+      subs.splice(last ? last.i + 1 : subs.length, 0, row);
+      return { ...f, subs };
+    });
+  }
+
+  function removeSubRow(key: string) {
+    setForm((f) => {
+      const row = f.subs.find((s) => s.key === key);
+      if (!row) return f;
+      // Never leave a selected scope without at least one row.
+      const siblings = f.subs.filter((s) => s.scope === row.scope);
+      if (siblings.length <= 1) return { ...f, subs: f.subs.map((s) => (s.key === key ? emptySub(s.scope) : s)) };
+      return { ...f, subs: f.subs.filter((s) => s.key !== key) };
+    });
+  }
+
+  function updateSub(key: string, patch: Partial<SubIntake>) {
     setForm((f) => ({
       ...f,
-      subs: f.subs.map((s) => (s.scope === scope ? { ...s, ...patch } : s)),
+      subs: f.subs.map((s) => (s.key === key ? { ...s, ...patch } : s)),
     }));
   }
 
-  function toggleSubSkip(scope: string) {
+  function toggleSubSkip(key: string) {
     setForm((f) => ({
       ...f,
       subs: f.subs.map((s) =>
-        s.scope === scope
+        s.key === key
           ? s.skipped
             ? { ...s, skipped: false }
             : {
@@ -473,9 +506,9 @@ function NewPermitPage() {
   );
 
   /** Fill a trade row from the GC's own saved subcontractor library. */
-  function pickSavedSub(scope: string, sub: SubRow) {
+  function pickSavedSub(key: string, sub: SubRow) {
     const contact = [sub.contact_first_name, sub.contact_last_name].filter(Boolean).join(" ");
-    updateSubByScope(scope, {
+    updateSub(key, {
       companyName: sub.company_name,
       licenseNumber: sub.license_number ?? "",
       contactName: contact || sub.qualifier_name || "",
@@ -486,8 +519,8 @@ function NewPermitPage() {
   }
 
   /** Fill a trade row from Cleard's paid roster. */
-  function pickMarketplaceSub(scope: string, sub: MarketplaceSub) {
-    updateSubByScope(scope, {
+  function pickMarketplaceSub(key: string, sub: MarketplaceSub) {
+    updateSub(key, {
       companyName: sub.company_name,
       licenseNumber: sub.license_number ?? "",
       contactName: sub.qualifier_name ?? "",
@@ -497,6 +530,7 @@ function NewPermitPage() {
     });
     setPickerScope(null);
   }
+
 
 
   function gapsForRow(s: SubIntake): CoverageGap[] {
@@ -523,7 +557,7 @@ function NewPermitPage() {
           .map((g) => g.message)
           .join("; ")}.`,
       });
-      setCoverageAsked((prev) => [...prev, s.scope]);
+      setCoverageAsked((prev) => [...prev, s.key]);
       toast.success(`Cleard will ask ${s.companyName} to upgrade coverage`);
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Could not send the request");
@@ -645,33 +679,34 @@ function NewPermitPage() {
     [filledSubs],
   );
 
-  const [dismissedReuse, setDismissedReuse] = useState<Set<number>>(new Set());
-  function dismissReuse(idx: number) {
+  const [dismissedReuse, setDismissedReuse] = useState<Set<string>>(new Set());
+  function dismissReuse(key: string) {
     setDismissedReuse((prev) => {
       const n = new Set(prev);
-      n.add(idx);
+      n.add(key);
       return n;
     });
   }
 
   /** For an empty sub row of a given trade, find an already-filled sub on
    *  the same job with the same trade — that's the reuse candidate. */
-  function reuseCandidateFor(idx: number): SubIntake | null {
-    if (dismissedReuse.has(idx)) return null;
-    const row = form.subs[idx];
+  function reuseCandidateFor(key: string): SubIntake | null {
+    if (dismissedReuse.has(key)) return null;
+    const row = form.subs.find((s) => s.key === key);
     if (!row || row.companyName.trim()) return null;
     const match = form.subs.find(
-      (s, i) => i !== idx && s.trade === row.trade && s.companyName.trim(),
+      (s) => s.key !== key && s.trade === row.trade && s.companyName.trim(),
     );
     return match ?? null;
   }
 
-  function applyReuse(idx: number, source: SubIntake) {
+  function applyReuse(key: string, source: SubIntake) {
     setForm((f) => ({
       ...f,
-      subs: f.subs.map((s, i) => (i === idx ? { ...source, trade: s.trade } : s)),
+      subs: f.subs.map((s) => (s.key === key ? { ...source, key: s.key, trade: s.trade } : s)),
     }));
   }
+
 
   function handleFile(key: string, e: ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -1206,16 +1241,20 @@ function NewPermitPage() {
                 <div className="pt-4 space-y-4 border-t border-obsidian/10">
                   <div className={sectionCls}>Subcontractor per Trade</div>
                   <p className="text-[12px] text-obsidian/60 -mt-2">
-                    Who is doing each trade — company, licence and contact. The{" "}
-                    <strong>Other</strong> row is for a subcontractor whose trade isn't in the list
-                    above; it is not where you describe the work (that's Scope Narrative).
+                    Who is doing each trade — company, licence and contact. Add as many
+                    subcontractors per trade as the job needs. The <strong>Other</strong> row is for
+                    a subcontractor whose trade isn't in the list above; it is not where you
+                    describe the work (that's Scope Narrative).
                   </p>
                   {form.subs.map((s) => {
-                    const idx = form.subs.findIndex((x) => x.scope === s.scope);
-                    const reuse = reuseCandidateFor(idx);
+                    const reuse = reuseCandidateFor(s.key);
                     const optional = OPTIONAL_SCOPES.has(s.scope);
+                    const sameScopeRows = form.subs.filter((x) => x.scope === s.scope);
+                    const rowNumber = sameScopeRows.findIndex((x) => x.key === s.key) + 1;
+                    const isLastOfScope = sameScopeRows[sameScopeRows.length - 1]?.key === s.key;
                     return (
-                      <div key={s.scope} className="space-y-2">
+                      <div key={s.key} className="space-y-2">
+
                         {reuse && !s.skipped && (
                           <div className="flex items-start gap-3 border border-[#2F4F4F]/30 bg-[#E6E6FA]/15 rounded-[3px] px-4 py-3">
                             <Sparkles className="mt-0.5 h-4 w-4 shrink-0 text-[#2F4F4F]" />
@@ -1231,7 +1270,7 @@ function NewPermitPage() {
                             <div className="flex flex-col gap-1.5 shrink-0">
                               <button
                                 type="button"
-                                onClick={() => applyReuse(idx, reuse)}
+                                onClick={() => applyReuse(s.key, reuse)}
                                 className="inline-flex items-center justify-center bg-obsidian px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-paper hover:bg-obsidian/90 rounded-[3px]"
                               >
                                 Use{" "}
@@ -1241,7 +1280,7 @@ function NewPermitPage() {
                               </button>
                               <button
                                 type="button"
-                                onClick={() => dismissReuse(idx)}
+                                onClick={() => dismissReuse(s.key)}
                                 className="font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/50 hover:text-obsidian"
                               >
                                 Dismiss
@@ -1257,6 +1296,11 @@ function NewPermitPage() {
                               <span className="inline-flex items-center bg-[#2F4F4F] text-white px-2 py-0.5 rounded-[3px] text-[10px] font-mono uppercase tracking-[0.12em]">
                                 {s.trade}
                               </span>
+                              {sameScopeRows.length > 1 && (
+                                <span className="text-[10px] font-mono uppercase tracking-[0.12em] text-obsidian/45">
+                                  Sub {rowNumber} of {sameScopeRows.length}
+                                </span>
+                              )}
                               {optional && (
                                 <span className="text-[10px] font-mono uppercase tracking-[0.12em] text-obsidian/45">
                                   Optional
@@ -1268,7 +1312,7 @@ function NewPermitPage() {
                                 <button
                                   type="button"
                                   onClick={() =>
-                                    setPickerScope(pickerScope === s.scope ? null : s.scope)
+                                    setPickerScope(pickerScope === s.key ? null : s.key)
                                   }
                                   className="inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-[#2F4F4F] hover:text-obsidian underline underline-offset-2"
                                 >
@@ -1280,15 +1324,25 @@ function NewPermitPage() {
                               )}
                               <button
                                 type="button"
-                                onClick={() => toggleSubSkip(s.scope)}
+                                onClick={() => toggleSubSkip(s.key)}
                                 className="font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/55 hover:text-obsidian underline underline-offset-2"
                               >
                                 {s.skipped ? "Add sub info" : "Skip for now"}
                               </button>
+                              {sameScopeRows.length > 1 && (
+                                <button
+                                  type="button"
+                                  onClick={() => removeSubRow(s.key)}
+                                  className="font-mono text-[10px] uppercase tracking-[0.14em] text-red-700/70 hover:text-red-700 underline underline-offset-2"
+                                >
+                                  Remove
+                                </button>
+                              )}
                             </div>
+
                           </div>
 
-                          {pickerScope === s.scope && (
+                          {pickerScope === s.key && (
                             <div className="border border-[#2F4F4F]/30 rounded-[3px] divide-y divide-obsidian/10">
                               {roster.length === 0 ? (
                                 <div className="px-3 py-3 text-[12px] text-obsidian/60">
@@ -1299,7 +1353,7 @@ function NewPermitPage() {
                                   <button
                                     key={m.id}
                                     type="button"
-                                    onClick={() => pickMarketplaceSub(s.scope, m)}
+                                    onClick={() => pickMarketplaceSub(s.key, m)}
                                     className="flex w-full items-center justify-between gap-3 px-3 py-2 text-left hover:bg-obsidian/[0.03]"
                                   >
                                     <span className="text-[13px] text-obsidian">
@@ -1330,7 +1384,7 @@ function NewPermitPage() {
                                   onChange={(e) => {
                                     const pick = savedSubs.find((x) => x.id === e.target.value);
                                     if (!pick) return;
-                                    pickSavedSub(s.scope, pick);
+                                    pickSavedSub(s.key, pick);
                                   }}
                                 >
                                   <option value="">
@@ -1365,7 +1419,7 @@ function NewPermitPage() {
                                   className={inputCls}
                                   value={s.companyName}
                                   onChange={(e) =>
-                                    updateSubByScope(s.scope, { companyName: e.target.value })
+                                    updateSub(s.key, { companyName: e.target.value })
                                   }
                                 />
                               </div>
@@ -1375,7 +1429,7 @@ function NewPermitPage() {
                                   className={inputCls}
                                   value={s.licenseNumber}
                                   onChange={(e) =>
-                                    updateSubByScope(s.scope, { licenseNumber: e.target.value })
+                                    updateSub(s.key, { licenseNumber: e.target.value })
                                   }
                                 />
                               </div>
@@ -1385,7 +1439,7 @@ function NewPermitPage() {
                                   className={inputCls}
                                   value={s.contactName}
                                   onChange={(e) =>
-                                    updateSubByScope(s.scope, { contactName: e.target.value })
+                                    updateSub(s.key, { contactName: e.target.value })
                                   }
                                 />
                               </div>
@@ -1396,7 +1450,7 @@ function NewPermitPage() {
                                   className={inputCls}
                                   value={s.contactEmail}
                                   onChange={(e) =>
-                                    updateSubByScope(s.scope, { contactEmail: e.target.value })
+                                    updateSub(s.key, { contactEmail: e.target.value })
                                   }
                                 />
                               </div>
@@ -1427,11 +1481,11 @@ function NewPermitPage() {
                                   </div>
                                   <button
                                     type="button"
-                                    disabled={coverageAsked.includes(s.scope)}
+                                    disabled={coverageAsked.includes(s.key)}
                                     onClick={() => askForCoverageUpgrade(s, gaps)}
                                     className="shrink-0 rounded-[3px] bg-amber-700 px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-white disabled:opacity-50"
                                   >
-                                    {coverageAsked.includes(s.scope)
+                                    {coverageAsked.includes(s.key)
                                       ? "Request sent"
                                       : "Ask to upgrade coverage"}
                                   </button>
@@ -1472,9 +1526,19 @@ function NewPermitPage() {
                             </div>
                           )}
                         </div>
+                        {isLastOfScope && (
+                          <button
+                            type="button"
+                            onClick={() => addSubForScope(s.scope)}
+                            className="inline-flex items-center gap-1.5 border border-dashed border-obsidian/25 px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/70 hover:border-obsidian/50 hover:text-obsidian rounded-[3px]"
+                          >
+                            + Add another {s.trade} subcontractor
+                          </button>
+                        )}
                       </div>
                     );
                   })}
+
                   {filledSubs.length > 0 && (
                     <div className="border-l-2 border-[#2F4F4F] bg-obsidian/[0.03] px-4 py-3 text-[12px] text-obsidian/80">
                       {wantBundle ? (
