@@ -18,6 +18,11 @@ import { useExpirationAlerts } from "@/hooks/use-expiration-alerts";
 import { NotificationBell } from "@/components/notification-bell";
 import { BookmarkToggle } from "@/components/bookmark-toggle";
 import { AdminOnly } from "@/components/admin-only";
+import {
+  isPermitsOnlyEmail,
+  isPermitsOnlyPathAllowed,
+  PERMITS_ONLY_HOME,
+} from "@/lib/permits-only";
 
 import { useBookmarks, normalizePath } from "@/lib/bookmarks-api";
 import { VictoriaWidget } from "@/components/victoria-widget";
@@ -54,6 +59,19 @@ const protectedPortalPrefixes = [
   "/portal",
   "/lpoa-signing",
 ];
+
+/** Bounce a permits-only seat back to the Permits workspace. */
+function PermitsOnlyRedirect() {
+  const navigate = useNavigate();
+  useEffect(() => {
+    navigate({ to: PERMITS_ONLY_HOME as never, replace: true });
+  }, [navigate]);
+  return (
+    <div className="portal-ui dark grid min-h-screen place-items-center bg-background">
+      <div className="text-[13px] text-muted-foreground">Taking you to Permits…</div>
+    </div>
+  );
+}
 
 function isProtectedPortalPath(pathname: string) {
   return protectedPortalPrefixes.some((p) => pathname === p || pathname.startsWith(`${p}/`));
@@ -95,13 +113,15 @@ function sectionAlerted(section: NavSection, alertKeys: Set<AlertKey>) {
  *
  * Navigation model is unchanged: same sections, same links, same order.
  */
-function useNavSections(role: AppRole | null, isAdmin: boolean) {
+function useNavSections(role: AppRole | null, isAdmin: boolean, permitsOnly = false) {
   const { bookmarks, toggle } = useBookmarks();
-  const sections = sectionsForRole(role, isAdmin);
+  const sections = permitsOnly
+    ? sectionsForRole(role, false).filter((s) => s.key === "permits")
+    : sectionsForRole(role, isAdmin);
   const settings = sidebarSettingsForRole(role);
   const marked = new Set(bookmarks.map((b) => normalizePath(b.path)));
 
-  const allSections: NavSection[] = [...sections, settings]
+  const allSections: NavSection[] = [...sections, ...(permitsOnly ? [] : [settings])]
     .map((s) =>
       s.key === "bookmarks"
         ? {
@@ -274,7 +294,11 @@ function SidebarNav({
   onNavigate?: () => void;
   onSignOut: () => void;
 }) {
-  const { allSections, isBookmarked, toggleBookmark } = useNavSections(role, isAdmin);
+  const { allSections, isBookmarked, toggleBookmark } = useNavSections(
+    role,
+    isAdmin,
+    isPermitsOnlyEmail(email),
+  );
   const [openKey, setOpenKey] = useState<string | null>(null);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isRail = mode === "rail";
@@ -642,6 +666,15 @@ function PortalShellInner({ children }: { children: ReactNode }) {
   const isAdminPath = pathname === "/admin" || pathname.startsWith("/admin/");
   if (isAdminPath && !session.loading && !session.isAdmin) {
     return <AdminOnly>{children}</AdminOnly>;
+  }
+
+  // Permits-only seats: any portal path outside Permits bounces back to Permits.
+  if (
+    !session.loading &&
+    isPermitsOnlyEmail(session.email) &&
+    !isPermitsOnlyPathAllowed(pathname)
+  ) {
+    return <PermitsOnlyRedirect />;
   }
 
 
