@@ -701,6 +701,9 @@ function PermitDetailPage() {
             >
               <Plus className="h-3.5 w-3.5" /> Add custom document field
             </button>
+            <div className="mt-4">
+              <BulkDocUpload permit={row} onChange={(u) => { setRow(u); setEdit(u); }} />
+            </div>
           </div>
         )}
       </div>
