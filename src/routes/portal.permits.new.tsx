@@ -679,33 +679,34 @@ function NewPermitPage() {
     [filledSubs],
   );
 
-  const [dismissedReuse, setDismissedReuse] = useState<Set<number>>(new Set());
-  function dismissReuse(idx: number) {
+  const [dismissedReuse, setDismissedReuse] = useState<Set<string>>(new Set());
+  function dismissReuse(key: string) {
     setDismissedReuse((prev) => {
       const n = new Set(prev);
-      n.add(idx);
+      n.add(key);
       return n;
     });
   }
 
   /** For an empty sub row of a given trade, find an already-filled sub on
    *  the same job with the same trade — that's the reuse candidate. */
-  function reuseCandidateFor(idx: number): SubIntake | null {
-    if (dismissedReuse.has(idx)) return null;
-    const row = form.subs[idx];
+  function reuseCandidateFor(key: string): SubIntake | null {
+    if (dismissedReuse.has(key)) return null;
+    const row = form.subs.find((s) => s.key === key);
     if (!row || row.companyName.trim()) return null;
     const match = form.subs.find(
-      (s, i) => i !== idx && s.trade === row.trade && s.companyName.trim(),
+      (s) => s.key !== key && s.trade === row.trade && s.companyName.trim(),
     );
     return match ?? null;
   }
 
-  function applyReuse(idx: number, source: SubIntake) {
+  function applyReuse(key: string, source: SubIntake) {
     setForm((f) => ({
       ...f,
-      subs: f.subs.map((s, i) => (i === idx ? { ...source, trade: s.trade } : s)),
+      subs: f.subs.map((s) => (s.key === key ? { ...source, key: s.key, trade: s.trade } : s)),
     }));
   }
+
 
   function handleFile(key: string, e: ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
