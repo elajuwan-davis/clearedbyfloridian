@@ -155,6 +155,15 @@ export async function updatePermit(id: string, patch: Partial<PermitInsert>): Pr
   return row;
 }
 
+export async function updatePermitDocuments(
+  id: string,
+  mutate: (current: PermitDoc[]) => PermitDoc[],
+): Promise<PermitRow> {
+  const latest = await getPermit(id);
+  if (!latest) throw new Error("Permit not found");
+  return updatePermit(id, { documents: mutate(getEffectiveDocs(latest)) });
+}
+
 export async function deletePermit(id: string): Promise<void> {
   const { error } = await T().delete().eq("id", id);
   if (error) throw error;

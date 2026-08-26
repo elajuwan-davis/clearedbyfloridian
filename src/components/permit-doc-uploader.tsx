@@ -3,7 +3,7 @@ import { toast } from "sonner";
 import { Upload, Eye, Download, Trash2, Loader2, Check, AlertTriangle, X, FileText, Cloud, Pencil, Ban, RotateCcw, Library } from "lucide-react";
 import { uploadPermitFile, getPermitFileUrl, deletePermitFile } from "@/lib/permit-storage";
 import type { PermitDoc, PermitRow } from "@/lib/permits-api";
-import { updatePermit, getEffectiveDocs } from "@/lib/permits-api";
+import { updatePermitDocuments } from "@/lib/permits-api";
 import { GoogleDrivePickerDialog } from "@/components/google-drive-picker-dialog";
 import { EquipmentLibraryDialog } from "@/components/equipment-library-dialog";
 
@@ -36,9 +36,9 @@ export function PermitDocUploader({ permit, doc, onChange, readOnly = false, onR
   const notRequired = doc.status === "not_applicable";
 
   async function persistDocs(nextDoc: PermitDoc) {
-    const current = getEffectiveDocs(permit);
-    const nextDocs = current.map((d) => (d.key === nextDoc.key ? nextDoc : d));
-    const updated = await updatePermit(permit.id, { documents: nextDocs });
+    const updated = await updatePermitDocuments(permit.id, (current) =>
+      current.map((d) => (d.key === nextDoc.key ? nextDoc : d)),
+    );
     onChange(updated);
   }
 
