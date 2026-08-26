@@ -10,7 +10,13 @@
 
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import type { AuthIdentityClient, RoleTableClient } from "@/lib/portal-logins-access.server";
 import { z } from "zod";
+
+/** The service-role client, narrowed to what the access helpers read. */
+function accessClient(client: unknown): RoleTableClient & AuthIdentityClient {
+  return client as RoleTableClient & AuthIdentityClient;
+}
 
 export type PortalLoginFlag = {
   id: string;
@@ -99,7 +105,7 @@ export const listPortalLoginFlags = createServerFn({ method: "GET" })
       await import("@/lib/portal-logins-access.server");
     const staff =
       data.scope === "all" &&
-      (await isStaff(supabaseAdmin as any, context.userId, context.claims as any));
+      (await isStaff(accessClient(supabaseAdmin), context.userId, context.claims));
     let query = supabaseAdmin
       .from("gc_portal_logins" as any)
       .select(
@@ -112,7 +118,7 @@ export const listPortalLoginFlags = createServerFn({ method: "GET" })
     const rows = (found ?? []) as unknown as PortalLoginFlag[];
     if (!staff || rows.length === 0) return rows;
 
-    const emailById = await ownerEmails(supabaseAdmin as any, [
+    const emailById = await ownerEmails(accessClient(supabaseAdmin), [
       ...new Set(rows.map((r) => r.user_id)),
     ]);
     return rows
@@ -158,11 +164,11 @@ export const revealPortalLogin = createServerFn({ method: "POST" })
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { isInternalEmail, isStaff, ownerEmails } =
       await import("@/lib/portal-logins-access.server");
-    if (!(await isStaff(supabaseAdmin as any, context.userId, context.claims as any))) {
+    if (!(await isStaff(accessClient(supabaseAdmin), context.userId, context.claims))) {
       throw new Error("Forbidden");
     }
     if (data.user_id !== context.userId) {
-      const emailById = await ownerEmails(supabaseAdmin as any, [data.user_id]);
+      const emailById = await ownerEmails(accessClient(supabaseAdmin), [data.user_id]);
       if (!isInternalEmail(emailById.get(data.user_id) ?? null)) throw new Error("Forbidden");
     }
     const { data: row, error } = await supabaseAdmin

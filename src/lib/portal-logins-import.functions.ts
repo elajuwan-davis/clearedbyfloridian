@@ -14,6 +14,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { z } from "zod";
 import type { RowResult } from "@/lib/portal-logins-import";
+import type { AuthIdentityClient, RoleTableClient } from "@/lib/portal-logins-access.server";
 
 export type InternalOwner = { user_id: string; email: string };
 
@@ -33,19 +34,17 @@ export const listInternalOwners = createServerFn({ method: "GET" })
   .handler(async ({ context }): Promise<InternalOwner[]> => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { isInternalEmail, isStaff } = await import("@/lib/portal-logins-access.server");
-    if (!(await isStaff(supabaseAdmin as any, context.userId, context.claims as any))) {
+    const client = supabaseAdmin as unknown as RoleTableClient & AuthIdentityClient;
+    if (!(await isStaff(client, context.userId, context.claims))) {
       throw new Error("Forbidden");
     }
     // Auth identities, not `profiles.email` — that column is owner/admin writable, so it
     // must not decide what counts as one of Cleard's own accounts.
     const owners: InternalOwner[] = [];
     for (let page = 1; page <= 20; page++) {
-      const { data, error } = await (supabaseAdmin.auth.admin as any).listUsers({
-        page,
-        perPage: 200,
-      });
+      const { data, error } = await client.auth.admin.listUsers({ page, perPage: 200 });
       if (error) throw new Error(error.message);
-      const users = (data?.users ?? []) as { id: string; email?: string | null }[];
+      const users = data?.users ?? [];
       for (const u of users) {
         if (isInternalEmail(u.email)) {
           owners.push({ user_id: u.id, email: (u.email ?? "").trim().toLowerCase() });
@@ -81,13 +80,12 @@ export const importPortalLogins = createServerFn({ method: "POST" })
       await import("@/lib/portal-logins-access.server");
     const { classifyRows, parseDelimited } = await import("@/lib/portal-logins-import");
 
-    if (!(await isStaff(supabaseAdmin as any, context.userId, context.claims as any))) {
+    const client = supabaseAdmin as unknown as RoleTableClient & AuthIdentityClient;
+    if (!(await isStaff(client, context.userId, context.claims))) {
       throw new Error("Forbidden");
     }
 
-    const ownerEmail = (await ownerEmails(supabaseAdmin as any, [data.owner_user_id])).get(
-      data.owner_user_id,
-    );
+    const ownerEmail = (await ownerEmails(client, [data.owner_user_id])).get(data.owner_user_id);
     if (!ownerEmail) throw new Error("That account no longer exists.");
     if (!isInternalEmail(ownerEmail)) {
       throw new Error(
@@ -110,7 +108,11 @@ export const importPortalLogins = createServerFn({ method: "POST" })
       return { applied: false, owner_email: ownerEmail, rows: safeRows, counts, written: 0 };
     }
 
-    const tenantId = await resolveTenant(supabaseAdmin as any, data.owner_user_id, data.tenant_id);
+    const tenantId = await resolveTenant(
+      supabaseAdmin as unknown as TenantMemberClient,
+      data.owner_user_id,
+      data.tenant_id,
+    );
     const { encryptSecret } = await import("@/lib/portal-logins-crypto.server");
     const payload = rows
       .filter((r) => r.record)
@@ -129,8 +131,17 @@ export const importPortalLogins = createServerFn({ method: "POST" })
         updated_at: new Date().toISOString(),
       }));
     if (payload.length > 0) {
-      const { error } = await supabaseAdmin
-        .from("gc_portal_logins" as any)
+      const { error } = await (
+        supabaseAdmin as unknown as {
+          from: (table: string) => {
+            upsert: (
+              rows: typeof payload,
+              options: { onConflict: string },
+            ) => Promise<{ error: { message: string } | null }>;
+          };
+        }
+      )
+        .from("gc_portal_logins")
         .upsert(payload, { onConflict: "user_id,municipality_slug" });
       if (error) throw new Error(error.message);
     }
@@ -143,8 +154,19 @@ export const importPortalLogins = createServerFn({ method: "POST" })
     };
   });
 
+type TenantMemberClient = {
+  from: (table: string) => {
+    select: (columns: string) => {
+      eq: (
+        column: string,
+        value: string,
+      ) => Promise<{ data: { tenant_id: string }[] | null; error: { message: string } | null }>;
+    };
+  };
+};
+
 async function resolveTenant(
-  supabase: { from: (table: string) => any },
+  supabase: TenantMemberClient,
   userId: string,
   override: string | null | undefined,
 ): Promise<string | null> {

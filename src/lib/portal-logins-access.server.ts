@@ -4,12 +4,27 @@
 // "Cleard staff" and one of "an internal Cleard account". A customer GC's credentials are
 // never listed or decrypted for staff — we hold them, we do not read them.
 
-type MinimalSupabase = { from: (table: string) => any };
+/**
+ * The slivers of the service-role client these helpers use. Narrow on purpose: the Supabase
+ * client's generated types don't describe every table this app has, so callers hand it over as
+ * `supabaseAdmin as unknown as RoleTableClient`.
+ */
+export type RoleTableClient = {
+  from: (table: string) => {
+    select: (columns: string) => {
+      eq: (column: string, value: string) => Promise<{ data: { role: string }[] | null }>;
+    };
+  };
+};
 
-type AuthAdminSupabase = {
+export type AuthIdentityClient = {
   auth: {
     admin: {
       getUserById: (id: string) => Promise<{ data: { user?: { email?: string | null } | null } }>;
+      listUsers: (params: { page: number; perPage: number }) => Promise<{
+        data: { users?: { id: string; email?: string | null }[] | null } | null;
+        error: { message: string } | null;
+      }>;
     };
   };
 };
@@ -37,7 +52,7 @@ function isAdminEmail(claims: Record<string, unknown> | undefined | null): boole
 
 /** Cleard staff, by the app's own role table — the email allowlist only widens it. */
 export async function isStaff(
-  supabase: MinimalSupabase,
+  supabase: RoleTableClient,
   userId: string,
   claims: Record<string, unknown> | undefined | null,
 ): Promise<boolean> {
@@ -48,7 +63,7 @@ export async function isStaff(
 
 /** Auth identity, not `profiles.email` — that column is owner/admin writable. */
 export async function ownerEmails(
-  supabase: AuthAdminSupabase,
+  supabase: AuthIdentityClient,
   userIds: string[],
 ): Promise<Map<string, string | null>> {
   const unique = [...new Set(userIds)];
