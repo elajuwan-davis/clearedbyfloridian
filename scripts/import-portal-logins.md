@@ -5,6 +5,23 @@ shape) and writes each row into `gc_portal_logins`, encrypted the same way the
 `/building-dept-logins` form does. It runs on an operator's machine, never on Lovable — the
 spreadsheet holds live portal credentials and should not be uploaded anywhere.
 
+## Or: the in-app importer (no secrets to hand around)
+
+`APP_USER_CONNECTION_KEY_SECRET` is write-only in Lovable's vault, so nobody can read it back to
+run this CLI. When that is the blocker, use the admin screen instead:
+**`/building-dept-logins` → Import sheet** (`/building-dept-logins/import`, Cleard staff only).
+
+Copy the sheet's rows out of Excel and paste them in, pick the Cleard account the logins belong
+to, press **Preview** (nothing is written — you get the same row/city/status table as below), then
+**Import**. Classification is the same code (`src/lib/portal-logins-import.ts`), the encryption is
+the same `encryptSecret()`, and the upsert is the same `user_id,municipality_slug`. The key stays
+in the server runtime and no credential is ever sent back to the browser.
+
+The owner list only contains internal Cleard accounts: an import cannot be filed under a customer
+GC, because staff share the internal-owned rows and must never be able to read a customer's.
+
+The rest of this document is the CLI, for an operator who does hold the two secrets.
+
 ## Before you run it
 
 You need both server secrets from Lovable Cloud, plus the project URL:
@@ -77,6 +94,6 @@ belongs to more than one tenant, `--sheet=<name>` for a workbook with several wo
 bun run test:import-portal-logins
 ```
 
-Covers the row classification, the city matching, the "no credential in the output" rule and the
-encrypt/decrypt round trip against a throwaway key. No hosted Supabase and no real credentials
+Covers the row classification, the city matching, the pasted-text parser, the internal-owner rule,
+the "no credential in the output" rule and the encrypt/decrypt round trip against a throwaway key. No hosted Supabase and no real credentials
 are involved.

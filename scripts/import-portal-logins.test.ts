@@ -13,8 +13,15 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 
 process.env.APP_USER_CONNECTION_KEY_SECRET ??= randomBytes(32).toString("base64");
 
-const { classifyRows, matchMunicipality, municipalityCatalog, extractPortalUrl, summaryTable } =
-  await import("./import-portal-logins/rows");
+const {
+  classifyRows,
+  matchMunicipality,
+  municipalityCatalog,
+  extractPortalUrl,
+  parseDelimited,
+  summaryTable,
+} = await import("../src/lib/portal-logins-import");
+const { isInternalEmail } = await import("../src/lib/portal-logins-access.server");
 const { resolveOwner, upsertPayload } = await import("./import-portal-logins");
 const { encryptSecret, decryptSecret } = await import("../src/lib/portal-logins-crypto.server");
 
@@ -216,4 +223,36 @@ test("an ambiguous owner is refused rather than guessed", async () => {
       ),
     /pass --tenant-id/,
   );
+});
+
+test("pasted delimited text keeps quoted commas and newlines in one cell", () => {
+  const rows = parseDelimited(
+    'City,Username,Password\r\nPlantation,u,p\r\n"Fort Lauderdale",u2,"p,2"\r\n\r\n',
+  );
+  assert.equal(rows.length, 3);
+  assert.deepEqual(rows[2], ["Fort Lauderdale", "u2", "p,2"]);
+});
+
+test("a spreadsheet paste (tab-separated) is detected without being told", () => {
+  const rows = parseDelimited("Plantation\tu\tp");
+  assert.deepEqual(rows, [["Plantation", "u", "p"]]);
+});
+
+test("pasted text classifies the same way a workbook does", () => {
+  const results = classifyRows(
+    parseDelimited("City,Username,Password\nPlantation,u,p\nMiramar,u,\n"),
+  );
+  assert.deepEqual(
+    results.map((r) => `${r.city}:${r.status}`),
+    ["Plantation:import", "Miramar:skip"],
+  );
+});
+
+test("only Cleard's own accounts count as internal owners", () => {
+  for (const email of ["eman@cleared.com", "EMAN@Floridianinc.com "]) {
+    assert.equal(isInternalEmail(email), true, email);
+  }
+  for (const email of [null, "", "gc@customer.com", "someone@notcleared.com", "cleared.com"]) {
+    assert.equal(isInternalEmail(email), false, String(email));
+  }
 });

@@ -21,7 +21,7 @@ import {
 } from "@/lib/portal-login-docs";
 import { toast } from "sonner";
 import {
-  ChevronDown, Copy, Eye, EyeOff, FileText, Plus, Search, Check, ExternalLink, Loader2,
+  ChevronDown, Copy, Eye, EyeOff, FileText, Plus, Search, Check, ExternalLink, Loader2, Upload,
 } from "lucide-react";
 
 export const Route = createFileRoute("/building-dept-logins")({
@@ -133,9 +133,16 @@ function BuildingDeptLoginsPage() {
             : `${rows.length} jurisdictions · encrypted credentials & document expirations`
         }
         actions={
-          <Link to="/building-dept-logins/submit" className="p-btn p-btn-primary">
-            <Plus className="h-3.5 w-3.5" strokeWidth={2} /> Submit login
-          </Link>
+          <>
+            {session.isAdmin && (
+              <Link to="/building-dept-logins/import" className="p-btn">
+                <Upload className="h-3.5 w-3.5" strokeWidth={2} /> Import sheet
+              </Link>
+            )}
+            <Link to="/building-dept-logins/submit" className="p-btn p-btn-primary">
+              <Plus className="h-3.5 w-3.5" strokeWidth={2} /> Submit login
+            </Link>
+          </>
         }
         toolbar={
           <>

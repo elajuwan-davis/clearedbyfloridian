@@ -91,8 +91,16 @@ environment problem; do not mass-reformat unrelated files to "fix" lint.
 - Sharing is internal-only: `listPortalLoginFlags({ scope: "all" })` and admin `revealPortalLogin`
   cover logins owned by `@cleared.com`/`@floridianinc.com` accounts (Cleard files its own permits
   here). A customer GC's credentials are never listed or decrypted for staff — do not widen this.
+  The internal check reads the **auth** identity (`auth.admin.getUserById`), not `profiles.email`,
+  which the row owner can edit. Shared helpers: `src/lib/portal-logins-access.server.ts`.
 - Documents: `portal_login_documents` + private bucket `portal-login-docs`. Expired status uses
   real `expiration_date` vs today (`isDocExpired`).
+- Bulk import: `/building-dept-logins/import` (staff only) pastes the sheet as CSV/TSV, previews,
+  then encrypts with the same `encryptSecret()` and upserts on `user_id,municipality_slug`. It
+  exists because the CLI needs `APP_USER_CONNECTION_KEY_SECRET`, which is write-only in Lovable.
+  Row classification is shared with the CLI in `src/lib/portal-logins-import.ts` — do not fork it,
+  and never return a plaintext credential to the browser. Owners are restricted to internal
+  accounts so an import cannot push a customer's credentials into the staff-shared view.
 - Submit route writes through `savePortalLogin` + document uploads — not a fake toast.
 - Requires migration `supabase/migrations/20260804170000_portal_login_documents.sql`.
 - Contacts sub-tab is still localStorage (`municipal-contacts.ts`) — separate from credentials.

@@ -21,7 +21,7 @@ import {
   summaryTable,
   type RowResult,
   type SheetRow,
-} from "./import-portal-logins/rows";
+} from "../src/lib/portal-logins-import";
 
 type Args = {
   file: string;
