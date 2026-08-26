@@ -5,10 +5,11 @@ import { FileText, Download, FolderOpen, Search } from "lucide-react";
 import { listPermits, type PermitDoc, type PermitRow } from "@/lib/permits-api";
 import { getPermitFileUrl } from "@/lib/permit-storage";
 import { PageShell, SearchInput } from "@/components/ui-kit";
+import { BulkDocUpload } from "@/components/bulk-doc-upload";
+import { PermitPicker } from "@/components/permit-picker";
 import {
   CDS,
   CdsEmpty,
-  DropZone,
   Kpi,
   KpiBar,
   Reveal,
