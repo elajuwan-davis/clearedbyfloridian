@@ -24,12 +24,15 @@ import { activeProvider, resolveMunicipality, type ResolvedAddress } from "@/lib
 import {
   createPermit,
   updatePermit,
+  updatePermitDocuments,
   getPermit,
+  getEffectiveDocs,
   type PermitDoc,
   type PermitRow,
   type PermitSub,
 } from "@/lib/permits-api";
 import { bulkUploadPermitDocs } from "@/lib/bulk-permit-docs";
+import { uploadPermitFile } from "@/lib/permit-storage";
 import { listSubs, createSub, type SubRow } from "@/lib/subs-api";
 import {
   listDesignPros,
@@ -165,6 +168,7 @@ function NewPermitPage() {
   const [saving, setSaving] = useState(false);
   const [loadingEdit, setLoadingEdit] = useState(isEditing);
   const [originalRow, setOriginalRow] = useState<PermitRow | null>(null);
+  const [docFiles, setDocFiles] = useState<Record<string, File>>({});
   // Real File objects staged for bulk upload. Names also live in form.extraDocs
   // so the draft/preview list survives a reload; files themselves cannot.
   const [extraFiles, setExtraFiles] = useState<File[]>([]);
@@ -305,6 +309,8 @@ function NewPermitPage() {
           return;
         }
         setOriginalRow(r);
+        setDocFiles({});
+        setExtraFiles([]);
         const ip = (r.intake_payload ?? {}) as Record<string, any>;
         const architect = (ip.architect ?? {}) as Record<string, string>;
         const engineer = (ip.engineer ?? {}) as Record<string, string>;
@@ -398,6 +404,14 @@ function NewPermitPage() {
     setForm((f) => ({ ...f, [key]: value }));
   }
   function updateDoc(key: string, patch: Partial<DocState>) {
+    if (patch.uploaded === null || patch.na || patch.deferred) {
+      setDocFiles((prev) => {
+        if (!(key in prev)) return prev;
+        const next = { ...prev };
+        delete next[key];
+        return next;
+      });
+    }
     setForm((f) => ({ ...f, docs: { ...f.docs, [key]: { ...f.docs[key], ...patch } } }));
   }
 
@@ -714,12 +728,19 @@ function NewPermitPage() {
 
   function handleFile(key: string, e: ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
-    if (file) updateDoc(key, { uploaded: file.name, na: false, deferred: false });
+    if (file) {
+      setDocFiles((prev) => ({ ...prev, [key]: file }));
+      updateDoc(key, { uploaded: file.name, na: false, deferred: false });
+    }
+    e.target.value = "";
   }
   function handleDrop(key: string, e: DragEvent<HTMLDivElement>) {
     e.preventDefault();
     const file = e.dataTransfer.files?.[0];
-    if (file) updateDoc(key, { uploaded: file.name, na: false, deferred: false });
+    if (file) {
+      setDocFiles((prev) => ({ ...prev, [key]: file }));
+      updateDoc(key, { uploaded: file.name, na: false, deferred: false });
+    }
   }
   function addExtraFiles(incoming: File[]) {
     const files = incoming.slice(0, 30 - form.extraDocs.length);
@@ -820,17 +841,40 @@ function NewPermitPage() {
         form.engineerEmail,
       );
 
+      const priorDocs = originalRow?.documents ?? [];
+      const priorByKey = new Map(priorDocs.map((d) => [d.key, d]));
+      const checklistKeys = new Set(checklist.map((d) => d.key));
       const documents: PermitDoc[] = checklist.map((d) => {
         const s = form.docs[d.key] ?? { uploaded: null, na: false, deferred: false };
+        const hasStagedFile = Boolean(docFiles[d.key]);
         const status: PermitDoc["status"] = s.uploaded
-          ? "uploaded"
+          ? hasStagedFile
+            ? "pending"
+            : "uploaded"
           : s.deferred
             ? "pending"
             : s.na
               ? "not_applicable"
               : "missing";
-        return { key: d.key, label: d.label, required: d.required, status, filename: s.uploaded };
+        const prior = priorByKey.get(d.key);
+        if (status === "uploaded" && prior?.filename === s.uploaded && (prior.path || prior.external_url)) {
+          return { ...prior, label: d.label, required: d.required, status };
+        }
+        return {
+          key: d.key,
+          label: d.label,
+          required: d.required,
+          status,
+          filename: status === "uploaded" ? s.uploaded : null,
+          path: null,
+          size: null,
+          mime: null,
+          uploaded_at: null,
+          external_url: null,
+          source: null,
+        };
       });
+      documents.push(...priorDocs.filter((d) => !checklistKeys.has(d.key)));
 
       const priorSubs = (originalRow?.subs ?? []) as PermitSub[];
       const subs: PermitSub[] = filledSubs.map((s) => {
@@ -910,8 +954,55 @@ function NewPermitPage() {
 
       // Files staged in "Additional Documents" upload once the permit row exists,
       // one document field per file, named after the file.
-      async function uploadStagedExtras(target: PermitRow) {
-        if (extraFiles.length === 0) return;
+      async function uploadStagedChecklistDocs(target: PermitRow): Promise<PermitRow> {
+        const entries = Object.entries(docFiles);
+        if (entries.length === 0) return target;
+        const currentDocs = getEffectiveDocs(target);
+        const uploaded: PermitDoc[] = [];
+        const failed: string[] = [];
+
+        await Promise.all(
+          entries.map(async ([key, file]) => {
+            const base = currentDocs.find((d) => d.key === key) ?? checklist.find((d) => d.key === key);
+            if (!base) return;
+            try {
+              const { path, size, mime } = await uploadPermitFile(target.id, key, file, file.name);
+              uploaded.push({
+                ...base,
+                status: "uploaded",
+                filename: file.name,
+                path,
+                size,
+                mime,
+                uploaded_at: new Date().toISOString(),
+                external_url: null,
+                source: "upload",
+              });
+            } catch {
+              failed.push(file.name);
+            }
+          }),
+        );
+
+        if (uploaded.length > 0) {
+          const byKey = new Map(uploaded.map((d) => [d.key, d]));
+          const updated = await updatePermitDocuments(target.id, (current) =>
+            current.map((d) => byKey.get(d.key) ?? d),
+          );
+          setDocFiles({});
+          if (uploaded.length > 1) toast.success(`Uploaded ${uploaded.length} checklist documents`);
+          if (failed.length === 0) return updated;
+          target = updated;
+        }
+
+        if (failed.length > 0) {
+          toast.error(`${failed.length} checklist file${failed.length === 1 ? "" : "s"} failed to upload — retry from the permit's Documents tab.`);
+        }
+        return target;
+      }
+
+      async function uploadStagedExtras(target: PermitRow): Promise<PermitRow> {
+        if (extraFiles.length === 0) return target;
         try {
           const result = await bulkUploadPermitDocs(target, extraFiles);
           if (result.uploaded.length > 0) {
@@ -925,16 +1016,19 @@ function NewPermitPage() {
             );
           }
           setExtraFiles([]);
+          return result.permit;
         } catch {
           toast.error("Documents could not be uploaded — retry from the permit's Documents tab.");
+          return target;
         }
       }
 
       let rowId: string;
       if (isEditing && editId) {
-        const updated = await updatePermit(editId, permitPatch);
+        let updated = await updatePermit(editId, permitPatch);
         rowId = updated.id;
-        await uploadStagedExtras(updated);
+        updated = await uploadStagedChecklistDocs(updated);
+        updated = await uploadStagedExtras(updated);
         try {
           await triggerNotification({
             kind: "submission_received",
@@ -948,9 +1042,10 @@ function NewPermitPage() {
         toast.success("Submission updated");
         navigate({ to: "/portal/permits/$id", params: { id: rowId } });
       } else {
-        const row = await createPermit({ ...permitPatch, status: "submitted" });
+        let row = await createPermit({ ...permitPatch, status: "submitted" });
         rowId = row.id;
-        await uploadStagedExtras(row);
+        row = await uploadStagedChecklistDocs(row);
+        row = await uploadStagedExtras(row);
         // Auto-generate internal NTBO (hidden from GC). Best-effort.
         void import("@/lib/ntbo-auto").then((m) => m.autoGenerateNTBOForPermit(row));
         // Auto-generate NOC (Palm Beach County std form) pre-filled from

@@ -9,7 +9,7 @@
 
 import { supabase } from "@/integrations/supabase/client";
 import { generateNOC, type NOCFields } from "@/lib/private-provider-forms";
-import { updatePermit, type PermitDoc, type PermitRow } from "@/lib/permits-api";
+import { updatePermitDocuments, type PermitDoc, type PermitRow } from "@/lib/permits-api";
 
 export const NOC_REVIEW_DOC_KEY = "notice_of_commencement_review";
 export const NOC_REVIEW_DOC_LABEL = "Notice of Commencement — Review & Sign";
@@ -82,9 +82,10 @@ export async function autoGenerateNOCForPermit(permit: PermitRow): Promise<void>
       source: "library",
     };
 
-    const existing = permit.documents ?? [];
-    const next = [nocEntry, ...existing.filter((d) => d.key !== NOC_REVIEW_DOC_KEY)];
-    await updatePermit(permit.id, { documents: next });
+    await updatePermitDocuments(permit.id, (existing) => [
+      nocEntry,
+      ...existing.filter((d) => d.key !== NOC_REVIEW_DOC_KEY),
+    ]);
   } catch (e) {
     // eslint-disable-next-line no-console
     console.warn("[NOC] auto-generate failed", e);
