@@ -9,6 +9,7 @@ import { PortalShell } from "@/components/portal-shell";
 import { PageShell, Panel, StatusChip } from "@/components/ui-kit";
 import { useSession } from "@/lib/use-session";
 import { toast } from "sonner";
+import { friendlyServerError } from "@/lib/server-fn-error";
 import { ArrowLeft, Loader2, ShieldCheck, Upload } from "lucide-react";
 import {
   importPortalLogins,
@@ -47,7 +48,7 @@ function ImportLoginsPage() {
         setOwnerId((prev) => prev || (list[0]?.user_id ?? ""));
       })
       .catch((e: unknown) =>
-        toast.error(e instanceof Error ? e.message : "Failed to load Cleard accounts"),
+        toast.error(friendlyServerError(e, "Failed to load Cleard accounts")),
       );
   }, [session.isAdmin, listOwners]);
 
@@ -74,7 +75,7 @@ function ImportLoginsPage() {
             : `${summary.counts.import} row(s) ready to import — nothing written yet`,
         );
       } catch (e) {
-        toast.error(e instanceof Error ? e.message : "Import failed");
+        toast.error(friendlyServerError(e, "Import failed"));
       } finally {
         setBusy(null);
       }

@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ArrowLeft, Eye, EyeOff, Search, Upload, FileText, Check, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { friendlyServerError } from "@/lib/server-fn-error";
 import { MUNICIPALITIES as SHARED_MUNICIPALITIES } from "@/lib/municipalities";
 import { savePortalLogin } from "@/lib/portal-logins.functions";
 import {
@@ -172,7 +173,7 @@ function SubmitLoginPage() {
       toast.success(`Login submitted for ${muni}.`);
       navigate({ to: "/building-dept-logins" });
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Submit failed");
+      toast.error(friendlyServerError(err, "Could not save this login"));
     } finally {
       setSubmitting(false);
     }

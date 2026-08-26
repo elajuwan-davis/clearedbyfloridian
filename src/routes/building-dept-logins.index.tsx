@@ -20,6 +20,7 @@ import {
   type PortalLoginDocument,
 } from "@/lib/portal-login-docs";
 import { toast } from "sonner";
+import { friendlyServerError } from "@/lib/server-fn-error";
 import {
   ChevronDown, Copy, Eye, EyeOff, FileText, Plus, Search, Check, ExternalLink, Loader2, Upload,
 } from "lucide-react";
@@ -101,7 +102,7 @@ function BuildingDeptLoginsPage() {
         return enriched[0]?.key ?? null;
       });
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Failed to load portal logins");
+      toast.error(friendlyServerError(e, "Failed to load portal logins"));
       setRows([]);
     } finally {
       setLoading(false);
@@ -392,7 +393,7 @@ function QuickSignIn({
         setStage("username");
       }
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Could not copy credentials");
+      toast.error(friendlyServerError(e, "Could not copy credentials"));
     } finally {
       setBusy(false);
     }
@@ -468,7 +469,7 @@ function RevealedSecretField({
       setValue(field === "username" ? res.username : res.password);
       setShown(true);
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Reveal failed");
+      toast.error(friendlyServerError(e, "Could not reveal this credential"));
     } finally {
       setLoading(false);
     }
@@ -513,7 +514,7 @@ function ViewDocButton({ path }: { path: string }) {
       const { url } = await getUrl({ data: { path } });
       window.open(url, "_blank", "noopener,noreferrer");
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Could not open file");
+      toast.error(friendlyServerError(e, "Could not open file"));
     } finally {
       setOpening(false);
     }
