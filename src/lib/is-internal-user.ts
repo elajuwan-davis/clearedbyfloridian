@@ -4,6 +4,8 @@
 // Both Cleard domains count — every @cleared.com and @floridianinc.com account is
 // staff with the same access. The email is cached in localStorage by useSession()
 // so Google sign-ins are recognised too, not just password logins.
+import { isPermitsOnlyEmail } from "@/lib/permits-only";
+
 const INTERNAL_DOMAINS = ["cleared.com", "floridianinc.com"];
 
 export function internalEmail(email: string | null | undefined): boolean {
