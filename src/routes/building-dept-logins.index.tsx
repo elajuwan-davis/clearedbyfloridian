@@ -24,7 +24,7 @@ import {
   ChevronDown, Copy, Eye, EyeOff, FileText, Plus, Search, Check, ExternalLink, Loader2, Upload,
 } from "lucide-react";
 
-export const Route = createFileRoute("/building-dept-logins")({
+export const Route = createFileRoute("/building-dept-logins/")({
   head: () => ({
     meta: [
       { title: "Building Dept Logins — Cleard" },
