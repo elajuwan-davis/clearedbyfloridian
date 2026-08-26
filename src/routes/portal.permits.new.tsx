@@ -32,6 +32,7 @@ import {
   type PermitSub,
 } from "@/lib/permits-api";
 import { bulkUploadPermitDocs } from "@/lib/bulk-permit-docs";
+import { BulkDocUpload } from "@/components/bulk-doc-upload";
 import { uploadPermitFile } from "@/lib/permit-storage";
 import { listSubs, createSub, type SubRow } from "@/lib/subs-api";
 import {
