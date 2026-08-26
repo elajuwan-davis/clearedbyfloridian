@@ -842,7 +842,10 @@ function NewPermitPage() {
         form.engineerEmail,
       );
 
-      const priorDocs = originalRow?.documents ?? [];
+      // Always merge against the freshest documents in the database — files may
+// have been uploaded (bulk or otherwise) after this form was loaded.
+      const latestRow = isEditing && editId ? await getPermit(editId).catch(() => null) : null;
+      const priorDocs = (latestRow ?? originalRow)?.documents ?? [];
       const priorByKey = new Map(priorDocs.map((d) => [d.key, d]));
       const checklistKeys = new Set(checklist.map((d) => d.key));
       const documents: PermitDoc[] = checklist.map((d) => {
