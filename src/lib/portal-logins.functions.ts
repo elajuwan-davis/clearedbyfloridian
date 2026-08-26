@@ -44,15 +44,20 @@ function isInternalEmail(email: string | null | undefined): boolean {
   return at > 0 && INTERNAL_EMAIL_DOMAINS.includes(normalized.slice(at + 1));
 }
 
+/** Auth identity, not `profiles.email` — that column is owner/admin writable. */
 async function ownerEmails(
-  supabase: { from: (table: string) => any },
+  supabase: { auth: { admin: { getUserById: (id: string) => Promise<{ data: { user?: { email?: string | null } | null } }> } } },
   userIds: string[],
 ): Promise<Map<string, string | null>> {
-  if (userIds.length === 0) return new Map();
-  const { data } = await supabase.from("profiles").select("id, email").in("id", userIds);
-  return new Map(
-    ((data ?? []) as { id: string; email: string | null }[]).map((p) => [p.id, p.email]),
+  const unique = [...new Set(userIds)];
+  if (unique.length === 0) return new Map();
+  const entries = await Promise.all(
+    unique.map(async (id) => {
+      const { data } = await supabase.auth.admin.getUserById(id);
+      return [id, data?.user?.email ?? null] as const;
+    }),
   );
+  return new Map(entries);
 }
 
 export type PortalLoginFlag = {
