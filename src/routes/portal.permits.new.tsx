@@ -1296,6 +1296,11 @@ function NewPermitPage() {
                               <span className="inline-flex items-center bg-[#2F4F4F] text-white px-2 py-0.5 rounded-[3px] text-[10px] font-mono uppercase tracking-[0.12em]">
                                 {s.trade}
                               </span>
+                              {sameScopeRows.length > 1 && (
+                                <span className="text-[10px] font-mono uppercase tracking-[0.12em] text-obsidian/45">
+                                  Sub {rowNumber} of {sameScopeRows.length}
+                                </span>
+                              )}
                               {optional && (
                                 <span className="text-[10px] font-mono uppercase tracking-[0.12em] text-obsidian/45">
                                   Optional
@@ -1324,7 +1329,17 @@ function NewPermitPage() {
                               >
                                 {s.skipped ? "Add sub info" : "Skip for now"}
                               </button>
+                              {sameScopeRows.length > 1 && (
+                                <button
+                                  type="button"
+                                  onClick={() => removeSubRow(s.key)}
+                                  className="font-mono text-[10px] uppercase tracking-[0.14em] text-red-700/70 hover:text-red-700 underline underline-offset-2"
+                                >
+                                  Remove
+                                </button>
+                              )}
                             </div>
+
                           </div>
 
                           {pickerScope === s.key && (
