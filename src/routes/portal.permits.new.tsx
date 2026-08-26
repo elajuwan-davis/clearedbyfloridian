@@ -1270,7 +1270,7 @@ function NewPermitPage() {
                             <div className="flex flex-col gap-1.5 shrink-0">
                               <button
                                 type="button"
-                                onClick={() => applyReuse(idx, reuse)}
+                                onClick={() => applyReuse(s.key, reuse)}
                                 className="inline-flex items-center justify-center bg-obsidian px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-paper hover:bg-obsidian/90 rounded-[3px]"
                               >
                                 Use{" "}
@@ -1280,7 +1280,7 @@ function NewPermitPage() {
                               </button>
                               <button
                                 type="button"
-                                onClick={() => dismissReuse(idx)}
+                                onClick={() => dismissReuse(s.key)}
                                 className="font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/50 hover:text-obsidian"
                               >
                                 Dismiss
@@ -1307,7 +1307,7 @@ function NewPermitPage() {
                                 <button
                                   type="button"
                                   onClick={() =>
-                                    setPickerScope(pickerScope === s.scope ? null : s.scope)
+                                    setPickerScope(pickerScope === s.key ? null : s.key)
                                   }
                                   className="inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-[#2F4F4F] hover:text-obsidian underline underline-offset-2"
                                 >
@@ -1319,7 +1319,7 @@ function NewPermitPage() {
                               )}
                               <button
                                 type="button"
-                                onClick={() => toggleSubSkip(s.scope)}
+                                onClick={() => toggleSubSkip(s.key)}
                                 className="font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/55 hover:text-obsidian underline underline-offset-2"
                               >
                                 {s.skipped ? "Add sub info" : "Skip for now"}
@@ -1327,7 +1327,7 @@ function NewPermitPage() {
                             </div>
                           </div>
 
-                          {pickerScope === s.scope && (
+                          {pickerScope === s.key && (
                             <div className="border border-[#2F4F4F]/30 rounded-[3px] divide-y divide-obsidian/10">
                               {roster.length === 0 ? (
                                 <div className="px-3 py-3 text-[12px] text-obsidian/60">
@@ -1338,7 +1338,7 @@ function NewPermitPage() {
                                   <button
                                     key={m.id}
                                     type="button"
-                                    onClick={() => pickMarketplaceSub(s.scope, m)}
+                                    onClick={() => pickMarketplaceSub(s.key, m)}
                                     className="flex w-full items-center justify-between gap-3 px-3 py-2 text-left hover:bg-obsidian/[0.03]"
                                   >
                                     <span className="text-[13px] text-obsidian">
@@ -1369,7 +1369,7 @@ function NewPermitPage() {
                                   onChange={(e) => {
                                     const pick = savedSubs.find((x) => x.id === e.target.value);
                                     if (!pick) return;
-                                    pickSavedSub(s.scope, pick);
+                                    pickSavedSub(s.key, pick);
                                   }}
                                 >
                                   <option value="">
@@ -1404,7 +1404,7 @@ function NewPermitPage() {
                                   className={inputCls}
                                   value={s.companyName}
                                   onChange={(e) =>
-                                    updateSubByScope(s.scope, { companyName: e.target.value })
+                                    updateSub(s.key, { companyName: e.target.value })
                                   }
                                 />
                               </div>
@@ -1414,7 +1414,7 @@ function NewPermitPage() {
                                   className={inputCls}
                                   value={s.licenseNumber}
                                   onChange={(e) =>
-                                    updateSubByScope(s.scope, { licenseNumber: e.target.value })
+                                    updateSub(s.key, { licenseNumber: e.target.value })
                                   }
                                 />
                               </div>
@@ -1424,7 +1424,7 @@ function NewPermitPage() {
                                   className={inputCls}
                                   value={s.contactName}
                                   onChange={(e) =>
-                                    updateSubByScope(s.scope, { contactName: e.target.value })
+                                    updateSub(s.key, { contactName: e.target.value })
                                   }
                                 />
                               </div>
@@ -1435,7 +1435,7 @@ function NewPermitPage() {
                                   className={inputCls}
                                   value={s.contactEmail}
                                   onChange={(e) =>
-                                    updateSubByScope(s.scope, { contactEmail: e.target.value })
+                                    updateSub(s.key, { contactEmail: e.target.value })
                                   }
                                 />
                               </div>
@@ -1466,11 +1466,11 @@ function NewPermitPage() {
                                   </div>
                                   <button
                                     type="button"
-                                    disabled={coverageAsked.includes(s.scope)}
+                                    disabled={coverageAsked.includes(s.key)}
                                     onClick={() => askForCoverageUpgrade(s, gaps)}
                                     className="shrink-0 rounded-[3px] bg-amber-700 px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-white disabled:opacity-50"
                                   >
-                                    {coverageAsked.includes(s.scope)
+                                    {coverageAsked.includes(s.key)
                                       ? "Request sent"
                                       : "Ask to upgrade coverage"}
                                   </button>
