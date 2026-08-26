@@ -9,8 +9,10 @@ import { MUNICIPALITIES } from "@/lib/municipalities";
 import {
   listPortalLoginFlags,
   revealOwnPortalLogin,
+  revealPortalLogin,
   type PortalLoginFlag,
 } from "@/lib/portal-logins.functions";
+import { useSession } from "@/lib/use-session";
 import {
   getPortalLoginDocUrlFn,
   isDocExpired,
@@ -37,6 +39,8 @@ type EnrichedLogin = PortalLoginFlag & {
   resolvedPortalUrl: string | null;
   status: "active" | "needs_updated";
   docs: PortalLoginDocument[];
+  /** Unique per row: two GCs can hold a login for the same city. */
+  key: string;
 };
 
 function fmtDate(iso: string | null | undefined) {
@@ -46,17 +50,21 @@ function fmtDate(iso: string | null | undefined) {
   return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 }
 
-function enrich(flags: PortalLoginFlag[], docsBySlug: Map<string, PortalLoginDocument[]>): EnrichedLogin[] {
+function enrich(
+  flags: PortalLoginFlag[],
+  docsByKey: Map<string, PortalLoginDocument[]>,
+): EnrichedLogin[] {
   return flags.map((f) => {
     const meta = MUNICIPALITIES.find(
       (m) =>
         m.name.toLowerCase() === f.city_name.toLowerCase() ||
         m.name.toLowerCase().replace(/[^a-z0-9]+/g, "-") === f.municipality_slug,
     );
-    const docs = docsBySlug.get(f.municipality_slug) ?? [];
+    const docs = docsByKey.get(`${f.user_id}:${f.municipality_slug}`) ?? [];
     const expiredCount = docs.filter((d) => isDocExpired(d.expiration_date)).length;
     return {
       ...f,
+      key: `${f.user_id}:${f.municipality_slug}`,
       county: meta?.county ?? "—",
       resolvedPortalUrl: f.portal_url || meta?.url || null,
       status: expiredCount > 0 ? "needs_updated" : "active",
@@ -67,6 +75,7 @@ function enrich(flags: PortalLoginFlag[], docsBySlug: Map<string, PortalLoginDoc
 
 function BuildingDeptLoginsPage() {
   const listFlags = useServerFn(listPortalLoginFlags);
+  const session = useSession();
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -75,19 +84,21 @@ function BuildingDeptLoginsPage() {
   const reload = useCallback(async () => {
     setLoading(true);
     try {
-      const flags = await listFlags();
+      // Cleard staff get every jurisdiction in the vault; the server ignores "all" for a GC.
+      const flags = await listFlags({ data: { scope: "all" } });
       const docs = await listPortalLoginDocuments().catch(() => [] as PortalLoginDocument[]);
-      const bySlug = new Map<string, PortalLoginDocument[]>();
+      const byKey = new Map<string, PortalLoginDocument[]>();
       for (const d of docs) {
-        const list = bySlug.get(d.municipality_slug) ?? [];
+        const k = `${d.user_id}:${d.municipality_slug}`;
+        const list = byKey.get(k) ?? [];
         list.push(d);
-        bySlug.set(d.municipality_slug, list);
+        byKey.set(k, list);
       }
-      const enriched = enrich(flags, bySlug);
+      const enriched = enrich(flags, byKey);
       setRows(enriched);
       setOpen((prev) => {
-        if (prev && enriched.some((r) => r.municipality_slug === prev)) return prev;
-        return enriched[0]?.municipality_slug ?? null;
+        if (prev && enriched.some((r) => r.key === prev)) return prev;
+        return enriched[0]?.key ?? null;
       });
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Failed to load portal logins");
@@ -105,7 +116,9 @@ function BuildingDeptLoginsPage() {
     const q = query.toLowerCase().trim();
     if (!q) return rows;
     return rows.filter((l) =>
-      `${l.city_name} ${l.county} ${l.registration ?? ""}`.toLowerCase().includes(q),
+      `${l.city_name} ${l.county} ${l.registration ?? ""} ${l.owner_email ?? ""}`
+        .toLowerCase()
+        .includes(q),
     );
   }, [query, rows]);
 
@@ -127,7 +140,11 @@ function BuildingDeptLoginsPage() {
         toolbar={
           <>
             <div className="p-inset min-w-0 flex-1 sm:max-w-sm">
-              <SearchInput value={query} onChange={setQuery} placeholder="Search municipality, county, registration" />
+              <SearchInput
+                value={query}
+                onChange={setQuery}
+                placeholder="Search municipality, county, registration, owner"
+              />
             </div>
             <span className="ml-auto hidden text-[11.5px] text-muted-foreground sm:inline">
               {filtered.length} shown
@@ -151,13 +168,14 @@ function BuildingDeptLoginsPage() {
             </div>
           )}
           {filtered.map((l) => {
-            const isOpen = open === l.municipality_slug;
+            const isOpen = open === l.key;
             const expiredCount = l.docs.filter((d) => isDocExpired(d.expiration_date)).length;
+            const othersLogin = !!session.userId && l.user_id !== session.userId;
             return (
-              <div key={l.municipality_slug} className="border-b border-white/[0.06] last:border-0">
+              <div key={l.key} className="border-b border-white/[0.06] last:border-0">
                 <button
                   type="button"
-                  onClick={() => setOpen(isOpen ? null : l.municipality_slug)}
+                  onClick={() => setOpen(isOpen ? null : l.key)}
                   className="flex w-full flex-wrap items-center gap-2.5 px-3 py-2.5 text-left transition-colors hover:bg-white/[0.03]"
                 >
                   <ChevronDown className={`h-3.5 w-3.5 shrink-0 text-muted-foreground transition-transform ${isOpen ? "rotate-180" : ""}`} />
@@ -165,6 +183,7 @@ function BuildingDeptLoginsPage() {
                     <div className="truncate text-[13px] font-medium">{l.city_name}</div>
                     <div className="truncate text-[11.5px] text-muted-foreground">
                       {l.county === "—" ? "Jurisdiction" : `${l.county} County`}
+                      {othersLogin && l.owner_email ? ` · ${l.owner_email}` : ""}
                     </div>
                   </div>
                   {expiredCount > 0 && (
@@ -209,10 +228,18 @@ function BuildingDeptLoginsPage() {
                           </Field>
 
                           <Field label="Username">
-                            <RevealedSecretField municipalitySlug={l.municipality_slug} field="username" />
+                            <RevealedSecretField
+                              municipalitySlug={l.municipality_slug}
+                              ownerUserId={othersLogin ? l.user_id : null}
+                              field="username"
+                            />
                           </Field>
                           <Field label="Password">
-                            <RevealedSecretField municipalitySlug={l.municipality_slug} field="password" />
+                            <RevealedSecretField
+                              municipalitySlug={l.municipality_slug}
+                              ownerUserId={othersLogin ? l.user_id : null}
+                              field="password"
+                            />
                           </Field>
 
                           <Field label="Portal Features">
@@ -301,15 +328,21 @@ function CopyButton({ value }: { value: string }) {
   );
 }
 
-/** Username/password only appear after a controlled revealOwnPortalLogin call. */
+/**
+ * Username/password only appear after a controlled reveal call: the owner's own row
+ * goes through revealOwnPortalLogin, another GC's row through the staff-only reveal.
+ */
 function RevealedSecretField({
   municipalitySlug,
+  ownerUserId,
   field,
 }: {
   municipalitySlug: string;
+  ownerUserId: string | null;
   field: "username" | "password";
 }) {
-  const reveal = useServerFn(revealOwnPortalLogin);
+  const revealOwn = useServerFn(revealOwnPortalLogin);
+  const revealAsStaff = useServerFn(revealPortalLogin);
   const [value, setValue] = useState<string | null>(null);
   const [shown, setShown] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -321,7 +354,11 @@ function RevealedSecretField({
     }
     setLoading(true);
     try {
-      const res = await reveal({ data: { municipality_slug: municipalitySlug } });
+      const res = ownerUserId
+        ? await revealAsStaff({
+            data: { user_id: ownerUserId, municipality_slug: municipalitySlug },
+          })
+        : await revealOwn({ data: { municipality_slug: municipalitySlug } });
       if (!res) throw new Error("No credentials on file");
       setValue(field === "username" ? res.username : res.password);
       setShown(true);
