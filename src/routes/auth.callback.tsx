@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { evaluatePortalAccessFn } from "@/lib/google-access.functions";
+import { isMissingBackendEnvError } from "@/lib/env-error";
 
 export const Route = createFileRoute("/auth/callback")({
   ssr: false,
