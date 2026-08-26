@@ -3,34 +3,19 @@
 //
 // - Save/List (metadata + has_login flags only) callable by authenticated GC users.
 // - Reveal (decrypt) only via controlled server fns — never via a direct table select.
-// - Owner can reveal their own credentials; Cleard staff (admin role) can list and
-//   reveal any GC's credentials at portal-submission time.
+// - Owner can reveal their own credentials. Cleard staff (admin role) additionally share
+//   the logins owned by internal Cleard accounts, because Cleard files its own permits
+//   here. A customer GC's credentials are never listed or revealed to staff — storing
+//   them is one thing, letting us read them is a privacy violation.
 
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import type { AuthIdentityClient, RoleTableClient } from "@/lib/portal-logins-access.server";
 import { z } from "zod";
 
-const ADMIN_EMAILS = new Set([
-  "elajuwan@floridianinc.com",
-  "eman@floridianinc.com",
-  "jose@floridianinc.com",
-  "paul@floridianinc.com",
-]);
-
-function isAdminEmail(claims: Record<string, unknown> | undefined | null): boolean {
-  const email = (claims as { email?: string } | null | undefined)?.email;
-  return !!email && ADMIN_EMAILS.has(email.toLowerCase());
-}
-
-/** Cleard staff, by the app's own role table — the email allowlist only widens it. */
-async function isStaff(
-  supabase: { from: (table: string) => any },
-  userId: string,
-  claims: Record<string, unknown> | undefined | null,
-): Promise<boolean> {
-  if (isAdminEmail(claims)) return true;
-  const { data } = await supabase.from("user_roles").select("role").eq("user_id", userId);
-  return ((data ?? []) as { role: string }[]).some((r) => r.role === "admin");
+/** The service-role client, narrowed to what the access helpers read. */
+function accessClient(client: unknown): RoleTableClient & AuthIdentityClient {
+  return client as RoleTableClient & AuthIdentityClient;
 }
 
 export type PortalLoginFlag = {
@@ -106,18 +91,21 @@ export const deletePortalLogin = createServerFn({ method: "POST" })
 const ListSchema = z.object({ scope: z.enum(["own", "all"]).default("own") });
 
 /**
- * Metadata only — no ciphertext. `scope: "all"` returns every jurisdiction in the
- * vault and is honoured for Cleard staff only (the platform is used internally, so
- * any admin can work a permit); everyone else, and the default, sees only their own.
+ * Metadata only — no ciphertext. `scope: "all"` is honoured for Cleard staff only, and
+ * even then widens the view just to logins owned by internal Cleard accounts (we file
+ * our own permits here) plus the caller's own. Customer GCs' logins stay invisible to
+ * us; everyone else, and the default, sees only their own.
  */
 export const listPortalLoginFlags = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data: unknown) => ListSchema.parse(data ?? {}))
   .handler(async ({ data, context }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { isInternalEmail, isStaff, ownerEmails } =
+      await import("@/lib/portal-logins-access.server");
     const staff =
       data.scope === "all" &&
-      (await isStaff(supabaseAdmin as any, context.userId, context.claims as any));
+      (await isStaff(accessClient(supabaseAdmin), context.userId, context.claims));
     let query = supabaseAdmin
       .from("gc_portal_logins" as any)
       .select(
@@ -130,18 +118,14 @@ export const listPortalLoginFlags = createServerFn({ method: "GET" })
     const rows = (found ?? []) as unknown as PortalLoginFlag[];
     if (!staff || rows.length === 0) return rows;
 
-    const ownerIds = [...new Set(rows.map((r) => r.user_id))];
-    const { data: owners } = await supabaseAdmin
-      .from("profiles" as any)
-      .select("id, email")
-      .in("id", ownerIds);
-    const emailById = new Map(
-      ((owners ?? []) as unknown as { id: string; email: string | null }[]).map((p) => [
-        p.id,
-        p.email,
-      ]),
-    );
-    return rows.map((r) => ({ ...r, owner_email: emailById.get(r.user_id) ?? null }));
+    const emailById = await ownerEmails(accessClient(supabaseAdmin), [
+      ...new Set(rows.map((r) => r.user_id)),
+    ]);
+    return rows
+      .filter(
+        (r) => r.user_id === context.userId || isInternalEmail(emailById.get(r.user_id) ?? null),
+      )
+      .map((r) => ({ ...r, owner_email: emailById.get(r.user_id) ?? null }));
   });
 
 /** Owner reveal — decrypt only the caller's own credentials. */
@@ -166,7 +150,10 @@ export const revealOwnPortalLogin = createServerFn({ method: "POST" })
     };
   });
 
-/** Staff-only reveal for Cleard admins to log into portals on behalf of GCs. */
+/**
+ * Staff reveal for a login owned by another internal Cleard account. Never a customer
+ * GC's credentials — those decrypt only for their owner.
+ */
 export const revealPortalLogin = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data: unknown) =>
@@ -175,8 +162,14 @@ export const revealPortalLogin = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     const { decryptSecret } = await import("@/lib/portal-logins-crypto.server");
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    if (!(await isStaff(supabaseAdmin as any, context.userId, context.claims as any))) {
+    const { isInternalEmail, isStaff, ownerEmails } =
+      await import("@/lib/portal-logins-access.server");
+    if (!(await isStaff(accessClient(supabaseAdmin), context.userId, context.claims))) {
       throw new Error("Forbidden");
+    }
+    if (data.user_id !== context.userId) {
+      const emailById = await ownerEmails(accessClient(supabaseAdmin), [data.user_id]);
+      if (!isInternalEmail(emailById.get(data.user_id) ?? null)) throw new Error("Forbidden");
     }
     const { data: row, error } = await supabaseAdmin
       .from("gc_portal_logins" as any)

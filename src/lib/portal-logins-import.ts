@@ -1,14 +1,15 @@
-// Pure spreadsheet → gc_portal_logins row logic for scripts/import-portal-logins.ts.
+// Pure spreadsheet → gc_portal_logins row logic, shared by the CLI
+// (scripts/import-portal-logins.ts) and the in-app admin importer.
 //
 // Deliberately free of I/O, Supabase and crypto so it can be unit-tested without the
 // service-role key: everything that decides *whether* a row is safe to import lives here,
-// and the CLI only encrypts and upserts what this module already approved.
+// and the callers only encrypt and upsert what this module already approved.
 //
 // Nothing in this module may return a plaintext credential in a human-readable field:
 // `username`/`password` are carried on the record for the CLI to encrypt, and the
 // reporting fields (`city`, `status`, `reason`) never quote a credential.
 
-import { MUNICIPALITY_TREE } from "../../src/lib/municipalities-data";
+import { MUNICIPALITY_TREE } from "./municipalities-data";
 import { slugify } from "../../supabase/functions/_shared/submission-draft";
 
 export type SheetRow = (string | number | boolean | null | undefined)[];
@@ -31,6 +32,45 @@ export const DEFAULT_COLUMNS: ColumnMap = {
   notes: [6, 7],
   verified: 5,
 };
+
+/**
+ * Split delimited text (CSV, or the TSV a browser gets from a spreadsheet paste) into a
+ * cell matrix. RFC4180 quoting, since a notes cell can hold a comma or a line break.
+ */
+export function parseDelimited(text: string, delimiter?: string): SheetRow[] {
+  const body = text.replace(/^\uFEFF/, "").replace(/\r\n?/g, "\n");
+  const sep = delimiter ?? (body.split("\n", 1)[0].includes("\t") ? "\t" : ",");
+  const rows: SheetRow[] = [];
+  let row: string[] = [];
+  let field = "";
+  let quoted = false;
+  for (let i = 0; i < body.length; i++) {
+    const c = body[i];
+    if (quoted) {
+      if (c === '"') {
+        if (body[i + 1] === '"') {
+          field += '"';
+          i++;
+        } else quoted = false;
+      } else field += c;
+      continue;
+    }
+    if (c === '"') quoted = true;
+    else if (c === sep) {
+      row.push(field);
+      field = "";
+    } else if (c === "\n") {
+      row.push(field);
+      rows.push(row);
+      row = [];
+      field = "";
+    } else field += c;
+  }
+  row.push(field);
+  rows.push(row);
+  // A trailing newline, and rows that are entirely empty, are not data.
+  return rows.filter((r) => r.some((cell) => String(cell ?? "").trim() !== ""));
+}
 
 export type ImportRecord = {
   municipality_slug: string;
