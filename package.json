@@ -11,7 +11,9 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "portal-worker": "tsx scripts/portal-worker/municipality-submit-worker.ts",
-    "status-worker": "tsx scripts/portal-worker/permit-status-worker.ts"
+    "status-worker": "tsx scripts/portal-worker/permit-status-worker.ts",
+    "import-portal-logins": "tsx scripts/import-portal-logins.ts",
+    "test:import-portal-logins": "tsx --test scripts/import-portal-logins.test.ts"
   },
   "dependencies": {
     "@fontsource/cormorant-garamond": "^5.2.11",
@@ -108,7 +110,8 @@
     "tsx": "^4.23.1",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.56.1",
-    "vite": "^7.3.1"
+    "vite": "^7.3.1",
+    "xlsx": "0.18.5"
   },
   "pnpm": {
     "overrides": {
