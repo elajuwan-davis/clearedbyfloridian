@@ -164,6 +164,9 @@ function NewPermitPage() {
   const [saving, setSaving] = useState(false);
   const [loadingEdit, setLoadingEdit] = useState(isEditing);
   const [originalRow, setOriginalRow] = useState<PermitRow | null>(null);
+  // Real File objects staged for bulk upload. Names also live in form.extraDocs
+  // so the draft/preview list survives a reload; files themselves cannot.
+  const [extraFiles, setExtraFiles] = useState<File[]>([]);
   const [subsSkipped, setSubsSkipped] = useState(false);
   const [docsSkipped, setDocsSkipped] = useState(false);
   const [saveArchitectToContacts, setSaveArchitectToContacts] = useState(false);
