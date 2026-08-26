@@ -1967,38 +1967,47 @@ function NewPermitPage() {
                   </ul>
 
                   <div className="pt-2">
-                    <div className={sectionCls}>Additional Documents</div>
-                    <label className="mt-3 inline-flex items-center gap-2 cursor-pointer border border-obsidian/20 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian rounded-[3px] hover:bg-obsidian/5">
-                      <Upload className="h-3.5 w-3.5" /> Add PDFs ({form.extraDocs.length}/30)
-                      <input
-                        type="file"
-                        accept="application/pdf"
-                        multiple
-                        className="hidden"
-                        onChange={handleExtraFiles}
-                      />
-                    </label>
+                    <div className={sectionCls}>Additional Documents — Bulk Upload</div>
+                    <p className="mt-1 text-[12px] text-obsidian/60">
+                      Pick or drop as many files as you like. Each one is saved as-is and filed
+                      under its own file name once the submission is saved.
+                    </p>
+                    <div
+                      onDragOver={(e) => e.preventDefault()}
+                      onDrop={handleExtraDrop}
+                      className="mt-3 border-2 border-dashed border-obsidian/20 hover:border-obsidian/40 bg-obsidian/[0.02] rounded-[3px] px-4 py-5 text-center transition-colors"
+                    >
+                      <label className="inline-flex items-center gap-2 cursor-pointer border border-obsidian/20 bg-white px-3 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian rounded-[3px] hover:bg-obsidian/5">
+                        <Upload className="h-3.5 w-3.5" /> Choose files ({form.extraDocs.length}/30)
+                        <input type="file" multiple className="hidden" onChange={handleExtraFiles} />
+                      </label>
+                      <div className="mt-2 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/45">
+                        or drop them here
+                      </div>
+                    </div>
                     {form.extraDocs.length > 0 && (
                       <ul className="mt-3 space-y-1">
-                        {form.extraDocs.map((name, i) => (
-                          <li
-                            key={i}
-                            className="flex items-center justify-between gap-2 text-[12px] text-obsidian/70 bg-obsidian/5 px-2 py-1 rounded-[3px]"
-                          >
-                            <span className="truncate">{name}</span>
-                            <button
-                              type="button"
-                              onClick={() =>
-                                update(
-                                  "extraDocs",
-                                  form.extraDocs.filter((_, j) => j !== i),
-                                )
-                              }
+                        {form.extraDocs.map((name, i) => {
+                          const staged = extraFiles.some((f) => f.name === name);
+                          return (
+                            <li
+                              key={i}
+                              className="flex items-center justify-between gap-2 text-[12px] text-obsidian/70 bg-obsidian/5 px-2 py-1 rounded-[3px]"
                             >
-                              <X className="h-3 w-3" />
-                            </button>
-                          </li>
-                        ))}
+                              <span className="truncate">
+                                {name}
+                                {!staged && (
+                                  <span className="ml-2 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/40">
+                                    name only — re-attach to upload
+                                  </span>
+                                )}
+                              </span>
+                              <button type="button" onClick={() => removeExtra(i)}>
+                                <X className="h-3 w-3" />
+                              </button>
+                            </li>
+                          );
+                        })}
                       </ul>
                     )}
                   </div>
