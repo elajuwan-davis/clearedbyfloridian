@@ -95,9 +95,11 @@ function sectionAlerted(section: NavSection, alertKeys: Set<AlertKey>) {
  *
  * Navigation model is unchanged: same sections, same links, same order.
  */
-function useNavSections(role: AppRole | null, isAdmin: boolean) {
+function useNavSections(role: AppRole | null, isAdmin: boolean, permitsOnly = false) {
   const { bookmarks, toggle } = useBookmarks();
-  const sections = sectionsForRole(role, isAdmin);
+  const sections = permitsOnly
+    ? sectionsForRole(role, false).filter((s) => s.key === "permits")
+    : sectionsForRole(role, isAdmin);
   const settings = sidebarSettingsForRole(role);
   const marked = new Set(bookmarks.map((b) => normalizePath(b.path)));
 
