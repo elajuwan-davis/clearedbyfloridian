@@ -32,6 +32,7 @@ export const tabGroups: TabGroup[] = [
       { label: "HOA Submittals", to: "/portal/hoa-submittals" },
       { label: "Bid Review", to: "/portal/bid-review" },
       { label: "Utility Locates", to: "/portal/utility-locates" },
+      { label: "Portal Logins", to: "/building-dept-logins" },
     ],
   },
   {
