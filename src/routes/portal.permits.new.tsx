@@ -907,10 +907,33 @@ function NewPermitPage() {
           : null,
       };
 
+      // Files staged in "Additional Documents" upload once the permit row exists,
+      // one document field per file, named after the file.
+      async function uploadStagedExtras(target: PermitRow) {
+        if (extraFiles.length === 0) return;
+        try {
+          const result = await bulkUploadPermitDocs(target, extraFiles);
+          if (result.uploaded.length > 0) {
+            toast.success(
+              `Uploaded ${result.uploaded.length} document${result.uploaded.length === 1 ? "" : "s"}`,
+            );
+          }
+          if (result.failed.length > 0) {
+            toast.error(
+              `${result.failed.length} file${result.failed.length === 1 ? "" : "s"} failed to upload — retry from the permit's Documents tab.`,
+            );
+          }
+          setExtraFiles([]);
+        } catch {
+          toast.error("Documents could not be uploaded — retry from the permit's Documents tab.");
+        }
+      }
+
       let rowId: string;
       if (isEditing && editId) {
         const updated = await updatePermit(editId, permitPatch);
         rowId = updated.id;
+        await uploadStagedExtras(updated);
         try {
           await triggerNotification({
             kind: "submission_received",
