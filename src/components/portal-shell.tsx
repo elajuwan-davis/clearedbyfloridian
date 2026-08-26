@@ -661,17 +661,27 @@ function PortalShellInner({ children }: { children: ReactNode }) {
     );
   }
 
+  // Do not render unrestricted navigation while the signed-in user's role and
+  // email are still loading. This prevents guest seats from briefly receiving
+  // the standard portal chrome after a redirect or hard refresh.
+  if (session.loading) {
+    return (
+      <div className="portal-ui dark grid min-h-screen place-items-center bg-background">
+        <div className="text-[13px] text-muted-foreground">Verifying access…</div>
+      </div>
+    );
+  }
+
 
   // Admin-only area: non-staff never see staff tooling, even by typing a URL.
   // (Data itself is already blocked server-side by RLS + admin assertions.)
   const isAdminPath = pathname === "/admin" || pathname.startsWith("/admin/");
-  if (isAdminPath && !session.loading && !session.isAdmin) {
+  if (isAdminPath && !session.isAdmin) {
     return <AdminOnly>{children}</AdminOnly>;
   }
 
   // Permits-only seats: any portal path outside Permits bounces back to Permits.
   if (
-    !session.loading &&
     isPermitsOnlyEmail(session.email) &&
     !isPermitsOnlyPathAllowed(pathname)
   ) {
