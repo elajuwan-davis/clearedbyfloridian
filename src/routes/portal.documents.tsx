@@ -58,6 +58,8 @@ function DocumentsPage() {
   const [loading, setLoading] = useState(true);
   const [query, setQuery] = useState("");
   const [preview, setPreview] = useState<DocEntry | null>(null);
+  const [pickerOpen, setPickerOpen] = useState(false);
+  const [bulkPermit, setBulkPermit] = useState<PermitRow | null>(null);
 
   useEffect(() => {
     let alive = true;
