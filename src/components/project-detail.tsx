@@ -208,6 +208,8 @@ export function ProjectDetail({ project }: { project: Project }) {
                 City portal link unavailable
               </span>
             )}
+            <PortalLoginPopover project={project} />
+
             {internal && <ClientNotificationsToggle projectId={project.id} />}
             <HeaderExtras project={project} />
           </div>
