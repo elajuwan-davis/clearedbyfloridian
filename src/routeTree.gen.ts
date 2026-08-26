@@ -61,6 +61,7 @@ import { Route as ApiVerifyLicenseRouteImport } from './routes/api/verify-licens
 import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
 import { Route as BlogIndexRouteImport } from './routes/blog.index'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
+import { Route as BuildingDeptLoginsImportRouteImport } from './routes/building-dept-logins.import'
 import { Route as BuildingDeptLoginsSubmitRouteImport } from './routes/building-dept-logins.submit'
 import { Route as FormsIndexRouteImport } from './routes/forms.index'
 import { Route as FormsPaymentAuthorizationRouteImport } from './routes/forms.payment-authorization'
@@ -399,6 +400,12 @@ const BlogSlugRoute = BlogSlugRouteImport.update({
   path: '/blog/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BuildingDeptLoginsImportRoute =
+  BuildingDeptLoginsImportRouteImport.update({
+    id: '/import',
+    path: '/import',
+    getParentRoute: () => BuildingDeptLoginsRoute,
+  } as any)
 const BuildingDeptLoginsSubmitRoute =
   BuildingDeptLoginsSubmitRouteImport.update({
     id: '/submit',
@@ -851,6 +858,7 @@ export interface FileRoutesByFullPath {
   '/api/verify-license': typeof ApiVerifyLicenseRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/blog/$slug': typeof BlogSlugRoute
+  '/building-dept-logins/import': typeof BuildingDeptLoginsImportRoute
   '/building-dept-logins/submit': typeof BuildingDeptLoginsSubmitRoute
   '/forms/payment-authorization': typeof FormsPaymentAuthorizationRoute
   '/forms/permit-intake': typeof FormsPermitIntakeRoute
@@ -980,6 +988,7 @@ export interface FileRoutesByTo {
   '/api/verify-license': typeof ApiVerifyLicenseRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/blog/$slug': typeof BlogSlugRoute
+  '/building-dept-logins/import': typeof BuildingDeptLoginsImportRoute
   '/building-dept-logins/submit': typeof BuildingDeptLoginsSubmitRoute
   '/forms/payment-authorization': typeof FormsPaymentAuthorizationRoute
   '/forms/permit-intake': typeof FormsPermitIntakeRoute
@@ -1110,6 +1119,7 @@ export interface FileRoutesById {
   '/api/verify-license': typeof ApiVerifyLicenseRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/blog/$slug': typeof BlogSlugRoute
+  '/building-dept-logins/import': typeof BuildingDeptLoginsImportRoute
   '/building-dept-logins/submit': typeof BuildingDeptLoginsSubmitRoute
   '/forms/payment-authorization': typeof FormsPaymentAuthorizationRoute
   '/forms/permit-intake': typeof FormsPermitIntakeRoute
@@ -1243,6 +1253,7 @@ export interface FileRouteTypes {
     | '/api/verify-license'
     | '/auth/callback'
     | '/blog/$slug'
+    | '/building-dept-logins/import'
     | '/building-dept-logins/submit'
     | '/forms/payment-authorization'
     | '/forms/permit-intake'
@@ -1372,6 +1383,7 @@ export interface FileRouteTypes {
     | '/api/verify-license'
     | '/auth/callback'
     | '/blog/$slug'
+    | '/building-dept-logins/import'
     | '/building-dept-logins/submit'
     | '/forms/payment-authorization'
     | '/forms/permit-intake'
@@ -1501,6 +1513,7 @@ export interface FileRouteTypes {
     | '/api/verify-license'
     | '/auth/callback'
     | '/blog/$slug'
+    | '/building-dept-logins/import'
     | '/building-dept-logins/submit'
     | '/forms/payment-authorization'
     | '/forms/permit-intake'
@@ -2029,6 +2042,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/blog/$slug'
       preLoaderRoute: typeof BlogSlugRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/building-dept-logins/import': {
+      id: '/building-dept-logins/import'
+      path: '/import'
+      fullPath: '/building-dept-logins/import'
+      preLoaderRoute: typeof BuildingDeptLoginsImportRouteImport
+      parentRoute: typeof BuildingDeptLoginsRoute
     }
     '/building-dept-logins/submit': {
       id: '/building-dept-logins/submit'
@@ -2573,10 +2593,12 @@ declare module '@tanstack/react-router' {
 }
 
 interface BuildingDeptLoginsRouteChildren {
+  BuildingDeptLoginsImportRoute: typeof BuildingDeptLoginsImportRoute
   BuildingDeptLoginsSubmitRoute: typeof BuildingDeptLoginsSubmitRoute
 }
 
 const BuildingDeptLoginsRouteChildren: BuildingDeptLoginsRouteChildren = {
+  BuildingDeptLoginsImportRoute: BuildingDeptLoginsImportRoute,
   BuildingDeptLoginsSubmitRoute: BuildingDeptLoginsSubmitRoute,
 }
 
