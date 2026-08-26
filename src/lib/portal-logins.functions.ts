@@ -3,7 +3,7 @@
 //
 // - Save/List (metadata + has_login flags only) callable by authenticated GC users.
 // - Reveal (decrypt) only via controlled server fns — never via a direct table select.
-// - Owner can reveal their own credentials; Cleard staff (admin email allowlist) can
+// - Owner can reveal their own credentials; Cleard staff (admin role) can list and
 //   reveal any GC's credentials at portal-submission time.
 
 import { createServerFn } from "@tanstack/react-start";
@@ -17,9 +17,20 @@ const ADMIN_EMAILS = new Set([
   "paul@floridianinc.com",
 ]);
 
-function isAdmin(claims: Record<string, unknown> | undefined | null): boolean {
+function isAdminEmail(claims: Record<string, unknown> | undefined | null): boolean {
   const email = (claims as { email?: string } | null | undefined)?.email;
   return !!email && ADMIN_EMAILS.has(email.toLowerCase());
+}
+
+/** Cleard staff, by the app's own role table — the email allowlist only widens it. */
+async function isStaff(
+  supabase: { from: (table: string) => any },
+  userId: string,
+  claims: Record<string, unknown> | undefined | null,
+): Promise<boolean> {
+  if (isAdminEmail(claims)) return true;
+  const { data } = await supabase.from("user_roles").select("role").eq("user_id", userId);
+  return ((data ?? []) as { role: string }[]).some((r) => r.role === "admin");
 }
 
 export type PortalLoginFlag = {
@@ -34,6 +45,8 @@ export type PortalLoginFlag = {
   derm: boolean;
   tenant_id: string | null;
   user_id: string;
+  /** Set only on the staff-wide view, so an admin can tell whose vault a row is. */
+  owner_email?: string | null;
 };
 
 const SaveSchema = z.object({
@@ -90,28 +103,51 @@ export const deletePortalLogin = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
-/** Metadata only — no ciphertext. */
+const ListSchema = z.object({ scope: z.enum(["own", "all"]).default("own") });
+
+/**
+ * Metadata only — no ciphertext. `scope: "all"` returns every jurisdiction in the
+ * vault and is honoured for Cleard staff only (the platform is used internally, so
+ * any admin can work a permit); everyone else, and the default, sees only their own.
+ */
 export const listPortalLoginFlags = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .handler(async ({ context }) => {
+  .inputValidator((data: unknown) => ListSchema.parse(data ?? {}))
+  .handler(async ({ data, context }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { data, error } = await supabaseAdmin
+    const staff =
+      data.scope === "all" &&
+      (await isStaff(supabaseAdmin as any, context.userId, context.claims as any));
+    let query = supabaseAdmin
       .from("gc_portal_logins" as any)
       .select(
         "id, user_id, tenant_id, municipality_slug, city_name, notes, updated_at, portal_url, registration, e_plan, derm",
       )
-      .eq("user_id", context.userId)
       .order("city_name", { ascending: true });
+    if (!staff) query = query.eq("user_id", context.userId);
+    const { data: found, error } = await query;
     if (error) throw new Error(error.message);
-    return (data ?? []) as unknown as PortalLoginFlag[];
+    const rows = (found ?? []) as unknown as PortalLoginFlag[];
+    if (!staff || rows.length === 0) return rows;
+
+    const ownerIds = [...new Set(rows.map((r) => r.user_id))];
+    const { data: owners } = await supabaseAdmin
+      .from("profiles" as any)
+      .select("id, email")
+      .in("id", ownerIds);
+    const emailById = new Map(
+      ((owners ?? []) as unknown as { id: string; email: string | null }[]).map((p) => [
+        p.id,
+        p.email,
+      ]),
+    );
+    return rows.map((r) => ({ ...r, owner_email: emailById.get(r.user_id) ?? null }));
   });
 
 /** Owner reveal — decrypt only the caller's own credentials. */
 export const revealOwnPortalLogin = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((data: unknown) =>
-    z.object({ municipality_slug: z.string().min(1) }).parse(data),
-  )
+  .inputValidator((data: unknown) => z.object({ municipality_slug: z.string().min(1) }).parse(data))
   .handler(async ({ data, context }) => {
     const { decryptSecret } = await import("@/lib/portal-logins-crypto.server");
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
@@ -130,16 +166,18 @@ export const revealOwnPortalLogin = createServerFn({ method: "POST" })
     };
   });
 
-/** Admin-only reveal for Cleard staff to log into portals on behalf of GCs. */
+/** Staff-only reveal for Cleard admins to log into portals on behalf of GCs. */
 export const revealPortalLogin = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data: unknown) =>
     z.object({ user_id: z.string().uuid(), municipality_slug: z.string().min(1) }).parse(data),
   )
   .handler(async ({ data, context }) => {
-    if (!isAdmin(context.claims as any)) throw new Error("Forbidden");
     const { decryptSecret } = await import("@/lib/portal-logins-crypto.server");
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    if (!(await isStaff(supabaseAdmin as any, context.userId, context.claims as any))) {
+      throw new Error("Forbidden");
+    }
     const { data: row, error } = await supabaseAdmin
       .from("gc_portal_logins" as any)
       .select("username_ciphertext, password_ciphertext, notes")
