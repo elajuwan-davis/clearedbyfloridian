@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { evaluatePortalAccessFn } from "@/lib/google-access.functions";
+import { isMissingBackendEnvError } from "@/lib/env-error";
 
 export const Route = createFileRoute("/auth/callback")({
   ssr: false,
@@ -59,6 +60,15 @@ function AuthCallback() {
         navigate({ to: target as never, replace: true });
       } catch (e) {
         if (cancelled) return;
+        // A transient backend-binding hiccup should read as "try again", not as a
+        // raw Supabase environment error in front of a signing-in contractor.
+        if (isMissingBackendEnvError(e)) {
+          setState({
+            kind: "error",
+            message: "We couldn't reach the portal just now. Please try signing in again.",
+          });
+          return;
+        }
         setState({
           kind: "error",
           message: e instanceof Error ? e.message : "Could not verify your access.",
