@@ -48,11 +48,13 @@ type DocSlot = {
 };
 
 const DEFAULT_DOCS: DocSlot[] = [
-  { key: "coi", label: "COI — Certificate of Insurance", required: true, expiration: "" },
-  { key: "wc", label: "WC — Workers Compensation", required: true, expiration: "" },
-  { key: "occ", label: "Occupational License", required: true, expiration: "" },
-  { key: "btr", label: "BTR — Business Tax Receipt", required: true, expiration: "" },
-  { key: "qdl", label: "Qualifier Driver's License", required: true, expiration: "" },
+  // Optional: a login is worth storing before its paperwork exists. An uploaded document
+  // still needs an expiration date, since that is what flips the row to "Needs updated".
+  { key: "coi", label: "COI — Certificate of Insurance", required: false, expiration: "" },
+  { key: "wc", label: "WC — Workers Compensation", required: false, expiration: "" },
+  { key: "occ", label: "Occupational License", required: false, expiration: "" },
+  { key: "btr", label: "BTR — Business Tax Receipt", required: false, expiration: "" },
+  { key: "qdl", label: "Qualifier Driver's License", required: false, expiration: "" },
 ];
 
 function SubmitLoginPage() {
@@ -69,6 +71,7 @@ function SubmitLoginPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPw, setShowPw] = useState(false);
+  const [portalUrl, setPortalUrl] = useState("");
   const [ePlan, setEPlan] = useState(false);
   const [derm, setDerm] = useState(false);
   const [docs, setDocs] = useState<DocSlot[]>(DEFAULT_DOCS);
@@ -105,7 +108,7 @@ function SubmitLoginPage() {
   }
 
   const allDocs = [...docs, ...extras];
-  const requiredOk = docs.every((d) => !d.required || (!!d.file && !!d.expiration?.trim()));
+  const requiredOk = allDocs.every((d) => !d.file || !!d.expiration?.trim());
   const canSubmit =
     muni.trim().length > 0 &&
     registration.trim().length > 0 &&
@@ -117,7 +120,9 @@ function SubmitLoginPage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!canSubmit) {
-      toast.error("Please complete all required fields and upload required documents.");
+      toast.error(
+        "Fill in the municipality, registration type and credentials — and give any uploaded document an expiration date.",
+      );
       return;
     }
     setSubmitting(true);
@@ -131,7 +136,7 @@ function SubmitLoginPage() {
           username: username.trim(),
           password: password.trim(),
           notes: null,
-          portal_url: muniMeta?.url ?? null,
+          portal_url: portalUrl.trim() || muniMeta?.url || null,
           registration: registration.trim(),
           e_plan: ePlan,
           derm,
@@ -187,7 +192,8 @@ function SubmitLoginPage() {
           <div className="eyebrow text-obsidian/50">Credentials Vault</div>
           <h1 className="display-serif mt-3 text-4xl text-obsidian">Submit New Login</h1>
           <p className="mt-2 text-sm text-obsidian/60">
-            Cleard encrypts credentials at rest. Required documents are stored with expiration dates.
+            Cleard encrypts credentials at rest. Compliance documents are optional and stored with
+            their expiration dates.
           </p>
         </div>
 
@@ -243,6 +249,23 @@ function SubmitLoginPage() {
               </select>
             </div>
 
+            <div className="sm:col-span-2">
+              <Label className="eyebrow text-obsidian/55">Portal URL</Label>
+              <Input
+                value={portalUrl}
+                onChange={(e) => setPortalUrl(e.target.value)}
+                placeholder={muniMeta?.url ?? "https://… the page you sign in on"}
+                className="mt-2 rounded-[3px] font-mono"
+                autoComplete="off"
+                inputMode="url"
+              />
+              <p className="mt-1 text-xs text-obsidian/55">
+                {muniMeta?.url
+                  ? "Leave blank to use the catalog URL shown above."
+                  : "Where “Copy & open portal” sends you. Blank means the row has no link."}
+              </p>
+            </div>
+
             <div>
               <Label className="eyebrow text-obsidian/55">Username <span className="text-oxblood">*</span></Label>
               <Input
@@ -285,7 +308,11 @@ function SubmitLoginPage() {
           </div>
 
           <div>
-            <div className="eyebrow text-obsidian/55 mb-3">Required Documents</div>
+            <div className="eyebrow text-obsidian/55">Compliance Documents</div>
+            <p className="mb-3 mt-1 text-xs text-obsidian/55">
+              Optional — save the login now and upload these later. A document needs an expiration
+              date so the login can flag itself when the paperwork lapses.
+            </p>
             <div className="border border-obsidian/15 bg-white divide-y divide-obsidian/5">
               {docs.map((d) => (
                 <DocRow
