@@ -36,14 +36,24 @@ export const listInternalOwners = createServerFn({ method: "GET" })
     if (!(await isStaff(supabaseAdmin as any, context.userId, context.claims as any))) {
       throw new Error("Forbidden");
     }
-    const { data, error } = await supabaseAdmin
-      .from("profiles")
-      .select("id, email")
-      .order("email", { ascending: true });
-    if (error) throw new Error(error.message);
-    return ((data ?? []) as { id: string; email: string | null }[])
-      .filter((p) => isInternalEmail(p.email) && !(p.email ?? "").endsWith("@test.invalid"))
-      .map((p) => ({ user_id: p.id, email: (p.email ?? "").toLowerCase() }));
+    // Auth identities, not `profiles.email` — that column is owner/admin writable, so it
+    // must not decide what counts as one of Cleard's own accounts.
+    const owners: InternalOwner[] = [];
+    for (let page = 1; page <= 20; page++) {
+      const { data, error } = await (supabaseAdmin.auth.admin as any).listUsers({
+        page,
+        perPage: 200,
+      });
+      if (error) throw new Error(error.message);
+      const users = (data?.users ?? []) as { id: string; email?: string | null }[];
+      for (const u of users) {
+        if (isInternalEmail(u.email)) {
+          owners.push({ user_id: u.id, email: (u.email ?? "").trim().toLowerCase() });
+        }
+      }
+      if (users.length < 200) break;
+    }
+    return owners.sort((a, b) => a.email.localeCompare(b.email));
   });
 
 const ImportSchema = z.object({
