@@ -69,6 +69,17 @@ async function loadSession(): Promise<SessionInfo> {
   const userId = session.user.id;
   const email = session.user.email ?? null;
 
+  // Cache the real signed-in email so the internal-team UI gates work for every
+  // sign-in path (Google included), not just the password form.
+  if (email) {
+    try {
+      localStorage.setItem("cleared_demo_user", email.toLowerCase());
+      localStorage.setItem("cleared_demo_user_email", email.toLowerCase());
+    } catch {
+      /* ignore */
+    }
+  }
+
   const { data: roles } = await (supabase.from("user_roles" as any) as any)
     .select("role")
     .eq("user_id", userId);
