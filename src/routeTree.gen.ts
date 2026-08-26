@@ -402,15 +402,15 @@ const BuildingDeptLoginsIndexRoute = BuildingDeptLoginsIndexRouteImport.update({
 } as any)
 const BuildingDeptLoginsImportRoute =
   BuildingDeptLoginsImportRouteImport.update({
-    id: '/import',
-    path: '/import',
-    getParentRoute: () => BuildingDeptLoginsRoute,
+    id: '/building-dept-logins/import',
+    path: '/building-dept-logins/import',
+    getParentRoute: () => rootRouteImport,
   } as any)
 const BuildingDeptLoginsSubmitRoute =
   BuildingDeptLoginsSubmitRouteImport.update({
-    id: '/submit',
-    path: '/submit',
-    getParentRoute: () => BuildingDeptLoginsRoute,
+    id: '/building-dept-logins/submit',
+    path: '/building-dept-logins/submit',
+    getParentRoute: () => rootRouteImport,
   } as any)
 const FormsIndexRoute = FormsIndexRouteImport.update({
   id: '/',
@@ -1645,6 +1645,8 @@ export interface RootRouteChildren {
   ApiVerifyLicenseRoute: typeof ApiVerifyLicenseRoute
   AuthCallbackRoute: typeof AuthCallbackRoute
   BlogSlugRoute: typeof BlogSlugRoute
+  BuildingDeptLoginsImportRoute: typeof BuildingDeptLoginsImportRoute
+  BuildingDeptLoginsSubmitRoute: typeof BuildingDeptLoginsSubmitRoute
   HomeownerTokenRoute: typeof HomeownerTokenRoute
   InvestorAdminRoute: typeof InvestorAdminRoute
   JoinTokenRoute: typeof JoinTokenRoute
@@ -2045,17 +2047,17 @@ declare module '@tanstack/react-router' {
     }
     '/building-dept-logins/import': {
       id: '/building-dept-logins/import'
-      path: '/import'
+      path: '/building-dept-logins/import'
       fullPath: '/building-dept-logins/import'
       preLoaderRoute: typeof BuildingDeptLoginsImportRouteImport
-      parentRoute: typeof BuildingDeptLoginsRoute
+      parentRoute: typeof rootRouteImport
     }
     '/building-dept-logins/submit': {
       id: '/building-dept-logins/submit'
-      path: '/submit'
+      path: '/building-dept-logins/submit'
       fullPath: '/building-dept-logins/submit'
       preLoaderRoute: typeof BuildingDeptLoginsSubmitRouteImport
-      parentRoute: typeof BuildingDeptLoginsRoute
+      parentRoute: typeof rootRouteImport
     }
     '/forms/': {
       id: '/forms/'
@@ -2776,6 +2778,8 @@ const rootRouteChildren: RootRouteChildren = {
   ApiVerifyLicenseRoute: ApiVerifyLicenseRoute,
   AuthCallbackRoute: AuthCallbackRoute,
   BlogSlugRoute: BlogSlugRoute,
+  BuildingDeptLoginsImportRoute: BuildingDeptLoginsImportRoute,
+  BuildingDeptLoginsSubmitRoute: BuildingDeptLoginsSubmitRoute,
   HomeownerTokenRoute: HomeownerTokenRoute,
   InvestorAdminRoute: InvestorAdminRoute,
   JoinTokenRoute: JoinTokenRoute,
