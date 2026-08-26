@@ -1526,9 +1526,19 @@ function NewPermitPage() {
                             </div>
                           )}
                         </div>
+                        {isLastOfScope && (
+                          <button
+                            type="button"
+                            onClick={() => addSubForScope(s.scope)}
+                            className="inline-flex items-center gap-1.5 border border-dashed border-obsidian/25 px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/70 hover:border-obsidian/50 hover:text-obsidian rounded-[3px]"
+                          >
+                            + Add another {s.trade} subcontractor
+                          </button>
+                        )}
                       </div>
                     );
                   })}
+
                   {filledSubs.length > 0 && (
                     <div className="border-l-2 border-[#2F4F4F] bg-obsidian/[0.03] px-4 py-3 text-[12px] text-obsidian/80">
                       {wantBundle ? (
