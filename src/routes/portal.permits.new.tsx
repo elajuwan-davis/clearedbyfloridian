@@ -428,7 +428,7 @@ function NewPermitPage() {
     }
   }
 
-  /** Toggling a scope also spawns / retires its inline sub row (1:1). */
+  /** Toggling a scope spawns / retires its inline sub row(s). */
   function toggleScope(scope: string) {
     setForm((f) => {
       const has = f.scopes.includes(scope);
@@ -443,23 +443,47 @@ function NewPermitPage() {
       // If a filled sub already exists for the same trade (e.g. Pool
       // and Pool/Spa both mapping to Pool trade), reuse its data.
       const existing = f.subs.find((s) => s.trade === trade && s.companyName.trim() && !s.skipped);
-      const seed: SubIntake = existing ? { ...existing, scope, skipped: false } : emptySub(scope);
+      const seed: SubIntake = existing
+        ? { ...existing, key: newSubKey(), scope, skipped: false }
+        : emptySub(scope);
       return { ...f, scopes: [...f.scopes, scope], subs: [...f.subs, seed] };
     });
   }
 
-  function updateSubByScope(scope: string, patch: Partial<SubIntake>) {
+  /** Add another subcontractor row for the same trade. */
+  function addSubForScope(scope: string) {
+    setForm((f) => {
+      const last = f.subs.map((s, i) => ({ s, i })).filter((x) => x.s.scope === scope).pop();
+      const row = emptySub(scope);
+      const subs = [...f.subs];
+      subs.splice(last ? last.i + 1 : subs.length, 0, row);
+      return { ...f, subs };
+    });
+  }
+
+  function removeSubRow(key: string) {
+    setForm((f) => {
+      const row = f.subs.find((s) => s.key === key);
+      if (!row) return f;
+      // Never leave a selected scope without at least one row.
+      const siblings = f.subs.filter((s) => s.scope === row.scope);
+      if (siblings.length <= 1) return { ...f, subs: f.subs.map((s) => (s.key === key ? emptySub(s.scope) : s)) };
+      return { ...f, subs: f.subs.filter((s) => s.key !== key) };
+    });
+  }
+
+  function updateSub(key: string, patch: Partial<SubIntake>) {
     setForm((f) => ({
       ...f,
-      subs: f.subs.map((s) => (s.scope === scope ? { ...s, ...patch } : s)),
+      subs: f.subs.map((s) => (s.key === key ? { ...s, ...patch } : s)),
     }));
   }
 
-  function toggleSubSkip(scope: string) {
+  function toggleSubSkip(key: string) {
     setForm((f) => ({
       ...f,
       subs: f.subs.map((s) =>
-        s.scope === scope
+        s.key === key
           ? s.skipped
             ? { ...s, skipped: false }
             : {
@@ -482,9 +506,9 @@ function NewPermitPage() {
   );
 
   /** Fill a trade row from the GC's own saved subcontractor library. */
-  function pickSavedSub(scope: string, sub: SubRow) {
+  function pickSavedSub(key: string, sub: SubRow) {
     const contact = [sub.contact_first_name, sub.contact_last_name].filter(Boolean).join(" ");
-    updateSubByScope(scope, {
+    updateSub(key, {
       companyName: sub.company_name,
       licenseNumber: sub.license_number ?? "",
       contactName: contact || sub.qualifier_name || "",
@@ -495,8 +519,8 @@ function NewPermitPage() {
   }
 
   /** Fill a trade row from Cleard's paid roster. */
-  function pickMarketplaceSub(scope: string, sub: MarketplaceSub) {
-    updateSubByScope(scope, {
+  function pickMarketplaceSub(key: string, sub: MarketplaceSub) {
+    updateSub(key, {
       companyName: sub.company_name,
       licenseNumber: sub.license_number ?? "",
       contactName: sub.qualifier_name ?? "",
@@ -506,6 +530,7 @@ function NewPermitPage() {
     });
     setPickerScope(null);
   }
+
 
 
   function gapsForRow(s: SubIntake): CoverageGap[] {
