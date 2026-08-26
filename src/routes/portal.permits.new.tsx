@@ -110,7 +110,9 @@ const OPTIONAL_SCOPES = new Set(["Hardscape / Pavers", "Structural", "Demolition
 type DocState = { uploaded: string | null; na: boolean; deferred: boolean };
 
 type SubIntake = {
-  /** The scope name that spawned this row (stable key). */
+  /** Stable row id — a scope can carry several subcontractor rows. */
+  key: string;
+  /** The scope name that spawned this row. */
   scope: string;
   trade: string;
   companyName: string;
@@ -123,7 +125,11 @@ type SubIntake = {
   marketplaceSubId: string | null;
 };
 
+let subKeySeq = 0;
+const newSubKey = () => `sub-${Date.now().toString(36)}-${subKeySeq++}`;
+
 const emptySub = (scope: string): SubIntake => ({
+  key: newSubKey(),
   scope,
   trade: SCOPE_TO_TRADE[scope] ?? scope,
   companyName: "",
@@ -133,6 +139,7 @@ const emptySub = (scope: string): SubIntake => ({
   skipped: false,
   marketplaceSubId: null,
 });
+
 
 /** A row the GC has started filling in must be finished, or explicitly skipped. */
 function subRowMissingFields(s: SubIntake): string[] {
