@@ -949,6 +949,7 @@ function NewPermitPage() {
       } else {
         const row = await createPermit({ ...permitPatch, status: "submitted" });
         rowId = row.id;
+        await uploadStagedExtras(row);
         // Auto-generate internal NTBO (hidden from GC). Best-effort.
         void import("@/lib/ntbo-auto").then((m) => m.autoGenerateNTBOForPermit(row));
         // Auto-generate NOC (Palm Beach County std form) pre-filled from
