@@ -11,6 +11,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import type { AuthIdentityClient, RoleTableClient } from "@/lib/portal-logins-access.server";
+import { portalLoginUpsertRow } from "@/lib/portal-logins-save";
 import { z } from "zod";
 
 /** The service-role client, narrowed to what the access helpers read. */
@@ -53,23 +54,13 @@ export const savePortalLogin = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     const { encryptSecret } = await import("@/lib/portal-logins-crypto.server");
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { error } = await supabaseAdmin.from("gc_portal_logins" as any).upsert(
-      {
-        user_id: context.userId,
-        tenant_id: data.tenant_id ?? null,
-        municipality_slug: data.municipality_slug,
-        city_name: data.city_name,
-        username_ciphertext: encryptSecret(data.username),
-        password_ciphertext: encryptSecret(data.password),
-        notes: data.notes ?? null,
-        portal_url: data.portal_url ?? null,
-        registration: data.registration ?? null,
-        e_plan: data.e_plan ?? false,
-        derm: data.derm ?? false,
-        updated_at: new Date().toISOString(),
-      },
-      { onConflict: "user_id,municipality_slug" },
-    );
+    // Only columns the caller sent are in the row. On conflict Postgres leaves
+    // omitted metadata (portal_url, registration, flags, tenant) untouched.
+    const { error } = await supabaseAdmin
+      .from("gc_portal_logins" as any)
+      .upsert(portalLoginUpsertRow(context.userId, data, encryptSecret), {
+        onConflict: "user_id,municipality_slug",
+      });
     if (error) throw new Error(error.message);
     return { ok: true };
   });
