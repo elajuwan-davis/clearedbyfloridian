@@ -343,11 +343,10 @@ function LoginPage() {
           <div className="mt-8 pt-6 border-t hairline space-y-3">
             <p className="text-sm">
               New here?{" "}
-              <Link to="/join" className="underline font-medium">
+              <Link to="/signup" className="underline font-medium">
                 Create an account
               </Link>{" "}
-              — or continue with Google above. Either way you start on a trial account with your
-              own permits unlocked; the rest opens once our team upgrades you.
+              or continue with Google.
             </p>
             <p className="text-xs text-muted-foreground leading-relaxed">
               Questions? info@cleardinc.com
