@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
-import { ChevronDown, ChevronRight, ChevronLeft, LogOut, Menu, X, Building2, Check, ShieldCheck, Sun, Moon, FileText, MessageSquare, Calendar, Bell, Bookmark, BookmarkCheck } from "lucide-react";
+import { ChevronDown, ChevronRight, ChevronLeft, LogOut, Menu, X, Building2, Check, ShieldCheck, Sun, Moon, FileText, MessageSquare, Calendar, Bell, Bookmark, BookmarkCheck, Sparkle } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
 import { cn } from "@/lib/utils";
 
@@ -790,7 +790,17 @@ function PortalShellInner({ children }: { children: ReactNode }) {
               </button>
             )}
             <ThemeToggle />
-            {!permitsOnly && <AskVictoriaDock variant="nav" />}
+            {!permitsOnly && (plan.isTrial ? (
+              <Link
+                to="/ask-victoria"
+                className="grid h-8 w-8 place-items-center rounded-lg transition hover:bg-[var(--rail-hover)]"
+                style={{ color: "var(--muted-foreground)" }}
+                title="Ask Victoria — locked"
+                aria-label="Ask Victoria — locked"
+              >
+                <Sparkle className="h-4 w-4" strokeWidth={1.75} />
+              </Link>
+            ) : <AskVictoriaDock variant="nav" />)}
             {!permitsOnly && <BookmarkToggle />}
             {!permitsOnly && <NotificationBell />}
 
