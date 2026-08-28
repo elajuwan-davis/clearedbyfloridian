@@ -49,45 +49,8 @@ type LocateRow = {
   ticket: string;
 };
 
-// Mock rows — replaced by live tickets once the locate API is wired.
-const MOCK_ROWS: LocateRow[] = [
-  {
-    id: "l1",
-    project: "Whitmore Residence",
-    address: "1420 Coquina Way, Jupiter, FL",
-    requested: "2026-07-27",
-    digStart: "2026-08-03",
-    status: "submitted",
-    ticket: "CLR-8114-207731",
-  },
-  {
-    id: "l2",
-    project: "Alders Estate",
-    address: "88 Southshore Dr, Palm City, FL",
-    requested: "2026-07-14",
-    digStart: "2026-07-20",
-    status: "cleared",
-    ticket: "CLR-8114-204168",
-  },
-  {
-    id: "l3",
-    project: "Seabrook Courtyard",
-    address: "3305 Marlin Ct, Stuart, FL",
-    requested: "2026-07-06",
-    digStart: "2026-07-10",
-    status: "action_required",
-    ticket: "CLR-8114-201942",
-  },
-  {
-    id: "l4",
-    project: "Rivera Poolhouse",
-    address: "702 Almeria Rd, West Palm Beach, FL",
-    requested: "2026-05-28",
-    digStart: "2026-06-02",
-    status: "expired",
-    ticket: "CLR-8114-198520",
-  },
-];
+// Live tickets only — seeded demo rows removed.
+const MOCK_ROWS: LocateRow[] = [];
 
 function fmtDate(iso: string) {
   const d = new Date(iso);
