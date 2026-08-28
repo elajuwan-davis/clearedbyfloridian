@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { FileStack, Map, Users } from "lucide-react";
 import { MarketingShell } from "@/components/marketing-shell";
@@ -27,9 +27,9 @@ const MUTED = `color-mix(in oklab, ${OBSIDIAN} 55%, transparent)`;
 const HAIRLINE = `color-mix(in oklab, ${OBSIDIAN} 12%, transparent)`;
 
 function JoinPage() {
-  const navigate = useNavigate();
   const signUp = useServerFn(selfServeSignupFn);
-  const [state, setState] = useState<"idle" | "submitting" | "created" | "error">("idle");
+  const [state, setState] = useState<"idle" | "submitting" | "verify" | "error">("idle");
+  const [resent, setResent] = useState<"idle" | "sending" | "sent" | "failed">("idle");
   const [errorMsg, setErrorMsg] = useState("");
   const [form, setForm] = useState({
     name: "",
@@ -70,17 +70,34 @@ function JoinPage() {
           password,
         },
       });
-      // The account is created pre-confirmed, so signing in works immediately.
-      const { error: signInError } = await supabase.auth.signInWithPassword({
-        email: form.email.trim(),
-        password,
-      });
-      if (signInError) throw new Error(signInError.message);
-      setState("created");
-      await navigate({ to: "/onboarding", search: { entry: "selfserve" } as never });
+      // The account exists but is unconfirmed: prove the address before it can sign in.
+      // The confirmation link lands on /auth/callback, which routes a self-serve arrival
+      // to the PAA.
+      await sendVerificationEmail();
+      setState("verify");
     } catch (err) {
       setState("error");
       setErrorMsg(err instanceof Error ? err.message : "Something went wrong.");
+    }
+  }
+
+  async function sendVerificationEmail() {
+    await supabase.auth.resend({
+      type: "signup",
+      email: form.email.trim(),
+      options: {
+        emailRedirectTo: `${window.location.origin}/auth/callback?entry=selfserve`,
+      },
+    });
+  }
+
+  async function onResend() {
+    setResent("sending");
+    try {
+      await sendVerificationEmail();
+      setResent("sent");
+    } catch {
+      setResent("failed");
     }
   }
 
@@ -340,24 +357,43 @@ function JoinPage() {
             Tell us about your operation and we'll get you set up.
           </p>
 
-          {state !== "created" && (
+          {state !== "verify" && (
             <VictoriaVoiceSignup
               disabled={state === "submitting"}
               onField={(field: VictoriaField, value) => set(field, value)}
             />
           )}
 
-          {state === "created" ? (
+          {state === "verify" ? (
             <div className="text-center py-12">
               <div
                 className="font-mono text-[10px] uppercase mb-4"
                 style={{ color: OBSIDIAN, letterSpacing: "0.32em" }}
               >
-                Account created
+                Verify your email
               </div>
               <p style={{ color: OBSIDIAN }} className="text-lg">
-                Signing you in…
+                We sent a confirmation link to {form.email.trim()}.
               </p>
+              <p className="mt-3 text-[14px]" style={{ color: MUTED }}>
+                Click it and you'll land straight on your permit agent authorization. The link
+                is what proves the address is yours — the account can't be used until then.
+              </p>
+              <button
+                type="button"
+                onClick={onResend}
+                disabled={resent === "sending"}
+                className="mt-8 font-mono text-[10px] uppercase tracking-[0.2em] underline disabled:opacity-50"
+                style={{ color: OBSIDIAN }}
+              >
+                {resent === "sending"
+                  ? "Sending…"
+                  : resent === "sent"
+                    ? "Sent again — check your inbox"
+                    : resent === "failed"
+                      ? "Couldn't resend — try again"
+                      : "Didn't get it? Resend"}
+              </button>
             </div>
           ) : (
             <form onSubmit={onSubmit} className="space-y-6">

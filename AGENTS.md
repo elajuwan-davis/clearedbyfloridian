@@ -35,7 +35,15 @@ Storage. See `README.md` / `FEATURES.md` for the full feature map.
 - The portal and many routes (`/portal`, `/dashboard`, `/fee-calculator`, `/admin`, `/forms`, …)
   are guarded by `PortalShell` (`protectedPortalPrefixes` in `src/components/portal-shell.tsx`) and
   redirect anonymous visitors to `/login`.
-- There is **no self-serve signup UI** — access is invite/admin-based (`/login` is sign-in only).
+- `/join` is **self-serve signup**: `selfServeSignupFn` creates the tenant + an *unconfirmed*
+  auth user, the page asks Supabase to send the confirmation email, and the link returns to
+  `/auth/callback?entry=selfserve` → PAA. `/login` stays sign-in only, and admin invites are
+  unchanged. Because it is public, it is rate-limited per IP and per email through
+  `public.signup_attempts` (`src/lib/signup-rate-limit.server.ts`) — do not remove that, and do
+  not go back to `email_confirm: true`. A verified address is enforced app-side too, in
+  `evaluatePortalAccessFn` and on the `/login` password path, so it holds regardless of the
+  project's email-confirmation setting. Real signups need SMTP configured in Supabase Auth;
+  the built-in mailer is throttled to a couple of messages an hour.
 - The hosted Supabase project **requires email confirmation**, so a brand-new account created via
   the anon `signUp` endpoint cannot sign in until its email is confirmed. Authenticated portal
   flows are similarly out of scope for Cloud Agents unless a pre-confirmed test login is already

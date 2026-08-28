@@ -1,12 +1,17 @@
-// Self-serve signup: create a tenant + a pre-confirmed auth user in one shot, with no
-// admin approval and no invite email. Modelled on approveAccessRequestFn in tenants.functions.ts
-// (same tenant-then-user sequence); the difference is that the account exists immediately.
+// Self-serve signup: create a tenant + an auth user in one shot, with no admin approval.
+// Modelled on approveAccessRequestFn in tenants.functions.ts (same tenant-then-user sequence);
+// the difference is that the account exists immediately.
+//
+// The account is created *unconfirmed*: the caller then asks Supabase to send the confirmation
+// email, and the portal gate (evaluatePortalAccessFn) refuses an unverified address, so an
+// address nobody controls cannot reach the portal.
 //
 // The PAA signature gate is unchanged — a self-serve account still cannot enter the portal
 // until it signs, exactly like an invited one.
 
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
+import type { SignupAttemptsClient } from "@/lib/signup-rate-limit.server";
 
 const SelfServeInput = z.object({
   name: z.string().min(1).max(200),
@@ -33,6 +38,13 @@ export const selfServeSignupFn = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) => SelfServeInput.parse(d))
   .handler(async ({ data }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { enforceSignupRateLimit } = await import("@/lib/signup-rate-limit.server");
+
+    // 0. /join is public, so cap attempts per network and per email before writing anything.
+    await enforceSignupRateLimit(
+      supabaseAdmin as unknown as SignupAttemptsClient,
+      data.email.trim().toLowerCase(),
+    );
 
     // 1. Create the tenant (plan defaults to 'trial' per the migration).
     const { data: tenant, error: tErr } = await (supabaseAdmin.from("tenants" as any) as any)
@@ -45,14 +57,14 @@ export const selfServeSignupFn = createServerFn({ method: "POST" })
       .single();
     if (tErr) throw new Error(tErr.message);
 
-    // 2. Create the auth user directly, pre-confirmed, no email round-trip.
-    //    handle_new_user() reads tenant_id/role off raw_user_meta_data and inserts
+    // 2. Create the auth user, unconfirmed — the email has to be proved before this account
+    //    is worth anything. handle_new_user() reads tenant_id/role off raw_user_meta_data and inserts
     //    user_roles + tenant_members itself — the same contract approveAccessRequestFn
     //    relies on, so don't write those rows here.
     const { data: created, error: uErr } = await (supabaseAdmin.auth.admin as any).createUser({
       email: data.email,
       password: data.password,
-      email_confirm: true,
+      email_confirm: false,
       user_metadata: {
         full_name: data.name,
         phone: data.phone ?? undefined,
@@ -72,5 +84,11 @@ export const selfServeSignupFn = createServerFn({ method: "POST" })
       );
     }
 
-    return { ok: true, tenantId: tenant.id as string, userId: created.user?.id ?? null };
+    return {
+      ok: true,
+      tenantId: tenant.id as string,
+      userId: created.user?.id ?? null,
+      /** The caller must trigger the confirmation email; sign-in is blocked until it's used. */
+      verificationRequired: true,
+    };
   });
