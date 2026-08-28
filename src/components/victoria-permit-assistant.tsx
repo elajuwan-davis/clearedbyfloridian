@@ -473,6 +473,26 @@ export function VictoriaPermitAssistant({
 
       <div className="mt-2.5 text-[15px] leading-snug text-obsidian">{current?.prompt}</div>
 
+      {current?.kind === "scopes" && scopeOptions.length > 0 && (
+        <div className="mt-2.5 flex flex-wrap gap-1.5">
+          {scopeOptions.map((s) => (
+            <button
+              key={s}
+              type="button"
+              onClick={() => {
+                onScopes?.([s]);
+                setScript([s]);
+                setHeard({ label: "Scope of work", value: s });
+              }}
+              className="rounded-[3px] border border-obsidian/20 px-2 py-1 font-mono text-[10px] uppercase tracking-[0.12em] text-obsidian/70 hover:bg-obsidian/5"
+            >
+              {s}
+            </button>
+          ))}
+        </div>
+      )}
+
+
       <div className="mt-3 flex items-center gap-3">
         <span
           className={`inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.16em] ${listening ? "text-obsidian" : "text-obsidian/50"}`}
