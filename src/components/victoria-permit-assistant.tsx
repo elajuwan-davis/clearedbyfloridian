@@ -284,7 +284,7 @@ export function VictoriaPermitAssistant({
   const listenFor = useCallback(
     (step: number) => {
       const Ctor = getRecognitionCtor();
-      const field = SCRIPT[step];
+      const field = stepsRef.current[step];
       if (!Ctor || !field) return;
 
       teardown();
@@ -301,7 +301,7 @@ export function VictoriaPermitAssistant({
       const next = (delay: number) => {
         advance.current = window.setTimeout(() => {
           const n = step + 1;
-          if (n >= SCRIPT.length) {
+          if (n >= stepsRef.current.length) {
             setNotice("That's the form — review it, add your documents, then continue.");
             return;
           }
@@ -317,6 +317,35 @@ export function VictoriaPermitAssistant({
           next(300);
           return;
         }
+
+        // Trades: one utterance can name several, and each one adds its own
+        // subcontractor block to the rest of the script.
+        if (field.kind === "scopes") {
+          const picked = matchScopes(transcript, scopeOptions);
+          if (!picked.length) {
+            setNotice("Didn't catch a trade — name them again, or pick them on the form.");
+            return;
+          }
+          onScopes?.(picked);
+          setScript(picked);
+          setHeard({ label: field.label, value: picked.join(", ") });
+          next(1400);
+          return;
+        }
+
+        if (field.kind === "sub") {
+          const value =
+            field.field === "contactEmail" ? tidyEmail(transcript) : transcript.trim();
+          if (!value) {
+            setNotice("Didn't catch that — say it again, or type it in.");
+            return;
+          }
+          onSubField?.(field.scope, field.field, value);
+          setHeard({ label: field.label, value });
+          next(1400);
+          return;
+        }
+
         const value = tidy(field.key, transcript);
         if (!value) {
           setNotice("Didn't catch that — say it again, or type it in.");
