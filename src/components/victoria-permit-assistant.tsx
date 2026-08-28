@@ -137,7 +137,10 @@ const SUB_FIELD_ORDER: VictoriaSubField[] = [
 ];
 
 /** The full script: project fields, then a sub block per selected scope, then the tail. */
-function buildSteps(scopes: string[]): Step[] {
+function buildSteps(scopes: string[], scopeOptions: string[] = []): Step[] {
+  const project = PROJECT_STEPS.map((s) =>
+    s.kind === "scopes" ? { ...s, prompt: scopesPrompt(scopeOptions) } : s,
+  );
   const subSteps: Step[] = [];
   for (const scope of scopes) {
     for (const field of SUB_FIELD_ORDER) {
