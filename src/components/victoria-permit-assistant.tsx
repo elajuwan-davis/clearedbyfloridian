@@ -210,6 +210,24 @@ export function matchMunicipality(raw: string): string {
   return contains ?? raw.trim();
 }
 
+/**
+ * "Pool and spa, electrical and plumbing" → the exact scope options the form offers.
+ * Each spoken fragment is matched against the catalog; unmatched words are dropped
+ * rather than invented, since the picker only accepts real scopes.
+ */
+export function matchScopes(raw: string, options: string[]): string[] {
+  const said = raw.toLowerCase();
+  const picked: string[] = [];
+  for (const option of options) {
+    const words = normalize(option)
+      .split(" ")
+      .filter((w) => w.length > 2);
+    const hit = words.some((w) => normalize(said).includes(w));
+    if (hit) picked.push(option);
+  }
+  return picked;
+}
+
 function tidy(key: VictoriaPermitField, raw: string): string {
   const text = raw.trim();
   switch (key) {
@@ -375,13 +393,13 @@ export function VictoriaPermitAssistant({
         setNotice("Voice input couldn't start — type the form instead.");
       }
     },
-    [onField, teardown],
+    [onField, onScopes, onSubField, scopeOptions, setScript, teardown],
   );
 
   // No Web Speech API (Safari/Firefox): show nothing rather than a button that can't work.
   if (!supported) return null;
 
-  const current = SCRIPT[index];
+  const current = steps[index];
 
   if (!open) {
     return (
@@ -392,6 +410,7 @@ export function VictoriaPermitAssistant({
           setOpen(true);
           setHeard(null);
           setNotice(null);
+          setScript([]);
           listenFor(0);
         }}
         title="Fill this permit by voice"
@@ -410,7 +429,7 @@ export function VictoriaPermitAssistant({
     >
       <div className="flex items-center justify-between gap-3">
         <div className="inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.16em] text-obsidian/55">
-          <Sparkles className="h-3.5 w-3.5" /> Victoria · {index + 1} of {SCRIPT.length}
+          <Sparkles className="h-3.5 w-3.5" /> Victoria · {index + 1} of {steps.length}
         </div>
         <button
           type="button"
