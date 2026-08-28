@@ -2216,7 +2216,44 @@ function NewPermitPage() {
         docsRequired={checklist.length}
         className="lg:sticky lg:top-6 self-start"
       />
+      {victoriaIntro && (
+        <div className="fixed inset-0 z-50 grid place-items-center bg-obsidian/40 p-4">
+          <div className="w-full max-w-md rounded-[3px] border border-obsidian/20 bg-white p-5 shadow-[0_24px_60px_-20px_rgba(47,79,79,0.5)]">
+            <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-obsidian/55">
+              Victoria · Voice intake
+            </div>
+            <h2 className="mt-2 text-[19px] leading-snug text-obsidian">
+              You can talk this permit in — no typing needed
+            </h2>
+            <p className="mt-2 text-[13.5px] leading-relaxed text-obsidian/70">
+              Victoria walks the form field by field: she asks, you answer out loud, and she writes
+              it in — project details, scope of work, subcontractors, design pros and all. Say
+              “skip” to leave a field for later. Typing still works exactly as before.
+            </p>
+            <div className="mt-4 flex flex-wrap gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  dismissVictoriaIntro();
+                  setVictoriaSignal((n) => n + 1);
+                }}
+                className="inline-flex items-center gap-2 rounded-[3px] bg-obsidian px-4 py-2.5 font-mono text-[10px] uppercase tracking-[0.14em] text-paper hover:bg-obsidian/90"
+              >
+                Give it a go
+              </button>
+              <button
+                type="button"
+                onClick={dismissVictoriaIntro}
+                className="inline-flex items-center gap-2 rounded-[3px] border border-obsidian/20 px-4 py-2.5 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian hover:bg-obsidian/5"
+              >
+                I'll type it
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       <VictoriaPermitAssistant
+        openSignal={victoriaSignal}
         scopeOptions={SCOPE_OPTIONS as unknown as string[]}
         onField={(field, value) => {
           // Victoria only ever writes step-1 text fields, so send the user back there if
