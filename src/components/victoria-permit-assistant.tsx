@@ -232,9 +232,18 @@ function tidy(key: VictoriaPermitField, raw: string): string {
 
 export function VictoriaPermitAssistant({
   onField,
+  onScopes,
+  onSubField,
+  scopeOptions = [],
 }: {
   /** Writes one value into the permit form; the form stays fully editable by hand. */
   onField: (field: VictoriaPermitField, value: string) => void;
+  /** Selects the spoken trades on the form (adds their subcontractor rows). */
+  onScopes?: (scopes: string[]) => void;
+  /** Writes one value onto the first subcontractor row of a selected scope. */
+  onSubField?: (scope: string, field: VictoriaSubField, value: string) => void;
+  /** The scope catalog the form offers, so spoken trades land on real options. */
+  scopeOptions?: string[];
 }) {
   const [supported, setSupported] = useState(false);
   const [open, setOpen] = useState(false);
@@ -242,8 +251,16 @@ export function VictoriaPermitAssistant({
   const [listening, setListening] = useState(false);
   const [heard, setHeard] = useState<{ label: string; value: string } | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
+  const [steps, setSteps] = useState<Step[]>(() => buildSteps([]));
+  const stepsRef = useRef<Step[]>(steps);
   const recognition = useRef<SpeechRecognitionLike | null>(null);
   const advance = useRef<number | null>(null);
+
+  const setScript = useCallback((scopes: string[]) => {
+    const next = buildSteps(scopes);
+    stepsRef.current = next;
+    setSteps(next);
+  }, []);
 
   useEffect(() => {
     setSupported(!!getRecognitionCtor());
