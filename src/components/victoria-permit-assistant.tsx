@@ -423,6 +423,7 @@ export function VictoriaPermitAssistant({
     setOpen(true);
     setHeard(null);
     setNotice(null);
+    setPicked([]);
     setScript([]);
     listenFor(0);
   }, [listenFor, setScript]);
