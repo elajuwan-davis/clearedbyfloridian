@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
-import { ChevronDown, ChevronRight, ChevronLeft, LogOut, Menu, X, Building2, Check, ShieldCheck, Sun, Moon, FileText, MessageSquare, Calendar, Bell, Bookmark, BookmarkCheck, Sparkle } from "lucide-react";
+import { ChevronDown, ChevronRight, ChevronLeft, LogOut, Menu, X, Building2, Check, ShieldCheck, FileText, MessageSquare, Calendar, Bell, Bookmark, BookmarkCheck, Sparkle } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
 import { cn } from "@/lib/utils";
 
@@ -1001,38 +1001,6 @@ function AdminTenantSwitcher() {
         </DropdownMenuContent>
       </DropdownMenu>
     </div>
-  );
-}
-
-function ThemeToggle() {
-  const [dark, setDark] = useState(false);
-
-  useEffect(() => {
-    setDark(document.documentElement.classList.contains("dark"));
-  }, []);
-
-  const toggle = () => {
-    const next = !dark;
-    setDark(next);
-    document.documentElement.classList.toggle("dark", next);
-    try {
-      localStorage.setItem("cleard-theme", next ? "dark" : "light");
-    } catch {
-      /* storage unavailable */
-    }
-  };
-
-  return (
-    <button
-      type="button"
-      onClick={toggle}
-      className="grid place-items-center h-9 w-9 rounded-md border transition-colors hover:bg-secondary"
-      style={{ borderColor: "var(--border)", color: "var(--muted-foreground)" }}
-      title={dark ? "Switch to light mode" : "Switch to dark mode"}
-      aria-label={dark ? "Switch to light mode" : "Switch to dark mode"}
-    >
-      {dark ? <Sun className="h-4 w-4" strokeWidth={1.5} /> : <Moon className="h-4 w-4" strokeWidth={1.5} />}
-    </button>
   );
 }
 
