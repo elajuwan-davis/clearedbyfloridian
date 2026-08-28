@@ -217,11 +217,14 @@ export const setTenantPlanFn = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     await assertAdmin(context.userId);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { error } = await (supabaseAdmin.from("tenants" as any) as any)
+    const { data: row, error } = await (supabaseAdmin.from("tenants" as any) as any)
       .update({ plan: data.plan })
-      .eq("id", data.tenant_id);
+      .eq("id", data.tenant_id)
+      .select("id, plan")
+      .maybeSingle();
     if (error) throw new Error(error.message);
-    return { tenant_id: data.tenant_id, plan: data.plan };
+    if (!row) throw new Error("That tenant no longer exists");
+    return { tenant_id: row.id as string, plan: row.plan as "trial" | "full" };
   });
 
 // Called during GC onboarding after they accept invite and set password.
