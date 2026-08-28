@@ -285,16 +285,19 @@ export function VictoriaPermitAssistant({
   const [listening, setListening] = useState(false);
   const [heard, setHeard] = useState<{ label: string; value: string } | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
-  const [steps, setSteps] = useState<Step[]>(() => buildSteps([]));
+  const [steps, setSteps] = useState<Step[]>(() => buildSteps([], scopeOptions));
   const stepsRef = useRef<Step[]>(steps);
   const recognition = useRef<SpeechRecognitionLike | null>(null);
   const advance = useRef<number | null>(null);
 
-  const setScript = useCallback((scopes: string[]) => {
-    const next = buildSteps(scopes);
-    stepsRef.current = next;
-    setSteps(next);
-  }, []);
+  const setScript = useCallback(
+    (scopes: string[]) => {
+      const next = buildSteps(scopes, scopeOptions);
+      stepsRef.current = next;
+      setSteps(next);
+    },
+    [scopeOptions],
+  );
 
   useEffect(() => {
     setSupported(!!getRecognitionCtor());
