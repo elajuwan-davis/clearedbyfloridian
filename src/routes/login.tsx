@@ -342,7 +342,7 @@ function LoginPage() {
 
           <div className="mt-10 pt-6 border-t hairline">
             <p className="text-xs text-muted-foreground leading-relaxed">
-              New here? Contact us at permits@floridianinc.com to set up your firm's portal access.
+              New here? Contact us at info@cleardinc.com to set up your firm's portal access.
             </p>
           </div>
         </div>
