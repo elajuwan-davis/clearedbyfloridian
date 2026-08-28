@@ -8,11 +8,11 @@ type Msg = { id: string; role: "user" | "assistant"; content: string };
 const uid = () => Math.random().toString(36).slice(2, 10);
 
 /**
- * Persistent Ask Victoria launcher — a small ping in the top-right corner of the
- * portal that opens the same Victoria chat, so Ask Victoria no longer needs a
- * sidebar nav slot.
+ * Persistent Ask Victoria launcher. `variant="nav"` renders an inline icon button
+ * meant to sit in the portal top bar (the default floating bubble is kept for
+ * any surface that still wants a corner launcher).
  */
-export function AskVictoriaDock() {
+export function AskVictoriaDock({ variant = "float" }: { variant?: "float" | "nav" } = {}) {
   const [open, setOpen] = useState(false);
   const [input, setInput] = useState("");
   const [thinking, setThinking] = useState(false);
@@ -41,6 +41,8 @@ export function AskVictoriaDock() {
     }, 500);
   }
 
+  const isNav = variant === "nav";
+
   return (
     <>
       <button
@@ -48,15 +50,28 @@ export function AskVictoriaDock() {
         onClick={() => setOpen((v) => !v)}
         aria-label="Ask Victoria"
         title="Ask Victoria"
-        className="fixed bottom-5 right-5 z-[60] grid h-11 w-11 place-items-center rounded-full shadow-lg transition hover:opacity-90"
-        style={{ backgroundColor: "var(--obsidian)", color: "var(--paper)" }}
+        className={
+          isNav
+            ? "grid h-8 w-8 place-items-center rounded-lg transition hover:bg-[var(--rail-hover)]"
+            : "fixed bottom-5 right-5 z-[60] grid h-11 w-11 place-items-center rounded-full shadow-lg transition hover:opacity-90"
+        }
+        style={
+          isNav
+            ? { color: "var(--muted-foreground)" }
+            : { backgroundColor: "var(--obsidian)", color: "var(--paper)" }
+        }
       >
-        <Sparkle className="h-5 w-5" strokeWidth={1.75} />
+        <Sparkle className={isNav ? "h-4 w-4" : "h-5 w-5"} strokeWidth={1.75} />
       </button>
 
       {open && (
         <div
-          className="fixed bottom-20 right-5 z-[60] flex h-[520px] max-h-[calc(100vh-7rem)] w-[380px] max-w-[calc(100vw-2rem)] flex-col rounded-xl border shadow-2xl"
+          className={
+            isNav
+              ? "fixed right-4 top-14 z-[60] flex h-[520px] max-h-[calc(100vh-5rem)] w-[380px] max-w-[calc(100vw-2rem)] flex-col rounded-xl border shadow-2xl"
+              : "fixed bottom-20 right-5 z-[60] flex h-[520px] max-h-[calc(100vh-7rem)] w-[380px] max-w-[calc(100vw-2rem)] flex-col rounded-xl border shadow-2xl"
+          }
+
           style={{ backgroundColor: "var(--card)", borderColor: "var(--border)" }}
         >
           <header
