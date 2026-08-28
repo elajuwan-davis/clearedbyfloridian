@@ -48,6 +48,7 @@ export function AskVictoriaDock({ variant = "float" }: { variant?: "float" | "na
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
+        data-tour={isNav ? "ask-victoria" : undefined}
         aria-label="Ask Victoria"
         title="Ask Victoria — AI that oversees your permits and helps you at every step to get them cleared"
         className={
