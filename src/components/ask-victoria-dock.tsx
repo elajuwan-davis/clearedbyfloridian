@@ -82,8 +82,9 @@ export function AskVictoriaDock({ variant = "float" }: { variant?: "float" | "na
               <Sparkle className="h-4 w-4" strokeWidth={1.5} />
               <div>
                 <div className="text-[13px] font-medium">Ask Victoria</div>
-                <div className="font-mono text-[9px] uppercase tracking-[0.18em] opacity-70">
-                  AI Permitting Assistant
+                <div className="text-[10.5px] leading-snug opacity-75">
+                  AI that oversees your permits and helps you at every step of the way to get
+                  them cleared.
                 </div>
               </div>
             </div>
