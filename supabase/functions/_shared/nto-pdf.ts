@@ -96,13 +96,18 @@ function wrap(text: string, maxChars: number): string[] {
 }
 
 export function downloadPdf(bytes: Uint8Array, filename: string) {
+  // Browser-only helper: `document` does not exist in the Deno/edge runtime, so it is
+  // reached through globalThis to keep this module type-checkable on the server.
+  const doc = (globalThis as unknown as { document?: any }).document;
+  if (!doc) return;
   const blob = new Blob([bytes as BlobPart], { type: "application/pdf" });
   const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
+  const a = doc.createElement("a");
   a.href = url;
   a.download = filename;
-  document.body.appendChild(a);
+  doc.body.appendChild(a);
   a.click();
   a.remove();
   setTimeout(() => URL.revokeObjectURL(url), 2000);
 }
+
