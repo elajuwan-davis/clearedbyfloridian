@@ -110,6 +110,7 @@ import { getPortalRole, canRequestNotary } from "@/lib/portal-role";
 import { ProjectInternalOps } from "@/components/project-internal-ops";
 import { logAudit } from "@/lib/audit-log";
 import { ShieldAlert, History } from "lucide-react";
+import { slugifyCity } from "@/lib/municipality-slug";
 
 const fmtMoneyWhole = (cents: number) =>
   `$${(cents / 100).toLocaleString("en-US", { maximumFractionDigits: 0 })}`;
@@ -1190,7 +1191,9 @@ function HoaSubmittalTab({ project }: { project: Project }) {
 /* readable by any script on the page.                                */
 /* ------------------------------------------------------------------ */
 function PortalLoginPopover({ project }: { project: Project }) {
-  const slug = project.city.toLowerCase().replace(/\s+/g, "-");
+  // Must match the vault's canonical slug ("Port St. Lucie" -> "port-st-lucie"),
+  // otherwise the reveal misses and a save writes an orphan row.
+  const slug = slugifyCity(project.city);
   const reveal = useServerFn(revealOwnPortalLogin);
   const save = useServerFn(savePortalLogin);
 
