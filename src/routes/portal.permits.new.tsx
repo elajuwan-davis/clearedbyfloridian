@@ -82,6 +82,8 @@ export const Route = createFileRoute("/portal/permits/new")({
   component: NewPermitPage,
 });
 
+const VICTORIA_INTRO_KEY = "cleard_victoria_permit_intro_seen";
+
 const SCOPE_OPTIONS = [
   "Pool / Spa",
   "Hardscape / Pavers",
