@@ -40,6 +40,7 @@ import { Route as ProjectGuidesRouteImport } from './routes/project-guides'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as ResetPasswordConfirmRouteImport } from './routes/reset-password-confirm'
 import { Route as ServicesRouteImport } from './routes/services'
+import { Route as SignupRouteImport } from './routes/signup'
 import { Route as SubPortalRouteImport } from './routes/sub-portal'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
@@ -293,6 +294,11 @@ const ResetPasswordConfirmRoute = ResetPasswordConfirmRouteImport.update({
 const ServicesRoute = ServicesRouteImport.update({
   id: '/services',
   path: '/services',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SignupRoute = SignupRouteImport.update({
+  id: '/signup',
+  path: '/signup',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SubPortalRoute = SubPortalRouteImport.update({
@@ -839,6 +845,7 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof ResetPasswordRoute
   '/reset-password-confirm': typeof ResetPasswordConfirmRoute
   '/services': typeof ServicesRoute
+  '/signup': typeof SignupRoute
   '/sub-portal': typeof SubPortalRoute
   '/terms': typeof TermsRoute
   '/admin/access-requests': typeof AdminAccessRequestsRoute
@@ -969,6 +976,7 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/reset-password-confirm': typeof ResetPasswordConfirmRoute
   '/services': typeof ServicesRoute
+  '/signup': typeof SignupRoute
   '/sub-portal': typeof SubPortalRoute
   '/terms': typeof TermsRoute
   '/admin/access-requests': typeof AdminAccessRequestsRoute
@@ -1100,6 +1108,7 @@ export interface FileRoutesById {
   '/reset-password': typeof ResetPasswordRoute
   '/reset-password-confirm': typeof ResetPasswordConfirmRoute
   '/services': typeof ServicesRoute
+  '/signup': typeof SignupRoute
   '/sub-portal': typeof SubPortalRoute
   '/terms': typeof TermsRoute
   '/admin/access-requests': typeof AdminAccessRequestsRoute
@@ -1234,6 +1243,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/reset-password-confirm'
     | '/services'
+    | '/signup'
     | '/sub-portal'
     | '/terms'
     | '/admin/access-requests'
@@ -1364,6 +1374,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/reset-password-confirm'
     | '/services'
+    | '/signup'
     | '/sub-portal'
     | '/terms'
     | '/admin/access-requests'
@@ -1494,6 +1505,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/reset-password-confirm'
     | '/services'
+    | '/signup'
     | '/sub-portal'
     | '/terms'
     | '/admin/access-requests'
@@ -1627,6 +1639,7 @@ export interface RootRouteChildren {
   ResetPasswordRoute: typeof ResetPasswordRoute
   ResetPasswordConfirmRoute: typeof ResetPasswordConfirmRoute
   ServicesRoute: typeof ServicesRoute
+  SignupRoute: typeof SignupRoute
   SubPortalRoute: typeof SubPortalRoute
   TermsRoute: typeof TermsRoute
   AdminAccessRequestsRoute: typeof AdminAccessRequestsRoute
@@ -1896,6 +1909,13 @@ declare module '@tanstack/react-router' {
       path: '/services'
       fullPath: '/services'
       preLoaderRoute: typeof ServicesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/signup': {
+      id: '/signup'
+      path: '/signup'
+      fullPath: '/signup'
+      preLoaderRoute: typeof SignupRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/sub-portal': {
@@ -2760,6 +2780,7 @@ const rootRouteChildren: RootRouteChildren = {
   ResetPasswordRoute: ResetPasswordRoute,
   ResetPasswordConfirmRoute: ResetPasswordConfirmRoute,
   ServicesRoute: ServicesRoute,
+  SignupRoute: SignupRoute,
   SubPortalRoute: SubPortalRoute,
   TermsRoute: TermsRoute,
   AdminAccessRequestsRoute: AdminAccessRequestsRoute,
