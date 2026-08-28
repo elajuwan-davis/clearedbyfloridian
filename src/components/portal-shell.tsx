@@ -789,7 +789,6 @@ function PortalShellInner({ children }: { children: ReactNode }) {
                 Exit
               </button>
             )}
-            <ThemeToggle />
             {!permitsOnly && (plan.isTrial ? (
               <Link
                 to="/ask-victoria"
