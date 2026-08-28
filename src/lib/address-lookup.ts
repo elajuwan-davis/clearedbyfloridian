@@ -13,6 +13,10 @@
 // ---------------------------------------------------------------------------
 
 import { MUNICIPALITIES } from "@/lib/municipalities";
+import {
+  resolveMunicipality as resolveMunicipalityFromList,
+  type MunicipalityResolution,
+} from "@/lib/resolve-municipality";
 
 export type ResolvedAddress = {
   /** Formatted street line (number + street) — safe to store in "address". */
@@ -34,6 +38,7 @@ export type ResolvedAddress = {
 };
 
 export type AddressProvider = "google" | "census";
+export type { MunicipalityResolution };
 
 const env = import.meta.env as Record<string, string | undefined>;
 
@@ -64,7 +69,8 @@ export async function censusLookup(address: string): Promise<CensusLookupRespons
   if (!q) return { matches: [], error: "Enter a street address first." };
   try {
     const resp = await fetch(`/api/geocode-census?address=${encodeURIComponent(q)}`);
-    if (!resp.ok) return { matches: [], error: "Lookup service unavailable — enter the city manually." };
+    if (!resp.ok)
+      return { matches: [], error: "Lookup service unavailable — enter the city manually." };
     const json = (await resp.json()) as CensusLookupResponse;
     return { matches: json.matches ?? [], error: json.error };
   } catch {
@@ -76,17 +82,6 @@ export async function censusLookup(address: string): Promise<CensusLookupRespons
 // Municipality resolution (shared by both providers)
 // ---------------------------------------------------------------------------
 
-const norm = (s: string) => s.toLowerCase().replace(/[^a-z]/g, "");
-
-export type MunicipalityResolution = {
-  /** Value to place in the (still editable) Municipality / City field. */
-  municipality: string;
-  /** True when it matched an incorporated jurisdiction in our own list. */
-  matchedList: boolean;
-  /** True when the address falls in an unincorporated county area. */
-  unincorporated: boolean;
-};
-
 /**
  * Map a resolved address to the jurisdiction that actually issues the permit.
  *
@@ -95,26 +90,5 @@ export type MunicipalityResolution = {
  * like-named town (e.g. unincorporated Palm Beach County ≠ Town of Palm Beach).
  */
 export function resolveMunicipality(r: ResolvedAddress): MunicipalityResolution {
-  const countyLong = r.county
-    ? /county$/i.test(r.county)
-      ? r.county
-      : `${r.county} County`
-    : "";
-
-  if (r.city && r.incorporated) {
-    const target = norm(r.city);
-    const match = MUNICIPALITIES.find((m) => norm(m.name) === target);
-    if (match) return { municipality: match.name, matchedList: true, unincorporated: false };
-    return { municipality: r.city, matchedList: false, unincorporated: false };
-  }
-
-  if (countyLong) {
-    return {
-      municipality: `Unincorporated ${countyLong}`,
-      matchedList: false,
-      unincorporated: true,
-    };
-  }
-
-  return { municipality: r.city || "", matchedList: false, unincorporated: false };
+  return resolveMunicipalityFromList(r, MUNICIPALITIES);
 }
