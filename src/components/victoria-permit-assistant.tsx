@@ -285,6 +285,7 @@ export function VictoriaPermitAssistant({
   const [listening, setListening] = useState(false);
   const [heard, setHeard] = useState<{ label: string; value: string } | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
+  const [picked, setPicked] = useState<string[]>([]);
   const [steps, setSteps] = useState<Step[]>(() => buildSteps([], scopeOptions));
   const stepsRef = useRef<Step[]>(steps);
   const recognition = useRef<SpeechRecognitionLike | null>(null);
