@@ -14,9 +14,10 @@ import { toast } from "sonner";
 import { createRequest } from "@/lib/feature-requests-api";
 import { FEATURE_COPY, usePlanAccess, type GatedFeature } from "@/lib/plan-access";
 
-function useAccessRequest(feature: GatedFeature) {
+type LockCopy = { title: string; does: string; area: string };
+
+function useAccessRequest(copy: LockCopy) {
   const [state, setState] = useState<"idle" | "sending" | "sent">("idle");
-  const copy = FEATURE_COPY[feature];
 
   async function request() {
     if (state !== "idle") return;
@@ -81,7 +82,16 @@ export function LockedFeatureNotice({
   /** Optional extra context under the copy (e.g. what the GC can do meanwhile). */
   children?: ReactNode;
 }) {
-  const { state, request, copy } = useAccessRequest(feature);
+  return <LockedPageNotice copy={FEATURE_COPY[feature]}>{children}</LockedPageNotice>;
+}
+
+/**
+ * Same full-page lock for a page that isn't one of the four named features — every other
+ * portal section a trial plan doesn't include. `copy.title` is the page's own name, so the
+ * request that reaches staff says which page was wanted.
+ */
+export function LockedPageNotice({ copy, children }: { copy: LockCopy; children?: ReactNode }) {
+  const { state, request } = useAccessRequest(copy);
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
@@ -135,7 +145,8 @@ export function LockedFeatureButton({
   className?: string;
 }) {
   const [open, setOpen] = useState(false);
-  const { state, request, copy } = useAccessRequest(feature);
+  const copy = FEATURE_COPY[feature];
+  const { state, request } = useAccessRequest(copy);
 
   return (
     <div className="relative">

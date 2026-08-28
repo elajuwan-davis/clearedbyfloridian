@@ -7,13 +7,21 @@
  */
 import { Link, useRouterState } from "@tanstack/react-router";
 import { groupForPath, isTabActive, hasQualifiedTab } from "@/lib/portal-tabs";
+import { usePlanAccess, trialPathAllowed } from "@/lib/plan-access";
 
 export function SectionTabs() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const search = useRouterState({ select: (s) => s.location.search as Record<string, unknown> });
+  const plan = usePlanAccess();
 
-  const group = groupForPath(pathname);
-  if (!group || group.tabs.length < 2) return null;
+  const found = groupForPath(pathname);
+  // A trial plan only sees the tabs it can actually open, so the bar never
+  // offers a locked page.
+  const group =
+    found && plan.isTrial
+      ? { ...found, tabs: found.tabs.filter((t) => trialPathAllowed(t.to)) }
+      : found;
+  if (plan.loading || !group || group.tabs.length < 2) return null;
 
   const qualified = hasQualifiedTab(group, pathname, search ?? {});
 
@@ -25,13 +33,17 @@ export function SectionTabs() {
         borderBottom: "1px solid var(--p-border)",
       }}
     >
-      <nav className="flex min-w-max items-center px-3 sm:px-4 lg:px-6" aria-label={`${group.label} sections`}>
+      <nav
+        className="flex min-w-max items-center px-3 sm:px-4 lg:px-6"
+        aria-label={`${group.label} sections`}
+      >
         {group.tabs.map((tab, i) => {
           const active = qualified
             ? isTabActive(pathname, search ?? {}, tab)
             : // No query-qualified match (e.g. /portal/contacts with no ?type):
               // highlight the first tab that owns this path.
-              group.tabs.findIndex((t) => pathname === t.to || pathname.startsWith(`${t.to}/`)) === i;
+              group.tabs.findIndex((t) => pathname === t.to || pathname.startsWith(`${t.to}/`)) ===
+              i;
 
           return (
             <Link

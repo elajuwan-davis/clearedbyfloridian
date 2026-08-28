@@ -59,6 +59,34 @@ export const FEATURE_COPY: Record<GatedFeature, FeatureCopy> = {
   },
 };
 
+/**
+ * The only portal paths a trial plan can open: its own permits, its own portal
+ * credentials, messages to Cleard, and its account. Prefix match, so
+ * /portal/permits/new and /portal/permits/<id> come along with My Permits.
+ *
+ * Everything else in the portal is gated — the nav hides it
+ * (trialNavSections in src/lib/portal-nav.ts) and PortalShell shows a lock if
+ * the path is typed in anyway.
+ */
+export const TRIAL_PATHS: string[] = [
+  "/dashboard",
+  "/portal", // the portal index redirects to the dashboard
+  "/portal/permits",
+  "/building-dept-logins",
+  "/messages",
+  "/profile",
+  "/portal/company",
+  // Onboarding/authorization a self-serve account still has to be able to finish.
+  "/onboarding",
+  "/forms/permit-agent-authorization",
+  "/sign",
+];
+
+export function trialPathAllowed(pathname: string): boolean {
+  const path = pathname.replace(/\/+$/, "") || "/";
+  return TRIAL_PATHS.some((p) => path === p || path.startsWith(p + "/"));
+}
+
 export function planIncludes(plan: PlanTier | null, feature: GatedFeature): boolean {
   if (plan !== "trial") return true;
   return !TRIAL_LOCKED.includes(feature);
@@ -71,6 +99,8 @@ function normalizePlan(raw: unknown): PlanTier {
 export type PlanAccess = {
   loading: boolean;
   plan: PlanTier | null;
+  /** Resolved to the trial tier — false while loading, so nothing hides early. */
+  isTrial: boolean;
   /** True when the feature is available to this tenant. */
   allows: (feature: GatedFeature) => boolean;
   /** Inverse of `allows`, for the common `locked && …` read. */
@@ -114,6 +144,7 @@ export function usePlanAccess(): PlanAccess {
   return {
     loading,
     plan,
+    isTrial: !loading && plan === "trial",
     allows: (feature) => planIncludes(plan, feature),
     locked: (feature) => !loading && !planIncludes(plan, feature),
   };

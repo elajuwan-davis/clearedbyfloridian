@@ -9,14 +9,13 @@ import {
   FolderOpen,
   BookOpen,
   MessageSquare,
-
   ShieldCheck,
   Scale,
   CreditCard,
   CalendarDays,
-
   Settings,
   HardHat,
+  KeyRound,
   type LucideIcon,
 } from "lucide-react";
 import type { AppRole } from "@/lib/use-session";
@@ -60,18 +59,35 @@ export const billingSection: NavSection = {
   to: "/portal/billing",
 };
 
+export const permitsSection: NavSection = {
+  key: "permits",
+  label: "My Permits",
+  icon: FileText,
+  to: "/portal/permits",
+};
+
+export const messagesSection: NavSection = {
+  key: "messages",
+  label: "Messages",
+  icon: MessageSquare,
+  to: "/messages",
+};
+
+/** Portal Logins is a tab elsewhere; a trial plan gets it as its own entry. */
+export const portalLoginsSection: NavSection = {
+  key: "portal-logins",
+  label: "Portal Logins",
+  icon: KeyRound,
+  to: "/building-dept-logins",
+};
+
 /**
  * Flat sidebar — one click per section. Every former sub-item now lives as a
  * tab inside its section page (see src/lib/portal-tabs.ts).
  */
 export const navSections: NavSection[] = [
   dashboardSection,
-  {
-    key: "permits",
-    label: "My Permits",
-    icon: FileText,
-    to: "/portal/permits",
-  },
+  permitsSection,
   {
     key: "inspections",
     label: "Inspections",
@@ -102,12 +118,7 @@ export const navSections: NavSection[] = [
     icon: DollarSign,
     to: "/portal/financials",
   },
-  {
-    key: "messages",
-    label: "Messages",
-    icon: MessageSquare,
-    to: "/messages",
-  },
+  messagesSection,
   calendarSection,
   {
     key: "resources",
@@ -118,16 +129,11 @@ export const navSections: NavSection[] = [
   bookmarksSection,
 ];
 
-
-
-
 export const legalSection: NavSection = {
   key: "legal",
   label: "Legal",
   icon: Scale,
-  items: [
-    { to: "/legal", label: "Document Library" },
-  ],
+  items: [{ to: "/legal", label: "Document Library" }],
 };
 
 export const adminSection: NavSection = {
@@ -136,8 +142,6 @@ export const adminSection: NavSection = {
   icon: ShieldCheck,
   to: "/admin/invites",
 };
-
-
 
 export const settingsSection: NavSection = {
   key: "settings",
@@ -148,7 +152,6 @@ export const settingsSection: NavSection = {
     { to: "/portal/company", label: "Company Profile" },
   ],
 };
-
 
 export const subNavSections: NavSection[] = [
   bookmarksSection,
@@ -168,11 +171,23 @@ export const subSettingsSection: NavSection = {
   items: [{ to: "/profile", label: "Profile" }],
 };
 
+/**
+ * Trial (self-serve) plan: the five places such an account can actually do
+ * something — file its own permits, keep its own portal credentials, talk to
+ * Cleard, and manage its account. Everything else is gated
+ * (see TRIAL_PATHS in src/lib/plan-access.ts).
+ */
+export const trialNavSections: NavSection[] = [
+  dashboardSection,
+  permitsSection,
+  portalLoginsSection,
+  messagesSection,
+];
+
 export function sectionsForRole(role: AppRole | null, isAdmin: boolean): NavSection[] {
   if (role === "subcontractor") return subNavSections;
   return isAdmin ? [...navSections, adminSection] : navSections;
 }
-
 
 /** Flat sidebar entry for Settings (sub-pages live as tabs on the page). */
 export const sidebarSettingsSection: NavSection = {
@@ -180,6 +195,12 @@ export const sidebarSettingsSection: NavSection = {
   label: "Settings",
   icon: Settings,
   to: "/profile",
+};
+
+/** Same page, named for what a self-serve account goes there to do. */
+export const accountInfoSection: NavSection = {
+  ...sidebarSettingsSection,
+  label: "Account Info",
 };
 
 export function sidebarSettingsForRole(role: AppRole | null): NavSection {
@@ -197,7 +218,15 @@ export function isItemActive(pathname: string, to: string) {
 
 /** Best-effort human label for an arbitrary portal path (used by bookmarks). */
 export function labelForPath(pathname: string): string {
-  const all = [...navSections, billingSection, calendarSection, legalSection, adminSection, settingsSection, ...subNavSections];
+  const all = [
+    ...navSections,
+    billingSection,
+    calendarSection,
+    legalSection,
+    adminSection,
+    settingsSection,
+    ...subNavSections,
+  ];
   let best: { len: number; label: string } | null = null;
   for (const s of all) {
     const entries: Array<{ to: string; label: string }> = s.to
@@ -211,7 +240,5 @@ export function labelForPath(pathname: string): string {
   }
   if (best) return best.label;
   const last = pathname.split("/").filter(Boolean).pop() ?? "Page";
-  return last
-    .replace(/[-_]+/g, " ")
-    .replace(/\b\w/g, (c) => c.toUpperCase());
+  return last.replace(/[-_]+/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
 }

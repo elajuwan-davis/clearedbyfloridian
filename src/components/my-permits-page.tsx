@@ -295,10 +295,10 @@ export function MyPermitsPage() {
             <EmptyState
               icon={<FileText className="h-4 w-4" strokeWidth={1.75} />}
               title="No permits yet"
-              description="Create your first permit to start the statutory clock."
+              description="Start your first permit here — Victoria can fill the form for you if you'd rather talk it through than type it."
               action={
                 <Link to="/portal/permits/new" className="p-btn p-btn-primary">
-                  <Plus className="h-3.5 w-3.5" strokeWidth={2} /> New permit
+                  <Plus className="h-3.5 w-3.5" strokeWidth={2} /> Start a new permit
                 </Link>
               }
             />
