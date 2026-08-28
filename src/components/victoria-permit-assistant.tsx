@@ -374,6 +374,12 @@ export function VictoriaPermitAssistant({
 
       rec.onresult = (e: RecognitionResultEvent) => {
         const transcript = e.results?.[0]?.[0]?.transcript ?? "";
+        // "next field" / "next" is the spoken twin of the Next field button.
+        if (/^\s*(next|next field|move on)\s*$/i.test(transcript.trim())) {
+          setHeard(null);
+          next(200);
+          return;
+        }
         if (isSkip(transcript)) {
           setHeard(null);
           setNotice(`Skipped ${field.label.toLowerCase()}.`);
