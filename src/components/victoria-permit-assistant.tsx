@@ -500,7 +500,7 @@ export function VictoriaPermitAssistant({
       )}
 
 
-      <div className="mt-3 flex items-center gap-3">
+      <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-2">
         <span
           className={`inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.16em] ${listening ? "text-obsidian" : "text-obsidian/50"}`}
         >
@@ -513,6 +513,24 @@ export function VictoriaPermitAssistant({
           className="inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.16em] text-obsidian/50 hover:text-obsidian"
         >
           <RotateCcw className="h-3 w-3" strokeWidth={2} /> Redo
+        </button>
+        <button
+          type="button"
+          onClick={() => goTo(index - 1)}
+          disabled={index === 0}
+          className="inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.16em] text-obsidian/50 hover:text-obsidian disabled:opacity-40"
+        >
+          <ChevronLeft className="h-3 w-3" strokeWidth={2} /> Back
+        </button>
+        <button
+          type="button"
+          onClick={() => {
+            setHeard(null);
+            goTo(index + 1);
+          }}
+          className="inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.16em] text-obsidian/50 hover:text-obsidian"
+        >
+          <SkipForward className="h-3 w-3" strokeWidth={2} /> Next field
         </button>
         <button
           type="button"
