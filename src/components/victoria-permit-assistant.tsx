@@ -12,7 +12,7 @@
 // spoken city lands on the exact option the form expects.
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Mic, RotateCcw, Square, X, Sparkles } from "lucide-react";
+import { ChevronLeft, Mic, RotateCcw, SkipForward, Square, X, Sparkles } from "lucide-react";
 import { MUNICIPALITIES } from "@/lib/municipalities";
 import {
   getRecognitionCtor,
@@ -70,7 +70,12 @@ const PROJECT_STEPS: Step[] = [
     prompt: "What's the total project value, in dollars?",
     label: "Project value",
   },
-  { kind: "field", key: "description", prompt: "Describe the scope of work.", label: "Scope description" },
+  {
+    kind: "field",
+    key: "description",
+    prompt: "In a sentence or two, what are we building? For example: new pool, spa and paver deck at a single-family residence.",
+    label: "Scope description",
+  },
   {
     kind: "scopes",
     prompt: "Scope of work — you can search and select them yourself on the form, or just tell me which ones apply.",
@@ -85,7 +90,7 @@ const PROJECT_STEPS: Step[] = [
 function scopesPrompt(options: string[]): string {
   if (!options.length) return PROJECT_STEPS[PROJECT_STEPS.length - 1]!.prompt;
   const list = options.join(", ");
-  return `Scope of work — you can search and select all that apply. The options are: ${list}. You can choose them yourself on the form, or just tell me which ones to select.`;
+  return `Scope of work — select all that apply. The options are: ${list}. You can pick them yourself from the buttons here, or just tell me which ones to select. When you\u2019re done, say next field.`;
 }
 
 /** Everything after the subcontractor rows — owner, contacts, design pros, notes. */
@@ -319,6 +324,26 @@ export function VictoriaPermitAssistant({
 
   useEffect(() => teardown, [teardown]);
 
+  /**
+   * Manual step control, for when dictation stalls or the user would rather type one field:
+   * jumps the script without waiting on speech, and stops cleanly at the end.
+   */
+  const goTo = useCallback(
+    (step: number) => {
+      const total = stepsRef.current.length;
+      if (step < 0) return;
+      if (step >= total) {
+        teardown();
+        setNotice("That's the form — review it, add your documents, then continue.");
+        return;
+      }
+      listenForRef.current?.(step);
+    },
+    [teardown],
+  );
+
+  const listenForRef = useRef<((step: number) => void) | null>(null);
+
   const listenFor = useCallback(
     (step: number) => {
       const Ctor = getRecognitionCtor();
@@ -349,6 +374,12 @@ export function VictoriaPermitAssistant({
 
       rec.onresult = (e: RecognitionResultEvent) => {
         const transcript = e.results?.[0]?.[0]?.transcript ?? "";
+        // "next field" / "next" is the spoken twin of the Next field button.
+        if (/^\s*(next|next field|move on)\s*$/i.test(transcript.trim())) {
+          setHeard(null);
+          next(200);
+          return;
+        }
         if (isSkip(transcript)) {
           setHeard(null);
           setNotice(`Skipped ${field.label.toLowerCase()}.`);
@@ -434,6 +465,10 @@ export function VictoriaPermitAssistant({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [openSignal]);
 
+  useEffect(() => {
+    listenForRef.current = listenFor;
+  }, [listenFor]);
+
   // No Web Speech API (Safari/Firefox): show nothing rather than a button that can't work.
   if (!supported) return null;
 
@@ -500,7 +535,7 @@ export function VictoriaPermitAssistant({
       )}
 
 
-      <div className="mt-3 flex items-center gap-3">
+      <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-2">
         <span
           className={`inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.16em] ${listening ? "text-obsidian" : "text-obsidian/50"}`}
         >
@@ -513,6 +548,24 @@ export function VictoriaPermitAssistant({
           className="inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.16em] text-obsidian/50 hover:text-obsidian"
         >
           <RotateCcw className="h-3 w-3" strokeWidth={2} /> Redo
+        </button>
+        <button
+          type="button"
+          onClick={() => goTo(index - 1)}
+          disabled={index === 0}
+          className="inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.16em] text-obsidian/50 hover:text-obsidian disabled:opacity-40"
+        >
+          <ChevronLeft className="h-3 w-3" strokeWidth={2} /> Back
+        </button>
+        <button
+          type="button"
+          onClick={() => {
+            setHeard(null);
+            goTo(index + 1);
+          }}
+          className="inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.16em] text-obsidian/50 hover:text-obsidian"
+        >
+          <SkipForward className="h-3 w-3" strokeWidth={2} /> Next field
         </button>
         <button
           type="button"
@@ -532,7 +585,8 @@ export function VictoriaPermitAssistant({
         </div>
       )}
       <div className="mt-2 text-[11.5px] leading-relaxed text-obsidian/50">
-        {notice ?? "Say your answer out loud — or say “skip” to leave a field for later."}
+        {notice ??
+          "Say your answer out loud — say “skip”, or use Next field to move on and type that one yourself."}
       </div>
     </div>
   );
