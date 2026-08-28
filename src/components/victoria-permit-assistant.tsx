@@ -73,10 +73,20 @@ const PROJECT_STEPS: Step[] = [
   { kind: "field", key: "description", prompt: "Describe the scope of work.", label: "Scope description" },
   {
     kind: "scopes",
-    prompt: "Which trades are on this permit? Name them all — for example, pool and spa, electrical, plumbing.",
+    prompt: "Scope of work — you can search and select them yourself on the form, or just tell me which ones apply.",
     label: "Scope of work",
   },
 ];
+
+/**
+ * The scope step reads the real catalog out loud, so a first-time user hears the exact
+ * options instead of a blank field they have to guess at.
+ */
+function scopesPrompt(options: string[]): string {
+  if (!options.length) return PROJECT_STEPS[PROJECT_STEPS.length - 1]!.prompt;
+  const list = options.join(", ");
+  return `Scope of work — you can search and select all that apply. The options are: ${list}. You can choose them yourself on the form, or just tell me which ones to select.`;
+}
 
 /** Everything after the subcontractor rows — owner, contacts, design pros, notes. */
 const TAIL_STEPS: Step[] = [
