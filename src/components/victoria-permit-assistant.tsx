@@ -12,7 +12,7 @@
 // spoken city lands on the exact option the form expects.
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Mic, RotateCcw, Square, X, Sparkles } from "lucide-react";
+import { ChevronLeft, Mic, RotateCcw, SkipForward, Square, X, Sparkles } from "lucide-react";
 import { MUNICIPALITIES } from "@/lib/municipalities";
 import {
   getRecognitionCtor,
@@ -70,7 +70,12 @@ const PROJECT_STEPS: Step[] = [
     prompt: "What's the total project value, in dollars?",
     label: "Project value",
   },
-  { kind: "field", key: "description", prompt: "Describe the scope of work.", label: "Scope description" },
+  {
+    kind: "field",
+    key: "description",
+    prompt: "In a sentence or two, what are we building? For example: new pool, spa and paver deck at a single-family residence.",
+    label: "Scope description",
+  },
   {
     kind: "scopes",
     prompt: "Scope of work — you can search and select them yourself on the form, or just tell me which ones apply.",
@@ -85,7 +90,7 @@ const PROJECT_STEPS: Step[] = [
 function scopesPrompt(options: string[]): string {
   if (!options.length) return PROJECT_STEPS[PROJECT_STEPS.length - 1]!.prompt;
   const list = options.join(", ");
-  return `Scope of work — you can search and select all that apply. The options are: ${list}. You can choose them yourself on the form, or just tell me which ones to select.`;
+  return `Scope of work — select all that apply. The options are: ${list}. You can pick them yourself from the buttons here, or just tell me which ones to select. When you\u2019re done, say next field.`;
 }
 
 /** Everything after the subcontractor rows — owner, contacts, design pros, notes. */
@@ -319,6 +324,26 @@ export function VictoriaPermitAssistant({
 
   useEffect(() => teardown, [teardown]);
 
+  /**
+   * Manual step control, for when dictation stalls or the user would rather type one field:
+   * jumps the script without waiting on speech, and stops cleanly at the end.
+   */
+  const goTo = useCallback(
+    (step: number) => {
+      const total = stepsRef.current.length;
+      if (step < 0) return;
+      if (step >= total) {
+        teardown();
+        setNotice("That's the form — review it, add your documents, then continue.");
+        return;
+      }
+      listenForRef.current?.(step);
+    },
+    [teardown],
+  );
+
+  const listenForRef = useRef<((step: number) => void) | null>(null);
+
   const listenFor = useCallback(
     (step: number) => {
       const Ctor = getRecognitionCtor();
@@ -433,6 +458,10 @@ export function VictoriaPermitAssistant({
     if (openSignal > 0) start();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [openSignal]);
+
+  useEffect(() => {
+    listenForRef.current = listenFor;
+  }, [listenFor]);
 
   // No Web Speech API (Safari/Firefox): show nothing rather than a button that can't work.
   if (!supported) return null;
@@ -550,7 +579,8 @@ export function VictoriaPermitAssistant({
         </div>
       )}
       <div className="mt-2 text-[11.5px] leading-relaxed text-obsidian/50">
-        {notice ?? "Say your answer out loud — or say “skip” to leave a field for later."}
+        {notice ??
+          "Say your answer out loud — say “skip”, or use Next field to move on and type that one yourself."}
       </div>
     </div>
   );
