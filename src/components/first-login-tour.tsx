@@ -24,9 +24,9 @@ const PENDING_VALUE = "victoria-permit";
 const POPOVER_CLASS = "cleard-tour-popover";
 
 const VICTORIA_TARGET = '[data-tour="victoria-permit"]';
-const VICTORIA_STEP_TITLE = "Or just talk it through";
+const VICTORIA_STEP_TITLE = "Let Victoria fill the form for you";
 const VICTORIA_STEP_BODY =
-  "Tap Victoria and say your answers out loud — the project, the address, the municipality, the value — and she fills each field for you as you speak. Typing works exactly as before.";
+  "Did you know you never have to type this form? Click here and Victoria asks for each field — project, address, municipality, value, scope of work, subcontractors — you answer out loud, and she writes it in. Say “skip” to leave a field for later. Click here to give it a go.";
 
 function baseOptions() {
   return {
