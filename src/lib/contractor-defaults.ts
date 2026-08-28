@@ -17,7 +17,7 @@ export const CLEARD_CONTRACTOR_DEFAULTS: ContractorDefaults = {
   contractorQualifier: "Elajuwan Davis",
   companyAddress: "2253 Vista Pkwy",
   poc: "Elajuwan Davis",
-  pocEmail: "team@floridianinc.com",
+  pocEmail: "info@cleardinc.com",
   pocPhone: "(561) 639-7931",
   licenseNumber: "CPC1459161",
 };
