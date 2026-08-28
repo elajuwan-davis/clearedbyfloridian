@@ -50,12 +50,19 @@ function OnboardingPage() {
         typeof window !== "undefined" &&
         new URLSearchParams(window.location.search).get("entry") === "selfserve";
       if (selfServe) {
-        const { data: member } = await (supabase.from("tenant_members" as any) as any)
-          .select("tenants:tenant_id ( name, license_number )")
-          .maybeSingle();
-        const t = (member as any)?.tenants;
-        if (t?.name) setTenantName(t.name);
-        if (t?.license_number) setLicenseNumber(t.license_number);
+        // Prefill is a convenience: a failed lookup still lands on the PAA, just blank.
+        try {
+          const { data: member } = await (supabase.from("tenant_members" as any) as any)
+            .select("tenants:tenant_id ( name, license_number )")
+            .eq("user_id", data.session.user.id)
+            .maybeSingle();
+          const t = (member as { tenants?: { name?: string; license_number?: string } } | null)
+            ?.tenants;
+          if (t?.name) setTenantName(t.name);
+          if (t?.license_number) setLicenseNumber(t.license_number);
+        } catch {
+          // fall through to the PAA with empty fields
+        }
         setStep("paa");
         return;
       }

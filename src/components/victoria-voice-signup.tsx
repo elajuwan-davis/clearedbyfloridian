@@ -56,7 +56,7 @@ function tidy(key: VictoriaField, raw: string): string {
     return text
       .toLowerCase()
       .replace(/\s+at\s+/g, "@")
-      .replace(/\s+dot\s+/g, ".")
+      .replace(/\s+(?:dot|period)\s+/g, ".")
       .replace(/\s+underscore\s+/g, "_")
       .replace(/\s+dash\s+|\s+hyphen\s+/g, "-")
       .replace(/\s+/g, "");
@@ -106,6 +106,7 @@ export function VictoriaVoiceSignup({
     advance.current = null;
     try {
       recognition.current?.abort();
+      window.speechSynthesis?.cancel();
     } catch {
       // already stopped
     }
