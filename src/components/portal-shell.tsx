@@ -793,8 +793,10 @@ function PortalShellInner({ children }: { children: ReactNode }) {
               </button>
             )}
             <ThemeToggle />
+            {!permitsOnly && <AskVictoriaDock variant="nav" />}
             {!permitsOnly && <BookmarkToggle />}
             {!permitsOnly && <NotificationBell />}
+
             <div className="hidden sm:block">
               <DropdownMenu>
                 <DropdownMenuTrigger className="flex h-8 items-center gap-1.5 rounded-lg px-1 outline-none hover:bg-[var(--rail-hover)]">
