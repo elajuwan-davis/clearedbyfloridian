@@ -58,9 +58,11 @@ function AuthCallback() {
         }
         // A self-serve signup arrives here off its own confirmation link and still owes
         // the PAA signature, so it goes to onboarding rather than straight to a dashboard.
+        // A brand-new Google account that just self-provisioned a trial tenant is the same case.
         if (
-          typeof window !== "undefined" &&
-          new URLSearchParams(window.location.search).get("entry") === "selfserve"
+          decision.reason === "provisioned" ||
+          (typeof window !== "undefined" &&
+            new URLSearchParams(window.location.search).get("entry") === "selfserve")
         ) {
           navigate({ to: "/onboarding", search: { entry: "selfserve" } as never, replace: true });
           return;

@@ -12,7 +12,7 @@ export type AccessDecision = {
    * "approved" | "pending" | "filed" | "unverified" — filed = we just created the queue
    * entry, unverified = the address has never been proved.
    */
-  reason: "approved" | "pending" | "filed" | "unverified";
+  reason: "approved" | "pending" | "filed" | "unverified" | "provisioned";
   email: string | null;
   role: string | null;
 };
@@ -90,24 +90,56 @@ export const evaluatePortalAccessFn = createServerFn({ method: "POST" })
         return { allowed: true, reason: "approved", email: emailKey, role: "gc_owner" };
       }
 
-      if (rows.length > 0) {
-        return { allowed: false, reason: "pending", email: emailKey, role: null };
-      }
-
-      // 5. Not known to us — file a request into the admin queue.
+      // 5. Not known to us (or only ever queued) — self-provision a TRIAL tenant, exactly
+      //    like an email/password signup through /join. Trial = own permits only; every
+      //    premium feature stays locked behind "Request access" (src/lib/plan-access.ts).
       const meta = (user?.user_metadata ?? {}) as Record<string, unknown>;
       const name =
         (typeof meta.full_name === "string" && meta.full_name) ||
         (typeof meta.name === "string" && meta.name) ||
         emailKey.split("@")[0];
-      await admin.from("access_requests").insert({
-        name,
-        email: emailKey,
-        company: emailKey.split("@")[1] ?? null,
-        status: "pending",
-        notes: "Auto-filed from Google sign-in",
+      const company =
+        (typeof meta.company === "string" && meta.company) || name || emailKey.split("@")[0];
+
+      const insertTenant = (row: Record<string, unknown>) =>
+        admin.from("tenants").insert(row).select("id").single();
+      let { data: tenant, error: tErr } = await insertTenant({
+        name: company,
+        status: "active",
+        plan: "trial",
       });
-      return { allowed: false, reason: "filed", email: emailKey, role: null };
+      if (tErr && /plan/i.test(tErr.message ?? "")) {
+        ({ data: tenant, error: tErr } = await insertTenant({ name: company, status: "active" }));
+      }
+      if (tErr || !tenant?.id) {
+        // Provisioning failed — fall back to the old behaviour so nobody is lost.
+        await admin.from("access_requests").insert({
+          name,
+          email: emailKey,
+          company: emailKey.split("@")[1] ?? null,
+          status: "pending",
+          notes: "Auto-filed from Google sign-in (trial provisioning failed)",
+        });
+        return { allowed: false, reason: "filed", email: emailKey, role: null };
+      }
+
+      await admin
+        .from("user_roles")
+        .upsert({ user_id: context.userId, role: "gc_owner" }, { onConflict: "user_id,role" });
+      await admin.from("tenant_members").upsert(
+        { user_id: context.userId, tenant_id: tenant.id, role: "gc_owner" },
+        { onConflict: "user_id,tenant_id" },
+      );
+
+      // Any stale queue entry for this address is now satisfied.
+      if (rows.length > 0) {
+        await admin
+          .from("access_requests")
+          .update({ status: "approved", approved_tenant_id: tenant.id })
+          .ilike("email", emailKey);
+      }
+
+      return { allowed: true, reason: "provisioned", email: emailKey, role: "gc_owner" };
     }
 
     return { allowed: false, reason: "pending", email: null, role: null };
