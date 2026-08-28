@@ -334,7 +334,7 @@ export function BuilderDashboard() {
               <div className="flex flex-col gap-1 px-3 pb-3">
                 <QuickAction to="/portal/permits/new" icon={<Plus className="h-3.5 w-3.5" strokeWidth={1.75} />} label="Start a new permit" tourId="new-permit" />
                 <QuickAction to="/portal/inspections" icon={<ClipboardList className="h-3.5 w-3.5" strokeWidth={1.75} />} label="Schedule inspection" />
-                <QuickAction to="/messages" icon={<Send className="h-3.5 w-3.5" strokeWidth={1.75} />} label="Message the desk" badge={unread || undefined} />
+                <QuickAction to="/messages" icon={<Send className="h-3.5 w-3.5" strokeWidth={1.75} />} label="Message the desk" badge={unread || undefined} tourId="messages" />
                 <QuickAction to="/portal/compliance" icon={<ShieldCheck className="h-3.5 w-3.5" strokeWidth={1.75} />} label="Compliance documents" tourId="documents" />
               </div>
             </Surface>

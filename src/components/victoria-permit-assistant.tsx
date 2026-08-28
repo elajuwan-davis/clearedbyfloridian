@@ -73,10 +73,20 @@ const PROJECT_STEPS: Step[] = [
   { kind: "field", key: "description", prompt: "Describe the scope of work.", label: "Scope description" },
   {
     kind: "scopes",
-    prompt: "Which trades are on this permit? Name them all — for example, pool and spa, electrical, plumbing.",
+    prompt: "Scope of work — you can search and select them yourself on the form, or just tell me which ones apply.",
     label: "Scope of work",
   },
 ];
+
+/**
+ * The scope step reads the real catalog out loud, so a first-time user hears the exact
+ * options instead of a blank field they have to guess at.
+ */
+function scopesPrompt(options: string[]): string {
+  if (!options.length) return PROJECT_STEPS[PROJECT_STEPS.length - 1]!.prompt;
+  const list = options.join(", ");
+  return `Scope of work — you can search and select all that apply. The options are: ${list}. You can choose them yourself on the form, or just tell me which ones to select.`;
+}
 
 /** Everything after the subcontractor rows — owner, contacts, design pros, notes. */
 const TAIL_STEPS: Step[] = [
@@ -127,7 +137,10 @@ const SUB_FIELD_ORDER: VictoriaSubField[] = [
 ];
 
 /** The full script: project fields, then a sub block per selected scope, then the tail. */
-function buildSteps(scopes: string[]): Step[] {
+function buildSteps(scopes: string[], scopeOptions: string[] = []): Step[] {
+  const project = PROJECT_STEPS.map((s) =>
+    s.kind === "scopes" ? { ...s, prompt: scopesPrompt(scopeOptions) } : s,
+  );
   const subSteps: Step[] = [];
   for (const scope of scopes) {
     for (const field of SUB_FIELD_ORDER) {
@@ -140,7 +153,7 @@ function buildSteps(scopes: string[]): Step[] {
       });
     }
   }
-  return [...PROJECT_STEPS, ...subSteps, ...TAIL_STEPS];
+  return [...project, ...subSteps, ...TAIL_STEPS];
 }
 
 const SPOKEN_DIGITS: Record<string, string> = {
@@ -253,6 +266,7 @@ export function VictoriaPermitAssistant({
   onScopes,
   onSubField,
   scopeOptions = [],
+  openSignal = 0,
 }: {
   /** Writes one value into the permit form; the form stays fully editable by hand. */
   onField: (field: VictoriaPermitField, value: string) => void;
@@ -262,6 +276,8 @@ export function VictoriaPermitAssistant({
   onSubField?: (scope: string, field: VictoriaSubField, value: string) => void;
   /** The scope catalog the form offers, so spoken trades land on real options. */
   scopeOptions?: string[];
+  /** Bump this to open Victoria and start the script from outside (e.g. the intro prompt). */
+  openSignal?: number;
 }) {
   const [supported, setSupported] = useState(false);
   const [open, setOpen] = useState(false);
@@ -269,16 +285,20 @@ export function VictoriaPermitAssistant({
   const [listening, setListening] = useState(false);
   const [heard, setHeard] = useState<{ label: string; value: string } | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
-  const [steps, setSteps] = useState<Step[]>(() => buildSteps([]));
+  const [picked, setPicked] = useState<string[]>([]);
+  const [steps, setSteps] = useState<Step[]>(() => buildSteps([], scopeOptions));
   const stepsRef = useRef<Step[]>(steps);
   const recognition = useRef<SpeechRecognitionLike | null>(null);
   const advance = useRef<number | null>(null);
 
-  const setScript = useCallback((scopes: string[]) => {
-    const next = buildSteps(scopes);
-    stepsRef.current = next;
-    setSteps(next);
-  }, []);
+  const setScript = useCallback(
+    (scopes: string[]) => {
+      const next = buildSteps(scopes, scopeOptions);
+      stepsRef.current = next;
+      setSteps(next);
+    },
+    [scopeOptions],
+  );
 
   useEffect(() => {
     setSupported(!!getRecognitionCtor());
@@ -339,14 +359,17 @@ export function VictoriaPermitAssistant({
         // Trades: one utterance can name several, and each one adds its own
         // subcontractor block to the rest of the script.
         if (field.kind === "scopes") {
-          const picked = matchScopes(transcript, scopeOptions);
-          if (!picked.length) {
-            setNotice("Didn't catch a trade — name them again, or pick them on the form.");
+          const spoken = matchScopes(transcript, scopeOptions);
+          if (!spoken.length) {
+            setNotice(
+              "Didn't catch a trade — name them again, tap one below, or pick them on the form.",
+            );
             return;
           }
-          onScopes?.(picked);
-          setScript(picked);
-          setHeard({ label: field.label, value: picked.join(", ") });
+          onScopes?.(spoken);
+          setPicked(spoken);
+          setScript(spoken);
+          setHeard({ label: field.label, value: spoken.join(", ") });
           next(1400);
           return;
         }
@@ -396,6 +419,21 @@ export function VictoriaPermitAssistant({
     [onField, onScopes, onSubField, scopeOptions, setScript, teardown],
   );
 
+  const start = useCallback(() => {
+    setOpen(true);
+    setHeard(null);
+    setNotice(null);
+    setPicked([]);
+    setScript([]);
+    listenFor(0);
+  }, [listenFor, setScript]);
+
+  // Opened from the intro prompt on the New Permit page.
+  useEffect(() => {
+    if (openSignal > 0) start();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [openSignal]);
+
   // No Web Speech API (Safari/Firefox): show nothing rather than a button that can't work.
   if (!supported) return null;
 
@@ -406,13 +444,7 @@ export function VictoriaPermitAssistant({
       <button
         type="button"
         data-tour="victoria-permit"
-        onClick={() => {
-          setOpen(true);
-          setHeard(null);
-          setNotice(null);
-          setScript([]);
-          listenFor(0);
-        }}
+        onClick={start}
         title="Fill this permit by voice"
         className="fixed bottom-6 right-6 z-40 inline-flex items-center gap-2 rounded-full bg-obsidian px-5 py-3.5 font-mono text-[10px] uppercase tracking-[0.16em] text-paper shadow-[0_18px_40px_-16px_rgba(47,79,79,0.65)] hover:bg-obsidian/90"
       >
@@ -445,6 +477,28 @@ export function VictoriaPermitAssistant({
       </div>
 
       <div className="mt-2.5 text-[15px] leading-snug text-obsidian">{current?.prompt}</div>
+
+      {current?.kind === "scopes" && scopeOptions.length > 0 && (
+        <div className="mt-2.5 flex flex-wrap gap-1.5">
+          {scopeOptions.map((s) => (
+            <button
+              key={s}
+              type="button"
+              onClick={() => {
+                const all = picked.includes(s) ? picked : [...picked, s];
+                setPicked(all);
+                onScopes?.([s]);
+                setScript(all);
+                setHeard({ label: "Scope of work", value: all.join(", ") });
+              }}
+              className="rounded-[3px] border border-obsidian/20 px-2 py-1 font-mono text-[10px] uppercase tracking-[0.12em] text-obsidian/70 hover:bg-obsidian/5"
+            >
+              {s}
+            </button>
+          ))}
+        </div>
+      )}
+
 
       <div className="mt-3 flex items-center gap-3">
         <span
