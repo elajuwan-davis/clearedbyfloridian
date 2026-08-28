@@ -2,7 +2,8 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { PortalShell } from "@/components/portal-shell";
-import { AdminOnly } from "@/components/admin-only";
+import { useSession } from "@/lib/use-session";
+import { LockedPageNotice } from "@/components/feature-lock";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -33,12 +34,43 @@ export const Route = createFileRoute("/legal/")({
       { name: "robots", content: "noindex" },
     ],
   }),
-  component: () => (
-    <AdminOnly>
-      <LegalLibraryPage />
-    </AdminOnly>
-  ),
+  component: LegalRoute,
 });
+
+/**
+ * Legal library is staff-managed. A non-staff account used to be bounced to the
+ * dashboard, which read as the page being broken — it now opens and explains
+ * itself with the same access lock used elsewhere in the portal.
+ */
+function LegalRoute() {
+  const session = useSession();
+
+  if (session.loading) {
+    return (
+      <PortalShell>
+        <div className="grid min-h-[40vh] place-items-center text-[13px] text-muted-foreground">
+          Loading legal library…
+        </div>
+      </PortalShell>
+    );
+  }
+
+  if (!session.isAdmin) {
+    return (
+      <PortalShell>
+        <LockedPageNotice
+          copy={{
+            title: "Legal document library",
+            does: "Holds permit agent authorizations, signed PAAs, NTBO templates, and platform legal records — versioned, with signing and download tracked per document.",
+            area: "Compliance & Documents",
+          }}
+        />
+      </PortalShell>
+    );
+  }
+
+  return <LegalLibraryPage />;
+}
 
 const TYPES: LegalDocType[] = [
   "Permit Agent Authorization",
