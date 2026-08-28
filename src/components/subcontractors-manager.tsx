@@ -13,11 +13,13 @@ import {
   Loader2,
   ShieldCheck,
   ExternalLink,
+  Lock,
 } from "lucide-react";
 import { listSubs, createSub, deleteSub, updateSubApi, subIsComplete, subMissingFields, coiLifecycle, type SubRow } from "@/lib/subs-api";
 import { verifyDbprLicense, dbprLookupUrl, type DbprResult } from "@/lib/dbpr-api";
 import { MarketplacePanel } from "@/components/marketplace-panel";
-import { useFirstLoginTourResume } from "@/components/first-login-tour";
+import { LockedFeatureButton } from "@/components/feature-lock";
+import { usePlanAccess } from "@/lib/plan-access";
 
 const dbprTone: Record<string, { label: string; cls: string }> = {
   active: {
@@ -42,9 +44,9 @@ export function SubcontractorsManager() {
   const [loading, setLoading] = useState(true);
   const [shareUrl, setShareUrl] = useState<string | null>(null);
   const [verifying, setVerifying] = useState<Record<string, boolean>>({});
-
-  // Last step of the first-login tour, if the dashboard sent the user here.
-  useFirstLoginTourResume();
+  const plan = usePlanAccess();
+  const invitesLocked = plan.locked("sub_invites");
+  const verifyLocked = plan.locked("license_verification");
 
   const needsAttention = subs.filter((s) => {
     const c = coiLifecycle(s);
@@ -130,12 +132,20 @@ export function SubcontractorsManager() {
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          <button type="button" data-tour="generate-intake-link" onClick={generateIntakeLink} className="inline-flex items-center gap-2 border border-obsidian/25 bg-white px-4 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian hover:bg-obsidian/5 rounded-[3px]">
-            <Link2 className="h-3.5 w-3.5" /> Generate Intake Link
-          </button>
-          <Link to="/portal/subcontractors/new" className="inline-flex items-center gap-2 bg-obsidian px-4 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-paper hover:bg-obsidian/90 rounded-[3px]">
-            <Plus className="h-3.5 w-3.5" /> Add Subcontractor
-          </Link>
+          {invitesLocked ? (
+            <LockedFeatureButton feature="sub_invites" label="Generate Intake Link" />
+          ) : (
+            <button type="button" data-tour="generate-intake-link" onClick={generateIntakeLink} className="inline-flex items-center gap-2 border border-obsidian/25 bg-white px-4 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian hover:bg-obsidian/5 rounded-[3px]">
+              <Link2 className="h-3.5 w-3.5" /> Generate Intake Link
+            </button>
+          )}
+          {invitesLocked ? (
+            <LockedFeatureButton feature="sub_invites" label="Add Subcontractor" />
+          ) : (
+            <Link to="/portal/subcontractors/new" className="inline-flex items-center gap-2 bg-obsidian px-4 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-paper hover:bg-obsidian/90 rounded-[3px]">
+              <Plus className="h-3.5 w-3.5" /> Add Subcontractor
+            </Link>
+          )}
         </div>
       </div>
 
@@ -190,11 +200,24 @@ export function SubcontractorsManager() {
                   <button
                     type="button"
                     onClick={() => verify(s)}
-                    disabled={!s.license_number || isVerifying}
-                    title={s.license_number ? "Verify with DBPR" : "No license number on file yet"}
+                    disabled={verifyLocked || !s.license_number || isVerifying}
+                    title={
+                      verifyLocked
+                        ? "Licence verification isn't on your plan"
+                        : s.license_number
+                          ? "Verify with DBPR"
+                          : "No license number on file yet"
+                    }
                     className="inline-flex items-center gap-1 border border-obsidian/25 bg-white px-2 py-1 font-mono text-[10px] uppercase tracking-[0.12em] text-obsidian rounded-[3px] hover:bg-obsidian/5 disabled:cursor-not-allowed disabled:opacity-40"
                   >
-                    {isVerifying ? <Loader2 className="h-3 w-3 animate-spin" /> : <ShieldCheck className="h-3 w-3" />} Verify
+                    {isVerifying ? (
+                      <Loader2 className="h-3 w-3 animate-spin" />
+                    ) : verifyLocked ? (
+                      <Lock className="h-3 w-3" />
+                    ) : (
+                      <ShieldCheck className="h-3 w-3" />
+                    )}{" "}
+                    Verify
                   </button>
                   {s.license_number && (
                     <a
@@ -207,9 +230,11 @@ export function SubcontractorsManager() {
                       <ExternalLink className="h-3.5 w-3.5" />
                     </a>
                   )}
-                  <button onClick={() => copySubLink(s.completion_token)} title="Copy intake link" className="text-obsidian/60 hover:text-obsidian">
-                    <Copy className="h-3.5 w-3.5" />
-                  </button>
+                  {!invitesLocked && (
+                    <button onClick={() => copySubLink(s.completion_token)} title="Copy intake link" className="text-obsidian/60 hover:text-obsidian">
+                      <Copy className="h-3.5 w-3.5" />
+                    </button>
+                  )}
                   <button onClick={() => remove(s.id, s.company_name)} title="Delete" className="text-red-600 hover:text-red-800">
                     <Trash2 className="h-3.5 w-3.5" />
                   </button>

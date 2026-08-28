@@ -1,3 +1,4 @@
+import { PlanGate } from "@/components/feature-lock";
 import { createFileRoute } from "@tanstack/react-router";
 import { AlertTriangle } from "lucide-react";
 import { PageShell, TableShell, StatusChip, type MetricTone } from "@/components/ui-kit";
@@ -20,7 +21,11 @@ export const Route = createFileRoute("/portal/lien-rights/deadlines")({
       { name: "robots", content: "noindex" },
     ],
   }),
-  component: LienDeadlinesPage,
+  component: () => (
+    <PlanGate feature="lien_rights">
+      <LienDeadlinesPage />
+    </PlanGate>
+  ),
 });
 
 const tone: Record<DeadlineStatus, MetricTone> = {

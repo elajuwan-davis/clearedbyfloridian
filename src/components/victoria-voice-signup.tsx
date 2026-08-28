@@ -1,12 +1,22 @@
 // "Victoria" voice-fill for the /join form.
 //
-// Deliberately NOT an AI feature: this is the browser's own speech-to-text, walking the
-// fields one at a time with hardcoded prompts. No LLM, no parsing service, nothing new
-// on the backend. Typing the form is always the default path — if the browser has no
-// speech recognition (Safari/Firefox), this renders nothing at all.
+// Deliberately NOT an AI feature: this is the browser's own speech-to-text (see
+// src/lib/victoria-speech.ts), walking the fields one at a time with hardcoded prompts.
+// No LLM, no parsing service, nothing new on the backend. Typing the form is always the
+// default path — if the browser has no speech recognition (Safari/Firefox), this renders
+// nothing at all.
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Mic, RotateCcw, Square } from "lucide-react";
+import {
+  getRecognitionCtor,
+  speak,
+  tidyEmail,
+  tidyPhone,
+  type RecognitionErrorEvent,
+  type RecognitionResultEvent,
+  type SpeechRecognitionLike,
+} from "@/lib/victoria-speech";
 
 export type VictoriaField = "name" | "company" | "license_number" | "email" | "phone";
 
@@ -22,60 +32,13 @@ const SCRIPT: { key: VictoriaField; prompt: string; label: string }[] = [
   { key: "phone", prompt: "And your phone number?", label: "Phone" },
 ];
 
-// Minimal shape of the Web Speech API surface we use; the DOM lib doesn't ship it.
-type RecognitionResultEvent = {
-  results: ArrayLike<ArrayLike<{ transcript: string }>>;
-};
-type RecognitionErrorEvent = { error?: string };
-
-type SpeechRecognitionLike = {
-  lang: string;
-  continuous: boolean;
-  interimResults: boolean;
-  start: () => void;
-  stop: () => void;
-  abort: () => void;
-  onresult: ((e: RecognitionResultEvent) => void) | null;
-  onerror: ((e: RecognitionErrorEvent) => void) | null;
-  onend: (() => void) | null;
-};
-
-function getRecognitionCtor(): (new () => SpeechRecognitionLike) | null {
-  if (typeof window === "undefined") return null;
-  const w = window as unknown as {
-    SpeechRecognition?: new () => SpeechRecognitionLike;
-    webkitSpeechRecognition?: new () => SpeechRecognitionLike;
-  };
-  return w.SpeechRecognition ?? w.webkitSpeechRecognition ?? null;
-}
-
 /** Dictated email/phone arrive as prose ("jane at cleard dot com", "five five five…"). */
 function tidy(key: VictoriaField, raw: string): string {
   const text = raw.trim();
-  if (key === "email") {
-    return text
-      .toLowerCase()
-      .replace(/\s+at\s+/g, "@")
-      .replace(/\s+(?:dot|period)\s+/g, ".")
-      .replace(/\s+underscore\s+/g, "_")
-      .replace(/\s+dash\s+|\s+hyphen\s+/g, "-")
-      .replace(/\s+/g, "");
-  }
-  if (key === "phone") return text.replace(/[^\d+]/g, "");
+  if (key === "email") return tidyEmail(text);
+  if (key === "phone") return tidyPhone(text);
   if (key === "license_number") return text.toUpperCase().replace(/\s+/g, "");
   return text;
-}
-
-function speak(text: string) {
-  if (typeof window === "undefined" || !window.speechSynthesis) return;
-  try {
-    window.speechSynthesis.cancel();
-    const u = new SpeechSynthesisUtterance(text);
-    u.rate = 1.05;
-    window.speechSynthesis.speak(u);
-  } catch {
-    // Speech synthesis is a nicety; never let it break the flow.
-  }
 }
 
 const OBSIDIAN = "#2F4F4F";

@@ -66,6 +66,29 @@ environment problem; do not mass-reformat unrelated files to "fix" lint.
 - `supabase/functions/*` are Deno edge functions; they are not part of the local `bun run dev`
   app runtime.
 
+### Plan gating (trial vs full)
+- `tenants.plan` decides which features a tenant can use: `full` (invited/managed accounts and
+  staff — no locks) or `trial` (self-serve `/join` signup — its own permits end to end, nothing
+  else). `selfServeSignupFn` writes `trial` explicitly; migration
+  `supabase/migrations/20260829120000_plan_gating.sql` moves every pre-existing tenant to `full`
+  and **must be applied before gating means anything** on the hosted project.
+- Client entry points: `usePlanAccess()` / `FEATURE_COPY` (`src/lib/plan-access.ts`) and
+  `PlanGate` / `LockedFeatureNotice` / `LockedFeatureButton` (`src/components/feature-lock.tsx`).
+  Locked features are `sub_invites`, `license_verification`, `coi_requests`, `lien_rights`.
+- The plan read **fails open** on purpose (missing column, RLS hiccup, offline ⇒ unlocked): never
+  lock a paying contractor out because a lookup failed. Admins are never gated.
+- "Request access" files a real `feature_requests` row through `createRequest()` — do not swap it
+  for a mailto or a toast.
+
+### Victoria voice-fill
+- Browser-native `SpeechRecognition` only — there is no AI backend on this path. Shared helpers in
+  `src/lib/victoria-speech.ts`; `/join` uses `victoria-voice-signup.tsx`, New Permit uses the
+  floating mic in `victoria-permit-assistant.tsx` (`data-tour="victoria-permit"`).
+- It is a fixed field script (ask → listen → write → advance), not free-form "field name + value"
+  parsing, and it renders nothing where the browser lacks the API. Typing always still works.
+- The first-login tour (`src/components/first-login-tour.tsx`) ends on that mic in
+  `/portal/permits/new` — do not point it back at "Generate Intake Link", which is now gated.
+
 ### Company profile (`/portal/company`)
 - Live data lives in `public.gc_company_profiles` (one row per tenant) + private Storage bucket
   `company-compliance-docs`. Client API: `src/lib/gc-company.ts`; uploads via

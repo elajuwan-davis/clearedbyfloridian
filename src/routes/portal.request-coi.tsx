@@ -1,3 +1,4 @@
+import { PlanGate } from "@/components/feature-lock";
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { useServerFn } from "@tanstack/react-start";
@@ -26,7 +27,11 @@ export const Route = createFileRoute("/portal/request-coi")({
       { name: "robots", content: "noindex" },
     ],
   }),
-  component: InsuranceRequestsPage,
+  component: () => (
+    <PlanGate feature="coi_requests">
+      <InsuranceRequestsPage />
+    </PlanGate>
+  ),
 });
 
 const inputCls =

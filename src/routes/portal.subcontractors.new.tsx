@@ -1,3 +1,4 @@
+import { PlanGate } from "@/components/feature-lock";
 import { createFileRoute, Link, useNavigate, useSearch } from "@tanstack/react-router";
 import { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
 import { toast } from "sonner";
@@ -22,7 +23,11 @@ export const Route = createFileRoute("/portal/subcontractors/new")({
       { name: "robots", content: "noindex" },
     ],
   }),
-  component: NewSubcontractorPage,
+  component: () => (
+    <PlanGate feature="sub_invites">
+      <NewSubcontractorPage />
+    </PlanGate>
+  ),
 });
 
 const TRADES = ["Plumbing", "Electrical", "Gas", "Other"] as const;

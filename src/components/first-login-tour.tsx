@@ -1,8 +1,11 @@
 // First-login tour: a real spotlight over real buttons, not a slideshow.
 //
-// Two steps live on the dashboard; the third is the actual "Generate Intake Link" button on
-// /portal/subcontractors, so the tour makes exactly one route hop to get there. The hand-off
-// is carried in sessionStorage so the subcontractors page can pick the tour back up on mount.
+// The dashboard leg points at New Permit and at Documents, then hands off to
+// /portal/permits/new, where the last step spotlights the Victoria mic in the corner — so a
+// brand-new self-serve account is walked into the one thing it can do end to end: file its
+// own permit. (It used to end on "Generate Intake Link", which is now a paid feature and
+// would have taught a trial account to click a lock.) The hand-off is carried in
+// sessionStorage so the permit page can pick the tour back up on mount.
 //
 // Targets are `data-tour` attributes, never class names, so restyling can't break the tour.
 
@@ -17,12 +20,13 @@ import {
 } from "@/lib/first-login-tour.functions";
 
 const PENDING_KEY = "cleard_tour_pending_step";
-const PENDING_VALUE = "generate-intake-link";
+const PENDING_VALUE = "victoria-permit";
 const POPOVER_CLASS = "cleard-tour-popover";
 
-const SUB_STEP_TITLE = "Invite a subcontractor";
-const SUB_STEP_BODY =
-  "This is how you invite a subcontractor — generate a link and send it to them; they fill in their own info and get registered.";
+const VICTORIA_TARGET = '[data-tour="victoria-permit"]';
+const VICTORIA_STEP_TITLE = "Or just talk it through";
+const VICTORIA_STEP_BODY =
+  "Tap Victoria and say your answers out loud — the project, the address, the municipality, the value — and she fills each field for you as you speak. Typing works exactly as before.";
 
 function baseOptions() {
   return {
@@ -38,7 +42,7 @@ function baseOptions() {
 }
 
 /** Wait for a target to exist before driving to it — pages mount their own content. */
-function whenPresent(selector: string, run: () => void, timeoutMs = 6000) {
+function whenPresent(selector: string, run: () => void, timeoutMs = 8000) {
   if (typeof document === "undefined") return;
   if (document.querySelector(selector)) {
     run();
@@ -56,11 +60,11 @@ function whenPresent(selector: string, run: () => void, timeoutMs = 6000) {
 }
 
 /**
- * Starts the dashboard leg of the tour. `onLeaveForSubcontractors` is called instead of
- * advancing in place, so the caller owns the router navigation.
+ * Starts the dashboard leg of the tour. `onLeaveForNewPermit` is called instead of advancing
+ * in place, so the caller owns the router navigation.
  */
 export function startFirstLoginTour(opts: {
-  onLeaveForSubcontractors: () => void;
+  onLeaveForNewPermit: () => void;
   onFinished: () => void;
 }): Driver | null {
   if (typeof window === "undefined") return null;
@@ -72,8 +76,9 @@ export function startFirstLoginTour(opts: {
       {
         element: '[data-tour="new-permit"]',
         popover: {
-          title: "Start a new permit",
-          description: "This is how you file a permit.",
+          title: "Start with a permit",
+          description:
+            "This is the job: file your own permits. Everything else on Cleard hangs off one of these.",
         },
       },
       {
@@ -81,18 +86,19 @@ export function startFirstLoginTour(opts: {
         popover: {
           title: "Compliance documents",
           description: "This is where your documents live.",
+          nextBtnText: "Create a permit",
           onNextClick: () => {
             handedOff = true;
             window.sessionStorage.setItem(PENDING_KEY, PENDING_VALUE);
             d.destroy();
-            opts.onLeaveForSubcontractors();
+            opts.onLeaveForNewPermit();
           },
         },
       },
     ],
     onDestroyed: () => {
       // Skipping, closing or finishing all end the tour for good — but not the mid-tour
-      // teardown we do ourselves to cross into /portal/subcontractors.
+      // teardown we do ourselves to cross into /portal/permits/new.
       if (!handedOff) opts.onFinished();
     },
   });
@@ -101,7 +107,7 @@ export function startFirstLoginTour(opts: {
   return d;
 }
 
-/** Third step, on /portal/subcontractors, only if the dashboard leg handed off. */
+/** Last step, on /portal/permits/new, only if the dashboard leg handed off. */
 export function resumeFirstLoginTour(opts: { onFinished: () => void }): Driver | null {
   if (typeof window === "undefined") return null;
   if (window.sessionStorage.getItem(PENDING_KEY) !== PENDING_VALUE) return null;
@@ -112,14 +118,16 @@ export function resumeFirstLoginTour(opts: { onFinished: () => void }): Driver |
     showProgress: false,
     steps: [
       {
-        element: '[data-tour="generate-intake-link"]',
-        popover: { title: SUB_STEP_TITLE, description: SUB_STEP_BODY },
+        element: VICTORIA_TARGET,
+        popover: { title: VICTORIA_STEP_TITLE, description: VICTORIA_STEP_BODY },
       },
     ],
     onDestroyed: () => opts.onFinished(),
   });
 
-  whenPresent('[data-tour="generate-intake-link"]', () => d.drive());
+  // The mic renders only where the browser has speech recognition; if it never appears the
+  // tour simply ends here rather than spotlighting nothing.
+  whenPresent(VICTORIA_TARGET, () => d.drive());
   return d;
 }
 
@@ -147,7 +155,7 @@ export function useFirstLoginTour(enabled: boolean) {
         return;
       }
       tour = startFirstLoginTour({
-        onLeaveForSubcontractors: () => void navigate({ to: "/portal/subcontractors" }),
+        onLeaveForNewPermit: () => void navigate({ to: "/portal/permits/new" }),
         onFinished: () => void complete().catch(() => {}),
       });
     })();
@@ -156,7 +164,7 @@ export function useFirstLoginTour(enabled: boolean) {
   }, [enabled, navigate, shouldShow, complete]);
 }
 
-/** Subcontractors-page counterpart: shows the final step and marks the tour complete. */
+/** New Permit counterpart: shows the final step and marks the tour complete. */
 export function useFirstLoginTourResume() {
   const complete = useServerFn(completeFirstLoginTourFn);
   const started = useRef(false);
