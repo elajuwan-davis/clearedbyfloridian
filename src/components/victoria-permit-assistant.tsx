@@ -480,9 +480,11 @@ export function VictoriaPermitAssistant({
               key={s}
               type="button"
               onClick={() => {
+                const all = picked.includes(s) ? picked : [...picked, s];
+                setPicked(all);
                 onScopes?.([s]);
-                setScript([s]);
-                setHeard({ label: "Scope of work", value: s });
+                setScript(all);
+                setHeard({ label: "Scope of work", value: all.join(", ") });
               }}
               className="rounded-[3px] border border-obsidian/20 px-2 py-1 font-mono text-[10px] uppercase tracking-[0.12em] text-obsidian/70 hover:bg-obsidian/5"
             >
