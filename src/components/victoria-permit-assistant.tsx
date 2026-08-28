@@ -415,6 +415,20 @@ export function VictoriaPermitAssistant({
     [onField, onScopes, onSubField, scopeOptions, setScript, teardown],
   );
 
+  const start = useCallback(() => {
+    setOpen(true);
+    setHeard(null);
+    setNotice(null);
+    setScript([]);
+    listenFor(0);
+  }, [listenFor, setScript]);
+
+  // Opened from the intro prompt on the New Permit page.
+  useEffect(() => {
+    if (openSignal > 0) start();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [openSignal]);
+
   // No Web Speech API (Safari/Firefox): show nothing rather than a button that can't work.
   if (!supported) return null;
 
@@ -425,13 +439,7 @@ export function VictoriaPermitAssistant({
       <button
         type="button"
         data-tour="victoria-permit"
-        onClick={() => {
-          setOpen(true);
-          setHeard(null);
-          setNotice(null);
-          setScript([]);
-          listenFor(0);
-        }}
+        onClick={start}
         title="Fill this permit by voice"
         className="fixed bottom-6 right-6 z-40 inline-flex items-center gap-2 rounded-full bg-obsidian px-5 py-3.5 font-mono text-[10px] uppercase tracking-[0.16em] text-paper shadow-[0_18px_40px_-16px_rgba(47,79,79,0.65)] hover:bg-obsidian/90"
       >
