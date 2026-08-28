@@ -861,8 +861,8 @@ function PortalShellInner({ children }: { children: ReactNode }) {
       </div>
 
 
-      {!permitsOnly && <AskVictoriaDock />}
       {!permitsOnly && <InternalOnlyVictoria />}
+
 
     </div>
   );
