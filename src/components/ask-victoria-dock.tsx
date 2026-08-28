@@ -49,7 +49,7 @@ export function AskVictoriaDock({ variant = "float" }: { variant?: "float" | "na
         type="button"
         onClick={() => setOpen((v) => !v)}
         aria-label="Ask Victoria"
-        title="Ask Victoria"
+        title="Ask Victoria — AI that oversees your permits and helps you at every step to get them cleared"
         className={
           isNav
             ? "grid h-8 w-8 place-items-center rounded-lg transition hover:bg-[var(--rail-hover)]"
@@ -82,8 +82,9 @@ export function AskVictoriaDock({ variant = "float" }: { variant?: "float" | "na
               <Sparkle className="h-4 w-4" strokeWidth={1.5} />
               <div>
                 <div className="text-[13px] font-medium">Ask Victoria</div>
-                <div className="font-mono text-[9px] uppercase tracking-[0.18em] opacity-70">
-                  AI Permitting Assistant
+                <div className="text-[10.5px] leading-snug opacity-75">
+                  AI that oversees your permits and helps you at every step of the way to get
+                  them cleared.
                 </div>
               </div>
             </div>
@@ -106,7 +107,9 @@ export function AskVictoriaDock({ variant = "float" }: { variant?: "float" | "na
             {messages.length === 0 ? (
               <div className="pt-8 text-center">
                 <p className="text-[13px]" style={{ color: "var(--muted-foreground)" }}>
-                  Ask about FS §553.791, county fees, timelines or inspections.
+                  Victoria is the AI that oversees your permits — she watches every filing,
+                  flags what a municipality will ask for, and walks you through each step until
+                  the permit is cleared. Ask her anything about fees, timelines or inspections.
                 </p>
                 <div className="mt-4 flex flex-wrap justify-center gap-1.5">
                   {["What counties do you serve?", "What are the fees?", "How long does review take?"].map((s) => (

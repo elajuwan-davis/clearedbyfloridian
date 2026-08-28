@@ -65,7 +65,6 @@ export const tabGroups: TabGroup[] = [
       { label: "Payment Authorization", to: "/forms/payment-authorization" },
       { label: "Billing", to: "/portal/billing" },
       { label: "Departments", to: "/portal/building-dept" },
-      { label: "Portal Logins", to: "/building-dept-logins" },
       { label: "Legal", to: "/legal" },
       { label: "Notary Queue", to: "/portal/notary-queue" },
     ],

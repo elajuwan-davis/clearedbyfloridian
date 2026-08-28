@@ -88,6 +88,8 @@ export const portalLoginsSection: NavSection = {
 export const navSections: NavSection[] = [
   dashboardSection,
   permitsSection,
+  // Portal Logins sits beside My Permits — both are included on every plan.
+  portalLoginsSection,
   {
     key: "inspections",
     label: "Inspections",

@@ -33,23 +33,115 @@ export type VictoriaPermitField =
   | "totalProjectValue"
   | "description"
   | "ownerName"
+  | "ownerEntity"
   | "signerEmail"
-  | "signerPhone";
+  | "signerPhone"
+  | "architectFirm"
+  | "architectContact"
+  | "architectLicense"
+  | "architectEmail"
+  | "engineerFirm"
+  | "engineerContact"
+  | "engineerLicense"
+  | "engineerEmail"
+  | "additionalNotes";
 
-const SCRIPT: { key: VictoriaPermitField; prompt: string; label: string }[] = [
-  { key: "projectName", prompt: "What's the project called?", label: "Project name" },
-  { key: "address", prompt: "What's the property address?", label: "Property address" },
-  { key: "municipality", prompt: "Which city or municipality is it in?", label: "Municipality" },
+/** Subcontractor row keys Victoria can fill, per selected scope. */
+export type VictoriaSubField = "companyName" | "licenseNumber" | "contactName" | "contactEmail";
+
+type Step =
+  | { kind: "field"; key: VictoriaPermitField; prompt: string; label: string }
+  | { kind: "scopes"; prompt: string; label: string }
+  | { kind: "sub"; scope: string; field: VictoriaSubField; prompt: string; label: string };
+
+/** Everything before the scope picker — the project itself. */
+const PROJECT_STEPS: Step[] = [
+  { kind: "field", key: "projectName", prompt: "What's the project called?", label: "Project name" },
+  { kind: "field", key: "address", prompt: "What's the property address?", label: "Property address" },
   {
+    kind: "field",
+    key: "municipality",
+    prompt: "Which city or municipality is it in?",
+    label: "Municipality",
+  },
+  {
+    kind: "field",
     key: "totalProjectValue",
     prompt: "What's the total project value, in dollars?",
     label: "Project value",
   },
-  { key: "description", prompt: "Describe the scope of work.", label: "Scope description" },
-  { key: "ownerName", prompt: "Who is the property owner?", label: "Owner name" },
-  { key: "signerEmail", prompt: "What's the contact email?", label: "Contact email" },
-  { key: "signerPhone", prompt: "And the contact phone number?", label: "Contact phone" },
+  { kind: "field", key: "description", prompt: "Describe the scope of work.", label: "Scope description" },
+  {
+    kind: "scopes",
+    prompt: "Which trades are on this permit? Name them all — for example, pool and spa, electrical, plumbing.",
+    label: "Scope of work",
+  },
 ];
+
+/** Everything after the subcontractor rows — owner, contacts, design pros, notes. */
+const TAIL_STEPS: Step[] = [
+  { kind: "field", key: "ownerName", prompt: "Who is the property owner?", label: "Owner name" },
+  {
+    kind: "field",
+    key: "ownerEntity",
+    prompt: "Is the owner an entity or trust? Say the name, or say skip.",
+    label: "Owner entity",
+  },
+  { kind: "field", key: "signerEmail", prompt: "What's the contact email?", label: "Contact email" },
+  { kind: "field", key: "signerPhone", prompt: "And the contact phone number?", label: "Contact phone" },
+  { kind: "field", key: "architectFirm", prompt: "Which architecture firm is on the job? Say skip if none.", label: "Architect firm" },
+  { kind: "field", key: "architectContact", prompt: "Who's the architect contact?", label: "Architect contact" },
+  { kind: "field", key: "architectLicense", prompt: "What's the architect's license number?", label: "Architect license" },
+  { kind: "field", key: "architectEmail", prompt: "And the architect's email?", label: "Architect email" },
+  { kind: "field", key: "engineerFirm", prompt: "Which engineering firm is on the job? Say skip if none.", label: "Engineer firm" },
+  { kind: "field", key: "engineerContact", prompt: "Who's the engineer contact?", label: "Engineer contact" },
+  { kind: "field", key: "engineerLicense", prompt: "What's the engineer's license number?", label: "Engineer license" },
+  { kind: "field", key: "engineerEmail", prompt: "And the engineer's email?", label: "Engineer email" },
+  {
+    kind: "field",
+    key: "additionalNotes",
+    prompt: "Anything else Cleard should know about this permit?",
+    label: "Additional notes",
+  },
+];
+
+const SUB_PROMPTS: Record<VictoriaSubField, (scope: string) => string> = {
+  companyName: (scope) => `Which company is doing the ${scope.toLowerCase()} work?`,
+  licenseNumber: (scope) => `What's the ${scope.toLowerCase()} contractor's license number?`,
+  contactName: (scope) => `Who's the contact at the ${scope.toLowerCase()} contractor?`,
+  contactEmail: (scope) => `And their email address?`,
+};
+
+const SUB_LABELS: Record<VictoriaSubField, string> = {
+  companyName: "Company",
+  licenseNumber: "License #",
+  contactName: "Contact",
+  contactEmail: "Contact email",
+};
+
+const SUB_FIELD_ORDER: VictoriaSubField[] = [
+  "companyName",
+  "licenseNumber",
+  "contactName",
+  "contactEmail",
+];
+
+/** The full script: project fields, then a sub block per selected scope, then the tail. */
+function buildSteps(scopes: string[]): Step[] {
+  const subSteps: Step[] = [];
+  for (const scope of scopes) {
+    for (const field of SUB_FIELD_ORDER) {
+      subSteps.push({
+        kind: "sub",
+        scope,
+        field,
+        prompt: SUB_PROMPTS[field](scope),
+        label: `${scope} · ${SUB_LABELS[field]}`,
+      });
+    }
+  }
+  return [...PROJECT_STEPS, ...subSteps, ...TAIL_STEPS];
+}
 
 const SPOKEN_DIGITS: Record<string, string> = {
   zero: "0",
@@ -118,6 +210,24 @@ export function matchMunicipality(raw: string): string {
   return contains ?? raw.trim();
 }
 
+/**
+ * "Pool and spa, electrical and plumbing" → the exact scope options the form offers.
+ * Each spoken fragment is matched against the catalog; unmatched words are dropped
+ * rather than invented, since the picker only accepts real scopes.
+ */
+export function matchScopes(raw: string, options: string[]): string[] {
+  const said = raw.toLowerCase();
+  const picked: string[] = [];
+  for (const option of options) {
+    const words = normalize(option)
+      .split(" ")
+      .filter((w) => w.length > 2);
+    const hit = words.some((w) => normalize(said).includes(w));
+    if (hit) picked.push(option);
+  }
+  return picked;
+}
+
 function tidy(key: VictoriaPermitField, raw: string): string {
   const text = raw.trim();
   switch (key) {
@@ -126,6 +236,8 @@ function tidy(key: VictoriaPermitField, raw: string): string {
     case "totalProjectValue":
       return parseMoney(text);
     case "signerEmail":
+    case "architectEmail":
+    case "engineerEmail":
       return tidyEmail(text);
     case "signerPhone":
       return tidyPhone(text);
@@ -138,9 +250,18 @@ function tidy(key: VictoriaPermitField, raw: string): string {
 
 export function VictoriaPermitAssistant({
   onField,
+  onScopes,
+  onSubField,
+  scopeOptions = [],
 }: {
   /** Writes one value into the permit form; the form stays fully editable by hand. */
   onField: (field: VictoriaPermitField, value: string) => void;
+  /** Selects the spoken trades on the form (adds their subcontractor rows). */
+  onScopes?: (scopes: string[]) => void;
+  /** Writes one value onto the first subcontractor row of a selected scope. */
+  onSubField?: (scope: string, field: VictoriaSubField, value: string) => void;
+  /** The scope catalog the form offers, so spoken trades land on real options. */
+  scopeOptions?: string[];
 }) {
   const [supported, setSupported] = useState(false);
   const [open, setOpen] = useState(false);
@@ -148,8 +269,16 @@ export function VictoriaPermitAssistant({
   const [listening, setListening] = useState(false);
   const [heard, setHeard] = useState<{ label: string; value: string } | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
+  const [steps, setSteps] = useState<Step[]>(() => buildSteps([]));
+  const stepsRef = useRef<Step[]>(steps);
   const recognition = useRef<SpeechRecognitionLike | null>(null);
   const advance = useRef<number | null>(null);
+
+  const setScript = useCallback((scopes: string[]) => {
+    const next = buildSteps(scopes);
+    stepsRef.current = next;
+    setSteps(next);
+  }, []);
 
   useEffect(() => {
     setSupported(!!getRecognitionCtor());
@@ -173,7 +302,7 @@ export function VictoriaPermitAssistant({
   const listenFor = useCallback(
     (step: number) => {
       const Ctor = getRecognitionCtor();
-      const field = SCRIPT[step];
+      const field = stepsRef.current[step];
       if (!Ctor || !field) return;
 
       teardown();
@@ -190,7 +319,7 @@ export function VictoriaPermitAssistant({
       const next = (delay: number) => {
         advance.current = window.setTimeout(() => {
           const n = step + 1;
-          if (n >= SCRIPT.length) {
+          if (n >= stepsRef.current.length) {
             setNotice("That's the form — review it, add your documents, then continue.");
             return;
           }
@@ -206,6 +335,35 @@ export function VictoriaPermitAssistant({
           next(300);
           return;
         }
+
+        // Trades: one utterance can name several, and each one adds its own
+        // subcontractor block to the rest of the script.
+        if (field.kind === "scopes") {
+          const picked = matchScopes(transcript, scopeOptions);
+          if (!picked.length) {
+            setNotice("Didn't catch a trade — name them again, or pick them on the form.");
+            return;
+          }
+          onScopes?.(picked);
+          setScript(picked);
+          setHeard({ label: field.label, value: picked.join(", ") });
+          next(1400);
+          return;
+        }
+
+        if (field.kind === "sub") {
+          const value =
+            field.field === "contactEmail" ? tidyEmail(transcript) : transcript.trim();
+          if (!value) {
+            setNotice("Didn't catch that — say it again, or type it in.");
+            return;
+          }
+          onSubField?.(field.scope, field.field, value);
+          setHeard({ label: field.label, value });
+          next(1400);
+          return;
+        }
+
         const value = tidy(field.key, transcript);
         if (!value) {
           setNotice("Didn't catch that — say it again, or type it in.");
@@ -235,13 +393,13 @@ export function VictoriaPermitAssistant({
         setNotice("Voice input couldn't start — type the form instead.");
       }
     },
-    [onField, teardown],
+    [onField, onScopes, onSubField, scopeOptions, setScript, teardown],
   );
 
   // No Web Speech API (Safari/Firefox): show nothing rather than a button that can't work.
   if (!supported) return null;
 
-  const current = SCRIPT[index];
+  const current = steps[index];
 
   if (!open) {
     return (
@@ -252,6 +410,7 @@ export function VictoriaPermitAssistant({
           setOpen(true);
           setHeard(null);
           setNotice(null);
+          setScript([]);
           listenFor(0);
         }}
         title="Fill this permit by voice"
@@ -270,7 +429,7 @@ export function VictoriaPermitAssistant({
     >
       <div className="flex items-center justify-between gap-3">
         <div className="inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.16em] text-obsidian/55">
-          <Sparkles className="h-3.5 w-3.5" /> Victoria · {index + 1} of {SCRIPT.length}
+          <Sparkles className="h-3.5 w-3.5" /> Victoria · {index + 1} of {steps.length}
         </div>
         <button
           type="button"

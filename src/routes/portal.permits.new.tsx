@@ -2217,11 +2217,45 @@ function NewPermitPage() {
         className="lg:sticky lg:top-6 self-start"
       />
       <VictoriaPermitAssistant
+        scopeOptions={SCOPE_OPTIONS as unknown as string[]}
         onField={(field, value) => {
           // Victoria only ever writes step-1 text fields, so send the user back there if
           // they started her from the documents step — otherwise she fills a page they
           // can't see.
           setForm((f) => ({ ...f, step: 1, [field]: value }));
+        }}
+        onScopes={(spoken) => {
+          // Select every trade she heard that isn't already on the form; each one
+          // spawns its subcontractor row exactly as a click would.
+          setForm((f) => {
+            let next = { ...f, step: 1 as 1 | 2 };
+            for (const scope of spoken) {
+              if (next.scopes.includes(scope)) continue;
+              const trade = SCOPE_TO_TRADE[scope] ?? scope;
+              const existing = next.subs.find(
+                (x) => x.trade === trade && x.companyName.trim() && !x.skipped,
+              );
+              const seed: SubIntake = existing
+                ? { ...existing, key: newSubKey(), scope, skipped: false }
+                : emptySub(scope);
+              next = { ...next, scopes: [...next.scopes, scope], subs: [...next.subs, seed] };
+            }
+            return next;
+          });
+        }}
+        onSubField={(scope, field, value) => {
+          // First row of that scope — the one the picker created when the scope was added.
+          setForm((f) => {
+            const target = f.subs.find((x) => x.scope === scope);
+            if (!target) return f;
+            return {
+              ...f,
+              step: 1 as 1 | 2,
+              subs: f.subs.map((x) =>
+                x.key === target.key ? { ...x, [field]: value, skipped: false } : x,
+              ),
+            };
+          });
         }}
       />
     </div>

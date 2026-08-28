@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { PortalShell } from "@/components/portal-shell";
 import { useMyIdentity, greetingForNow } from "@/lib/profile-api";
+import { usePlanAccess } from "@/lib/plan-access";
 import { listPermits, type PermitRow } from "@/lib/permits-api";
 import { listThreads } from "@/lib/messages-api";
 import {
@@ -17,6 +18,7 @@ import {
   Send,
   ClipboardList,
   Activity,
+  Lock,
 } from "lucide-react";
 import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
 
@@ -53,6 +55,44 @@ function relTime(iso: string | null | undefined) {
   const d = Math.round(h / 24);
   if (d < 7) return `${d}d ago`;
   return `${Math.round(d / 7)}w ago`;
+}
+
+/**
+ * Self-serve (trial) accounts see exactly what their plan includes, right at the
+ * top of the dashboard, so nothing in the sidebar comes as a surprise lock.
+ */
+function TrialAccessBanner() {
+  const plan = usePlanAccess();
+  if (!plan.isTrial) return null;
+  const included = [
+    { label: "My Permits", to: "/portal/permits" },
+    { label: "Portal Logins", to: "/building-dept-logins" },
+    { label: "Messages", to: "/messages" },
+    { label: "Account Info", to: "/profile" },
+  ];
+  return (
+    <div
+      className="mb-3 rounded-xl border p-4"
+      style={{ borderColor: "var(--p-border)", backgroundColor: "var(--card)" }}
+    >
+      <div className="flex items-center gap-2 text-[12px] font-medium text-foreground">
+        <Lock className="h-3.5 w-3.5" strokeWidth={1.75} />
+        Your plan includes these features
+      </div>
+      <p className="mt-1 text-[12px] leading-relaxed text-muted-foreground">
+        You can file and run your own permits, keep your building-department logins, message
+        Cleard, and manage your account. Everything else in the portal is visible but locked —
+        open it to see what it does and request access.
+      </p>
+      <div className="mt-3 flex flex-wrap gap-1.5">
+        {included.map((i) => (
+          <Link key={i.to} to={i.to as never} className="p-chip p-chip-info">
+            {i.label}
+          </Link>
+        ))}
+      </div>
+    </div>
+  );
 }
 
 export function BuilderDashboard() {
@@ -146,6 +186,8 @@ export function BuilderDashboard() {
             </>
           }
       >
+        <TrialAccessBanner />
+
         {/* Banners */}
         {(needsVerification || needsLpoa) && (
           <div className="mb-3 space-y-2">
