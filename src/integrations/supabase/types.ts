@@ -10,7 +10,7 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "14.17"
+    PostgrestVersion: "14.5"
   }
   public: {
     Tables: {
@@ -3891,6 +3891,30 @@ export type Database = {
           },
         ]
       }
+      signup_attempts: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          ip_hash: string | null
+          outcome: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          ip_hash?: string | null
+          outcome?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          ip_hash?: string | null
+          outcome?: string
+        }
+        Relationships: []
+      }
       signwell_events: {
         Row: {
           event_hash: string
@@ -4598,10 +4622,12 @@ export type Database = {
           id: string
           license_number: string | null
           name: string
+          plan: string
           primary_coi_path: string | null
           primary_license_path: string | null
           service_areas: string[]
           status: string
+          tour_completed_at: string | null
           updated_at: string
         }
         Insert: {
@@ -4610,10 +4636,12 @@ export type Database = {
           id?: string
           license_number?: string | null
           name: string
+          plan?: string
           primary_coi_path?: string | null
           primary_license_path?: string | null
           service_areas?: string[]
           status?: string
+          tour_completed_at?: string | null
           updated_at?: string
         }
         Update: {
@@ -4622,10 +4650,12 @@ export type Database = {
           id?: string
           license_number?: string | null
           name?: string
+          plan?: string
           primary_coi_path?: string | null
           primary_license_path?: string | null
           service_areas?: string[]
           status?: string
+          tour_completed_at?: string | null
           updated_at?: string
         }
         Relationships: []
