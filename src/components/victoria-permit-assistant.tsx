@@ -276,6 +276,8 @@ export function VictoriaPermitAssistant({
   onSubField?: (scope: string, field: VictoriaSubField, value: string) => void;
   /** The scope catalog the form offers, so spoken trades land on real options. */
   scopeOptions?: string[];
+  /** Bump this to open Victoria and start the script from outside (e.g. the intro prompt). */
+  openSignal?: number;
 }) {
   const [supported, setSupported] = useState(false);
   const [open, setOpen] = useState(false);
