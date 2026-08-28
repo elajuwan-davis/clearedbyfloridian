@@ -17,6 +17,7 @@ import {
 import { listSubs, createSub, deleteSub, updateSubApi, subIsComplete, subMissingFields, coiLifecycle, type SubRow } from "@/lib/subs-api";
 import { verifyDbprLicense, dbprLookupUrl, type DbprResult } from "@/lib/dbpr-api";
 import { MarketplacePanel } from "@/components/marketplace-panel";
+import { useFirstLoginTourResume } from "@/components/first-login-tour";
 
 const dbprTone: Record<string, { label: string; cls: string }> = {
   active: {
@@ -41,6 +42,9 @@ export function SubcontractorsManager() {
   const [loading, setLoading] = useState(true);
   const [shareUrl, setShareUrl] = useState<string | null>(null);
   const [verifying, setVerifying] = useState<Record<string, boolean>>({});
+
+  // Last step of the first-login tour, if the dashboard sent the user here.
+  useFirstLoginTourResume();
 
   const needsAttention = subs.filter((s) => {
     const c = coiLifecycle(s);
@@ -126,7 +130,7 @@ export function SubcontractorsManager() {
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          <button type="button" onClick={generateIntakeLink} className="inline-flex items-center gap-2 border border-obsidian/25 bg-white px-4 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian hover:bg-obsidian/5 rounded-[3px]">
+          <button type="button" data-tour="generate-intake-link" onClick={generateIntakeLink} className="inline-flex items-center gap-2 border border-obsidian/25 bg-white px-4 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian hover:bg-obsidian/5 rounded-[3px]">
             <Link2 className="h-3.5 w-3.5" /> Generate Intake Link
           </button>
           <Link to="/portal/subcontractors/new" className="inline-flex items-center gap-2 bg-obsidian px-4 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-paper hover:bg-obsidian/90 rounded-[3px]">

@@ -1,7 +1,11 @@
 import { useState } from "react";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import { FileStack, Map, Users } from "lucide-react";
 import { MarketingShell } from "@/components/marketing-shell";
+import { VictoriaVoiceSignup, type VictoriaField } from "@/components/victoria-voice-signup";
+import { selfServeSignupFn } from "@/lib/self-serve-signup.functions";
+import { supabase } from "@/integrations/supabase/client";
 
 
 export const Route = createFileRoute("/join")({
@@ -23,7 +27,9 @@ const MUTED = `color-mix(in oklab, ${OBSIDIAN} 55%, transparent)`;
 const HAIRLINE = `color-mix(in oklab, ${OBSIDIAN} 12%, transparent)`;
 
 function JoinPage() {
-  const [state, setState] = useState<"idle" | "submitting" | "sent" | "error">("idle");
+  const navigate = useNavigate();
+  const signUp = useServerFn(selfServeSignupFn);
+  const [state, setState] = useState<"idle" | "submitting" | "created" | "error">("idle");
   const [errorMsg, setErrorMsg] = useState("");
   const [form, setForm] = useState({
     name: "",
@@ -32,6 +38,8 @@ function JoinPage() {
     email: "",
     phone: "",
   });
+  const [password, setPassword] = useState("");
+  const [confirm, setConfirm] = useState("");
 
   function set<K extends keyof typeof form>(k: K, v: string) {
     setForm((f) => ({ ...f, [k]: v }));
@@ -39,16 +47,37 @@ function JoinPage() {
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (password.length < 8) {
+      setState("error");
+      setErrorMsg("Password must be at least 8 characters.");
+      return;
+    }
+    if (password !== confirm) {
+      setState("error");
+      setErrorMsg("Passwords don't match.");
+      return;
+    }
     setState("submitting");
     setErrorMsg("");
     try {
-      const res = await fetch("/api/public/access-request", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+      await signUp({
+        data: {
+          name: form.name.trim(),
+          company: form.company.trim(),
+          license_number: form.license_number.trim() || null,
+          email: form.email.trim(),
+          phone: form.phone.trim() || null,
+          password,
+        },
       });
-      if (!res.ok) throw new Error(await res.text());
-      setState("sent");
+      // The account is created pre-confirmed, so signing in works immediately.
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email: form.email.trim(),
+        password,
+      });
+      if (signInError) throw new Error(signInError.message);
+      setState("created");
+      await navigate({ to: "/onboarding", search: { entry: "selfserve" } as never });
     } catch (err) {
       setState("error");
       setErrorMsg(err instanceof Error ? err.message : "Something went wrong.");
@@ -311,16 +340,23 @@ function JoinPage() {
             Tell us about your operation and we'll get you set up.
           </p>
 
-          {state === "sent" ? (
+          {state !== "created" && (
+            <VictoriaVoiceSignup
+              disabled={state === "submitting"}
+              onField={(field: VictoriaField, value) => set(field, value)}
+            />
+          )}
+
+          {state === "created" ? (
             <div className="text-center py-12">
               <div
                 className="font-mono text-[10px] uppercase mb-4"
                 style={{ color: OBSIDIAN, letterSpacing: "0.32em" }}
               >
-                Received
+                Account created
               </div>
               <p style={{ color: OBSIDIAN }} className="text-lg">
-                We'll be in touch within one business day.
+                Signing you in…
               </p>
             </div>
           ) : (
@@ -358,6 +394,38 @@ function JoinPage() {
                 </div>
               ))}
 
+              {[
+                { label: "Password", value: password, onChange: setPassword },
+                { label: "Confirm Password", value: confirm, onChange: setConfirm },
+              ].map((f) => (
+                <div key={f.label}>
+                  <label
+                    className="block font-mono text-[10px] uppercase mb-2"
+                    style={{ color: MUTED, letterSpacing: "0.2em" }}
+                  >
+                    {f.label}
+                  </label>
+                  <input
+                    type="password"
+                    required
+                    minLength={8}
+                    autoComplete="new-password"
+                    value={f.value}
+                    onChange={(e) => f.onChange(e.target.value)}
+                    className="w-full bg-transparent px-0 py-3 text-base outline-none transition-colors"
+                    style={{
+                      color: OBSIDIAN,
+                      borderBottom: `1px solid color-mix(in oklab, ${OBSIDIAN} 20%, transparent)`,
+                      borderRadius: 0,
+                    }}
+                    onFocus={(e) => (e.currentTarget.style.borderBottomColor = OBSIDIAN)}
+                    onBlur={(e) =>
+                      (e.currentTarget.style.borderBottomColor = `color-mix(in oklab, ${OBSIDIAN} 20%, transparent)`)
+                    }
+                  />
+                </div>
+              ))}
+
               {state === "error" && (
                 <div className="text-[12px]" style={{ color: "#8c3b3b" }}>
                   {errorMsg || "Submission failed. Please try again."}
@@ -370,7 +438,7 @@ function JoinPage() {
                 className="w-full h-14 text-[12px] font-mono uppercase tracking-[0.24em] transition-opacity hover:opacity-85 disabled:opacity-50"
                 style={{ backgroundColor: OBSIDIAN, color: "#FAF3E6", borderRadius: 0 }}
               >
-                {state === "submitting" ? "Sending…" : "Get Started"}
+                {state === "submitting" ? "Creating your account…" : "Create My Account"}
               </button>
             </form>
           )}

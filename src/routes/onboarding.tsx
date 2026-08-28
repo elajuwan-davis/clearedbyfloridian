@@ -36,15 +36,31 @@ function OnboardingPage() {
 
   useEffect(() => {
     // Verify we have an authenticated invited user
-    supabase.auth.getSession().then(({ data }) => {
+    supabase.auth.getSession().then(async ({ data }) => {
       if (!data.session) {
         setError("Invite link expired or invalid. Please contact info@cleard.com.");
         setStep("password");
         return;
       }
       setSignerEmail(data.session.user.email ?? "");
-      setStep("password");
 
+      // Self-serve signups already chose a password and named their company at signup —
+      // the only thing left for them is the PAA, which is never skippable.
+      const selfServe =
+        typeof window !== "undefined" &&
+        new URLSearchParams(window.location.search).get("entry") === "selfserve";
+      if (selfServe) {
+        const { data: member } = await (supabase.from("tenant_members" as any) as any)
+          .select("tenants:tenant_id ( name, license_number )")
+          .maybeSingle();
+        const t = (member as any)?.tenants;
+        if (t?.name) setTenantName(t.name);
+        if (t?.license_number) setLicenseNumber(t.license_number);
+        setStep("paa");
+        return;
+      }
+
+      setStep("password");
     });
   }, []);
 
