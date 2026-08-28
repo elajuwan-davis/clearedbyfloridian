@@ -150,7 +150,19 @@ let settings: LienSettings = {
 };
 
 const listeners = new Set<() => void>();
+
+// useSyncExternalStore requires referentially stable snapshots — recompute the
+// cached arrays only when the underlying data actually changes.
+let docsSnapshot: LienDoc[] = [...docs].sort((a, b) => b.generatedAt.localeCompare(a.generatedAt));
+let requestsSnapshot: ERecordRequest[] = [...requests];
+
+function refreshSnapshots() {
+  docsSnapshot = [...docs].sort((a, b) => b.generatedAt.localeCompare(a.generatedAt));
+  requestsSnapshot = [...requests];
+}
+
 function emit() {
+  refreshSnapshots();
   listeners.forEach((l) => l());
 }
 export function subscribeLienStore(fn: () => void) {
@@ -159,7 +171,7 @@ export function subscribeLienStore(fn: () => void) {
 }
 
 export function listLienDocs(): LienDoc[] {
-  return [...docs].sort((a, b) => b.generatedAt.localeCompare(a.generatedAt));
+  return docsSnapshot;
 }
 
 let seq = 1044;
@@ -181,7 +193,7 @@ export function markLienDocSent(id: string) {
 }
 
 export function listERecordRequests(): ERecordRequest[] {
-  return [...requests];
+  return requestsSnapshot;
 }
 
 let erSeq = 2072;
