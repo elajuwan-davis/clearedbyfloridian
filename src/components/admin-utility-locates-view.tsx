@@ -123,6 +123,13 @@ export function AdminUtilityLocatesView() {
                 </td>
               </tr>
             ))}
+            {MOCK_ROWS.length === 0 && (
+              <tr>
+                <td colSpan={6} className="px-4 py-10 text-center text-sm text-obsidian/55">
+                  No locate requests yet. Submit an 811 request to start tracking tickets here.
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>
