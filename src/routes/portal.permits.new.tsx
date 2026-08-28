@@ -174,6 +174,28 @@ function NewPermitPage() {
   const [loadingEdit, setLoadingEdit] = useState(isEditing);
   const [originalRow, setOriginalRow] = useState<PermitRow | null>(null);
   const [docFiles, setDocFiles] = useState<Record<string, File>>({});
+  // One-time nudge that Victoria can fill the whole form by voice; shown on the first
+  // New Permit visit in this browser only (never on an edit, never again after dismissal).
+  const [victoriaIntro, setVictoriaIntro] = useState(false);
+  const [victoriaSignal, setVictoriaSignal] = useState(0);
+  useEffect(() => {
+    if (isEditing) return;
+    try {
+      if (window.localStorage.getItem(VICTORIA_INTRO_KEY)) return;
+      if (!("webkitSpeechRecognition" in window) && !("SpeechRecognition" in window)) return;
+      setVictoriaIntro(true);
+    } catch {
+      // storage blocked — skip the nudge rather than showing it every visit
+    }
+  }, [isEditing]);
+  const dismissVictoriaIntro = () => {
+    setVictoriaIntro(false);
+    try {
+      window.localStorage.setItem(VICTORIA_INTRO_KEY, "1");
+    } catch {
+      // ignore
+    }
+  };
   // Real File objects staged for bulk upload. Names also live in form.extraDocs
   // so the draft/preview list survives a reload; files themselves cannot.
   const [extraFiles, setExtraFiles] = useState<File[]>([]);
