@@ -79,6 +79,18 @@ function LoginPage() {
       setError(error.message);
       return;
     }
+    // A self-serve account exists before its address is proved; it must not reach the portal
+    // on the password alone. (Supabase also refuses this when email confirmation is enabled
+    // project-side — this holds either way.)
+    if (signIn.user && !signIn.user.email_confirmed_at) {
+      await supabase.auth.signOut();
+      setLoading(false);
+      setError(
+        "Confirm your email first — check your inbox for the verification link we sent when you signed up.",
+      );
+      return;
+    }
+
     // Route by role
     const userId = signIn.user?.id;
     let target = getSafeNext("/portal");

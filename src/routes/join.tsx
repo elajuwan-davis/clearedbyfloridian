@@ -1,7 +1,11 @@
 import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import { FileStack, Map, Users } from "lucide-react";
 import { MarketingShell } from "@/components/marketing-shell";
+import { VictoriaVoiceSignup, type VictoriaField } from "@/components/victoria-voice-signup";
+import { selfServeSignupFn } from "@/lib/self-serve-signup.functions";
+import { supabase } from "@/integrations/supabase/client";
 
 
 export const Route = createFileRoute("/join")({
@@ -23,7 +27,9 @@ const MUTED = `color-mix(in oklab, ${OBSIDIAN} 55%, transparent)`;
 const HAIRLINE = `color-mix(in oklab, ${OBSIDIAN} 12%, transparent)`;
 
 function JoinPage() {
-  const [state, setState] = useState<"idle" | "submitting" | "sent" | "error">("idle");
+  const signUp = useServerFn(selfServeSignupFn);
+  const [state, setState] = useState<"idle" | "submitting" | "verify" | "error">("idle");
+  const [resent, setResent] = useState<"idle" | "sending" | "sent" | "failed">("idle");
   const [errorMsg, setErrorMsg] = useState("");
   const [form, setForm] = useState({
     name: "",
@@ -32,6 +38,8 @@ function JoinPage() {
     email: "",
     phone: "",
   });
+  const [password, setPassword] = useState("");
+  const [confirm, setConfirm] = useState("");
 
   function set<K extends keyof typeof form>(k: K, v: string) {
     setForm((f) => ({ ...f, [k]: v }));
@@ -39,19 +47,57 @@ function JoinPage() {
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (password.length < 8) {
+      setState("error");
+      setErrorMsg("Password must be at least 8 characters.");
+      return;
+    }
+    if (password !== confirm) {
+      setState("error");
+      setErrorMsg("Passwords don't match.");
+      return;
+    }
     setState("submitting");
     setErrorMsg("");
     try {
-      const res = await fetch("/api/public/access-request", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+      await signUp({
+        data: {
+          name: form.name.trim(),
+          company: form.company.trim(),
+          license_number: form.license_number.trim() || null,
+          email: form.email.trim(),
+          phone: form.phone.trim() || null,
+          password,
+        },
       });
-      if (!res.ok) throw new Error(await res.text());
-      setState("sent");
+      // The account exists but is unconfirmed: prove the address before it can sign in.
+      // The confirmation link lands on /auth/callback, which routes a self-serve arrival
+      // to the PAA.
+      await sendVerificationEmail();
+      setState("verify");
     } catch (err) {
       setState("error");
       setErrorMsg(err instanceof Error ? err.message : "Something went wrong.");
+    }
+  }
+
+  async function sendVerificationEmail() {
+    await supabase.auth.resend({
+      type: "signup",
+      email: form.email.trim(),
+      options: {
+        emailRedirectTo: `${window.location.origin}/auth/callback?entry=selfserve`,
+      },
+    });
+  }
+
+  async function onResend() {
+    setResent("sending");
+    try {
+      await sendVerificationEmail();
+      setResent("sent");
+    } catch {
+      setResent("failed");
     }
   }
 
@@ -311,17 +357,43 @@ function JoinPage() {
             Tell us about your operation and we'll get you set up.
           </p>
 
-          {state === "sent" ? (
+          {state !== "verify" && (
+            <VictoriaVoiceSignup
+              disabled={state === "submitting"}
+              onField={(field: VictoriaField, value) => set(field, value)}
+            />
+          )}
+
+          {state === "verify" ? (
             <div className="text-center py-12">
               <div
                 className="font-mono text-[10px] uppercase mb-4"
                 style={{ color: OBSIDIAN, letterSpacing: "0.32em" }}
               >
-                Received
+                Verify your email
               </div>
               <p style={{ color: OBSIDIAN }} className="text-lg">
-                We'll be in touch within one business day.
+                We sent a confirmation link to {form.email.trim()}.
               </p>
+              <p className="mt-3 text-[14px]" style={{ color: MUTED }}>
+                Click it and you'll land straight on your permit agent authorization. The link
+                is what proves the address is yours — the account can't be used until then.
+              </p>
+              <button
+                type="button"
+                onClick={onResend}
+                disabled={resent === "sending"}
+                className="mt-8 font-mono text-[10px] uppercase tracking-[0.2em] underline disabled:opacity-50"
+                style={{ color: OBSIDIAN }}
+              >
+                {resent === "sending"
+                  ? "Sending…"
+                  : resent === "sent"
+                    ? "Sent again — check your inbox"
+                    : resent === "failed"
+                      ? "Couldn't resend — try again"
+                      : "Didn't get it? Resend"}
+              </button>
             </div>
           ) : (
             <form onSubmit={onSubmit} className="space-y-6">
@@ -358,6 +430,38 @@ function JoinPage() {
                 </div>
               ))}
 
+              {[
+                { label: "Password", value: password, onChange: setPassword },
+                { label: "Confirm Password", value: confirm, onChange: setConfirm },
+              ].map((f) => (
+                <div key={f.label}>
+                  <label
+                    className="block font-mono text-[10px] uppercase mb-2"
+                    style={{ color: MUTED, letterSpacing: "0.2em" }}
+                  >
+                    {f.label}
+                  </label>
+                  <input
+                    type="password"
+                    required
+                    minLength={8}
+                    autoComplete="new-password"
+                    value={f.value}
+                    onChange={(e) => f.onChange(e.target.value)}
+                    className="w-full bg-transparent px-0 py-3 text-base outline-none transition-colors"
+                    style={{
+                      color: OBSIDIAN,
+                      borderBottom: `1px solid color-mix(in oklab, ${OBSIDIAN} 20%, transparent)`,
+                      borderRadius: 0,
+                    }}
+                    onFocus={(e) => (e.currentTarget.style.borderBottomColor = OBSIDIAN)}
+                    onBlur={(e) =>
+                      (e.currentTarget.style.borderBottomColor = `color-mix(in oklab, ${OBSIDIAN} 20%, transparent)`)
+                    }
+                  />
+                </div>
+              ))}
+
               {state === "error" && (
                 <div className="text-[12px]" style={{ color: "#8c3b3b" }}>
                   {errorMsg || "Submission failed. Please try again."}
@@ -370,7 +474,7 @@ function JoinPage() {
                 className="w-full h-14 text-[12px] font-mono uppercase tracking-[0.24em] transition-opacity hover:opacity-85 disabled:opacity-50"
                 style={{ backgroundColor: OBSIDIAN, color: "#FAF3E6", borderRadius: 0 }}
               >
-                {state === "submitting" ? "Sending…" : "Get Started"}
+                {state === "submitting" ? "Creating your account…" : "Create My Account"}
               </button>
             </form>
           )}
