@@ -12,7 +12,7 @@ export type AccessDecision = {
    * "approved" | "pending" | "filed" | "unverified" — filed = we just created the queue
    * entry, unverified = the address has never been proved.
    */
-  reason: "approved" | "pending" | "filed" | "unverified";
+  reason: "approved" | "pending" | "filed" | "unverified" | "provisioned";
   email: string | null;
   role: string | null;
 };
