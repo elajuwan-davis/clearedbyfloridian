@@ -1,3 +1,4 @@
+import { PlanGate } from "@/components/feature-lock";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState, useSyncExternalStore } from "react";
 import { toast } from "sonner";
@@ -25,7 +26,11 @@ export const Route = createFileRoute("/portal/lien-rights/settings")({
       { name: "robots", content: "noindex" },
     ],
   }),
-  component: LienSettingsPage,
+  component: () => (
+    <PlanGate feature="lien_rights">
+      <LienSettingsPage />
+    </PlanGate>
+  ),
 });
 
 function LienSettingsPage() {

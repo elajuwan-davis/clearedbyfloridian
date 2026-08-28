@@ -6,6 +6,18 @@ import { getImpersonatedTenantId } from "@/lib/use-session";
 export const CLEARD_SUPPORT_EMAIL = "help@cleardinc.com";
 export const CLEARD_SUPPORT_LABEL = "Cleard Support";
 
+/** The one address a self-serve (trial) account can address a thread to. */
+export const CLEARD_INFO_EMAIL = "info@cleardinc.com";
+
+/** The only recipient a trial plan can pick: Cleard itself. */
+export const CLEARD_RECIPIENT: ThreadRecipient = {
+  role: "Cleard Support",
+  name: "Cleard Inc",
+  email: CLEARD_INFO_EMAIL,
+  phone: null,
+  contactId: null,
+};
+
 export type ThreadRow = {
   id: string;
   tenant_id: string | null;

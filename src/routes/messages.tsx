@@ -22,6 +22,8 @@ import { useMyIdentity } from "@/lib/profile-api";
 import {
   CLEARD_SUPPORT_EMAIL,
   CLEARD_SUPPORT_LABEL,
+  CLEARD_INFO_EMAIL,
+  CLEARD_RECIPIENT,
   listThreads,
   listPosts,
   createThread,
@@ -35,6 +37,7 @@ import {
   type ThreadRecipient,
 } from "@/lib/messages-api";
 import { listContacts, type ContactRow } from "@/lib/contacts-api";
+import { usePlanAccess } from "@/lib/plan-access";
 import {
   Select,
   SelectContent,
@@ -73,6 +76,7 @@ function fmt(ts: string) {
 function MessagesPage() {
   const session = useSession();
   const me = useMyIdentity();
+  const plan = usePlanAccess();
   const isAdmin = session.isAdmin;
 
   const [threads, setThreads] = useState<ThreadRow[]>([]);
@@ -112,10 +116,12 @@ function MessagesPage() {
   useEffect(() => { refreshThreads(true); }, []);
 
   useEffect(() => {
+    // A trial plan has no Contacts — it only ever writes to Cleard.
+    if (plan.isTrial) return;
     listContacts()
       .then(setContacts)
       .catch(() => {/* contacts are optional for messaging */});
-  }, []);
+  }, [plan.isTrial]);
 
   // Deep link from Contacts: /messages?contact=<id> opens the composer for them.
   useEffect(() => {
@@ -131,13 +137,16 @@ function MessagesPage() {
   }, [contactParam, contacts]);
 
   const selectedContact = contacts.find((c) => c.id === recipientContactId) ?? null;
-  const recipient: ThreadRecipient = {
-    role: recipientRole,
-    name: selectedContact?.name ?? null,
-    email: selectedContact?.email ?? null,
-    phone: selectedContact?.phone ?? null,
-    contactId: selectedContact?.id ?? null,
-  };
+  // A trial plan can only write to Cleard, so the recipient is fixed rather than chosen.
+  const recipient: ThreadRecipient = plan.isTrial
+    ? CLEARD_RECIPIENT
+    : {
+        role: recipientRole,
+        name: selectedContact?.name ?? null,
+        email: selectedContact?.email ?? null,
+        phone: selectedContact?.phone ?? null,
+        contactId: selectedContact?.id ?? null,
+      };
 
   const active = threads.find((t) => t.id === activeId) ?? null;
 
@@ -459,6 +468,18 @@ function MessagesPage() {
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-3 sm:grid-cols-2">
+            {plan.isTrial ? (
+              <div className="sm:col-span-2">
+                <Label className="mb-1.5 block text-[11px] uppercase tracking-[0.07em] text-muted-foreground">
+                  Send to
+                </Label>
+                <div className="p-surface-flat px-3 py-2 text-[13px]">
+                  Cleard Inc{" "}
+                  <span className="text-muted-foreground">&lt;{CLEARD_INFO_EMAIL}&gt;</span>
+                </div>
+              </div>
+            ) : (
+            <>
             <div>
               <Label className="mb-1.5 block text-[11px] uppercase tracking-[0.07em] text-muted-foreground">
                 Send to (role)
@@ -497,6 +518,8 @@ function MessagesPage() {
                 </p>
               )}
             </div>
+            </>
+            )}
             <div className="sm:col-span-2">
               <Label className="mb-1.5 block text-[11px] uppercase tracking-[0.07em] text-muted-foreground">
                 Subject

@@ -52,6 +52,8 @@ import { logPermitIntelligence } from "@/lib/intelligence";
 import { DispatchCard } from "@/components/dispatch-card";
 import { runDispatch, type DispatchResult } from "@/lib/dispatch";
 import { MunicipalityReadinessPanel } from "@/components/municipality-readiness-panel";
+import { VictoriaPermitAssistant } from "@/components/victoria-permit-assistant";
+import { useFirstLoginTourResume } from "@/components/first-login-tour";
 import type { SubmittalDocSnapshot } from "@/lib/submittal-package";
 import type { GcDocKey } from "@/lib/gc-compliance";
 import { draftScope, type ScopeDraft } from "@/lib/scope-draft";
@@ -162,6 +164,8 @@ function subRowMissingFields(s: SubIntake): string[] {
 function NewPermitPage() {
   const navigate = useNavigate();
   const session = useSession();
+  // Final step of the first-login tour, if the dashboard sent the user here.
+  useFirstLoginTourResume();
   const { edit: editId } = Route.useSearch();
   const isEditing = !!editId;
   const [savedSubs, setSavedSubs] = useState<SubRow[]>([]);
@@ -2211,6 +2215,14 @@ function NewPermitPage() {
         docsProvided={docsComplete}
         docsRequired={checklist.length}
         className="lg:sticky lg:top-6 self-start"
+      />
+      <VictoriaPermitAssistant
+        onField={(field, value) => {
+          // Victoria only ever writes step-1 text fields, so send the user back there if
+          // they started her from the documents step — otherwise she fills a page they
+          // can't see.
+          setForm((f) => ({ ...f, step: 1, [field]: value }));
+        }}
       />
     </div>
   );

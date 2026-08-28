@@ -1,3 +1,4 @@
+import { PlanGate } from "@/components/feature-lock";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState, useSyncExternalStore } from "react";
 import { Download, FileStack, Plus, CheckCircle2 } from "lucide-react";
@@ -32,7 +33,11 @@ export const Route = createFileRoute("/portal/lien-rights/e-recording")({
       { name: "robots", content: "noindex" },
     ],
   }),
-  component: ERecordingPage,
+  component: () => (
+    <PlanGate feature="lien_rights">
+      <ERecordingPage />
+    </PlanGate>
+  ),
 });
 
 const tone: Record<ERecordStatus, MetricTone> = {

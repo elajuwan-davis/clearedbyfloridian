@@ -3,7 +3,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { PortalShell } from "@/components/portal-shell";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { PageShell, Panel, SearchInput, StatusChip } from "@/components/ui-kit";
+import { EmptyState, PageShell, Panel, SearchInput, StatusChip } from "@/components/ui-kit";
 import { MunicipalityContactsTab } from "@/components/municipal-contacts";
 import { MUNICIPALITIES } from "@/lib/municipalities";
 import {
@@ -22,7 +22,7 @@ import {
 import { toast } from "sonner";
 import { friendlyServerError } from "@/lib/server-fn-error";
 import {
-  ChevronDown, Copy, Eye, EyeOff, FileText, Plus, Search, Check, ExternalLink, Loader2, Upload,
+  ChevronDown, Copy, Eye, EyeOff, FileText, KeyRound, Plus, Search, Check, ExternalLink, Loader2, Upload,
 } from "lucide-react";
 
 export const Route = createFileRoute("/building-dept-logins/")({
@@ -167,13 +167,22 @@ function BuildingDeptLoginsPage() {
             </div>
           )}
           {!loading && filtered.length === 0 && (
-            <div className="px-3 py-10 text-center text-[12px] text-muted-foreground">
-              No portal logins saved yet.{" "}
-              <Link to="/building-dept-logins/submit" className="underline underline-offset-2">
-                Submit a new login
-              </Link>
-              .
-            </div>
+            rows.length === 0 ? (
+              <EmptyState
+                icon={<KeyRound className="h-4 w-4" strokeWidth={1.75} />}
+                title="Add your first portal login"
+                description="Keep the accounts you use on government ePermitting sites here, encrypted. Paste the portal link, your username and your password — that's it."
+                action={
+                  <Link to="/building-dept-logins/submit" className="p-btn p-btn-primary">
+                    <Plus className="h-3.5 w-3.5" strokeWidth={2} /> Add a portal login
+                  </Link>
+                }
+              />
+            ) : (
+              <div className="px-3 py-10 text-center text-[12px] text-muted-foreground">
+                No logins match “{query}”.
+              </div>
+            )
           )}
           {filtered.map((l) => {
             const isOpen = open === l.key;

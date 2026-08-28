@@ -5,15 +5,11 @@ import { PortalShell } from "@/components/portal-shell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ArrowLeft, Eye, EyeOff, Search, Upload, FileText, Check, Loader2 } from "lucide-react";
+import { ArrowLeft, Eye, EyeOff, Search, Check, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { friendlyServerError } from "@/lib/server-fn-error";
 import { MUNICIPALITIES as SHARED_MUNICIPALITIES } from "@/lib/municipalities";
 import { savePortalLogin } from "@/lib/portal-logins.functions";
-import {
-  createPortalLoginDocUploadUrlFn,
-  insertPortalLoginDocumentFn,
-} from "@/lib/portal-login-docs";
 import { useSession } from "@/lib/use-session";
 
 export const Route = createFileRoute("/building-dept-logins/submit")({
@@ -40,30 +36,10 @@ const REGISTRATIONS = [
   "Specialty Trade Registration",
 ];
 
-type DocSlot = {
-  key: string;
-  label: string;
-  required: boolean;
-  file?: File | null;
-  expiration?: string;
-};
-
-const DEFAULT_DOCS: DocSlot[] = [
-  // Optional: a login is worth storing before its paperwork exists. An uploaded document
-  // still needs an expiration date, since that is what flips the row to "Needs updated".
-  { key: "coi", label: "COI — Certificate of Insurance", required: false, expiration: "" },
-  { key: "wc", label: "WC — Workers Compensation", required: false, expiration: "" },
-  { key: "occ", label: "Occupational License", required: false, expiration: "" },
-  { key: "btr", label: "BTR — Business Tax Receipt", required: false, expiration: "" },
-  { key: "qdl", label: "Qualifier Driver's License", required: false, expiration: "" },
-];
-
 function SubmitLoginPage() {
   const navigate = useNavigate();
   const session = useSession();
   const saveFn = useServerFn(savePortalLogin);
-  const createUpload = useServerFn(createPortalLoginDocUploadUrlFn);
-  const insertDoc = useServerFn(insertPortalLoginDocumentFn);
 
   const [muniQuery, setMuniQuery] = useState("");
   const [muni, setMuni] = useState("");
@@ -75,8 +51,6 @@ function SubmitLoginPage() {
   const [portalUrl, setPortalUrl] = useState("");
   const [ePlan, setEPlan] = useState(false);
   const [derm, setDerm] = useState(false);
-  const [docs, setDocs] = useState<DocSlot[]>(DEFAULT_DOCS);
-  const [extras, setExtras] = useState<DocSlot[]>([]);
   const [submitting, setSubmitting] = useState(false);
 
   const muniMeta = useMemo(
@@ -90,40 +64,18 @@ function SubmitLoginPage() {
     return MUNICIPALITIES.filter((m) => m.toLowerCase().includes(q)).slice(0, 12);
   }, [muniQuery]);
 
-  function setDocFile(key: string, list: DocSlot[], setList: (n: DocSlot[]) => void, file: File | null) {
-    setList(list.map((d) => (d.key === key ? { ...d, file } : d)));
-  }
-  function setDocExp(key: string, list: DocSlot[], setList: (n: DocSlot[]) => void, expiration: string) {
-    setList(list.map((d) => (d.key === key ? { ...d, expiration } : d)));
-  }
-  function addExtra() {
-    setExtras((e) => [
-      ...e,
-      {
-        key: `extra-${e.length}-${Math.random().toString(36).slice(2, 6)}`,
-        label: "Additional document",
-        required: false,
-        expiration: "",
-      },
-    ]);
-  }
-
-  const allDocs = [...docs, ...extras];
-  const requiredOk = allDocs.every((d) => !d.file || !!d.expiration?.trim());
+  // A login is worth storing on its own: the jurisdiction it belongs to plus the credentials.
+  // No paperwork, no registration paperwork type — those live on the compliance pages.
   const canSubmit =
     muni.trim().length > 0 &&
-    registration.trim().length > 0 &&
     username.trim().length > 0 &&
     password.trim().length > 0 &&
-    requiredOk &&
     !!session.userId;
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!canSubmit) {
-      toast.error(
-        "Fill in the municipality, registration type and credentials — and give any uploaded document an expiration date.",
-      );
+      toast.error("Pick the municipality and fill in the username and password.");
       return;
     }
     setSubmitting(true);
@@ -138,39 +90,14 @@ function SubmitLoginPage() {
           password: password.trim(),
           notes: null,
           portal_url: portalUrl.trim() || muniMeta?.url || null,
-          registration: registration.trim(),
+          registration: registration.trim() || null,
           e_plan: ePlan,
           derm,
           tenant_id: session.effectiveTenantId,
         },
       });
 
-      // 2) Upload each attached document; abort on any upload failure.
-      for (const d of allDocs) {
-        if (!d.file) continue;
-        const signed = await createUpload({
-          data: { municipalitySlug: slug, filename: d.file.name },
-        });
-        const put = await fetch(signed.signedUrl, {
-          method: "PUT",
-          headers: { "Content-Type": d.file.type || "application/pdf" },
-          body: d.file,
-        });
-        if (!put.ok) throw new Error(`Upload failed for ${d.label} (${put.status})`);
-        await insertDoc({
-          data: {
-            municipality_slug: slug,
-            municipality: muni.trim(),
-            doc_label: d.label,
-            file_path: signed.path,
-            file_name: d.file.name,
-            expiration_date: d.expiration?.trim() || null,
-            tenant_id: session.effectiveTenantId,
-          },
-        });
-      }
-
-      toast.success(`Login submitted for ${muni}.`);
+      toast.success(`Login saved for ${muni}.`);
       navigate({ to: "/building-dept-logins" });
     } catch (err) {
       toast.error(friendlyServerError(err, "Could not save this login"));
@@ -193,8 +120,8 @@ function SubmitLoginPage() {
           <div className="eyebrow text-obsidian/50">Credentials Vault</div>
           <h1 className="display-serif mt-3 text-4xl text-obsidian">Submit New Login</h1>
           <p className="mt-2 text-sm text-obsidian/60">
-            Cleard encrypts credentials at rest. Compliance documents are optional and stored with
-            their expiration dates.
+            Paste the portal link, your username and your password — Cleard encrypts the credentials
+            at rest. No documents needed.
           </p>
         </div>
 
@@ -239,13 +166,13 @@ function SubmitLoginPage() {
             </div>
 
             <div className="sm:col-span-2">
-              <Label className="eyebrow text-obsidian/55">Registration Type <span className="text-oxblood">*</span></Label>
+              <Label className="eyebrow text-obsidian/55">Registration Type</Label>
               <select
                 value={registration}
                 onChange={(e) => setRegistration(e.target.value)}
                 className="mt-2 block w-full border border-obsidian/15 bg-white px-3 py-2 text-sm text-obsidian focus:border-obsidian/40 focus:outline-none rounded-[3px]"
               >
-                <option value="">Select registration type…</option>
+                <option value="">Not sure / leave blank</option>
                 {REGISTRATIONS.map((r) => <option key={r} value={r}>{r}</option>)}
               </select>
             </div>
@@ -308,62 +235,13 @@ function SubmitLoginPage() {
             </div>
           </div>
 
-          <div>
-            <div className="eyebrow text-obsidian/55">Compliance Documents</div>
-            <p className="mb-3 mt-1 text-xs text-obsidian/55">
-              Optional — save the login now and upload these later. A document needs an expiration
-              date so the login can flag itself when the paperwork lapses.
-            </p>
-            <div className="border border-obsidian/15 bg-white divide-y divide-obsidian/5">
-              {docs.map((d) => (
-                <DocRow
-                  key={d.key}
-                  doc={d}
-                  onFile={(f) => setDocFile(d.key, docs, setDocs, f)}
-                  onExpiration={(v) => setDocExp(d.key, docs, setDocs, v)}
-                />
-              ))}
-            </div>
-          </div>
-
-          <div>
-            <div className="flex items-center justify-between mb-3">
-              <div className="eyebrow text-obsidian/55">Additional Documents</div>
-              <button
-                type="button"
-                onClick={addExtra}
-                className="font-mono text-[10px] uppercase tracking-[0.14em] text-sky hover:opacity-70"
-              >
-                + Add document
-              </button>
-            </div>
-            {extras.length === 0 ? (
-              <div className="border border-dashed border-obsidian/15 bg-paper-warm/40 px-4 py-6 text-center text-xs text-obsidian/45 rounded-[3px]">
-                No additional documents.
-              </div>
-            ) : (
-              <div className="border border-obsidian/15 bg-white divide-y divide-obsidian/5">
-                {extras.map((d) => (
-                  <DocRow
-                    key={d.key}
-                    doc={d}
-                    editable
-                    onLabel={(label) => setExtras((e) => e.map((x) => (x.key === d.key ? { ...x, label } : x)))}
-                    onFile={(f) => setDocFile(d.key, extras, setExtras, f)}
-                    onExpiration={(v) => setDocExp(d.key, extras, setExtras, v)}
-                  />
-                ))}
-              </div>
-            )}
-          </div>
-
           <div className="flex items-center justify-end gap-3 pt-4 border-t border-obsidian/10">
             <Button asChild variant="outline" className="rounded-[3px]">
               <Link to="/building-dept-logins">Cancel</Link>
             </Button>
             <Button type="submit" variant="dark" disabled={!canSubmit || submitting} className="rounded-[3px] gap-2">
               {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
-              {submitting ? "Submitting…" : "Submit Login"}
+              {submitting ? "Saving…" : "Save Login"}
             </Button>
           </div>
         </form>
@@ -395,60 +273,5 @@ function Toggle({ on, onChange, label }: { on: boolean; onChange: (v: boolean) =
       </span>
       {label}
     </button>
-  );
-}
-
-function DocRow({
-  doc, editable, onFile, onLabel, onExpiration,
-}: {
-  doc: DocSlot;
-  editable?: boolean;
-  onFile: (file: File | null) => void;
-  onLabel?: (label: string) => void;
-  onExpiration: (v: string) => void;
-}) {
-  return (
-    <div className="flex flex-wrap items-center gap-3 px-4 py-3">
-      <FileText className="h-4 w-4 text-obsidian/40 shrink-0" />
-      <div className="flex-1 min-w-0 space-y-1.5">
-        {editable && onLabel ? (
-          <input
-            value={doc.label}
-            onChange={(e) => onLabel(e.target.value)}
-            className="w-full bg-transparent text-sm text-obsidian border-b border-transparent focus:border-obsidian/30 focus:outline-none"
-          />
-        ) : (
-          <div className="text-sm text-obsidian truncate">
-            {doc.label}
-            {doc.required && <span className="ml-1.5 text-oxblood">*</span>}
-          </div>
-        )}
-        {doc.file && (
-          <div className="font-mono text-[10px] text-obsidian/50 truncate">
-            {doc.file.name} · {(doc.file.size / 1024).toFixed(0)} KB
-          </div>
-        )}
-        <div className="flex items-center gap-2">
-          <label className="font-mono text-[10px] uppercase tracking-[0.12em] text-obsidian/45">Expires</label>
-          <input
-            type="date"
-            required={doc.required}
-            value={doc.expiration ?? ""}
-            onChange={(e) => onExpiration(e.target.value)}
-            className="border border-obsidian/15 bg-white px-2 py-1 text-xs rounded-[3px]"
-          />
-        </div>
-      </div>
-      <label className="cursor-pointer inline-flex items-center gap-1.5 border border-obsidian/20 bg-paper-warm px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.12em] text-obsidian/70 hover:text-obsidian rounded-[3px]">
-        <Upload className="h-3 w-3" />
-        {doc.file ? "Replace" : "Upload"}
-        <input
-          type="file"
-          accept=".pdf,.png,.jpg,.jpeg"
-          className="hidden"
-          onChange={(e) => onFile(e.target.files?.[0] ?? null)}
-        />
-      </label>
-    </div>
   );
 }

@@ -46,15 +46,22 @@ export const selfServeSignupFn = createServerFn({ method: "POST" })
       data.email.trim().toLowerCase(),
     );
 
-    // 1. Create the tenant (plan defaults to 'trial' per the migration).
-    const { data: tenant, error: tErr } = await (supabaseAdmin.from("tenants" as any) as any)
-      .insert({
-        name: data.company,
-        license_number: data.license_number ?? null,
-        status: "active",
-      })
-      .select("id, name")
-      .single();
+    // 1. Create the tenant on the trial tier — own permits only, everything else locked
+    //    until staff upgrades it (see src/lib/plan-access.ts). Written explicitly rather
+    //    than left to the column default so the intent survives a default change.
+    const base = {
+      name: data.company,
+      license_number: data.license_number ?? null,
+      status: "active",
+    };
+    const insertTenant = (row: Record<string, unknown>) =>
+      (supabaseAdmin.from("tenants" as any) as any).insert(row).select("id, name").single();
+
+    let { data: tenant, error: tErr } = await insertTenant({ ...base, plan: "trial" });
+    if (tErr && /plan/i.test(tErr.message ?? "")) {
+      // Plan migration not applied on this project yet: signing up still has to work.
+      ({ data: tenant, error: tErr } = await insertTenant(base));
+    }
     if (tErr) throw new Error(tErr.message);
 
     // 2. Create the auth user, unconfirmed — the email has to be proved before this account

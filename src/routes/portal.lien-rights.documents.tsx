@@ -1,3 +1,4 @@
+import { PlanGate } from "@/components/feature-lock";
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState, useSyncExternalStore } from "react";
 import { FileText, Plus, PenLine, Eye, CheckCircle2 } from "lucide-react";
@@ -38,7 +39,11 @@ export const Route = createFileRoute("/portal/lien-rights/documents")({
       { name: "robots", content: "noindex" },
     ],
   }),
-  component: LienDocumentsPage,
+  component: () => (
+    <PlanGate feature="lien_rights">
+      <LienDocumentsPage />
+    </PlanGate>
+  ),
 });
 
 const statusTone: Record<LienDocStatus, MetricTone> = {

@@ -38,10 +38,15 @@ import {
   sectionsForRole,
   settingsForRole,
   sidebarSettingsForRole,
+  accountInfoSection,
+  trialNavSections,
   isItemActive,
+  labelForPath,
   type AlertKey,
   type NavSection,
 } from "@/lib/portal-nav";
+import { usePlanAccess, trialPathAllowed } from "@/lib/plan-access";
+import { LockedPageNotice } from "@/components/feature-lock";
 
 const protectedPortalPrefixes = [
   "/dashboard",
@@ -115,13 +120,20 @@ function sectionAlerted(section: NavSection, alertKeys: Set<AlertKey>) {
  */
 function useNavSections(role: AppRole | null, isAdmin: boolean, permitsOnly = false) {
   const { bookmarks, toggle } = useBookmarks();
+  const plan = usePlanAccess();
   const sections = permitsOnly
     ? sectionsForRole(role, false).filter((s) => s.key === "permits")
-    : sectionsForRole(role, isAdmin);
-  const settings = sidebarSettingsForRole(role);
+    : plan.isTrial
+      ? trialNavSections
+      : sectionsForRole(role, isAdmin);
+  const settings = plan.isTrial ? accountInfoSection : sidebarSettingsForRole(role);
   const marked = new Set(bookmarks.map((b) => normalizePath(b.path)));
 
-  const allSections: NavSection[] = [...sections, ...(permitsOnly ? [] : [settings])]
+  // Nothing until the plan is known — a trial account must never be shown a
+  // section it can't open, even for one frame.
+  const allSections: NavSection[] = (
+    plan.loading ? [] : [...sections, ...(permitsOnly ? [] : [settings])]
+  )
     .map((s) =>
       s.key === "bookmarks"
         ? {
@@ -601,6 +613,7 @@ function PortalShellInner({ children }: { children: ReactNode }) {
   const signingOutRef = useRef(false);
   const session = useSession();
   const me = useMyIdentity();
+  const plan = usePlanAccess();
   const permitsOnly = isPermitsOnlyEmail(session.email);
 
   useEffect(() => {
@@ -837,7 +850,9 @@ function PortalShellInner({ children }: { children: ReactNode }) {
         {!permitsOnly && <SectionTabs />}
 
         <main className="min-h-[calc(100vh-3rem)] min-w-0 overflow-x-hidden pb-20 md:pb-0">
-          {children}
+          <TrialPathGate pathname={pathname} plan={plan}>
+            {children}
+          </TrialPathGate>
         </main>
 
         <MobileBottomNav pathname={pathname} permitsOnly={permitsOnly} />
@@ -848,6 +863,41 @@ function PortalShellInner({ children }: { children: ReactNode }) {
       {!permitsOnly && <InternalOnlyVictoria />}
 
     </div>
+  );
+}
+
+/**
+ * A trial (self-serve) plan reaches five places; any other portal path — typed in, bookmarked
+ * or linked from a page — gets the lock instead of the paid page. The nav already hides these,
+ * so this is the URL-level backstop.
+ */
+function TrialPathGate({
+  pathname,
+  plan,
+  children,
+}: {
+  pathname: string;
+  plan: ReturnType<typeof usePlanAccess>;
+  children: ReactNode;
+}) {
+  const allowed = trialPathAllowed(pathname);
+  // Never render a page the plan may not include until the plan is known.
+  if (plan.loading && !allowed) {
+    return (
+      <div className="grid min-h-[40vh] place-items-center">
+        <div className="text-[13px] text-muted-foreground">Checking your plan…</div>
+      </div>
+    );
+  }
+  if (!plan.isTrial || allowed) return <>{children}</>;
+  return (
+    <LockedPageNotice
+      copy={{
+        title: labelForPath(pathname),
+        does: "This is one of the tools Cleard runs for managed accounts — the staff-assisted side of the platform, alongside subcontractor compliance, lien rights and insurance tracking.",
+        area: "Other",
+      }}
+    />
   );
 }
 
@@ -975,7 +1025,13 @@ const MOBILE_NAV_ITEMS: Array<{ to: string; label: string; icon: typeof FileText
 
 /** Fixed bottom tab bar for phones (< md). Mirrors the desktop rail's top-level destinations. */
 function MobileBottomNav({ pathname, permitsOnly = false }: { pathname: string; permitsOnly?: boolean }) {
-  const items = permitsOnly ? MOBILE_NAV_ITEMS.slice(0, 1) : MOBILE_NAV_ITEMS;
+  const plan = usePlanAccess();
+  const items = permitsOnly
+    ? MOBILE_NAV_ITEMS.slice(0, 1)
+    : plan.isTrial
+      ? MOBILE_NAV_ITEMS.filter((i) => trialPathAllowed(i.to))
+      : MOBILE_NAV_ITEMS;
+  const oneUp = permitsOnly || items.length === 1;
   return (
     <nav
       className="md:hidden fixed inset-x-0 bottom-0 z-40 border-t"
@@ -986,7 +1042,10 @@ function MobileBottomNav({ pathname, permitsOnly = false }: { pathname: string; 
       }}
       aria-label="Primary"
     >
-      <div className={permitsOnly ? "grid grid-cols-1" : "grid grid-cols-4"}>
+      <div
+        className="grid"
+        style={{ gridTemplateColumns: `repeat(${oneUp ? 1 : items.length}, minmax(0, 1fr))` }}
+      >
         {items.map((item) => {
           const active = item.match(pathname);
           const Icon = item.icon;
