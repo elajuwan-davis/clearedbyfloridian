@@ -266,6 +266,7 @@ export function VictoriaPermitAssistant({
   onScopes,
   onSubField,
   scopeOptions = [],
+  openSignal = 0,
 }: {
   /** Writes one value into the permit form; the form stays fully editable by hand. */
   onField: (field: VictoriaPermitField, value: string) => void;
