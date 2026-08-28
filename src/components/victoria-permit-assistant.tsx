@@ -359,14 +359,17 @@ export function VictoriaPermitAssistant({
         // Trades: one utterance can name several, and each one adds its own
         // subcontractor block to the rest of the script.
         if (field.kind === "scopes") {
-          const picked = matchScopes(transcript, scopeOptions);
-          if (!picked.length) {
-            setNotice("Didn't catch a trade — name them again, or pick them on the form.");
+          const spoken = matchScopes(transcript, scopeOptions);
+          if (!spoken.length) {
+            setNotice(
+              "Didn't catch a trade — name them again, tap one below, or pick them on the form.",
+            );
             return;
           }
-          onScopes?.(picked);
-          setScript(picked);
-          setHeard({ label: field.label, value: picked.join(", ") });
+          onScopes?.(spoken);
+          setPicked(spoken);
+          setScript(spoken);
+          setHeard({ label: field.label, value: spoken.join(", ") });
           next(1400);
           return;
         }
