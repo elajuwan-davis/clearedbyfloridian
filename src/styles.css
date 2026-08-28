@@ -2324,7 +2324,8 @@ html body .p-seg button,
 html body .p-tab,
 html body [role="tablist"] button,
 html body button.p-chip,
-html body table button {
+html body table button,
+html body .driver-popover.cleard-tour-popover button {
   border-radius: 3px !important;
 }
 
@@ -2342,4 +2343,54 @@ html body [class*="bg-purple-100"],
 html body [class*="bg-pink-50"],
 html body [class*="bg-pink-100"] {
   background-color: color-mix(in oklab, var(--nl-lavender) 40%, var(--nl-oat)) !important;
+}
+
+/* first-login tour (driver.js) — Nordic Luxury popover instead of the library default */
+.driver-popover.cleard-tour-popover {
+  background: var(--paper);
+  color: var(--obsidian);
+  border: 1px solid color-mix(in oklab, var(--obsidian) 20%, transparent);
+  border-radius: 3px;
+  box-shadow: 0 24px 60px -24px color-mix(in oklab, var(--obsidian) 45%, transparent);
+  font-family: inherit;
+  max-width: 22rem;
+}
+.driver-popover.cleard-tour-popover .driver-popover-title {
+  font-family: var(--font-display, inherit);
+  font-size: 1.0625rem;
+  color: var(--obsidian);
+}
+.driver-popover.cleard-tour-popover .driver-popover-description {
+  color: color-mix(in oklab, var(--obsidian) 65%, transparent);
+  font-size: 0.8125rem;
+}
+.driver-popover.cleard-tour-popover .driver-popover-progress-text {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.625rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--obsidian) 55%, transparent);
+}
+.driver-popover.cleard-tour-popover button {
+  border-radius: 3px;
+  border: 1px solid color-mix(in oklab, var(--obsidian) 25%, transparent);
+  background: transparent;
+  color: var(--obsidian);
+  text-shadow: none;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.625rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 0.375rem 0.75rem;
+}
+.driver-popover.cleard-tour-popover .driver-popover-next-btn {
+  background: var(--obsidian);
+  color: var(--paper);
+  border-color: var(--obsidian);
+}
+.driver-popover.cleard-tour-popover .driver-popover-arrow-side-left,
+.driver-popover.cleard-tour-popover .driver-popover-arrow-side-right,
+.driver-popover.cleard-tour-popover .driver-popover-arrow-side-top,
+.driver-popover.cleard-tour-popover .driver-popover-arrow-side-bottom {
+  border-color: var(--paper);
 }

@@ -11,7 +11,6 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AskVictoriaRouteImport } from './routes/ask-victoria'
-import { Route as BuildingDeptLoginsRouteImport } from './routes/building-dept-logins'
 import { Route as CompareRouteImport } from './routes/compare'
 import { Route as ComplianceRouteImport } from './routes/compliance'
 import { Route as ContactRouteImport } from './routes/contact'
@@ -61,6 +60,8 @@ import { Route as ApiVerifyLicenseRouteImport } from './routes/api/verify-licens
 import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
 import { Route as BlogIndexRouteImport } from './routes/blog.index'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
+import { Route as BuildingDeptLoginsIndexRouteImport } from './routes/building-dept-logins.index'
+import { Route as BuildingDeptLoginsImportRouteImport } from './routes/building-dept-logins.import'
 import { Route as BuildingDeptLoginsSubmitRouteImport } from './routes/building-dept-logins.submit'
 import { Route as FormsIndexRouteImport } from './routes/forms.index'
 import { Route as FormsPaymentAuthorizationRouteImport } from './routes/forms.payment-authorization'
@@ -147,11 +148,6 @@ const IndexRoute = IndexRouteImport.update({
 const AskVictoriaRoute = AskVictoriaRouteImport.update({
   id: '/ask-victoria',
   path: '/ask-victoria',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const BuildingDeptLoginsRoute = BuildingDeptLoginsRouteImport.update({
-  id: '/building-dept-logins',
-  path: '/building-dept-logins',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CompareRoute = CompareRouteImport.update({
@@ -399,11 +395,22 @@ const BlogSlugRoute = BlogSlugRouteImport.update({
   path: '/blog/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BuildingDeptLoginsIndexRoute = BuildingDeptLoginsIndexRouteImport.update({
+  id: '/building-dept-logins/',
+  path: '/building-dept-logins/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BuildingDeptLoginsImportRoute =
+  BuildingDeptLoginsImportRouteImport.update({
+    id: '/building-dept-logins/import',
+    path: '/building-dept-logins/import',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const BuildingDeptLoginsSubmitRoute =
   BuildingDeptLoginsSubmitRouteImport.update({
-    id: '/submit',
-    path: '/submit',
-    getParentRoute: () => BuildingDeptLoginsRoute,
+    id: '/building-dept-logins/submit',
+    path: '/building-dept-logins/submit',
+    getParentRoute: () => rootRouteImport,
   } as any)
 const FormsIndexRoute = FormsIndexRouteImport.update({
   id: '/',
@@ -803,7 +810,6 @@ const PortalPermitsIdBundleRoute = PortalPermitsIdBundleRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/ask-victoria': typeof AskVictoriaRoute
-  '/building-dept-logins': typeof BuildingDeptLoginsRouteWithChildren
   '/compare': typeof CompareRoute
   '/compliance': typeof ComplianceRoute
   '/contact': typeof ContactRoute
@@ -851,6 +857,7 @@ export interface FileRoutesByFullPath {
   '/api/verify-license': typeof ApiVerifyLicenseRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/blog/$slug': typeof BlogSlugRoute
+  '/building-dept-logins/import': typeof BuildingDeptLoginsImportRoute
   '/building-dept-logins/submit': typeof BuildingDeptLoginsSubmitRoute
   '/forms/payment-authorization': typeof FormsPaymentAuthorizationRoute
   '/forms/permit-intake': typeof FormsPermitIntakeRoute
@@ -890,6 +897,7 @@ export interface FileRoutesByFullPath {
   '/versus/$slug': typeof VersusSlugRoute
   '/admin/': typeof AdminIndexRoute
   '/blog/': typeof BlogIndexRoute
+  '/building-dept-logins/': typeof BuildingDeptLoginsIndexRoute
   '/forms/': typeof FormsIndexRoute
   '/legal/': typeof LegalIndexRoute
   '/portal/': typeof PortalIndexRoute
@@ -934,7 +942,6 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/ask-victoria': typeof AskVictoriaRoute
-  '/building-dept-logins': typeof BuildingDeptLoginsRouteWithChildren
   '/compare': typeof CompareRoute
   '/compliance': typeof ComplianceRoute
   '/contact': typeof ContactRoute
@@ -980,6 +987,7 @@ export interface FileRoutesByTo {
   '/api/verify-license': typeof ApiVerifyLicenseRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/blog/$slug': typeof BlogSlugRoute
+  '/building-dept-logins/import': typeof BuildingDeptLoginsImportRoute
   '/building-dept-logins/submit': typeof BuildingDeptLoginsSubmitRoute
   '/forms/payment-authorization': typeof FormsPaymentAuthorizationRoute
   '/forms/permit-intake': typeof FormsPermitIntakeRoute
@@ -1017,6 +1025,7 @@ export interface FileRoutesByTo {
   '/versus/$slug': typeof VersusSlugRoute
   '/admin': typeof AdminIndexRoute
   '/blog': typeof BlogIndexRoute
+  '/building-dept-logins': typeof BuildingDeptLoginsIndexRoute
   '/forms': typeof FormsIndexRoute
   '/legal': typeof LegalIndexRoute
   '/portal': typeof PortalIndexRoute
@@ -1062,7 +1071,6 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/ask-victoria': typeof AskVictoriaRoute
-  '/building-dept-logins': typeof BuildingDeptLoginsRouteWithChildren
   '/compare': typeof CompareRoute
   '/compliance': typeof ComplianceRoute
   '/contact': typeof ContactRoute
@@ -1110,6 +1118,7 @@ export interface FileRoutesById {
   '/api/verify-license': typeof ApiVerifyLicenseRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/blog/$slug': typeof BlogSlugRoute
+  '/building-dept-logins/import': typeof BuildingDeptLoginsImportRoute
   '/building-dept-logins/submit': typeof BuildingDeptLoginsSubmitRoute
   '/forms/payment-authorization': typeof FormsPaymentAuthorizationRoute
   '/forms/permit-intake': typeof FormsPermitIntakeRoute
@@ -1149,6 +1158,7 @@ export interface FileRoutesById {
   '/versus/$slug': typeof VersusSlugRoute
   '/admin/': typeof AdminIndexRoute
   '/blog/': typeof BlogIndexRoute
+  '/building-dept-logins/': typeof BuildingDeptLoginsIndexRoute
   '/forms/': typeof FormsIndexRoute
   '/legal/': typeof LegalIndexRoute
   '/portal/': typeof PortalIndexRoute
@@ -1195,7 +1205,6 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/ask-victoria'
-    | '/building-dept-logins'
     | '/compare'
     | '/compliance'
     | '/contact'
@@ -1243,6 +1252,7 @@ export interface FileRouteTypes {
     | '/api/verify-license'
     | '/auth/callback'
     | '/blog/$slug'
+    | '/building-dept-logins/import'
     | '/building-dept-logins/submit'
     | '/forms/payment-authorization'
     | '/forms/permit-intake'
@@ -1282,6 +1292,7 @@ export interface FileRouteTypes {
     | '/versus/$slug'
     | '/admin/'
     | '/blog/'
+    | '/building-dept-logins/'
     | '/forms/'
     | '/legal/'
     | '/portal/'
@@ -1326,7 +1337,6 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/ask-victoria'
-    | '/building-dept-logins'
     | '/compare'
     | '/compliance'
     | '/contact'
@@ -1372,6 +1382,7 @@ export interface FileRouteTypes {
     | '/api/verify-license'
     | '/auth/callback'
     | '/blog/$slug'
+    | '/building-dept-logins/import'
     | '/building-dept-logins/submit'
     | '/forms/payment-authorization'
     | '/forms/permit-intake'
@@ -1409,6 +1420,7 @@ export interface FileRouteTypes {
     | '/versus/$slug'
     | '/admin'
     | '/blog'
+    | '/building-dept-logins'
     | '/forms'
     | '/legal'
     | '/portal'
@@ -1453,7 +1465,6 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/ask-victoria'
-    | '/building-dept-logins'
     | '/compare'
     | '/compliance'
     | '/contact'
@@ -1501,6 +1512,7 @@ export interface FileRouteTypes {
     | '/api/verify-license'
     | '/auth/callback'
     | '/blog/$slug'
+    | '/building-dept-logins/import'
     | '/building-dept-logins/submit'
     | '/forms/payment-authorization'
     | '/forms/permit-intake'
@@ -1540,6 +1552,7 @@ export interface FileRouteTypes {
     | '/versus/$slug'
     | '/admin/'
     | '/blog/'
+    | '/building-dept-logins/'
     | '/forms/'
     | '/legal/'
     | '/portal/'
@@ -1585,7 +1598,6 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AskVictoriaRoute: typeof AskVictoriaRoute
-  BuildingDeptLoginsRoute: typeof BuildingDeptLoginsRouteWithChildren
   CompareRoute: typeof CompareRoute
   ComplianceRoute: typeof ComplianceRoute
   ContactRoute: typeof ContactRoute
@@ -1633,6 +1645,8 @@ export interface RootRouteChildren {
   ApiVerifyLicenseRoute: typeof ApiVerifyLicenseRoute
   AuthCallbackRoute: typeof AuthCallbackRoute
   BlogSlugRoute: typeof BlogSlugRoute
+  BuildingDeptLoginsImportRoute: typeof BuildingDeptLoginsImportRoute
+  BuildingDeptLoginsSubmitRoute: typeof BuildingDeptLoginsSubmitRoute
   HomeownerTokenRoute: typeof HomeownerTokenRoute
   InvestorAdminRoute: typeof InvestorAdminRoute
   JoinTokenRoute: typeof JoinTokenRoute
@@ -1645,6 +1659,7 @@ export interface RootRouteChildren {
   VersusSlugRoute: typeof VersusSlugRoute
   AdminIndexRoute: typeof AdminIndexRoute
   BlogIndexRoute: typeof BlogIndexRoute
+  BuildingDeptLoginsIndexRoute: typeof BuildingDeptLoginsIndexRoute
   LegalIndexRoute: typeof LegalIndexRoute
   VersusIndexRoute: typeof VersusIndexRoute
   AdminBlogIdRoute: typeof AdminBlogIdRoute
@@ -1678,13 +1693,6 @@ declare module '@tanstack/react-router' {
       path: '/ask-victoria'
       fullPath: '/ask-victoria'
       preLoaderRoute: typeof AskVictoriaRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/building-dept-logins': {
-      id: '/building-dept-logins'
-      path: '/building-dept-logins'
-      fullPath: '/building-dept-logins'
-      preLoaderRoute: typeof BuildingDeptLoginsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/compare': {
@@ -2030,12 +2038,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BlogSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/building-dept-logins/': {
+      id: '/building-dept-logins/'
+      path: '/building-dept-logins'
+      fullPath: '/building-dept-logins/'
+      preLoaderRoute: typeof BuildingDeptLoginsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/building-dept-logins/import': {
+      id: '/building-dept-logins/import'
+      path: '/building-dept-logins/import'
+      fullPath: '/building-dept-logins/import'
+      preLoaderRoute: typeof BuildingDeptLoginsImportRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/building-dept-logins/submit': {
       id: '/building-dept-logins/submit'
-      path: '/submit'
+      path: '/building-dept-logins/submit'
       fullPath: '/building-dept-logins/submit'
       preLoaderRoute: typeof BuildingDeptLoginsSubmitRouteImport
-      parentRoute: typeof BuildingDeptLoginsRoute
+      parentRoute: typeof rootRouteImport
     }
     '/forms/': {
       id: '/forms/'
@@ -2572,17 +2594,6 @@ declare module '@tanstack/react-router' {
   }
 }
 
-interface BuildingDeptLoginsRouteChildren {
-  BuildingDeptLoginsSubmitRoute: typeof BuildingDeptLoginsSubmitRoute
-}
-
-const BuildingDeptLoginsRouteChildren: BuildingDeptLoginsRouteChildren = {
-  BuildingDeptLoginsSubmitRoute: BuildingDeptLoginsSubmitRoute,
-}
-
-const BuildingDeptLoginsRouteWithChildren =
-  BuildingDeptLoginsRoute._addFileChildren(BuildingDeptLoginsRouteChildren)
-
 interface FormsRouteChildren {
   FormsPaymentAuthorizationRoute: typeof FormsPaymentAuthorizationRoute
   FormsPermitIntakeRoute: typeof FormsPermitIntakeRoute
@@ -2720,7 +2731,6 @@ const PortalRouteWithChildren =
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AskVictoriaRoute: AskVictoriaRoute,
-  BuildingDeptLoginsRoute: BuildingDeptLoginsRouteWithChildren,
   CompareRoute: CompareRoute,
   ComplianceRoute: ComplianceRoute,
   ContactRoute: ContactRoute,
@@ -2768,6 +2778,8 @@ const rootRouteChildren: RootRouteChildren = {
   ApiVerifyLicenseRoute: ApiVerifyLicenseRoute,
   AuthCallbackRoute: AuthCallbackRoute,
   BlogSlugRoute: BlogSlugRoute,
+  BuildingDeptLoginsImportRoute: BuildingDeptLoginsImportRoute,
+  BuildingDeptLoginsSubmitRoute: BuildingDeptLoginsSubmitRoute,
   HomeownerTokenRoute: HomeownerTokenRoute,
   InvestorAdminRoute: InvestorAdminRoute,
   JoinTokenRoute: JoinTokenRoute,
@@ -2780,6 +2792,7 @@ const rootRouteChildren: RootRouteChildren = {
   VersusSlugRoute: VersusSlugRoute,
   AdminIndexRoute: AdminIndexRoute,
   BlogIndexRoute: BlogIndexRoute,
+  BuildingDeptLoginsIndexRoute: BuildingDeptLoginsIndexRoute,
   LegalIndexRoute: LegalIndexRoute,
   VersusIndexRoute: VersusIndexRoute,
   AdminBlogIdRoute: AdminBlogIdRoute,

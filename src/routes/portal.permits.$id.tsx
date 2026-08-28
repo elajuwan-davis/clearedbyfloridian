@@ -27,8 +27,9 @@ import type { DispatchResult } from "@/lib/dispatch";
 import { PageShell, Panel } from "@/components/ui-kit";
 
 
-import { getPermit, updatePermit, deletePermit, permitCompleteness, getEffectiveDocs, getHiddenFieldKeys, withHiddenFieldKeys, ensureSubTokens, type PermitRow, type PermitStatus, type PermitDoc, type PermitSub } from "@/lib/permits-api";
+import { getPermit, updatePermit, updatePermitDocuments, deletePermit, permitCompleteness, getEffectiveDocs, getHiddenFieldKeys, withHiddenFieldKeys, ensureSubTokens, type PermitRow, type PermitStatus, type PermitDoc, type PermitSub } from "@/lib/permits-api";
 import { PermitDocUploader } from "@/components/permit-doc-uploader";
+import { BulkDocUpload } from "@/components/bulk-doc-upload";
 import { deletePermitFile } from "@/lib/permit-storage";
 import { supabase } from "@/integrations/supabase/client";
 import { generatePermitExportPdf, suggestExportFilename } from "@/lib/permit-export";
@@ -138,7 +139,9 @@ function PermitDetailPage() {
     if (!row) return;
     setSaving(true);
     try {
-      const updated = await updatePermit(row.id, edit);
+      const savePatch: Partial<PermitRow> = { ...edit };
+      delete savePatch.documents;
+      const updated = await updatePermit(row.id, savePatch);
       setRow(updated);
       setEdit(updated);
       setEditing(false);
@@ -656,15 +659,17 @@ function PermitDetailPage() {
                 readOnly={!editing}
                 onChange={(u) => { setRow(u); setEdit(u); }}
                 onRename={d.custom ? async (label) => {
-                  const next = docs.map((x) => x.key === d.key ? { ...x, label } : x);
-                  const updated = await updatePermit(row.id, { documents: next });
+                  const updated = await updatePermitDocuments(row.id, (current) =>
+                    current.map((x) => x.key === d.key ? { ...x, label } : x),
+                  );
                   setRow(updated); setEdit(updated);
                 } : undefined}
                 onDeleteField={d.custom ? async () => {
                   if (!confirm(`Delete field "${d.label}"? Any uploaded file will also be removed.`)) return;
                   if (d.path) { try { await deletePermitFile(d.path); } catch { /* ignore */ } }
-                  const next = docs.filter((x) => x.key !== d.key);
-                  const updated = await updatePermit(row.id, { documents: next });
+                  const updated = await updatePermitDocuments(row.id, (current) =>
+                    current.filter((x) => x.key !== d.key),
+                  );
                   setRow(updated); setEdit(updated);
                   toast.success("Field removed");
                 } : undefined}
@@ -688,9 +693,8 @@ function PermitDetailPage() {
                   filename: null,
                   custom: true,
                 };
-                const next = [...docs, newDoc];
                 try {
-                  const updated = await updatePermit(row.id, { documents: next });
+                  const updated = await updatePermitDocuments(row.id, (current) => [...current, newDoc]);
                   setRow(updated); setEdit(updated);
                   toast.success("Field added");
                 } catch (e) {
@@ -701,6 +705,9 @@ function PermitDetailPage() {
             >
               <Plus className="h-3.5 w-3.5" /> Add custom document field
             </button>
+            <div className="mt-4">
+              <BulkDocUpload permit={row} onChange={(u) => { setRow(u); setEdit(u); }} />
+            </div>
           </div>
         )}
       </div>

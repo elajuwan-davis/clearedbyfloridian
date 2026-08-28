@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { evaluatePortalAccessFn } from "@/lib/google-access.functions";
+import { isMissingBackendEnvError } from "@/lib/env-error";
 
 export const Route = createFileRoute("/auth/callback")({
   ssr: false,
@@ -19,6 +20,7 @@ export const Route = createFileRoute("/auth/callback")({
 type State =
   | { kind: "working" }
   | { kind: "pending"; email: string | null; filed: boolean }
+  | { kind: "unverified"; email: string | null }
   | { kind: "error"; message: string };
 
 function AuthCallback() {
@@ -47,7 +49,20 @@ function AuthCallback() {
         if (cancelled) return;
         if (!decision.allowed) {
           await supabase.auth.signOut();
-          setState({ kind: "pending", email: decision.email, filed: decision.reason === "filed" });
+          setState(
+            decision.reason === "unverified"
+              ? { kind: "unverified", email: decision.email }
+              : { kind: "pending", email: decision.email, filed: decision.reason === "filed" },
+          );
+          return;
+        }
+        // A self-serve signup arrives here off its own confirmation link and still owes
+        // the PAA signature, so it goes to onboarding rather than straight to a dashboard.
+        if (
+          typeof window !== "undefined" &&
+          new URLSearchParams(window.location.search).get("entry") === "selfserve"
+        ) {
+          navigate({ to: "/onboarding", search: { entry: "selfserve" } as never, replace: true });
           return;
         }
         const target =
@@ -59,6 +74,15 @@ function AuthCallback() {
         navigate({ to: target as never, replace: true });
       } catch (e) {
         if (cancelled) return;
+        // A transient backend-binding hiccup should read as "try again", not as a
+        // raw Supabase environment error in front of a signing-in contractor.
+        if (isMissingBackendEnvError(e)) {
+          setState({
+            kind: "error",
+            message: "We couldn't reach the portal just now. Please try signing in again.",
+          });
+          return;
+        }
         setState({
           kind: "error",
           message: e instanceof Error ? e.message : "Could not verify your access.",
@@ -100,6 +124,26 @@ function AuthCallback() {
             </p>
             <p className="text-xs text-muted-foreground">
               Questions? permits@floridianinc.com
+            </p>
+            <Link to="/login" className="inline-block text-sm underline">
+              Back to sign in
+            </Link>
+          </>
+        )}
+
+        {state.kind === "unverified" && (
+          <>
+            <div className="label-eyebrow">Email not verified</div>
+            <h1
+              className="text-3xl font-bold"
+              style={{ fontFamily: "'Fraunces', 'Iowan Old Style', Georgia, serif" }}
+            >
+              Confirm your email first.
+            </h1>
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              We need to know the address is yours before the portal opens
+              {state.email ? ` for ${state.email}` : ""}. Use the confirmation link we emailed
+              you, then sign in again.
             </p>
             <Link to="/login" className="inline-block text-sm underline">
               Back to sign in

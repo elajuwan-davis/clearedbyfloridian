@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ArrowRight, Loader2 } from "lucide-react";
+import { isPermitsOnlyEmail, PERMITS_ONLY_HOME } from "@/lib/permits-only";
 
 
 export const Route = createFileRoute("/login")({
@@ -61,7 +62,10 @@ function LoginPage() {
           /* ignore */
         }
         setLoading(false);
-        navigate({ to: getSafeNext("/dashboard") as never, replace: true });
+        const target = isPermitsOnlyEmail(emailKey)
+          ? PERMITS_ONLY_HOME
+          : getSafeNext("/dashboard");
+        navigate({ to: target as never, replace: true });
         return;
       }
       setLoading(false);
@@ -75,6 +79,18 @@ function LoginPage() {
       setError(error.message);
       return;
     }
+    // A self-serve account exists before its address is proved; it must not reach the portal
+    // on the password alone. (Supabase also refuses this when email confirmation is enabled
+    // project-side — this holds either way.)
+    if (signIn.user && !signIn.user.email_confirmed_at) {
+      await supabase.auth.signOut();
+      setLoading(false);
+      setError(
+        "Confirm your email first — check your inbox for the verification link we sent when you signed up.",
+      );
+      return;
+    }
+
     // Route by role
     const userId = signIn.user?.id;
     let target = getSafeNext("/portal");

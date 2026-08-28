@@ -35,7 +35,15 @@ Storage. See `README.md` / `FEATURES.md` for the full feature map.
 - The portal and many routes (`/portal`, `/dashboard`, `/fee-calculator`, `/admin`, `/forms`, …)
   are guarded by `PortalShell` (`protectedPortalPrefixes` in `src/components/portal-shell.tsx`) and
   redirect anonymous visitors to `/login`.
-- There is **no self-serve signup UI** — access is invite/admin-based (`/login` is sign-in only).
+- `/join` is **self-serve signup**: `selfServeSignupFn` creates the tenant + an *unconfirmed*
+  auth user, the page asks Supabase to send the confirmation email, and the link returns to
+  `/auth/callback?entry=selfserve` → PAA. `/login` stays sign-in only, and admin invites are
+  unchanged. Because it is public, it is rate-limited per IP and per email through
+  `public.signup_attempts` (`src/lib/signup-rate-limit.server.ts`) — do not remove that, and do
+  not go back to `email_confirm: true`. A verified address is enforced app-side too, in
+  `evaluatePortalAccessFn` and on the `/login` password path, so it holds regardless of the
+  project's email-confirmation setting. Real signups need SMTP configured in Supabase Auth;
+  the built-in mailer is throttled to a couple of messages an hour.
 - The hosted Supabase project **requires email confirmation**, so a brand-new account created via
   the anon `signUp` endpoint cannot sign in until its email is confirmed. Authenticated portal
   flows are similarly out of scope for Cloud Agents unless a pre-confirmed test login is already
@@ -88,8 +96,23 @@ environment problem; do not mass-reformat unrelated files to "fix" lint.
 ### Building Dept Logins (`/building-dept-logins`)
 - Credentials live in `gc_portal_logins` (AES-256-GCM via `APP_USER_CONNECTION_KEY_SECRET`).
   List returns metadata only; plaintext only via `revealOwnPortalLogin` / admin `revealPortalLogin`.
+- Sharing is internal-only: `listPortalLoginFlags({ scope: "all" })` and admin `revealPortalLogin`
+  cover logins owned by `@cleared.com`/`@floridianinc.com` accounts (Cleard files its own permits
+  here). A customer GC's credentials are never listed or decrypted for staff — do not widen this.
+  The internal check reads the **auth** identity (`auth.admin.getUserById`), not `profiles.email`,
+  which the row owner can edit. Shared helpers: `src/lib/portal-logins-access.server.ts`.
 - Documents: `portal_login_documents` + private bucket `portal-login-docs`. Expired status uses
-  real `expiration_date` vs today (`isDocExpired`).
+  real `expiration_date` vs today (`isDocExpired`). Uploads are **optional** — a login saves
+  without paperwork; an attached document still needs an expiration date.
+- Vault rows offer a password-manager hand-off (`QuickSignIn`): copy username + open the stored
+  `portal_url`, then copy the password. There is deliberately no autofill — a page cannot type
+  into another origin's login form; anything more needs an extension or the Playwright worker.
+- Bulk import: `/building-dept-logins/import` (staff only) pastes the sheet as CSV/TSV, previews,
+  then encrypts with the same `encryptSecret()` and upserts on `user_id,municipality_slug`. It
+  exists because the CLI needs `APP_USER_CONNECTION_KEY_SECRET`, which is write-only in Lovable.
+  Row classification is shared with the CLI in `src/lib/portal-logins-import.ts` — do not fork it,
+  and never return a plaintext credential to the browser. Owners are restricted to internal
+  accounts so an import cannot push a customer's credentials into the staff-shared view.
 - Submit route writes through `savePortalLogin` + document uploads — not a fake toast.
 - Requires migration `supabase/migrations/20260804170000_portal_login_documents.sql`.
 - Contacts sub-tab is still localStorage (`municipal-contacts.ts`) — separate from credentials.

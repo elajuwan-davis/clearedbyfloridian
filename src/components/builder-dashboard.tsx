@@ -24,6 +24,7 @@ import { CoiAlertsWidget } from "@/components/coi-alerts-widget";
 import { AlertsList } from "@/components/alerts-list";
 import { useExpirationAlerts } from "@/hooks/use-expiration-alerts";
 
+import { useFirstLoginTour } from "@/components/first-login-tour";
 import { projectStatusMeta as statusMeta } from "@/lib/status-badges";
 import {
   PageShell,
@@ -123,6 +124,9 @@ export function BuilderDashboard() {
 
   const needsVerification = false;
   const needsLpoa = false;
+
+  // Once per tenant, on first arrival here — gated server-side on tenants.tour_completed_at.
+  useFirstLoginTour(!loading);
 
   return (
     <PortalShell>
@@ -286,10 +290,10 @@ export function BuilderDashboard() {
             <Surface padded={false} flat>
               <SectionHeader title="Quick actions" />
               <div className="flex flex-col gap-1 px-3 pb-3">
-                <QuickAction to="/portal/permits/new" icon={<Plus className="h-3.5 w-3.5" strokeWidth={1.75} />} label="Start a new permit" />
+                <QuickAction to="/portal/permits/new" icon={<Plus className="h-3.5 w-3.5" strokeWidth={1.75} />} label="Start a new permit" tourId="new-permit" />
                 <QuickAction to="/portal/inspections" icon={<ClipboardList className="h-3.5 w-3.5" strokeWidth={1.75} />} label="Schedule inspection" />
                 <QuickAction to="/messages" icon={<Send className="h-3.5 w-3.5" strokeWidth={1.75} />} label="Message the desk" badge={unread || undefined} />
-                <QuickAction to="/portal/compliance" icon={<ShieldCheck className="h-3.5 w-3.5" strokeWidth={1.75} />} label="Compliance documents" />
+                <QuickAction to="/portal/compliance" icon={<ShieldCheck className="h-3.5 w-3.5" strokeWidth={1.75} />} label="Compliance documents" tourId="documents" />
               </div>
             </Surface>
 
@@ -376,15 +380,18 @@ function QuickAction({
   icon,
   label,
   badge,
+  tourId,
 }: {
   to: string;
   icon: React.ReactNode;
   label: string;
   badge?: number;
+  tourId?: string;
 }) {
   return (
     <Link
       to={to as never}
+      data-tour={tourId}
       className="flex items-center gap-2.5 rounded-[10px] px-2.5 py-2 text-[13px] transition-colors hover:bg-white/[0.05]"
     >
       <span className="grid h-6 w-6 shrink-0 place-items-center rounded-lg bg-white/[0.06] text-muted-foreground">

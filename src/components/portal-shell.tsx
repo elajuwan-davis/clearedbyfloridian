@@ -18,6 +18,11 @@ import { useExpirationAlerts } from "@/hooks/use-expiration-alerts";
 import { NotificationBell } from "@/components/notification-bell";
 import { BookmarkToggle } from "@/components/bookmark-toggle";
 import { AdminOnly } from "@/components/admin-only";
+import {
+  isPermitsOnlyEmail,
+  isPermitsOnlyPathAllowed,
+  PERMITS_ONLY_HOME,
+} from "@/lib/permits-only";
 
 import { useBookmarks, normalizePath } from "@/lib/bookmarks-api";
 import { VictoriaWidget } from "@/components/victoria-widget";
@@ -54,6 +59,19 @@ const protectedPortalPrefixes = [
   "/portal",
   "/lpoa-signing",
 ];
+
+/** Bounce a permits-only seat back to the Permits workspace. */
+function PermitsOnlyRedirect() {
+  const navigate = useNavigate();
+  useEffect(() => {
+    navigate({ to: PERMITS_ONLY_HOME as never, replace: true });
+  }, [navigate]);
+  return (
+    <div className="portal-ui dark grid min-h-screen place-items-center bg-background">
+      <div className="text-[13px] text-muted-foreground">Taking you to Permits…</div>
+    </div>
+  );
+}
 
 function isProtectedPortalPath(pathname: string) {
   return protectedPortalPrefixes.some((p) => pathname === p || pathname.startsWith(`${p}/`));
@@ -95,13 +113,15 @@ function sectionAlerted(section: NavSection, alertKeys: Set<AlertKey>) {
  *
  * Navigation model is unchanged: same sections, same links, same order.
  */
-function useNavSections(role: AppRole | null, isAdmin: boolean) {
+function useNavSections(role: AppRole | null, isAdmin: boolean, permitsOnly = false) {
   const { bookmarks, toggle } = useBookmarks();
-  const sections = sectionsForRole(role, isAdmin);
+  const sections = permitsOnly
+    ? sectionsForRole(role, false).filter((s) => s.key === "permits")
+    : sectionsForRole(role, isAdmin);
   const settings = sidebarSettingsForRole(role);
   const marked = new Set(bookmarks.map((b) => normalizePath(b.path)));
 
-  const allSections: NavSection[] = [...sections, settings]
+  const allSections: NavSection[] = [...sections, ...(permitsOnly ? [] : [settings])]
     .map((s) =>
       s.key === "bookmarks"
         ? {
@@ -274,7 +294,11 @@ function SidebarNav({
   onNavigate?: () => void;
   onSignOut: () => void;
 }) {
-  const { allSections, isBookmarked, toggleBookmark } = useNavSections(role, isAdmin);
+  const { allSections, isBookmarked, toggleBookmark } = useNavSections(
+    role,
+    isAdmin,
+    isPermitsOnlyEmail(email),
+  );
   const [openKey, setOpenKey] = useState<string | null>(null);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isRail = mode === "rail";
@@ -577,6 +601,7 @@ function PortalShellInner({ children }: { children: ReactNode }) {
   const signingOutRef = useRef(false);
   const session = useSession();
   const me = useMyIdentity();
+  const permitsOnly = isPermitsOnlyEmail(session.email);
 
   useEffect(() => {
     let cancelled = false;
@@ -636,12 +661,31 @@ function PortalShellInner({ children }: { children: ReactNode }) {
     );
   }
 
+  // Do not render unrestricted navigation while the signed-in user's role and
+  // email are still loading. This prevents guest seats from briefly receiving
+  // the standard portal chrome after a redirect or hard refresh.
+  if (session.loading) {
+    return (
+      <div className="portal-ui dark grid min-h-screen place-items-center bg-background">
+        <div className="text-[13px] text-muted-foreground">Verifying access…</div>
+      </div>
+    );
+  }
+
 
   // Admin-only area: non-staff never see staff tooling, even by typing a URL.
   // (Data itself is already blocked server-side by RLS + admin assertions.)
   const isAdminPath = pathname === "/admin" || pathname.startsWith("/admin/");
-  if (isAdminPath && !session.loading && !session.isAdmin) {
+  if (isAdminPath && !session.isAdmin) {
     return <AdminOnly>{children}</AdminOnly>;
+  }
+
+  // Permits-only seats: any portal path outside Permits bounces back to Permits.
+  if (
+    isPermitsOnlyEmail(session.email) &&
+    !isPermitsOnlyPathAllowed(pathname)
+  ) {
+    return <PermitsOnlyRedirect />;
   }
 
 
@@ -736,8 +780,8 @@ function PortalShellInner({ children }: { children: ReactNode }) {
               </button>
             )}
             <ThemeToggle />
-            <BookmarkToggle />
-            <NotificationBell />
+            {!permitsOnly && <BookmarkToggle />}
+            {!permitsOnly && <NotificationBell />}
             <div className="hidden sm:block">
               <DropdownMenu>
                 <DropdownMenuTrigger className="flex h-8 items-center gap-1.5 rounded-lg px-1 outline-none hover:bg-[var(--rail-hover)]">
@@ -763,14 +807,18 @@ function PortalShellInner({ children }: { children: ReactNode }) {
                       </div>
                     )}
                   </DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  {(settingsForRole(session.role).items ?? []).map((item, i) => (
-                    <DropdownMenuItem key={`${item.to}-${i}`} asChild>
-                      <Link to={item.to as never} className="cursor-pointer rounded-lg px-3 py-2 text-[13px]" style={{ color: "var(--foreground)" }}>
-                        {item.label}
-                      </Link>
-                    </DropdownMenuItem>
-                  ))}
+                  {!permitsOnly && (
+                    <>
+                      <DropdownMenuSeparator />
+                      {(settingsForRole(session.role).items ?? []).map((item, i) => (
+                        <DropdownMenuItem key={`${item.to}-${i}`} asChild>
+                          <Link to={item.to as never} className="cursor-pointer rounded-lg px-3 py-2 text-[13px]" style={{ color: "var(--foreground)" }}>
+                            {item.label}
+                          </Link>
+                        </DropdownMenuItem>
+                      ))}
+                    </>
+                  )}
                   <DropdownMenuSeparator />
                   <DropdownMenuItem
                     onSelect={() => handleSignOut()}
@@ -786,18 +834,18 @@ function PortalShellInner({ children }: { children: ReactNode }) {
           </div>
         </header>
 
-        <SectionTabs />
+        {!permitsOnly && <SectionTabs />}
 
         <main className="min-h-[calc(100vh-3rem)] min-w-0 overflow-x-hidden pb-20 md:pb-0">
           {children}
         </main>
 
-        <MobileBottomNav pathname={pathname} />
+        <MobileBottomNav pathname={pathname} permitsOnly={permitsOnly} />
       </div>
 
 
-      <AskVictoriaDock />
-      <InternalOnlyVictoria />
+      {!permitsOnly && <AskVictoriaDock />}
+      {!permitsOnly && <InternalOnlyVictoria />}
 
     </div>
   );
@@ -926,7 +974,8 @@ const MOBILE_NAV_ITEMS: Array<{ to: string; label: string; icon: typeof FileText
 ];
 
 /** Fixed bottom tab bar for phones (< md). Mirrors the desktop rail's top-level destinations. */
-function MobileBottomNav({ pathname }: { pathname: string }) {
+function MobileBottomNav({ pathname, permitsOnly = false }: { pathname: string; permitsOnly?: boolean }) {
+  const items = permitsOnly ? MOBILE_NAV_ITEMS.slice(0, 1) : MOBILE_NAV_ITEMS;
   return (
     <nav
       className="md:hidden fixed inset-x-0 bottom-0 z-40 border-t"
@@ -937,8 +986,8 @@ function MobileBottomNav({ pathname }: { pathname: string }) {
       }}
       aria-label="Primary"
     >
-      <div className="grid grid-cols-4">
-        {MOBILE_NAV_ITEMS.map((item) => {
+      <div className={permitsOnly ? "grid grid-cols-1" : "grid grid-cols-4"}>
+        {items.map((item) => {
           const active = item.match(pathname);
           const Icon = item.icon;
           return (

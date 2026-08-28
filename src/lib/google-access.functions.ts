@@ -8,8 +8,11 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 export type AccessDecision = {
   allowed: boolean;
-  /** "approved" | "pending" | "filed" — filed = we just created the queue entry. */
-  reason: "approved" | "pending" | "filed";
+  /**
+   * "approved" | "pending" | "filed" | "unverified" — filed = we just created the queue
+   * entry, unverified = the address has never been proved.
+   */
+  reason: "approved" | "pending" | "filed" | "unverified";
   email: string | null;
   role: string | null;
 };
@@ -26,6 +29,14 @@ export const evaluatePortalAccessFn = createServerFn({ method: "POST" })
     const user = authUser?.user ?? null;
     const email = (user?.email ?? (context.claims as any)?.email ?? null) as string | null;
     const emailKey = email ? email.trim().toLowerCase() : null;
+
+    // 0. A verified address is the floor for everyone, however they signed in. Google (and
+    //    any other OIDC provider) fills email_confirmed_at itself when it vouches for the
+    //    address, so a real Google account passes here without a second email; one whose
+    //    address the provider did not verify does not.
+    if (user && !user.email_confirmed_at && !(user as any).confirmed_at) {
+      return { allowed: false, reason: "unverified", email: emailKey, role: null };
+    }
 
     // 1. Internal team always allowed.
     if (emailKey && INTERNAL_DOMAIN.test(emailKey)) {
