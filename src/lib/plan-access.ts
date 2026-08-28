@@ -84,7 +84,12 @@ export const TRIAL_PATHS: string[] = [
 
 export function trialPathAllowed(pathname: string): boolean {
   const path = pathname.replace(/\/+$/, "") || "/";
-  return TRIAL_PATHS.some((p) => path === p || path.startsWith(p + "/"));
+  return TRIAL_PATHS.some((p) => {
+    // /portal is only the index redirect. Treating it as a prefix would unlock
+    // every paid /portal/* route for a trial tenant.
+    if (p === "/portal") return path === p;
+    return path === p || path.startsWith(p + "/");
+  });
 }
 
 export function planIncludes(plan: PlanTier | null, feature: GatedFeature): boolean {

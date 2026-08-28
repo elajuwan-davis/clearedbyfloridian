@@ -39,7 +39,6 @@ import {
   settingsForRole,
   sidebarSettingsForRole,
   accountInfoSection,
-  trialNavSections,
   isItemActive,
   labelForPath,
   type AlertKey,
@@ -123,14 +122,12 @@ function useNavSections(role: AppRole | null, isAdmin: boolean, permitsOnly = fa
   const plan = usePlanAccess();
   const sections = permitsOnly
     ? sectionsForRole(role, false).filter((s) => s.key === "permits")
-    : plan.isTrial
-      ? trialNavSections
-      : sectionsForRole(role, isAdmin);
+    : sectionsForRole(role, isAdmin);
   const settings = plan.isTrial ? accountInfoSection : sidebarSettingsForRole(role);
   const marked = new Set(bookmarks.map((b) => normalizePath(b.path)));
 
-  // Nothing until the plan is known — a trial account must never be shown a
-  // section it can't open, even for one frame.
+  // Nothing until the plan is known. Trial accounts still see the complete
+  // portal navigation; paid destinations render an explanatory access lock.
   const allSections: NavSection[] = (
     plan.loading ? [] : [...sections, ...(permitsOnly ? [] : [settings])]
   )
@@ -632,14 +629,14 @@ function PortalShellInner({ children }: { children: ReactNode }) {
         setAuthState("authed");
       }
     });
-    const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (!session) {
+    const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === "SIGNED_OUT") {
         try { localStorage.removeItem("cleared_demo_session"); } catch { /* ignore */ }
         setAuthState("anon");
         if (shouldProtect && !signingOutRef.current) {
           navigate({ to: "/login", search: { next: pathname } as never, replace: true });
         }
-      } else {
+      } else if (session && (event === "SIGNED_IN" || event === "TOKEN_REFRESHED" || event === "USER_UPDATED")) {
         setAuthState("authed");
       }
     });
@@ -869,9 +866,8 @@ function PortalShellInner({ children }: { children: ReactNode }) {
 }
 
 /**
- * A trial (self-serve) plan reaches five places; any other portal path — typed in, bookmarked
- * or linked from a page — gets the lock instead of the paid page. The nav already hides these,
- * so this is the URL-level backstop.
+ * A trial (self-serve) plan reaches its included workspaces; every other portal path — whether
+ * opened from the visible navigation, a bookmark, or a typed URL — gets the access lock.
  */
 function TrialPathGate({
   pathname,
@@ -896,11 +892,24 @@ function TrialPathGate({
     <LockedPageNotice
       copy={{
         title: labelForPath(pathname),
-        does: "This is one of the tools Cleard runs for managed accounts — the staff-assisted side of the platform, alongside subcontractor compliance, lien rights and insurance tracking.",
+        does: lockedPageDescription(pathname),
         area: "Other",
       }}
     />
   );
+}
+
+function lockedPageDescription(pathname: string): string {
+  if (pathname.includes("bid-review")) return "Compare subcontractor bids, scope coverage, exclusions, and pricing before awarding the work.";
+  if (pathname.includes("utility-locates")) return "Coordinate utility locate requests, track responses, and keep excavation readiness visible to the project team.";
+  if (pathname.includes("hoa-submittals")) return "Prepare, submit, and track HOA review packages alongside the permit record.";
+  if (pathname.includes("subcontractor") || pathname.includes("request-coi")) return "Manage subcontractors, verify licenses and insurance, and track compliance requirements in one workspace.";
+  if (pathname.includes("lien-rights")) return "Track statutory deadlines, prepare lien-rights documents, and manage e-recording from the project timeline.";
+  if (pathname.includes("financial") || pathname.includes("billing") || pathname.includes("permit-fees") || pathname.includes("reports")) return "Track permit costs, invoices, savings, and portfolio reporting from one financial workspace.";
+  if (pathname.includes("document") || pathname.includes("legal") || pathname.includes("notary")) return "Organize project documents, authorization forms, legal records, and signing workflows in a secure workspace.";
+  if (pathname.includes("inspection")) return "Schedule same-day inspections, monitor results, and coordinate corrections from the permit record.";
+  if (pathname.includes("calendar")) return "See permit milestones, inspections, deadlines, and team activity on one shared calendar.";
+  return "This managed-account workspace brings the related project workflow, records, and team actions together inside Cleard.";
 }
 
 function InternalOnlyVictoria() {

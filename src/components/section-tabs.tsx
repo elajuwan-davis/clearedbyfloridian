@@ -7,20 +7,14 @@
  */
 import { Link, useRouterState } from "@tanstack/react-router";
 import { groupForPath, isTabActive, hasQualifiedTab } from "@/lib/portal-tabs";
-import { usePlanAccess, trialPathAllowed } from "@/lib/plan-access";
+import { usePlanAccess } from "@/lib/plan-access";
 
 export function SectionTabs() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const search = useRouterState({ select: (s) => s.location.search as Record<string, unknown> });
   const plan = usePlanAccess();
 
-  const found = groupForPath(pathname);
-  // A trial plan only sees the tabs it can actually open, so the bar never
-  // offers a locked page.
-  const group =
-    found && plan.isTrial
-      ? { ...found, tabs: found.tabs.filter((t) => trialPathAllowed(t.to)) }
-      : found;
+  const group = groupForPath(pathname);
   if (plan.loading || !group || group.tabs.length < 2) return null;
 
   const qualified = hasQualifiedTab(group, pathname, search ?? {});

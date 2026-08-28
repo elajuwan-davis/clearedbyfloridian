@@ -110,6 +110,7 @@ export const tabGroups: TabGroup[] = [
     label: "Admin",
     tabs: [
       { label: "Invite Pipeline", to: "/admin/invites" },
+      { label: "Feature Access Requests", to: "/admin/feature-requests" },
       { label: "Staff Workload", to: "/admin/workload" },
       { label: "Audit Trail", to: "/admin/audit" },
       { label: "Pricing Tiers", to: "/admin/pricing" },
