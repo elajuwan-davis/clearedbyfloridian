@@ -78,14 +78,31 @@ export function startFirstLoginTour(opts: {
         popover: {
           title: "Start with a permit",
           description:
-            "This is the job: file your own permits. Everything else on Cleard hangs off one of these.",
+            "This is the job: file your own permits. Everything else on Cleard hangs off one of these — and you can fill the whole intake by voice instead of typing it.",
+        },
+      },
+      {
+        element: '[data-tour="messages"]',
+        popover: {
+          title: "Talk to the permit desk",
+          description:
+            "Questions, county comments, anything you need from us — it all runs through here, tied to the permit it belongs to.",
+        },
+      },
+      {
+        element: '[data-tour="ask-victoria"]',
+        popover: {
+          title: "Ask Victoria, any time",
+          description:
+            "Victoria is the AI that oversees your permits and helps at every step to get them cleared. Ask her what's outstanding, what a county comment means, or what to do next.",
         },
       },
       {
         element: '[data-tour="documents"]',
         popover: {
           title: "Compliance documents",
-          description: "This is where your documents live.",
+          description:
+            "This is where your documents live — licenses, insurance, plans. Next, let's create a permit together.",
           nextBtnText: "Create a permit",
           onNextClick: () => {
             handedOff = true;
