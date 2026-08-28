@@ -153,7 +153,7 @@ function buildSteps(scopes: string[], scopeOptions: string[] = []): Step[] {
       });
     }
   }
-  return [...PROJECT_STEPS, ...subSteps, ...TAIL_STEPS];
+  return [...project, ...subSteps, ...TAIL_STEPS];
 }
 
 const SPOKEN_DIGITS: Record<string, string> = {
