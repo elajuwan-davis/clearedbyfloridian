@@ -5,6 +5,7 @@ import { PageShell } from "@/components/ui-kit";
 import { AdminInvitePipelineView } from "@/components/admin-invite-pipeline-view";
 import { AdminAccessRequestsView } from "@/components/admin-access-requests-view";
 import { AdminReviewQueueView } from "@/components/admin-review-queue-view";
+import { AdminTenantPlansView } from "@/components/admin-tenant-plans-view";
 
 export const Route = createFileRoute("/admin/invites")({
   head: () => ({
@@ -21,18 +22,20 @@ export const Route = createFileRoute("/admin/invites")({
   component: InvitePipelinePage,
 });
 
-type Tab = "pipeline" | "requests" | "review";
+type Tab = "pipeline" | "requests" | "review" | "plans";
 
 const TABS: Array<{ key: Tab; label: string }> = [
   { key: "pipeline", label: "Invite Pipeline" },
   { key: "requests", label: "Access Requests" },
   { key: "review", label: "Review Queue" },
+  { key: "plans", label: "Plans" },
 ];
 
 const META: Record<Tab, string> = {
   pipeline: "Invite → signup → first permits",
   requests: "Approve or reject inbound access",
   review: "Client self-submitted permits",
+  plans: "Trial or full access, per tenant",
 };
 
 function InvitePipelinePage() {
@@ -65,8 +68,10 @@ function InvitePipelinePage() {
           <AdminInvitePipelineView />
         ) : tab === "requests" ? (
           <AdminAccessRequestsView />
-        ) : (
+        ) : tab === "review" ? (
           <AdminReviewQueueView />
+        ) : (
+          <AdminTenantPlansView />
         )}
       </PageShell>
     </PortalShell>

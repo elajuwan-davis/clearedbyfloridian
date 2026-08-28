@@ -33,15 +33,22 @@ export const approveAccessRequestFn = createServerFn({ method: "POST" })
     await assertAdmin(context.userId);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
-    // 1. Create tenant
-    const { data: tenant, error: tErr } = await (supabaseAdmin.from("tenants" as any) as any)
-      .insert({
-        name: data.tenant_name,
-        license_number: data.license_number ?? null,
-        status: "active",
-      })
-      .select("id, name")
-      .single();
+    // 1. Create tenant. An invited account is a managed one: plan is written
+    // explicitly rather than left to the column default, so a default flip can
+    // never quietly drop a paying client onto the trial surface.
+    const base = {
+      name: data.tenant_name,
+      license_number: data.license_number ?? null,
+      status: "active",
+    };
+    const insertTenant = (row: Record<string, unknown>) =>
+      (supabaseAdmin.from("tenants" as any) as any).insert(row).select("id, name").single();
+
+    let { data: tenant, error: tErr } = await insertTenant({ ...base, plan: "full" });
+    if (tErr && /plan/i.test(tErr.message ?? "")) {
+      // Plan migration not applied on this project yet: inviting still has to work.
+      ({ data: tenant, error: tErr } = await insertTenant(base));
+    }
     if (tErr) throw new Error(tErr.message);
 
     // 2. Always create a shareable invite token for this tenant
@@ -146,6 +153,78 @@ export const listTenantsFn = createServerFn({ method: "GET" })
       status: string;
       created_at: string;
     }>;
+  });
+
+export type TenantPlanRow = {
+  id: string;
+  name: string;
+  plan: "trial" | "full";
+  status: string;
+  created_at: string;
+  member_count: number;
+  owner_email: string | null;
+};
+
+/** Every tenant with the plan tier that decides what its members can open. */
+export const listTenantPlansFn = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }): Promise<TenantPlanRow[]> => {
+    await assertAdmin(context.userId);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const [tenantRes, memberRes, profileRes] = await Promise.all([
+      (supabaseAdmin.from("tenants" as any) as any)
+        .select("id, name, plan, status, created_at")
+        .order("created_at", { ascending: false }),
+      (supabaseAdmin.from("tenant_members" as any) as any).select("user_id, tenant_id, role"),
+      (supabaseAdmin.from("profiles" as any) as any).select("id, email"),
+    ]);
+    if (tenantRes.error) throw new Error(tenantRes.error.message);
+
+    const emailById = new Map<string, string | null>(
+      (profileRes.data ?? []).map((p: any) => [p.id as string, (p.email ?? null) as string | null]),
+    );
+    const members = new Map<string, { count: number; owner: string | null }>();
+    for (const m of memberRes.data ?? []) {
+      const entry = members.get(m.tenant_id) ?? { count: 0, owner: null };
+      entry.count += 1;
+      if (m.role === "gc_owner" && !entry.owner) entry.owner = emailById.get(m.user_id) ?? null;
+      members.set(m.tenant_id, entry);
+    }
+
+    return (tenantRes.data ?? []).map((t: any) => {
+      const entry = members.get(t.id);
+      return {
+        id: t.id as string,
+        name: (t.name ?? "—") as string,
+        plan: t.plan === "trial" ? "trial" : "full",
+        status: (t.status ?? "—") as string,
+        created_at: t.created_at as string,
+        member_count: entry?.count ?? 0,
+        owner_email: entry?.owner ?? null,
+      };
+    });
+  });
+
+const SetPlanInput = z.object({
+  tenant_id: z.string().uuid(),
+  plan: z.enum(["trial", "full"]),
+});
+
+/** Move one tenant between the trial and full tiers. Admin only. */
+export const setTenantPlanFn = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) => SetPlanInput.parse(d))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context.userId);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: row, error } = await (supabaseAdmin.from("tenants" as any) as any)
+      .update({ plan: data.plan })
+      .eq("id", data.tenant_id)
+      .select("id, plan")
+      .maybeSingle();
+    if (error) throw new Error(error.message);
+    if (!row) throw new Error("That tenant no longer exists");
+    return { tenant_id: row.id as string, plan: row.plan as "trial" | "full" };
   });
 
 // Called during GC onboarding after they accept invite and set password.
