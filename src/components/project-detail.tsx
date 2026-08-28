@@ -110,6 +110,7 @@ import { getPortalRole, canRequestNotary } from "@/lib/portal-role";
 import { ProjectInternalOps } from "@/components/project-internal-ops";
 import { logAudit } from "@/lib/audit-log";
 import { ShieldAlert, History } from "lucide-react";
+import { slugifyCity } from "@/lib/municipality-slug";
 
 const fmtMoneyWhole = (cents: number) =>
   `$${(cents / 100).toLocaleString("en-US", { maximumFractionDigits: 0 })}`;
