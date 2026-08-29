@@ -188,14 +188,13 @@ export function MarketingNav() {
                 className="pt-3 text-[10.5px] uppercase tracking-[0.22em]"
                 style={{ color: INK, fontWeight: 700 }}
               >
-                Trades
+                Solutions
               </div>
               <div className="mt-3 space-y-3">
-                {TRADE_LINKS.map((t) => (
+                {SOLUTION_LINKS.map((t) => (
                   <Link
                     key={t.label}
                     to={t.to}
-                    params={t.params}
                     onClick={() => setOpen(false)}
                     className="block text-[15px] no-underline"
                     style={{ color: BODY_GRAY }}
@@ -203,6 +202,7 @@ export function MarketingNav() {
                     {t.label}
                   </Link>
                 ))}
+
               </div>
             </div>
 
