@@ -427,10 +427,16 @@ export const setTenantAllowedDomainFn = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) => SetDomainInput.parse(d))
   .handler(async ({ data, context }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { resolveAllowedDomain } = await import("@/lib/allowed-domain");
     const { data: me } = await (supabaseAdmin.from("tenant_members" as any) as any)
       .select("tenant_id, role").eq("user_id", context.userId).maybeSingle();
     if (!me || me.role !== "gc_owner") throw new Error("Only the owner can set the domain");
-    const domain = (data.allowed_domain ?? "").trim().toLowerCase().replace(/^@/, "") || null;
+    // Auth identity, not profiles.email — that column is owner-editable and would
+    // let someone spoof a company domain they do not actually receive mail at.
+    const { data: authUser } = await (supabaseAdmin.auth.admin as any).getUserById(context.userId);
+    const ownerEmail =
+      authUser?.user?.email ?? ((context.claims as { email?: string } | undefined)?.email ?? null);
+    const domain = resolveAllowedDomain(data.allowed_domain, ownerEmail);
     const { error } = await (supabaseAdmin.from("tenants" as any) as any)
       .update({ allowed_domain: domain }).eq("id", me.tenant_id);
     if (error) throw new Error(error.message);

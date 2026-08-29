@@ -581,6 +581,8 @@ function TeamOnboardingSection() {
           <div className="mt-1 text-[12.5px] font-semibold">Email domain auto-join</div>
           <p className="mt-1 text-[11.5px] text-muted-foreground leading-relaxed">
             Anyone who signs up with an email at this domain is added to your team automatically.
+            Must match the domain on your own work email — Gmail and other public providers cannot
+            be used.
           </p>
           <div className="mt-3 flex items-center gap-2">
             <span className="text-[11px] text-muted-foreground">@</span>
