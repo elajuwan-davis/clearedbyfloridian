@@ -98,7 +98,7 @@ export function MarketingNav() {
                 }}
                 aria-expanded={tradesOpen}
               >
-                Trades
+                Solutions
                 <ChevronDown className="h-3.5 w-3.5" />
               </button>
               {tradesOpen && (
@@ -107,19 +107,16 @@ export function MarketingNav() {
                   style={{ zIndex: 60 }}
                 >
                   <div
-                    className="grid grid-cols-2 gap-x-2"
                     style={{
                       background: NEAR_BLACK,
                       border: `1px solid ${BORDER}`,
-                      minWidth: 460,
+                      minWidth: 280,
                     }}
                   >
-
-                    {TRADE_LINKS.map((t) => (
+                    {SOLUTION_LINKS.map((t) => (
                       <Link
                         key={t.label}
                         to={t.to}
-                        params={t.params}
                         onClick={() => setTradesOpen(false)}
                         className="block px-4 py-3 text-[14px] no-underline transition-opacity hover:opacity-70"
                         style={{ color: INK }}
@@ -128,6 +125,9 @@ export function MarketingNav() {
                       </Link>
                     ))}
                   </div>
+                </div>
+              )}
+
                 </div>
               )}
             </div>
