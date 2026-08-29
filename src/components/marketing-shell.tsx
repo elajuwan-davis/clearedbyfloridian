@@ -11,12 +11,13 @@ const NAV_LINKS: Array<{ to: string; label: string }> = [
   { to: "/compare", label: "Compare" },
 ];
 
-/** Trade-specific landing pages. */
-const TRADE_LINKS = TRADES.map((t) => ({
-  to: "/trades/$slug" as const,
-  params: { slug: t.slug },
-  label: t.navLabel,
-}));
+/** Solutions links. */
+const SOLUTION_LINKS: Array<{ to: string; label: string }> = [
+  { to: "/municipalities", label: "Cleard Gov for municipalities" },
+  { to: "/contact", label: "Cleard Approval for HOAs" },
+  { to: "/join", label: "Cleard for Contractors" },
+];
+
 
 const NEAR_BLACK = "#FAF3E6";
 const BODY_GRAY = "#7A5C68";
