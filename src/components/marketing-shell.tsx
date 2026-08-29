@@ -268,19 +268,19 @@ export function MarketingFooter() {
             </div>
 
             <div>
-              <div className={FOOT_HEAD} style={FOOT_HEAD_STYLE}>Trades</div>
+              <div className={FOOT_HEAD} style={FOOT_HEAD_STYLE}>Solutions</div>
               <div className="mt-4 space-y-2.5">
-                {TRADE_LINKS.slice(0, 7).map((t) => (
+                {SOLUTION_LINKS.map((t) => (
                   <Link
                     key={t.label}
                     to={t.to}
-                    params={t.params}
                     className={FOOT_LINK}
                     style={FOOT_LINK_STYLE}
                   >
                     {t.label}
                   </Link>
                 ))}
+
               </div>
             </div>
 
