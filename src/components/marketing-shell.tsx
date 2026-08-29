@@ -2,7 +2,7 @@ import { useState, type ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
 import { Menu, X, ArrowRight, ChevronDown } from "lucide-react";
 import mark2d from "@/assets/cleard-mark-2d.png.asset.json";
-import { TRADES } from "@/lib/trades";
+
 /** Flat nav links — the only dropdown is Trades. */
 const NAV_LINKS: Array<{ to: string; label: string }> = [
   { to: "/", label: "Home" },
@@ -11,12 +11,13 @@ const NAV_LINKS: Array<{ to: string; label: string }> = [
   { to: "/compare", label: "Compare" },
 ];
 
-/** Trade-specific landing pages. */
-const TRADE_LINKS = TRADES.map((t) => ({
-  to: "/trades/$slug" as const,
-  params: { slug: t.slug },
-  label: t.navLabel,
-}));
+/** Solutions links. */
+const SOLUTION_LINKS: Array<{ to: string; label: string }> = [
+  { to: "/municipalities", label: "Cleard Gov for municipalities" },
+  { to: "/contact", label: "Cleard Approval for HOAs" },
+  { to: "/join", label: "Cleard for Contractors" },
+];
+
 
 const NEAR_BLACK = "#FAF3E6";
 const BODY_GRAY = "#7A5C68";
@@ -97,7 +98,7 @@ export function MarketingNav() {
                 }}
                 aria-expanded={tradesOpen}
               >
-                Trades
+                Solutions
                 <ChevronDown className="h-3.5 w-3.5" />
               </button>
               {tradesOpen && (
@@ -106,19 +107,16 @@ export function MarketingNav() {
                   style={{ zIndex: 60 }}
                 >
                   <div
-                    className="grid grid-cols-2 gap-x-2"
                     style={{
                       background: NEAR_BLACK,
                       border: `1px solid ${BORDER}`,
-                      minWidth: 460,
+                      minWidth: 280,
                     }}
                   >
-
-                    {TRADE_LINKS.map((t) => (
+                    {SOLUTION_LINKS.map((t) => (
                       <Link
                         key={t.label}
                         to={t.to}
-                        params={t.params}
                         onClick={() => setTradesOpen(false)}
                         className="block px-4 py-3 text-[14px] no-underline transition-opacity hover:opacity-70"
                         style={{ color: INK }}
@@ -187,14 +185,13 @@ export function MarketingNav() {
                 className="pt-3 text-[10.5px] uppercase tracking-[0.22em]"
                 style={{ color: INK, fontWeight: 700 }}
               >
-                Trades
+                Solutions
               </div>
               <div className="mt-3 space-y-3">
-                {TRADE_LINKS.map((t) => (
+                {SOLUTION_LINKS.map((t) => (
                   <Link
                     key={t.label}
                     to={t.to}
-                    params={t.params}
                     onClick={() => setOpen(false)}
                     className="block text-[15px] no-underline"
                     style={{ color: BODY_GRAY }}
@@ -202,6 +199,7 @@ export function MarketingNav() {
                     {t.label}
                   </Link>
                 ))}
+
               </div>
             </div>
 
@@ -267,19 +265,19 @@ export function MarketingFooter() {
             </div>
 
             <div>
-              <div className={FOOT_HEAD} style={FOOT_HEAD_STYLE}>Trades</div>
+              <div className={FOOT_HEAD} style={FOOT_HEAD_STYLE}>Solutions</div>
               <div className="mt-4 space-y-2.5">
-                {TRADE_LINKS.slice(0, 7).map((t) => (
+                {SOLUTION_LINKS.map((t) => (
                   <Link
                     key={t.label}
                     to={t.to}
-                    params={t.params}
                     className={FOOT_LINK}
                     style={FOOT_LINK_STYLE}
                   >
                     {t.label}
                   </Link>
                 ))}
+
               </div>
             </div>
 
