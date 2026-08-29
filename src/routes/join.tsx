@@ -15,7 +15,7 @@ export const Route = createFileRoute("/join")({
       { title: "Cleard — Permit management for licensed contractors" },
       { name: "description", content: "Cleard handles jurisdiction requirements, sub coordination, document collection, and submission so your projects don't stall." },
       { property: "og:title", content: "Stop losing weeks to the permit process." },
-      { property: "og:description", content: "One platform. Every permit. Every trade. Built for licensed contractors." },
+      { property: "og:description", content: "One platform. Every permit. Built for licensed contractors." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -199,7 +199,7 @@ function JoinPage() {
                   Bundled Submission
                 </div>
                 <div className="text-[11px]" style={{ color: OBSIDIAN }}>
-                  6 trades · 1 package
+                  6 scopes · 1 package
                 </div>
               </div>
             </div>
@@ -233,8 +233,8 @@ function JoinPage() {
                 body: "Every city has different checklists, different portals, different requirements. Tracking them manually is a full-time job nobody signed up for.",
               },
               {
-                label: "Multiple trades, multiple failure points.",
-                body: "Pulling separate permits per trade multiplies your cost and your exposure. One missed sub doc can hold up the whole job.",
+                label: "Multiple scopes, multiple failure points.",
+                body: "Pulling separate permits for each scope multiplies your cost and your exposure. One missed sub doc can hold up the whole job.",
               },
             ].map((c, i) => (
               <div key={c.label} className="bg-white p-8" style={{ border: `1px solid ${HAIRLINE}` }}>
@@ -275,14 +275,14 @@ function JoinPage() {
             Cleard fixes all of it.
           </h2>
           <p className="text-lg mb-16 max-w-2xl" style={{ color: MUTED }}>
-            One platform. Every permit. Every trade.
+            One platform. Every permit.
           </p>
           <div className="grid md:grid-cols-3 gap-12 lg:gap-16">
             {[
               {
                 Icon: FileStack,
                 label: "Bundled Submissions",
-                body: "Submit all trades under one GC package. One submission, one point of contact, one fee.",
+                body: "Submit every scope under one GC package. One submission, one point of contact, one fee.",
               },
               {
                 Icon: Map,
@@ -317,7 +317,7 @@ function JoinPage() {
         <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-16 md:gap-8 text-center">
           {[
             { n: "400+", l: "Jurisdictions mapped" },
-            { n: "All trades", l: "Bundled in one submission" },
+            { n: "All scopes", l: "Bundled in one submission" },
             { n: "Real-time", l: "Permit status tracking" },
           ].map((s) => (
             <div key={s.l}>
