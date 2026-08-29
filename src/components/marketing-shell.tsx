@@ -127,9 +127,6 @@ export function MarketingNav() {
                   </div>
                 </div>
               )}
-
-                </div>
-              )}
             </div>
           </nav>
 
