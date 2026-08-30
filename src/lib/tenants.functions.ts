@@ -4,6 +4,7 @@
 
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { assembleTenantPlanRows, type TenantPlanRow } from "@/lib/tenant-plans";
 import { z } from "zod";
 
 async function assertAdmin(userId: string) {
@@ -155,15 +156,7 @@ export const listTenantsFn = createServerFn({ method: "GET" })
     }>;
   });
 
-export type TenantPlanRow = {
-  id: string;
-  name: string;
-  plan: "trial" | "full";
-  status: string;
-  created_at: string;
-  member_count: number;
-  owner_email: string | null;
-};
+export type { TenantPlanRow } from "@/lib/tenant-plans";
 
 /** Every tenant with the plan tier that decides what its members can open. */
 export const listTenantPlansFn = createServerFn({ method: "GET" })
@@ -180,29 +173,11 @@ export const listTenantPlansFn = createServerFn({ method: "GET" })
     ]);
     if (tenantRes.error) throw new Error(tenantRes.error.message);
 
-    const emailById = new Map<string, string | null>(
-      (profileRes.data ?? []).map((p: any) => [p.id as string, (p.email ?? null) as string | null]),
+    return assembleTenantPlanRows(
+      tenantRes.data ?? [],
+      memberRes.data ?? [],
+      profileRes.data ?? [],
     );
-    const members = new Map<string, { count: number; owner: string | null }>();
-    for (const m of memberRes.data ?? []) {
-      const entry = members.get(m.tenant_id) ?? { count: 0, owner: null };
-      entry.count += 1;
-      if (m.role === "gc_owner" && !entry.owner) entry.owner = emailById.get(m.user_id) ?? null;
-      members.set(m.tenant_id, entry);
-    }
-
-    return (tenantRes.data ?? []).map((t: any) => {
-      const entry = members.get(t.id);
-      return {
-        id: t.id as string,
-        name: (t.name ?? "—") as string,
-        plan: t.plan === "trial" ? "trial" : "full",
-        status: (t.status ?? "—") as string,
-        created_at: t.created_at as string,
-        member_count: entry?.count ?? 0,
-        owner_email: entry?.owner ?? null,
-      };
-    });
   });
 
 const SetPlanInput = z.object({

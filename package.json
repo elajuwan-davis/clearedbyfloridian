@@ -13,7 +13,8 @@
     "portal-worker": "tsx scripts/portal-worker/municipality-submit-worker.ts",
     "status-worker": "tsx scripts/portal-worker/permit-status-worker.ts",
     "import-portal-logins": "tsx scripts/import-portal-logins.ts",
-    "test:import-portal-logins": "tsx --test scripts/import-portal-logins.test.ts"
+    "test:import-portal-logins": "tsx --test scripts/import-portal-logins.test.ts",
+    "test": "tsx --test src/lib/*.test.ts scripts/import-portal-logins.test.ts"
   },
   "dependencies": {
     "@fontsource/cormorant-garamond": "^5.2.11",

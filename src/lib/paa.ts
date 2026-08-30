@@ -97,15 +97,7 @@ export async function loadPaa(): Promise<PaaRecord | null> {
   return data ? mapPaa(data) : null;
 }
 
-/**
- * Signed means SignWell said so. The one exception is a row created before the integration
- * existed — it has no SignWell document to confirm, and the validator has always counted it,
- * so revoking it here would lock out accounts that are legitimately authorized.
- */
-export function isPaaSigned(rec: PaaRecord | null | undefined): boolean {
-  if (rec?.status !== "signed") return false;
-  return rec.statusSource === "provider_confirmed" || rec.envelopeId === null;
-}
+export { isPaaSigned } from "@/lib/paa-status";
 
 /**
  * Creates the draft row the SignWell send attaches to. The RPC resolves the tenant and
