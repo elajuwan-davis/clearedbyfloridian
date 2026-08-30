@@ -121,7 +121,7 @@ function FinancialsPage() {
       alive = false;
       window.removeEventListener("manual-fees:changed", refreshFees);
     };
-  }, []);
+  }, [activeTenantId]);
 
   const feesByProject = useMemo(() => {
     const m = new Map<string, ManualFee[]>();
