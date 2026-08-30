@@ -4,6 +4,7 @@ import { PortalShell } from "@/components/portal-shell";
 import { useMyIdentity, greetingForNow } from "@/lib/profile-api";
 import { usePlanAccess } from "@/lib/plan-access";
 import { listPermits, type PermitRow } from "@/lib/permits-api";
+import { useActiveTenantId } from "@/lib/view-mode-context";
 import { listThreads } from "@/lib/messages-api";
 import {
   AlertTriangle,
@@ -102,9 +103,10 @@ export function BuilderDashboard() {
   const [unread, setUnread] = useState(0);
   const [loading, setLoading] = useState(true);
   const alerts = useExpirationAlerts();
+  const activeTenantId = useActiveTenantId();
 
   useEffect(() => {
-    listPermits()
+    listPermits(activeTenantId)
       .then(setPermits)
       .catch(() => {})
       .finally(() => setLoading(false));
@@ -113,7 +115,7 @@ export function BuilderDashboard() {
       .catch(() => {});
     const id = setInterval(() => setGreeting(greetingForNow()), 60_000);
     return () => clearInterval(id);
-  }, []);
+  }, [activeTenantId]);
 
   const active = permits.filter((p) => !CLOSED.has(p.status));
   const issued = permits.filter((p) => p.status === "permit_issued").length;

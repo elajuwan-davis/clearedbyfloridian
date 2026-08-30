@@ -17,6 +17,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useSession } from "@/lib/use-session";
 import { listPermits, type PermitRow } from "@/lib/permits-api";
+import { useActiveTenantId } from "@/lib/view-mode-context";
 import {
   listAllInspections,
   createInspection,
@@ -78,12 +79,13 @@ function InspectionsPage() {
   const [requestFor, setRequestFor] = useState<PermitRow | null>(null);
   const [reportFor, setReportFor] = useState<PermitInspection | null>(null);
   const [statusFor, setStatusFor] = useState<PermitInspection | null>(null);
+  const activeTenantId = useActiveTenantId();
 
   const refresh = useCallback(async () => {
     try {
       const [inspections, permitList] = await Promise.all([
         listAllInspections(),
-        listPermits(),
+        listPermits(activeTenantId),
       ]);
       setRows(inspections);
       setPermits(permitList);
@@ -92,7 +94,7 @@ function InspectionsPage() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [activeTenantId]);
 
   useEffect(() => {
     void refresh();

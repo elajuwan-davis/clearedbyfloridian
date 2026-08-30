@@ -98,6 +98,7 @@ export function MyPermitsPage() {
     dir: "desc",
   });
   const internal = isInternalUser();
+  const activeTenantId = useActiveTenantId();
 
   useEffect(() => {
     setDrafts(listLocalPermitDrafts());
@@ -126,7 +127,7 @@ export function MyPermitsPage() {
   async function refresh() {
     setLoading(true);
     try {
-      const rows = await listPermits();
+      const rows = await listPermits(activeTenantId);
       setPermits(rows);
     } finally {
       setLoading(false);
@@ -152,7 +153,8 @@ export function MyPermitsPage() {
   useEffect(() => {
     refresh();
     setLastSync(getLastRun());
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeTenantId]);
 
   useEffect(() => {
     if (!internal) return;
