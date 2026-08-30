@@ -136,7 +136,7 @@ function useNavSections(role: AppRole | null, isAdmin: boolean, permitsOnly = fa
   // Nothing until the plan is known. Trial accounts still see the complete
   // portal navigation; paid destinations render an explanatory access lock.
   const allSections: NavSection[] = (
-    plan.loading ? [] : [...sections, ...(permitsOnly ? [] : [settings])]
+    plan.loading ? [] : [...sections, ...(permitsOnly || clientView ? [] : [settings])]
   )
     .map((s) =>
       s.key === "bookmarks"
