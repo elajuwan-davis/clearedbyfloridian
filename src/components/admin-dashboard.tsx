@@ -28,6 +28,7 @@ import {
 } from "lucide-react";
 import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
 import { supabase } from "@/integrations/supabase/client";
+import { useViewMode } from "@/lib/view-mode-context";
 import { projectStatusMeta, type ProjectStatus as Status } from "@/lib/status-badges";
 import { useMyIdentity, greetingForNow } from "@/lib/profile-api";
 import {
@@ -97,6 +98,7 @@ export function AdminDashboard() {
   const [statusFilter, setStatusFilter] = useState<"all" | Status>("all");
   const [countyFilter, setCountyFilter] = useState<"all" | (typeof COUNTIES)[number]>("all");
   const [clientFilter, setClientFilter] = useState<"all" | string>("all");
+  const { setSelectedTenantId } = useViewMode();
   const [query, setQuery] = useState("");
 
   useEffect(() => {
@@ -378,7 +380,13 @@ export function AdminDashboard() {
                   {COUNTIES.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
                 </SelectContent>
               </Select>
-              <Select value={clientFilter} onValueChange={setClientFilter}>
+              <Select
+                value={clientFilter}
+                onValueChange={(v) => {
+                  setClientFilter(v);
+                  setSelectedTenantId(v === "all" ? null : v);
+                }}
+              >
                 <SelectTrigger className="h-8 w-[170px] rounded-[10px] text-[12px]"><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All clients</SelectItem>
