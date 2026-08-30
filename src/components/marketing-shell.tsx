@@ -7,8 +7,8 @@ import { TRADES } from "@/lib/trades";
 /** Flat nav links — dropdowns are Solutions and Trades. */
 const NAV_LINKS: Array<{ to: string; label: string }> = [
   { to: "/", label: "Home" },
+  { to: "/contact", label: "Partnerships" },
   { to: "/pricing", label: "Pricing" },
-  { to: "/compare", label: "Compare" },
 ];
 
 /** Solutions links. */
@@ -128,7 +128,7 @@ export function MarketingNav() {
               )}
             </div>
 
-            {NAV_LINKS.filter((l) => l.to !== "/").map((l) => (
+            {NAV_LINKS.filter((l) => l.to === "/contact").map((l) => (
               <Link
                 key={l.to}
                 to={l.to}
@@ -193,6 +193,14 @@ export function MarketingNav() {
                 </div>
               )}
             </div>
+
+            <Link
+              to="/pricing"
+              className="text-[14px] no-underline transition-opacity hover:opacity-70"
+              style={{ color: BODY_GRAY, whiteSpace: "nowrap", flexShrink: 0 }}
+            >
+              Pricing
+            </Link>
           </nav>
 
         <div className="flex items-center justify-end gap-3" style={{ flexShrink: 0, gridColumn: 3 }}>
@@ -346,7 +354,7 @@ export function MarketingFooter() {
               <div className={FOOT_HEAD} style={FOOT_HEAD_STYLE}>Platform</div>
               <div className="mt-4 space-y-2.5">
                 <Link to="/pricing" className={FOOT_LINK} style={FOOT_LINK_STYLE}>Pricing</Link>
-                <Link to="/compare" className={FOOT_LINK} style={FOOT_LINK_STYLE}>Compare</Link>
+                
                 <Link to="/" hash="watch-it-run" className={FOOT_LINK} style={FOOT_LINK_STYLE}>How it works</Link>
               </div>
             </div>
