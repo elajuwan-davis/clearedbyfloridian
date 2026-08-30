@@ -292,7 +292,6 @@ export function MarketingFooter() {
             <div>
               <div className={FOOT_HEAD} style={FOOT_HEAD_STYLE}>Resources</div>
               <div className="mt-4 space-y-2.5">
-                <Link to="/municipalities" className={FOOT_LINK} style={FOOT_LINK_STYLE}>CleardGov — For municipalities</Link>
                 <Link to="/login" className={FOOT_LINK} style={FOOT_LINK_STYLE}>Client portal</Link>
                 <Link to="/privacy" className={FOOT_LINK} style={FOOT_LINK_STYLE}>Privacy Policy</Link>
                 <Link to="/terms" className={FOOT_LINK} style={FOOT_LINK_STYLE}>Terms of Service</Link>
