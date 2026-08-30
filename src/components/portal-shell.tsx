@@ -519,7 +519,47 @@ function SidebarNav({
         })}
       </nav>
 
-
+      {isAdmin && (
+        <div
+          className={cn("shrink-0 pb-2", isRail ? "px-1.5 pt-2" : "px-3 pt-2")}
+          style={{ borderTop: "1px solid var(--p-border)" }}
+        >
+          <div
+            className={cn("flex gap-0.5 p-0.5", isRail ? "flex-col" : "items-stretch")}
+            style={{ backgroundColor: "var(--rail-item-active-bg)" }}
+            role="group"
+            aria-label="View mode"
+          >
+            {(
+              [
+                { mode: "admin" as const, label: "Cleard", short: "C" },
+                { mode: "client" as const, label: "Flōridian", short: "F" },
+              ]
+            ).map((opt) => {
+              const active = viewMode === opt.mode;
+              return (
+                <button
+                  key={opt.mode}
+                  type="button"
+                  onClick={() => setViewMode(opt.mode)}
+                  title={`${opt.label} view`}
+                  aria-pressed={active}
+                  className={cn(
+                    "flex-1 truncate px-2 py-1 text-[11px] font-medium transition-colors",
+                    isRail && "px-0 text-center",
+                  )}
+                  style={{
+                    backgroundColor: active ? "#2F4F4F" : "transparent",
+                    color: active ? "#FAF3E6" : "var(--rail-muted)",
+                  }}
+                >
+                  {isRail ? opt.short : opt.label}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
 
       <div
