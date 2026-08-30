@@ -24,9 +24,14 @@ const SERIF = '"Fraunces", "Iowan Old Style", Georgia, serif';
 
 const NAV = [
   { to: "/", label: "Home", hash: undefined },
-  { to: "/join", label: "For Contractors", hash: undefined },
   { to: "/pricing", label: "Pricing", hash: undefined },
   { to: "/compare", label: "Compare", hash: undefined },
+] as const;
+
+const SOLUTIONS = [
+  { to: "/join", label: "Cleard — For Contractors" },
+  { to: "/contact", label: "CleardApproval — For HOAs" },
+  { to: "/municipalities", label: "CleardGov — For Municipalities" },
 ] as const;
 
 /* ------------------------- HERO MOMENT SEQUENCE -------------------------- */
@@ -128,6 +133,58 @@ function useHeroSequence(navSlot: React.RefObject<HTMLElement | null>) {
 }
 
 /* ---------------------------------- NAV ---------------------------------- */
+
+function HeroSolutions() {
+  const [open, setOpen] = useState(false);
+  return (
+    <div
+      className="relative"
+      onMouseEnter={() => setOpen(true)}
+      onMouseLeave={() => setOpen(false)}
+    >
+      <button
+        type="button"
+        data-plain
+        onClick={() => setOpen((s) => !s)}
+        className="text-[13.5px] transition-colors"
+        style={{
+          color: SLATE,
+          whiteSpace: "nowrap",
+          background: "none",
+          border: "none",
+          padding: 0,
+          borderRadius: 0,
+          boxShadow: "none",
+          backdropFilter: "none",
+          WebkitBackdropFilter: "none",
+        }}
+        aria-expanded={open}
+      >
+        Solutions
+      </button>
+      {open && (
+        <div className="absolute left-0 top-full pt-3" style={{ zIndex: 10 }}>
+          <div
+            className="grid grid-cols-1"
+            style={{ background: OAT, border: "1px solid #E0D3BC", minWidth: 280 }}
+          >
+            {SOLUTIONS.map((s) => (
+              <Link
+                key={s.label}
+                to={s.to}
+                onClick={() => setOpen(false)}
+                className="block px-4 py-3 text-[13.5px] no-underline transition-opacity hover:opacity-70"
+                style={{ color: SLATE }}
+              >
+                {s.label}
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
 
 function HeroTrades() {
   const [open, setOpen] = useState(false);
@@ -239,6 +296,7 @@ function HeroNav({ logoSlot, logoVisible }: { logoSlot: React.Ref<HTMLDivElement
               {l.label}
             </Link>
           ))}
+          <HeroSolutions />
           <HeroTrades />
         </nav>
 
@@ -296,6 +354,28 @@ function HeroNav({ logoSlot, logoVisible }: { logoSlot: React.Ref<HTMLDivElement
                 {l.label}
               </Link>
             ))}
+
+            <div className="pt-2" style={{ borderTop: "1px solid #E0D3BC" }}>
+              <div
+                className="pt-3 text-[10.5px] uppercase tracking-[0.22em]"
+                style={{ color: PLUM, fontWeight: 700 }}
+              >
+                Solutions
+              </div>
+              <div className="mt-3 space-y-3">
+                {SOLUTIONS.map((s) => (
+                  <Link
+                    key={s.label}
+                    to={s.to}
+                    onClick={() => setOpen(false)}
+                    className="block text-[15px] no-underline"
+                    style={{ color: SLATE }}
+                  >
+                    {s.label}
+                  </Link>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       )}
