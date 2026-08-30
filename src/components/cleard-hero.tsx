@@ -134,6 +134,58 @@ function useHeroSequence(navSlot: React.RefObject<HTMLElement | null>) {
 
 /* ---------------------------------- NAV ---------------------------------- */
 
+function HeroSolutions() {
+  const [open, setOpen] = useState(false);
+  return (
+    <div
+      className="relative"
+      onMouseEnter={() => setOpen(true)}
+      onMouseLeave={() => setOpen(false)}
+    >
+      <button
+        type="button"
+        data-plain
+        onClick={() => setOpen((s) => !s)}
+        className="text-[13.5px] transition-colors"
+        style={{
+          color: SLATE,
+          whiteSpace: "nowrap",
+          background: "none",
+          border: "none",
+          padding: 0,
+          borderRadius: 0,
+          boxShadow: "none",
+          backdropFilter: "none",
+          WebkitBackdropFilter: "none",
+        }}
+        aria-expanded={open}
+      >
+        Solutions
+      </button>
+      {open && (
+        <div className="absolute left-0 top-full pt-3" style={{ zIndex: 10 }}>
+          <div
+            className="grid grid-cols-1"
+            style={{ background: OAT, border: "1px solid #E0D3BC", minWidth: 280 }}
+          >
+            {SOLUTIONS.map((s) => (
+              <Link
+                key={s.label}
+                to={s.to}
+                onClick={() => setOpen(false)}
+                className="block px-4 py-3 text-[13.5px] no-underline transition-opacity hover:opacity-70"
+                style={{ color: SLATE }}
+              >
+                {s.label}
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function HeroTrades() {
   const [open, setOpen] = useState(false);
   return (
