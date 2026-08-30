@@ -24,8 +24,8 @@ const SERIF = '"Fraunces", "Iowan Old Style", Georgia, serif';
 
 const NAV = [
   { to: "/", label: "Home", hash: undefined },
+  { to: "/contact", label: "Partnerships", hash: undefined },
   { to: "/pricing", label: "Pricing", hash: undefined },
-  { to: "/compare", label: "Compare", hash: undefined },
 ] as const;
 
 const SOLUTIONS = [
