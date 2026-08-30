@@ -285,19 +285,21 @@ function HeroNav({ logoSlot, logoVisible }: { logoSlot: React.Ref<HTMLDivElement
           className="hidden items-center justify-center gap-8 md:flex"
           style={{ whiteSpace: "nowrap", flexWrap: "nowrap", gridColumn: 2 }}
         >
-          {NAV.map((l) => (
-            <Link
-              key={l.label}
-              to={l.to}
-              hash={l.hash}
-              className="text-[13.5px] no-underline transition-colors"
-              style={{ color: SLATE, whiteSpace: "nowrap" }}
-            >
-              {l.label}
-            </Link>
-          ))}
-          <HeroSolutions />
-          <HeroTrades />
+          {[NAV[0], null, NAV[1], null, NAV[2]].map((l, i) =>
+            l === null ? (
+              i === 1 ? <HeroSolutions key="solutions" /> : <HeroTrades key="trades" />
+            ) : (
+              <Link
+                key={l.label}
+                to={l.to}
+                hash={l.hash}
+                className="text-[13.5px] no-underline transition-colors"
+                style={{ color: SLATE, whiteSpace: "nowrap" }}
+              >
+                {l.label}
+              </Link>
+            ),
+          )}
         </nav>
 
         <div className="flex items-center justify-end gap-4" style={{ flexShrink: 0, gridColumn: 3 }}>
