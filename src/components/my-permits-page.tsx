@@ -20,6 +20,7 @@ import {
   type PermitRow,
   type PermitStatus,
 } from "@/lib/permits-api";
+import { useActiveTenantId } from "@/lib/view-mode-context";
 import { syncAllPermits, getLastRun, formatRelative } from "@/lib/permit-sync";
 import { getVendor, isVendorManaged } from "@/lib/project-vendors";
 import {
