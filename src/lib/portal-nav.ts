@@ -194,9 +194,40 @@ export const CLIENT_NAV_SECTIONS: NavSection[] = [
   },
 ];
 
+/** Collapsed 7-item staff rail: sub-pages are grouped under Documents/Finance. */
+export const ADMIN_NAV_SECTIONS: NavSection[] = [
+  { key: "dashboard", label: "Dashboard", icon: LayoutDashboard, to: "/dashboard" },
+  { key: "permits", label: "My Permits", icon: FileText, to: "/portal/permits" },
+  { key: "portal-logins", label: "Portal Logins", icon: KeyRound, to: "/building-dept-logins" },
+  { key: "inspections", label: "Inspections", icon: CalendarDays, to: "/portal/inspections" },
+  {
+    key: "documents",
+    label: "Documents",
+    icon: FolderOpen,
+    to: "/portal/documents",
+    items: [
+      { to: "/portal/documents", label: "All Documents" },
+      { to: "/portal/lien-rights/documents", label: "Lien Rights" },
+      { to: "/portal/contacts", label: "Contacts" },
+    ],
+  },
+  {
+    key: "finance",
+    label: "Finance",
+    icon: DollarSign,
+    to: "/portal/financials",
+    items: [
+      { to: "/portal/financials", label: "Financials" },
+      { to: "/portal/calendar", label: "Calendar" },
+    ],
+  },
+  { key: "messages", label: "Messages", icon: MessageSquare, to: "/messages" },
+];
+
 export function sectionsForRole(role: AppRole | null, isAdmin: boolean): NavSection[] {
   if (role === "subcontractor") return subNavSections;
-  return isAdmin ? [...navSections, adminSection] : navSections;
+  // Admin tools stay reachable alongside the collapsed set.
+  return isAdmin ? [...ADMIN_NAV_SECTIONS, adminSection] : navSections;
 }
 
 /** Flat sidebar entry for Settings (sub-pages live as tabs on the page). */
