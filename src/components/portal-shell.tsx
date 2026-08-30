@@ -122,9 +122,14 @@ function sectionAlerted(section: NavSection, alertKeys: Set<AlertKey>) {
 function useNavSections(role: AppRole | null, isAdmin: boolean, permitsOnly = false) {
   const { bookmarks, toggle } = useBookmarks();
   const plan = usePlanAccess();
+  const { viewMode } = useViewMode();
+  // Client view swaps the rail for the scoped five-item client nav.
+  const clientView = isAdmin && viewMode === "client" && role !== "subcontractor";
   const sections = permitsOnly
     ? sectionsForRole(role, false).filter((s) => s.key === "permits")
-    : sectionsForRole(role, isAdmin);
+    : clientView
+      ? CLIENT_NAV_SECTIONS
+      : sectionsForRole(role, isAdmin);
   const settings = plan.isTrial ? accountInfoSection : sidebarSettingsForRole(role);
   const marked = new Set(bookmarks.map((b) => normalizePath(b.path)));
 
