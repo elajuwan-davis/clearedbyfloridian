@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { canHoldAdminRole } from "@/lib/signup-role";
 
 export type AppRole = "admin" | "gc_owner" | "gc_member" | "subcontractor";
 
@@ -101,7 +102,9 @@ async function loadSession(): Promise<SessionInfo> {
 
   const tenantId = (member as any)?.tenant_id ?? null;
   const tenantName = (member as any)?.tenants?.name ?? null;
-  const isAdmin = role === "admin";
+  // user_roles.admin is not enough: public signUp used to let anyone mint that
+  // row. Staff-domain mailbox is the second factor until/after the trigger fix.
+  const isAdmin = role === "admin" && canHoldAdminRole(email);
   const impersonation = isAdmin ? readImpersonation() : null;
 
   return {
