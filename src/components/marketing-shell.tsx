@@ -13,9 +13,9 @@ const NAV_LINKS: Array<{ to: string; label: string }> = [
 
 /** Solutions links. */
 const SOLUTION_LINKS: Array<{ to: string; label: string }> = [
-  { to: "/municipalities", label: "Cleard Gov for municipalities" },
-  { to: "/contact", label: "Cleard Approval for HOAs" },
-  { to: "/join", label: "Cleard for Contractors" },
+  { to: "/municipalities", label: "CleardGov — For Municipalities" },
+  { to: "/contact", label: "CleardApproval — For HOAs" },
+  { to: "/join", label: "Cleard — For Contractors" },
 ];
 
 
@@ -257,7 +257,6 @@ export function MarketingFooter() {
             <div>
               <div className={FOOT_HEAD} style={FOOT_HEAD_STYLE}>Platform</div>
               <div className="mt-4 space-y-2.5">
-                <Link to="/join" className={FOOT_LINK} style={FOOT_LINK_STYLE}>For Contractors</Link>
                 <Link to="/pricing" className={FOOT_LINK} style={FOOT_LINK_STYLE}>Pricing</Link>
                 <Link to="/compare" className={FOOT_LINK} style={FOOT_LINK_STYLE}>Compare</Link>
                 <Link to="/" hash="watch-it-run" className={FOOT_LINK} style={FOOT_LINK_STYLE}>How it works</Link>
@@ -293,7 +292,6 @@ export function MarketingFooter() {
             <div>
               <div className={FOOT_HEAD} style={FOOT_HEAD_STYLE}>Resources</div>
               <div className="mt-4 space-y-2.5">
-                <Link to="/municipalities" className={FOOT_LINK} style={FOOT_LINK_STYLE}>CleardGov — For municipalities</Link>
                 <Link to="/login" className={FOOT_LINK} style={FOOT_LINK_STYLE}>Client portal</Link>
                 <Link to="/privacy" className={FOOT_LINK} style={FOOT_LINK_STYLE}>Privacy Policy</Link>
                 <Link to="/terms" className={FOOT_LINK} style={FOOT_LINK_STYLE}>Terms of Service</Link>
