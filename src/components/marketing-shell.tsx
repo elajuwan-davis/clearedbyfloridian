@@ -64,7 +64,69 @@ export function MarketingNav() {
             className="hidden items-center justify-center gap-8 md:flex"
             style={{ flexWrap: "nowrap", whiteSpace: "nowrap", gridColumn: 2 }}
           >
-            {NAV_LINKS.map((l) => (
+            <Link
+              to="/"
+              className="text-[14px] no-underline transition-opacity hover:opacity-70"
+              style={{ color: BODY_GRAY, whiteSpace: "nowrap", flexShrink: 0 }}
+            >
+              Home
+            </Link>
+
+            <div
+              className="relative"
+              onMouseEnter={() => setSolutionsOpen(true)}
+              onMouseLeave={() => setSolutionsOpen(false)}
+            >
+              <button
+                type="button"
+                data-plain
+                onClick={() => setSolutionsOpen((s) => !s)}
+                className="inline-flex items-center gap-1 text-[14px] transition-opacity hover:opacity-70"
+                style={{
+                  color: BODY_GRAY,
+                  whiteSpace: "nowrap",
+                  background: "none",
+                  border: "none",
+                  padding: 0,
+                  borderRadius: 0,
+                  boxShadow: "none",
+                  backdropFilter: "none",
+                  WebkitBackdropFilter: "none",
+                }}
+                aria-expanded={solutionsOpen}
+              >
+                Solutions
+                <ChevronDown className="h-3.5 w-3.5" />
+              </button>
+              {solutionsOpen && (
+                <div
+                  className="absolute left-0 top-full min-w-[220px] pt-2"
+                  style={{ zIndex: 60 }}
+                >
+                  <div
+                    style={{
+                      background: NEAR_BLACK,
+                      border: `1px solid ${BORDER}`,
+                      minWidth: 280,
+                    }}
+                  >
+                    {SOLUTION_LINKS.map((t) => (
+                      <Link
+                        key={t.label}
+                        to={t.to}
+                        onClick={() => setSolutionsOpen(false)}
+                        className="block px-4 py-3 text-[14px] no-underline transition-opacity hover:opacity-70"
+                        style={{ color: INK }}
+                      >
+                        {t.label}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {NAV_LINKS.filter((l) => l.to !== "/").map((l) => (
               <Link
                 key={l.to}
                 to={l.to}
@@ -98,7 +160,7 @@ export function MarketingNav() {
                 }}
                 aria-expanded={tradesOpen}
               >
-                Solutions
+                Trades
                 <ChevronDown className="h-3.5 w-3.5" />
               </button>
               {tradesOpen && (
@@ -113,15 +175,16 @@ export function MarketingNav() {
                       minWidth: 280,
                     }}
                   >
-                    {SOLUTION_LINKS.map((t) => (
+                    {TRADES.map((t) => (
                       <Link
-                        key={t.label}
-                        to={t.to}
+                        key={t.slug}
+                        to="/trades/$slug"
+                        params={{ slug: t.slug }}
                         onClick={() => setTradesOpen(false)}
                         className="block px-4 py-3 text-[14px] no-underline transition-opacity hover:opacity-70"
                         style={{ color: INK }}
                       >
-                        {t.label}
+                        {t.navLabel}
                       </Link>
                     ))}
                   </div>
