@@ -24,9 +24,14 @@ const SERIF = '"Fraunces", "Iowan Old Style", Georgia, serif';
 
 const NAV = [
   { to: "/", label: "Home", hash: undefined },
-  { to: "/join", label: "For Contractors", hash: undefined },
   { to: "/pricing", label: "Pricing", hash: undefined },
   { to: "/compare", label: "Compare", hash: undefined },
+] as const;
+
+const SOLUTIONS = [
+  { to: "/join", label: "Cleard — For Contractors" },
+  { to: "/contact", label: "CleardApproval — For HOAs" },
+  { to: "/municipalities", label: "CleardGov — For Municipalities" },
 ] as const;
 
 /* ------------------------- HERO MOMENT SEQUENCE -------------------------- */
