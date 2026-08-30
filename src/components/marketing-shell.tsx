@@ -7,8 +7,8 @@ import { TRADES } from "@/lib/trades";
 /** Flat nav links — dropdowns are Solutions and Trades. */
 const NAV_LINKS: Array<{ to: string; label: string }> = [
   { to: "/", label: "Home" },
+  { to: "/contact", label: "Partnerships" },
   { to: "/pricing", label: "Pricing" },
-  { to: "/compare", label: "Compare" },
 ];
 
 /** Solutions links. */
