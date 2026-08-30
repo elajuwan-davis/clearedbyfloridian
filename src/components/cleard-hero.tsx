@@ -296,6 +296,7 @@ function HeroNav({ logoSlot, logoVisible }: { logoSlot: React.Ref<HTMLDivElement
               {l.label}
             </Link>
           ))}
+          <HeroSolutions />
           <HeroTrades />
         </nav>
 
