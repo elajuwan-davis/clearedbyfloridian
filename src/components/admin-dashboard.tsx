@@ -28,7 +28,7 @@ import {
 } from "lucide-react";
 import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
 import { supabase } from "@/integrations/supabase/client";
-import { useViewMode } from "@/lib/view-mode-context";
+import { useViewMode, useActiveTenantId } from "@/lib/view-mode-context";
 import { projectStatusMeta, type ProjectStatus as Status } from "@/lib/status-badges";
 import { useMyIdentity, greetingForNow } from "@/lib/profile-api";
 import {
@@ -99,6 +99,7 @@ export function AdminDashboard() {
   const [countyFilter, setCountyFilter] = useState<"all" | (typeof COUNTIES)[number]>("all");
   const [clientFilter, setClientFilter] = useState<"all" | string>("all");
   const { setSelectedTenantId } = useViewMode();
+  const activeTenantId = useActiveTenantId();
   const [query, setQuery] = useState("");
 
   useEffect(() => {
