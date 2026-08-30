@@ -16,16 +16,22 @@ type ViewModeContextValue = {
   setViewMode: (mode: ViewMode) => void;
   /** Tenant the client view is scoped to; null in admin mode. */
   activeTenantId: string | null;
+  /** Admin-mode client filter. null = no client picked yet. */
+  selectedTenantId: string | null;
+  setSelectedTenantId: (id: string | null) => void;
 };
 
 const ViewModeContext = createContext<ViewModeContextValue>({
   viewMode: "admin",
   setViewMode: () => {},
   activeTenantId: null,
+  selectedTenantId: null,
+  setSelectedTenantId: () => {},
 });
 
 export function ViewModeProvider({ children }: { children: ReactNode }) {
   const [viewMode, setViewModeState] = useState<ViewMode>("admin");
+  const [selectedTenantId, setSelectedTenantId] = useState<string | null>(null);
 
   // Read after mount so SSR and hydration agree.
   useEffect(() => {
@@ -49,8 +55,10 @@ export function ViewModeProvider({ children }: { children: ReactNode }) {
         }
       },
       activeTenantId: viewMode === "client" ? FLORIDIAN_TENANT_ID : null,
+      selectedTenantId,
+      setSelectedTenantId,
     }),
-    [viewMode],
+    [viewMode, selectedTenantId],
   );
 
   return <ViewModeContext.Provider value={value}>{children}</ViewModeContext.Provider>;
@@ -60,7 +68,12 @@ export function useViewMode() {
   return useContext(ViewModeContext);
 }
 
-/** Tenant id the current view is scoped to (null = unscoped admin view). */
+/**
+ * Tenant id the current view is scoped to. In admin mode with no client picked
+ * this is the `"__none__"` sentinel, which data helpers read as "show nothing".
+ */
 export function useActiveTenantId(): string | null {
-  return useViewMode().activeTenantId;
+  const { viewMode, selectedTenantId } = useViewMode();
+  if (viewMode === "client") return FLORIDIAN_TENANT_ID;
+  return selectedTenantId ?? "__none__";
 }
