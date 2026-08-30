@@ -39,11 +39,13 @@ import {
   settingsForRole,
   sidebarSettingsForRole,
   accountInfoSection,
+  CLIENT_NAV_SECTIONS,
   isItemActive,
   labelForPath,
   type AlertKey,
   type NavSection,
 } from "@/lib/portal-nav";
+import { useViewMode } from "@/lib/view-mode-context";
 import { usePlanAccess, trialPathAllowed } from "@/lib/plan-access";
 import { LockedPageNotice } from "@/components/feature-lock";
 
