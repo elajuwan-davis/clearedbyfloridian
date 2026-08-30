@@ -295,16 +295,24 @@ export function MyPermitsPage() {
 
         {permits.length === 0 && drafts.length === 0 && !loading ? (
           <Panel padded={false}>
-            <EmptyState
-              icon={<FileText className="h-4 w-4" strokeWidth={1.75} />}
-              title="No permits yet"
-              description="Start your first permit here — Victoria can fill the form for you if you'd rather talk it through than type it."
-              action={
-                <Link to="/portal/permits/new" className="p-btn p-btn-primary">
-                  <Plus className="h-3.5 w-3.5" strokeWidth={2} /> Start a new permit
-                </Link>
-              }
-            />
+            {activeTenantId === "__none__" ? (
+              <EmptyState
+                icon={<FileText className="h-4 w-4" strokeWidth={1.75} />}
+                title="No client selected"
+                description="Select a client to view their permits."
+              />
+            ) : (
+              <EmptyState
+                icon={<FileText className="h-4 w-4" strokeWidth={1.75} />}
+                title="No permits yet"
+                description="Start your first permit here — Victoria can fill the form for you if you'd rather talk it through than type it."
+                action={
+                  <Link to="/portal/permits/new" className="p-btn p-btn-primary">
+                    <Plus className="h-3.5 w-3.5" strokeWidth={2} /> Start a new permit
+                  </Link>
+                }
+              />
+            )}
           </Panel>
         ) : (
           <div className="space-y-4">
