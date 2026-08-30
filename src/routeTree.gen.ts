@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AskVictoriaRouteImport } from './routes/ask-victoria'
+import { Route as ClearapprovalRouteImport } from './routes/clearapproval'
 import { Route as CompareRouteImport } from './routes/compare'
 import { Route as ComplianceRouteImport } from './routes/compliance'
 import { Route as ContactRouteImport } from './routes/contact'
@@ -149,6 +150,11 @@ const IndexRoute = IndexRouteImport.update({
 const AskVictoriaRoute = AskVictoriaRouteImport.update({
   id: '/ask-victoria',
   path: '/ask-victoria',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ClearapprovalRoute = ClearapprovalRouteImport.update({
+  id: '/clearapproval',
+  path: '/clearapproval',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CompareRoute = CompareRouteImport.update({
@@ -816,6 +822,7 @@ const PortalPermitsIdBundleRoute = PortalPermitsIdBundleRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/ask-victoria': typeof AskVictoriaRoute
+  '/clearapproval': typeof ClearapprovalRoute
   '/compare': typeof CompareRoute
   '/compliance': typeof ComplianceRoute
   '/contact': typeof ContactRoute
@@ -949,6 +956,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/ask-victoria': typeof AskVictoriaRoute
+  '/clearapproval': typeof ClearapprovalRoute
   '/compare': typeof CompareRoute
   '/compliance': typeof ComplianceRoute
   '/contact': typeof ContactRoute
@@ -1079,6 +1087,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/ask-victoria': typeof AskVictoriaRoute
+  '/clearapproval': typeof ClearapprovalRoute
   '/compare': typeof CompareRoute
   '/compliance': typeof ComplianceRoute
   '/contact': typeof ContactRoute
@@ -1214,6 +1223,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/ask-victoria'
+    | '/clearapproval'
     | '/compare'
     | '/compliance'
     | '/contact'
@@ -1347,6 +1357,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/ask-victoria'
+    | '/clearapproval'
     | '/compare'
     | '/compliance'
     | '/contact'
@@ -1476,6 +1487,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/ask-victoria'
+    | '/clearapproval'
     | '/compare'
     | '/compliance'
     | '/contact'
@@ -1610,6 +1622,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AskVictoriaRoute: typeof AskVictoriaRoute
+  ClearapprovalRoute: typeof ClearapprovalRoute
   CompareRoute: typeof CompareRoute
   ComplianceRoute: typeof ComplianceRoute
   ContactRoute: typeof ContactRoute
@@ -1706,6 +1719,13 @@ declare module '@tanstack/react-router' {
       path: '/ask-victoria'
       fullPath: '/ask-victoria'
       preLoaderRoute: typeof AskVictoriaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/clearapproval': {
+      id: '/clearapproval'
+      path: '/clearapproval'
+      fullPath: '/clearapproval'
+      preLoaderRoute: typeof ClearapprovalRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/compare': {
@@ -2751,6 +2771,7 @@ const PortalRouteWithChildren =
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AskVictoriaRoute: AskVictoriaRoute,
+  ClearapprovalRoute: ClearapprovalRoute,
   CompareRoute: CompareRoute,
   ComplianceRoute: ComplianceRoute,
   ContactRoute: ContactRoute,
