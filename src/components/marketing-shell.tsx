@@ -267,6 +267,29 @@ export function MarketingNav() {
               </div>
             </div>
 
+            <div className="pt-2" style={{ borderTop: `1px solid ${BORDER}` }}>
+              <div
+                className="pt-3 text-[10.5px] uppercase tracking-[0.22em]"
+                style={{ color: INK, fontWeight: 700 }}
+              >
+                Trades
+              </div>
+              <div className="mt-3 space-y-3">
+                {TRADES.map((t) => (
+                  <Link
+                    key={t.slug}
+                    to="/trades/$slug"
+                    params={{ slug: t.slug }}
+                    onClick={() => setOpen(false)}
+                    className="block text-[15px] no-underline"
+                    style={{ color: BODY_GRAY }}
+                  >
+                    {t.navLabel}
+                  </Link>
+                ))}
+              </div>
+            </div>
+
             <Link
               to="/join"
               hash="request"
