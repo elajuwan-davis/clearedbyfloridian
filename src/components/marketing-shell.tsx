@@ -33,6 +33,7 @@ export function MarketingNav() {
   const [open, setOpen] = useState(false);
   const [tradesOpen, setTradesOpen] = useState(false);
   const [solutionsOpen, setSolutionsOpen] = useState(false);
+  const [solutionsOpen, setSolutionsOpen] = useState(false);
   return (
     <header
       className="sticky top-0 z-[100]"
