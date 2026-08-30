@@ -124,7 +124,7 @@ function useNavSections(role: AppRole | null, isAdmin: boolean, permitsOnly = fa
   const plan = usePlanAccess();
   const { viewMode } = useViewMode();
   // Client view swaps the rail for the scoped five-item client nav.
-  const clientView = isAdmin && viewMode === "client" && role !== "subcontractor";
+  const clientView = viewMode === "client" && role !== "subcontractor";
   const sections = permitsOnly
     ? sectionsForRole(role, false).filter((s) => s.key === "permits")
     : clientView
