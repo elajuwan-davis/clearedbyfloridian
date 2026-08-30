@@ -117,8 +117,12 @@ export type PermitInsert = Omit<PermitRow, "id" | "created_at" | "updated_at">;
 
 const T = () => supabase.from("permits" as any) as any;
 
-export async function listPermits(): Promise<PermitRow[]> {
-  const { data, error } = await T().select("*").order("created_at", { ascending: false });
+export async function listPermits(tenantId?: string | null): Promise<PermitRow[]> {
+  let query = T().select("*").order("created_at", { ascending: false });
+  if (tenantId) {
+    query = query.eq("tenant_id", tenantId);
+  }
+  const { data, error } = await query;
   if (error) throw error;
   return (data ?? []) as PermitRow[];
 }
