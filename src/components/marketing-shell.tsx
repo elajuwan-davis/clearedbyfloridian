@@ -257,7 +257,6 @@ export function MarketingFooter() {
             <div>
               <div className={FOOT_HEAD} style={FOOT_HEAD_STYLE}>Platform</div>
               <div className="mt-4 space-y-2.5">
-                <Link to="/join" className={FOOT_LINK} style={FOOT_LINK_STYLE}>For Contractors</Link>
                 <Link to="/pricing" className={FOOT_LINK} style={FOOT_LINK_STYLE}>Pricing</Link>
                 <Link to="/compare" className={FOOT_LINK} style={FOOT_LINK_STYLE}>Compare</Link>
                 <Link to="/" hash="watch-it-run" className={FOOT_LINK} style={FOOT_LINK_STYLE}>How it works</Link>
