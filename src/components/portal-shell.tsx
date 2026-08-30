@@ -359,6 +359,21 @@ function SidebarNav({
         )}
       </Link>
 
+      {clientView && (
+        <div
+          className={cn("shrink-0 pb-1.5", isRail ? "px-1.5 text-center" : "px-3.5")}
+          title="Flōridian view"
+        >
+          <span
+            className="inline-block max-w-full truncate text-[10px] uppercase tracking-[0.14em]"
+            style={{ color: "var(--rail-muted)" }}
+          >
+            {isRail ? "FLŌ" : "Flōridian view"}
+          </span>
+        </div>
+      )}
+
+
       <nav
         className={cn(
           "p-noscroll min-h-0 flex-1",
