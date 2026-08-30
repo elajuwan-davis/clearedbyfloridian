@@ -152,9 +152,11 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <PermitsOnlyBoundary>
-        <Outlet />
-      </PermitsOnlyBoundary>
+      <ViewModeProvider>
+        <PermitsOnlyBoundary>
+          <Outlet />
+        </PermitsOnlyBoundary>
+      </ViewModeProvider>
       <Toaster />
     </QueryClientProvider>
   );
