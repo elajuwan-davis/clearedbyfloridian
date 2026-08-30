@@ -315,6 +315,8 @@ function SidebarNav({
     isAdmin,
     isPermitsOnlyEmail(email),
   );
+  const { viewMode, setViewMode } = useViewMode();
+  const clientView = isAdmin && viewMode === "client";
   const [openKey, setOpenKey] = useState<string | null>(null);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isRail = mode === "rail";
