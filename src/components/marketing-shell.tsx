@@ -2,11 +2,11 @@ import { useState, type ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
 import { Menu, X, ArrowRight, ChevronDown } from "lucide-react";
 import mark2d from "@/assets/cleard-mark-2d.png.asset.json";
+import { TRADES } from "@/lib/trades";
 
-/** Flat nav links — the only dropdown is Trades. */
+/** Flat nav links — dropdowns are Solutions and Trades. */
 const NAV_LINKS: Array<{ to: string; label: string }> = [
   { to: "/", label: "Home" },
-  { to: "/join", label: "For Contractors" },
   { to: "/pricing", label: "Pricing" },
   { to: "/compare", label: "Compare" },
 ];
