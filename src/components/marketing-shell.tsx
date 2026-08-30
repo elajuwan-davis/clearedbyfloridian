@@ -13,9 +13,9 @@ const NAV_LINKS: Array<{ to: string; label: string }> = [
 
 /** Solutions links. */
 const SOLUTION_LINKS: Array<{ to: string; label: string }> = [
-  { to: "/municipalities", label: "Cleard Gov for municipalities" },
-  { to: "/contact", label: "Cleard Approval for HOAs" },
-  { to: "/join", label: "Cleard for Contractors" },
+  { to: "/municipalities", label: "CleardGov — For Municipalities" },
+  { to: "/contact", label: "CleardApproval — For HOAs" },
+  { to: "/join", label: "Cleard — For Contractors" },
 ];
 
 
