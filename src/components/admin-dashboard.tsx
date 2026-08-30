@@ -28,7 +28,7 @@ import {
 } from "lucide-react";
 import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
 import { supabase } from "@/integrations/supabase/client";
-import { useViewMode } from "@/lib/view-mode-context";
+import { useViewMode, useActiveTenantId } from "@/lib/view-mode-context";
 import { projectStatusMeta, type ProjectStatus as Status } from "@/lib/status-badges";
 import { useMyIdentity, greetingForNow } from "@/lib/profile-api";
 import {
@@ -99,15 +99,25 @@ export function AdminDashboard() {
   const [countyFilter, setCountyFilter] = useState<"all" | (typeof COUNTIES)[number]>("all");
   const [clientFilter, setClientFilter] = useState<"all" | string>("all");
   const { setSelectedTenantId } = useViewMode();
+  const activeTenantId = useActiveTenantId();
   const [query, setQuery] = useState("");
 
   useEffect(() => {
     let cancelled = false;
+    const noClient = activeTenantId === "__none__";
     (async () => {
+      const permitsQuery = noClient
+        ? Promise.resolve({ data: [] as PermitLite[] })
+        : (() => {
+            let q = (supabase.from("permits" as any) as any)
+              .select("id, permit_number, project_name, job_address, county, municipality, status, construction_value_cents, submitted_date, created_at, created_by, tenant_id")
+              .order("created_at", { ascending: false });
+            if (activeTenantId) q = q.eq("tenant_id", activeTenantId);
+            return q;
+          })();
+
       const [p, t, m, pr, inv, th, invt, ar] = await Promise.all([
-        (supabase.from("permits" as any) as any)
-          .select("id, permit_number, project_name, job_address, county, municipality, status, construction_value_cents, submitted_date, created_at, created_by, tenant_id")
-          .order("created_at", { ascending: false }),
+        permitsQuery,
         (supabase.from("tenants" as any) as any).select("id, name, status, created_at"),
         (supabase.from("tenant_members" as any) as any).select("user_id, tenant_id, role, created_at"),
         (supabase.from("profiles" as any) as any).select("id, email, display_name, full_name"),
@@ -117,7 +127,7 @@ export function AdminDashboard() {
         (supabase.from("access_requests" as any) as any).select("status"),
       ]);
       if (cancelled) return;
-      setPermits(((p.data ?? []) as PermitLite[]));
+      setPermits((((p as any).data ?? []) as PermitLite[]));
       setTenants(((t.data ?? []) as TenantLite[]));
       setMembers(((m.data ?? []) as MemberLite[]));
       setProfiles(((pr.data ?? []) as ProfileLite[]));
@@ -138,7 +148,7 @@ export function AdminDashboard() {
       setLoading(false);
     })().catch(() => setLoading(false));
     return () => { cancelled = true; };
-  }, []);
+  }, [activeTenantId]);
 
 
   const tenantName = useMemo(() => {
@@ -410,6 +420,8 @@ export function AdminDashboard() {
 
             {loading ? (
               <LoadingRow label="Loading permits" />
+            ) : activeTenantId === "__none__" && permits.length === 0 ? (
+              <EmptyState title="No client selected" description="Select a client to view their permits." />
             ) : filtered.length === 0 ? (
               <EmptyState title="No permits match these filters" description="Clear the search or pick a different status to widen the queue." />
             ) : (
