@@ -39,11 +39,13 @@ import {
   settingsForRole,
   sidebarSettingsForRole,
   accountInfoSection,
+  CLIENT_NAV_SECTIONS,
   isItemActive,
   labelForPath,
   type AlertKey,
   type NavSection,
 } from "@/lib/portal-nav";
+import { useViewMode } from "@/lib/view-mode-context";
 import { usePlanAccess, trialPathAllowed } from "@/lib/plan-access";
 import { LockedPageNotice } from "@/components/feature-lock";
 
@@ -120,16 +122,21 @@ function sectionAlerted(section: NavSection, alertKeys: Set<AlertKey>) {
 function useNavSections(role: AppRole | null, isAdmin: boolean, permitsOnly = false) {
   const { bookmarks, toggle } = useBookmarks();
   const plan = usePlanAccess();
+  const { viewMode } = useViewMode();
+  // Client view swaps the rail for the scoped five-item client nav.
+  const clientView = isAdmin && viewMode === "client" && role !== "subcontractor";
   const sections = permitsOnly
     ? sectionsForRole(role, false).filter((s) => s.key === "permits")
-    : sectionsForRole(role, isAdmin);
+    : clientView
+      ? CLIENT_NAV_SECTIONS
+      : sectionsForRole(role, isAdmin);
   const settings = plan.isTrial ? accountInfoSection : sidebarSettingsForRole(role);
   const marked = new Set(bookmarks.map((b) => normalizePath(b.path)));
 
   // Nothing until the plan is known. Trial accounts still see the complete
   // portal navigation; paid destinations render an explanatory access lock.
   const allSections: NavSection[] = (
-    plan.loading ? [] : [...sections, ...(permitsOnly ? [] : [settings])]
+    plan.loading ? [] : [...sections, ...(permitsOnly || clientView ? [] : [settings])]
   )
     .map((s) =>
       s.key === "bookmarks"
@@ -308,6 +315,8 @@ function SidebarNav({
     isAdmin,
     isPermitsOnlyEmail(email),
   );
+  const { viewMode, setViewMode } = useViewMode();
+  const clientView = isAdmin && viewMode === "client";
   const [openKey, setOpenKey] = useState<string | null>(null);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isRail = mode === "rail";
@@ -349,6 +358,21 @@ function SidebarNav({
           </span>
         )}
       </Link>
+
+      {clientView && (
+        <div
+          className={cn("shrink-0 pb-1.5", isRail ? "px-1.5 text-center" : "px-3.5")}
+          title="Flōridian view"
+        >
+          <span
+            className="inline-block max-w-full truncate text-[10px] uppercase tracking-[0.14em]"
+            style={{ color: "var(--rail-muted)" }}
+          >
+            {isRail ? "FLŌ" : "Flōridian view"}
+          </span>
+        </div>
+      )}
+
 
       <nav
         className={cn(
@@ -495,7 +519,47 @@ function SidebarNav({
         })}
       </nav>
 
-
+      {isAdmin && (
+        <div
+          className={cn("shrink-0 pb-2", isRail ? "px-1.5 pt-2" : "px-3 pt-2")}
+          style={{ borderTop: "1px solid var(--p-border)" }}
+        >
+          <div
+            className={cn("flex gap-0.5 p-0.5", isRail ? "flex-col" : "items-stretch")}
+            style={{ backgroundColor: "var(--rail-item-active-bg)" }}
+            role="group"
+            aria-label="View mode"
+          >
+            {(
+              [
+                { mode: "admin" as const, label: "Cleard", short: "C" },
+                { mode: "client" as const, label: "Flōridian", short: "F" },
+              ]
+            ).map((opt) => {
+              const active = viewMode === opt.mode;
+              return (
+                <button
+                  key={opt.mode}
+                  type="button"
+                  onClick={() => setViewMode(opt.mode)}
+                  title={`${opt.label} view`}
+                  aria-pressed={active}
+                  className={cn(
+                    "flex-1 truncate px-2 py-1 text-[11px] font-medium transition-colors",
+                    isRail && "px-0 text-center",
+                  )}
+                  style={{
+                    backgroundColor: active ? "#2F4F4F" : "transparent",
+                    color: active ? "#FAF3E6" : "var(--rail-muted)",
+                  }}
+                >
+                  {isRail ? opt.short : opt.label}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
 
       <div

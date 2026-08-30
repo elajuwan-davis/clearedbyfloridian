@@ -13,6 +13,7 @@ import appCss from "../styles.css?url";
 /* Design system lockdown: one system font stack app-wide — no webfont imports. */
 import { Toaster } from "@/components/ui/sonner";
 import { PermitsOnlyBoundary } from "@/components/permits-only-boundary";
+import { ViewModeProvider } from "@/lib/view-mode-context";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 
 function NotFoundComponent() {
@@ -152,9 +153,11 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <PermitsOnlyBoundary>
-        <Outlet />
-      </PermitsOnlyBoundary>
+      <ViewModeProvider>
+        <PermitsOnlyBoundary>
+          <Outlet />
+        </PermitsOnlyBoundary>
+      </ViewModeProvider>
       <Toaster />
     </QueryClientProvider>
   );
