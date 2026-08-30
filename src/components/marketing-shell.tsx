@@ -128,7 +128,7 @@ export function MarketingNav() {
               )}
             </div>
 
-            {NAV_LINKS.filter((l) => l.to !== "/").map((l) => (
+            {NAV_LINKS.filter((l) => l.to === "/contact").map((l) => (
               <Link
                 key={l.to}
                 to={l.to}
