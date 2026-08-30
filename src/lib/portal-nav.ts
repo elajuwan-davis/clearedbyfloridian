@@ -186,6 +186,33 @@ export const trialNavSections: NavSection[] = [
   messagesSection,
 ];
 
+/**
+ * Client view (Flōridian): the five places a GC client works out of. Used when
+ * the view-mode toggle is set to the client side.
+ */
+export const CLIENT_NAV_SECTIONS: NavSection[] = [
+  permitsSection,
+  {
+    key: "inspections",
+    label: "Inspections",
+    icon: CalendarDays,
+    to: "/portal/inspections",
+  },
+  {
+    key: "documents",
+    label: "Documents",
+    icon: FolderOpen,
+    to: "/portal/documents",
+  },
+  messagesSection,
+  {
+    key: "settings",
+    label: "Settings",
+    icon: Settings,
+    to: "/portal/settings",
+  },
+];
+
 export function sectionsForRole(role: AppRole | null, isAdmin: boolean): NavSection[] {
   if (role === "subcontractor") return subNavSections;
   return isAdmin ? [...navSections, adminSection] : navSections;
