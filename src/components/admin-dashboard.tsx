@@ -420,6 +420,8 @@ export function AdminDashboard() {
 
             {loading ? (
               <LoadingRow label="Loading permits" />
+            ) : activeTenantId === "__none__" && permits.length === 0 ? (
+              <EmptyState title="No client selected" description="Select a client to view their permits." />
             ) : filtered.length === 0 ? (
               <EmptyState title="No permits match these filters" description="Clear the search or pick a different status to widen the queue." />
             ) : (
