@@ -29,6 +29,7 @@ const SERIF = '"Fraunces", "Iowan Old Style", Georgia, serif';
 
 
 /** The single marketing nav — identical on every public page. */
+// nav v2
 export function MarketingNav() {
   const [open, setOpen] = useState(false);
   const [tradesOpen, setTradesOpen] = useState(false);
