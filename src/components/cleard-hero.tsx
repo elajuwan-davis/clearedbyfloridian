@@ -354,6 +354,28 @@ function HeroNav({ logoSlot, logoVisible }: { logoSlot: React.Ref<HTMLDivElement
                 {l.label}
               </Link>
             ))}
+
+            <div className="pt-2" style={{ borderTop: "1px solid #E0D3BC" }}>
+              <div
+                className="pt-3 text-[10.5px] uppercase tracking-[0.22em]"
+                style={{ color: PLUM, fontWeight: 700 }}
+              >
+                Solutions
+              </div>
+              <div className="mt-3 space-y-3">
+                {SOLUTIONS.map((s) => (
+                  <Link
+                    key={s.label}
+                    to={s.to}
+                    onClick={() => setOpen(false)}
+                    className="block text-[15px] no-underline"
+                    style={{ color: SLATE }}
+                  >
+                    {s.label}
+                  </Link>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       )}
