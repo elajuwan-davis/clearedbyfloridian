@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { FileText, Download, FolderOpen, Search } from "lucide-react";
 import { listPermits, type PermitDoc, type PermitRow } from "@/lib/permits-api";
+import { useActiveTenantId } from "@/lib/view-mode-context";
 import { getPermitFileUrl } from "@/lib/permit-storage";
 import { PageShell, SearchInput } from "@/components/ui-kit";
 import { BulkDocUpload } from "@/components/bulk-doc-upload";
@@ -61,17 +62,18 @@ function DocumentsPage() {
   const [preview, setPreview] = useState<DocEntry | null>(null);
   const [pickerOpen, setPickerOpen] = useState(false);
   const [bulkPermit, setBulkPermit] = useState<PermitRow | null>(null);
+  const activeTenantId = useActiveTenantId();
 
   useEffect(() => {
     let alive = true;
-    listPermits()
+    listPermits(activeTenantId)
       .then((rows) => alive && setPermits(rows))
       .catch(() => toast.error("Could not load documents"))
       .finally(() => alive && setLoading(false));
     return () => {
       alive = false;
     };
-  }, []);
+  }, [activeTenantId]);
 
   const docs = useMemo<DocEntry[]>(
     () =>

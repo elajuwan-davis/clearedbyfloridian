@@ -12,6 +12,7 @@ import {
   FolderOpen,
 } from "lucide-react";
 import { listPermits, updatePermit, type PermitRow, type PermitStatus } from "@/lib/permits-api";
+import { useActiveTenantId } from "@/lib/view-mode-context";
 import { listAllFees, fmtUsd, parseDollarsToCents, type ManualFee } from "@/lib/manual-fees";
 import { BeforeClearedPanel } from "@/components/before-cleared-panel";
 import { SavingsCalculator } from "@/components/savings-calculator";
@@ -101,10 +102,11 @@ function FinancialsPage() {
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
   const [editId, setEditId] = useState<string | null>(null);
   const [editVal, setEditVal] = useState("");
+  const activeTenantId = useActiveTenantId();
 
   useEffect(() => {
     let alive = true;
-    listPermits()
+    listPermits(activeTenantId)
       .then((rows) => alive && setPermits(rows))
       .catch(() => toast.error("Failed to load projects"))
       .finally(() => alive && setLoading(false));
@@ -119,7 +121,7 @@ function FinancialsPage() {
       alive = false;
       window.removeEventListener("manual-fees:changed", refreshFees);
     };
-  }, []);
+  }, [activeTenantId]);
 
   const feesByProject = useMemo(() => {
     const m = new Map<string, ManualFee[]>();

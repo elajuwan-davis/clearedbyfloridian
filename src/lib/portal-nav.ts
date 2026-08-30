@@ -4,10 +4,8 @@ import {
   LayoutDashboard,
   Bookmark,
   FileText,
-  Users,
   DollarSign,
   FolderOpen,
-  BookOpen,
   MessageSquare,
   ShieldCheck,
   Scale,
@@ -86,49 +84,32 @@ export const portalLoginsSection: NavSection = {
  * tab inside its section page (see src/lib/portal-tabs.ts).
  */
 export const navSections: NavSection[] = [
-  dashboardSection,
-  permitsSection,
-  // Portal Logins sits beside My Permits — both are included on every plan.
-  portalLoginsSection,
-  {
-    key: "inspections",
-    label: "Inspections",
-    icon: CalendarDays,
-    to: "/portal/inspections",
-  },
-  {
-    key: "lien-rights",
-    label: "Lien Rights",
-    icon: Scale,
-    to: "/portal/lien-rights/documents",
-  },
-  {
-    key: "contacts",
-    label: "Contacts",
-    icon: Users,
-    to: "/portal/contacts",
-  },
+  { key: "dashboard", label: "Dashboard", icon: LayoutDashboard, to: "/dashboard" },
+  { key: "permits", label: "My Permits", icon: FileText, to: "/portal/permits" },
+  { key: "portal-logins", label: "Portal Logins", icon: KeyRound, to: "/building-dept-logins" },
+  { key: "inspections", label: "Inspections", icon: CalendarDays, to: "/portal/inspections" },
   {
     key: "documents",
     label: "Documents",
     icon: FolderOpen,
     to: "/portal/documents",
+    items: [
+      { to: "/portal/documents", label: "All Documents" },
+      { to: "/portal/lien-rights/documents", label: "Lien Rights" },
+      { to: "/portal/contacts", label: "Contacts" },
+    ],
   },
   {
-    key: "financials",
-    label: "Financials",
+    key: "finance",
+    label: "Finance",
     icon: DollarSign,
     to: "/portal/financials",
+    items: [
+      { to: "/portal/financials", label: "Financials" },
+      { to: "/portal/calendar", label: "Calendar" },
+    ],
   },
-  messagesSection,
-  calendarSection,
-  {
-    key: "resources",
-    label: "Resources",
-    icon: BookOpen,
-    to: "/portal/blog",
-  },
-  bookmarksSection,
+  { key: "messages", label: "Messages", icon: MessageSquare, to: "/messages" },
 ];
 
 export const legalSection: NavSection = {

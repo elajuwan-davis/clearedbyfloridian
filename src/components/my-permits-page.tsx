@@ -20,6 +20,7 @@ import {
   type PermitRow,
   type PermitStatus,
 } from "@/lib/permits-api";
+import { useActiveTenantId } from "@/lib/view-mode-context";
 import { syncAllPermits, getLastRun, formatRelative } from "@/lib/permit-sync";
 import { getVendor, isVendorManaged } from "@/lib/project-vendors";
 import {
@@ -97,6 +98,7 @@ export function MyPermitsPage() {
     dir: "desc",
   });
   const internal = isInternalUser();
+  const activeTenantId = useActiveTenantId();
 
   useEffect(() => {
     setDrafts(listLocalPermitDrafts());
@@ -125,7 +127,7 @@ export function MyPermitsPage() {
   async function refresh() {
     setLoading(true);
     try {
-      const rows = await listPermits();
+      const rows = await listPermits(activeTenantId);
       setPermits(rows);
     } finally {
       setLoading(false);
@@ -151,7 +153,8 @@ export function MyPermitsPage() {
   useEffect(() => {
     refresh();
     setLastSync(getLastRun());
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeTenantId]);
 
   useEffect(() => {
     if (!internal) return;
