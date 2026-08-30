@@ -8,7 +8,7 @@ const BORDER = "#E0D3BC";
 const BODY = "#7A5C68";
 const SERIF = '"Fraunces", "Iowan Old Style", Georgia, serif';
 
-export const Route = createFileRoute("/clearapproval")({
+export const Route = createFileRoute("/cleardapproval")({
   head: () => ({
     meta: [
       { title: "CleardApproval — HOA Architectural Review" },

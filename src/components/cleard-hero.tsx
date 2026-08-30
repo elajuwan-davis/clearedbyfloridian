@@ -30,7 +30,7 @@ const NAV = [
 
 const SOLUTIONS = [
   { to: "/join", label: "Cleard — For Contractors" },
-  { to: "/clearapproval", label: "CleardApproval — For HOAs" },
+  { to: "/cleardapproval", label: "CleardApproval — For HOAs" },
   { to: "/municipalities", label: "CleardGov — For Municipalities" },
 ] as const;
 
