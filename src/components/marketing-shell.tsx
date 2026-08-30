@@ -32,6 +32,7 @@ const SERIF = '"Fraunces", "Iowan Old Style", Georgia, serif';
 export function MarketingNav() {
   const [open, setOpen] = useState(false);
   const [tradesOpen, setTradesOpen] = useState(false);
+  const [solutionsOpen, setSolutionsOpen] = useState(false);
   return (
     <header
       className="sticky top-0 z-[100]"
