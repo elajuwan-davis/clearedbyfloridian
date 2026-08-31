@@ -69,11 +69,11 @@ export function useViewMode() {
 }
 
 /**
- * Tenant id the current view is scoped to. In admin mode with no client picked
- * this is the `"__none__"` sentinel, which data helpers read as "show nothing".
+ * Tenant id the current view is scoped to. In admin mode this is the selected
+ * client filter, or null (= every tenant) when no client has been picked.
  */
 export function useActiveTenantId(): string | null {
   const { viewMode, selectedTenantId } = useViewMode();
   if (viewMode === "client") return FLORIDIAN_TENANT_ID;
-  return selectedTenantId ?? "__none__";
+  return selectedTenantId;
 }
