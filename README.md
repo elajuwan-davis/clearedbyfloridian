@@ -30,7 +30,7 @@ and how it is *currently wired* — real backend, partially wired, or mock/demo.
 | Styling | Tailwind CSS v4 via `src/styles.css` (design tokens, no config file) |
 | Backend | **Lovable Cloud** — managed Postgres, Auth, Storage, and background endpoints |
 | Auth | Email + password with role/tenant assignment at signup (`handle_new_user` trigger) |
-| Files | One private storage bucket: `permit-files` |
+| Files | Private buckets include `permit-files`, `company-compliance-docs`, `legal-documents`, `coi-documents`, `portal-login-docs` |
 | AI | Lovable AI Gateway (`LOVABLE_API_KEY`) — used for document OCR/extraction |
 | Payments | Stripe, currently in **sandbox** mode (`STRIPE_SANDBOX_API_KEY`) |
 
@@ -71,29 +71,90 @@ portal logins.** Admins bypass this via `public.is_admin()` clauses in every pol
 
 ### 2.3 How a user ends up in a tenant
 
-Three paths, resolved in `handle_new_user()` at signup time:
+Self-serve and Google provision create the tenant themselves. Invite / domain / fallback still
+run through `handle_new_user()` at auth-user creation:
 
-1. **Invite token** (highest priority) — `tenant_invites.token` is passed in signup metadata,
-   consumed by `consume_invite_token()`, and the user joins that tenant.
-2. **Domain auto-join** — if the email domain matches `tenants.allowed_domain`, they join
-   automatically. This is how a GC's whole office self-onboards.
-3. **Fallback** — the legacy/default tenant `0000…0001`.
+1. **Self-serve signup** (`/join` and `/signup`) — `selfServeSignupFn` inserts a tenant with
+   `plan: 'trial'` and an *unconfirmed* `gc_owner`. The page then asks Supabase to send the
+   confirmation email; the link returns to `/auth/callback?entry=selfserve` → PAA. Public, so
+   it is rate-limited per IP (5/hour) and per email (3/day) via `public.signup_attempts`
+   (`src/lib/signup-rate-limit.server.ts`). Do not set `email_confirm: true` on `createUser` —
+   verification is enforced app-side in `evaluatePortalAccessFn` and on the `/login` password
+   path. `/login` is sign-in only.
+2. **Invite token** — `tenant_invites.token` via `/join/$token`, consumed by
+   `consume_invite_token()`. `approveAccessRequestFn` writes `plan: 'full'` on the new tenant.
+3. **Domain auto-join** — if the email domain matches `tenants.allowed_domain`.
+4. **Google (or any OIDC) sign-in** — `evaluatePortalAccessFn` (`src/lib/google-access.functions.ts`):
+   unverified email is refused; `@cleared.com` / `@floridianinc.com` always allowed; existing
+   role or `tenant_members` row allowed; an approved `access_requests` row is attached as a
+   seat; otherwise the function **self-provisions a trial tenant** (same contract as `/join`).
+   If that insert fails it files a pending `access_requests` row and denies entry.
+5. **Fallback** — the legacy/default tenant `0000…0001`.
 
 Subcontractors skip all of this: they get the `subcontractor` role and a `sub_accounts` row.
 
-### 2.4 Admin impersonation
+The `POST /api/public/access-request` endpoint and `/admin/invites` → Access Requests tab still
+exist for staff triage, but **`/join` no longer writes `access_requests`**.
 
-`AdminTenantSwitcher` in the top bar (admins only) lists all tenants. Selecting one stores it
-in `localStorage` under `cleard_impersonate_tenant` and shows a persistent obsidian banner:
-"Viewing as <tenant>". **This is a UI-level filter, not a security boundary** — the admin's own
-RLS already permits full access; impersonation just narrows what the interface displays.
+### 2.4 Plan gating (`tenants.plan`)
 
-### 2.5 Session plumbing
+`trial` vs `full`. Column default is **`full`** (migration
+`20260830120000_tenant_plan_default_full.sql`) so an invited/managed tenant that does not
+write the column never lands on the locked surface. The only writers that want `trial` set it
+explicitly (`selfServeSignupFn`, Google provision).
 
-`src/lib/use-session.ts` is the single hook exposing `{ userId, email, role, tenantId,
-tenantName, isAdmin, impersonatingTenantId, effectiveTenantId }`. `PortalShell` guards every
-protected path prefix (`/portal`, `/dashboard`, `/forms`, `/profile`, `/admin`, …), showing
+| Tier | Who | What they can open |
+| --- | --- | --- |
+| `full` | Invited/managed accounts and staff | No locks. |
+| `trial` | Self-serve `/join` or `/signup` | Own permits end to end, portal logins, messages to Cleard, account/PAA. Everything else is locked. |
+
+Locked features: `sub_invites`, `license_verification`, `coi_requests`, `lien_rights`
+(`src/lib/plan-access.ts`). Allowed path prefixes: `TRIAL_PATHS`. Client UI:
+`usePlanAccess()` / `PlanGate` / `LockedFeatureNotice` / `LockedFeatureButton`
+(`src/components/feature-lock.tsx`). "Request access" inserts a real `feature_requests` row
+via `createRequest()` — not a mailto.
+
+**Fail-open:** a missing column, RLS hiccup, or offline read resolves to unlocked. Admins are
+never gated. Staff switch a tenant at `/admin/invites` → **Plans** (`setTenantPlanFn`).
+
+### 2.5 Two staff scoping systems (do not confuse them)
+
+Staff have two independent `localStorage` filters. Both are **UI-level, not a security
+boundary** — admin RLS already permits full access.
+
+| | View mode | Impersonation |
+| --- | --- | --- |
+| Where | Sidebar toggle (admins only): **Cleard** / **Flōridian** | Top-bar `AdminTenantSwitcher` ("View as client") |
+| Key | `cleard_view_mode` | `cleard_impersonate_tenant` |
+| Code | `src/lib/view-mode-context.tsx` | `src/lib/use-session.ts` |
+| What it drives | Nav set + `listPermits` / dashboards / documents / financials / inspections | `session.effectiveTenantId` — plan read, messages, contacts |
+| Unset behavior | Admin mode with no client picked → sentinel `"__none__"` → **empty permit lists** | "All Clients (admin view)" |
+
+**View mode details**
+
+- `client` hard-scopes `useActiveTenantId()` to the Flōridian tenant
+  `3e137bde-7c3b-46b6-bcf9-57b703fd5592` (`FLORIDIAN_TENANT_ID`) and swaps the rail to
+  `CLIENT_NAV_SECTIONS` (Permits, Inspections, Documents, Messages, Settings).
+- `admin` uses `ADMIN_NAV_SECTIONS`. `useActiveTenantId()` is the client selected on the
+  admin dashboard (`setSelectedTenantId`). "All clients" on that picker writes `null` →
+  `"__none__"`. `listPermits("__none__")` returns `[]` on purpose so a staff session does
+  not dump every tenant's jobs into My Permits until a client is chosen.
+- Surfaces that pass `useActiveTenantId()` into `listPermits`: admin dashboard, builder
+  dashboard, My Permits, `/portal/financials`, `/portal/documents`, `/portal/inspections`.
+
+**Pitfall:** the top-bar switcher does **not** fill My Permits. Pick the client on the
+dashboard (view-mode `selectedTenantId`) or flip the rail to Flōridian view.
+
+### 2.6 Session plumbing
+
+`src/lib/use-session.ts` exposes `{ userId, email, role, tenantId, tenantName, isAdmin,
+impersonatingTenantId, effectiveTenantId }`. `PortalShell` guards every protected path
+prefix (`/portal`, `/dashboard`, `/forms`, `/profile`, `/admin`, …), showing
 "Verifying session…" then redirecting anonymous visitors to `/login?next=…`.
+
+**Permits-only guest seats** (`src/lib/permits-only.ts`): emails matching
+`*.guest@cleared.com` / `guest@cleared.com` (and the `@floridianinc.com` equivalents) are
+kept off the admin role by `handle_new_user` and the UI restricts them to `/portal/permits*`.
 
 Legacy note: login also writes `cleared_demo_session` / `cleared_demo_user` keys to
 `localStorage`. Several older components still read those to decide whether a user is
@@ -109,15 +170,22 @@ only and should eventually be replaced by `useSession()`.
 | Route | Purpose | Status |
 | --- | --- | --- |
 | `/` | Homepage — the private-provider pitch, statutory timelines, CTA | Static |
-| `/join` | Ramp-style problem → cure sales page with an access-request form | **LIVE** (writes `access_requests`) |
+| `/join` | Contractor self-serve signup (trial tenant + unconfirmed user) | **LIVE** (`selfServeSignupFn`) |
+| `/signup` | Alternate self-serve form (same server function; linked from `/login`) | **LIVE** |
+| `/join/$token` | Invite acceptance — joins an existing (full-plan) tenant | **LIVE** |
+| `/cleardapproval` | CleardApproval marketing page (HOA architectural review) | Static |
+| `/municipalities` | CleardGov marketing page (contract plan review for building depts) | Static |
+| `/trades/$slug` | Trade landing pages (`src/lib/trades.ts`) | Static |
 | `/products` | Product overview | Static |
 | `/versus`, `/versus/$slug` | Competitor comparison pages | Static (`src/lib/competitors.ts`) |
 | `/services`, `/process`, `/about`, `/contact` | Standard marketing pages | Static / **MOCK** copy |
-| `/municipalities` | Public jurisdiction directory | Static from `municipalities-data.ts` |
 | `/blog`, `/blog/$slug` | Public blog | **LIVE** — reads `blog_posts` where `status='published'` |
 | `/fee-calculator` | Private-provider savings calculator | **LIVE** (pure client math, FS 553.791 + HB 803 logic) |
-| `/pricing` | Hidden from nav by request | Static |
-| `/login`, `/onboarding`, `/join/$token` | Auth entry, tenant onboarding, invite acceptance | **LIVE** |
+| `/pricing` | Pricing | Static |
+| `/login`, `/onboarding` | Sign-in only; PAA onboarding | **LIVE** |
+
+Marketing nav (`src/components/marketing-shell.tsx`) is **Solutions** (Cleard / CleardApproval /
+CleardGov) plus **Trades** (`/trades/$slug`). The primary CTA is `/join`.
 
 ### 3.2 Tokenized public pages (no login, secret URL)
 
@@ -131,8 +199,20 @@ only and should eventually be replaced by `useSession()`.
 
 ### 3.3 Portal (authenticated) — `PortalShell`
 
-Navigation is grouped: **Permits · Financials · Documents · Operations · Marketplace**, plus a
-Settings dropdown on the avatar. Subcontractors see only **Projects** and **Compliance**.
+The sidebar is a flat icon rail (`src/lib/portal-nav.ts`). Former sub-items live as tabs on
+the section page (`src/lib/portal-tabs.ts`). Which rail you see depends on role + plan +
+view mode:
+
+| Who | Rail |
+| --- | --- |
+| Staff, Cleard view | `ADMIN_NAV_SECTIONS` + Admin (Dashboard, Permits, Portal Logins, Inspections, Documents, Finance, Messages) |
+| Staff, Flōridian view | `CLIENT_NAV_SECTIONS` (Permits, Inspections, Documents, Messages, Settings) |
+| Full-plan GC | `navSections` (same collapsed set as staff, without Admin) |
+| Trial GC | `trialNavSections` (Dashboard, Permits, Portal Logins, Messages) + Account Info |
+| Subcontractor | `subNavSections` (Bookmarks, My Projects, Compliance) |
+
+A trial account that types a paid URL still hits `PlanGate` / `LockedFeatureNotice` — the nav
+hiding it is not the only gate.
 
 ---
 
@@ -256,20 +336,31 @@ attribution (`co-checklist-panel.tsx`).
 
 ### 4.9 Victoria — the intelligence layer
 
-Three distinct pieces, with different maturity:
+Four distinct pieces, with different maturity:
 
-1. **Submittal intelligence** — **LIVE**. Tables `submittal_intelligence` and
+1. **Voice-fill** — **LIVE (browser API only)**. Fixed field script (ask → listen → write →
+   advance), not free-form parsing. Shared helpers in `src/lib/victoria-speech.ts`. `/join`
+   uses `victoria-voice-signup.tsx`; New Permit uses the floating mic in
+   `victoria-permit-assistant.tsx` (`data-tour="victoria-permit"`). Renders nothing where
+   `SpeechRecognition` is missing (Safari/Firefox); typing always still works. There is no
+   AI backend on this path.
+2. **Submittal intelligence** — **LIVE**. Tables `submittal_intelligence` and
    `submittal_corrections`, surfaced by the functions `intel_municipality_stats(slug)`
    (sample size, avg days to first response, avg days to resolution, avg fee, approval rate)
    and `intel_common_corrections(slug, trade, limit)`. Rendered by
    `victoria-intelligence-panel.tsx` on intake and on the Building Departments page.
-2. **Proactive alerts** — **PARTIAL**. Table `victoria_alerts` with a scanning worker at
+3. **Proactive alerts** — **PARTIAL**. Table `victoria_alerts` with a scanning worker at
    `/api/public/victoria-scan` that flags stale permits. The table, UI (`/portal/alerts`,
    `alerts-list.tsx`), and endpoint all work — but nothing calls the endpoint on a schedule yet
    (needs `pg_cron` or an external scheduler). It is gated by the private `CRON_SECRET` header.
-3. **Ask Victoria chat** (`/ask-victoria`) — **LOCAL**. Threads and the 50-questions/day quota
+4. **Ask Victoria chat** (`/ask-victoria`) — **LOCAL**. Threads and the 50-questions/day quota
    live in `localStorage`. The floating `VictoriaWidget` is shown only to internal
    `@floridianinc.com` users.
+
+**First-login tour** (`src/components/first-login-tour.tsx`, driver.js): dashboard spots
+New Permit + Documents, then hands off via `sessionStorage` to `/portal/permits/new` and
+ends on the Victoria mic. Do not point it at "Generate Intake Link" — that control is plan-
+gated and would teach a trial account to click a lock. Targets are `data-tour` attributes.
 
 ### 4.10 Notifications — **LIVE**
 `notifications` (in-app feed, `NotificationBell`) and `notification_prefs` (per-channel email/SMS
@@ -363,17 +454,41 @@ Per-user OAuth via the app-user connector; picker dialog (`google-drive-picker-d
 you attach Drive files to a permit. Connection keys are AES-256-GCM encrypted in
 `app_user_connections`.
 
-### 4.24 Access requests — **LIVE**
-`access_requests` captures the `/join` form. The insert policy validates strictly: `status` must
-be `'new'`, `approved_tenant_id` must be null, and name/email must pass regex + length checks.
-Staff triage at `/admin/access-requests` and approve into a tenant.
+### 4.24 Access requests — **LIVE** (legacy front door)
+`access_requests` is no longer filled by `/join`. The table still backs staff triage
+(`/admin/invites` → Access Requests, also `/admin/access-requests`) and the Google-sign-in
+fallback in `evaluatePortalAccessFn`. `POST /api/public/access-request` remains: the insert
+policy validates strictly (`status` must be `'new'`, `approved_tenant_id` must be null,
+name/email regex + length). Approving creates a **full**-plan tenant + invite
+(`approveAccessRequestFn`).
 
-### 4.25 Messages — **MOCK**
-`/messages` renders admin vs builder chat bubbles. It attempts to read a `messages` table that
-**does not exist** and silently falls back to hard-coded seed threads. Attachments are in-memory
-only. This is the largest remaining demo surface.
+### 4.25 Messages — **LIVE**
+`/messages` reads `message_threads` + `message_posts` (`src/lib/messages-api.ts`). GCs open a
+thread; staff reply as Cleard Support (`help@cleardinc.com`). A trial plan can only address
+Cleard (`info@cleardinc.com`) — the recipient picker is fixed, not chosen. Tenant on a new
+thread follows impersonation (`getImpersonatedTenantId()`), not view-mode.
 
-### 4.26 Other local-only stores
+### 4.26 Company profile — **LIVE**
+`/portal/company` — one `gc_company_profiles` row per tenant + private bucket
+`company-compliance-docs`. Save auto-validates qualifiers through existing
+`verifyDbprLicense()` (`/api/verify-license`). Client: `src/lib/gc-company.ts`.
+
+### 4.27 Legal document library — **LIVE**
+`/legal` — `legal_documents` + `legal_document_versions` + private bucket `legal-documents`.
+Admin-only (RLS `is_admin()`). Versioning mirrors HOA templates but each version has a real
+`file_path`. Notary queue remains **LOCAL** (`notary-requests.ts`).
+
+### 4.28 Insurance requests — **LIVE**
+`/portal/request-coi` — `insurance_requests` (`coi_request` | `sub_update`). Subs come from
+`listSubs()` / `subcontractors`, never `subcontractor-library.ts`. Optional COI PDFs reuse
+bucket `coi-documents`. Submit also writes a `notifications` row. **Plan-gated** for trial.
+
+### 4.29 Staff workload — **LIVE**
+`/admin/workload` — roster from `user_roles` (role=`admin`) ⨝ `profiles` via
+`listStaffAdmins()`. Assignments from `staff_assignments`. Gate with `session.isAdmin`, not
+`isInternalUser()`. Excludes `@test.invalid`; duplicate local-parts keep `@cleared.com`.
+
+### 4.30 Other local-only stores
 
 These modules persist to `localStorage` and are per-browser demo data:
 `project-notes.ts`, `project-documents.ts`, `project-pcn.ts`, `property-appraiser.ts`,
@@ -389,13 +504,16 @@ These modules persist to `localStorage` and are per-browser demo data:
 | Route | Purpose |
 | --- | --- |
 | `/admin` | Staff landing |
-| `/admin/access-requests` | Approve/deny `/join` submissions and assign a tenant |
+| `/admin/invites` | Invite pipeline + Access Requests + Review Queue + **Plans** (trial/full switch) |
+| `/admin/access-requests` | Same access-request queue (standalone route) |
 | `/admin/builders`, `/admin/gc-clients` | GC account management |
 | `/admin/contractors` | Contractor directory |
 | `/admin/blog`, `/admin/blog/new`, `/admin/blog/$id` | CMS |
-| `/admin/feature-requests` | Triage, status, public responses |
+| `/admin/feature-requests` | Triage, status, public responses (also receives in-app "Request access") |
 | `/admin/hubspot-simulate` | Replay webhook payloads |
-| Tenant switcher (top nav) | Impersonate any tenant |
+| `/admin/workload` | Live staff roster + `staff_assignments` |
+| Sidebar Cleard / Flōridian toggle | View mode (§2.5) — scopes permit lists |
+| Tenant switcher (top nav) | Impersonation (§2.5) — `effectiveTenantId` |
 | Internal docs | NOC / NTBO / private-provider affidavits, hidden from GCs |
 | Victoria widget | Only rendered for `@floridianinc.com` sessions |
 
@@ -410,7 +528,7 @@ These modules persist to `localStorage` and are per-browser demo data:
 | `/api/public/hubspot.deal-webhook` | HubSpot | HMAC signature, fails closed | **LIVE** |
 | `/api/public/hoa-reply` | Inbound mail parser | Verified in handler | **LIVE** |
 | `/api/public/payments/webhook` | Stripe | `PAYMENTS_SANDBOX_WEBHOOK_SECRET` | **LIVE (sandbox)** |
-| `/api/public/access-request` | `/join` form | Validated + RLS-checked insert | **LIVE** |
+| `/api/public/access-request` | Legacy request form / Google fallback | Validated + RLS-checked insert | **LIVE** |
 | `/api/public/sub-intake-upload` | Sub intake | One-time token | **LIVE** |
 | `/api/verify-license` | Compliance layer | Authenticated | **LIVE** |
 
@@ -458,6 +576,8 @@ These modules persist to `localStorage` and are per-browser demo data:
    weekly reports.
 2. Schedule `/api/public/victoria-scan` to turn proactive alerts on.
 3. Move Stripe from sandbox to live keys.
-4. Create a real `messages` table (and a `fees`/invoices view) to retire the two mock pages.
-5. Migrate the `localStorage` modules in §4.26 to tenant-scoped tables.
+4. Unify view-mode (`useActiveTenantId`) and impersonation (`effectiveTenantId`) so a client
+   picked in one place scopes permits, messages, and plan reads together.
+5. Migrate the `localStorage` modules in §4.30 to tenant-scoped tables.
 6. Add an SMS provider to honor the `sms_*` notification preferences.
+7. Retire the leftover `/invoices` mock (`fees` table does not exist).
