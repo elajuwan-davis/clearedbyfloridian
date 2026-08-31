@@ -123,8 +123,9 @@ function useNavSections(role: AppRole | null, isAdmin: boolean, permitsOnly = fa
   const { bookmarks, toggle } = useBookmarks();
   const plan = usePlanAccess();
   const { viewMode } = useViewMode();
-  // Client view swaps the rail for the scoped five-item client nav.
-  const clientView = viewMode === "client" && role !== "subcontractor";
+  // Client view is staff-only. The toggle lives in localStorage, so a GC on a
+  // shared browser must not inherit the Floridian rail.
+  const clientView = isAdmin && viewMode === "client" && role !== "subcontractor";
   const sections = permitsOnly
     ? sectionsForRole(role, false).filter((s) => s.key === "permits")
     : clientView
