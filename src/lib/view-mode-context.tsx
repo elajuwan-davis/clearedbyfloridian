@@ -4,10 +4,14 @@
  * the choice survives navigation and reloads.
  */
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import {
+  FLORIDIAN_TENANT_ID,
+  resolveActiveTenantId,
+  type ViewMode,
+} from "@/lib/tenant-scope";
 
-export type ViewMode = "admin" | "client";
-
-export const FLORIDIAN_TENANT_ID = "3e137bde-7c3b-46b6-bcf9-57b703fd5592";
+export type { ViewMode };
+export { FLORIDIAN_TENANT_ID };
 
 const STORAGE_KEY = "cleard_view_mode";
 
@@ -74,6 +78,5 @@ export function useViewMode() {
  */
 export function useActiveTenantId(): string | null {
   const { viewMode, selectedTenantId } = useViewMode();
-  if (viewMode === "client") return FLORIDIAN_TENANT_ID;
-  return selectedTenantId ?? "__none__";
+  return resolveActiveTenantId(viewMode, selectedTenantId);
 }

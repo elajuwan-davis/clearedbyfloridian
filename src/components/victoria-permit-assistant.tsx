@@ -15,6 +15,12 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { ChevronLeft, Mic, RotateCcw, SkipForward, Square, X, Sparkles } from "lucide-react";
 import { MUNICIPALITIES } from "@/lib/municipalities";
 import {
+  matchMunicipalityName,
+  matchScopes,
+  parseSpokenMoney,
+  tidySpokenAddress,
+} from "@/lib/victoria-permit-match";
+import {
   getRecognitionCtor,
   isSkip,
   speak,
@@ -161,90 +167,19 @@ function buildSteps(scopes: string[], scopeOptions: string[] = []): Step[] {
   return [...project, ...subSteps, ...TAIL_STEPS];
 }
 
-const SPOKEN_DIGITS: Record<string, string> = {
-  zero: "0",
-  oh: "0",
-  one: "1",
-  two: "2",
-  three: "3",
-  four: "4",
-  five: "5",
-  six: "6",
-  seven: "7",
-  eight: "8",
-  nine: "9",
-};
-
-/**
- * "two fifty thousand" is beyond a fixed grammar, but "$250,000", "250000" and
- * "250 thousand" all turn up in dictation, so handle digits plus a thousand/million suffix.
- */
-function parseMoney(raw: string): string {
-  const text = raw.toLowerCase().replace(/[$,]/g, " ");
-  const m = text.match(/(\d+(?:\.\d+)?)\s*(thousand|k|million|m)?/);
-  if (!m) return "";
-  let value = Number(m[1]);
-  if (!Number.isFinite(value)) return "";
-  if (m[2] === "thousand" || m[2] === "k") value *= 1_000;
-  if (m[2] === "million" || m[2] === "m") value *= 1_000_000;
-  return String(Math.round(value));
-}
-
-/** Spoken street numbers come through as words often enough to be worth normalising. */
-function tidyAddress(raw: string): string {
-  return raw
-    .trim()
-    .replace(/\b(zero|oh|one|two|three|four|five|six|seven|eight|nine)\b/gi, (w) =>
-      w.length <= 5 ? (SPOKEN_DIGITS[w.toLowerCase()] ?? w) : w,
-    )
-    .replace(/\s+/g, " ")
-    .replace(/^\w/, (c) => c.toUpperCase());
-}
-
-function normalize(s: string): string {
-  return s
-    .toLowerCase()
-    .replace(/\b(city|town|village) of\b/g, "")
-    .replace(/\bcounty\b/g, "")
-    .replace(/[^a-z0-9]+/g, " ")
-    .trim();
-}
-
 /**
  * Match a spoken city onto the catalog: exact first, then a contains match either way
  * ("Miami Beach" heard as "the city of Miami Beach"). Falls back to the raw words, which
  * the picker accepts as freeform.
  */
 export function matchMunicipality(raw: string): string {
-  const said = normalize(raw);
-  if (!said) return "";
-  const names = MUNICIPALITIES.map((m) => m.name);
-  const exact = names.find((n) => normalize(n) === said);
-  if (exact) return exact;
-  const contains = names.find((n) => {
-    const t = normalize(n);
-    return t.includes(said) || said.includes(t);
-  });
-  return contains ?? raw.trim();
+  return matchMunicipalityName(
+    raw,
+    MUNICIPALITIES.map((m) => m.name),
+  );
 }
 
-/**
- * "Pool and spa, electrical and plumbing" → the exact scope options the form offers.
- * Each spoken fragment is matched against the catalog; unmatched words are dropped
- * rather than invented, since the picker only accepts real scopes.
- */
-export function matchScopes(raw: string, options: string[]): string[] {
-  const said = raw.toLowerCase();
-  const picked: string[] = [];
-  for (const option of options) {
-    const words = normalize(option)
-      .split(" ")
-      .filter((w) => w.length > 2);
-    const hit = words.some((w) => normalize(said).includes(w));
-    if (hit) picked.push(option);
-  }
-  return picked;
-}
+export { matchScopes };
 
 function tidy(key: VictoriaPermitField, raw: string): string {
   const text = raw.trim();
@@ -252,7 +187,7 @@ function tidy(key: VictoriaPermitField, raw: string): string {
     case "municipality":
       return matchMunicipality(text);
     case "totalProjectValue":
-      return parseMoney(text);
+      return parseSpokenMoney(text);
     case "signerEmail":
     case "architectEmail":
     case "engineerEmail":
@@ -260,7 +195,7 @@ function tidy(key: VictoriaPermitField, raw: string): string {
     case "signerPhone":
       return tidyPhone(text);
     case "address":
-      return tidyAddress(text);
+      return tidySpokenAddress(text);
     default:
       return text;
   }
