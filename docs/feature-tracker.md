@@ -41,6 +41,9 @@ bun run feature-tracker -- --feature="Voice-to-form fill" --status=Complete --ow
   --notes="Victoria voice-fill on /join and New Permit (PR #50, #51)"
 ```
 
-`Started At` / `Completed At` default to today for `In Progress` / `Complete`; pass `--started=`
-or `--completed=` to backdate. Rows are matched on the exact feature name, so a typo fails loudly
-rather than writing a new row.
+`Started At` / `Completed At` are stamped with today only when the row first enters that status —
+re-running the same status to fix an owner or a note leaves the recorded date alone; pass
+`--started=` / `--completed=` to set or correct one explicitly. `Complete` is refused when the row
+would have no evidence in Notes. Rows are matched on the exact feature name, so a typo fails loudly
+rather than writing a new row, and only the cells you actually change are written, so two agents
+editing different columns of one feature can't overwrite each other.

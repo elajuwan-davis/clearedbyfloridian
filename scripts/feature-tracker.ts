@@ -81,8 +81,8 @@ const status = arg("status") as Status | undefined;
 const owner = arg("owner");
 const notes = arg("notes");
 const today = new Date().toISOString().slice(0, 10);
-const started = arg("started") ?? (status === "In Progress" ? today : undefined);
-const completed = arg("completed") ?? (status === "Complete" ? today : undefined);
+const startedArg = arg("started");
+const completedArg = arg("completed");
 
 if (!feature || !status) {
   console.error(
@@ -110,18 +110,40 @@ if (index < 1) {
 
 const row = rows[index];
 const rowNumber = index + 1;
-const next = [
-  row[0],
-  row[1] ?? "",
-  status,
-  owner ?? row[3] ?? "",
-  started ?? row[4] ?? "",
-  completed ?? row[5] ?? "",
-  row[6] ?? "",
-  notes ?? row[7] ?? "",
-];
-await sheets(token, `/values/${TAB}!A${rowNumber}:H${rowNumber}?valueInputOption=RAW`, {
-  method: "PUT",
-  body: JSON.stringify({ values: [next] }),
+
+// Notes carry the evidence a Complete row is only allowed to claim with: a merged PR,
+// a commit or a file. Stored evidence counts, so an owner-only edit need not repeat it.
+if (status === "Complete" && !(notes ?? row[7] ?? "").trim()) {
+  console.error(
+    `"${row[0]}" cannot be Complete with an empty Notes cell — pass --notes with the PR, commit or file that shipped it.`,
+  );
+  process.exit(1);
+}
+
+// A milestone date is stamped when the row first enters that status; re-running the same
+// status to fix an owner or a note must not move the date it already recorded.
+const started =
+  startedArg ?? (status === "In Progress" && !(row[4] ?? "").trim() ? today : undefined);
+const completed =
+  completedArg ?? (status === "Complete" && !(row[5] ?? "").trim() ? today : undefined);
+
+// Only the cells this invocation actually changes are written, so two agents editing
+// different columns of one feature cannot overwrite each other from a stale read.
+const updates: Array<{ range: string; values: string[][] }> = [];
+const set = (column: string, value: string | undefined) => {
+  if (value !== undefined)
+    updates.push({ range: `${TAB}!${column}${rowNumber}`, values: [[value]] });
+};
+set("C", status);
+set("D", owner);
+set("E", started);
+set("F", completed);
+set("H", notes);
+
+await sheets(token, "/values:batchUpdate", {
+  method: "POST",
+  body: JSON.stringify({ valueInputOption: "RAW", data: updates }),
 });
-console.log(`Row ${rowNumber} updated: ${row[0]} → ${status}${owner ? ` (${owner})` : ""}`);
+console.log(
+  `Row ${rowNumber} updated: ${row[0]} → ${status}${owner ? ` (${owner})` : ""} [${updates.map((u) => u.range.split("!")[1]).join(", ")}]`,
+);
