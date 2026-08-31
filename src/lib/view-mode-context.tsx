@@ -4,10 +4,15 @@
  * the choice survives navigation and reloads.
  */
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import { useSession } from "@/lib/use-session";
+import {
+  FLORIDIAN_TENANT_ID,
+  NO_CLIENT_SELECTED,
+  resolveActiveTenantId,
+  type ViewMode,
+} from "@/lib/view-mode";
 
-export type ViewMode = "admin" | "client";
-
-export const FLORIDIAN_TENANT_ID = "3e137bde-7c3b-46b6-bcf9-57b703fd5592";
+export { FLORIDIAN_TENANT_ID, NO_CLIENT_SELECTED, resolveActiveTenantId, type ViewMode };
 
 const STORAGE_KEY = "cleard_view_mode";
 
@@ -69,11 +74,13 @@ export function useViewMode() {
 }
 
 /**
- * Tenant id the current view is scoped to. In admin mode with no client picked
- * this is the `"__none__"` sentinel, which data helpers read as "show nothing".
+ * Tenant id the current view is scoped to.
+ * Staff in admin mode with no client picked get `"__none__"` (show nothing).
+ * Regular GCs get `null` so listPermits applies no extra filter and RLS
+ * returns their own rows.
  */
 export function useActiveTenantId(): string | null {
   const { viewMode, selectedTenantId } = useViewMode();
-  if (viewMode === "client") return FLORIDIAN_TENANT_ID;
-  return selectedTenantId ?? "__none__";
+  const { isAdmin } = useSession();
+  return resolveActiveTenantId({ viewMode, selectedTenantId, isAdmin });
 }
