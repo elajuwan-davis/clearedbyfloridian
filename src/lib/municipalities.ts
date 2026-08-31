@@ -1,6 +1,7 @@
 // Single source of truth for municipalities — loaded from public.municipalities.
 
 import { listMunicipalityRows, type MunicipalityRow } from "@/lib/municipalities-store";
+import { matchPortalForAddress } from "@/lib/address-portal";
 
 export type Municipality = {
   name: string;
@@ -62,32 +63,8 @@ export const MUNICIPALITIES: Municipality[] = new Proxy([] as Municipality[], {
 });
 
 export function findPortalForAddress(address: string): Municipality | undefined {
-  if (!address) return undefined;
   const list = cache.length ? cache : [];
-  const lower = address.toLowerCase();
-  const candidates = list
-    .filter((m) => lower.includes(m.name.toLowerCase()))
-    .sort((a, b) => b.name.length - a.name.length);
-  if (candidates[0]) return candidates[0];
-
-  const aliases: Array<[RegExp, string]> = [
-    [/\bnorth palm beach\b/, "North Palm Beach"],
-    [/\bwest palm beach\b/, "West Palm Beach"],
-    [/\bpalm beach gardens\b/, "Palm Beach Gardens"],
-    [/\broyal palm beach\b/, "Royal Palm Beach"],
-    [/\bport st\.?\s*lucie\b/, "Port St. Lucie"],
-    [/\bstuart\b/, "Stuart"],
-    [/\bfort pierce\b/, "Fort Pierce"],
-    [/\bfort lauderdale\b/, "Ft. Lauderdale"],
-    [/\bfort myers\b/, "Ft Myers"],
-  ];
-  for (const [re, name] of aliases) {
-    if (re.test(lower)) {
-      const m = list.find((x) => x.name === name);
-      if (m) return m;
-    }
-  }
-  return undefined;
+  return matchPortalForAddress(address, list);
 }
 
 /** Async portal lookup that ensures the directory is loaded. */

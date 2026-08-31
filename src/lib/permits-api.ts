@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import { shouldListNoPermits } from "@/lib/tenant-scope";
 
 export type PermitStatus =
   | "submitted"
@@ -119,7 +120,7 @@ const T = () => supabase.from("permits" as any) as any;
 
 export async function listPermits(tenantId?: string | null): Promise<PermitRow[]> {
   // Sentinel from admin view with no client selected — show nothing.
-  if (tenantId === "__none__") return [];
+  if (shouldListNoPermits(tenantId)) return [];
   let query = T().select("*").order("created_at", { ascending: false });
   if (tenantId) {
     query = query.eq("tenant_id", tenantId);

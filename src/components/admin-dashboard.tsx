@@ -29,6 +29,7 @@ import {
 import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
 import { supabase } from "@/integrations/supabase/client";
 import { useViewMode, useActiveTenantId } from "@/lib/view-mode-context";
+import { shouldListNoPermits } from "@/lib/tenant-scope";
 import { projectStatusMeta, type ProjectStatus as Status } from "@/lib/status-badges";
 import { useMyIdentity, greetingForNow } from "@/lib/profile-api";
 import {
@@ -104,7 +105,7 @@ export function AdminDashboard() {
 
   useEffect(() => {
     let cancelled = false;
-    const noClient = activeTenantId === "__none__";
+    const noClient = shouldListNoPermits(activeTenantId);
     (async () => {
       const permitsQuery = noClient
         ? Promise.resolve({ data: [] as PermitLite[] })

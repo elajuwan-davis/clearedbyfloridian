@@ -3,6 +3,24 @@
 import { supabase } from "@/integrations/supabase/client";
 import { calculateCleardFee } from "@/lib/pricing";
 import { getStripeEnvironment, isPaymentsConfigured } from "@/lib/stripe";
+import {
+  computeTransactionFee,
+  fmtUsd,
+  hasOverdueInvoices,
+  invoiceTotal,
+  mapInvoiceStatus,
+  outstandingBalanceForInvoices,
+  type InvoiceStatus,
+} from "@/lib/billing-math";
+
+export type { InvoiceStatus };
+export {
+  computeTransactionFee,
+  fmtUsd,
+  hasOverdueInvoices,
+  invoiceTotal,
+  outstandingBalanceForInvoices,
+};
 
 export type BillingCycle = "monthly";
 
@@ -28,8 +46,6 @@ export type InvoiceLineItem = {
   description: string;
   amountCents: number;
 };
-
-export type InvoiceStatus = "pending" | "paid" | "refunded" | "overdue";
 
 export type Invoice = {
   id: string;
@@ -63,36 +79,9 @@ const PLAN_BY_PRICE: Record<string, { name: string; monthlyCents: number }> = {
   cleard_firm_monthly: { name: "Cleard Firm", monthlyCents: 59900 },
 };
 
-export function fmtUsd(cents: number): string {
-  return `$${(cents / 100).toLocaleString("en-US", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  })}`;
-}
-
-/** 50% of savings vs standard municipal fee; 0 when there is no savings. */
-export function computeTransactionFee(
-  standardMunicipalFeeCents: number,
-  privateProviderFeeCents: number,
-): { savingsCents: number; feeCents: number } {
-  const savingsCents = Math.max(0, standardMunicipalFeeCents - privateProviderFeeCents);
-  const feeCents = Math.round(savingsCents * 0.5);
-  return { savingsCents, feeCents };
-}
-
 function invoiceNumberFromId(id: string, createdAt: string | null): string {
   const y = (createdAt ?? "").slice(0, 4) || "CLR";
   return `CLR-${y}-${id.slice(0, 8).toUpperCase()}`;
-}
-
-function mapInvoiceStatus(status: string, createdAt: string | null): InvoiceStatus {
-  if (status === "paid") return "paid";
-  if (status === "refunded") return "refunded";
-  if (status === "pending" && createdAt) {
-    const ageMs = Date.now() - new Date(createdAt).getTime();
-    if (ageMs > 14 * 24 * 60 * 60 * 1000) return "overdue";
-  }
-  return "pending";
 }
 
 function rowToInvoice(row: any): Invoice {
@@ -141,10 +130,6 @@ function rowToInvoice(row: any): Invoice {
       },
     ].filter((li) => li.amountCents > 0),
   };
-}
-
-export function invoiceTotal(invoice: Invoice): number {
-  return invoice.lineItems.reduce((s, l) => s + l.amountCents, 0);
 }
 
 function environmentFilter(): string | null {
@@ -234,16 +219,6 @@ export async function listPaymentsFromInvoices(invoices: Invoice[]): Promise<Pay
       method: "Stripe",
     }))
     .sort((a, b) => (a.paidAt < b.paidAt ? 1 : -1));
-}
-
-export function outstandingBalanceForInvoices(invoices: Invoice[], accountId: string): number {
-  return invoices
-    .filter((i) => i.accountId === accountId && i.status !== "paid" && i.status !== "refunded")
-    .reduce((s, i) => s + invoiceTotal(i), 0);
-}
-
-export function hasOverdueInvoices(invoices: Invoice[], accountId: string): boolean {
-  return invoices.some((i) => i.accountId === accountId && i.status === "overdue");
 }
 
 /** Create a pending service_fee_invoices row for a permit (staff "Generate Invoice"). */
