@@ -188,7 +188,9 @@ export function BuilderDashboard() {
             </>
           }
       >
+        <TrialBillingBanner />
         <TrialAccessBanner />
+
 
         {/* Banners */}
         {(needsVerification || needsLpoa) && (
