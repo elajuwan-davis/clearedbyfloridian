@@ -397,7 +397,7 @@ export function MarketingFooter() {
         </div>
 
         <div className="pb-10 text-[12px]" style={{ color: "rgba(255,255,255,0.45)" }}>
-          © 2026 Cleard · Built by Flōridian
+          © 2026 Cleard
         </div>
       </div>
     </footer>
