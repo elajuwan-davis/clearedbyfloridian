@@ -678,7 +678,7 @@ export function ReplaceThePermitOffice() {
         <div className="flex flex-wrap items-end justify-between gap-4 pb-3" style={{ borderBottom: `1px solid ${HAIR}` }}>
           <div>
             <div className="text-[10.5px] font-bold uppercase" style={{ letterSpacing: "0.22em", color: GREEN }}>
-              Before and after
+              Without Victoria vs. with Victoria
             </div>
             <h2
               className="mt-3 max-w-3xl"
@@ -701,9 +701,7 @@ export function ReplaceThePermitOffice() {
               <span>2-day plan review</span>
               <span aria-hidden style={{ color: LIGHT }}>·</span>
               <span>Same-day inspections</span>
-              <span aria-hidden style={{ color: LIGHT }}>·</span>
-              <span>By invitation</span>
-            </div>
+              </div>
           </div>
 
           <div className="flex items-center gap-2">
@@ -727,7 +725,7 @@ export function ReplaceThePermitOffice() {
             style={{ borderColor: HAIR }}
           >
             <div className="text-[10px] uppercase" style={{ fontFamily: MONO, letterSpacing: "0.2em", color: "rgba(103,49,71,0.7)" }}>
-              Before · eight handoffs
+              Without Victoria · eight handoffs
             </div>
             <div className="mt-3 flex flex-1 flex-col justify-between">
               {BEFORE.map((b, i) => (
@@ -769,7 +767,7 @@ export function ReplaceThePermitOffice() {
               className="absolute left-4 top-3 z-20 text-[9.5px] uppercase"
               style={{ fontFamily: MONO, letterSpacing: "0.18em", color: "rgba(142,90,56,0.8)" }}
             >
-              After Cleard
+              With Victoria
             </div>
 
             {/* short orthogonal CAD legs */}
