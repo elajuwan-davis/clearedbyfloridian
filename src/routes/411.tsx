@@ -166,7 +166,7 @@ function FourEleven() {
               fontWeight: 600,
             }}
           >
-            Still have a question? Talk to us
+            Have a question? Talk to us
           </Link>
         </div>
       </section>
