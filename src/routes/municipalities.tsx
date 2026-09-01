@@ -115,7 +115,7 @@ const DIFFERENTIATORS = [
   },
   {
     t: "Fee-share model",
-    b: "CleardGov is funded by permit fees, not the general fund. The city retains 15% of collected fees; Cleard retains 85% and carries the people, the platform, and the liability.",
+    b: "CleardGov is funded by permit fees, not the general fund. The city retains a share of collected fees; Cleard retains the remainder and carries the people, the platform, and the liability.",
   },
 ];
 
@@ -348,17 +348,22 @@ function MunicipalitiesPage() {
               style={{ background: SURFACE, border: `1px solid ${TEAL}` }}
             >
               <div>
-                <div style={{ color: TEAL, fontSize: 34, fontWeight: 700, letterSpacing: "-0.03em" }}>15%</div>
+                <div style={{ color: TEAL, fontSize: 18, fontWeight: 700, letterSpacing: "-0.01em" }}>
+                  City retains a share
+                </div>
                 <div className="mt-2 text-[13.5px] leading-relaxed" style={{ color: MUTED }}>
-                  Retained by the city on every permit fee collected — revenue without headcount.
+                  Revenue generated from every permit fee collected — no headcount required.
                 </div>
               </div>
               <div>
-                <div style={{ color: TITLE, fontSize: 34, fontWeight: 700, letterSpacing: "-0.03em" }}>85%</div>
+                <div style={{ color: TITLE, fontSize: 18, fontWeight: 700, letterSpacing: "-0.01em" }}>
+                  Cleard covers operations
+                </div>
                 <div className="mt-2 text-[13.5px] leading-relaxed" style={{ color: MUTED }}>
-                  Retained by Cleard, covering licensed staff, technology, and program liability.
+                  Licensed staff, technology, and program liability — fully managed.
                 </div>
               </div>
+
             </div>
           </div>
         </section>
