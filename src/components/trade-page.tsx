@@ -151,47 +151,6 @@ export function TradePage({ trade }: { trade: Trade }) {
           </div>
         </section>
 
-        {/* Services */}
-        <section style={{ borderTop: `1px solid ${BORDER}` }}>
-          <div className="mx-auto max-w-7xl px-5 lg:px-8 py-20">
-            <h2
-              className="max-w-3xl"
-              style={{
-                fontWeight: 800,
-                fontSize: "clamp(1.5rem, 3vw, 2.5rem)",
-                lineHeight: 1.1,
-                letterSpacing: "-0.03em",
-              }}
-            >
-              Everything your permit coordinator does. And everything they don't.
-            </h2>
-
-            <div className="mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-3 items-stretch">
-              {SERVICES.map((s) => {
-                const Icon = s.icon;
-                return (
-                  <div
-                    key={s.name}
-                    className="flex flex-col p-7"
-                    style={{ border: `1px solid ${BORDER}` }}
-                  >
-                    <Icon className="h-5 w-5" style={{ color: GREEN }} />
-                    <div
-                      className="mt-5 text-[13px] uppercase tracking-[0.16em]"
-                      style={{ color: INK, fontWeight: 700 }}
-                    >
-                      {s.name}
-                    </div>
-                    <p className="mt-4 text-[14px] leading-relaxed" style={{ color: GRAY }}>
-                      {s.body}
-                    </p>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </section>
-
         {/* Inspections */}
         {trade.inspections && trade.inspections.length > 0 && (
           <section style={{ background: INK, borderTop: `1px solid ${BORDER}` }}>
@@ -289,6 +248,48 @@ export function TradePage({ trade }: { trade: Trade }) {
             </div>
           </section>
         )}
+
+        {/* Services */}
+        <section style={{ borderTop: `1px solid ${BORDER}` }}>
+          <div className="mx-auto max-w-7xl px-5 lg:px-8 py-20">
+            <h2
+              className="max-w-3xl"
+              style={{
+                fontWeight: 800,
+                fontSize: "clamp(1.5rem, 3vw, 2.5rem)",
+                lineHeight: 1.1,
+                letterSpacing: "-0.03em",
+              }}
+            >
+              Everything your permit coordinator does. And everything your private provider doesn't.
+            </h2>
+
+            <div className="mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-3 items-stretch">
+              {SERVICES.map((s) => {
+                const Icon = s.icon;
+                return (
+                  <div
+                    key={s.name}
+                    className="flex flex-col p-7"
+                    style={{ border: `1px solid ${BORDER}` }}
+                  >
+                    <Icon className="h-5 w-5" style={{ color: GREEN }} />
+                    <div
+                      className="mt-5 text-[13px] uppercase tracking-[0.16em]"
+                      style={{ color: INK, fontWeight: 700 }}
+                    >
+                      {s.name}
+                    </div>
+                    <p className="mt-4 text-[14px] leading-relaxed" style={{ color: GRAY }}>
+                      {s.body}
+                    </p>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+
 
 
 
