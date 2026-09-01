@@ -164,7 +164,7 @@ export function LiveCommandCenter() {
           </div>
           <div className="text-right">
             <div className="text-[22px] leading-none tabular-nums" style={{ fontFamily: SERIF, fontWeight: 600, color: GREEN_LT }}>
-              94%
+              100%
             </div>
             <div className="mt-1.5 text-[10px] uppercase" style={{ fontFamily: MONO, letterSpacing: "0.18em", color: "rgba(250,243,230,0.5)" }}>
               On time
@@ -172,7 +172,7 @@ export function LiveCommandCenter() {
           </div>
         </div>
         <div className="mt-3 h-[3px] w-full" style={{ background: "rgba(250,243,230,0.12)" }}>
-          <div style={{ width: "94%", height: "100%", background: GREEN_LT, transition: "width 900ms ease" }} />
+          <div style={{ width: "100%", height: "100%", background: GREEN_LT, transition: "width 900ms ease" }} />
         </div>
       </div>
 

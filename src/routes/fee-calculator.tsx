@@ -397,7 +397,7 @@ function FeeCalculatorPage() {
           </div>
           <div className="p-6 space-y-5">
             <div className="text-center">
-              <div className="font-display text-6xl text-obsidian tabular-nums">94%</div>
+              <div className="font-display text-6xl text-obsidian tabular-nums">100%</div>
               <div className="mt-1 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/55">Match rate across 12 issued permits</div>
             </div>
             <div className="border border-obsidian/10 rounded-[3px] divide-y divide-obsidian/10 text-sm">
