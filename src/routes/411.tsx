@@ -50,25 +50,109 @@ const ITEMS: Array<{ q: string; a: string }> = [
   },
 ];
 
+const POSTS: Array<{ category: string; title: string; excerpt: string }> = [
+  {
+    category: "Plan Review",
+    title: "What happens when a plan review fails?",
+    excerpt:
+      "A failed review is a comment list, not a dead end — here is exactly how corrections move back through us.",
+  },
+  {
+    category: "Inspections",
+    title: "The inspection sequence every pool contractor needs to know",
+    excerpt:
+      "From steel to final deck, the order inspections must happen in and where crews usually lose a week.",
+  },
+  {
+    category: "Jurisdictions",
+    title: "Five jurisdictions that still require paper submittals",
+    excerpt:
+      "Some building departments still want ink on paper — here is who, and how we handle it for you.",
+  },
+];
+
 function FourEleven() {
   return (
     <MarketingShell>
       <PageHeader
-        eyebrow="The 411"
+        eyebrow="411"
         title="Straight answers on permitting."
-        intro="No runaround, no vendor-speak. Here is how permitting actually runs when Cleard is your private provider."
+        intro="Answers, field notes, and the information contractors actually need."
       />
 
+      {/* FAQ */}
       <section className="mx-auto max-w-5xl px-6 py-20 lg:px-10">
-        <div className="grid gap-10 md:grid-cols-2">
+        <div className="label-eyebrow" style={{ color: "var(--copper-deep)" }}>
+          FAQ
+        </div>
+        <h2
+          className="mt-3 text-[28px] leading-tight"
+          style={{ color: "var(--md-text)", fontWeight: 600 }}
+        >
+          FAQ
+        </h2>
+
+        <div className="mt-10 grid gap-10 md:grid-cols-2">
           {ITEMS.map((it) => (
             <div key={it.q}>
-              <h2 className="text-[17px] font-semibold" style={{ color: "var(--md-text)" }}>
+              <h3 className="text-[17px] font-semibold" style={{ color: "var(--md-text)" }}>
                 {it.q}
-              </h2>
+              </h3>
               <p className="mt-3 text-[14.5px] leading-relaxed md-muted">{it.a}</p>
             </div>
           ))}
+        </div>
+      </section>
+
+      {/* Blog */}
+      <section
+        className="mx-auto max-w-5xl px-6 pb-20 lg:px-10"
+        style={{ borderTop: "1px solid color-mix(in oklab, var(--md-text) 12%, transparent)" }}
+      >
+        <div className="pt-16">
+          <div className="label-eyebrow" style={{ color: "var(--copper-deep)" }}>
+            From the field
+          </div>
+          <h2
+            className="mt-3 text-[28px] leading-tight"
+            style={{ color: "var(--md-text)", fontWeight: 600 }}
+          >
+            Notes from the permit desk.
+          </h2>
+
+          <div className="mt-10 grid gap-6 md:grid-cols-3">
+            {POSTS.map((p) => (
+              <article
+                key={p.title}
+                className="flex flex-col p-6"
+                style={{
+                  border: "1px solid color-mix(in oklab, var(--md-text) 14%, transparent)",
+                  background: "color-mix(in oklab, var(--md-text) 3%, transparent)",
+                }}
+              >
+                <span
+                  className="font-mono text-[10px] uppercase tracking-[0.16em]"
+                  style={{ color: "var(--copper-deep)" }}
+                >
+                  {p.category}
+                </span>
+                <h3
+                  className="mt-4 text-[17px] font-semibold leading-snug"
+                  style={{ color: "var(--md-text)" }}
+                >
+                  {p.title}
+                </h3>
+                <p className="mt-3 flex-1 text-[14px] leading-relaxed md-muted">{p.excerpt}</p>
+                <a
+                  href="#"
+                  className="mt-6 font-mono text-[10px] uppercase tracking-[0.18em] no-underline"
+                  style={{ color: "var(--md-text)" }}
+                >
+                  Read →
+                </a>
+              </article>
+            ))}
+          </div>
         </div>
 
         <div className="mt-16">
@@ -89,3 +173,4 @@ function FourEleven() {
     </MarketingShell>
   );
 }
+
