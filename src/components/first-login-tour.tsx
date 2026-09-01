@@ -98,6 +98,14 @@ export function startFirstLoginTour(opts: {
         },
       },
       {
+        element: 'a[href="/building-dept-logins"]',
+        popover: {
+          title: "Your building-department vault",
+          description:
+            "Every county and city portal login you use lives here — encrypted, in one place, and yours. Save a municipality's username and password once and you can copy them and jump straight into that portal from Cleard, instead of hunting through a spreadsheet. It's the same vault our own permit desk works out of.",
+        },
+      },
+      {
         element: '[data-tour="documents"]',
         popover: {
           title: "Compliance documents",
@@ -112,6 +120,7 @@ export function startFirstLoginTour(opts: {
           },
         },
       },
+
     ],
     onDestroyed: () => {
       // Skipping, closing or finishing all end the tour for good — but not the mid-tour
