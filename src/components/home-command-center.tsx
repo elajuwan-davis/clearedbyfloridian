@@ -719,36 +719,93 @@ export function ReplaceThePermitOffice() {
 
         {/* --------------------------- SPLIT GRID -------------------------- */}
         <div className="grid gap-6 lg:grid-cols-2">
-          {/* LEFT — before, eight handoffs */}
+          {/* LEFT — without Victoria: scattered, out-of-sync paperwork */}
           <div
             className="flex min-h-[420px] flex-col lg:border-r lg:pr-6"
             style={{ borderColor: HAIR }}
           >
             <div className="text-[10px] uppercase" style={{ fontFamily: MONO, letterSpacing: "0.2em", color: "rgba(103,49,71,0.7)" }}>
-              Without Victoria · eight handoffs
+              Before · without Victoria
             </div>
-            <div className="mt-3 flex flex-1 flex-col justify-between">
-              {BEFORE.map((b, i) => (
+
+            <div
+              className="relative mt-3 flex-1 overflow-hidden"
+              style={{
+                background: "rgba(103,49,71,0.035)",
+                border: `1px solid ${HAIR_SOFT}`,
+                minHeight: 340,
+              }}
+            >
+              {/* misaligned grid, drifting out of register */}
+              <div
+                className="pointer-events-none absolute inset-0"
+                style={{
+                  backgroundImage: `linear-gradient(rgba(103,49,71,0.10) 1px, transparent 1px), linear-gradient(91.4deg, rgba(103,49,71,0.10) 1px, transparent 1px)`,
+                  backgroundSize: "38px 52px",
+                  transform: "rotate(-1.4deg) scale(1.15)",
+                }}
+              />
+
+              {CHAOS_CARDS.map((c) => (
                 <div
-                  key={b}
-                  className="cl-handoff flex items-center gap-3 py-[7px] text-[14.5px]"
-                  style={{ borderBottom: `1px solid ${HAIR_SOFT}`, color: INK, transition: "color 200ms ease" }}
+                  key={c.t}
+                  className="cl-chaos absolute"
+                  style={{
+                    left: `${c.x}%`,
+                    top: `${c.y}%`,
+                    width: c.w,
+                    transform: `rotate(${c.r}deg)`,
+                    background: CREAM,
+                    border: `1px solid ${HAIR}`,
+                    boxShadow: "3px 4px 0 rgba(103,49,71,0.07)",
+                    padding: "7px 9px",
+                    zIndex: c.z,
+                  }}
                 >
-                  <span className="text-[11px] tabular-nums" style={{ fontFamily: MONO, color: TAN }}>
-                    {String(i + 1).padStart(2, "0")}
-                  </span>
-                  {b}
+                  <div
+                    className="text-[8.5px] uppercase"
+                    style={{ fontFamily: MONO, letterSpacing: "0.16em", color: c.bad ? PLUM : "rgba(103,49,71,0.55)" }}
+                  >
+                    {c.tag}
+                  </div>
+                  <div className="mt-1 text-[12px] leading-tight" style={{ color: INK }}>
+                    {c.t}
+                  </div>
+                  {c.meta ? (
+                    <div
+                      className="mt-1 text-[9px]"
+                      style={{
+                        fontFamily: MONO,
+                        color: c.bad ? PLUM : TAN,
+                        textDecoration: c.strike ? "line-through" : undefined,
+                      }}
+                    >
+                      {c.meta}
+                    </div>
+                  ) : null}
                 </div>
               ))}
 
+              {/* fragmented, dead-end communication lines */}
+              <svg className="pointer-events-none absolute inset-0 h-full w-full" aria-hidden>
+                <g stroke="rgba(103,49,71,0.28)" strokeWidth="1" strokeDasharray="3 5" fill="none">
+                  <path d="M18% 26% L46% 18%" />
+                  <path d="M52% 34% L30% 58%" />
+                  <path d="M62% 62% L38% 76%" />
+                  <path d="M24% 70% L70% 44%" />
+                </g>
+              </svg>
             </div>
+
             <div
               className="mt-4 pt-3 text-[13px] leading-snug"
               style={{ borderTop: `1px solid ${HAIR}`, color: PLUM, fontFamily: SERIF, fontStyle: "italic" }}
             >
-              Each handoff is a delay, a re-explanation, and another invoice.
+              Eight handoffs, four inboxes, nobody holding the schedule. Each one is a delay, a
+              re-explanation, and another invoice.
             </div>
           </div>
+
 
           {/* RIGHT — compact orrery canvas */}
           <div
