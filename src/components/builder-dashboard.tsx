@@ -28,6 +28,8 @@ import { AlertsList } from "@/components/alerts-list";
 import { useExpirationAlerts } from "@/hooks/use-expiration-alerts";
 
 import { useFirstLoginTour } from "@/components/first-login-tour";
+import { TrialBillingBanner } from "@/components/trial-billing";
+
 import { projectStatusMeta as statusMeta } from "@/lib/status-badges";
 import {
   PageShell,
