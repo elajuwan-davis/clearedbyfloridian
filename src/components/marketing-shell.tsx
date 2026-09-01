@@ -203,7 +203,16 @@ export function MarketingNav() {
             >
               Pricing
             </Link>
+
+            <Link
+              to="/411"
+              className="text-[14px] no-underline transition-opacity hover:opacity-70"
+              style={{ color: BODY_GRAY, whiteSpace: "nowrap", flexShrink: 0 }}
+            >
+              411
+            </Link>
           </nav>
+
 
         <div className="flex items-center justify-end gap-3" style={{ flexShrink: 0, gridColumn: 3 }}>
           <Link
