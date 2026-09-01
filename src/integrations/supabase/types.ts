@@ -4618,6 +4618,7 @@ export type Database = {
       tenants: {
         Row: {
           allowed_domain: string | null
+          card_prompt_dismissed_at: string | null
           created_at: string
           id: string
           license_number: string | null
@@ -4628,10 +4629,12 @@ export type Database = {
           service_areas: string[]
           status: string
           tour_completed_at: string | null
+          trial_started_at: string | null
           updated_at: string
         }
         Insert: {
           allowed_domain?: string | null
+          card_prompt_dismissed_at?: string | null
           created_at?: string
           id?: string
           license_number?: string | null
@@ -4642,10 +4645,12 @@ export type Database = {
           service_areas?: string[]
           status?: string
           tour_completed_at?: string | null
+          trial_started_at?: string | null
           updated_at?: string
         }
         Update: {
           allowed_domain?: string | null
+          card_prompt_dismissed_at?: string | null
           created_at?: string
           id?: string
           license_number?: string | null
@@ -4656,6 +4661,7 @@ export type Database = {
           service_areas?: string[]
           status?: string
           tour_completed_at?: string | null
+          trial_started_at?: string | null
           updated_at?: string
         }
         Relationships: []
