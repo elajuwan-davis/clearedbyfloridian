@@ -1016,6 +1016,8 @@ export function ReplaceThePermitOffice() {
 
       <style>{`
         .cl-handoff:hover { color: ${PLUM} !important; }
+        .cl-chaos { transition: transform 220ms ease, box-shadow 220ms ease; }
+        .cl-chaos:hover { transform: rotate(0deg) !important; box-shadow: 5px 6px 0 rgba(103,49,71,0.12); z-index: 20; }
         .cl-copper {
           background:
             linear-gradient(145deg, #F6DCB6 0%, #D79A62 24%, #A9683C 52%, #8E5A38 68%, #E9C49B 86%, #7A4A2C 100%);
