@@ -119,7 +119,7 @@ function AuthCallback() {
             </h1>
             <p className="text-sm text-muted-foreground leading-relaxed">
               {state.filed
-                ? "Cleard is invitation-only while we onboard firms. We've submitted an access request"
+                ? "We've submitted an access request"
                 : "Your access request is still under review"}
               {state.email ? ` for ${state.email}` : ""}. Our team will email you as soon as your
               portal access is approved.

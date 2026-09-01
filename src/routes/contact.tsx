@@ -32,7 +32,7 @@ function ContactPage() {
       <PageHeader
         eyebrow="Request access"
         title="Tell us about the Cleard project."
-        intro="Cleard is offered by invitation to the licensed GCs delivering Cleard's work. A principal will respond within four business hours to verify your project and begin intake."
+        intro="Tell us about your project and a principal will respond within four business hours to begin intake."
       />
 
       <section className="mx-auto max-w-6xl px-4 sm:px-6 py-24 grid md:grid-cols-12 gap-12">

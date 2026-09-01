@@ -13,7 +13,7 @@ export const Route = createFileRoute("/login")({
   head: () => ({
     meta: [
       { title: "Sign in — Cleard" },
-      { name: "description", content: "Builder portal sign in. By invitation only." },
+      { name: "description", content: "Builder portal sign in." },
       { name: "robots", content: "noindex" },
     ],
   }),
