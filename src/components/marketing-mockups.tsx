@@ -205,7 +205,7 @@ export function KanbanMock() {
       <div className="flex items-center gap-5 px-4 py-3" style={{ borderBottom: `1px solid ${M.line2}` }}>
         {[
           { k: "17", v: "Active" },
-          { k: "94%", v: "On time" },
+          { k: "100%", v: "On time" },
           { k: "48h", v: "Avg review" },
         ].map((s) => (
           <div key={s.v} className="flex items-baseline gap-1.5">
