@@ -164,7 +164,7 @@ function useCycle(length: number, ms: number) {
 
 const HERO_STATS = [
   { k: "1,200+", v: "Permits managed" },
-  { k: "94%", v: "On-time approval rate" },
+  { k: "100%", v: "On-time approval rate" },
   { k: "48 hr", v: "Average plan review" },
   { k: "400+", v: "Jurisdictions covered" },
 ];
