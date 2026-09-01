@@ -567,15 +567,26 @@ const HAIR = "rgba(103,49,71,0.20)";
 const HAIR_SOFT = "rgba(103,49,71,0.13)";
 const CAD = "rgba(142,90,56,0.55)";
 
-const BEFORE = [
-  "Permit expediter",
-  "Plan reviewer",
-  "Inspector scheduling",
-  "License tracker",
-  "COI spreadsheet",
-  "Lien service",
-  "Phone calls",
-  "Manual emails",
+const CHAOS_CARDS: {
+  tag: string;
+  t: string;
+  meta?: string;
+  x: number;
+  y: number;
+  w: number;
+  r: number;
+  z: number;
+  bad?: boolean;
+  strike?: boolean;
+}[] = [
+  { tag: "Expediter", t: "Permit expediter", meta: "Waiting 6 days", x: 4, y: 4, w: 132, r: -3.5, z: 6, bad: true },
+  { tag: "Email thread", t: "Plan reviewer", meta: "Re: Re: Fwd:", x: 47, y: 1, w: 128, r: 2.6, z: 4 },
+  { tag: "Voicemail", t: "Inspector scheduling", meta: "Missed 3/14", x: 24, y: 21, w: 138, r: 1.4, z: 8, bad: true },
+  { tag: "Spreadsheet", t: "COI spreadsheet", meta: "Last edit: unknown", x: 58, y: 27, w: 130, r: -2.2, z: 5 },
+  { tag: "Expired", t: "License tracker", meta: "Expired 02/28", x: 2, y: 41, w: 126, r: 3.1, z: 7, bad: true },
+  { tag: "Third party", t: "Lien service", meta: "Deadline 4/02", x: 40, y: 49, w: 130, r: -1.6, z: 9, strike: true, bad: true },
+  { tag: "Text message", t: "Phone calls", meta: "\u201cCall me back\u201d", x: 8, y: 66, w: 120, r: -3.8, z: 6 },
+  { tag: "Manual", t: "Manual emails", meta: "No confirmation", x: 52, y: 72, w: 132, r: 2.9, z: 5 },
 ];
 
 type NodeKey = "permits" | "review" | "licenses" | "documents";
@@ -787,12 +798,17 @@ export function ReplaceThePermitOffice() {
               ))}
 
               {/* fragmented, dead-end communication lines */}
-              <svg className="pointer-events-none absolute inset-0 h-full w-full" aria-hidden>
-                <g stroke="rgba(103,49,71,0.28)" strokeWidth="1" strokeDasharray="3 5" fill="none">
-                  <path d="M18% 26% L46% 18%" />
-                  <path d="M52% 34% L30% 58%" />
-                  <path d="M62% 62% L38% 76%" />
-                  <path d="M24% 70% L70% 44%" />
+              <svg
+                className="pointer-events-none absolute inset-0 h-full w-full"
+                viewBox="0 0 100 100"
+                preserveAspectRatio="none"
+                aria-hidden
+              >
+                <g stroke="rgba(103,49,71,0.28)" strokeWidth="0.4" strokeDasharray="2 3" fill="none">
+                  <path d="M18 26 L46 18" />
+                  <path d="M52 34 L30 58" />
+                  <path d="M62 62 L38 76" />
+                  <path d="M24 70 L70 44" />
                 </g>
               </svg>
             </div>
