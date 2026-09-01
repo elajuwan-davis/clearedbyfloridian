@@ -133,8 +133,13 @@ export function startFirstLoginTour(opts: {
   return d;
 }
 
-/** Last step, on /portal/permits/new, only if the dashboard leg handed off. */
-export function resumeFirstLoginTour(opts: { onFinished: () => void }): Driver | null {
+/**
+ * Victoria step on /portal/permits/new. Whether they finish it or skip out of creating the
+ * permit, the tour hands off to the Portal Logins vault rather than just ending.
+ */
+export function resumeFirstLoginTour(opts: {
+  onLeaveForVault: () => void;
+}): Driver | null {
   if (typeof window === "undefined") return null;
   if (window.sessionStorage.getItem(PENDING_KEY) !== PENDING_VALUE) return null;
   window.sessionStorage.removeItem(PENDING_KEY);
@@ -145,10 +150,17 @@ export function resumeFirstLoginTour(opts: { onFinished: () => void }): Driver |
     steps: [
       {
         element: VICTORIA_TARGET,
-        popover: { title: VICTORIA_STEP_TITLE, description: VICTORIA_STEP_BODY },
+        popover: {
+          title: VICTORIA_STEP_TITLE,
+          description: VICTORIA_STEP_BODY,
+          doneBtnText: "Next: your vault",
+        },
       },
     ],
-    onDestroyed: () => opts.onFinished(),
+    onDestroyed: () => {
+      window.sessionStorage.setItem(PENDING_KEY, PENDING_VAULT_VALUE);
+      opts.onLeaveForVault();
+    },
   });
 
   // The mic renders only where the browser has speech recognition; if it never appears the
