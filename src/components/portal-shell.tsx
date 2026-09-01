@@ -48,6 +48,8 @@ import {
 import { useViewMode } from "@/lib/view-mode-context";
 import { usePlanAccess, trialPathAllowed } from "@/lib/plan-access";
 import { LockedPageNotice } from "@/components/feature-lock";
+import { TrialBillingPrompt } from "@/components/trial-billing";
+
 
 const protectedPortalPrefixes = [
   "/dashboard",
