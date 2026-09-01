@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as R411RouteImport } from './routes/411'
 import { Route as AskVictoriaRouteImport } from './routes/ask-victoria'
 import { Route as CleardapprovalRouteImport } from './routes/cleardapproval'
 import { Route as CompareRouteImport } from './routes/compare'
@@ -145,6 +146,11 @@ import { Route as PortalPermitsIdBundleRouteImport } from './routes/portal.permi
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const R411Route = R411RouteImport.update({
+  id: '/411',
+  path: '/411',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AskVictoriaRoute = AskVictoriaRouteImport.update({
@@ -821,6 +827,7 @@ const PortalPermitsIdBundleRoute = PortalPermitsIdBundleRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/411': typeof R411Route
   '/ask-victoria': typeof AskVictoriaRoute
   '/cleardapproval': typeof CleardapprovalRoute
   '/compare': typeof CompareRoute
@@ -955,6 +962,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/411': typeof R411Route
   '/ask-victoria': typeof AskVictoriaRoute
   '/cleardapproval': typeof CleardapprovalRoute
   '/compare': typeof CompareRoute
@@ -1086,6 +1094,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/411': typeof R411Route
   '/ask-victoria': typeof AskVictoriaRoute
   '/cleardapproval': typeof CleardapprovalRoute
   '/compare': typeof CompareRoute
@@ -1222,6 +1231,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/411'
     | '/ask-victoria'
     | '/cleardapproval'
     | '/compare'
@@ -1356,6 +1366,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/411'
     | '/ask-victoria'
     | '/cleardapproval'
     | '/compare'
@@ -1486,6 +1497,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/411'
     | '/ask-victoria'
     | '/cleardapproval'
     | '/compare'
@@ -1621,6 +1633,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  R411Route: typeof R411Route
   AskVictoriaRoute: typeof AskVictoriaRoute
   CleardapprovalRoute: typeof CleardapprovalRoute
   CompareRoute: typeof CompareRoute
@@ -1712,6 +1725,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/411': {
+      id: '/411'
+      path: '/411'
+      fullPath: '/411'
+      preLoaderRoute: typeof R411RouteImport
       parentRoute: typeof rootRouteImport
     }
     '/ask-victoria': {
@@ -2770,6 +2790,7 @@ const PortalRouteWithChildren =
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  R411Route: R411Route,
   AskVictoriaRoute: AskVictoriaRoute,
   CleardapprovalRoute: CleardapprovalRoute,
   CompareRoute: CompareRoute,
