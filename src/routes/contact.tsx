@@ -97,16 +97,13 @@ function ContactPage() {
         <aside className="md:col-span-5 md:pl-8 md:border-l hairline space-y-10">
           <div>
             <div className="label-eyebrow">Phone</div>
-            <p className="mt-3 font-mono">+1 (561) 555-0144</p>
+            <p className="mt-3 font-mono">(772) 675-3274</p>
           </div>
           <div>
             <div className="label-eyebrow">Email</div>
-            <p className="mt-3 font-mono">intake@cleared.build</p>
+            <p className="mt-3 font-mono">info@clearedinc.com</p>
           </div>
-          <div>
-            <div className="label-eyebrow">Hours</div>
-            <p className="mt-3 font-mono text-sm">Mon–Fri · 7:00–18:00 EST<br />Inspections: weekends by arrangement</p>
-          </div>
+
           <div className="border hairline bg-secondary/40 p-5">
             <div className="label-eyebrow text-accent">Access policy</div>
             <p className="mt-2 text-sm">
