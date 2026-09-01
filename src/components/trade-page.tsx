@@ -192,6 +192,106 @@ export function TradePage({ trade }: { trade: Trade }) {
           </div>
         </section>
 
+        {/* Inspections */}
+        {trade.inspections && trade.inspections.length > 0 && (
+          <section style={{ background: INK, borderTop: `1px solid ${BORDER}` }}>
+            <div className="mx-auto max-w-7xl px-5 lg:px-8 py-20">
+              <div
+                className="text-[10.5px] font-bold uppercase tracking-[0.22em]"
+                style={{ color: "rgba(230,230,250,0.7)" }}
+              >
+                Inspection sequence
+              </div>
+              <h2
+                className="mt-5 max-w-2xl"
+                style={{
+                  color: PAPER,
+                  fontWeight: 800,
+                  fontSize: "clamp(1.5rem, 3vw, 2.5rem)",
+                  lineHeight: 1.1,
+                  letterSpacing: "-0.03em",
+                }}
+              >
+                Every inspection. In order.
+              </h2>
+              <p
+                className="mt-4 max-w-xl text-[15px] leading-relaxed"
+                style={{ color: "rgba(250,243,230,0.6)" }}
+              >
+                Cleard coordinates and schedules each stage so your crews never wait on a missed
+                inspection window.
+              </p>
+
+              {/* Mobile: horizontal scroll */}
+              <div className="mt-12 flex gap-4 overflow-x-auto pb-2 md:hidden">
+                {trade.inspections.map((insp, i) => (
+                  <div
+                    key={insp.stage}
+                    className="shrink-0 w-[240px] p-6"
+                    style={{
+                      border: `1px solid rgba(230,230,250,0.18)`,
+                      borderTop: `2px solid rgba(230,230,250,0.5)`,
+                    }}
+                  >
+                    <div
+                      className="font-mono text-[11px] tabular-nums"
+                      style={{ color: "rgba(230,230,250,0.55)" }}
+                    >
+                      {String(i + 1).padStart(2, "0")}
+                    </div>
+                    <div className="mt-3 text-[15px] font-bold" style={{ color: PAPER }}>
+                      {insp.stage}
+                    </div>
+                    <p
+                      className="mt-2 text-[13px] leading-relaxed"
+                      style={{ color: "rgba(250,243,230,0.6)" }}
+                    >
+                      {insp.description}
+                    </p>
+                  </div>
+                ))}
+              </div>
+
+              {/* Desktop: grid */}
+              <div
+                className="mt-12 hidden md:grid gap-4"
+                style={{
+                  gridTemplateColumns: `repeat(${Math.min(trade.inspections.length, 3)}, 1fr)`,
+                }}
+              >
+                {trade.inspections.map((insp, i) => (
+                  <div
+                    key={insp.stage}
+                    className="p-6"
+                    style={{
+                      border: `1px solid rgba(230,230,250,0.18)`,
+                      borderTop: `2px solid rgba(230,230,250,0.5)`,
+                    }}
+                  >
+                    <div
+                      className="font-mono text-[11px] tabular-nums"
+                      style={{ color: "rgba(230,230,250,0.55)" }}
+                    >
+                      {String(i + 1).padStart(2, "0")}
+                    </div>
+                    <div className="mt-3 text-[15px] font-bold" style={{ color: PAPER }}>
+                      {insp.stage}
+                    </div>
+                    <p
+                      className="mt-2 text-[13px] leading-relaxed"
+                      style={{ color: "rgba(250,243,230,0.6)" }}
+                    >
+                      {insp.description}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
+
+
+
         {/* Why Cleard */}
         <section style={{ borderTop: `1px solid ${BORDER}`, background: OFF }}>
           <div className="mx-auto max-w-7xl px-5 lg:px-8 py-20">
