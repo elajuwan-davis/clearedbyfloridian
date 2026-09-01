@@ -104,14 +104,7 @@ function ContactPage() {
             <p className="mt-3 font-mono">info@clearedinc.com</p>
           </div>
 
-          <div className="border hairline bg-secondary/40 p-5">
-            <div className="label-eyebrow text-accent">Access policy</div>
-            <p className="mt-2 text-sm">
-              Cleard is offered exclusively to licensed GCs on active
-              Cleard projects. New requests are verified against our
-              project ledger before intake begins.
-            </p>
-          </div>
+
         </aside>
       </section>
     </MarketingShell>

@@ -781,7 +781,7 @@ function StatusPill({ k }: { k: StatusKey }) {
 
 const DASH_METRICS: Array<[string, number, string, string]> = [
   ["Active permits", 17, "", STATUS.enroute.color],
-  ["On time", 94, "%", STATUS.completed.color],
+  ["On time", 100, "%", STATUS.completed.color],
   ["Avg review", 48, "h", BRONZE],
   ["Corrections", 2, "", STATUS.delayed.color],
 ];
