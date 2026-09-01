@@ -765,6 +765,8 @@ function PortalShellInner({ children }: { children: ReactNode }) {
 
   return (
     <div className="portal-ui dark min-h-screen bg-background">
+      <TrialBillingPrompt />
+
       {/* Sidebar — 56px icon rail with flyouts, or 240px pinned (HubSpot model) */}
       <aside
         className="fixed inset-y-0 left-0 z-40 hidden lg:block"
