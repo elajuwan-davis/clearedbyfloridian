@@ -287,7 +287,7 @@ function HeroNav({ logoSlot, logoVisible }: { logoSlot: React.Ref<HTMLDivElement
           className="hidden items-center justify-center gap-8 md:flex"
           style={{ whiteSpace: "nowrap", flexWrap: "nowrap", gridColumn: 2 }}
         >
-          {[NAV[0], null, NAV[1], null, NAV[2]].map((l, i) =>
+          {[NAV[0], null, NAV[1], null, NAV[2], NAV[3]].map((l, i) =>
             l === null ? (
               i === 1 ? <HeroSolutions key="solutions" /> : <HeroTrades key="trades" />
             ) : (
