@@ -12,7 +12,7 @@ import { toast } from "sonner";
 export const Route = createFileRoute("/contact")({
   head: () => ({
     meta: [
-      { title: "Request Access — Cleard" },
+      { title: "Get Started — Cleard" },
       {
         name: "description",
         content:
@@ -30,9 +30,9 @@ function ContactPage() {
   return (
     <MarketingShell>
       <PageHeader
-        eyebrow="Request access"
+        eyebrow="Get started"
         title="Tell us about the Cleard project."
-        intro="Tell us about your project and a principal will respond within four business hours to begin intake."
+        intro="Tell us about your project. A principal will respond within four business hours."
       />
 
       <section className="mx-auto max-w-6xl px-4 sm:px-6 py-24 grid md:grid-cols-12 gap-12">
