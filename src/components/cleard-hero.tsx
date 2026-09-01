@@ -26,7 +26,9 @@ const NAV = [
   { to: "/", label: "Home", hash: undefined },
   { to: "/contact", label: "Partnerships", hash: undefined },
   { to: "/pricing", label: "Pricing", hash: undefined },
+  { to: "/411", label: "411", hash: undefined },
 ] as const;
+
 
 const SOLUTIONS = [
   { to: "/join", label: "Cleard — For Contractors" },
