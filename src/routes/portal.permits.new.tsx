@@ -72,6 +72,7 @@ import {
 } from "@/lib/marketplace";
 import { createSubUpdateRequest } from "@/lib/insurance-requests-api";
 import { useSession } from "@/lib/use-session";
+import { TrialCardRequiredGate } from "@/components/trial-billing";
 
 export const Route = createFileRoute("/portal/permits/new")({
   validateSearch: (search: Record<string, unknown>): { edit?: string } =>
@@ -79,8 +80,17 @@ export const Route = createFileRoute("/portal/permits/new")({
   head: () => ({
     meta: [{ title: "New Permit Intake — Cleard" }, { name: "robots", content: "noindex" }],
   }),
-  component: NewPermitPage,
+  component: NewPermitRoute,
 });
+
+// A trial account with no card on file cannot file a permit — payment authorization comes first.
+function NewPermitRoute() {
+  return (
+    <TrialCardRequiredGate>
+      <NewPermitPage />
+    </TrialCardRequiredGate>
+  );
+}
 
 const VICTORIA_INTRO_KEY = "cleard_victoria_permit_intro_seen";
 

@@ -314,6 +314,46 @@ function TrialBillingBannerPicker({
   return <TierPicker status={status} onDone={onDone} />;
 }
 
+/* ───────────────────── hard gate: a card is required to file a permit ───────────────────── */
+
+/**
+ * Blocks a trial account with no card on file from creating a permit. Fails open: if payments
+ * aren't configured, the status can't be read, or the tenant is on a full plan, it renders the
+ * page as normal — nobody is locked out by a billing lookup.
+ */
+export function TrialCardRequiredGate({ children }: { children: React.ReactNode }) {
+  const plan = usePlanAccess();
+  const { status, loading, refresh } = useTrialBilling();
+
+  if (!isPaymentsConfigured() || loading) return <>{children}</>;
+  if (!status || !plan.isTrial || status.plan !== "trial" || status.cardOnFile) return <>{children}</>;
+
+  return (
+    <div className="mx-auto max-w-lg py-8">
+      <div
+        className="rounded-2xl border p-5"
+        style={{ borderColor: "var(--p-border)", backgroundColor: "var(--card)" }}
+      >
+        <div className="text-[11px] font-mono uppercase tracking-[0.15em] text-muted-foreground">
+          Payment authorization required
+        </div>
+        <h2 className="mt-1 text-[18px] font-semibold text-foreground">
+          Add your card to file a permit.
+        </h2>
+        <p className="mt-1 text-[12px] leading-relaxed text-muted-foreground">
+          Your 3-month free trial is running
+          {status.daysLeft > 0 ? ` — ${status.daysLeft} days left` : ""}. Filing permits needs a
+          card on file first. Nothing is charged until{" "}
+          {fmtDate(status.trialEndsAt)}.
+        </p>
+        <div className="mt-4">
+          <TierPicker status={status} onDone={() => void refresh()} />
+        </div>
+      </div>
+    </div>
+  );
+}
+
 /** Small inline spinner used while billing state resolves on the Billing page. */
 export function TrialBillingLoading() {
   return (

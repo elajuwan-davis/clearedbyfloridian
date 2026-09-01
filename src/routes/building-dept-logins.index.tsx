@@ -13,6 +13,7 @@ import {
   type PortalLoginFlag,
 } from "@/lib/portal-logins.functions";
 import { useSession } from "@/lib/use-session";
+import { useFirstLoginTourVault } from "@/components/first-login-tour";
 import {
   getPortalLoginDocUrlFn,
   isDocExpired,
@@ -77,6 +78,8 @@ function enrich(
 function BuildingDeptLoginsPage() {
   const listFlags = useServerFn(listPortalLoginFlags);
   const session = useSession();
+  // Last leg of the first-login walkthrough, if New Permit sent the user here.
+  useFirstLoginTourVault();
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -140,7 +143,11 @@ function BuildingDeptLoginsPage() {
                 <Upload className="h-3.5 w-3.5" strokeWidth={2} /> Import sheet
               </Link>
             )}
-            <Link to="/building-dept-logins/submit" className="p-btn p-btn-primary">
+            <Link
+              to="/building-dept-logins/submit"
+              data-tour="add-portal-login"
+              className="p-btn p-btn-primary"
+            >
               <Plus className="h-3.5 w-3.5" strokeWidth={2} /> Submit login
             </Link>
           </>

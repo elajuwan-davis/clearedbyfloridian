@@ -21,6 +21,7 @@ import {
 
 const PENDING_KEY = "cleard_tour_pending_step";
 const PENDING_VALUE = "victoria-permit";
+const PENDING_VAULT_VALUE = "portal-logins";
 const POPOVER_CLASS = "cleard-tour-popover";
 
 const VICTORIA_TARGET = '[data-tour="victoria-permit"]';
@@ -133,8 +134,13 @@ export function startFirstLoginTour(opts: {
   return d;
 }
 
-/** Last step, on /portal/permits/new, only if the dashboard leg handed off. */
-export function resumeFirstLoginTour(opts: { onFinished: () => void }): Driver | null {
+/**
+ * Victoria step on /portal/permits/new. Whether they finish it or skip out of creating the
+ * permit, the tour hands off to the Portal Logins vault rather than just ending.
+ */
+export function resumeFirstLoginTour(opts: {
+  onLeaveForVault: () => void;
+}): Driver | null {
   if (typeof window === "undefined") return null;
   if (window.sessionStorage.getItem(PENDING_KEY) !== PENDING_VALUE) return null;
   window.sessionStorage.removeItem(PENDING_KEY);
@@ -145,10 +151,17 @@ export function resumeFirstLoginTour(opts: { onFinished: () => void }): Driver |
     steps: [
       {
         element: VICTORIA_TARGET,
-        popover: { title: VICTORIA_STEP_TITLE, description: VICTORIA_STEP_BODY },
+        popover: {
+          title: VICTORIA_STEP_TITLE,
+          description: VICTORIA_STEP_BODY,
+          doneBtnText: "Next: your vault",
+        },
       },
     ],
-    onDestroyed: () => opts.onFinished(),
+    onDestroyed: () => {
+      window.sessionStorage.setItem(PENDING_KEY, PENDING_VAULT_VALUE);
+      opts.onLeaveForVault();
+    },
   });
 
   // The mic renders only where the browser has speech recognition; if it never appears the
@@ -190,15 +203,60 @@ export function useFirstLoginTour(enabled: boolean) {
   }, [enabled, navigate, shouldShow, complete]);
 }
 
-/** New Permit counterpart: shows the final step and marks the tour complete. */
+/**
+ * Vault leg, on /building-dept-logins — the last stop of the tour. Runs only if the New Permit
+ * leg handed off (finished or skipped), then marks the whole tour complete.
+ */
+export function resumeVaultTour(opts: { onFinished: () => void }): Driver | null {
+  if (typeof window === "undefined") return null;
+  if (window.sessionStorage.getItem(PENDING_KEY) !== PENDING_VAULT_VALUE) return null;
+  window.sessionStorage.removeItem(PENDING_KEY);
+
+  const d = driver({
+    ...baseOptions(),
+    showProgress: false,
+    steps: [
+      {
+        element: '[data-tour="add-portal-login"]',
+        popover: {
+          title: "This vault is yours",
+          description:
+            "No permit yet? Start here instead. Save a county or city ePermitting login once — portal link, username, password — and it is encrypted and kept in your own vault. From then on you copy the credentials and jump straight into that portal from Cleard, instead of digging through a spreadsheet.",
+          doneBtnText: "Got it",
+        },
+      },
+    ],
+    onDestroyed: () => opts.onFinished(),
+  });
+
+  whenPresent('[data-tour="add-portal-login"]', () => d.drive());
+  return d;
+}
+
+/** New Permit counterpart: shows the Victoria step, then walks them to the vault. */
 export function useFirstLoginTourResume() {
-  const complete = useServerFn(completeFirstLoginTourFn);
+  const navigate = useNavigate();
   const started = useRef(false);
 
   useEffect(() => {
     if (started.current) return;
     started.current = true;
     const tour = resumeFirstLoginTour({
+      onLeaveForVault: () => void navigate({ to: "/building-dept-logins" }),
+    });
+    return () => tour?.destroy();
+  }, [navigate]);
+}
+
+/** Portal Logins counterpart: final step, and marks the tour complete. */
+export function useFirstLoginTourVault() {
+  const complete = useServerFn(completeFirstLoginTourFn);
+  const started = useRef(false);
+
+  useEffect(() => {
+    if (started.current) return;
+    started.current = true;
+    const tour = resumeVaultTour({
       onFinished: () => void complete().catch(() => {}),
     });
     return () => tour?.destroy();
