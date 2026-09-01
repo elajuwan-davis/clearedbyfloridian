@@ -736,7 +736,7 @@ export function ReplaceThePermitOffice() {
             style={{ borderColor: HAIR }}
           >
             <div className="text-[10px] uppercase" style={{ fontFamily: MONO, letterSpacing: "0.2em", color: "rgba(103,49,71,0.7)" }}>
-              Before · without Victoria
+              Without Victoria
             </div>
 
             <div
