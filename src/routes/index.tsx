@@ -105,8 +105,12 @@ function HomePage() {
         <div id="watch-it-run">
           <WatchItRun />
         </div>
+        <ProductWalkthroughs />
         <VictoriaSection />
         <ReplaceThePermitOffice />
+        <ClearedDifferenceTable />
+        <Hb803Callout background={OFF} />
+        <CountyCoverage />
         <MunicipalityTrack />
         <StatsStrip />
         <TrustBar />
