@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { MarketingShell, PageHeader } from "@/components/marketing-shell";
+import { Hb803Callout } from "@/components/hb803-callout";
 
 export const Route = createFileRoute("/411")({
   head: () => ({
@@ -27,6 +28,10 @@ const ITEMS: Array<{ q: string; a: string }> = [
   {
     q: "How fast is plan review?",
     a: "2-day plan review on every submittal we handle as your private provider.",
+  },
+  {
+    q: "Do I get a permit fee reduction when I use a private provider?",
+    a: "Yes. Under Florida House Bill 803 (effective July 1, 2026), jurisdictions must reduce permit fees when a private provider is used — at least 25% when a private provider performs plan review or inspections, and at least 50% when a private provider performs both. Florida law requires this reduction, and Cleard verifies it's applied to every eligible permit.",
   },
   {
     q: "How do inspections work?",
@@ -103,6 +108,10 @@ function FourEleven() {
           ))}
         </div>
       </section>
+
+      <Hb803Callout background="transparent" />
+
+
 
       {/* Blog */}
       <section

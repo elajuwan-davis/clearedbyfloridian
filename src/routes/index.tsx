@@ -35,6 +35,11 @@ import {
   ReplaceThePermitOffice,
   WatchItRun,
 } from "@/components/home-command-center";
+import { ProductWalkthroughs } from "@/components/product-walkthroughs";
+import { ClearedDifferenceTable } from "@/components/cleard-difference-table";
+import { Hb803Callout } from "@/components/hb803-callout";
+import { COUNTIES } from "@/lib/counties";
+
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -100,8 +105,12 @@ function HomePage() {
         <div id="watch-it-run">
           <WatchItRun />
         </div>
+        <ProductWalkthroughs />
         <VictoriaSection />
         <ReplaceThePermitOffice />
+        <ClearedDifferenceTable />
+        <Hb803Callout background={OFF} />
+        <CountyCoverage />
         <MunicipalityTrack />
         <StatsStrip />
         <TrustBar />
@@ -354,6 +363,59 @@ const SERVICES = [
 
 
 /* --------------------------- MUNICIPALITY TRACK -------------------------- */
+
+function CountyCoverage() {
+  return (
+    <section style={{ background: WHITE }}>
+      <div className="mx-auto max-w-7xl px-5 pb-20 pt-20 lg:px-8 md:pb-24">
+        <div
+          className="mb-6 flex items-center gap-3 text-[10.5px] font-bold uppercase tracking-[0.22em]"
+          style={{ color: GREEN }}
+        >
+          <span className="copper-hairline inline-block h-px w-7" />
+          Statewide coverage
+        </div>
+        <h2
+          className="max-w-3xl"
+          style={{
+            fontWeight: 700,
+            fontSize: "clamp(1.8rem, 3.4vw, 2.6rem)",
+            lineHeight: 1.06,
+            letterSpacing: "-0.035em",
+            color: INK,
+          }}
+        >
+          Every Florida county. Pick yours.
+        </h2>
+        <p className="mt-5 max-w-2xl text-[15.5px] leading-relaxed" style={{ color: GRAY }}>
+          Private-provider plan review and inspections under Florida Statute 553.791 — 2-day plan
+          review, same-day inspections.
+        </p>
+
+        <div className="mt-10 flex flex-wrap gap-3">
+          {COUNTIES.map((c) => (
+            <Link
+              key={c.slug}
+              to="/coverage/$county"
+              params={{ county: c.slug }}
+              className="px-4 py-2 text-[13px] no-underline transition-colors"
+              style={{ border: `1px solid ${BORDER}`, color: INK, background: OFF }}
+            >
+              {c.label}
+            </Link>
+          ))}
+          <Link
+            to="/coverage"
+            className="px-4 py-2 text-[13px] no-underline"
+            style={{ border: `1px solid ${TEAL}`, color: TEAL, fontWeight: 600 }}
+          >
+            All coverage →
+          </Link>
+        </div>
+      </div>
+    </section>
+  );
+}
 
 function MunicipalityTrack() {
   const CARD_BG = "#2F4F4F";
