@@ -5,6 +5,9 @@
 import { supabase } from "@/integrations/supabase/client";
 import { verifyDbprLicense, type DbprResult } from "@/lib/dbpr-api";
 
+export { canSubmitNewPermits, complianceFlags } from "@/lib/gc-company-flags";
+export type { ComplianceFlag } from "@/lib/gc-company-flags";
+
 export type DbprStatus = "active" | "inactive" | "expired";
 
 export type Qualifier = {
@@ -127,9 +130,7 @@ function mapRow(row: any): GcCompanyProfile {
     dba: (row.dba as string) ?? "",
     entityType: (row.entity_type as string) ?? "",
     primaryQualifier: asQualifier(row.primary_qualifier),
-    secondaryQualifier: row.secondary_qualifier
-      ? asQualifier(row.secondary_qualifier)
-      : null,
+    secondaryQualifier: row.secondary_qualifier ? asQualifier(row.secondary_qualifier) : null,
     generalLiability: asPolicy(row.general_liability),
     workersComp: asPolicy(row.workers_comp),
     bond: asBond(row.bond),
@@ -141,13 +142,6 @@ function notifyChanged() {
   if (typeof window !== "undefined") {
     window.dispatchEvent(new CustomEvent(GC_COMPANY_EVT));
   }
-}
-
-function daysUntil(dateStr: string | null | undefined): number {
-  if (!dateStr) return -Infinity;
-  const d = new Date(dateStr);
-  if (isNaN(d.getTime())) return -Infinity;
-  return Math.floor((d.getTime() - Date.now()) / 86400000);
 }
 
 export async function listGcCompanyProfiles(): Promise<GcCompanyProfile[]> {
@@ -273,55 +267,6 @@ export async function saveCurrentGcCompanyProfileWithDbpr(
     primaryQualifier,
     secondaryQualifier,
   });
-}
-
-export type ComplianceFlag = { level: "warn" | "blocked"; label: string };
-
-export function complianceFlags(profile: GcCompanyProfile): ComplianceFlag[] {
-  const flags: ComplianceFlag[] = [];
-
-  function checkExpiration(label: string, expiration: string, extra?: DbprStatus) {
-    if (extra === "expired") {
-      flags.push({ level: "blocked", label: `${label} expired` });
-      return;
-    }
-    // Skip blank dates so an unsaved / empty profile does not look "expired".
-    if (!expiration?.trim()) return;
-    const days = daysUntil(expiration);
-    if (days < 0) flags.push({ level: "blocked", label: `${label} expired` });
-    else if (days <= 60)
-      flags.push({
-        level: "warn",
-        label: `${label} expires in ${days} day${days === 1 ? "" : "s"}`,
-      });
-  }
-
-  checkExpiration(
-    `${profile.primaryQualifier.licenseType} license (${profile.primaryQualifier.name})`,
-    profile.primaryQualifier.expiration,
-    profile.primaryQualifier.dbprStatus,
-  );
-  if (profile.secondaryQualifier) {
-    checkExpiration(
-      `${profile.secondaryQualifier.licenseType} license (${profile.secondaryQualifier.name})`,
-      profile.secondaryQualifier.expiration,
-      profile.secondaryQualifier.dbprStatus,
-    );
-  }
-  checkExpiration("General liability insurance", profile.generalLiability.expiration);
-  checkExpiration("Workers compensation insurance", profile.workersComp.expiration);
-  if (profile.bond) checkExpiration("Surety bond", profile.bond.expiration);
-
-  return flags;
-}
-
-export function canSubmitNewPermits(profile: GcCompanyProfile): { ok: boolean; message?: string } {
-  const flags = complianceFlags(profile);
-  const blocked = flags.some((f) => f.level === "blocked");
-  if (blocked) {
-    return { ok: false, message: "License expired — update before submitting new permits" };
-  }
-  return { ok: true };
 }
 
 export function formatCents(cents: number): string {

@@ -4,6 +4,11 @@
 
 import { supabase } from "@/integrations/supabase/client";
 import type { SubRow } from "@/lib/subs-api";
+import { coverageGaps } from "@/lib/coverage-gaps";
+import type { CoverageGap, ProjectInsuranceRequirements } from "@/lib/coverage-gaps";
+
+export { coverageGaps };
+export type { CoverageGap, ProjectInsuranceRequirements };
 
 /**
  * One-time unlock price. Set MARKETPLACE_UNLOCK_PRICE_CENTS (server) and
@@ -132,70 +137,6 @@ export async function setMarketplaceListed(subId: string, listed: boolean): Prom
 }
 
 // --- Insurance / compliance disclosure -----------------------------------
-
-export type ProjectInsuranceRequirements = {
-  /** Cover has to still be in force on this date for this project. */
-  coverageNeededThrough: string | null;
-  w9Required: boolean;
-};
-
-export type CoverageGap = {
-  field: "coi" | "coi_expiration" | "license" | "license_expiration" | "w9";
-  message: string;
-};
-
-function isExpiredBy(date: string | null | undefined, by: string): boolean {
-  if (!date) return false;
-  return date < by;
-}
-
-/**
- * Compare one sub's insurance/licensing against a project's requirements.
- * Returns every gap found; an empty array means nothing to disclose.
- */
-export function coverageGaps(
-  sub: Pick<
-    MarketplaceSub,
-    "coi_expiration" | "license_expiration" | "has_coi" | "has_license" | "has_w9"
-  >,
-  req: ProjectInsuranceRequirements,
-): CoverageGap[] {
-  const today = new Date().toISOString().slice(0, 10);
-  const through = req.coverageNeededThrough || today;
-  const gaps: CoverageGap[] = [];
-
-  if (!sub.has_coi) {
-    gaps.push({ field: "coi", message: "No certificate of insurance on file" });
-  }
-  if (!sub.coi_expiration) {
-    gaps.push({ field: "coi_expiration", message: "COI expiration date unknown" });
-  } else if (isExpiredBy(sub.coi_expiration, today)) {
-    gaps.push({ field: "coi_expiration", message: `COI expired ${sub.coi_expiration}` });
-  } else if (isExpiredBy(sub.coi_expiration, through)) {
-    gaps.push({
-      field: "coi_expiration",
-      message: `COI expires ${sub.coi_expiration}, before this project needs cover through ${through}`,
-    });
-  }
-
-  if (!sub.has_license) {
-    gaps.push({ field: "license", message: "No license document on file" });
-  }
-  if (!sub.license_expiration) {
-    gaps.push({ field: "license_expiration", message: "License expiration date unknown" });
-  } else if (isExpiredBy(sub.license_expiration, today)) {
-    gaps.push({
-      field: "license_expiration",
-      message: `License expired ${sub.license_expiration}`,
-    });
-  }
-
-  if (req.w9Required && !sub.has_w9) {
-    gaps.push({ field: "w9", message: "No W-9 on file" });
-  }
-
-  return gaps;
-}
 
 /** Same check for one of the tenant's own subcontractor rows. */
 export function ownSubCoverageGaps(sub: SubRow, req: ProjectInsuranceRequirements): CoverageGap[] {
