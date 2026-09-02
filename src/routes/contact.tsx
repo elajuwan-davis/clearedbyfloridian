@@ -97,6 +97,7 @@ export const Route = createFileRoute("/contact")({
 
 function ContactPage() {
   const [submitting, setSubmitting] = useState(false);
+  const [jurisdiction, setJurisdiction] = useState("");
   return (
     <MarketingShell>
       <PageHeader
