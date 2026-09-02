@@ -113,6 +113,7 @@ export const tabGroups: TabGroup[] = [
       { label: "Staff Workload", to: "/admin/workload" },
       { label: "Audit Trail", to: "/admin/audit" },
       { label: "Pricing Tiers", to: "/admin/pricing" },
+      { label: "CRMs", to: "/admin/crms" },
     ],
   },
 ];

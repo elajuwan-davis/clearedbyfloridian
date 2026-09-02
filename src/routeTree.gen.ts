@@ -51,6 +51,7 @@ import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminAccessRequestsRouteImport } from './routes/admin.access-requests'
 import { Route as AdminActivityRouteImport } from './routes/admin.activity'
 import { Route as AdminAuditRouteImport } from './routes/admin.audit'
+import { Route as AdminCrmsRouteImport } from './routes/admin.crms'
 import { Route as AdminFeatureRequestsRouteImport } from './routes/admin.feature-requests'
 import { Route as AdminGcComplianceRouteImport } from './routes/admin.gc-compliance'
 import { Route as AdminInvitesRouteImport } from './routes/admin.invites'
@@ -355,6 +356,11 @@ const AdminActivityRoute = AdminActivityRouteImport.update({
 const AdminAuditRoute = AdminAuditRouteImport.update({
   id: '/admin/audit',
   path: '/admin/audit',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminCrmsRoute = AdminCrmsRouteImport.update({
+  id: '/admin/crms',
+  path: '/admin/crms',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminFeatureRequestsRoute = AdminFeatureRequestsRouteImport.update({
@@ -891,6 +897,7 @@ export interface FileRoutesByFullPath {
   '/admin/access-requests': typeof AdminAccessRequestsRoute
   '/admin/activity': typeof AdminActivityRoute
   '/admin/audit': typeof AdminAuditRoute
+  '/admin/crms': typeof AdminCrmsRoute
   '/admin/feature-requests': typeof AdminFeatureRequestsRoute
   '/admin/gc-compliance': typeof AdminGcComplianceRoute
   '/admin/invites': typeof AdminInvitesRoute
@@ -1028,6 +1035,7 @@ export interface FileRoutesByTo {
   '/admin/access-requests': typeof AdminAccessRequestsRoute
   '/admin/activity': typeof AdminActivityRoute
   '/admin/audit': typeof AdminAuditRoute
+  '/admin/crms': typeof AdminCrmsRoute
   '/admin/feature-requests': typeof AdminFeatureRequestsRoute
   '/admin/gc-compliance': typeof AdminGcComplianceRoute
   '/admin/invites': typeof AdminInvitesRoute
@@ -1166,6 +1174,7 @@ export interface FileRoutesById {
   '/admin/access-requests': typeof AdminAccessRequestsRoute
   '/admin/activity': typeof AdminActivityRoute
   '/admin/audit': typeof AdminAuditRoute
+  '/admin/crms': typeof AdminCrmsRoute
   '/admin/feature-requests': typeof AdminFeatureRequestsRoute
   '/admin/gc-compliance': typeof AdminGcComplianceRoute
   '/admin/invites': typeof AdminInvitesRoute
@@ -1307,6 +1316,7 @@ export interface FileRouteTypes {
     | '/admin/access-requests'
     | '/admin/activity'
     | '/admin/audit'
+    | '/admin/crms'
     | '/admin/feature-requests'
     | '/admin/gc-compliance'
     | '/admin/invites'
@@ -1444,6 +1454,7 @@ export interface FileRouteTypes {
     | '/admin/access-requests'
     | '/admin/activity'
     | '/admin/audit'
+    | '/admin/crms'
     | '/admin/feature-requests'
     | '/admin/gc-compliance'
     | '/admin/invites'
@@ -1581,6 +1592,7 @@ export interface FileRouteTypes {
     | '/admin/access-requests'
     | '/admin/activity'
     | '/admin/audit'
+    | '/admin/crms'
     | '/admin/feature-requests'
     | '/admin/gc-compliance'
     | '/admin/invites'
@@ -1721,6 +1733,7 @@ export interface RootRouteChildren {
   AdminAccessRequestsRoute: typeof AdminAccessRequestsRoute
   AdminActivityRoute: typeof AdminActivityRoute
   AdminAuditRoute: typeof AdminAuditRoute
+  AdminCrmsRoute: typeof AdminCrmsRoute
   AdminFeatureRequestsRoute: typeof AdminFeatureRequestsRoute
   AdminGcComplianceRoute: typeof AdminGcComplianceRoute
   AdminInvitesRoute: typeof AdminInvitesRoute
@@ -2064,6 +2077,13 @@ declare module '@tanstack/react-router' {
       path: '/admin/audit'
       fullPath: '/admin/audit'
       preLoaderRoute: typeof AdminAuditRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/crms': {
+      id: '/admin/crms'
+      path: '/admin/crms'
+      fullPath: '/admin/crms'
+      preLoaderRoute: typeof AdminCrmsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/feature-requests': {
@@ -2910,6 +2930,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminAccessRequestsRoute: AdminAccessRequestsRoute,
   AdminActivityRoute: AdminActivityRoute,
   AdminAuditRoute: AdminAuditRoute,
+  AdminCrmsRoute: AdminCrmsRoute,
   AdminFeatureRequestsRoute: AdminFeatureRequestsRoute,
   AdminGcComplianceRoute: AdminGcComplianceRoute,
   AdminInvitesRoute: AdminInvitesRoute,
