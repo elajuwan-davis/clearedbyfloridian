@@ -49,6 +49,8 @@ function SignupPage() {
   });
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
+  const [crm, setCrm] = useState("");
+  const [crmOther, setCrmOther] = useState("");
 
   function set<K extends keyof typeof form>(k: K, v: string) {
     setForm((f) => ({ ...f, [k]: v }));
