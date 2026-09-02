@@ -1352,6 +1352,29 @@ export function HeroStage() {
         />
       </div>
 
+      {/* pagination dots */}
+      <div className="mt-4 flex items-center justify-center gap-2">
+        {SCENES.map((s, i) => (
+          <button
+            key={s.label}
+            type="button"
+            aria-label={`Go to ${s.label}`}
+            aria-current={i === scene}
+            onClick={() => setScene(i)}
+            className="h-2 shrink-0 transition-all duration-300"
+            style={{
+              width: i === scene ? 20 : 8,
+              borderRadius: 999,
+              background: i === scene ? BRONZE : "rgba(103,49,71,0.35)",
+              border: "none",
+              padding: 0,
+              cursor: "pointer",
+            }}
+          />
+        ))}
+      </div>
+
+
       {/* pills */}
       <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
         <Link
