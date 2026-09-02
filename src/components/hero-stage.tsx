@@ -1255,10 +1255,10 @@ function SceneArrow({
       onClick={onClick}
       className="cl-glass inline-flex h-11 w-11 shrink-0 items-center justify-center text-[22px] leading-none transition-all duration-200 hover:scale-105"
       style={{
-        background: "rgba(47,79,79,0.08)",
-        border: "1px solid rgba(43,22,32,0.16)",
+        background: "rgba(103,49,71,0.72)",
+        border: "1px solid rgba(156,107,63,0.6)",
         backdropFilter: "blur(12px) saturate(150%)",
-        color: PLUM,
+        color: OAT,
         borderRadius: 999,
         cursor: "pointer",
       }}
@@ -1351,6 +1351,29 @@ export function HeroStage() {
           onClick={() => setScene((v) => (v + 1) % SCENES.length)}
         />
       </div>
+
+      {/* pagination dots */}
+      <div className="mt-4 flex items-center justify-center gap-2">
+        {SCENES.map((s, i) => (
+          <button
+            key={s.label}
+            type="button"
+            aria-label={`Go to ${s.label}`}
+            aria-current={i === scene}
+            onClick={() => setScene(i)}
+            className="h-2 shrink-0 transition-all duration-300"
+            style={{
+              width: i === scene ? 20 : 8,
+              borderRadius: 999,
+              background: i === scene ? BRONZE : "rgba(103,49,71,0.35)",
+              border: "none",
+              padding: 0,
+              cursor: "pointer",
+            }}
+          />
+        ))}
+      </div>
+
 
       {/* pills */}
       <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
