@@ -77,6 +77,10 @@ function SignupPage() {
       setError("Passwords don't match.");
       return;
     }
+    if (!isCrmAnswerComplete(crm, crmOther)) {
+      setError("Tell us which CRM you use.");
+      return;
+    }
     setState("submitting");
     try {
       await signUp({
@@ -87,6 +91,8 @@ function SignupPage() {
           email: form.email.trim(),
           phone: form.phone.trim() || null,
           password,
+          crm,
+          crm_other: crm === CRM_OTHER ? crmOther.trim() : null,
         },
       });
       await sendVerificationEmail();
