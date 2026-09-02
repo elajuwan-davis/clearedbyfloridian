@@ -155,16 +155,17 @@ export const subSettingsSection: NavSection = {
 };
 
 /**
- * Trial (self-serve) plan: the five places such an account can actually do
+ * Trial (self-serve) plan: the places such an account can actually do
  * something — file its own permits, keep its own portal credentials, talk to
- * Cleard, and manage its account. Everything else is gated
- * (see TRIAL_PATHS in src/lib/plan-access.ts).
+ * Cleard, manage its subscription, and manage its account. Everything else is
+ * gated (see TRIAL_PATHS in src/lib/plan-access.ts).
  */
 export const trialNavSections: NavSection[] = [
   dashboardSection,
   permitsSection,
   portalLoginsSection,
   messagesSection,
+  billingSection,
 ];
 
 /**

@@ -10,6 +10,7 @@
 // first charge lands 3 months after sign-up regardless of when the card was added.
 
 import { useCallback, useEffect, useState } from "react";
+import { Link } from "@tanstack/react-router";
 import { CreditCard, Check, Loader2, ShieldCheck } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
 import { StripeEmbedded } from "@/components/stripe-embedded";
@@ -267,8 +268,11 @@ export function TrialBillingBanner() {
         <p className="mt-1 text-[12px] leading-relaxed text-muted-foreground">
           {status.daysLeft} day{status.daysLeft === 1 ? "" : "s"} left. Your first payment
           {picked ? ` of ${formatMonthly(picked.monthlyCents)}` : ""} is on{" "}
-          {fmtDate(status.currentPeriodEnd ?? status.trialEndsAt)}. Manage or cancel any time in
-          Billing.
+          {fmtDate(status.currentPeriodEnd ?? status.trialEndsAt)}. Manage or cancel any time in{" "}
+          <Link to="/portal/billing" className="underline">
+            Billing
+          </Link>
+          .
         </p>
       </div>
     );
