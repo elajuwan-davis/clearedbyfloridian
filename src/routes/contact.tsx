@@ -118,6 +118,7 @@ function ContactPage() {
                   description: "A reviewer will respond within 4 business hours.",
                 });
                 (e.target as HTMLFormElement).reset();
+                setJurisdiction("");
               }, 700);
             }}
             className="space-y-6"
