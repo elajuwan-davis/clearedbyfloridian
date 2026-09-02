@@ -67,6 +67,7 @@ import { Route as BuildingDeptLoginsIndexRouteImport } from './routes/building-d
 import { Route as BuildingDeptLoginsImportRouteImport } from './routes/building-dept-logins.import'
 import { Route as BuildingDeptLoginsSubmitRouteImport } from './routes/building-dept-logins.submit'
 import { Route as CoverageIndexRouteImport } from './routes/coverage.index'
+import { Route as CoverageCountyRouteImport } from './routes/coverage.$county'
 import { Route as FormsIndexRouteImport } from './routes/forms.index'
 import { Route as FormsPaymentAuthorizationRouteImport } from './routes/forms.payment-authorization'
 import { Route as FormsPermitIntakeRouteImport } from './routes/forms.permit-intake'
@@ -434,6 +435,11 @@ const BuildingDeptLoginsSubmitRoute =
 const CoverageIndexRoute = CoverageIndexRouteImport.update({
   id: '/coverage/',
   path: '/coverage/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CoverageCountyRoute = CoverageCountyRouteImport.update({
+  id: '/coverage/$county',
+  path: '/coverage/$county',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FormsIndexRoute = FormsIndexRouteImport.update({
@@ -886,6 +892,7 @@ export interface FileRoutesByFullPath {
   '/blog/$slug': typeof BlogSlugRoute
   '/building-dept-logins/import': typeof BuildingDeptLoginsImportRoute
   '/building-dept-logins/submit': typeof BuildingDeptLoginsSubmitRoute
+  '/coverage/$county': typeof CoverageCountyRoute
   '/forms/payment-authorization': typeof FormsPaymentAuthorizationRoute
   '/forms/permit-intake': typeof FormsPermitIntakeRoute
   '/forms/subcontractors': typeof FormsSubcontractorsRoute
@@ -1020,6 +1027,7 @@ export interface FileRoutesByTo {
   '/blog/$slug': typeof BlogSlugRoute
   '/building-dept-logins/import': typeof BuildingDeptLoginsImportRoute
   '/building-dept-logins/submit': typeof BuildingDeptLoginsSubmitRoute
+  '/coverage/$county': typeof CoverageCountyRoute
   '/forms/payment-authorization': typeof FormsPaymentAuthorizationRoute
   '/forms/permit-intake': typeof FormsPermitIntakeRoute
   '/forms/subcontractors': typeof FormsSubcontractorsRoute
@@ -1155,6 +1163,7 @@ export interface FileRoutesById {
   '/blog/$slug': typeof BlogSlugRoute
   '/building-dept-logins/import': typeof BuildingDeptLoginsImportRoute
   '/building-dept-logins/submit': typeof BuildingDeptLoginsSubmitRoute
+  '/coverage/$county': typeof CoverageCountyRoute
   '/forms/payment-authorization': typeof FormsPaymentAuthorizationRoute
   '/forms/permit-intake': typeof FormsPermitIntakeRoute
   '/forms/subcontractors': typeof FormsSubcontractorsRoute
@@ -1293,6 +1302,7 @@ export interface FileRouteTypes {
     | '/blog/$slug'
     | '/building-dept-logins/import'
     | '/building-dept-logins/submit'
+    | '/coverage/$county'
     | '/forms/payment-authorization'
     | '/forms/permit-intake'
     | '/forms/subcontractors'
@@ -1427,6 +1437,7 @@ export interface FileRouteTypes {
     | '/blog/$slug'
     | '/building-dept-logins/import'
     | '/building-dept-logins/submit'
+    | '/coverage/$county'
     | '/forms/payment-authorization'
     | '/forms/permit-intake'
     | '/forms/subcontractors'
@@ -1561,6 +1572,7 @@ export interface FileRouteTypes {
     | '/blog/$slug'
     | '/building-dept-logins/import'
     | '/building-dept-logins/submit'
+    | '/coverage/$county'
     | '/forms/payment-authorization'
     | '/forms/permit-intake'
     | '/forms/subcontractors'
@@ -1698,6 +1710,7 @@ export interface RootRouteChildren {
   BlogSlugRoute: typeof BlogSlugRoute
   BuildingDeptLoginsImportRoute: typeof BuildingDeptLoginsImportRoute
   BuildingDeptLoginsSubmitRoute: typeof BuildingDeptLoginsSubmitRoute
+  CoverageCountyRoute: typeof CoverageCountyRoute
   HomeownerTokenRoute: typeof HomeownerTokenRoute
   InvestorAdminRoute: typeof InvestorAdminRoute
   JoinTokenRoute: typeof JoinTokenRoute
@@ -2137,6 +2150,13 @@ declare module '@tanstack/react-router' {
       path: '/coverage'
       fullPath: '/coverage/'
       preLoaderRoute: typeof CoverageIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/coverage/$county': {
+      id: '/coverage/$county'
+      path: '/coverage/$county'
+      fullPath: '/coverage/$county'
+      preLoaderRoute: typeof CoverageCountyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/forms/': {
@@ -2863,6 +2883,7 @@ const rootRouteChildren: RootRouteChildren = {
   BlogSlugRoute: BlogSlugRoute,
   BuildingDeptLoginsImportRoute: BuildingDeptLoginsImportRoute,
   BuildingDeptLoginsSubmitRoute: BuildingDeptLoginsSubmitRoute,
+  CoverageCountyRoute: CoverageCountyRoute,
   HomeownerTokenRoute: HomeownerTokenRoute,
   InvestorAdminRoute: InvestorAdminRoute,
   JoinTokenRoute: JoinTokenRoute,
