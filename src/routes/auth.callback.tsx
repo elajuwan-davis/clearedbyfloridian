@@ -61,21 +61,30 @@ function AuthCallback() {
         // A self-serve signup arrives here off its own confirmation link and still owes
         // the PAA signature, so it goes to onboarding rather than straight to a dashboard.
         // A brand-new Google account that just self-provisioned a trial tenant is the same case.
-        if (
+        const target =
           decision.reason === "provisioned" ||
           (typeof window !== "undefined" &&
             new URLSearchParams(window.location.search).get("entry") === "selfserve")
-        ) {
-          navigate({ to: "/onboarding", search: { entry: "selfserve" } as never, replace: true });
-          return;
-        }
-        const target =
-          decision.role === "admin"
-            ? "/dashboard"
+            ? "/onboarding"
             : decision.role === "subcontractor"
               ? "/sub-portal"
               : "/dashboard";
-        navigate({ to: target as never, replace: true });
+
+        // Google accounts never saw the /join form's CRM question — ask it once, here,
+        // before the portal opens. A lookup failure must not strand a valid sign-in.
+        let answered = true;
+        try {
+          const crm = await getMyCrmFn();
+          answered = Boolean(crm.crm);
+        } catch {
+          answered = true;
+        }
+        if (cancelled) return;
+        if (!answered) {
+          setState({ kind: "crm", target });
+          return;
+        }
+        goTo(target);
       } catch (e) {
         if (cancelled) return;
         // A transient backend-binding hiccup should read as "try again", not as a
