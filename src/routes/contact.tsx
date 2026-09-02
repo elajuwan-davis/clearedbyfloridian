@@ -6,8 +6,78 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { jurisdictions } from "@/lib/mock-data";
 import { toast } from "sonner";
+
+const FL_JURISDICTIONS = [
+  "All FL Jurisdictions",
+  "Alachua",
+  "Baker",
+  "Bay",
+  "Bradford",
+  "Brevard",
+  "Broward",
+  "Calhoun",
+  "Charlotte",
+  "Citrus",
+  "Clay",
+  "Collier",
+  "Columbia",
+  "DeSoto",
+  "Dixie",
+  "Duval (Consolidated with the City of Jacksonville)",
+  "Escambia",
+  "Flagler",
+  "Franklin",
+  "Gadsden",
+  "Gilchrist",
+  "Glades",
+  "Gulf",
+  "Hamilton",
+  "Hardee",
+  "Hendry",
+  "Hernando",
+  "Highlands",
+  "Hillsborough",
+  "Holmes",
+  "Indian River",
+  "Jackson",
+  "Jefferson",
+  "Lafayette",
+  "Lake",
+  "Lee",
+  "Leon",
+  "Levy",
+  "Liberty",
+  "Madison",
+  "Manatee",
+  "Marion",
+  "Martin",
+  "Miami-Dade",
+  "Monroe",
+  "Nassau",
+  "Okaloosa",
+  "Okeechobee",
+  "Orange",
+  "Osceola",
+  "Palm Beach",
+  "Pasco",
+  "Pinellas",
+  "Polk",
+  "Putnam",
+  "Santa Rosa",
+  "Sarasota",
+  "Seminole",
+  "St. Johns",
+  "St. Lucie",
+  "Sumter",
+  "Suwannee",
+  "Taylor",
+  "Union",
+  "Volusia",
+  "Wakulla",
+  "Walton",
+  "Washington",
+] as const;
 
 export const Route = createFileRoute("/contact")({
   head: () => ({
@@ -27,6 +97,7 @@ export const Route = createFileRoute("/contact")({
 
 function ContactPage() {
   const [submitting, setSubmitting] = useState(false);
+  const [jurisdiction, setJurisdiction] = useState("");
   return (
     <MarketingShell>
       <PageHeader
@@ -47,6 +118,7 @@ function ContactPage() {
                   description: "A reviewer will respond within 4 business hours.",
                 });
                 (e.target as HTMLFormElement).reset();
+                setJurisdiction("");
               }, 700);
             }}
             className="space-y-6"
@@ -66,16 +138,17 @@ function ContactPage() {
               </Field>
             </div>
             <Field label="Jurisdiction">
-              <Select>
+              <Select value={jurisdiction} onValueChange={setJurisdiction}>
                 <SelectTrigger className="h-11 rounded-sm w-full">
                   <SelectValue placeholder="Select jurisdiction" />
                 </SelectTrigger>
-                <SelectContent>
-                  {jurisdictions.map((j) => (
+                <SelectContent className="max-h-72">
+                  {FL_JURISDICTIONS.map((j) => (
                     <SelectItem key={j} value={j}>{j}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
+              <input type="hidden" name="jurisdiction" value={jurisdiction} />
             </Field>
             <Field label="Project address">
               <Input required name="address" placeholder="1217 Main St, Suite 200" className="h-11 rounded-sm" />
