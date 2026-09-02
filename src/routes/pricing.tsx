@@ -183,6 +183,7 @@ function PricingLockOverlay() {
 function PricingPage() {
   return (
     <MarketingShell>
+      <PermitCostCalculator />
       <div className="relative" style={{ background: "#FAF3E6", color: INK }}>
         <PricingLockOverlay />
         <div
