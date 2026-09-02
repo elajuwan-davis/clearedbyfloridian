@@ -21,6 +21,8 @@ type State =
   | { kind: "working" }
   | { kind: "pending"; email: string | null; filed: boolean }
   | { kind: "unverified"; email: string | null }
+  /** Google account that has never answered the CRM question — required before entry. */
+  | { kind: "crm"; target: string }
   | { kind: "error"; message: string };
 
 function AuthCallback() {
