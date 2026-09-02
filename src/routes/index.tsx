@@ -108,7 +108,7 @@ function HomePage() {
         <ProductWalkthroughs />
         <VictoriaSection />
         <ReplaceThePermitOffice />
-        <ClearedDifferenceTable />
+        
         <Hb803Callout background={OFF} />
         <CountyCoverage />
         <MunicipalityTrack />
