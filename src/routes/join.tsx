@@ -75,6 +75,8 @@ function JoinPage() {
           email: form.email.trim(),
           phone: form.phone.trim() || null,
           password,
+          crm,
+          crm_other: crm === CRM_OTHER ? crmOther.trim() : null,
         },
       });
       // The account exists but is unconfirmed: prove the address before it can sign in.
