@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { selfServeSignupFn } from "@/lib/self-serve-signup.functions";
+import { CRM_OPTIONS, CRM_OTHER, CRM_QUESTION, isCrmAnswerComplete } from "@/lib/crm-options";
 
 export const Route = createFileRoute("/signup")({
   head: () => ({
@@ -48,6 +49,8 @@ function SignupPage() {
   });
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
+  const [crm, setCrm] = useState("");
+  const [crmOther, setCrmOther] = useState("");
 
   function set<K extends keyof typeof form>(k: K, v: string) {
     setForm((f) => ({ ...f, [k]: v }));
@@ -74,6 +77,10 @@ function SignupPage() {
       setError("Passwords don't match.");
       return;
     }
+    if (!isCrmAnswerComplete(crm, crmOther)) {
+      setError("Tell us which CRM you use.");
+      return;
+    }
     setState("submitting");
     try {
       await signUp({
@@ -84,6 +91,8 @@ function SignupPage() {
           email: form.email.trim(),
           phone: form.phone.trim() || null,
           password,
+          crm,
+          crm_other: crm === CRM_OTHER ? crmOther.trim() : null,
         },
       });
       await sendVerificationEmail();
@@ -302,6 +311,33 @@ function SignupPage() {
                     />
                   </div>
                 ))}
+
+                <div className="space-y-1.5">
+                  <Label htmlFor="su-crm">{CRM_QUESTION}</Label>
+                  <select
+                    id="su-crm"
+                    required
+                    value={crm}
+                    onChange={(e) => setCrm(e.target.value)}
+                    className="flex h-10 w-full border border-input bg-background px-3 py-2 text-sm outline-none"
+                  >
+                    <option value="">Select one…</option>
+                    {CRM_OPTIONS.map((o) => (
+                      <option key={o} value={o}>
+                        {o}
+                      </option>
+                    ))}
+                  </select>
+                  {crm === CRM_OTHER && (
+                    <Input
+                      required
+                      aria-label="Which CRM do you use?"
+                      placeholder="Which tool do you use?"
+                      value={crmOther}
+                      onChange={(e) => setCrmOther(e.target.value)}
+                    />
+                  )}
+                </div>
 
                 <div className="space-y-1.5">
                   <Label htmlFor="su-password">Password</Label>
