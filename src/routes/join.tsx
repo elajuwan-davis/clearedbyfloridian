@@ -40,6 +40,8 @@ function JoinPage() {
   });
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
+  const [crm, setCrm] = useState("");
+  const [crmOther, setCrmOther] = useState("");
 
   function set<K extends keyof typeof form>(k: K, v: string) {
     setForm((f) => ({ ...f, [k]: v }));
@@ -47,6 +49,11 @@ function JoinPage() {
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (!isCrmAnswerComplete(crm, crmOther)) {
+      setState("error");
+      setErrorMsg("Please tell us which project management or CRM software you use.");
+      return;
+    }
     if (password.length < 8) {
       setState("error");
       setErrorMsg("Password must be at least 8 characters.");
