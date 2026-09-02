@@ -30,6 +30,10 @@ const ITEMS: Array<{ q: string; a: string }> = [
     a: "2-day plan review on every submittal we handle as your private provider.",
   },
   {
+    q: "Do I get a permit fee reduction when I use a private provider?",
+    a: "Yes. Under Florida House Bill 803 (effective July 1, 2026), jurisdictions must reduce permit fees when a private provider is used — at least 25% when a private provider performs plan review or inspections, and at least 50% when a private provider performs both. Florida law requires this reduction, and Cleard verifies it's applied to every eligible permit.",
+  },
+  {
     q: "How do inspections work?",
     a: "Same-day inspections, coordinated and documented in the portal with photos and results attached to the permit.",
   },
