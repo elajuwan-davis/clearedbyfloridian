@@ -1,9 +1,11 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { evaluatePortalAccessFn } from "@/lib/google-access.functions";
 import { isMissingBackendEnvError } from "@/lib/env-error";
+import { getMyCrmFn } from "@/lib/crm.functions";
+import { CrmCaptureDialog } from "@/components/crm-capture-dialog";
 
 export const Route = createFileRoute("/auth/callback")({
   ssr: false,
@@ -119,11 +121,13 @@ function AuthCallback() {
     return () => {
       cancelled = true;
     };
-  }, [navigate]);
+  }, [navigate, goTo]);
 
   return (
     <div className="cl-public min-h-screen flex items-center justify-center px-6 bg-background">
       <div className="w-full max-w-md space-y-4 text-center">
+        {state.kind === "crm" && <CrmCaptureDialog onDone={() => goTo(state.target)} />}
+
         {state.kind === "working" && (
           <>
             <Loader2 className="h-5 w-5 animate-spin mx-auto" />
