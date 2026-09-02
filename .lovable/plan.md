@@ -1,75 +1,52 @@
-## Goal
+# Comparison page, Integrations page, CRM capture, and admin CRMs tab
 
-Stop cross-tenant reads of HOA contact PII (`hoa_contact_name`, `hoa_contact_email`, `hoa_contact_phone`) while keeping the shared community repository and the ability to submit to a community whose template another tenant created. Contact PII becomes usable server-side only, never sent to the browser.
+## 1. Comparison page (move off the homepage)
 
-## 1. Database (one migration, only `hoa_templates` policies touched)
+- New route `/comparison` (marketing shell) that hosts the existing "The Cleard Difference" table component — Permit Expediter vs Private Provider vs Cleard, 10 rows, footnote intact.
+- Remove `<ClearedDifferenceTable />` from the homepage (`src/routes/index.tsx`) so the homepage gets shorter.
+- Add "Comparison" to the footer link column in `src/components/marketing-shell.tsx` (next to Pricing / How it works). Not added to the top nav.
+- Page gets its own title/description/OG meta.
 
-Before:
-```sql
-CREATE POLICY "hoa_templates read all authenticated" ON public.hoa_templates
-FOR SELECT USING (true);
-```
-After:
-```sql
-CREATE POLICY "hoa_templates read own tenant" ON public.hoa_templates
-FOR SELECT TO authenticated
-USING (is_admin() OR created_by_tenant_id = current_tenant_id());
-```
-Plus a non-PII sharing view (owner-owned, so it reads past the base table's RLS; access controlled by GRANT to `authenticated` only, never `anon`):
-```sql
-CREATE VIEW public.hoa_templates_shared AS
-SELECT id, community_name, city, submission_method, submission_portal_url,
-       required_documents, deposit_amount_cents, deposit_type, arc_meeting_notes,
-       form_template, uploaded_form_path, last_used_at, usage_count,
-       created_by_tenant_id, created_at, updated_at, current_version,
-       (hoa_contact_email IS NOT NULL) AS has_contact_email
-FROM public.hoa_templates;
-GRANT SELECT ON public.hoa_templates_shared TO authenticated;
-```
-No contact columns in the view. `has_contact_email` is a boolean only — it drives the "can send" check without leaking the address. Insert/update/delete policies on `hoa_templates` are untouched, and no other table is touched.
+## 2. Part A — Integrations page
 
-## 2. What changes in `src/lib/hoa-templates.ts`
+- New route `/integrations`, linked in the main nav next to Pricing and 411 (header + mobile menu + footer).
+- Headline "Cleard plugs into the tools you already run." with the given subhead.
+- Card grid for JobTread, ServiceTitan, Procore, Netic.ai, Avoca.ai, Podium.com, Craftflow. Each card: placeholder monogram/icon tile (no fabricated brand logos), platform name, a "Coming Soon" badge on every card, and one line of contractor-facing benefit copy.
+- Below the grid: "Don't see your platform listed?" form — name, email, platform — writing to a new `integration_requests` table. Success/error states inline, no fake toast.
+- Nordic Luxury marketing palette (oat/slate/plum/copper), zero-radius, no emojis.
 
-- `listHoaTemplates()` / `searchHoaTemplates()` / `getHoaTemplate()` read from `hoa_templates_shared` and return a new `HoaTemplateShared` type (no contact fields, plus `has_contact_email`). This is what the picker and detail page use.
-- New `getHoaTemplateOwn()` reads the base table (full row incl. contact) — used only by the create/edit + versioning path, which is already own-tenant/creator-only.
-- `searchHoaTemplates()` drops `hoa_contact_name` from its `.or()` filter; `/portal/hoa-submittals/new`'s client-side filter drops the same field. Search still matches community and city.
+## 3. Shared data field (Parts B, C, D)
 
-## 3. What changes in `src/lib/hoa-send.ts`
+One migration adds to `public.profiles`:
+- `current_crm text`
+- `current_crm_other text`
+- `crm_source text` — `'signup_form'` or `'google'`
+- `crm_captured_at timestamptz`
 
-The whole send routine moves server-side. `hoa-send.ts` becomes a thin client caller; the logic lands in `src/lib/hoa-send.server.ts`, exposed by `sendHoaSubmittalFn` in `src/lib/hoa.functions.ts` (`requireSupabaseAuth` middleware).
+Company name and signup date come from the existing tenant/profile records, so nothing is duplicated. A shared `src/lib/crm-options.ts` holds the single canonical option list used by the sign-up select, the Google modal, and the admin filter.
 
-Inside the handler:
-1. Read the submittal via `context.supabase` — RLS confirms the caller's tenant owns it. No submittal, no send.
-2. Resolve the template contact with the service-role client (loaded inside the handler, after that check), reading only `hoa_contact_name/email/phone`, `community_name`, `city`, `deposit_amount_cents` for that one `template_id`.
-3. Build the HOA email body and the homeowner deposit notice exactly as today (same wording, same attachments, same `Dear …`/contact-block interpolation), enqueue both through `context.supabase` so `email_outbox` inserts stay tenant-scoped and attributed to the caller.
-4. Update the submittal status/timestamps and write the two `hoa_submittal_events` rows via `context.supabase` — same values as today.
-5. Bump `last_used_at`/`usage_count` with the admin client so shared-repository usage stats work even for another tenant's template (today this silently no-ops cross-tenant, since template UPDATE is admin-or-creator).
+New table `public.integration_requests` (name, email, platform, created_at) with GRANTs, RLS: anon+authenticated INSERT, admin-only SELECT.
 
-Return shape stays `{ hoaEmailId, homeownerEmailId, warnings }`. The "No HOA contact email on file" error keeps its exact text but is now raised server-side.
+## 4. Part B — sign-up form field
 
-## 4. What changes on `/portal/hoa-submittals/$id`
+- In `/join`, a required select "Which project management or CRM software do you currently use?" placed after Contractor License Number and before Email, with the exact option order given. Choosing "Other (please specify)" reveals a required free-text input directly below.
+- The value is passed into the existing `selfServeSignupFn` server function, which writes it onto the new user's profile row at creation time (same handler that already creates tenant + user — no new account-creation path, no change to the rate limit, verification, or PAA gates).
 
-- Contact block: `hoa_contact_name` and `hoa_contact_email` lines are removed. It keeps template name, city, deposit, and gains a neutral line — "HOA contact on file · used automatically when sending" — rendered from `has_contact_email`. If the flag is false it reads "No HOA contact on file", matching the old failure hint.
-- `sendToHoa()` pre-check switches from `template?.hoa_contact_email` to `template?.has_contact_email`, so the user still gets the same early toast instead of a failed send.
-- Send call goes through `useServerFn(sendHoaSubmittalFn)`; the surrounding confirm dialogs, PDF-generation prompt, and toasts are unchanged.
+## 5. Part C — Google sign-in modal
 
-## 5. Reply logging (the client-side default you flagged)
+- In `/auth/callback`, after the Supabase session hydrates and portal access is approved, check whether the signed-in profile already has `current_crm`. If not, render a non-dismissible modal ("One quick question", same dropdown + Other behaviour, single "Continue" button) before any redirect. Continue is disabled until a selection exists (and Other text is filled).
+- Submitting writes the answer with `crm_source = 'google'`, then the callback proceeds to its normal destination (onboarding/PAA or dashboard) exactly as today.
+- Users who already answered are never asked again; sign-in for existing accounts is unaffected apart from this one-time question.
 
-Today `submitReply()` falls back to `template?.hoa_contact_email` / `hoa_contact_name` in the browser — that breaks once the email isn't there. Fix: a second server function, `logHoaReplyFn`, takes `{ submittalId, direction, subject, bodyText, fromEmail? }`. It verifies submittal access via `context.supabase`, and when `fromEmail` is empty it resolves the default sender email and name from the template contact server-side, then inserts the `hoa_submittal_replies` row as the caller. Behavior is identical: leave the field blank and the reply is attributed to the HOA contact on file.
+## 6. Part D — admin CRMs tab
 
-- The input placeholder changes from `From email (default hoa@example.com)` to `From email (defaults to the HOA contact on file)`.
-- The `hoa_reply_logged` timeline event stays a client call — it carries no contact data.
-
-## 6. Tests
-
-Two fake tenants in a rolled-back transaction (no persisted data):
-- Same-tenant read of the base table returns full rows including contact fields.
-- Cross-tenant read of the base table returns zero rows.
-- Cross-tenant read of `hoa_templates_shared` returns the community with `has_contact_email = true` and no contact columns available at all.
-- Send path: confirm the server-side resolution picks the correct contact for another tenant's template, then grep the browser-facing modules to prove no contact column is selected client-side.
+- New route `/admin/crms`, added to the Admin tab group in `src/lib/portal-tabs.ts` so it sits alongside Invite Pipeline, Feature Access Requests, etc. Uses the same `useSession().isAdmin` gate + `AdminOnly` UI wrapper as the other admin pages.
+- Summary row: live counts per CRM ("ServiceTitan: 42 · JobTread: 18 · …").
+- Table: User name / Company / CRM selected / Other value / Signup date / Signed up via. Sortable on every column, plus a CRM dropdown filter above it.
+- Data is read through an admin-only server function (RLS-backed), not a client-side broad read.
 
 ## Technical notes
 
-- The view is intentionally not `security_invoker` — that's what allows cross-tenant browsing of non-PII after the base table is locked down. Its exposure is bounded by the column list plus the `authenticated`-only grant.
-- Service-role usage is confined to the two handlers, loaded via dynamic import inside the handler after the caller's access to the submittal has been proven through RLS.
-- Cross-tenant template *edits* remain impossible; only reads of non-PII columns and server-side contact use are shared.
+- One migration file adds the profile columns and the `integration_requests` table with GRANTs + RLS policies; the CRM columns are nullable so existing accounts keep working (they simply show as unanswered).
+- The Google modal reads/writes through server functions so no client code needs elevated access.
+- No change to admin access control itself — the new tab reuses the existing admin gate.
