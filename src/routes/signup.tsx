@@ -313,6 +313,33 @@ function SignupPage() {
                 ))}
 
                 <div className="space-y-1.5">
+                  <Label htmlFor="su-crm">{CRM_QUESTION}</Label>
+                  <select
+                    id="su-crm"
+                    required
+                    value={crm}
+                    onChange={(e) => setCrm(e.target.value)}
+                    className="flex h-10 w-full border border-input bg-background px-3 py-2 text-sm outline-none"
+                  >
+                    <option value="">Select one…</option>
+                    {CRM_OPTIONS.map((o) => (
+                      <option key={o} value={o}>
+                        {o}
+                      </option>
+                    ))}
+                  </select>
+                  {crm === CRM_OTHER && (
+                    <Input
+                      required
+                      aria-label="Which CRM do you use?"
+                      placeholder="Which tool do you use?"
+                      value={crmOther}
+                      onChange={(e) => setCrmOther(e.target.value)}
+                    />
+                  )}
+                </div>
+
+                <div className="space-y-1.5">
                   <Label htmlFor="su-password">Password</Label>
                   <Input
                     id="su-password"
