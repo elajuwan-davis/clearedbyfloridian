@@ -29,6 +29,18 @@ function AuthCallback() {
   const navigate = useNavigate();
   const [state, setState] = useState<State>({ kind: "working" });
 
+  const goTo = useCallback(
+    (target: string) => {
+      if (target === "/onboarding") {
+        navigate({ to: "/onboarding", search: { entry: "selfserve" } as never, replace: true });
+        return;
+      }
+      navigate({ to: target as never, replace: true });
+    },
+    [navigate],
+  );
+
+
   useEffect(() => {
     let cancelled = false;
 
