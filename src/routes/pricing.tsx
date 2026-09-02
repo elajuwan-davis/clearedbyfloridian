@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Check, Lock } from "lucide-react";
 
 import { MarketingShell } from "@/components/marketing-shell";
+import { PermitCostCalculator } from "@/components/permit-cost-calculator";
 
 export const Route = createFileRoute("/pricing")({
   head: () => ({
