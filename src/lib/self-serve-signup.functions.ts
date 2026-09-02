@@ -20,6 +20,9 @@ const SelfServeInput = z.object({
   email: z.string().email(),
   phone: z.string().max(40).optional().nullable(),
   password: z.string().min(8),
+  /** Which project management / CRM tool the signup reported (asked on the form). */
+  crm: z.string().max(120).optional().nullable(),
+  crm_other: z.string().max(200).optional().nullable(),
 });
 
 /** Supabase reports a taken email in a few different shapes depending on the endpoint. */
