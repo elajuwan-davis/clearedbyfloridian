@@ -14,6 +14,7 @@ import { Route as R411RouteImport } from './routes/411'
 import { Route as AskVictoriaRouteImport } from './routes/ask-victoria'
 import { Route as CleardapprovalRouteImport } from './routes/cleardapproval'
 import { Route as CompareRouteImport } from './routes/compare'
+import { Route as ComparisonRouteImport } from './routes/comparison'
 import { Route as ComplianceRouteImport } from './routes/compliance'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as DashboardRouteImport } from './routes/dashboard'
@@ -21,6 +22,7 @@ import { Route as FeeCalculatorRouteImport } from './routes/fee-calculator'
 import { Route as ForContractorsRouteImport } from './routes/for-contractors'
 import { Route as FormsRouteImport } from './routes/forms'
 import { Route as InsuranceRouteImport } from './routes/insurance'
+import { Route as IntegrationsRouteImport } from './routes/integrations'
 import { Route as InvestorRouteImport } from './routes/investor'
 import { Route as InvoicesRouteImport } from './routes/invoices'
 import { Route as JoinRouteImport } from './routes/join'
@@ -49,6 +51,7 @@ import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminAccessRequestsRouteImport } from './routes/admin.access-requests'
 import { Route as AdminActivityRouteImport } from './routes/admin.activity'
 import { Route as AdminAuditRouteImport } from './routes/admin.audit'
+import { Route as AdminCrmsRouteImport } from './routes/admin.crms'
 import { Route as AdminFeatureRequestsRouteImport } from './routes/admin.feature-requests'
 import { Route as AdminGcComplianceRouteImport } from './routes/admin.gc-compliance'
 import { Route as AdminInvitesRouteImport } from './routes/admin.invites'
@@ -170,6 +173,11 @@ const CompareRoute = CompareRouteImport.update({
   path: '/compare',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ComparisonRoute = ComparisonRouteImport.update({
+  id: '/comparison',
+  path: '/comparison',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ComplianceRoute = ComplianceRouteImport.update({
   id: '/compliance',
   path: '/compliance',
@@ -203,6 +211,11 @@ const FormsRoute = FormsRouteImport.update({
 const InsuranceRoute = InsuranceRouteImport.update({
   id: '/insurance',
   path: '/insurance',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const IntegrationsRoute = IntegrationsRouteImport.update({
+  id: '/integrations',
+  path: '/integrations',
   getParentRoute: () => rootRouteImport,
 } as any)
 const InvestorRoute = InvestorRouteImport.update({
@@ -343,6 +356,11 @@ const AdminActivityRoute = AdminActivityRouteImport.update({
 const AdminAuditRoute = AdminAuditRouteImport.update({
   id: '/admin/audit',
   path: '/admin/audit',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminCrmsRoute = AdminCrmsRouteImport.update({
+  id: '/admin/crms',
+  path: '/admin/crms',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminFeatureRequestsRoute = AdminFeatureRequestsRouteImport.update({
@@ -843,6 +861,7 @@ export interface FileRoutesByFullPath {
   '/ask-victoria': typeof AskVictoriaRoute
   '/cleardapproval': typeof CleardapprovalRoute
   '/compare': typeof CompareRoute
+  '/comparison': typeof ComparisonRoute
   '/compliance': typeof ComplianceRoute
   '/contact': typeof ContactRoute
   '/dashboard': typeof DashboardRoute
@@ -850,6 +869,7 @@ export interface FileRoutesByFullPath {
   '/for-contractors': typeof ForContractorsRoute
   '/forms': typeof FormsRouteWithChildren
   '/insurance': typeof InsuranceRoute
+  '/integrations': typeof IntegrationsRoute
   '/investor': typeof InvestorRoute
   '/invoices': typeof InvoicesRoute
   '/join': typeof JoinRoute
@@ -877,6 +897,7 @@ export interface FileRoutesByFullPath {
   '/admin/access-requests': typeof AdminAccessRequestsRoute
   '/admin/activity': typeof AdminActivityRoute
   '/admin/audit': typeof AdminAuditRoute
+  '/admin/crms': typeof AdminCrmsRoute
   '/admin/feature-requests': typeof AdminFeatureRequestsRoute
   '/admin/gc-compliance': typeof AdminGcComplianceRoute
   '/admin/invites': typeof AdminInvitesRoute
@@ -980,12 +1001,14 @@ export interface FileRoutesByTo {
   '/ask-victoria': typeof AskVictoriaRoute
   '/cleardapproval': typeof CleardapprovalRoute
   '/compare': typeof CompareRoute
+  '/comparison': typeof ComparisonRoute
   '/compliance': typeof ComplianceRoute
   '/contact': typeof ContactRoute
   '/dashboard': typeof DashboardRoute
   '/fee-calculator': typeof FeeCalculatorRoute
   '/for-contractors': typeof ForContractorsRoute
   '/insurance': typeof InsuranceRoute
+  '/integrations': typeof IntegrationsRoute
   '/investor': typeof InvestorRoute
   '/invoices': typeof InvoicesRoute
   '/join': typeof JoinRoute
@@ -1012,6 +1035,7 @@ export interface FileRoutesByTo {
   '/admin/access-requests': typeof AdminAccessRequestsRoute
   '/admin/activity': typeof AdminActivityRoute
   '/admin/audit': typeof AdminAuditRoute
+  '/admin/crms': typeof AdminCrmsRoute
   '/admin/feature-requests': typeof AdminFeatureRequestsRoute
   '/admin/gc-compliance': typeof AdminGcComplianceRoute
   '/admin/invites': typeof AdminInvitesRoute
@@ -1114,6 +1138,7 @@ export interface FileRoutesById {
   '/ask-victoria': typeof AskVictoriaRoute
   '/cleardapproval': typeof CleardapprovalRoute
   '/compare': typeof CompareRoute
+  '/comparison': typeof ComparisonRoute
   '/compliance': typeof ComplianceRoute
   '/contact': typeof ContactRoute
   '/dashboard': typeof DashboardRoute
@@ -1121,6 +1146,7 @@ export interface FileRoutesById {
   '/for-contractors': typeof ForContractorsRoute
   '/forms': typeof FormsRouteWithChildren
   '/insurance': typeof InsuranceRoute
+  '/integrations': typeof IntegrationsRoute
   '/investor': typeof InvestorRoute
   '/invoices': typeof InvoicesRoute
   '/join': typeof JoinRoute
@@ -1148,6 +1174,7 @@ export interface FileRoutesById {
   '/admin/access-requests': typeof AdminAccessRequestsRoute
   '/admin/activity': typeof AdminActivityRoute
   '/admin/audit': typeof AdminAuditRoute
+  '/admin/crms': typeof AdminCrmsRoute
   '/admin/feature-requests': typeof AdminFeatureRequestsRoute
   '/admin/gc-compliance': typeof AdminGcComplianceRoute
   '/admin/invites': typeof AdminInvitesRoute
@@ -1253,6 +1280,7 @@ export interface FileRouteTypes {
     | '/ask-victoria'
     | '/cleardapproval'
     | '/compare'
+    | '/comparison'
     | '/compliance'
     | '/contact'
     | '/dashboard'
@@ -1260,6 +1288,7 @@ export interface FileRouteTypes {
     | '/for-contractors'
     | '/forms'
     | '/insurance'
+    | '/integrations'
     | '/investor'
     | '/invoices'
     | '/join'
@@ -1287,6 +1316,7 @@ export interface FileRouteTypes {
     | '/admin/access-requests'
     | '/admin/activity'
     | '/admin/audit'
+    | '/admin/crms'
     | '/admin/feature-requests'
     | '/admin/gc-compliance'
     | '/admin/invites'
@@ -1390,12 +1420,14 @@ export interface FileRouteTypes {
     | '/ask-victoria'
     | '/cleardapproval'
     | '/compare'
+    | '/comparison'
     | '/compliance'
     | '/contact'
     | '/dashboard'
     | '/fee-calculator'
     | '/for-contractors'
     | '/insurance'
+    | '/integrations'
     | '/investor'
     | '/invoices'
     | '/join'
@@ -1422,6 +1454,7 @@ export interface FileRouteTypes {
     | '/admin/access-requests'
     | '/admin/activity'
     | '/admin/audit'
+    | '/admin/crms'
     | '/admin/feature-requests'
     | '/admin/gc-compliance'
     | '/admin/invites'
@@ -1523,6 +1556,7 @@ export interface FileRouteTypes {
     | '/ask-victoria'
     | '/cleardapproval'
     | '/compare'
+    | '/comparison'
     | '/compliance'
     | '/contact'
     | '/dashboard'
@@ -1530,6 +1564,7 @@ export interface FileRouteTypes {
     | '/for-contractors'
     | '/forms'
     | '/insurance'
+    | '/integrations'
     | '/investor'
     | '/invoices'
     | '/join'
@@ -1557,6 +1592,7 @@ export interface FileRouteTypes {
     | '/admin/access-requests'
     | '/admin/activity'
     | '/admin/audit'
+    | '/admin/crms'
     | '/admin/feature-requests'
     | '/admin/gc-compliance'
     | '/admin/invites'
@@ -1661,6 +1697,7 @@ export interface RootRouteChildren {
   AskVictoriaRoute: typeof AskVictoriaRoute
   CleardapprovalRoute: typeof CleardapprovalRoute
   CompareRoute: typeof CompareRoute
+  ComparisonRoute: typeof ComparisonRoute
   ComplianceRoute: typeof ComplianceRoute
   ContactRoute: typeof ContactRoute
   DashboardRoute: typeof DashboardRoute
@@ -1668,6 +1705,7 @@ export interface RootRouteChildren {
   ForContractorsRoute: typeof ForContractorsRoute
   FormsRoute: typeof FormsRouteWithChildren
   InsuranceRoute: typeof InsuranceRoute
+  IntegrationsRoute: typeof IntegrationsRoute
   InvestorRoute: typeof InvestorRoute
   InvoicesRoute: typeof InvoicesRoute
   JoinRoute: typeof JoinRoute
@@ -1695,6 +1733,7 @@ export interface RootRouteChildren {
   AdminAccessRequestsRoute: typeof AdminAccessRequestsRoute
   AdminActivityRoute: typeof AdminActivityRoute
   AdminAuditRoute: typeof AdminAuditRoute
+  AdminCrmsRoute: typeof AdminCrmsRoute
   AdminFeatureRequestsRoute: typeof AdminFeatureRequestsRoute
   AdminGcComplianceRoute: typeof AdminGcComplianceRoute
   AdminInvitesRoute: typeof AdminInvitesRoute
@@ -1781,6 +1820,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CompareRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/comparison': {
+      id: '/comparison'
+      path: '/comparison'
+      fullPath: '/comparison'
+      preLoaderRoute: typeof ComparisonRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/compliance': {
       id: '/compliance'
       path: '/compliance'
@@ -1828,6 +1874,13 @@ declare module '@tanstack/react-router' {
       path: '/insurance'
       fullPath: '/insurance'
       preLoaderRoute: typeof InsuranceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/integrations': {
+      id: '/integrations'
+      path: '/integrations'
+      fullPath: '/integrations'
+      preLoaderRoute: typeof IntegrationsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/investor': {
@@ -2024,6 +2077,13 @@ declare module '@tanstack/react-router' {
       path: '/admin/audit'
       fullPath: '/admin/audit'
       preLoaderRoute: typeof AdminAuditRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/crms': {
+      id: '/admin/crms'
+      path: '/admin/crms'
+      fullPath: '/admin/crms'
+      preLoaderRoute: typeof AdminCrmsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/feature-requests': {
@@ -2834,6 +2894,7 @@ const rootRouteChildren: RootRouteChildren = {
   AskVictoriaRoute: AskVictoriaRoute,
   CleardapprovalRoute: CleardapprovalRoute,
   CompareRoute: CompareRoute,
+  ComparisonRoute: ComparisonRoute,
   ComplianceRoute: ComplianceRoute,
   ContactRoute: ContactRoute,
   DashboardRoute: DashboardRoute,
@@ -2841,6 +2902,7 @@ const rootRouteChildren: RootRouteChildren = {
   ForContractorsRoute: ForContractorsRoute,
   FormsRoute: FormsRouteWithChildren,
   InsuranceRoute: InsuranceRoute,
+  IntegrationsRoute: IntegrationsRoute,
   InvestorRoute: InvestorRoute,
   InvoicesRoute: InvoicesRoute,
   JoinRoute: JoinRoute,
@@ -2868,6 +2930,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminAccessRequestsRoute: AdminAccessRequestsRoute,
   AdminActivityRoute: AdminActivityRoute,
   AdminAuditRoute: AdminAuditRoute,
+  AdminCrmsRoute: AdminCrmsRoute,
   AdminFeatureRequestsRoute: AdminFeatureRequestsRoute,
   AdminGcComplianceRoute: AdminGcComplianceRoute,
   AdminInvitesRoute: AdminInvitesRoute,

@@ -6,6 +6,12 @@ import { MarketingShell } from "@/components/marketing-shell";
 import { VictoriaVoiceSignup, type VictoriaField } from "@/components/victoria-voice-signup";
 import { selfServeSignupFn } from "@/lib/self-serve-signup.functions";
 import { supabase } from "@/integrations/supabase/client";
+import {
+  CRM_OPTIONS,
+  CRM_OTHER,
+  CRM_QUESTION,
+  isCrmAnswerComplete,
+} from "@/lib/crm-options";
 
 
 export const Route = createFileRoute("/join")({
@@ -40,6 +46,8 @@ function JoinPage() {
   });
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
+  const [crm, setCrm] = useState("");
+  const [crmOther, setCrmOther] = useState("");
 
   function set<K extends keyof typeof form>(k: K, v: string) {
     setForm((f) => ({ ...f, [k]: v }));
@@ -47,6 +55,11 @@ function JoinPage() {
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (!isCrmAnswerComplete(crm, crmOther)) {
+      setState("error");
+      setErrorMsg("Please tell us which project management or CRM software you use.");
+      return;
+    }
     if (password.length < 8) {
       setState("error");
       setErrorMsg("Password must be at least 8 characters.");
@@ -68,6 +81,8 @@ function JoinPage() {
           email: form.email.trim(),
           phone: form.phone.trim() || null,
           password,
+          crm,
+          crm_other: crm === CRM_OTHER ? crmOther.trim() : null,
         },
       });
       // The account exists but is unconfirmed: prove the address before it can sign in.
@@ -401,6 +416,75 @@ function JoinPage() {
                 { k: "name", label: "Full Name", type: "text", required: true },
                 { k: "company", label: "Company Name", type: "text", required: true },
                 { k: "license_number", label: "Contractor License Number", type: "text", required: true },
+              ].map((f) => (
+                <div key={f.k}>
+                  <label
+                    className="block font-mono text-[10px] uppercase mb-2"
+                    style={{ color: MUTED, letterSpacing: "0.2em" }}
+                  >
+                    {f.label}
+                  </label>
+                  <input
+                    type={f.type}
+                    required={f.required}
+                    value={form[f.k as keyof typeof form]}
+                    onChange={(e) => set(f.k as keyof typeof form, e.target.value)}
+                    className="w-full bg-transparent px-0 py-3 text-base outline-none transition-colors"
+                    style={{
+                      color: OBSIDIAN,
+                      borderBottom: `1px solid color-mix(in oklab, ${OBSIDIAN} 20%, transparent)`,
+                      borderRadius: 0,
+                    }}
+                    onFocus={(e) => (e.currentTarget.style.borderBottomColor = OBSIDIAN)}
+                    onBlur={(e) =>
+                      (e.currentTarget.style.borderBottomColor = `color-mix(in oklab, ${OBSIDIAN} 20%, transparent)`)
+                    }
+                  />
+                </div>
+              ))}
+
+              <div>
+                <label
+                  className="block font-mono text-[10px] uppercase mb-2"
+                  style={{ color: MUTED, letterSpacing: "0.2em" }}
+                >
+                  {CRM_QUESTION}
+                </label>
+                <select
+                  required
+                  value={crm}
+                  onChange={(e) => setCrm(e.target.value)}
+                  className="w-full bg-transparent px-0 py-3 text-base outline-none"
+                  style={{
+                    color: OBSIDIAN,
+                    borderBottom: `1px solid color-mix(in oklab, ${OBSIDIAN} 20%, transparent)`,
+                    borderRadius: 0,
+                  }}
+                >
+                  <option value="">Select one…</option>
+                  {CRM_OPTIONS.map((o) => (
+                    <option key={o} value={o}>
+                      {o}
+                    </option>
+                  ))}
+                </select>
+                {crm === CRM_OTHER && (
+                  <input
+                    required
+                    value={crmOther}
+                    onChange={(e) => setCrmOther(e.target.value)}
+                    placeholder="Which tool do you use?"
+                    className="mt-3 w-full bg-transparent px-0 py-3 text-base outline-none"
+                    style={{
+                      color: OBSIDIAN,
+                      borderBottom: `1px solid color-mix(in oklab, ${OBSIDIAN} 20%, transparent)`,
+                      borderRadius: 0,
+                    }}
+                  />
+                )}
+              </div>
+
+              {[
                 { k: "email", label: "Email", type: "email", required: true },
                 { k: "phone", label: "Phone", type: "tel", required: true },
               ].map((f) => (
@@ -429,6 +513,8 @@ function JoinPage() {
                   />
                 </div>
               ))}
+
+
 
               {[
                 { label: "Password", value: password, onChange: setPassword },

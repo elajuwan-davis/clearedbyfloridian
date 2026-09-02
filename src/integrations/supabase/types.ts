@@ -1810,6 +1810,30 @@ export type Database = {
           },
         ]
       }
+      integration_requests: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          name: string
+          platform: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          name: string
+          platform: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          name?: string
+          platform?: string
+        }
+        Relationships: []
+      }
       investor_access_codes: {
         Row: {
           code: string
@@ -3624,6 +3648,10 @@ export type Database = {
           avatar_url: string | null
           company_name: string | null
           created_at: string
+          crm_captured_at: string | null
+          crm_source: string | null
+          current_crm: string | null
+          current_crm_other: string | null
           display_name: string | null
           email: string | null
           full_name: string | null
@@ -3642,6 +3670,10 @@ export type Database = {
           avatar_url?: string | null
           company_name?: string | null
           created_at?: string
+          crm_captured_at?: string | null
+          crm_source?: string | null
+          current_crm?: string | null
+          current_crm_other?: string | null
           display_name?: string | null
           email?: string | null
           full_name?: string | null
@@ -3660,6 +3692,10 @@ export type Database = {
           avatar_url?: string | null
           company_name?: string | null
           created_at?: string
+          crm_captured_at?: string | null
+          crm_source?: string | null
+          current_crm?: string | null
+          current_crm_other?: string | null
           display_name?: string | null
           email?: string | null
           full_name?: string | null

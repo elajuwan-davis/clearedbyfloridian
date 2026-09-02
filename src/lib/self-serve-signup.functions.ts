@@ -20,6 +20,9 @@ const SelfServeInput = z.object({
   email: z.string().email(),
   phone: z.string().max(40).optional().nullable(),
   password: z.string().min(8),
+  /** Which project management / CRM tool the signup reported (asked on the form). */
+  crm: z.string().max(120).optional().nullable(),
+  crm_other: z.string().max(200).optional().nullable(),
 });
 
 /** Supabase reports a taken email in a few different shapes depending on the endpoint. */
@@ -91,10 +94,26 @@ export const selfServeSignupFn = createServerFn({ method: "POST" })
       );
     }
 
+    // 3. Record the CRM answer on the profile ensure_profile_for_new_user() just created.
+    //    A failure here must not sink an otherwise valid signup.
+    const newUserId = created.user?.id ?? null;
+    if (newUserId && data.crm) {
+      await (supabaseAdmin.from("profiles" as any) as any).upsert(
+        {
+          id: newUserId,
+          current_crm: data.crm,
+          current_crm_other: data.crm_other?.trim() || null,
+          crm_source: "signup_form",
+          crm_captured_at: new Date().toISOString(),
+        },
+        { onConflict: "id" },
+      );
+    }
+
     return {
       ok: true,
       tenantId: tenant.id as string,
-      userId: created.user?.id ?? null,
+      userId: newUserId,
       /** The caller must trigger the confirmation email; sign-in is blocked until it's used. */
       verificationRequired: true,
     };

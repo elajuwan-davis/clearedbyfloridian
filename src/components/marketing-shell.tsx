@@ -9,6 +9,7 @@ const NAV_LINKS: Array<{ to: string; label: string }> = [
   { to: "/", label: "Home" },
   { to: "/contact", label: "Partnerships" },
   { to: "/pricing", label: "Pricing" },
+  { to: "/integrations", label: "Integrations" },
   { to: "/411", label: "411" },
 ];
 
@@ -365,7 +366,8 @@ export function MarketingFooter() {
               <div className={FOOT_HEAD} style={FOOT_HEAD_STYLE}>Platform</div>
               <div className="mt-4 space-y-2.5">
                 <Link to="/pricing" className={FOOT_LINK} style={FOOT_LINK_STYLE}>Pricing</Link>
-                
+                <Link to="/comparison" className={FOOT_LINK} style={FOOT_LINK_STYLE}>Comparison</Link>
+                <Link to="/integrations" className={FOOT_LINK} style={FOOT_LINK_STYLE}>Integrations</Link>
                 <Link to="/" hash="watch-it-run" className={FOOT_LINK} style={FOOT_LINK_STYLE}>How it works</Link>
               </div>
             </div>
