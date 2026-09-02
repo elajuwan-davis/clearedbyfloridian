@@ -14,6 +14,7 @@ import { Route as R411RouteImport } from './routes/411'
 import { Route as AskVictoriaRouteImport } from './routes/ask-victoria'
 import { Route as CleardapprovalRouteImport } from './routes/cleardapproval'
 import { Route as CompareRouteImport } from './routes/compare'
+import { Route as ComparisonRouteImport } from './routes/comparison'
 import { Route as ComplianceRouteImport } from './routes/compliance'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as DashboardRouteImport } from './routes/dashboard'
@@ -168,6 +169,11 @@ const CleardapprovalRoute = CleardapprovalRouteImport.update({
 const CompareRoute = CompareRouteImport.update({
   id: '/compare',
   path: '/compare',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ComparisonRoute = ComparisonRouteImport.update({
+  id: '/comparison',
+  path: '/comparison',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ComplianceRoute = ComplianceRouteImport.update({
@@ -843,6 +849,7 @@ export interface FileRoutesByFullPath {
   '/ask-victoria': typeof AskVictoriaRoute
   '/cleardapproval': typeof CleardapprovalRoute
   '/compare': typeof CompareRoute
+  '/comparison': typeof ComparisonRoute
   '/compliance': typeof ComplianceRoute
   '/contact': typeof ContactRoute
   '/dashboard': typeof DashboardRoute
@@ -980,6 +987,7 @@ export interface FileRoutesByTo {
   '/ask-victoria': typeof AskVictoriaRoute
   '/cleardapproval': typeof CleardapprovalRoute
   '/compare': typeof CompareRoute
+  '/comparison': typeof ComparisonRoute
   '/compliance': typeof ComplianceRoute
   '/contact': typeof ContactRoute
   '/dashboard': typeof DashboardRoute
@@ -1114,6 +1122,7 @@ export interface FileRoutesById {
   '/ask-victoria': typeof AskVictoriaRoute
   '/cleardapproval': typeof CleardapprovalRoute
   '/compare': typeof CompareRoute
+  '/comparison': typeof ComparisonRoute
   '/compliance': typeof ComplianceRoute
   '/contact': typeof ContactRoute
   '/dashboard': typeof DashboardRoute
@@ -1253,6 +1262,7 @@ export interface FileRouteTypes {
     | '/ask-victoria'
     | '/cleardapproval'
     | '/compare'
+    | '/comparison'
     | '/compliance'
     | '/contact'
     | '/dashboard'
@@ -1390,6 +1400,7 @@ export interface FileRouteTypes {
     | '/ask-victoria'
     | '/cleardapproval'
     | '/compare'
+    | '/comparison'
     | '/compliance'
     | '/contact'
     | '/dashboard'
@@ -1523,6 +1534,7 @@ export interface FileRouteTypes {
     | '/ask-victoria'
     | '/cleardapproval'
     | '/compare'
+    | '/comparison'
     | '/compliance'
     | '/contact'
     | '/dashboard'
@@ -1661,6 +1673,7 @@ export interface RootRouteChildren {
   AskVictoriaRoute: typeof AskVictoriaRoute
   CleardapprovalRoute: typeof CleardapprovalRoute
   CompareRoute: typeof CompareRoute
+  ComparisonRoute: typeof ComparisonRoute
   ComplianceRoute: typeof ComplianceRoute
   ContactRoute: typeof ContactRoute
   DashboardRoute: typeof DashboardRoute
@@ -1779,6 +1792,13 @@ declare module '@tanstack/react-router' {
       path: '/compare'
       fullPath: '/compare'
       preLoaderRoute: typeof CompareRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/comparison': {
+      id: '/comparison'
+      path: '/comparison'
+      fullPath: '/comparison'
+      preLoaderRoute: typeof ComparisonRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/compliance': {
@@ -2834,6 +2854,7 @@ const rootRouteChildren: RootRouteChildren = {
   AskVictoriaRoute: AskVictoriaRoute,
   CleardapprovalRoute: CleardapprovalRoute,
   CompareRoute: CompareRoute,
+  ComparisonRoute: ComparisonRoute,
   ComplianceRoute: ComplianceRoute,
   ContactRoute: ContactRoute,
   DashboardRoute: DashboardRoute,
