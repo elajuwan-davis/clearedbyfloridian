@@ -1255,10 +1255,10 @@ function SceneArrow({
       onClick={onClick}
       className="cl-glass inline-flex h-11 w-11 shrink-0 items-center justify-center text-[22px] leading-none transition-all duration-200 hover:scale-105"
       style={{
-        background: "rgba(47,79,79,0.08)",
-        border: "1px solid rgba(43,22,32,0.16)",
+        background: "rgba(103,49,71,0.72)",
+        border: "1px solid rgba(156,107,63,0.6)",
         backdropFilter: "blur(12px) saturate(150%)",
-        color: PLUM,
+        color: OAT,
         borderRadius: 999,
         cursor: "pointer",
       }}
