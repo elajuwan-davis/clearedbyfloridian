@@ -136,16 +136,17 @@ function ContactPage() {
               </Field>
             </div>
             <Field label="Jurisdiction">
-              <Select>
+              <Select value={jurisdiction} onValueChange={setJurisdiction}>
                 <SelectTrigger className="h-11 rounded-sm w-full">
                   <SelectValue placeholder="Select jurisdiction" />
                 </SelectTrigger>
-                <SelectContent>
-                  {jurisdictions.map((j) => (
+                <SelectContent className="max-h-72">
+                  {FL_JURISDICTIONS.map((j) => (
                     <SelectItem key={j} value={j}>{j}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
+              <input type="hidden" name="jurisdiction" value={jurisdiction} />
             </Field>
             <Field label="Project address">
               <Input required name="address" placeholder="1217 Main St, Suite 200" className="h-11 rounded-sm" />
