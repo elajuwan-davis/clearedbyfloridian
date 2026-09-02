@@ -77,12 +77,15 @@ async function countSince(
 /**
  * Throws RateLimitError when this caller has attempted too often. Records the attempt so
  * repeats count even when the signup itself later fails.
+ *
+ * `ipHash` is optional so unit tests can drive the per-network cap without a request
+ * context. Production callers omit it and the real proxy header is hashed.
  */
 export async function enforceSignupRateLimit(
   admin: SignupAttemptsClient,
   email: string,
+  ipHash: string | null = clientIpHash(),
 ): Promise<void> {
-  const ipHash = clientIpHash();
 
   if (ipHash) {
     const recent = await countSince(admin, "ip_hash", ipHash, IP_WINDOW_MINUTES);

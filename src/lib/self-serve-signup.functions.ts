@@ -26,7 +26,7 @@ const SelfServeInput = z.object({
 });
 
 /** Supabase reports a taken email in a few different shapes depending on the endpoint. */
-function isEmailTaken(message: string): boolean {
+export function isEmailTaken(message: string): boolean {
   const m = message.toLowerCase();
   return (
     m.includes("already registered") ||
