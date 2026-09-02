@@ -6,6 +6,12 @@ import { MarketingShell } from "@/components/marketing-shell";
 import { VictoriaVoiceSignup, type VictoriaField } from "@/components/victoria-voice-signup";
 import { selfServeSignupFn } from "@/lib/self-serve-signup.functions";
 import { supabase } from "@/integrations/supabase/client";
+import {
+  CRM_OPTIONS,
+  CRM_OTHER,
+  CRM_QUESTION,
+  isCrmAnswerComplete,
+} from "@/lib/crm-options";
 
 
 export const Route = createFileRoute("/join")({
