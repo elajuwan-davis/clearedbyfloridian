@@ -9,6 +9,7 @@ const NAV_LINKS: Array<{ to: string; label: string }> = [
   { to: "/", label: "Home" },
   { to: "/contact", label: "Partnerships" },
   { to: "/pricing", label: "Pricing" },
+  { to: "/integrations", label: "Integrations" },
   { to: "/411", label: "411" },
 ];
 
