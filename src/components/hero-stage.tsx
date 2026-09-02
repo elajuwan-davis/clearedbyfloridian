@@ -1253,14 +1253,14 @@ function SceneArrow({
       type="button"
       aria-label={label}
       onClick={onClick}
-      className="cl-glass inline-flex h-11 w-11 shrink-0 items-center justify-center text-[22px] leading-none transition-all duration-200 hover:scale-105"
+      className="inline-flex h-11 w-11 shrink-0 items-center justify-center text-[22px] leading-none transition-all duration-200 hover:scale-105 hover:brightness-110"
       style={{
-        background: "rgba(103,49,71,0.72)",
-        border: "1px solid rgba(156,107,63,0.6)",
-        backdropFilter: "blur(12px) saturate(150%)",
-        color: OAT,
+        background: "rgba(103,49,71,0.82)",
+        border: "1.5px solid rgba(156,107,63,0.75)",
+        color: "#FAF3E6",
         borderRadius: 999,
         cursor: "pointer",
+        boxShadow: "0 4px 16px rgba(103,49,71,0.35)",
       }}
     >
       {glyph}
