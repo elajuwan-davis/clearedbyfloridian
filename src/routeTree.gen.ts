@@ -22,6 +22,7 @@ import { Route as FeeCalculatorRouteImport } from './routes/fee-calculator'
 import { Route as ForContractorsRouteImport } from './routes/for-contractors'
 import { Route as FormsRouteImport } from './routes/forms'
 import { Route as InsuranceRouteImport } from './routes/insurance'
+import { Route as IntegrationsRouteImport } from './routes/integrations'
 import { Route as InvestorRouteImport } from './routes/investor'
 import { Route as InvoicesRouteImport } from './routes/invoices'
 import { Route as JoinRouteImport } from './routes/join'
@@ -209,6 +210,11 @@ const FormsRoute = FormsRouteImport.update({
 const InsuranceRoute = InsuranceRouteImport.update({
   id: '/insurance',
   path: '/insurance',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const IntegrationsRoute = IntegrationsRouteImport.update({
+  id: '/integrations',
+  path: '/integrations',
   getParentRoute: () => rootRouteImport,
 } as any)
 const InvestorRoute = InvestorRouteImport.update({
@@ -857,6 +863,7 @@ export interface FileRoutesByFullPath {
   '/for-contractors': typeof ForContractorsRoute
   '/forms': typeof FormsRouteWithChildren
   '/insurance': typeof InsuranceRoute
+  '/integrations': typeof IntegrationsRoute
   '/investor': typeof InvestorRoute
   '/invoices': typeof InvoicesRoute
   '/join': typeof JoinRoute
@@ -994,6 +1001,7 @@ export interface FileRoutesByTo {
   '/fee-calculator': typeof FeeCalculatorRoute
   '/for-contractors': typeof ForContractorsRoute
   '/insurance': typeof InsuranceRoute
+  '/integrations': typeof IntegrationsRoute
   '/investor': typeof InvestorRoute
   '/invoices': typeof InvoicesRoute
   '/join': typeof JoinRoute
@@ -1130,6 +1138,7 @@ export interface FileRoutesById {
   '/for-contractors': typeof ForContractorsRoute
   '/forms': typeof FormsRouteWithChildren
   '/insurance': typeof InsuranceRoute
+  '/integrations': typeof IntegrationsRoute
   '/investor': typeof InvestorRoute
   '/invoices': typeof InvoicesRoute
   '/join': typeof JoinRoute
@@ -1270,6 +1279,7 @@ export interface FileRouteTypes {
     | '/for-contractors'
     | '/forms'
     | '/insurance'
+    | '/integrations'
     | '/investor'
     | '/invoices'
     | '/join'
@@ -1407,6 +1417,7 @@ export interface FileRouteTypes {
     | '/fee-calculator'
     | '/for-contractors'
     | '/insurance'
+    | '/integrations'
     | '/investor'
     | '/invoices'
     | '/join'
@@ -1542,6 +1553,7 @@ export interface FileRouteTypes {
     | '/for-contractors'
     | '/forms'
     | '/insurance'
+    | '/integrations'
     | '/investor'
     | '/invoices'
     | '/join'
@@ -1681,6 +1693,7 @@ export interface RootRouteChildren {
   ForContractorsRoute: typeof ForContractorsRoute
   FormsRoute: typeof FormsRouteWithChildren
   InsuranceRoute: typeof InsuranceRoute
+  IntegrationsRoute: typeof IntegrationsRoute
   InvestorRoute: typeof InvestorRoute
   InvoicesRoute: typeof InvoicesRoute
   JoinRoute: typeof JoinRoute
@@ -1848,6 +1861,13 @@ declare module '@tanstack/react-router' {
       path: '/insurance'
       fullPath: '/insurance'
       preLoaderRoute: typeof InsuranceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/integrations': {
+      id: '/integrations'
+      path: '/integrations'
+      fullPath: '/integrations'
+      preLoaderRoute: typeof IntegrationsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/investor': {
@@ -2862,6 +2882,7 @@ const rootRouteChildren: RootRouteChildren = {
   ForContractorsRoute: ForContractorsRoute,
   FormsRoute: FormsRouteWithChildren,
   InsuranceRoute: InsuranceRoute,
+  IntegrationsRoute: IntegrationsRoute,
   InvestorRoute: InvestorRoute,
   InvoicesRoute: InvoicesRoute,
   JoinRoute: JoinRoute,
