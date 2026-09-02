@@ -1234,7 +1234,7 @@ function ScenePortal() {
 /* --------------------------------- the stage --------------------------------- */
 
 const SCENES = [
-  { render: () => <SceneOrbit />, ms: 16000, label: "Everything Cleard runs" },
+  { render: () => <SceneOrbit />, ms: 16000, label: "Everything Cleard manages" },
   { render: () => <SceneDashboard />, ms: 8000, label: "Your dashboard" },
   { render: () => <ScenePortal />, ms: 9000, label: "Permits filed" },
 ];
