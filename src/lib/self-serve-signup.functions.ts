@@ -94,10 +94,26 @@ export const selfServeSignupFn = createServerFn({ method: "POST" })
       );
     }
 
+    // 3. Record the CRM answer on the profile ensure_profile_for_new_user() just created.
+    //    A failure here must not sink an otherwise valid signup.
+    const newUserId = created.user?.id ?? null;
+    if (newUserId && data.crm) {
+      await (supabaseAdmin.from("profiles" as any) as any).upsert(
+        {
+          id: newUserId,
+          current_crm: data.crm,
+          current_crm_other: data.crm_other?.trim() || null,
+          crm_source: "signup_form",
+          crm_captured_at: new Date().toISOString(),
+        },
+        { onConflict: "id" },
+      );
+    }
+
     return {
       ok: true,
       tenantId: tenant.id as string,
-      userId: created.user?.id ?? null,
+      userId: newUserId,
       /** The caller must trigger the confirmation email; sign-in is blocked until it's used. */
       verificationRequired: true,
     };
