@@ -105,7 +105,7 @@ function IntegrationsPage() {
             {PLATFORMS.map((p) => (
               <div key={p.name} className="p-7" style={{ background: OAT }}>
                 <div className="flex items-start justify-between gap-4">
-                  <Monogram name={p.name} />
+                  <Monogram name={p.name} logo={p.logo} />
                   <span
                     className="px-2.5 py-1 text-[9.5px] uppercase"
                     style={{
