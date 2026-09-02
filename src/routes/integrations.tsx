@@ -35,17 +35,40 @@ const BORDER = "#E0D3BC";
 const SERIF = "'Fraunces', 'Iowan Old Style', Georgia, serif";
 const MONO = "'JetBrains Mono', ui-monospace, monospace";
 
-const PLATFORMS: Array<{ name: string; blurb: string }> = [
-  { name: "JobTread", blurb: "See your permit status right inside JobTread." },
-  { name: "ServiceTitan", blurb: "Push a new job to Cleard and get the permit started automatically." },
-  { name: "Procore", blurb: "Keep drawings, submittals, and permit records on one timeline." },
-  { name: "Netic.ai", blurb: "Route inbound jobs into permit intake without retyping the address." },
-  { name: "Avoca.ai", blurb: "Let your call intake hand a permit-ready project straight to Cleard." },
-  { name: "Podium.com", blurb: "Trigger homeowner updates the moment a permit is issued." },
-  { name: "Craftflow", blurb: "Sync scopes and subs so intake is filled in before you open it." },
+import logoJobtread from "@/assets/logo-jobtread.png.asset.json";
+import logoServiceTitan from "@/assets/logo-servicetitan.png.asset.json";
+import logoProcore from "@/assets/logo-procore.png.asset.json";
+import logoNetic from "@/assets/logo-netic.png.asset.json";
+import logoAvoca from "@/assets/logo-avoca.webp.asset.json";
+import logoPodium from "@/assets/logo-podium.jpg.asset.json";
+import logoCraftflow from "@/assets/logo-craftflow.png.asset.json";
+
+const PLATFORMS: Array<{ name: string; blurb: string; logo?: string }> = [
+  { name: "JobTread", logo: logoJobtread.url, blurb: "See your permit status right inside JobTread." },
+  { name: "ServiceTitan", logo: logoServiceTitan.url, blurb: "Push a new job to Cleard and get the permit started automatically." },
+  { name: "Procore", logo: logoProcore.url, blurb: "Keep drawings, submittals, and permit records on one timeline." },
+  { name: "Netic.ai", logo: logoNetic.url, blurb: "Route inbound jobs into permit intake without retyping the address." },
+  { name: "Avoca.ai", logo: logoAvoca.url, blurb: "Let your call intake hand a permit-ready project straight to Cleard." },
+  { name: "Podium.com", logo: logoPodium.url, blurb: "Trigger homeowner updates the moment a permit is issued." },
+  { name: "Craftflow", logo: logoCraftflow.url, blurb: "Sync scopes and subs so intake is filled in before you open it." },
 ];
 
-function Monogram({ name }: { name: string }) {
+function Monogram({ name, logo }: { name: string; logo?: string }) {
+  if (logo) {
+    return (
+      <div
+        className="flex h-11 w-28 shrink-0 items-center justify-start"
+        style={{ borderRadius: 0 }}
+      >
+        <img
+          src={logo}
+          alt={`${name} logo`}
+          loading="lazy"
+          className="max-h-11 w-auto max-w-full object-contain"
+        />
+      </div>
+    );
+  }
   const initials = name.replace(/[^A-Za-z]/g, "").slice(0, 2).toUpperCase();
   return (
     <div
@@ -66,6 +89,7 @@ function Monogram({ name }: { name: string }) {
   );
 }
 
+
 function IntegrationsPage() {
   return (
     <MarketingShell>
@@ -81,7 +105,7 @@ function IntegrationsPage() {
             {PLATFORMS.map((p) => (
               <div key={p.name} className="p-7" style={{ background: OAT }}>
                 <div className="flex items-start justify-between gap-4">
-                  <Monogram name={p.name} />
+                  <Monogram name={p.name} logo={p.logo} />
                   <span
                     className="px-2.5 py-1 text-[9.5px] uppercase"
                     style={{
