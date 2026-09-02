@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { selfServeSignupFn } from "@/lib/self-serve-signup.functions";
+import { CRM_OPTIONS, CRM_OTHER, CRM_QUESTION, isCrmAnswerComplete } from "@/lib/crm-options";
 
 export const Route = createFileRoute("/signup")({
   head: () => ({
