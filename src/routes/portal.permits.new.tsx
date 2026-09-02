@@ -83,8 +83,12 @@ export const Route = createFileRoute("/portal/permits/new")({
   component: NewPermitRoute,
 });
 
-// A trial account with no card on file cannot file a permit — payment authorization comes first.
+// A trial account with no card on file cannot file a *new* permit — payment
+// authorization comes first. Editing an existing submission must still work;
+// that path is /portal/permits/new?edit=<id>.
 function NewPermitRoute() {
+  const { edit } = Route.useSearch();
+  if (edit) return <NewPermitPage />;
   return (
     <TrialCardRequiredGate>
       <NewPermitPage />

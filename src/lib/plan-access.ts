@@ -64,6 +64,10 @@ export const FEATURE_COPY: Record<GatedFeature, FeatureCopy> = {
  * credentials, messages to Cleard, and its account. Prefix match, so
  * /portal/permits/new and /portal/permits/<id> come along with My Permits.
  *
+ * Billing is included because trial checkout (startTrialSubscriptionCheckoutFn)
+ * returns to /portal/billing and the dashboard banner tells the contractor to
+ * manage/cancel there. Locking it left a paid-up trial account on a dead page.
+ *
  * Everything else in the portal is gated — the nav hides it
  * (trialNavSections in src/lib/portal-nav.ts) and PortalShell shows a lock if
  * the path is typed in anyway.
@@ -72,6 +76,7 @@ export const TRIAL_PATHS: string[] = [
   "/dashboard",
   "/portal", // the portal index redirects to the dashboard
   "/portal/permits",
+  "/portal/billing",
   "/building-dept-logins",
   "/messages",
   "/profile",
