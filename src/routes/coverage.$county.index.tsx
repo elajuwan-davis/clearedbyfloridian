@@ -74,6 +74,8 @@ const STATS = [
 function CountyPage() {
   const { county } = Route.useLoaderData();
   const others = COUNTIES.filter((c) => c.slug !== county.slug).slice(0, 6);
+  const timelineCounty = findTimelineCounty(county.slug);
+
 
   return (
     <MarketingShell>
