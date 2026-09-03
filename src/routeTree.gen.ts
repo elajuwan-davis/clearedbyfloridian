@@ -46,6 +46,7 @@ import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as ResetPasswordConfirmRouteImport } from './routes/reset-password-confirm'
 import { Route as ServicesRouteImport } from './routes/services'
 import { Route as SignupRouteImport } from './routes/signup'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as SubPortalRouteImport } from './routes/sub-portal'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
@@ -334,6 +335,11 @@ const ServicesRoute = ServicesRouteImport.update({
 const SignupRoute = SignupRouteImport.update({
   id: '/signup',
   path: '/signup',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SubPortalRoute = SubPortalRouteImport.update({
@@ -912,6 +918,7 @@ export interface FileRoutesByFullPath {
   '/reset-password-confirm': typeof ResetPasswordConfirmRoute
   '/services': typeof ServicesRoute
   '/signup': typeof SignupRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/sub-portal': typeof SubPortalRoute
   '/terms': typeof TermsRoute
   '/admin/access-requests': typeof AdminAccessRequestsRoute
@@ -1053,6 +1060,7 @@ export interface FileRoutesByTo {
   '/reset-password-confirm': typeof ResetPasswordConfirmRoute
   '/services': typeof ServicesRoute
   '/signup': typeof SignupRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/sub-portal': typeof SubPortalRoute
   '/terms': typeof TermsRoute
   '/admin/access-requests': typeof AdminAccessRequestsRoute
@@ -1195,6 +1203,7 @@ export interface FileRoutesById {
   '/reset-password-confirm': typeof ResetPasswordConfirmRoute
   '/services': typeof ServicesRoute
   '/signup': typeof SignupRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/sub-portal': typeof SubPortalRoute
   '/terms': typeof TermsRoute
   '/admin/access-requests': typeof AdminAccessRequestsRoute
@@ -1340,6 +1349,7 @@ export interface FileRouteTypes {
     | '/reset-password-confirm'
     | '/services'
     | '/signup'
+    | '/sitemap.xml'
     | '/sub-portal'
     | '/terms'
     | '/admin/access-requests'
@@ -1481,6 +1491,7 @@ export interface FileRouteTypes {
     | '/reset-password-confirm'
     | '/services'
     | '/signup'
+    | '/sitemap.xml'
     | '/sub-portal'
     | '/terms'
     | '/admin/access-requests'
@@ -1622,6 +1633,7 @@ export interface FileRouteTypes {
     | '/reset-password-confirm'
     | '/services'
     | '/signup'
+    | '/sitemap.xml'
     | '/sub-portal'
     | '/terms'
     | '/admin/access-requests'
@@ -1766,6 +1778,7 @@ export interface RootRouteChildren {
   ResetPasswordConfirmRoute: typeof ResetPasswordConfirmRoute
   ServicesRoute: typeof ServicesRoute
   SignupRoute: typeof SignupRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   SubPortalRoute: typeof SubPortalRoute
   TermsRoute: typeof TermsRoute
   AdminAccessRequestsRoute: typeof AdminAccessRequestsRoute
@@ -2082,6 +2095,13 @@ declare module '@tanstack/react-router' {
       path: '/signup'
       fullPath: '/signup'
       preLoaderRoute: typeof SignupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/sub-portal': {
@@ -2987,6 +3007,7 @@ const rootRouteChildren: RootRouteChildren = {
   ResetPasswordConfirmRoute: ResetPasswordConfirmRoute,
   ServicesRoute: ServicesRoute,
   SignupRoute: SignupRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
   SubPortalRoute: SubPortalRoute,
   TermsRoute: TermsRoute,
   AdminAccessRequestsRoute: AdminAccessRequestsRoute,
