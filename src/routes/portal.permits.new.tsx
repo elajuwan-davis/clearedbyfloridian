@@ -83,8 +83,11 @@ export const Route = createFileRoute("/portal/permits/new")({
   component: NewPermitRoute,
 });
 
-// A trial account with no card on file cannot file a permit — payment authorization comes first.
+// A trial account with no card on file cannot file a NEW permit — payment authorization comes
+// first. Reopening a permit they already have is not a new filing, so it is never gated.
 function NewPermitRoute() {
+  const { edit } = Route.useSearch();
+  if (edit) return <NewPermitPage />;
   return (
     <TrialCardRequiredGate>
       <NewPermitPage />

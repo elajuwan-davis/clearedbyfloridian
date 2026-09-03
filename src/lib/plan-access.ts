@@ -76,6 +76,9 @@ export const TRIAL_PATHS: string[] = [
   "/messages",
   "/profile",
   "/portal/company",
+  // Stripe's billing-portal return_url lands here, and a trial tenant has to be
+  // able to manage or cancel the subscription it just authorized.
+  "/portal/billing",
   // Onboarding/authorization a self-serve account still has to be able to finish.
   "/onboarding",
   "/forms/permit-agent-authorization",
