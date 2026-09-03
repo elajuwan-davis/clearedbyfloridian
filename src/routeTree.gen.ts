@@ -70,7 +70,6 @@ import { Route as BuildingDeptLoginsIndexRouteImport } from './routes/building-d
 import { Route as BuildingDeptLoginsImportRouteImport } from './routes/building-dept-logins.import'
 import { Route as BuildingDeptLoginsSubmitRouteImport } from './routes/building-dept-logins.submit'
 import { Route as CoverageIndexRouteImport } from './routes/coverage.index'
-import { Route as CoverageCountyRouteImport } from './routes/coverage.$county'
 import { Route as FormsIndexRouteImport } from './routes/forms.index'
 import { Route as FormsPaymentAuthorizationRouteImport } from './routes/forms.payment-authorization'
 import { Route as FormsPermitIntakeRouteImport } from './routes/forms.permit-intake'
@@ -119,6 +118,7 @@ import { Route as ApiPublicHoaReplyRouteImport } from './routes/api/public/hoa-r
 import { Route as ApiPublicIdUploadRouteImport } from './routes/api/public/id-upload'
 import { Route as ApiPublicSubIntakeUploadRouteImport } from './routes/api/public/sub-intake-upload'
 import { Route as ApiPublicVictoriaScanRouteImport } from './routes/api/public/victoria-scan'
+import { Route as CoverageCountyIndexRouteImport } from './routes/coverage.$county.index'
 import { Route as PortalBlogIndexRouteImport } from './routes/portal.blog.index'
 import { Route as PortalBlogIdRouteImport } from './routes/portal.blog.$id'
 import { Route as PortalBlogNewRouteImport } from './routes/portal.blog.new'
@@ -455,11 +455,6 @@ const CoverageIndexRoute = CoverageIndexRouteImport.update({
   path: '/coverage/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const CoverageCountyRoute = CoverageCountyRouteImport.update({
-  id: '/coverage/$county',
-  path: '/coverage/$county',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const FormsIndexRoute = FormsIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -703,6 +698,11 @@ const ApiPublicVictoriaScanRoute = ApiPublicVictoriaScanRouteImport.update({
   path: '/api/public/victoria-scan',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CoverageCountyIndexRoute = CoverageCountyIndexRouteImport.update({
+  id: '/coverage/$county/',
+  path: '/coverage/$county/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PortalBlogIndexRoute = PortalBlogIndexRouteImport.update({
   id: '/blog/',
   path: '/blog/',
@@ -913,7 +913,6 @@ export interface FileRoutesByFullPath {
   '/blog/$slug': typeof BlogSlugRoute
   '/building-dept-logins/import': typeof BuildingDeptLoginsImportRoute
   '/building-dept-logins/submit': typeof BuildingDeptLoginsSubmitRoute
-  '/coverage/$county': typeof CoverageCountyRoute
   '/forms/payment-authorization': typeof FormsPaymentAuthorizationRoute
   '/forms/permit-intake': typeof FormsPermitIntakeRoute
   '/forms/subcontractors': typeof FormsSubcontractorsRoute
@@ -979,6 +978,7 @@ export interface FileRoutesByFullPath {
   '/portal/subcontractors/new': typeof PortalSubcontractorsNewRoute
   '/portal/submissions/$id': typeof PortalSubmissionsIdRoute
   '/admin/blog/': typeof AdminBlogIndexRoute
+  '/coverage/$county/': typeof CoverageCountyIndexRoute
   '/portal/blog/': typeof PortalBlogIndexRoute
   '/portal/guides/': typeof PortalGuidesIndexRoute
   '/portal/hoa-submittals/': typeof PortalHoaSubmittalsIndexRoute
@@ -1051,7 +1051,6 @@ export interface FileRoutesByTo {
   '/blog/$slug': typeof BlogSlugRoute
   '/building-dept-logins/import': typeof BuildingDeptLoginsImportRoute
   '/building-dept-logins/submit': typeof BuildingDeptLoginsSubmitRoute
-  '/coverage/$county': typeof CoverageCountyRoute
   '/forms/payment-authorization': typeof FormsPaymentAuthorizationRoute
   '/forms/permit-intake': typeof FormsPermitIntakeRoute
   '/forms/subcontractors': typeof FormsSubcontractorsRoute
@@ -1115,6 +1114,7 @@ export interface FileRoutesByTo {
   '/portal/subcontractors/new': typeof PortalSubcontractorsNewRoute
   '/portal/submissions/$id': typeof PortalSubmissionsIdRoute
   '/admin/blog': typeof AdminBlogIndexRoute
+  '/coverage/$county': typeof CoverageCountyIndexRoute
   '/portal/blog': typeof PortalBlogIndexRoute
   '/portal/guides': typeof PortalGuidesIndexRoute
   '/portal/hoa-submittals': typeof PortalHoaSubmittalsIndexRoute
@@ -1190,7 +1190,6 @@ export interface FileRoutesById {
   '/blog/$slug': typeof BlogSlugRoute
   '/building-dept-logins/import': typeof BuildingDeptLoginsImportRoute
   '/building-dept-logins/submit': typeof BuildingDeptLoginsSubmitRoute
-  '/coverage/$county': typeof CoverageCountyRoute
   '/forms/payment-authorization': typeof FormsPaymentAuthorizationRoute
   '/forms/permit-intake': typeof FormsPermitIntakeRoute
   '/forms/subcontractors': typeof FormsSubcontractorsRoute
@@ -1256,6 +1255,7 @@ export interface FileRoutesById {
   '/portal/subcontractors/new': typeof PortalSubcontractorsNewRoute
   '/portal/submissions/$id': typeof PortalSubmissionsIdRoute
   '/admin/blog/': typeof AdminBlogIndexRoute
+  '/coverage/$county/': typeof CoverageCountyIndexRoute
   '/portal/blog/': typeof PortalBlogIndexRoute
   '/portal/guides/': typeof PortalGuidesIndexRoute
   '/portal/hoa-submittals/': typeof PortalHoaSubmittalsIndexRoute
@@ -1332,7 +1332,6 @@ export interface FileRouteTypes {
     | '/blog/$slug'
     | '/building-dept-logins/import'
     | '/building-dept-logins/submit'
-    | '/coverage/$county'
     | '/forms/payment-authorization'
     | '/forms/permit-intake'
     | '/forms/subcontractors'
@@ -1398,6 +1397,7 @@ export interface FileRouteTypes {
     | '/portal/subcontractors/new'
     | '/portal/submissions/$id'
     | '/admin/blog/'
+    | '/coverage/$county/'
     | '/portal/blog/'
     | '/portal/guides/'
     | '/portal/hoa-submittals/'
@@ -1470,7 +1470,6 @@ export interface FileRouteTypes {
     | '/blog/$slug'
     | '/building-dept-logins/import'
     | '/building-dept-logins/submit'
-    | '/coverage/$county'
     | '/forms/payment-authorization'
     | '/forms/permit-intake'
     | '/forms/subcontractors'
@@ -1534,6 +1533,7 @@ export interface FileRouteTypes {
     | '/portal/subcontractors/new'
     | '/portal/submissions/$id'
     | '/admin/blog'
+    | '/coverage/$county'
     | '/portal/blog'
     | '/portal/guides'
     | '/portal/hoa-submittals'
@@ -1608,7 +1608,6 @@ export interface FileRouteTypes {
     | '/blog/$slug'
     | '/building-dept-logins/import'
     | '/building-dept-logins/submit'
-    | '/coverage/$county'
     | '/forms/payment-authorization'
     | '/forms/permit-intake'
     | '/forms/subcontractors'
@@ -1674,6 +1673,7 @@ export interface FileRouteTypes {
     | '/portal/subcontractors/new'
     | '/portal/submissions/$id'
     | '/admin/blog/'
+    | '/coverage/$county/'
     | '/portal/blog/'
     | '/portal/guides/'
     | '/portal/hoa-submittals/'
@@ -1749,7 +1749,6 @@ export interface RootRouteChildren {
   BlogSlugRoute: typeof BlogSlugRoute
   BuildingDeptLoginsImportRoute: typeof BuildingDeptLoginsImportRoute
   BuildingDeptLoginsSubmitRoute: typeof BuildingDeptLoginsSubmitRoute
-  CoverageCountyRoute: typeof CoverageCountyRoute
   HomeownerTokenRoute: typeof HomeownerTokenRoute
   InvestorAdminRoute: typeof InvestorAdminRoute
   JoinTokenRoute: typeof JoinTokenRoute
@@ -1774,6 +1773,7 @@ export interface RootRouteChildren {
   ApiPublicSubIntakeUploadRoute: typeof ApiPublicSubIntakeUploadRoute
   ApiPublicVictoriaScanRoute: typeof ApiPublicVictoriaScanRoute
   AdminBlogIndexRoute: typeof AdminBlogIndexRoute
+  CoverageCountyIndexRoute: typeof CoverageCountyIndexRoute
   ApiPublicEmailOutboxProcessRoute: typeof ApiPublicEmailOutboxProcessRoute
   ApiPublicHubspotDealWebhookRoute: typeof ApiPublicHubspotDealWebhookRoute
   ApiPublicPaymentsWebhookRoute: typeof ApiPublicPaymentsWebhookRoute
@@ -2212,13 +2212,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CoverageIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/coverage/$county': {
-      id: '/coverage/$county'
-      path: '/coverage/$county'
-      fullPath: '/coverage/$county'
-      preLoaderRoute: typeof CoverageCountyRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/forms/': {
       id: '/forms/'
       path: '/'
@@ -2553,6 +2546,13 @@ declare module '@tanstack/react-router' {
       path: '/api/public/victoria-scan'
       fullPath: '/api/public/victoria-scan'
       preLoaderRoute: typeof ApiPublicVictoriaScanRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/coverage/$county/': {
+      id: '/coverage/$county/'
+      path: '/coverage/$county'
+      fullPath: '/coverage/$county/'
+      preLoaderRoute: typeof CoverageCountyIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/portal/blog/': {
@@ -2946,7 +2946,6 @@ const rootRouteChildren: RootRouteChildren = {
   BlogSlugRoute: BlogSlugRoute,
   BuildingDeptLoginsImportRoute: BuildingDeptLoginsImportRoute,
   BuildingDeptLoginsSubmitRoute: BuildingDeptLoginsSubmitRoute,
-  CoverageCountyRoute: CoverageCountyRoute,
   HomeownerTokenRoute: HomeownerTokenRoute,
   InvestorAdminRoute: InvestorAdminRoute,
   JoinTokenRoute: JoinTokenRoute,
@@ -2971,6 +2970,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicSubIntakeUploadRoute: ApiPublicSubIntakeUploadRoute,
   ApiPublicVictoriaScanRoute: ApiPublicVictoriaScanRoute,
   AdminBlogIndexRoute: AdminBlogIndexRoute,
+  CoverageCountyIndexRoute: CoverageCountyIndexRoute,
   ApiPublicEmailOutboxProcessRoute: ApiPublicEmailOutboxProcessRoute,
   ApiPublicHubspotDealWebhookRoute: ApiPublicHubspotDealWebhookRoute,
   ApiPublicPaymentsWebhookRoute: ApiPublicPaymentsWebhookRoute,
