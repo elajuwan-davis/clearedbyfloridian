@@ -12,6 +12,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { CreditCard, Check, Loader2, ShieldCheck } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
+import { Link } from "@tanstack/react-router";
 import { StripeEmbedded } from "@/components/stripe-embedded";
 import { getStripeEnvironment, isPaymentsConfigured } from "@/lib/stripe";
 import { usePlanAccess } from "@/lib/plan-access";
@@ -267,8 +268,11 @@ export function TrialBillingBanner() {
         <p className="mt-1 text-[12px] leading-relaxed text-muted-foreground">
           {status.daysLeft} day{status.daysLeft === 1 ? "" : "s"} left. Your first payment
           {picked ? ` of ${formatMonthly(picked.monthlyCents)}` : ""} is on{" "}
-          {fmtDate(status.currentPeriodEnd ?? status.trialEndsAt)}. Manage or cancel any time in
-          Billing.
+          {fmtDate(status.currentPeriodEnd ?? status.trialEndsAt)}. Manage or cancel any time in{" "}
+          <Link to="/portal/billing" className="underline underline-offset-2">
+            Billing
+          </Link>
+          .
         </p>
       </div>
     );
@@ -295,10 +299,18 @@ export function TrialBillingBanner() {
           <TrialBillingBannerPicker status={status} onDone={() => void refresh()} />
         </div>
       ) : (
-        <button type="button" className="p-btn p-btn-primary mt-3" onClick={() => setOpen(true)}>
-          <CreditCard className="h-3.5 w-3.5" strokeWidth={2} />
-          Authorize payment
-        </button>
+        <div className="mt-3 flex flex-wrap items-center gap-3">
+          <button type="button" className="p-btn p-btn-primary" onClick={() => setOpen(true)}>
+            <CreditCard className="h-3.5 w-3.5" strokeWidth={2} />
+            Authorize payment
+          </button>
+          <Link
+            to="/portal/billing"
+            className="text-[12px] text-muted-foreground underline underline-offset-2"
+          >
+            Go to Billing
+          </Link>
+        </div>
       )}
     </div>
   );

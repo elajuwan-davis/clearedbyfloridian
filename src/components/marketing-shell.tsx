@@ -414,7 +414,6 @@ export function MarketingFooter() {
           style={{ borderTop: "1px solid rgba(255,255,255,0.12)" }}
         >
           {[
-            "[Insert actual security/compliance status here]",
             "Encrypted document storage",
             "Role-based access control",
           ].map((b) => (
