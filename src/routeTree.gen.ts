@@ -56,6 +56,7 @@ import { Route as AdminCrmsRouteImport } from './routes/admin.crms'
 import { Route as AdminFeatureRequestsRouteImport } from './routes/admin.feature-requests'
 import { Route as AdminGcComplianceRouteImport } from './routes/admin.gc-compliance'
 import { Route as AdminInvitesRouteImport } from './routes/admin.invites'
+import { Route as AdminLeadsRouteImport } from './routes/admin.leads'
 import { Route as AdminPricingRouteImport } from './routes/admin.pricing'
 import { Route as AdminProtectionRouteImport } from './routes/admin.protection'
 import { Route as AdminReviewQueueRouteImport } from './routes/admin.review-queue'
@@ -383,6 +384,11 @@ const AdminGcComplianceRoute = AdminGcComplianceRouteImport.update({
 const AdminInvitesRoute = AdminInvitesRouteImport.update({
   id: '/admin/invites',
   path: '/admin/invites',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminLeadsRoute = AdminLeadsRouteImport.update({
+  id: '/admin/leads',
+  path: '/admin/leads',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminPricingRoute = AdminPricingRouteImport.update({
@@ -915,6 +921,7 @@ export interface FileRoutesByFullPath {
   '/admin/feature-requests': typeof AdminFeatureRequestsRoute
   '/admin/gc-compliance': typeof AdminGcComplianceRoute
   '/admin/invites': typeof AdminInvitesRoute
+  '/admin/leads': typeof AdminLeadsRoute
   '/admin/pricing': typeof AdminPricingRoute
   '/admin/protection': typeof AdminProtectionRoute
   '/admin/review-queue': typeof AdminReviewQueueRoute
@@ -1055,6 +1062,7 @@ export interface FileRoutesByTo {
   '/admin/feature-requests': typeof AdminFeatureRequestsRoute
   '/admin/gc-compliance': typeof AdminGcComplianceRoute
   '/admin/invites': typeof AdminInvitesRoute
+  '/admin/leads': typeof AdminLeadsRoute
   '/admin/pricing': typeof AdminPricingRoute
   '/admin/protection': typeof AdminProtectionRoute
   '/admin/review-queue': typeof AdminReviewQueueRoute
@@ -1196,6 +1204,7 @@ export interface FileRoutesById {
   '/admin/feature-requests': typeof AdminFeatureRequestsRoute
   '/admin/gc-compliance': typeof AdminGcComplianceRoute
   '/admin/invites': typeof AdminInvitesRoute
+  '/admin/leads': typeof AdminLeadsRoute
   '/admin/pricing': typeof AdminPricingRoute
   '/admin/protection': typeof AdminProtectionRoute
   '/admin/review-queue': typeof AdminReviewQueueRoute
@@ -1340,6 +1349,7 @@ export interface FileRouteTypes {
     | '/admin/feature-requests'
     | '/admin/gc-compliance'
     | '/admin/invites'
+    | '/admin/leads'
     | '/admin/pricing'
     | '/admin/protection'
     | '/admin/review-queue'
@@ -1480,6 +1490,7 @@ export interface FileRouteTypes {
     | '/admin/feature-requests'
     | '/admin/gc-compliance'
     | '/admin/invites'
+    | '/admin/leads'
     | '/admin/pricing'
     | '/admin/protection'
     | '/admin/review-queue'
@@ -1620,6 +1631,7 @@ export interface FileRouteTypes {
     | '/admin/feature-requests'
     | '/admin/gc-compliance'
     | '/admin/invites'
+    | '/admin/leads'
     | '/admin/pricing'
     | '/admin/protection'
     | '/admin/review-queue'
@@ -1763,6 +1775,7 @@ export interface RootRouteChildren {
   AdminFeatureRequestsRoute: typeof AdminFeatureRequestsRoute
   AdminGcComplianceRoute: typeof AdminGcComplianceRoute
   AdminInvitesRoute: typeof AdminInvitesRoute
+  AdminLeadsRoute: typeof AdminLeadsRoute
   AdminPricingRoute: typeof AdminPricingRoute
   AdminProtectionRoute: typeof AdminProtectionRoute
   AdminReviewQueueRoute: typeof AdminReviewQueueRoute
@@ -2139,6 +2152,13 @@ declare module '@tanstack/react-router' {
       path: '/admin/invites'
       fullPath: '/admin/invites'
       preLoaderRoute: typeof AdminInvitesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/leads': {
+      id: '/admin/leads'
+      path: '/admin/leads'
+      fullPath: '/admin/leads'
+      preLoaderRoute: typeof AdminLeadsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/pricing': {
@@ -2976,6 +2996,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminFeatureRequestsRoute: AdminFeatureRequestsRoute,
   AdminGcComplianceRoute: AdminGcComplianceRoute,
   AdminInvitesRoute: AdminInvitesRoute,
+  AdminLeadsRoute: AdminLeadsRoute,
   AdminPricingRoute: AdminPricingRoute,
   AdminProtectionRoute: AdminProtectionRoute,
   AdminReviewQueueRoute: AdminReviewQueueRoute,
