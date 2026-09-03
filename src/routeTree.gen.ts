@@ -119,6 +119,7 @@ import { Route as ApiPublicIdUploadRouteImport } from './routes/api/public/id-up
 import { Route as ApiPublicSubIntakeUploadRouteImport } from './routes/api/public/sub-intake-upload'
 import { Route as ApiPublicVictoriaScanRouteImport } from './routes/api/public/victoria-scan'
 import { Route as CoverageCountyIndexRouteImport } from './routes/coverage.$county.index'
+import { Route as CoverageCountyPermitTypeRouteImport } from './routes/coverage.$county.$permitType'
 import { Route as PortalBlogIndexRouteImport } from './routes/portal.blog.index'
 import { Route as PortalBlogIdRouteImport } from './routes/portal.blog.$id'
 import { Route as PortalBlogNewRouteImport } from './routes/portal.blog.new'
@@ -703,6 +704,12 @@ const CoverageCountyIndexRoute = CoverageCountyIndexRouteImport.update({
   path: '/coverage/$county/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CoverageCountyPermitTypeRoute =
+  CoverageCountyPermitTypeRouteImport.update({
+    id: '/coverage/$county/$permitType',
+    path: '/coverage/$county/$permitType',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const PortalBlogIndexRoute = PortalBlogIndexRouteImport.update({
   id: '/blog/',
   path: '/blog/',
@@ -964,6 +971,7 @@ export interface FileRoutesByFullPath {
   '/api/public/id-upload': typeof ApiPublicIdUploadRoute
   '/api/public/sub-intake-upload': typeof ApiPublicSubIntakeUploadRoute
   '/api/public/victoria-scan': typeof ApiPublicVictoriaScanRoute
+  '/coverage/$county/$permitType': typeof CoverageCountyPermitTypeRoute
   '/portal/blog/$id': typeof PortalBlogIdRoute
   '/portal/blog/new': typeof PortalBlogNewRoute
   '/portal/guides/$slug': typeof PortalGuidesSlugRoute
@@ -1100,6 +1108,7 @@ export interface FileRoutesByTo {
   '/api/public/id-upload': typeof ApiPublicIdUploadRoute
   '/api/public/sub-intake-upload': typeof ApiPublicSubIntakeUploadRoute
   '/api/public/victoria-scan': typeof ApiPublicVictoriaScanRoute
+  '/coverage/$county/$permitType': typeof CoverageCountyPermitTypeRoute
   '/portal/blog/$id': typeof PortalBlogIdRoute
   '/portal/blog/new': typeof PortalBlogNewRoute
   '/portal/guides/$slug': typeof PortalGuidesSlugRoute
@@ -1241,6 +1250,7 @@ export interface FileRoutesById {
   '/api/public/id-upload': typeof ApiPublicIdUploadRoute
   '/api/public/sub-intake-upload': typeof ApiPublicSubIntakeUploadRoute
   '/api/public/victoria-scan': typeof ApiPublicVictoriaScanRoute
+  '/coverage/$county/$permitType': typeof CoverageCountyPermitTypeRoute
   '/portal/blog/$id': typeof PortalBlogIdRoute
   '/portal/blog/new': typeof PortalBlogNewRoute
   '/portal/guides/$slug': typeof PortalGuidesSlugRoute
@@ -1383,6 +1393,7 @@ export interface FileRouteTypes {
     | '/api/public/id-upload'
     | '/api/public/sub-intake-upload'
     | '/api/public/victoria-scan'
+    | '/coverage/$county/$permitType'
     | '/portal/blog/$id'
     | '/portal/blog/new'
     | '/portal/guides/$slug'
@@ -1519,6 +1530,7 @@ export interface FileRouteTypes {
     | '/api/public/id-upload'
     | '/api/public/sub-intake-upload'
     | '/api/public/victoria-scan'
+    | '/coverage/$county/$permitType'
     | '/portal/blog/$id'
     | '/portal/blog/new'
     | '/portal/guides/$slug'
@@ -1659,6 +1671,7 @@ export interface FileRouteTypes {
     | '/api/public/id-upload'
     | '/api/public/sub-intake-upload'
     | '/api/public/victoria-scan'
+    | '/coverage/$county/$permitType'
     | '/portal/blog/$id'
     | '/portal/blog/new'
     | '/portal/guides/$slug'
@@ -1772,6 +1785,7 @@ export interface RootRouteChildren {
   ApiPublicIdUploadRoute: typeof ApiPublicIdUploadRoute
   ApiPublicSubIntakeUploadRoute: typeof ApiPublicSubIntakeUploadRoute
   ApiPublicVictoriaScanRoute: typeof ApiPublicVictoriaScanRoute
+  CoverageCountyPermitTypeRoute: typeof CoverageCountyPermitTypeRoute
   AdminBlogIndexRoute: typeof AdminBlogIndexRoute
   CoverageCountyIndexRoute: typeof CoverageCountyIndexRoute
   ApiPublicEmailOutboxProcessRoute: typeof ApiPublicEmailOutboxProcessRoute
@@ -2555,6 +2569,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CoverageCountyIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/coverage/$county/$permitType': {
+      id: '/coverage/$county/$permitType'
+      path: '/coverage/$county/$permitType'
+      fullPath: '/coverage/$county/$permitType'
+      preLoaderRoute: typeof CoverageCountyPermitTypeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/portal/blog/': {
       id: '/portal/blog/'
       path: '/blog'
@@ -2969,6 +2990,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicIdUploadRoute: ApiPublicIdUploadRoute,
   ApiPublicSubIntakeUploadRoute: ApiPublicSubIntakeUploadRoute,
   ApiPublicVictoriaScanRoute: ApiPublicVictoriaScanRoute,
+  CoverageCountyPermitTypeRoute: CoverageCountyPermitTypeRoute,
   AdminBlogIndexRoute: AdminBlogIndexRoute,
   CoverageCountyIndexRoute: CoverageCountyIndexRoute,
   ApiPublicEmailOutboxProcessRoute: ApiPublicEmailOutboxProcessRoute,
