@@ -18,6 +18,7 @@ import { Route as ComparisonRouteImport } from './routes/comparison'
 import { Route as ComplianceRouteImport } from './routes/compliance'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as DashboardRouteImport } from './routes/dashboard'
+import { Route as EstimatorRouteImport } from './routes/estimator'
 import { Route as FeeCalculatorRouteImport } from './routes/fee-calculator'
 import { Route as ForContractorsRouteImport } from './routes/for-contractors'
 import { Route as FormsRouteImport } from './routes/forms'
@@ -45,6 +46,7 @@ import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as ResetPasswordConfirmRouteImport } from './routes/reset-password-confirm'
 import { Route as ServicesRouteImport } from './routes/services'
 import { Route as SignupRouteImport } from './routes/signup'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as SubPortalRouteImport } from './routes/sub-portal'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
@@ -55,6 +57,7 @@ import { Route as AdminCrmsRouteImport } from './routes/admin.crms'
 import { Route as AdminFeatureRequestsRouteImport } from './routes/admin.feature-requests'
 import { Route as AdminGcComplianceRouteImport } from './routes/admin.gc-compliance'
 import { Route as AdminInvitesRouteImport } from './routes/admin.invites'
+import { Route as AdminLeadsRouteImport } from './routes/admin.leads'
 import { Route as AdminPricingRouteImport } from './routes/admin.pricing'
 import { Route as AdminProtectionRouteImport } from './routes/admin.protection'
 import { Route as AdminReviewQueueRouteImport } from './routes/admin.review-queue'
@@ -70,7 +73,6 @@ import { Route as BuildingDeptLoginsIndexRouteImport } from './routes/building-d
 import { Route as BuildingDeptLoginsImportRouteImport } from './routes/building-dept-logins.import'
 import { Route as BuildingDeptLoginsSubmitRouteImport } from './routes/building-dept-logins.submit'
 import { Route as CoverageIndexRouteImport } from './routes/coverage.index'
-import { Route as CoverageCountyRouteImport } from './routes/coverage.$county'
 import { Route as FormsIndexRouteImport } from './routes/forms.index'
 import { Route as FormsPaymentAuthorizationRouteImport } from './routes/forms.payment-authorization'
 import { Route as FormsPermitIntakeRouteImport } from './routes/forms.permit-intake'
@@ -119,6 +121,8 @@ import { Route as ApiPublicHoaReplyRouteImport } from './routes/api/public/hoa-r
 import { Route as ApiPublicIdUploadRouteImport } from './routes/api/public/id-upload'
 import { Route as ApiPublicSubIntakeUploadRouteImport } from './routes/api/public/sub-intake-upload'
 import { Route as ApiPublicVictoriaScanRouteImport } from './routes/api/public/victoria-scan'
+import { Route as CoverageCountyIndexRouteImport } from './routes/coverage.$county.index'
+import { Route as CoverageCountyPermitTypeRouteImport } from './routes/coverage.$county.$permitType'
 import { Route as PortalBlogIndexRouteImport } from './routes/portal.blog.index'
 import { Route as PortalBlogIdRouteImport } from './routes/portal.blog.$id'
 import { Route as PortalBlogNewRouteImport } from './routes/portal.blog.new'
@@ -191,6 +195,11 @@ const ContactRoute = ContactRouteImport.update({
 const DashboardRoute = DashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EstimatorRoute = EstimatorRouteImport.update({
+  id: '/estimator',
+  path: '/estimator',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FeeCalculatorRoute = FeeCalculatorRouteImport.update({
@@ -328,6 +337,11 @@ const SignupRoute = SignupRouteImport.update({
   path: '/signup',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SubPortalRoute = SubPortalRouteImport.update({
   id: '/sub-portal',
   path: '/sub-portal',
@@ -376,6 +390,11 @@ const AdminGcComplianceRoute = AdminGcComplianceRouteImport.update({
 const AdminInvitesRoute = AdminInvitesRouteImport.update({
   id: '/admin/invites',
   path: '/admin/invites',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminLeadsRoute = AdminLeadsRouteImport.update({
+  id: '/admin/leads',
+  path: '/admin/leads',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminPricingRoute = AdminPricingRouteImport.update({
@@ -453,11 +472,6 @@ const BuildingDeptLoginsSubmitRoute =
 const CoverageIndexRoute = CoverageIndexRouteImport.update({
   id: '/coverage/',
   path: '/coverage/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CoverageCountyRoute = CoverageCountyRouteImport.update({
-  id: '/coverage/$county',
-  path: '/coverage/$county',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FormsIndexRoute = FormsIndexRouteImport.update({
@@ -703,6 +717,17 @@ const ApiPublicVictoriaScanRoute = ApiPublicVictoriaScanRouteImport.update({
   path: '/api/public/victoria-scan',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CoverageCountyIndexRoute = CoverageCountyIndexRouteImport.update({
+  id: '/coverage/$county/',
+  path: '/coverage/$county/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CoverageCountyPermitTypeRoute =
+  CoverageCountyPermitTypeRouteImport.update({
+    id: '/coverage/$county/$permitType',
+    path: '/coverage/$county/$permitType',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const PortalBlogIndexRoute = PortalBlogIndexRouteImport.update({
   id: '/blog/',
   path: '/blog/',
@@ -865,6 +890,7 @@ export interface FileRoutesByFullPath {
   '/compliance': typeof ComplianceRoute
   '/contact': typeof ContactRoute
   '/dashboard': typeof DashboardRoute
+  '/estimator': typeof EstimatorRoute
   '/fee-calculator': typeof FeeCalculatorRoute
   '/for-contractors': typeof ForContractorsRoute
   '/forms': typeof FormsRouteWithChildren
@@ -892,6 +918,7 @@ export interface FileRoutesByFullPath {
   '/reset-password-confirm': typeof ResetPasswordConfirmRoute
   '/services': typeof ServicesRoute
   '/signup': typeof SignupRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/sub-portal': typeof SubPortalRoute
   '/terms': typeof TermsRoute
   '/admin/access-requests': typeof AdminAccessRequestsRoute
@@ -901,6 +928,7 @@ export interface FileRoutesByFullPath {
   '/admin/feature-requests': typeof AdminFeatureRequestsRoute
   '/admin/gc-compliance': typeof AdminGcComplianceRoute
   '/admin/invites': typeof AdminInvitesRoute
+  '/admin/leads': typeof AdminLeadsRoute
   '/admin/pricing': typeof AdminPricingRoute
   '/admin/protection': typeof AdminProtectionRoute
   '/admin/review-queue': typeof AdminReviewQueueRoute
@@ -913,7 +941,6 @@ export interface FileRoutesByFullPath {
   '/blog/$slug': typeof BlogSlugRoute
   '/building-dept-logins/import': typeof BuildingDeptLoginsImportRoute
   '/building-dept-logins/submit': typeof BuildingDeptLoginsSubmitRoute
-  '/coverage/$county': typeof CoverageCountyRoute
   '/forms/payment-authorization': typeof FormsPaymentAuthorizationRoute
   '/forms/permit-intake': typeof FormsPermitIntakeRoute
   '/forms/subcontractors': typeof FormsSubcontractorsRoute
@@ -965,6 +992,7 @@ export interface FileRoutesByFullPath {
   '/api/public/id-upload': typeof ApiPublicIdUploadRoute
   '/api/public/sub-intake-upload': typeof ApiPublicSubIntakeUploadRoute
   '/api/public/victoria-scan': typeof ApiPublicVictoriaScanRoute
+  '/coverage/$county/$permitType': typeof CoverageCountyPermitTypeRoute
   '/portal/blog/$id': typeof PortalBlogIdRoute
   '/portal/blog/new': typeof PortalBlogNewRoute
   '/portal/guides/$slug': typeof PortalGuidesSlugRoute
@@ -979,6 +1007,7 @@ export interface FileRoutesByFullPath {
   '/portal/subcontractors/new': typeof PortalSubcontractorsNewRoute
   '/portal/submissions/$id': typeof PortalSubmissionsIdRoute
   '/admin/blog/': typeof AdminBlogIndexRoute
+  '/coverage/$county/': typeof CoverageCountyIndexRoute
   '/portal/blog/': typeof PortalBlogIndexRoute
   '/portal/guides/': typeof PortalGuidesIndexRoute
   '/portal/hoa-submittals/': typeof PortalHoaSubmittalsIndexRoute
@@ -1005,6 +1034,7 @@ export interface FileRoutesByTo {
   '/compliance': typeof ComplianceRoute
   '/contact': typeof ContactRoute
   '/dashboard': typeof DashboardRoute
+  '/estimator': typeof EstimatorRoute
   '/fee-calculator': typeof FeeCalculatorRoute
   '/for-contractors': typeof ForContractorsRoute
   '/insurance': typeof InsuranceRoute
@@ -1030,6 +1060,7 @@ export interface FileRoutesByTo {
   '/reset-password-confirm': typeof ResetPasswordConfirmRoute
   '/services': typeof ServicesRoute
   '/signup': typeof SignupRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/sub-portal': typeof SubPortalRoute
   '/terms': typeof TermsRoute
   '/admin/access-requests': typeof AdminAccessRequestsRoute
@@ -1039,6 +1070,7 @@ export interface FileRoutesByTo {
   '/admin/feature-requests': typeof AdminFeatureRequestsRoute
   '/admin/gc-compliance': typeof AdminGcComplianceRoute
   '/admin/invites': typeof AdminInvitesRoute
+  '/admin/leads': typeof AdminLeadsRoute
   '/admin/pricing': typeof AdminPricingRoute
   '/admin/protection': typeof AdminProtectionRoute
   '/admin/review-queue': typeof AdminReviewQueueRoute
@@ -1051,7 +1083,6 @@ export interface FileRoutesByTo {
   '/blog/$slug': typeof BlogSlugRoute
   '/building-dept-logins/import': typeof BuildingDeptLoginsImportRoute
   '/building-dept-logins/submit': typeof BuildingDeptLoginsSubmitRoute
-  '/coverage/$county': typeof CoverageCountyRoute
   '/forms/payment-authorization': typeof FormsPaymentAuthorizationRoute
   '/forms/permit-intake': typeof FormsPermitIntakeRoute
   '/forms/subcontractors': typeof FormsSubcontractorsRoute
@@ -1101,6 +1132,7 @@ export interface FileRoutesByTo {
   '/api/public/id-upload': typeof ApiPublicIdUploadRoute
   '/api/public/sub-intake-upload': typeof ApiPublicSubIntakeUploadRoute
   '/api/public/victoria-scan': typeof ApiPublicVictoriaScanRoute
+  '/coverage/$county/$permitType': typeof CoverageCountyPermitTypeRoute
   '/portal/blog/$id': typeof PortalBlogIdRoute
   '/portal/blog/new': typeof PortalBlogNewRoute
   '/portal/guides/$slug': typeof PortalGuidesSlugRoute
@@ -1115,6 +1147,7 @@ export interface FileRoutesByTo {
   '/portal/subcontractors/new': typeof PortalSubcontractorsNewRoute
   '/portal/submissions/$id': typeof PortalSubmissionsIdRoute
   '/admin/blog': typeof AdminBlogIndexRoute
+  '/coverage/$county': typeof CoverageCountyIndexRoute
   '/portal/blog': typeof PortalBlogIndexRoute
   '/portal/guides': typeof PortalGuidesIndexRoute
   '/portal/hoa-submittals': typeof PortalHoaSubmittalsIndexRoute
@@ -1142,6 +1175,7 @@ export interface FileRoutesById {
   '/compliance': typeof ComplianceRoute
   '/contact': typeof ContactRoute
   '/dashboard': typeof DashboardRoute
+  '/estimator': typeof EstimatorRoute
   '/fee-calculator': typeof FeeCalculatorRoute
   '/for-contractors': typeof ForContractorsRoute
   '/forms': typeof FormsRouteWithChildren
@@ -1169,6 +1203,7 @@ export interface FileRoutesById {
   '/reset-password-confirm': typeof ResetPasswordConfirmRoute
   '/services': typeof ServicesRoute
   '/signup': typeof SignupRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/sub-portal': typeof SubPortalRoute
   '/terms': typeof TermsRoute
   '/admin/access-requests': typeof AdminAccessRequestsRoute
@@ -1178,6 +1213,7 @@ export interface FileRoutesById {
   '/admin/feature-requests': typeof AdminFeatureRequestsRoute
   '/admin/gc-compliance': typeof AdminGcComplianceRoute
   '/admin/invites': typeof AdminInvitesRoute
+  '/admin/leads': typeof AdminLeadsRoute
   '/admin/pricing': typeof AdminPricingRoute
   '/admin/protection': typeof AdminProtectionRoute
   '/admin/review-queue': typeof AdminReviewQueueRoute
@@ -1190,7 +1226,6 @@ export interface FileRoutesById {
   '/blog/$slug': typeof BlogSlugRoute
   '/building-dept-logins/import': typeof BuildingDeptLoginsImportRoute
   '/building-dept-logins/submit': typeof BuildingDeptLoginsSubmitRoute
-  '/coverage/$county': typeof CoverageCountyRoute
   '/forms/payment-authorization': typeof FormsPaymentAuthorizationRoute
   '/forms/permit-intake': typeof FormsPermitIntakeRoute
   '/forms/subcontractors': typeof FormsSubcontractorsRoute
@@ -1242,6 +1277,7 @@ export interface FileRoutesById {
   '/api/public/id-upload': typeof ApiPublicIdUploadRoute
   '/api/public/sub-intake-upload': typeof ApiPublicSubIntakeUploadRoute
   '/api/public/victoria-scan': typeof ApiPublicVictoriaScanRoute
+  '/coverage/$county/$permitType': typeof CoverageCountyPermitTypeRoute
   '/portal/blog/$id': typeof PortalBlogIdRoute
   '/portal/blog/new': typeof PortalBlogNewRoute
   '/portal/guides/$slug': typeof PortalGuidesSlugRoute
@@ -1256,6 +1292,7 @@ export interface FileRoutesById {
   '/portal/subcontractors/new': typeof PortalSubcontractorsNewRoute
   '/portal/submissions/$id': typeof PortalSubmissionsIdRoute
   '/admin/blog/': typeof AdminBlogIndexRoute
+  '/coverage/$county/': typeof CoverageCountyIndexRoute
   '/portal/blog/': typeof PortalBlogIndexRoute
   '/portal/guides/': typeof PortalGuidesIndexRoute
   '/portal/hoa-submittals/': typeof PortalHoaSubmittalsIndexRoute
@@ -1284,6 +1321,7 @@ export interface FileRouteTypes {
     | '/compliance'
     | '/contact'
     | '/dashboard'
+    | '/estimator'
     | '/fee-calculator'
     | '/for-contractors'
     | '/forms'
@@ -1311,6 +1349,7 @@ export interface FileRouteTypes {
     | '/reset-password-confirm'
     | '/services'
     | '/signup'
+    | '/sitemap.xml'
     | '/sub-portal'
     | '/terms'
     | '/admin/access-requests'
@@ -1320,6 +1359,7 @@ export interface FileRouteTypes {
     | '/admin/feature-requests'
     | '/admin/gc-compliance'
     | '/admin/invites'
+    | '/admin/leads'
     | '/admin/pricing'
     | '/admin/protection'
     | '/admin/review-queue'
@@ -1332,7 +1372,6 @@ export interface FileRouteTypes {
     | '/blog/$slug'
     | '/building-dept-logins/import'
     | '/building-dept-logins/submit'
-    | '/coverage/$county'
     | '/forms/payment-authorization'
     | '/forms/permit-intake'
     | '/forms/subcontractors'
@@ -1384,6 +1423,7 @@ export interface FileRouteTypes {
     | '/api/public/id-upload'
     | '/api/public/sub-intake-upload'
     | '/api/public/victoria-scan'
+    | '/coverage/$county/$permitType'
     | '/portal/blog/$id'
     | '/portal/blog/new'
     | '/portal/guides/$slug'
@@ -1398,6 +1438,7 @@ export interface FileRouteTypes {
     | '/portal/subcontractors/new'
     | '/portal/submissions/$id'
     | '/admin/blog/'
+    | '/coverage/$county/'
     | '/portal/blog/'
     | '/portal/guides/'
     | '/portal/hoa-submittals/'
@@ -1424,6 +1465,7 @@ export interface FileRouteTypes {
     | '/compliance'
     | '/contact'
     | '/dashboard'
+    | '/estimator'
     | '/fee-calculator'
     | '/for-contractors'
     | '/insurance'
@@ -1449,6 +1491,7 @@ export interface FileRouteTypes {
     | '/reset-password-confirm'
     | '/services'
     | '/signup'
+    | '/sitemap.xml'
     | '/sub-portal'
     | '/terms'
     | '/admin/access-requests'
@@ -1458,6 +1501,7 @@ export interface FileRouteTypes {
     | '/admin/feature-requests'
     | '/admin/gc-compliance'
     | '/admin/invites'
+    | '/admin/leads'
     | '/admin/pricing'
     | '/admin/protection'
     | '/admin/review-queue'
@@ -1470,7 +1514,6 @@ export interface FileRouteTypes {
     | '/blog/$slug'
     | '/building-dept-logins/import'
     | '/building-dept-logins/submit'
-    | '/coverage/$county'
     | '/forms/payment-authorization'
     | '/forms/permit-intake'
     | '/forms/subcontractors'
@@ -1520,6 +1563,7 @@ export interface FileRouteTypes {
     | '/api/public/id-upload'
     | '/api/public/sub-intake-upload'
     | '/api/public/victoria-scan'
+    | '/coverage/$county/$permitType'
     | '/portal/blog/$id'
     | '/portal/blog/new'
     | '/portal/guides/$slug'
@@ -1534,6 +1578,7 @@ export interface FileRouteTypes {
     | '/portal/subcontractors/new'
     | '/portal/submissions/$id'
     | '/admin/blog'
+    | '/coverage/$county'
     | '/portal/blog'
     | '/portal/guides'
     | '/portal/hoa-submittals'
@@ -1560,6 +1605,7 @@ export interface FileRouteTypes {
     | '/compliance'
     | '/contact'
     | '/dashboard'
+    | '/estimator'
     | '/fee-calculator'
     | '/for-contractors'
     | '/forms'
@@ -1587,6 +1633,7 @@ export interface FileRouteTypes {
     | '/reset-password-confirm'
     | '/services'
     | '/signup'
+    | '/sitemap.xml'
     | '/sub-portal'
     | '/terms'
     | '/admin/access-requests'
@@ -1596,6 +1643,7 @@ export interface FileRouteTypes {
     | '/admin/feature-requests'
     | '/admin/gc-compliance'
     | '/admin/invites'
+    | '/admin/leads'
     | '/admin/pricing'
     | '/admin/protection'
     | '/admin/review-queue'
@@ -1608,7 +1656,6 @@ export interface FileRouteTypes {
     | '/blog/$slug'
     | '/building-dept-logins/import'
     | '/building-dept-logins/submit'
-    | '/coverage/$county'
     | '/forms/payment-authorization'
     | '/forms/permit-intake'
     | '/forms/subcontractors'
@@ -1660,6 +1707,7 @@ export interface FileRouteTypes {
     | '/api/public/id-upload'
     | '/api/public/sub-intake-upload'
     | '/api/public/victoria-scan'
+    | '/coverage/$county/$permitType'
     | '/portal/blog/$id'
     | '/portal/blog/new'
     | '/portal/guides/$slug'
@@ -1674,6 +1722,7 @@ export interface FileRouteTypes {
     | '/portal/subcontractors/new'
     | '/portal/submissions/$id'
     | '/admin/blog/'
+    | '/coverage/$county/'
     | '/portal/blog/'
     | '/portal/guides/'
     | '/portal/hoa-submittals/'
@@ -1701,6 +1750,7 @@ export interface RootRouteChildren {
   ComplianceRoute: typeof ComplianceRoute
   ContactRoute: typeof ContactRoute
   DashboardRoute: typeof DashboardRoute
+  EstimatorRoute: typeof EstimatorRoute
   FeeCalculatorRoute: typeof FeeCalculatorRoute
   ForContractorsRoute: typeof ForContractorsRoute
   FormsRoute: typeof FormsRouteWithChildren
@@ -1728,6 +1778,7 @@ export interface RootRouteChildren {
   ResetPasswordConfirmRoute: typeof ResetPasswordConfirmRoute
   ServicesRoute: typeof ServicesRoute
   SignupRoute: typeof SignupRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   SubPortalRoute: typeof SubPortalRoute
   TermsRoute: typeof TermsRoute
   AdminAccessRequestsRoute: typeof AdminAccessRequestsRoute
@@ -1737,6 +1788,7 @@ export interface RootRouteChildren {
   AdminFeatureRequestsRoute: typeof AdminFeatureRequestsRoute
   AdminGcComplianceRoute: typeof AdminGcComplianceRoute
   AdminInvitesRoute: typeof AdminInvitesRoute
+  AdminLeadsRoute: typeof AdminLeadsRoute
   AdminPricingRoute: typeof AdminPricingRoute
   AdminProtectionRoute: typeof AdminProtectionRoute
   AdminReviewQueueRoute: typeof AdminReviewQueueRoute
@@ -1749,7 +1801,6 @@ export interface RootRouteChildren {
   BlogSlugRoute: typeof BlogSlugRoute
   BuildingDeptLoginsImportRoute: typeof BuildingDeptLoginsImportRoute
   BuildingDeptLoginsSubmitRoute: typeof BuildingDeptLoginsSubmitRoute
-  CoverageCountyRoute: typeof CoverageCountyRoute
   HomeownerTokenRoute: typeof HomeownerTokenRoute
   InvestorAdminRoute: typeof InvestorAdminRoute
   JoinTokenRoute: typeof JoinTokenRoute
@@ -1773,7 +1824,9 @@ export interface RootRouteChildren {
   ApiPublicIdUploadRoute: typeof ApiPublicIdUploadRoute
   ApiPublicSubIntakeUploadRoute: typeof ApiPublicSubIntakeUploadRoute
   ApiPublicVictoriaScanRoute: typeof ApiPublicVictoriaScanRoute
+  CoverageCountyPermitTypeRoute: typeof CoverageCountyPermitTypeRoute
   AdminBlogIndexRoute: typeof AdminBlogIndexRoute
+  CoverageCountyIndexRoute: typeof CoverageCountyIndexRoute
   ApiPublicEmailOutboxProcessRoute: typeof ApiPublicEmailOutboxProcessRoute
   ApiPublicHubspotDealWebhookRoute: typeof ApiPublicHubspotDealWebhookRoute
   ApiPublicPaymentsWebhookRoute: typeof ApiPublicPaymentsWebhookRoute
@@ -1846,6 +1899,13 @@ declare module '@tanstack/react-router' {
       path: '/dashboard'
       fullPath: '/dashboard'
       preLoaderRoute: typeof DashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/estimator': {
+      id: '/estimator'
+      path: '/estimator'
+      fullPath: '/estimator'
+      preLoaderRoute: typeof EstimatorRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/fee-calculator': {
@@ -2037,6 +2097,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SignupRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/sub-portal': {
       id: '/sub-portal'
       path: '/sub-portal'
@@ -2105,6 +2172,13 @@ declare module '@tanstack/react-router' {
       path: '/admin/invites'
       fullPath: '/admin/invites'
       preLoaderRoute: typeof AdminInvitesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/leads': {
+      id: '/admin/leads'
+      path: '/admin/leads'
+      fullPath: '/admin/leads'
+      preLoaderRoute: typeof AdminLeadsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/pricing': {
@@ -2210,13 +2284,6 @@ declare module '@tanstack/react-router' {
       path: '/coverage'
       fullPath: '/coverage/'
       preLoaderRoute: typeof CoverageIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/coverage/$county': {
-      id: '/coverage/$county'
-      path: '/coverage/$county'
-      fullPath: '/coverage/$county'
-      preLoaderRoute: typeof CoverageCountyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/forms/': {
@@ -2553,6 +2620,20 @@ declare module '@tanstack/react-router' {
       path: '/api/public/victoria-scan'
       fullPath: '/api/public/victoria-scan'
       preLoaderRoute: typeof ApiPublicVictoriaScanRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/coverage/$county/': {
+      id: '/coverage/$county/'
+      path: '/coverage/$county'
+      fullPath: '/coverage/$county/'
+      preLoaderRoute: typeof CoverageCountyIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/coverage/$county/$permitType': {
+      id: '/coverage/$county/$permitType'
+      path: '/coverage/$county/$permitType'
+      fullPath: '/coverage/$county/$permitType'
+      preLoaderRoute: typeof CoverageCountyPermitTypeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/portal/blog/': {
@@ -2898,6 +2979,7 @@ const rootRouteChildren: RootRouteChildren = {
   ComplianceRoute: ComplianceRoute,
   ContactRoute: ContactRoute,
   DashboardRoute: DashboardRoute,
+  EstimatorRoute: EstimatorRoute,
   FeeCalculatorRoute: FeeCalculatorRoute,
   ForContractorsRoute: ForContractorsRoute,
   FormsRoute: FormsRouteWithChildren,
@@ -2925,6 +3007,7 @@ const rootRouteChildren: RootRouteChildren = {
   ResetPasswordConfirmRoute: ResetPasswordConfirmRoute,
   ServicesRoute: ServicesRoute,
   SignupRoute: SignupRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
   SubPortalRoute: SubPortalRoute,
   TermsRoute: TermsRoute,
   AdminAccessRequestsRoute: AdminAccessRequestsRoute,
@@ -2934,6 +3017,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminFeatureRequestsRoute: AdminFeatureRequestsRoute,
   AdminGcComplianceRoute: AdminGcComplianceRoute,
   AdminInvitesRoute: AdminInvitesRoute,
+  AdminLeadsRoute: AdminLeadsRoute,
   AdminPricingRoute: AdminPricingRoute,
   AdminProtectionRoute: AdminProtectionRoute,
   AdminReviewQueueRoute: AdminReviewQueueRoute,
@@ -2946,7 +3030,6 @@ const rootRouteChildren: RootRouteChildren = {
   BlogSlugRoute: BlogSlugRoute,
   BuildingDeptLoginsImportRoute: BuildingDeptLoginsImportRoute,
   BuildingDeptLoginsSubmitRoute: BuildingDeptLoginsSubmitRoute,
-  CoverageCountyRoute: CoverageCountyRoute,
   HomeownerTokenRoute: HomeownerTokenRoute,
   InvestorAdminRoute: InvestorAdminRoute,
   JoinTokenRoute: JoinTokenRoute,
@@ -2970,7 +3053,9 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicIdUploadRoute: ApiPublicIdUploadRoute,
   ApiPublicSubIntakeUploadRoute: ApiPublicSubIntakeUploadRoute,
   ApiPublicVictoriaScanRoute: ApiPublicVictoriaScanRoute,
+  CoverageCountyPermitTypeRoute: CoverageCountyPermitTypeRoute,
   AdminBlogIndexRoute: AdminBlogIndexRoute,
+  CoverageCountyIndexRoute: CoverageCountyIndexRoute,
   ApiPublicEmailOutboxProcessRoute: ApiPublicEmailOutboxProcessRoute,
   ApiPublicHubspotDealWebhookRoute: ApiPublicHubspotDealWebhookRoute,
   ApiPublicPaymentsWebhookRoute: ApiPublicPaymentsWebhookRoute,
