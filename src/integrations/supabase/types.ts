@@ -1885,6 +1885,54 @@ export type Database = {
         }
         Relationships: []
       }
+      leads: {
+        Row: {
+          company: string | null
+          county: string | null
+          created_at: string
+          email: string
+          estimate_days_high: number | null
+          estimate_days_low: number | null
+          estimate_fee_high: number | null
+          estimate_fee_low: number | null
+          id: string
+          name: string
+          page_url: string | null
+          permit_type: string | null
+          source: string
+        }
+        Insert: {
+          company?: string | null
+          county?: string | null
+          created_at?: string
+          email: string
+          estimate_days_high?: number | null
+          estimate_days_low?: number | null
+          estimate_fee_high?: number | null
+          estimate_fee_low?: number | null
+          id?: string
+          name: string
+          page_url?: string | null
+          permit_type?: string | null
+          source?: string
+        }
+        Update: {
+          company?: string | null
+          county?: string | null
+          created_at?: string
+          email?: string
+          estimate_days_high?: number | null
+          estimate_days_low?: number | null
+          estimate_fee_high?: number | null
+          estimate_fee_low?: number | null
+          id?: string
+          name?: string
+          page_url?: string | null
+          permit_type?: string | null
+          source?: string
+        }
+        Relationships: []
+      }
       legal_document_versions: {
         Row: {
           change_notes: string | null
