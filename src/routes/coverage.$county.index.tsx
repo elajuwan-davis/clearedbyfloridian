@@ -135,7 +135,52 @@ function CountyPage() {
         </div>
       </section>
 
+      {timelineCounty ? (
+        <section
+          className="mx-auto max-w-6xl px-6 py-16 lg:px-10"
+          style={{ borderTop: "1px solid color-mix(in oklab, var(--md-text) 12%, transparent)" }}
+        >
+          <div className="label-eyebrow" style={{ color: "var(--copper-deep)" }}>
+            Permit timelines by type
+          </div>
+          <h2 className="mt-3 text-[24px]" style={{ color: "var(--md-text)", fontWeight: 600 }}>
+            How long each permit takes in {county.label}.
+          </h2>
+          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {TIMELINE_PERMIT_TYPES.map((p) => {
+              const est = computeEstimate(timelineCounty, p);
+              return (
+                <Link
+                  key={p.slug}
+                  to="/coverage/$county/$permitType"
+                  params={{ county: county.slug, permitType: p.slug }}
+                  className="block p-5 no-underline"
+                  style={{
+                    border: "1px solid color-mix(in oklab, var(--md-text) 14%, transparent)",
+                    color: "var(--md-text)",
+                  }}
+                >
+                  <div className="text-[15px] font-semibold">{p.shortName}</div>
+                  <div className="mt-2 text-[13px] md-muted">
+                    {est.daysLow}–{est.daysHigh} days · ${est.feeLow.toLocaleString()}–$
+                    {est.feeHigh.toLocaleString()}
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+          <p className="mt-6 text-[13.5px] md-muted">
+            Different county or permit type?{" "}
+            <Link to="/estimator" className="underline" style={{ color: "var(--md-text)" }}>
+              Use the estimator
+            </Link>
+            .
+          </p>
+        </section>
+      ) : null}
+
       <Hb803Callout background="transparent" />
+
 
       <section
         className="mx-auto max-w-6xl px-6 pb-24 lg:px-10"
