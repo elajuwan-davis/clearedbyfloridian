@@ -370,6 +370,9 @@ export function MarketingFooter() {
                 <Link to="/pricing" className={FOOT_LINK} style={FOOT_LINK_STYLE}>Pricing</Link>
                 <Link to="/comparison" className={FOOT_LINK} style={FOOT_LINK_STYLE}>Comparison</Link>
                 <Link to="/integrations" className={FOOT_LINK} style={FOOT_LINK_STYLE}>Integrations</Link>
+                <Link to="/coverage" className={FOOT_LINK} style={FOOT_LINK_STYLE}>Coverage</Link>
+                <Link to="/estimator" className={FOOT_LINK} style={FOOT_LINK_STYLE}>Permit Estimator</Link>
+
                 <Link to="/" hash="watch-it-run" className={FOOT_LINK} style={FOOT_LINK_STYLE}>How it works</Link>
               </div>
             </div>
