@@ -3,7 +3,7 @@ import { MarketingShell, PageHeader } from "@/components/marketing-shell";
 import { COUNTIES, findCounty } from "@/lib/counties";
 import { Hb803Callout } from "@/components/hb803-callout";
 
-export const Route = createFileRoute("/coverage/$county")({
+export const Route = createFileRoute("/coverage/$county/")({
   loader: ({ params }) => {
     const county = findCounty(params.county);
     if (!county) throw notFound();
