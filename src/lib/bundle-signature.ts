@@ -11,6 +11,8 @@ import { sendForSignature, type SignatureRequest } from "@/lib/signature-request
 import { buildBundlePrefill, type Bundle, type BundleTrade } from "@/lib/bundle";
 import type { PermitRow } from "@/lib/permits-api";
 
+export { tradeSignatureState } from "@/lib/bundle-signature-state";
+
 const BUCKET = "permit-files";
 
 /** Stable per-trade document name — the key the ledger row is matched back on. */
@@ -102,14 +104,3 @@ export async function sendTradeForSignature(
   });
 }
 
-/**
- * Provider truth for a trade. A ledger row on its own only means "sent" — SignWell has to
- * confirm completion before a trade counts as signed.
- */
-export function tradeSignatureState(
-  req: SignatureRequest | undefined,
-): "pending" | "sent" | "signed" {
-  if (!req) return "pending";
-  if (req.status === "signed" && req.statusSource === "provider_confirmed") return "signed";
-  return "sent";
-}

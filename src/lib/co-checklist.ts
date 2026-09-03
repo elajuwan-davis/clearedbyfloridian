@@ -1,5 +1,8 @@
 import { supabase } from "@/integrations/supabase/client";
 import { triggerNotification } from "@/lib/notifications-api";
+import { CO_ITEMS } from "@/lib/co-progress";
+
+export { CO_ITEMS, coProgress } from "@/lib/co-progress";
 
 export type CoItem = {
   id: string;
@@ -13,20 +16,6 @@ export type CoItem = {
   completed_by: string | null;
   completed_by_label: string | null;
 };
-
-export const CO_ITEMS: { key: string; label: string }[] = [
-  { key: "final_structural", label: "Final structural inspection passed" },
-  { key: "final_electrical", label: "Final electrical inspection passed" },
-  { key: "final_plumbing", label: "Final plumbing inspection passed" },
-  { key: "final_mechanical", label: "Final mechanical / HVAC inspection passed" },
-  { key: "final_pool_spa", label: "Final pool / spa inspection passed" },
-  { key: "trade_signoffs", label: "All trade sign-offs received" },
-  { key: "corrections_resolved", label: "All permit corrections resolved" },
-  { key: "lien_releases_filed", label: "Lien releases filed (all subs)" },
-  { key: "noc_recorded", label: "NOC recorded with county clerk" },
-  { key: "hoa_deposit_refunded", label: "HOA damage deposit refunded (if applicable)" },
-  { key: "co_issued", label: "CO issued by municipality" },
-];
 
 export async function ensureCoItems(permitId: string, tenantId: string | null): Promise<CoItem[]> {
   const existing = await listCoItems(permitId);
@@ -89,10 +78,4 @@ export async function toggleCoItem(item: CoItem, projectName: string, permitTena
     }
   }
   return updated;
-}
-
-export function coProgress(items: CoItem[]): { done: number; total: number; percent: number; issued: boolean } {
-  const total = items.length || CO_ITEMS.length;
-  const done = items.filter((i) => i.complete).length;
-  return { done, total, percent: total ? Math.round((done / total) * 100) : 0, issued: total > 0 && done === total };
 }
