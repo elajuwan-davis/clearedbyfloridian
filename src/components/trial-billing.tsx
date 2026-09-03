@@ -12,6 +12,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { CreditCard, Check, Loader2, ShieldCheck } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
+import { Link } from "@tanstack/react-router";
 import { StripeEmbedded } from "@/components/stripe-embedded";
 import { getStripeEnvironment, isPaymentsConfigured } from "@/lib/stripe";
 import { usePlanAccess } from "@/lib/plan-access";
