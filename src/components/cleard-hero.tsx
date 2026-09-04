@@ -7,7 +7,7 @@ import { HeroStage } from "@/components/hero-stage";
 import { TRADES } from "@/lib/trades";
 
 const HERO_VIDEO_URL =
-  "https://videos.pexels.com/video-files/3195394/3195394-uhd_2560_1440_25fps.mp4";
+  "https://videos.pexels.com/video-files/2278095/2278095-uhd_2560_1440_30fps.mp4";
 
 
 /* ---------------------- NORDIC LUXURY BRAND TOKENS ---------------------- */
