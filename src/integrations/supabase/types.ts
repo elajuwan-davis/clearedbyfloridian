@@ -3122,7 +3122,9 @@ export type Database = {
           inspector_name: string | null
           notes: string | null
           permit_id: string
+          photos: Json
           preferred_time: string | null
+          request_method: string
           requested_date: string | null
           result: string | null
           scheduled_date: string | null
@@ -3137,7 +3139,9 @@ export type Database = {
           inspector_name?: string | null
           notes?: string | null
           permit_id: string
+          photos?: Json
           preferred_time?: string | null
+          request_method?: string
           requested_date?: string | null
           result?: string | null
           scheduled_date?: string | null
@@ -3152,7 +3156,9 @@ export type Database = {
           inspector_name?: string | null
           notes?: string | null
           permit_id?: string
+          photos?: Json
           preferred_time?: string | null
+          request_method?: string
           requested_date?: string | null
           result?: string | null
           scheduled_date?: string | null

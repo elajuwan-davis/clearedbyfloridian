@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import {
   ArrowRight,
@@ -9,6 +9,9 @@ import {
   CheckCircle2,
   XCircle,
   CalendarDays,
+  Camera,
+  Share2,
+  Upload,
 } from "lucide-react";
 import { PermitPicker } from "@/components/permit-picker";
 import { Button } from "@/components/ui/button";
@@ -27,26 +30,28 @@ import {
   labelFor,
   labelForTime,
   hasReport,
+  hasPhotos,
   isUpcoming,
   type PermitInspection,
   type InspectionType,
+  type InspectionRequestMethod,
 } from "@/lib/inspections-api";
-import { PageShell, Segmented, StatusChip, type MetricTone } from "@/components/ui-kit";
 import {
-  CDS,
-  CdsCard,
-  CdsEmpty,
-  Reveal,
-  SkeletonCards,
-  Tag,
-  isoDay,
-} from "@/components/cds-kit";
+  uploadInspectionPhotos,
+  getInspectionPhotoUrl,
+  INSPECTION_PHOTO_MAX_FILES,
+} from "@/lib/inspection-photo-upload";
+import { PageShell, Segmented, StatusChip, type MetricTone } from "@/components/ui-kit";
+import { CDS, CdsCard, CdsEmpty, Reveal, SkeletonCards, Tag, isoDay } from "@/components/cds-kit";
 
 export const Route = createFileRoute("/portal/inspections")({
   head: () => ({
     meta: [
       { title: "Inspections — Cleard" },
-      { name: "description", content: "Schedule inspections and review results across your permits." },
+      {
+        name: "description",
+        content: "Schedule inspections and review results across your permits.",
+      },
       { name: "robots", content: "noindex" },
     ],
   }),
@@ -62,7 +67,10 @@ const resultTone: Record<string, MetricTone> = {
 
 function ResultBadge({ result }: { result: string | null }) {
   const tone = resultTone[result ?? ""] ?? "info";
-  const label = result === "pending" || !result ? "Scheduled" : result.charAt(0).toUpperCase() + result.slice(1);
+  const label =
+    result === "pending" || !result
+      ? "Scheduled"
+      : result.charAt(0).toUpperCase() + result.slice(1);
   return <StatusChip tone={tone}>{label}</StatusChip>;
 }
 
@@ -75,6 +83,7 @@ function InspectionsPage() {
   const [requestFor, setRequestFor] = useState<PermitRow | null>(null);
   const [reportFor, setReportFor] = useState<PermitInspection | null>(null);
   const [statusFor, setStatusFor] = useState<PermitInspection | null>(null);
+  const [photosFor, setPhotosFor] = useState<PermitInspection | null>(null);
   const activeTenantId = useActiveTenantId();
 
   const refresh = useCallback(async () => {
@@ -182,6 +191,7 @@ function InspectionsPage() {
               rows={upcoming}
               isAdmin={session.isAdmin}
               onViewReport={setReportFor}
+              onViewPhotos={setPhotosFor}
               onUpdateStatus={setStatusFor}
             />
             <InspectionGroup
@@ -190,6 +200,7 @@ function InspectionsPage() {
               rows={past}
               isAdmin={session.isAdmin}
               onViewReport={setReportFor}
+              onViewPhotos={setPhotosFor}
               onUpdateStatus={setStatusFor}
             />
           </div>
@@ -220,8 +231,10 @@ function InspectionsPage() {
         />
       )}
 
-      {reportFor && (
-        <ReportDialog inspection={reportFor} onClose={() => setReportFor(null)} />
+      {reportFor && <ReportDialog inspection={reportFor} onClose={() => setReportFor(null)} />}
+
+      {photosFor && (
+        <PhotoGalleryDialog inspection={photosFor} onClose={() => setPhotosFor(null)} />
       )}
 
       {statusFor && (
@@ -245,7 +258,14 @@ function LiveInspectionCard({ inspection }: { inspection: PermitInspection }) {
   const step = inspection.result === "passed" ? 3 : inspection.scheduled_date ? 1 : 0;
   return (
     <Reveal className="mb-4">
-      <div style={{ background: CDS.ink, border: `1px solid ${CDS.ink}`, borderRadius: 8, padding: 20 }}>
+      <div
+        style={{
+          background: CDS.ink,
+          border: `1px solid ${CDS.ink}`,
+          borderRadius: 8,
+          padding: 20,
+        }}
+      >
         <div className="flex min-w-0 flex-wrap items-baseline gap-2">
           <span
             style={{
@@ -313,6 +333,7 @@ function InspectionGroup({
   rows,
   isAdmin,
   onViewReport,
+  onViewPhotos,
   onUpdateStatus,
 }: {
   title: string;
@@ -320,6 +341,7 @@ function InspectionGroup({
   rows: PermitInspection[];
   isAdmin: boolean;
   onViewReport: (i: PermitInspection) => void;
+  onViewPhotos: (i: PermitInspection) => void;
   onUpdateStatus: (i: PermitInspection) => void;
 }) {
   return (
@@ -363,7 +385,10 @@ function InspectionGroup({
                         {i.permit_number ?? i.project_name}
                       </Link>
                     )}
-                    <div className="truncate" style={{ fontSize: 14, fontWeight: 700, color: CDS.black }}>
+                    <div
+                      className="truncate"
+                      style={{ fontSize: 14, fontWeight: 700, color: CDS.black }}
+                    >
                       {i.job_address || i.project_name || "—"}
                     </div>
                     <div className="mt-1.5 flex flex-wrap items-center gap-2">
@@ -389,8 +414,16 @@ function InspectionGroup({
                       View report <ArrowRight className="h-3 w-3" />
                     </button>
                   )}
+                  {hasPhotos(i) && (
+                    <button className="p-btn p-btn-ghost p-btn-sm" onClick={() => onViewPhotos(i)}>
+                      <Camera className="h-3 w-3" /> View photos ({i.photos.length})
+                    </button>
+                  )}
                   {isAdmin && i.result === "pending" && (
-                    <button className="p-btn p-btn-quiet p-btn-sm" onClick={() => onUpdateStatus(i)}>
+                    <button
+                      className="p-btn p-btn-quiet p-btn-sm"
+                      onClick={() => onUpdateStatus(i)}
+                    >
                       Update status
                     </button>
                   )}
@@ -404,6 +437,38 @@ function InspectionGroup({
   );
 }
 
+function MethodOption({
+  active,
+  icon,
+  title,
+  description,
+  onClick,
+}: {
+  active: boolean;
+  icon: React.ReactNode;
+  title: string;
+  description: string;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-pressed={active}
+      className={`flex items-start gap-2.5 rounded-[3px] border px-3 py-2.5 text-left transition-colors ${
+        active
+          ? "border-obsidian bg-obsidian/[0.04]"
+          : "border-obsidian/15 hover:border-obsidian/35"
+      }`}
+    >
+      <span className={active ? "text-obsidian mt-0.5" : "text-obsidian/45 mt-0.5"}>{icon}</span>
+      <span>
+        <span className="block text-sm font-medium text-obsidian">{title}</span>
+        <span className="block text-[11px] text-obsidian/55">{description}</span>
+      </span>
+    </button>
+  );
+}
 
 function RequestInspectionDialog({
   permit,
@@ -414,35 +479,102 @@ function RequestInspectionDialog({
   onClose: () => void;
   onCreated: () => Promise<void>;
 }) {
+  const [method, setMethod] = useState<InspectionRequestMethod>("live");
   const [type, setType] = useState<InspectionType>("rough");
   const [date, setDate] = useState("");
   const [time, setTime] = useState("morning");
   const [notes, setNotes] = useState("");
   const [saving, setSaving] = useState(false);
+  const [photoQueue, setPhotoQueue] = useState<File[]>([]);
+  const [photoProgress, setPhotoProgress] = useState<{ done: number; total: number } | null>(null);
+  const [dragOver, setDragOver] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Local thumbnails for the staged photos — released whenever the queue changes.
+  const previews = useMemo(() => photoQueue.map((f) => URL.createObjectURL(f)), [photoQueue]);
+  useEffect(() => {
+    return () => previews.forEach((u) => URL.revokeObjectURL(u));
+  }, [previews]);
+
+  function addPhotos(files: File[]) {
+    const images = files.filter(
+      (f) => f.type.startsWith("image/") || /\.(heic|heif|jpe?g|png|gif|webp)$/i.test(f.name),
+    );
+    if (images.length === 0) {
+      toast.error("Only photo files are accepted");
+      return;
+    }
+    setPhotoQueue((prev) => {
+      const seen = new Set(prev.map((f) => `${f.name}:${f.size}`));
+      const merged = [...prev];
+      for (const f of images) {
+        const id = `${f.name}:${f.size}`;
+        if (seen.has(id)) continue;
+        seen.add(id);
+        merged.push(f);
+      }
+      if (merged.length > INSPECTION_PHOTO_MAX_FILES) {
+        toast.error(`Up to ${INSPECTION_PHOTO_MAX_FILES} photos at a time`);
+        return merged.slice(0, INSPECTION_PHOTO_MAX_FILES);
+      }
+      return merged;
+    });
+  }
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
-    if (!date) {
+    if (method === "live" && !date) {
       toast.error("Pick a preferred date");
+      return;
+    }
+    if (method === "photos" && photoQueue.length === 0) {
+      toast.error("Add at least one photo");
       return;
     }
     setSaving(true);
     try {
-      await createInspection({
-        permit_id: permit.id,
-        tenant_id: permit.tenant_id,
-        inspection_type: type,
-        requested_date: date,
-        scheduled_date: date,
-        preferred_time: time || null,
-        notes: notes.trim() || null,
-      });
+      if (method === "live") {
+        await createInspection({
+          permit_id: permit.id,
+          tenant_id: permit.tenant_id,
+          inspection_type: type,
+          requested_date: date,
+          scheduled_date: date,
+          preferred_time: time || null,
+          notes: notes.trim() || null,
+          request_method: "live",
+        });
+      } else {
+        setPhotoProgress({ done: 0, total: photoQueue.length });
+        const result = await uploadInspectionPhotos(permit.id, photoQueue, (done, total) =>
+          setPhotoProgress({ done, total }),
+        );
+        if (result.uploaded.length === 0) {
+          throw new Error("None of the photos could be uploaded — please try again.");
+        }
+        if (result.failed.length > 0) {
+          toast.error(
+            `${result.failed.length} photo${result.failed.length === 1 ? "" : "s"} failed to upload: ` +
+              result.failed.map((f) => f.filename).join(", "),
+          );
+        }
+        await createInspection({
+          permit_id: permit.id,
+          tenant_id: permit.tenant_id,
+          inspection_type: type,
+          requested_date: new Date().toISOString().slice(0, 10),
+          notes: notes.trim() || null,
+          request_method: "photos",
+          photos: result.uploaded,
+        });
+      }
       toast.success("Inspection requested");
       await onCreated();
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Failed to request inspection");
     } finally {
       setSaving(false);
+      setPhotoProgress(null);
     }
   }
 
@@ -479,36 +611,146 @@ function RequestInspectionDialog({
               ))}
             </select>
           </div>
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <Label className="font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/55">
-                Preferred date
-              </Label>
-              <Input
-                type="date"
-                required
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
-                className="mt-1.5 rounded-[3px]"
+
+          <div>
+            <Label className="font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/55">
+              How should this be inspected?
+            </Label>
+            <div className="mt-1.5 grid grid-cols-2 gap-2">
+              <MethodOption
+                active={method === "live"}
+                icon={<CalendarDays className="h-4 w-4" />}
+                title="Live Inspection"
+                description="An inspector visits the site"
+                onClick={() => setMethod("live")}
+              />
+              <MethodOption
+                active={method === "photos"}
+                icon={<Camera className="h-4 w-4" />}
+                title="Upload Photos"
+                description="Reviewed from jobsite photos"
+                onClick={() => setMethod("photos")}
               />
             </div>
+          </div>
+
+          {method === "live" ? (
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label className="font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/55">
+                  Preferred date
+                </Label>
+                <Input
+                  type="date"
+                  required
+                  value={date}
+                  onChange={(e) => setDate(e.target.value)}
+                  className="mt-1.5 rounded-[3px]"
+                />
+              </div>
+              <div>
+                <Label className="font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/55">
+                  Preferred time
+                </Label>
+                <select
+                  value={time}
+                  onChange={(e) => setTime(e.target.value)}
+                  className="mt-1.5 w-full border border-obsidian/20 rounded-[3px] px-3 py-2 text-sm min-h-11"
+                >
+                  {TIME_WINDOWS.map((t) => (
+                    <option key={t.value} value={t.value}>
+                      {t.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          ) : (
             <div>
               <Label className="font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/55">
-                Preferred time
+                Jobsite photos
               </Label>
-              <select
-                value={time}
-                onChange={(e) => setTime(e.target.value)}
-                className="mt-1.5 w-full border border-obsidian/20 rounded-[3px] px-3 py-2 text-sm min-h-11"
+              <div
+                onDragOver={(e) => {
+                  e.preventDefault();
+                  setDragOver(true);
+                }}
+                onDragLeave={() => setDragOver(false)}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  setDragOver(false);
+                  addPhotos(Array.from(e.dataTransfer.files ?? []));
+                }}
+                onClick={() => fileInputRef.current?.click()}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") fileInputRef.current?.click();
+                }}
+                className={`mt-1.5 cursor-pointer border-2 border-dashed rounded-[3px] px-4 py-5 text-center transition-colors ${
+                  dragOver
+                    ? "border-obsidian/50 bg-obsidian/[0.05]"
+                    : "border-obsidian/20 hover:border-obsidian/40"
+                }`}
               >
-                {TIME_WINDOWS.map((t) => (
-                  <option key={t.value} value={t.value}>
-                    {t.label}
-                  </option>
-                ))}
-              </select>
+                <Upload className="h-4 w-4 mx-auto text-obsidian/45" />
+                <div className="mt-2 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/60">
+                  Drop photos or click to choose
+                </div>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  className="hidden"
+                  onChange={(e) => {
+                    addPhotos(Array.from(e.target.files ?? []));
+                    e.target.value = "";
+                  }}
+                />
+              </div>
+
+              {photoQueue.length > 0 && (
+                <div className="mt-3 grid grid-cols-4 gap-2">
+                  {photoQueue.map((f, i) => (
+                    <div
+                      key={`${f.name}-${i}`}
+                      className="relative aspect-square rounded-[3px] overflow-hidden border border-obsidian/10 bg-obsidian/[0.02]"
+                    >
+                      <img src={previews[i]} alt={f.name} className="h-full w-full object-cover" />
+                      {!saving && (
+                        <button
+                          type="button"
+                          onClick={() => setPhotoQueue((q) => q.filter((_, j) => j !== i))}
+                          className="absolute top-1 right-1 rounded-full bg-obsidian/70 p-0.5 text-white"
+                          aria-label={`Remove ${f.name}`}
+                        >
+                          <X className="h-3 w-3" />
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {photoProgress && (
+                <div className="mt-3">
+                  <div className="h-1.5 bg-obsidian/10 rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-emerald-500 transition-all"
+                      style={{
+                        width: `${photoProgress.total ? (photoProgress.done / photoProgress.total) * 100 : 0}%`,
+                      }}
+                    />
+                  </div>
+                  <div className="mt-1 font-mono text-[10px] text-obsidian/55">
+                    Uploading… {photoProgress.done}/{photoProgress.total}
+                  </div>
+                </div>
+              )}
             </div>
-          </div>
+          )}
+
           <div>
             <Label className="font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/55">
               Notes (optional)
@@ -523,15 +765,137 @@ function RequestInspectionDialog({
           </div>
         </div>
         <div className="px-6 py-4 border-t border-obsidian/10 flex justify-end gap-2">
-          <Button type="button" variant="outline" className="rounded-[3px]" onClick={onClose} disabled={saving}>
+          <Button
+            type="button"
+            variant="outline"
+            className="rounded-[3px]"
+            onClick={onClose}
+            disabled={saving}
+          >
             Cancel
           </Button>
           <Button type="submit" className="rounded-[3px]" disabled={saving}>
-            {saving ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Plus className="h-4 w-4 mr-2" />}
-            Submit request
+            {saving ? (
+              <Loader2 className="h-4 w-4 animate-spin mr-2" />
+            ) : (
+              <Plus className="h-4 w-4 mr-2" />
+            )}
+            {saving && method === "photos" ? "Uploading…" : "Submit request"}
           </Button>
         </div>
       </form>
+    </div>
+  );
+}
+
+function PhotoGalleryDialog({
+  inspection,
+  onClose,
+}: {
+  inspection: PermitInspection;
+  onClose: () => void;
+}) {
+  const [urls, setUrls] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    let active = true;
+    (async () => {
+      const entries = await Promise.all(
+        inspection.photos.map(async (p) => {
+          try {
+            const url = await getInspectionPhotoUrl(p.path);
+            return [p.path, url] as const;
+          } catch {
+            return [p.path, ""] as const;
+          }
+        }),
+      );
+      if (active) setUrls(Object.fromEntries(entries));
+    })();
+    return () => {
+      active = false;
+    };
+  }, [inspection]);
+
+  async function share(photo: (typeof inspection.photos)[number]) {
+    try {
+      const url = await getInspectionPhotoUrl(photo.path, 3600);
+      const nav = navigator as Navigator & { share?: (data: ShareData) => Promise<void> };
+      if (nav.share) {
+        await nav.share({ title: photo.file_name, url });
+      } else {
+        await navigator.clipboard.writeText(url);
+        toast.success("Link copied — paste it anywhere to share.");
+      }
+    } catch (e) {
+      if (e instanceof Error && e.name === "AbortError") return; // share sheet dismissed
+      toast.error("Could not create a share link");
+    }
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 bg-obsidian/50 flex items-start justify-center overflow-y-auto p-4">
+      <div className="w-full max-w-2xl bg-white rounded-[3px] shadow-2xl my-16">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-obsidian/10">
+          <div>
+            <div className="eyebrow text-obsidian/50">Inspection Photos</div>
+            <h2 className="display-serif text-xl text-obsidian mt-1">
+              {labelFor(inspection.inspection_type)}
+            </h2>
+            <p className="text-xs text-obsidian/55 mt-1">
+              {inspection.job_address || inspection.project_name}
+            </p>
+          </div>
+          <button type="button" onClick={onClose} className="p-2 rounded-[3px] hover:bg-obsidian/5">
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+        <div className="px-6 py-5">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+            {inspection.photos.map((p) => (
+              <div
+                key={p.path}
+                className="group relative rounded-[3px] overflow-hidden border border-obsidian/10 bg-obsidian/[0.02]"
+              >
+                {urls[p.path] ? (
+                  <a
+                    href={urls[p.path]}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="block aspect-square"
+                  >
+                    <img
+                      src={urls[p.path]}
+                      alt={p.file_name}
+                      className="h-full w-full object-cover"
+                    />
+                  </a>
+                ) : (
+                  <div className="aspect-square grid place-items-center">
+                    <Loader2 className="h-4 w-4 animate-spin text-obsidian/40" />
+                  </div>
+                )}
+                <button
+                  type="button"
+                  onClick={() => void share(p)}
+                  className="absolute bottom-1 right-1 rounded-[3px] bg-obsidian/70 p-1.5 text-white opacity-0 group-hover:opacity-100 focus-visible:opacity-100 transition-opacity"
+                  aria-label={`Share ${p.file_name}`}
+                >
+                  <Share2 className="h-3.5 w-3.5" />
+                </button>
+              </div>
+            ))}
+          </div>
+          <p className="mt-3 text-[11px] text-obsidian/45">
+            Click a photo to open it full-size. Tap the share icon to send a link anywhere.
+          </p>
+        </div>
+        <div className="px-6 py-4 border-t border-obsidian/10 flex justify-end">
+          <Button variant="outline" className="rounded-[3px]" onClick={onClose}>
+            Close
+          </Button>
+        </div>
+      </div>
     </div>
   );
 }
@@ -586,6 +950,12 @@ function ReportDialog({
               <dt className="text-obsidian/55">Inspector</dt>
               <dd className="text-obsidian text-right">{inspection.inspector_name || "—"}</dd>
             </div>
+            <div className="flex justify-between gap-4">
+              <dt className="text-obsidian/55">Method</dt>
+              <dd className="text-obsidian text-right">
+                {inspection.request_method === "photos" ? "Uploaded photos" : "Live site visit"}
+              </dd>
+            </div>
           </dl>
           <div>
             <div className="font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/55 mb-1.5">
@@ -595,10 +965,12 @@ function ReportDialog({
               {inspection.notes?.trim() || "No notes recorded."}
             </div>
           </div>
-          <p className="text-[11px] text-obsidian/40">
-            Results are stored on the inspection record (`result` + `notes`). No separate
-            attachments table in this MVP.
-          </p>
+          {hasPhotos(inspection) && (
+            <p className="text-[11px] text-obsidian/50">
+              {inspection.photos.length} jobsite photo{inspection.photos.length === 1 ? "" : "s"} on
+              file — use "View photos" on the card to open or share them.
+            </p>
+          )}
         </div>
         <div className="px-6 py-4 border-t border-obsidian/10 flex justify-end">
           <Button variant="outline" className="rounded-[3px]" onClick={onClose}>
@@ -728,7 +1100,13 @@ function StatusUpdateDialog({
           )}
         </div>
         <div className="px-6 py-4 border-t border-obsidian/10 flex justify-end gap-2">
-          <Button type="button" variant="outline" className="rounded-[3px]" onClick={onClose} disabled={saving}>
+          <Button
+            type="button"
+            variant="outline"
+            className="rounded-[3px]"
+            onClick={onClose}
+            disabled={saving}
+          >
             Cancel
           </Button>
           <Button type="submit" className="rounded-[3px]" disabled={saving}>

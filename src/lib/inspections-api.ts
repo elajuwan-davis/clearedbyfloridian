@@ -16,6 +16,17 @@ export type InspectionType =
 
 export type InspectionResult = "pending" | "passed" | "failed" | "reinspect" | "cancelled";
 
+/** "live" = an inspector visits the site. "photos" = reviewed from uploaded jobsite photos. */
+export type InspectionRequestMethod = "live" | "photos";
+
+export type InspectionPhoto = {
+  path: string;
+  file_name: string;
+  size: number;
+  mime: string;
+  uploaded_at: string;
+};
+
 export const INSPECTION_TYPES: { value: InspectionType; label: string }[] = [
   { value: "rough", label: "Rough" },
   { value: "framing", label: "Framing" },
@@ -52,6 +63,8 @@ export type PermitInspection = {
   inspector_name: string | null;
   result: InspectionResult | string | null;
   notes: string | null;
+  request_method: InspectionRequestMethod | string;
+  photos: InspectionPhoto[];
   created_at: string;
   updated_at: string;
   /** Joined from permits when listed via listAllInspections */
@@ -61,7 +74,7 @@ export type PermitInspection = {
 };
 
 const SELECT_WITH_PERMIT =
-  "id, permit_id, tenant_id, inspection_type, requested_date, scheduled_date, preferred_time, inspector_name, result, notes, created_at, updated_at, permits:permit_id ( id, project_name, job_address, permit_number, tenant_id )";
+  "id, permit_id, tenant_id, inspection_type, requested_date, scheduled_date, preferred_time, inspector_name, result, notes, request_method, photos, created_at, updated_at, permits:permit_id ( id, project_name, job_address, permit_number, tenant_id )";
 
 function mapRow(row: any): PermitInspection {
   const permit = row.permits ?? null;
@@ -76,6 +89,8 @@ function mapRow(row: any): PermitInspection {
     inspector_name: row.inspector_name,
     result: row.result,
     notes: row.notes,
+    request_method: row.request_method ?? "live",
+    photos: Array.isArray(row.photos) ? (row.photos as InspectionPhoto[]) : [],
     created_at: row.created_at,
     updated_at: row.updated_at,
     project_name: permit?.project_name ?? null,
@@ -121,6 +136,8 @@ export async function createInspection(input: {
   preferred_time?: string | null;
   inspector_name?: string | null;
   notes?: string | null;
+  request_method?: InspectionRequestMethod;
+  photos?: InspectionPhoto[];
 }): Promise<PermitInspection> {
   const { data: auth } = await supabase.auth.getUser();
   const { data, error } = await supabase
@@ -218,6 +235,11 @@ export function labelForTime(time: string | null | undefined): string {
 /** Has a recorded outcome that can be shown in View report. */
 export function hasReport(i: PermitInspection): boolean {
   return i.result === "passed" || i.result === "failed" || i.result === "reinspect";
+}
+
+/** Uploaded jobsite photos on file, viewable/shareable any time — not gated on a result. */
+export function hasPhotos(i: PermitInspection): boolean {
+  return (i.photos?.length ?? 0) > 0;
 }
 
 export function isUpcoming(i: PermitInspection, today = new Date().toISOString().slice(0, 10)): boolean {
