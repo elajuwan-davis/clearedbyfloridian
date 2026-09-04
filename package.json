@@ -13,6 +13,7 @@
     "portal-worker": "tsx scripts/portal-worker/municipality-submit-worker.ts",
     "status-worker": "tsx scripts/portal-worker/permit-status-worker.ts",
     "import-portal-logins": "tsx scripts/import-portal-logins.ts",
+    "test": "tsx --test src/lib/*.test.ts",
     "test:import-portal-logins": "tsx --test scripts/import-portal-logins.test.ts"
   },
   "dependencies": {

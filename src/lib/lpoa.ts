@@ -8,6 +8,8 @@
 import { supabase } from "@/integrations/supabase/client";
 import { generateAgreementPdf } from "@/lib/private-provider-forms";
 
+export { isLpoaSigned } from "@/lib/lpoa-status";
+
 export const LPOA_REVISION = "2026.06";
 export const LPOA_TITLE = "Affidavit of Agency & Limited Power of Attorney";
 export const LPOA_SUBTITLE =
@@ -90,10 +92,6 @@ export async function loadLpoa(): Promise<LpoaRecord | null> {
     .maybeSingle();
   if (error) return null;
   return data ? mapRow(data) : null;
-}
-
-export function isLpoaSigned(rec: LpoaRecord | null | undefined): boolean {
-  return rec?.status === "signed" && rec?.statusSource === "provider_confirmed";
 }
 
 export async function createLpoaDraft(input: {
