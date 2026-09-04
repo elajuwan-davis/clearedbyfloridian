@@ -24,12 +24,12 @@ const SOLUTION_LINKS: Array<{ to: string; label: string }> = [
 ];
 
 
-const NEAR_BLACK = "#FAF3E6";
-const BODY_GRAY = "#7A5C68";
-const INK = "#2F4F4F";
-const TEAL = "#673147";
-const OAT = "#FAF3E6";
-const BORDER = "#E0D3BC";
+const NEAR_BLACK = "#FFFFFF";
+const BODY_GRAY = "#6B6B6B";
+const INK = "#2B1620";
+const TEAL = "#2B1620";
+const OAT = "#FFFFFF";
+const BORDER = "rgba(0,0,0,0.1)";
 const SERIF = '"Fraunces", "Iowan Old Style", Georgia, serif';
 
 
@@ -232,7 +232,7 @@ export function MarketingNav() {
             style={{
               backgroundImage: "var(--gradient-copper)",
               border: "1px solid color-mix(in oklab, var(--copper-deep) 70%, transparent)",
-              color: "#FFF8EC",
+              color: "#FFFFFF",
               fontWeight: 600,
               whiteSpace: "nowrap",
               boxShadow: "inset 0 1px 0 rgba(255,255,255,0.45)",
@@ -319,7 +319,7 @@ export function MarketingNav() {
               onClick={() => setOpen(false)}
               className="cl-glass foil-sheen inline-flex w-full items-center justify-center px-4 py-2.5 text-sm no-underline"
               style={{
-                color: "#FFF8EC",
+                color: "#FFFFFF",
                 backgroundImage: "var(--gradient-copper)",
                 border: "1px solid color-mix(in oklab, var(--copper-deep) 70%, transparent)",
                 fontWeight: 600,
@@ -353,7 +353,7 @@ export function MarketingFooter() {
             <Link to="/" className="no-underline">
               <span
                 className="text-[22px] tracking-[-0.03em]"
-                style={{ fontFamily: SERIF, fontWeight: 600, color: "#FAF3E6" }}
+                style={{ fontFamily: SERIF, fontWeight: 600, color: "#FFFFFF" }}
               >
                 Cleard
               </span>
