@@ -203,7 +203,7 @@
     font-family: var(--nl-font);
     font-weight: 700;
     letter-spacing: -0.02em;
-    color: var(--black);
+    color: inherit;
   }
   a { color: inherit; }
   ::selection { background: var(--copper-soft-2); color: var(--black); }

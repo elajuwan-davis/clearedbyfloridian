@@ -97,13 +97,13 @@ function nextAction(p: PermitRow, c: ReturnType<typeof permitCompleteness>, vend
   if (vendor) return { label: `Managed by ${vendor}`, tone: "neutral" as const };
   if (p.status === "corrections_required") return { label: "Respond to corrections", tone: "danger" as const };
   if (p.status === "on_hold") return { label: "Delayed — check with Cleard", tone: "danger" as const };
+  if (p.status === "cancelled") return { label: "Cancelled", tone: "neutral" as const };
   if (c.missingFields.length > 0)
     return { label: `${c.missingFields.length} field${c.missingFields.length === 1 ? "" : "s"} missing`, tone: "danger" as const };
   if (c.missingDocs.length > 0)
     return { label: `${c.missingDocs.length} document${c.missingDocs.length === 1 ? "" : "s"} to upload`, tone: "info" as const };
   if (p.status === "permit_issued") return { label: "Permit issued", tone: "success" as const };
   if (p.status === "approved") return { label: "Approved — awaiting issue", tone: "success" as const };
-  if (p.status === "cancelled") return { label: "Cancelled", tone: "neutral" as const };
   return { label: "Waiting on jurisdiction", tone: "info" as const };
 }
 

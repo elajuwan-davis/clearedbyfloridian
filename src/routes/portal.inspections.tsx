@@ -141,8 +141,8 @@ function InspectionsPage() {
 
   const live = useMemo(() => {
     const today = isoDay(new Date());
-    return rows.find((r) => dayOf(r) === today && (r.result === "pending" || !r.result)) ?? null;
-  }, [rows]);
+    return visible.find((r) => dayOf(r) === today && (r.result === "pending" || !r.result)) ?? null;
+  }, [visible]);
 
   return (
     <>

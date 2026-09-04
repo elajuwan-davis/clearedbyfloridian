@@ -176,7 +176,7 @@ function Td({ children }: { children: React.ReactNode }) {
 }
 
 function codeStatus(c: Code) {
-  if (c.used) return { label: "Used", color: "rgba(0,0,0,0.62)" };
+  if (c.used) return { label: "Used", color: "rgba(255,255,255,0.62)" };
   if (c.expires_at && new Date(c.expires_at).getTime() <= Date.now())
     return { label: "Expired", color: "#C0392B" };
   return { label: "Active", color: TEAL };
