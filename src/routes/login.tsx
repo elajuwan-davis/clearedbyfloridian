@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ArrowRight, Loader2 } from "lucide-react";
 import { isPermitsOnlyEmail, PERMITS_ONLY_HOME } from "@/lib/permits-only";
+import { canHoldAdminRole } from "@/lib/signup-role";
 
 
 export const Route = createFileRoute("/login")({
@@ -99,7 +100,7 @@ function LoginPage() {
         .select("role")
         .eq("user_id", userId);
       const set = new Set((roles ?? []).map((r: any) => r.role));
-      if (set.has("admin")) target = "/admin";
+      if (set.has("admin") && canHoldAdminRole(signIn.user?.email ?? emailKey)) target = "/admin";
       else if (set.has("subcontractor")) target = "/sub-portal";
       else target = getSafeNext("/portal");
     }

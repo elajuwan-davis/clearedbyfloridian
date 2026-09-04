@@ -5,6 +5,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { z } from "zod";
+import { canHoldAdminRole } from "@/lib/signup-role";
 
 async function assertAdmin(userId: string) {
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
@@ -16,6 +17,13 @@ async function assertAdmin(userId: string) {
     .maybeSingle();
   if (error) throw new Error(error.message);
   if (!data) throw new Error("Forbidden — admin only");
+  // Belt-and-suspenders: a planted user_roles.admin row from public signUp
+  // metadata must not unlock approve/invite/impersonate before the trigger fix
+  // is applied on the hosted project.
+  const { data: authUser } = await supabaseAdmin.auth.admin.getUserById(userId);
+  if (!canHoldAdminRole(authUser?.user?.email ?? null)) {
+    throw new Error("Forbidden — admin only");
+  }
 }
 
 const ApproveInput = z.object({
@@ -377,7 +385,10 @@ export const inviteSubcontractorFn = createServerFn({ method: "POST" })
       .maybeSingle();
     const { data: isAdminRow } = await (supabaseAdmin.from("user_roles" as any) as any)
       .select("role").eq("user_id", context.userId).eq("role", "admin").maybeSingle();
-    const authorized = !!isAdminRow || (caller && caller.tenant_id === sub.tenant_id);
+    const { data: callerAuth } = await supabaseAdmin.auth.admin.getUserById(context.userId);
+    const authorized =
+      (!!isAdminRow && canHoldAdminRole(callerAuth?.user?.email ?? null)) ||
+      (caller && caller.tenant_id === sub.tenant_id);
     if (!authorized) throw new Error("Forbidden");
 
     const { data: invited, error: iErr } = await (supabaseAdmin.auth.admin as any).inviteUserByEmail(
