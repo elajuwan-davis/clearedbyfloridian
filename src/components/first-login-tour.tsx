@@ -189,12 +189,17 @@ export function useFirstLoginTour(enabled: boolean) {
 
     void (async () => {
       try {
+        // The tour state lives behind an authenticated call — without a live session
+        // there is no bearer token to send, so don't ask at all.
+        const { data } = await supabase.auth.getSession();
+        if (!data.session?.access_token) return;
         const res = await shouldShow();
         if (!res?.show) return;
       } catch {
         // Tour state unavailable (e.g. migration not applied yet) — skip it silently.
         return;
       }
+
       tour = startFirstLoginTour({
         onLeaveForNewPermit: () => void navigate({ to: "/portal/permits/new" }),
         onFinished: () => void complete().catch(() => {}),
