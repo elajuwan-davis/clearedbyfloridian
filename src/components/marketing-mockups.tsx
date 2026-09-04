@@ -687,7 +687,7 @@ export function VictoriaChatMock() {
         <div className="flex">
           <div
             className="max-w-[92%] px-3.5 py-2.5 text-[12px] leading-relaxed"
-            style={{ background: "rgba(103,49,71,0.1)", borderLeft: `2px solid ${M.teal}`, color: M.text }}
+            style={{ background: "rgba(156,107,63,0.08)", borderLeft: `2px solid ${M.teal}`, color: M.text }}
           >
             Martin County requires a 7.5-ft rear setback for pool equipment and 6 ft from the water&apos;s
             edge to the rear property line. Screen enclosures reduce to 5 ft with an engineered tie-down
