@@ -142,32 +142,48 @@ export function AddressAutocomplete({
   const unavailableRef = useRef(onUnavailable);
   unavailableRef.current = onUnavailable;
 
-  const giveUp = useRef(() => {
+  const giveUp = useRef((reason?: unknown) => {
+    if (reason !== undefined) {
+      console.warn("[AddressAutocomplete] falling back to Census lookup —", reason);
+    }
     setSupported(false);
     unavailableRef.current?.();
   }).current;
 
   useEffect(() => {
-    if (!MAPS_KEY) { giveUp(); return; }
+    if (!MAPS_KEY) { giveUp("no VITE_GOOGLE_MAPS_API_KEY configured"); return; }
     // Google reports an invalid key / blocked referrer / billing problem
     // asynchronously through gm_authFailure — treat it as unavailable.
-    const off = onGoogleMapsAuthFailure(giveUp);
+    const off = onGoogleMapsAuthFailure(() =>
+      giveUp("gm_authFailure — invalid key, blocked referrer, or billing not enabled"),
+    );
     loadMapsJs()
       .then(async (g) => {
         const lib = await g.maps.importLibrary("places");
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const anyLib = lib as any;
-        // Probe once up front so an invalid key / blocked referrer / disabled
-        // API / quota problem surfaces before the user types a single letter.
-        await anyLib.AutocompleteSuggestion.fetchAutocompleteSuggestions({
-          input: "Miami",
-          includedRegionCodes: ["us"],
-          locationRestriction: FLORIDA_BOUNDS,
-        });
+        // The library loaded — that's the real signal the feature can work.
+        // Wire it up immediately, before the probe below, so a hiccup on
+        // that one startup call can never block real typing later.
         placesLibRef.current = lib;
         sessionTokenRef.current = new anyLib.AutocompleteSessionToken();
+        // Best-effort health check, logged but never fatal — a rejection
+        // here used to give up on Google for the whole page even when a
+        // real address typed a moment later would have worked fine.
+        try {
+          await anyLib.AutocompleteSuggestion.fetchAutocompleteSuggestions({
+            input: "Miami",
+            includedRegionCodes: ["us"],
+            locationRestriction: FLORIDA_BOUNDS,
+          });
+        } catch (probeErr) {
+          console.warn(
+            "[AddressAutocomplete] startup probe call failed (autocomplete stays enabled) —",
+            probeErr,
+          );
+        }
       })
-      .catch(giveUp);
+      .catch((err) => giveUp(err));
     return off;
   }, [giveUp]);
 
@@ -217,11 +233,11 @@ export function AddressAutocomplete({
         setSuggestions(list);
         setActiveIdx(0);
         setOpen(list.length > 0);
-      } catch {
+      } catch (err) {
         // A rejected Places call means the key/API isn't usable — hand over to
         // the Census lookup rather than leaving a silent, dead input.
         setSuggestions([]);
-        giveUp();
+        giveUp(err);
       } finally {
         setLoading(false);
       }
