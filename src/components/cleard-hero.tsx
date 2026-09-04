@@ -5,10 +5,9 @@ import mark2d from "@/assets/cleard-logo-copper.png.asset.json";
 import wordmarkCopper from "@/assets/cleard-wordmark-copper.png.asset.json";
 import { HomeMotionStyles } from "@/components/home-command-center";
 import { HeroStage } from "@/components/hero-stage";
+import { WireframeBackdrop } from "@/components/wireframe-backdrop";
 import { TRADES } from "@/lib/trades";
 
-const HERO_VIDEO_URL =
-  "https://videos.pexels.com/video-files/2278095/2278095-uhd_2560_1440_30fps.mp4";
 
 
 /* ---------------------- NORDIC LUXURY BRAND TOKENS ---------------------- */
