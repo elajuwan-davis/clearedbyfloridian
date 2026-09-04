@@ -808,9 +808,8 @@ function PortalShellInner({ children }: { children: ReactNode }) {
             </SheetContent>
           </Sheet>
 
-          <Link to="/" className="flex items-center gap-2 text-[15px] font-semibold lg:hidden" style={{ color: "var(--copper)" }}>
-            <img src={logoCopper.url} alt="" className="h-6 w-6 object-contain" />
-            CLEARD
+          <Link to="/" className="flex items-center lg:hidden">
+            <img src={wordmarkCopper.url} alt="CLEARD" className="h-5 w-auto object-contain" />
           </Link>
 
           {/* Breadcrumb spine — same place on every page */}

@@ -1,18 +1,13 @@
 import { Link } from "@tanstack/react-router";
+import wordmarkCopper from "@/assets/cleard-wordmark-copper.png.asset.json";
 
 export function SiteFooter() {
   return (
     <footer className="border-t hairline mt-32">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 py-16 grid gap-12 md:grid-cols-4">
         <div className="md:col-span-2">
-          <div className="flex items-center gap-3 mb-4">
-            <div
-              className="h-10 w-10 rounded-xl flex items-center justify-center text-white font-bold text-base"
-              style={{ background: "linear-gradient(135deg, #9C6B3F, #2E7D32)" }}
-            >
-              C
-            </div>
-            <span className="wordmark text-3xl">CLEARD</span>
+          <div className="flex items-center mb-4">
+            <img src={wordmarkCopper.url} alt="CLEARD" className="h-8 w-auto object-contain" />
           </div>
           <p className="mt-4 max-w-sm text-sm text-muted-foreground">
             Private-provider permitting for leading general contractors —
