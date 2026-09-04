@@ -351,7 +351,7 @@ function SidebarNav({
             className="truncate text-[19px] font-bold tracking-[0.02em]"
             style={{ color: "var(--copper)" }}
           >
-            CLEARED
+            CLEARD
           </span>
         )}
       </Link>
@@ -813,7 +813,7 @@ function PortalShellInner({ children }: { children: ReactNode }) {
 
           <Link to="/" className="flex items-center gap-2 text-[15px] font-semibold lg:hidden" style={{ color: "var(--copper)" }}>
             <img src={logoCopper.url} alt="" className="h-6 w-6 object-contain" />
-            CLEARED
+            CLEARD
           </Link>
 
           {/* Breadcrumb spine — same place on every page */}

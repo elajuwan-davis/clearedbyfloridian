@@ -9,8 +9,8 @@ import { Check, Minus, Sparkles } from "lucide-react";
 /* ------------------------------- tokens ---------------------------------- */
 
 export const M = {
-  bg0: "#111111",
-  bg1: "#111111",
+  bg0: "#000000",
+  bg1: "#000000",
   bg2: "rgba(255,255,255,0.05)",
   line: "rgba(255,255,255,0.12)",
   line2: "rgba(255,255,255,0.07)",
@@ -113,7 +113,7 @@ function Rail({ active }: { active: string }) {
   return (
     <div className="hidden sm:block py-3" style={{ background: M.bg0, borderRight: `1px solid ${M.line}` }}>
       <div className="px-4 pb-4 text-[14px] font-bold" style={{ color: M.text, letterSpacing: "-0.03em" }}>
-        Cleard
+        CLEARD
       </div>
       {items.map((i) => (
         <div

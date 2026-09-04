@@ -417,7 +417,7 @@ function CountyCoverage() {
 }
 
 function MunicipalityTrack() {
-  const CARD_BG = "#2B1620";
+  const CARD_BG = "#000000";
   const CARD_BORDER = "rgba(255,255,255,0.14)";
   return (
     <section style={{ background: WHITE }}>
@@ -429,7 +429,7 @@ function MunicipalityTrack() {
 
         <div className="p-8 md:p-14" style={{ background: CARD_BG, borderLeft: "3px solid var(--copper)" }}>
           <div style={{ color: "#FFFFFF", fontSize: 32, fontWeight: 700, letterSpacing: "-0.03em" }}>
-            CleardGov
+              CLEARDGOV
           </div>
           <div className="mt-2 text-[17px] font-semibold" style={{ color: "#FFFFFF" }}>
             The building department, outsourced.
@@ -639,7 +639,7 @@ function MobileApp() {
 
           <div className="px-4 py-3 flex items-center justify-between" style={{ borderBottom: `1px solid ${BORDER}` }}>
             <span className="text-[15px] font-bold" style={{ color: INK, letterSpacing: "-0.03em" }}>
-              Cleard
+              CLEARD
             </span>
             <Bell className="h-4 w-4" style={{ color: GRAY }} />
           </div>
