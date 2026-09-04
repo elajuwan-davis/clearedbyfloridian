@@ -403,7 +403,6 @@ export function ClearedHero() {
         src={heroVideo.url}
         autoPlay
         muted
-        defaultMuted
         loop
         playsInline
         preload="auto"
