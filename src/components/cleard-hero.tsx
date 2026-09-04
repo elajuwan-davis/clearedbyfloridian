@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import mark3d from "@/assets/cleard-3d-mark.png.asset.json";
-import heroVideo from "@/assets/hero-wireframe.mp4.asset.json";
+import heroVideo from "@/assets/hero-bg-loop.mp4.asset.json";
 import mark2d from "@/assets/cleard-logo-copper.png.asset.json";
 import wordmarkCopper from "@/assets/cleard-wordmark-copper.png.asset.json";
 import { HomeMotionStyles } from "@/components/home-command-center";
@@ -405,9 +405,17 @@ export function ClearedHero() {
         muted
         loop
         playsInline
+        preload="auto"
+        disablePictureInPicture
         aria-hidden
+        ref={(el) => {
+          if (el) {
+            el.muted = true;
+            void el.play().catch(() => {});
+          }
+        }}
         className="pointer-events-none absolute inset-0 h-full w-full"
-        style={{ zIndex: 0, objectFit: "cover" }}
+        style={{ zIndex: 0, objectFit: "cover", willChange: "transform", transform: "translateZ(0)" }}
       />
 
       <div
