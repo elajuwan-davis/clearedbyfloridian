@@ -120,8 +120,8 @@ const CC_CHECKS = [
 ];
 
 function toneStyle(t: "review" | "ok" | "warn") {
-  if (t === "ok") return { background: "rgba(156,190,178,0.18)", color: GREEN_LT };
-  if (t === "warn") return { background: "rgba(217,175,193,0.18)", color: PLUM_LT };
+  if (t === "ok") return { background: "rgba(156,107,63,0.14)", color: "#9C6B3F" };
+  if (t === "warn") return { background: "rgba(156,107,63,0.10)", color: "#9C6B3F" };
   return { background: "rgba(250,243,230,0.10)", color: "rgba(250,243,230,0.62)" };
 }
 
@@ -235,7 +235,7 @@ export function LiveCommandCenter() {
                     className="grid h-4 w-4 shrink-0 place-items-center"
                     style={{
                       border: `1px solid ${done ? GREEN_LT : "rgba(250,243,230,0.2)"}`,
-                      background: done ? "rgba(156,190,178,0.16)" : "transparent",
+                      background: done ? "rgba(156,107,63,0.14)" : "transparent",
                       transition: "all 400ms ease",
                     }}
                   >
@@ -529,7 +529,7 @@ export function VictoriaSpotlight() {
               <span
                 className="cl-glass foil-sheen cl-hoverable mt-6 inline-flex cursor-default items-center gap-2 px-5 py-2.5 text-[12.5px]"
                 style={{
-                  background: "rgba(103,49,71,0.55)",
+                  background: "rgba(43,22,32,0.65)",
                   color: OAT,
                   fontWeight: 600,
                   border: "1px solid rgba(250,243,230,0.22)",
@@ -735,14 +735,14 @@ export function ReplaceThePermitOffice() {
             className="flex min-h-[420px] flex-col lg:border-r lg:pr-6"
             style={{ borderColor: HAIR }}
           >
-            <div className="text-[10px] uppercase" style={{ fontFamily: MONO, letterSpacing: "0.2em", color: "rgba(103,49,71,0.7)" }}>
+            <div className="text-[10px] uppercase" style={{ fontFamily: MONO, letterSpacing: "0.2em", color: "rgba(43,22,32,0.6)" }}>
               Without Victoria
             </div>
 
             <div
               className="relative mt-3 flex-1 overflow-hidden"
               style={{
-                background: "rgba(103,49,71,0.035)",
+                background: "rgba(0,0,0,0.02)",
                 border: `1px solid ${HAIR_SOFT}`,
                 minHeight: 340,
               }}
@@ -751,7 +751,7 @@ export function ReplaceThePermitOffice() {
               <div
                 className="pointer-events-none absolute inset-0"
                 style={{
-                  backgroundImage: `linear-gradient(rgba(103,49,71,0.10) 1px, transparent 1px), linear-gradient(91.4deg, rgba(103,49,71,0.10) 1px, transparent 1px)`,
+                  backgroundImage: `linear-gradient(rgba(43,22,32,0.08) 1px, transparent 1px), linear-gradient(91.4deg, rgba(43,22,32,0.08) 1px, transparent 1px)`,
                   backgroundSize: "38px 52px",
                   transform: "rotate(-1.4deg) scale(1.15)",
                 }}
@@ -768,14 +768,14 @@ export function ReplaceThePermitOffice() {
                     transform: `rotate(${c.r}deg)`,
                     background: CREAM,
                     border: `1px solid ${HAIR}`,
-                    boxShadow: "3px 4px 0 rgba(103,49,71,0.07)",
+                    boxShadow: "3px 4px 0 rgba(0,0,0,0.06)",
                     padding: "7px 9px",
                     zIndex: c.z,
                   }}
                 >
                   <div
                     className="text-[8.5px] uppercase"
-                    style={{ fontFamily: MONO, letterSpacing: "0.16em", color: c.bad ? PLUM : "rgba(103,49,71,0.55)" }}
+                    style={{ fontFamily: MONO, letterSpacing: "0.16em", color: c.bad ? PLUM : "rgba(43,22,32,0.65)" }}
                   >
                     {c.tag}
                   </div>
@@ -804,7 +804,7 @@ export function ReplaceThePermitOffice() {
                 preserveAspectRatio="none"
                 aria-hidden
               >
-                <g stroke="rgba(103,49,71,0.28)" strokeWidth="0.4" strokeDasharray="2 3" fill="none">
+                <g stroke="rgba(0,0,0,0.2)" strokeWidth="0.4" strokeDasharray="2 3" fill="none">
                   <path d="M18 26 L46 18" />
                   <path d="M52 34 L30 58" />
                   <path d="M62 62 L38 76" />
@@ -832,7 +832,7 @@ export function ReplaceThePermitOffice() {
             <div
               className="pointer-events-none absolute inset-0"
               style={{
-                backgroundImage: `linear-gradient(rgba(142,90,56,0.10) 1px, transparent 1px), linear-gradient(90deg, rgba(142,90,56,0.10) 1px, transparent 1px)`,
+                backgroundImage: `linear-gradient(rgba(43,22,32,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(43,22,32,0.06) 1px, transparent 1px)`,
                 backgroundSize: "44px 44px",
               }}
             />
@@ -1040,12 +1040,12 @@ export function ReplaceThePermitOffice() {
             inset 0 1px 1px rgba(255,246,230,0.85),
             inset 0 -2px 5px rgba(70,35,15,0.5),
             0 0 0 4px rgba(185,128,85,0.18),
-            0 4px 12px rgba(103,49,71,0.28);
+            0 4px 12px rgba(0,0,0,0.2);
         }
         .cl-onecard { transition: box-shadow 220ms ease, border-color 220ms ease; }
         .cl-onecard:hover {
-          border-color: rgba(103,49,71,0.35) !important;
-          box-shadow: 0 12px 26px -14px rgba(103,49,71,0.4);
+          border-color: rgba(43,22,32,0.22) !important;
+          box-shadow: 0 12px 26px -14px rgba(43,22,32,0.3);
         }
       `}</style>
     </section>
@@ -1100,8 +1100,8 @@ export function FeaturedTestimonial({
             onClick={() => setI((v) => (v + dir + items.length) % items.length)}
             className="cl-glass inline-flex h-10 w-10 items-center justify-center text-[20px] leading-none transition-all duration-200 hover:scale-105"
             style={{
-              background: "rgba(103,49,71,0.10)",
-              border: "1px solid rgba(103,49,71,0.26)",
+              background: "rgba(43,22,32,0.08)",
+              border: "1px solid rgba(43,22,32,0.2)",
               backdropFilter: "blur(10px) saturate(140%)",
               color: PLUM,
             }}
