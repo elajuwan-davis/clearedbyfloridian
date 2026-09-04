@@ -35,12 +35,12 @@ export const Route = createFileRoute("/compare")({
   component: ComparePage,
 });
 
-const INK = "#2F4F4F";
-const GRAY = "#7A5C68";
-const PLUM = "#673147";
-const BORDER = "#E0D3BC";
-const OFF = "#F3EAD9";
-const LAV = "#E6E6FA";
+const INK = "#000000";
+const GRAY = "#000000";
+const PLUM = "#000000";
+const BORDER = "rgba(0,0,0,0.12)";
+const OFF = "#FFFFFF";
+const LAV = "#FFFFFF";
 
 const SERVICES = [
   "Permitting Administration",
@@ -188,7 +188,7 @@ function Pips({ covers, hero }: { covers: boolean[]; hero?: boolean }) {
             width: "clamp(28px, 6vw, 62px)",
             borderRadius: 3,
             transformOrigin: "left",
-            background: on ? (hero ? "#52243A" : INK) : "#E4E0D6",
+            background: on ? (hero ? "#FFFFFF" : INK) : "#E4E0D6",
             opacity: on ? 1 : 0.9,
           }}
         />
@@ -217,7 +217,7 @@ function VendorRow({ v, hero, index }: { v: Vendor; hero?: boolean; index: numbe
         borderBottom: hero ? "none" : `1px solid ${BORDER}`,
         border: hero ? `1px solid ${PLUM}` : undefined,
         borderRadius: hero ? 10 : 0,
-        background: hero ? LAV : open ? "rgba(103,49,71,0.045)" : "transparent",
+        background: hero ? LAV : open ? "rgba(156,107,63,0.045)" : "transparent",
         transition: "background 220ms ease",
       }}
     >
@@ -253,7 +253,7 @@ function VendorRow({ v, hero, index }: { v: Vendor; hero?: boolean; index: numbe
           >
             <p
               className="pt-2.5 pl-[3rem] text-[13px] leading-relaxed"
-              style={{ color: hero ? "#52243A" : GRAY }}
+              style={{ color: hero ? "#000000" : GRAY }}
             >
               {v.note}
             </p>
@@ -282,7 +282,7 @@ function ComparePage() {
 
   return (
     <MarketingShell>
-      <div style={{ background: "#FAF3E6", color: INK }}>
+      <div style={{ background: "#FFFFFF", color: INK }}>
         <section className="mx-auto max-w-4xl px-5 lg:px-8 pt-20 pb-14 md:pt-24">
           <motion.div
             initial={{ opacity: 0, y: 8 }}
@@ -402,7 +402,7 @@ function ComparePage() {
                             </td>
                             <td
                               className="px-3 py-2.5 text-center"
-                              style={{ background: "rgba(103,49,71,0.07)" }}
+                              style={{ background: "rgba(156,107,63,0.07)" }}
                             >
                               <Mark value={r.cleard} />
                             </td>
@@ -427,7 +427,7 @@ function ComparePage() {
           <div className="mx-auto flex max-w-4xl flex-col items-start gap-5 px-5 py-10 sm:flex-row sm:items-center sm:justify-between lg:px-8">
             <h2
               style={{
-                color: "#FAF3E6",
+                color: "#000000",
                 fontWeight: 800,
                 fontSize: "clamp(1.35rem, 3vw, 1.9rem)",
                 letterSpacing: "-0.03em",

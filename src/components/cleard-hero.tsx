@@ -2,16 +2,13 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react
 import { Link } from "@tanstack/react-router";
 import mark3d from "@/assets/cleard-3d-mark.png.asset.json";
 import mark2d from "@/assets/cleard-mark-2d.png.asset.json";
-import heroBackdrop from "@/assets/hero-construction.jpg";
-import heroVideoMp4 from "@/assets/hero-loop.mp4.asset.json";
-import heroVideoWebm from "@/assets/hero-loop.webm.asset.json";
 import { HomeMotionStyles } from "@/components/home-command-center";
 import { HeroStage } from "@/components/hero-stage";
 import { TRADES } from "@/lib/trades";
 
-const HERO_ASSET_ORIGIN = "https://project--0b3e81be-56ac-4636-ba0c-f0ab606037c7.lovable.app";
-const HERO_VIDEO_MP4_URL = `${HERO_ASSET_ORIGIN}${heroVideoMp4.url}`;
-const HERO_VIDEO_WEBM_URL = `${HERO_ASSET_ORIGIN}${heroVideoWebm.url}`;
+const HERO_PHOTO_URL =
+  "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=1920&q=85";
+
 
 /* ---------------------- NORDIC LUXURY BRAND TOKENS ---------------------- */
 
@@ -391,41 +388,8 @@ function HeroNav({ logoSlot, logoVisible }: { logoSlot: React.Ref<HTMLDivElement
 
 export function ClearedHero() {
   const navSlot = useRef<HTMLDivElement | null>(null);
-  const bgVideo = useRef<HTMLVideoElement | null>(null);
   const { beat, dockTf, stageMark, skip } = useHeroSequence(navSlot);
 
-  /* keep the backdrop video playing forever, whatever the browser does */
-  useEffect(() => {
-    const v = bgVideo.current;
-    if (!v) return;
-    const kick = () => {
-      v.muted = true;
-      v.loop = true;
-      const p = v.play();
-      if (p && typeof p.catch === "function") p.catch(() => {});
-    };
-    const keepLooping = () => {
-      if (Number.isFinite(v.duration) && v.duration - v.currentTime < 0.12) {
-        v.currentTime = 0;
-        kick();
-      }
-    };
-    kick();
-    v.addEventListener("pause", kick);
-    v.addEventListener("ended", kick);
-    v.addEventListener("timeupdate", keepLooping);
-    document.addEventListener("visibilitychange", kick);
-    const id = window.setInterval(() => {
-      if (v.paused || v.ended) kick();
-    }, 1500);
-    return () => {
-      v.removeEventListener("pause", kick);
-      v.removeEventListener("ended", kick);
-      v.removeEventListener("timeupdate", keepLooping);
-      document.removeEventListener("visibilitychange", kick);
-      window.clearInterval(id);
-    };
-  }, []);
 
   /* The hero moment now lives in HeroStage (mark + capability boxes + app). */
   const running = false;
@@ -455,36 +419,25 @@ export function ClearedHero() {
 
 
 
-      {/* muted construction-site backdrop video — always autoplaying, silent, endlessly looping */}
-      <video
-        ref={bgVideo}
-        aria-hidden
-        autoPlay
-        muted
-        loop
-        playsInline
-        preload="auto"
-        disablePictureInPicture
-        poster={heroBackdrop}
-        className="pointer-events-none absolute inset-x-0 bottom-0 top-0 h-full w-full"
-        style={{
-          objectFit: "cover",
-          objectPosition: "center",
-          opacity: 1,
-          transform: "translateZ(0)",
-          filter: "grayscale(1) contrast(1.06) brightness(1.02)",
-        }}
-      >
-        <source src={HERO_VIDEO_WEBM_URL} type="video/webm" />
-        <source src={HERO_VIDEO_MP4_URL} type="video/mp4" />
-      </video>
+      {/* real job-site photograph backdrop */}
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0"
         style={{
-          background: `linear-gradient(to bottom, rgba(255,255,255,0.42) 0%, rgba(255,255,255,0.18) 40%, rgba(255,255,255,0.06) 72%, rgba(255,255,255,0.12) 100%)`,
+          backgroundImage: `url(${HERO_PHOTO_URL})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
         }}
       />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background:
+            "linear-gradient(to right, rgba(0,0,0,0.72) 40%, rgba(0,0,0,0.35) 100%)",
+        }}
+      />
+
 
 
       {/* Beat 3 — the paperwork mess that the mark clears away */}
@@ -545,7 +498,7 @@ export function ClearedHero() {
               fontSize: "clamp(2.3rem, 5vw, 3.9rem)",
               lineHeight: 0.99,
               letterSpacing: "-0.035em",
-              color: PLUM,
+              color: "#FFFFFF",
               fontVariationSettings: '"SOFT" 0, "WONK" 1',
             }}
           >
@@ -554,9 +507,10 @@ export function ClearedHero() {
 
           <p
             className="mx-auto mt-5 max-w-[52ch] text-[16px] leading-[1.65]"
-            style={{ color: SLATE }}
+            style={{ color: "rgba(255,255,255,0.88)" }}
           >
             Permits, inspections, licenses, and lien rights — cleared automatically.
+
           </p>
         </div>
 

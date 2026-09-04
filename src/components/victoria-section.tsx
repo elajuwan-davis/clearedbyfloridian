@@ -238,7 +238,7 @@ export function VictoriaSection() {
           />
           {/* blueprint grid */}
           <div
-            className="absolute inset-0 opacity-[0.10]"
+            className="absolute inset-0 opacity-[0.35]"
             style={{
               backgroundImage:
                 `linear-gradient(${COPPER} 1px, transparent 1px), linear-gradient(90deg, ${COPPER} 1px, transparent 1px)`,
@@ -271,7 +271,7 @@ export function VictoriaSection() {
                   fill="none"
                   stroke={COPPER_LT}
                   strokeWidth={1.1}
-                  strokeOpacity={0.62}
+                  strokeOpacity={0.35}
                   initial={{ pathLength: 0 }}
                   animate={inView ? { pathLength: 1 } : {}}
                   transition={{ duration: reduced ? 0 : 2.1, delay: reduced ? 0 : 0.35 + i * 0.22, ease: [0.16, 1, 0.3, 1] }}
@@ -289,7 +289,7 @@ export function VictoriaSection() {
                   fill="none"
                   stroke={COPPER_LT}
                   strokeWidth={1.6}
-                  strokeOpacity={0.85}
+                  strokeOpacity={0.5}
                   strokeDasharray="26 300"
                   style={{ animation: `vFlow ${11 + i * 4}s linear infinite`, filter: "url(#vGlow)" }}
                 />
@@ -310,11 +310,11 @@ export function VictoriaSection() {
                   fill="none"
                   stroke={COPPER}
                   strokeWidth={0.8}
-                  strokeOpacity={0.5}
+                  strokeOpacity={0.35}
                   style={{ animation: `vNodePulse ${3.4 + i * 0.5}s ease-in-out infinite`, transformOrigin: `${n.x}px ${n.y}px` }}
                 />
-                <circle cx={n.x} cy={n.y} r={7} fill="none" stroke={COPPER_LT} strokeWidth={1} strokeOpacity={0.8} />
-                <circle cx={n.x} cy={n.y} r={2.4} fill={COPPER_LT} filter="url(#vGlow)" />
+                <circle cx={n.x} cy={n.y} r={7} fill="none" stroke={COPPER_LT} strokeWidth={1} strokeOpacity={0.5} />
+                <circle cx={n.x} cy={n.y} r={2.4} fill={COPPER_LT} fillOpacity={0.5} filter="url(#vGlow)" />
               </motion.g>
             ))}
           </svg>
@@ -438,7 +438,7 @@ function IntelCard({ card }: { card: Card }) {
       className="px-4 py-3.5"
       style={{
         background: "#FFFFFF",
-        border: "1px solid rgba(0,0,0,0.15)",
+        border: "1px solid rgba(0,0,0,0.12)",
         boxShadow: "0 18px 40px rgba(0,0,0,0.14)",
       }}
     >

@@ -8,10 +8,10 @@ import {
   computeEstimate,
 } from "@/lib/permit-timelines";
 
-const OAT = "#FAF3E6";
-const SLATE = "#2F4F4F";
-const PLUM = "#673147";
-const LINE = "#E4DACB";
+const OAT = "#FFFFFF";
+const SLATE = "#000000";
+const PLUM = "#000000";
+const LINE = "rgba(0,0,0,0.12)";
 const SERIF = '"Instrument Sans", sans-serif';
 
 export const Route = createFileRoute("/estimator")({

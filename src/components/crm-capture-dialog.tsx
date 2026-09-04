@@ -9,9 +9,9 @@ import {
   isCrmAnswerComplete,
 } from "@/lib/crm-options";
 
-const INK = "#2F4F4F";
-const OAT = "#FAF3E6";
-const BORDER = "#E0D3BC";
+const INK = "#000000";
+const OAT = "#FFFFFF";
+const BORDER = "#FFFFFF";
 const SERIF = "'Instrument Sans', sans-serif";
 
 /**
@@ -53,7 +53,7 @@ export function CrmCaptureDialog({ onDone }: { onDone: () => void }) {
       aria-modal="true"
       aria-labelledby="crm-capture-title"
       className="fixed inset-0 z-[300] flex items-center justify-center px-5"
-      style={{ background: "rgba(47,79,79,0.55)" }}
+      style={{ background: "rgba(0,0,0,0.55)" }}
     >
       <div
         className="w-full max-w-md p-8"
@@ -66,7 +66,7 @@ export function CrmCaptureDialog({ onDone }: { onDone: () => void }) {
         >
           One quick question
         </h2>
-        <p className="mt-3 text-[14px]" style={{ color: "#7A5C68" }}>
+        <p className="mt-3 text-[14px]" style={{ color: "#000000" }}>
           {CRM_QUESTION}
         </p>
 

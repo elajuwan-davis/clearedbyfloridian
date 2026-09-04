@@ -41,7 +41,7 @@ function tidy(key: VictoriaField, raw: string): string {
   return text;
 }
 
-const OBSIDIAN = "#2F4F4F";
+const OBSIDIAN = "#000000";
 const MUTED = `color-mix(in oklab, ${OBSIDIAN} 55%, transparent)`;
 
 export function VictoriaVoiceSignup({

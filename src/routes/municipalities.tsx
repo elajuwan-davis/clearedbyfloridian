@@ -33,11 +33,11 @@ export const Route = createFileRoute("/municipalities")({
   component: MunicipalitiesPage,
 });
 
-const BG = "#2F4F4F";
-const SURFACE = "#2F4F4F";
-const BORDER = "#3F5C5A";
-const TEAL = "#E6E6FA";
-const TITLE = "#F3EAD9";
+const BG = "#FFFFFF";
+const SURFACE = "#FFFFFF";
+const BORDER = "rgba(0,0,0,0.12)";
+const TEAL = "#9C6B3F";
+const TITLE = "#000000";
 const MUTED = "rgba(250, 243, 230, 0.66)";
 
 const PROBLEM = [
@@ -201,7 +201,7 @@ function MunicipalitiesPage() {
             <Link
               to="/contact"
               className="inline-flex items-center gap-2 px-6 py-3 text-[14px] no-underline"
-              style={{ background: TEAL, color: "#2F4F4F", fontWeight: 700 }}
+              style={{ background: TEAL, color: "#FFFFFF", fontWeight: 700 }}
             >
               Schedule a conversation <ArrowRight className="h-4 w-4" strokeWidth={2} />
             </Link>
@@ -280,7 +280,7 @@ function MunicipalitiesPage() {
                 <div key={s.n} className="pt-6" style={{ borderTop: `1px solid ${BORDER}` }}>
                   <div
                     className="inline-flex h-11 w-11 items-center justify-center text-[14px] font-bold tabular-nums"
-                    style={{ background: TEAL, color: "#2F4F4F" }}
+                    style={{ background: TEAL, color: "#FFFFFF" }}
                   >
                     {s.n}
                   </div>
@@ -410,7 +410,7 @@ function MunicipalitiesPage() {
             <Link
               to="/contact"
               className="mt-9 flex w-full items-center justify-center gap-2 px-6 py-4 text-[14px] no-underline"
-              style={{ background: TEAL, color: "#2F4F4F", fontWeight: 700 }}
+              style={{ background: TEAL, color: "#FFFFFF", fontWeight: 700 }}
             >
               Schedule a conversation <ArrowRight className="h-4 w-4" strokeWidth={2} />
             </Link>

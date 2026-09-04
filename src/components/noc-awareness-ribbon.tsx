@@ -21,7 +21,7 @@ export function NocAwarenessRibbon({ scopeKey }: { scopeKey: string }) {
   if (dismissed !== false) return null;
 
   return (
-    <div className="flex items-start gap-3 border-l-2 border-[#2F4F4F] bg-obsidian/[0.04] px-4 py-3 text-[13px] text-obsidian/85 rounded-[3px]">
+    <div className="flex items-start gap-3 border-l-2 border-[#000000] bg-obsidian/[0.04] px-4 py-3 text-[13px] text-obsidian/85 rounded-[3px]">
       <Info className="mt-0.5 h-4 w-4 shrink-0 text-obsidian/70" />
       <div className="flex-1">
         <span className="font-medium text-obsidian">Notice of Commencement on file.</span>{" "}

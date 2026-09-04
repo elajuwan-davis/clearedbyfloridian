@@ -1,7 +1,7 @@
 /** Cleard wordmark (vector). `tone` picks the letter color; the A stays brand blue. */
 export function ClearedWordmark({
   className,
-  tone = "#FAF3E6",
+  tone = "#FFFFFF",
   title = "Cleard",
 }: {
   className?: string;

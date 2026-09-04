@@ -24,7 +24,7 @@ export const REGISTERED_MUNIS: RegisteredMuni[] = [
   { name: "Palm Beach", county: "Palm Beach", lat: 26.706, lng: -80.037 },
 ];
 
-const OBSIDIAN = "#2F4F4F";
+const OBSIDIAN = "#000000";
 const SKY = "#E6E6FA";
 
 // Projection bounds — South Florida coastal corridor
@@ -111,7 +111,7 @@ export default function MunicipalityMap() {
         <path d={oceanPath} fill="url(#ocean-wave)" />
 
         {/* Land */}
-        <path d={landPath} fill="#FAF3E6" />
+        <path d={landPath} fill="#FFFFFF" />
         <path d={landPath} fill="url(#wave-pattern)" />
 
         {/* Coastline stroke */}
@@ -174,7 +174,7 @@ export default function MunicipalityMap() {
               <circle
                 r={active ? 10 : 7}
                 fill={OBSIDIAN}
-                stroke="#FAF3E6"
+                stroke="#FFFFFF"
                 strokeWidth="2"
                 style={{ transition: "r 150ms ease" }}
               />
@@ -209,7 +209,7 @@ export default function MunicipalityMap() {
                 <text
                   x={tx + 14}
                   y={ty + 22}
-                  fill="#FAF3E6"
+                  fill="#FFFFFF"
                   fontSize="14"
                   fontFamily="'Instrument Sans', sans-serif"
                   fontWeight="600"
@@ -238,10 +238,10 @@ export function MunicipalityMapHero() {
   return (
     <section
       className="relative rounded-sm border overflow-hidden"
-      style={{ background: "#FAF3E6", borderColor: "rgba(47, 79, 79,0.15)" }}
+      style={{ background: "#FFFFFF", borderColor: "rgba(47, 79, 79,0.15)" }}
     >
       <div className="grid md:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)] gap-0">
-        <div className="p-8 md:p-10 flex flex-col justify-center" style={{ background: OBSIDIAN, color: "#FAF3E6" }}>
+        <div className="p-8 md:p-10 flex flex-col justify-center" style={{ background: OBSIDIAN, color: "#FFFFFF" }}>
           <div className="font-mono text-[10px] tracking-[0.24em] uppercase" style={{ color: SKY }}>
             Coverage Map
           </div>

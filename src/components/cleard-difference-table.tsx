@@ -1,10 +1,10 @@
 import { Check, Minus, X } from "lucide-react";
 
-const OAT = "#FAF3E6";
-const INK = "#2F4F4F";
-const GRAY = "#7A5C68";
-const PLUM = "#673147";
-const BORDER = "#E0D3BC";
+const OAT = "#FFFFFF";
+const INK = "#000000";
+const GRAY = "#000000";
+const PLUM = "#000000";
+const BORDER = "#FFFFFF";
 const SERIF = "'Instrument Sans', sans-serif";
 const MONO = "'JetBrains Mono', ui-monospace, monospace";
 
@@ -125,7 +125,7 @@ export function ClearedDifferenceTable({ background = OAT }: { background?: stri
                         key={i}
                         className="px-5 py-4 align-middle"
                         style={{
-                          borderBottom: `1px solid ${isCleard ? "rgba(250,243,230,0.18)" : BORDER}`,
+                          borderBottom: `1px solid ${isCleard ? "rgba(255,255,255,0.18)" : BORDER}`,
                           background: isCleard ? PLUM : "transparent",
                         }}
                       >

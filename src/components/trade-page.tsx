@@ -12,14 +12,14 @@ import {
 import { MarketingShell } from "@/components/marketing-shell";
 import type { Trade } from "@/lib/trades";
 
-const INK = "#2F4F4F";
-const GRAY = "#7A5C68";
-const LIGHT = "#8B9A97";
-const GREEN = "#2F4F4F";
-const TEAL = "#673147";
-const BORDER = "#E0D3BC";
-const OFF = "#F3EAD9";
-const PAPER = "#FAF3E6";
+const INK = "#000000";
+const GRAY = "#000000";
+const LIGHT = "#000000";
+const GREEN = "#000000";
+const TEAL = "#9C6B3F";
+const BORDER = "rgba(0,0,0,0.12)";
+const OFF = "#FFFFFF";
+const PAPER = "#FFFFFF";
 
 const SERVICES = [
   {
@@ -175,7 +175,7 @@ export function TradePage({ trade }: { trade: Trade }) {
               </h2>
               <p
                 className="mt-4 max-w-xl text-[15px] leading-relaxed"
-                style={{ color: "rgba(250,243,230,0.6)" }}
+                style={{ color: "rgba(0,0,0,0.6)" }}
               >
                 Cleard coordinates and schedules each stage so your crews never wait on a missed
                 inspection window.
@@ -203,7 +203,7 @@ export function TradePage({ trade }: { trade: Trade }) {
                     </div>
                     <p
                       className="mt-2 text-[13px] leading-relaxed"
-                      style={{ color: "rgba(250,243,230,0.6)" }}
+                      style={{ color: "rgba(0,0,0,0.6)" }}
                     >
                       {insp.description}
                     </p>
@@ -238,7 +238,7 @@ export function TradePage({ trade }: { trade: Trade }) {
                     </div>
                     <p
                       className="mt-2 text-[13px] leading-relaxed"
-                      style={{ color: "rgba(250,243,230,0.6)" }}
+                      style={{ color: "rgba(0,0,0,0.6)" }}
                     >
                       {insp.description}
                     </p>
