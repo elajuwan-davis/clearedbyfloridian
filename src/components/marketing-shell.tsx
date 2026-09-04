@@ -7,7 +7,7 @@ import { TRADES } from "@/lib/trades";
 /** Flat nav links — dropdowns are Solutions and Trades. */
 const NAV_LINKS: Array<{ to: string; label: string }> = [
   { to: "/", label: "Home" },
-  { to: "/contact", label: "Partnerships" },
+  { to: "/integrations", label: "Integrations" },
   { to: "/pricing", label: "Pricing" },
   { to: "/coverage", label: "Coverage" },
 
@@ -26,8 +26,8 @@ const SOLUTION_LINKS: Array<{ to: string; label: string }> = [
 
 const NEAR_BLACK = "#FFFFFF";
 const BODY_GRAY = "#6B6B6B";
-const INK = "#2B1620";
-const TEAL = "#2B1620";
+const INK = "#000000";
+const TEAL = "#000000";
 const OAT = "#FFFFFF";
 const BORDER = "rgba(0,0,0,0.1)";
 const SERIF = '"Instrument Sans", sans-serif';
@@ -346,7 +346,7 @@ const FOOT_LINK_STYLE = { color: "rgba(255,255,255,0.72)" } as const;
 /** The single public footer — identical on every marketing page. */
 export function MarketingFooter() {
   return (
-    <footer style={{ background: INK, borderTop: "1px solid rgba(255,255,255,0.12)" }}>
+    <footer style={{ background: "#2B1620", borderTop: "1px solid rgba(255,255,255,0.12)" }}>
       <div className="mx-auto max-w-7xl px-5 lg:px-10">
         <div className="grid gap-12 py-16 md:grid-cols-[1.2fr_2.8fr]">
           <div>

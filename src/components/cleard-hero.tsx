@@ -24,7 +24,7 @@ const SERIF = '"Instrument Sans", sans-serif';
 
 const NAV = [
   { to: "/", label: "Home", hash: undefined },
-  { to: "/contact", label: "Partnerships", hash: undefined },
+  { to: "/integrations", label: "Integrations", hash: undefined },
   { to: "/pricing", label: "Pricing", hash: undefined },
   { to: "/411", label: "411", hash: undefined },
 ] as const;
