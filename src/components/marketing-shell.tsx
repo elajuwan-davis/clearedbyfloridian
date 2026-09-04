@@ -1,6 +1,6 @@
 import { useState, type ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
-import { Menu, X, ArrowRight, ChevronDown, ShieldCheck } from "lucide-react";
+import { Menu, X, ArrowRight, ChevronDown } from "lucide-react";
 import mark2d from "@/assets/cleard-mark-2d.png.asset.json";
 import { TRADES } from "@/lib/trades";
 
