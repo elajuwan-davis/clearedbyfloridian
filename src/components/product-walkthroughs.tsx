@@ -7,7 +7,7 @@ const GRAY = "rgba(43,22,32,0.55)";
 const PLUM = "#2B1620";
 const BRONZE = "#9C6B3F";
 const BORDER = "rgba(0,0,0,0.1)";
-const SERIF = "'Unbounded', sans-serif";
+const SERIF = "'Instrument Sans', sans-serif";
 const MONO = "'JetBrains Mono', ui-monospace, monospace";
 
 type Walkthrough = {

@@ -67,15 +67,15 @@ export const Route = createFileRoute("/")({
 const WHITE = "#FFFFFF";
 const OFF = "#F5F5F5";
 const OFF2 = "rgba(0,0,0,0.05)";
-const INK = "#2B1620";
+const INK = "#000000";
 const GRAY = "rgba(43,22,32,0.55)";
 const LIGHT = "rgba(43,22,32,0.38)";
-const TEAL = "#2B1620";
+const TEAL = "#000000";
 const PLUM_LT = "var(--copper)"; /* light copper, legible on dark surfaces */
 const GREEN = "rgba(43,22,32,0.5)"; /* neutral muted ink for secondary labels */
 const GREEN_LT = "rgba(255,255,255,0.72)"; /* warm copper-lite on dark */
 const BORDER = "rgba(43,22,32,0.1)";
-const SANS = "'Unbounded', sans-serif";
+const SANS = "'Instrument Sans', sans-serif";
 
 /* --------------------------------- PAGE ---------------------------------- */
 
@@ -233,7 +233,7 @@ function statusStyle(status: string) {
     case "Verified":
     case "Passed":
     case "Clear":
-      return { background: "rgba(43,22,32,0.08)", color: "#2B1620" };
+      return { background: "rgba(43,22,32,0.08)", color: "#000000" };
     case "Corrections":
     case "Alert":
     case "Expired":
@@ -415,7 +415,7 @@ function CountyCoverage() {
 }
 
 function MunicipalityTrack() {
-  const CARD_BG = "#2B1620";
+  const CARD_BG = "#000000";
   const CARD_BORDER = "rgba(255,255,255,0.14)";
   return (
     <section style={{ background: WHITE }}>

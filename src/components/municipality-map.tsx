@@ -211,7 +211,7 @@ export default function MunicipalityMap() {
                   y={ty + 22}
                   fill="#FAF3E6"
                   fontSize="14"
-                  fontFamily="'Unbounded', sans-serif"
+                  fontFamily="'Instrument Sans', sans-serif"
                   fontWeight="600"
                 >
                   {m.name}
@@ -248,7 +248,7 @@ export function MunicipalityMapHero() {
           <h2
             className="mt-4 leading-[0.95]"
             style={{
-              fontFamily: "'Unbounded', sans-serif",
+              fontFamily: "'Instrument Sans', sans-serif",
               fontSize: "clamp(48px, 6vw, 88px)",
               fontWeight: 500,
               letterSpacing: "-0.02em",
@@ -281,7 +281,7 @@ export function MunicipalityMapHero() {
         {REGISTERED_MUNIS.map((m) => (
           <div key={m.name} className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full" style={{ background: OBSIDIAN }} />
-            <span className="text-xs" style={{ fontFamily: "'Unbounded', sans-serif" }}>
+            <span className="text-xs" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>
               {m.name}
             </span>
           </div>

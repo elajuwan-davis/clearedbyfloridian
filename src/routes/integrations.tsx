@@ -32,7 +32,7 @@ const OAT = "#FAF3E6";
 const GRAY = "#7A5C68";
 const PLUM = "#673147";
 const BORDER = "#E0D3BC";
-const SERIF = "'Unbounded', sans-serif";
+const SERIF = "'Instrument Sans', sans-serif";
 const MONO = "'JetBrains Mono', ui-monospace, monospace";
 
 import logoJobtread from "@/assets/logo-jobtread.png.asset.json";

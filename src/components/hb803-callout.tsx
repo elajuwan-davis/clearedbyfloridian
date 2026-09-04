@@ -2,10 +2,10 @@ import { Link } from "@tanstack/react-router";
 import { Landmark } from "lucide-react";
 
 const OAT = "#FFFFFF";
-const INK = "#2B1620";
-const PLUM = "#2B1620";
+const INK = "#000000";
+const PLUM = "#000000";
 const BRONZE = "#9C6B3F";
-const SERIF = "'Unbounded', sans-serif";
+const SERIF = "'Instrument Sans', sans-serif";
 const MONO = "'JetBrains Mono', ui-monospace, monospace";
 
 /** Florida HB 803 permit-fee reduction callout. Factual, no guarantee language. */

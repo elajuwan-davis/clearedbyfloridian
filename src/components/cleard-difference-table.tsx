@@ -5,7 +5,7 @@ const INK = "#2F4F4F";
 const GRAY = "#7A5C68";
 const PLUM = "#673147";
 const BORDER = "#E0D3BC";
-const SERIF = "'Unbounded', sans-serif";
+const SERIF = "'Instrument Sans', sans-serif";
 const MONO = "'JetBrains Mono', ui-monospace, monospace";
 
 type Mark = "yes" | "no" | "partial";

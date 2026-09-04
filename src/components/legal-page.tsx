@@ -5,7 +5,7 @@ const SLATE = "#2F4F4F";
 const PLUM = "#673147";
 const BODY = "#7A5C68";
 const BORDER = "#E0D3BC";
-const SERIF = '"Unbounded", sans-serif';
+const SERIF = '"Instrument Sans", sans-serif';
 
 /** Shared shell for the Privacy / Terms documents — Nordic Luxury theme. */
 export function LegalDoc({

@@ -119,7 +119,7 @@ function ResetPasswordConfirmPage() {
           <h1
             className="text-4xl leading-[1.05] font-bold"
             style={{
-              fontFamily: "'Unbounded', sans-serif",
+              fontFamily: "'Instrument Sans', sans-serif",
               letterSpacing: "-0.02em",
               color: "var(--foreground)",
             }}

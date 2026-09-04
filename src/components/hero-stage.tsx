@@ -6,10 +6,10 @@ import cLogo from "@/assets/cleard-c-copper.png.asset.json";
 const OAT = "#FFFFFF";
 const PAPER = "#FFFFFF";
 const BORDER = "rgba(43,22,32,0.09)";
-const INK = "#2B1620";
+const INK = "#000000";
 const BRONZE = "#9C6B3F";
 const MONO = '"JetBrains Mono", ui-monospace, monospace';
-const SERIF = '"Unbounded", sans-serif';
+const SERIF = '"Instrument Sans", sans-serif';
 
 const FRAME_H = 640;
 
@@ -387,13 +387,13 @@ function BentoCard({
 }
 
 const REPORT_BARS = [
-  { key: "Palm Bch", value: 22, color: "#2B1620" },
+  { key: "Palm Bch", value: 22, color: "#000000" },
   { key: "Martin", value: 14, color: BRONZE },
   { key: "St Lucie", value: 18, color: "rgba(43,22,32,0.65)" },
   { key: "Broward", value: 9, color: "rgba(43,22,32,0.48)" },
   { key: "Ind River", value: 12, color: "rgba(43,22,32,0.35)" },
   { key: "Sarasota", value: 16, color: "rgba(43,22,32,0.65)" },
-  { key: "Collier", value: 7, color: "#2B1620" },
+  { key: "Collier", value: 7, color: "#000000" },
 ];
 
 function TrendArrow({ dir }: { dir: "up" | "down" }) {

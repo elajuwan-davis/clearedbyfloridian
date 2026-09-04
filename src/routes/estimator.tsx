@@ -12,7 +12,7 @@ const OAT = "#FAF3E6";
 const SLATE = "#2F4F4F";
 const PLUM = "#673147";
 const LINE = "#E4DACB";
-const SERIF = '"Unbounded", sans-serif';
+const SERIF = '"Instrument Sans", sans-serif';
 
 export const Route = createFileRoute("/estimator")({
   head: () => ({
