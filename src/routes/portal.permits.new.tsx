@@ -2154,7 +2154,7 @@ function NewPermitPage() {
 
             <div className="bg-white border border-obsidian/10 rounded-[3px] p-6 sm:p-8 space-y-6 xl:-mr-[344px]">
               <div>
-                <div className={sectionCls}>Notice of Commencement — Review</div>
+                <div className={sectionCls}>Statutory Notices — Review</div>
                 <p className="mt-1 text-[12px] text-obsidian/60">
                   Pre-filled from the information above. The right panel updates live; nothing here
                   is final until you submit — Cleard generates the actual filed PDF from these same
