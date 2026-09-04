@@ -265,7 +265,7 @@ function LienBody() {
           </span>
           <span
             className="shrink-0 text-[7.5px] uppercase"
-            style={{ fontFamily: MONO, letterSpacing: "0.12em", color: GREEN }}
+            style={{ fontFamily: MONO, letterSpacing: "0.12em", color: "rgba(43,22,32,0.45)" }}
           >
             {when}
           </span>
@@ -397,7 +397,7 @@ const REPORT_BARS = [
 ];
 
 function TrendArrow({ dir }: { dir: "up" | "down" }) {
-  const color = dir === "down" ? BRONZE : BRONZE;
+  const color = BRONZE;
   return (
     <svg width="9" height="9" viewBox="0 0 10 10" aria-hidden style={{ overflow: "visible" }}>
       <path
