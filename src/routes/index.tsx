@@ -457,13 +457,14 @@ function MunicipalityTrack() {
             to="/contact"
             className="cl-glass mt-10 inline-flex items-center gap-2 px-7 py-3 text-[14px] no-underline transition-transform duration-200 hover:scale-[1.03]"
             style={{
-              background: "rgba(103,49,71,0.9)",
-              border: "1px solid rgba(217,175,193,0.35)",
+              backgroundImage: "var(--gradient-copper)",
+              border: "1px solid color-mix(in oklab, var(--copper-deep) 70%, transparent)",
               backdropFilter: "blur(12px) saturate(140%)",
               WebkitBackdropFilter: "blur(12px) saturate(140%)",
-              color: "#FAF3E6",
+              color: "#FFF8EC",
               fontWeight: 700,
-              boxShadow: "inset 0 1px 0 rgba(255,255,255,0.22), 0 18px 34px -20px rgba(0,0,0,0.5)",
+              boxShadow:
+                "inset 0 1px 0 rgba(255,255,255,0.45), 0 18px 34px -20px rgba(100,55,10,0.4)",
             }}
           >
             Talk to our team <ArrowUpRight className="h-4 w-4" strokeWidth={2} />
