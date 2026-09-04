@@ -1,6 +1,6 @@
 import { PlanGate } from "@/components/feature-lock";
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState, useSyncExternalStore } from "react";
+import { useState, useSyncExternalStore } from "react";
 import { FileText, Plus, PenLine, Eye, CheckCircle2 } from "lucide-react";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
