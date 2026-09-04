@@ -27,9 +27,11 @@ export async function autoGenerateNOCForPermit(permit: PermitRow): Promise<void>
 
     const ownerName = [permit.owner_name, permit.owner_entity].filter(Boolean).join(" — ");
     const designProfessional =
+      (intake.designee_name as string) ||
       (architect.firm as string | undefined) ||
       (engineer.firm as string | undefined) ||
       "";
+    const isOwnerBuilder = intake.filer_type === "owner_builder";
 
     const scopes: string[] = Array.isArray(intake.scopes) ? intake.scopes : [];
     const improvement =
@@ -41,17 +43,23 @@ export async function autoGenerateNOCForPermit(permit: PermitRow): Promise<void>
       legalDescription: (intake.legal_description as string) ?? "",
       ownerName,
       ownerAddress: (intake.owner_address as string) ?? permit.job_address ?? "",
-      contractorName: permit.contractor_company ?? "",
-      contractorAddress: permit.company_address ?? "",
-      contractorLicense: permit.license_number ?? "",
+      // Florida allows an owner acting as their own contractor to file as
+      // Owner-Builder instead of naming a licensed contractor (§489.103(7)).
+      contractorName: isOwnerBuilder
+        ? `${ownerName || "Owner"} (Owner-Builder)`
+        : (permit.contractor_company ?? ""),
+      contractorAddress: isOwnerBuilder
+        ? ((intake.owner_address as string) ?? permit.job_address ?? "")
+        : (permit.company_address ?? ""),
+      contractorLicense: isOwnerBuilder ? "N/A — Owner-Builder" : (permit.license_number ?? ""),
       contractorPhone: permit.poc_phone ?? permit.signer_phone ?? "",
       lenderName: (lender.name as string) ?? "",
       lenderAddress: (lender.address as string) ?? "",
       suretyName: FLORIDIAN_PRIVATE_PROVIDER,
       suretyAddress: FLORIDIAN_PROVIDER_ADDRESS,
-      suretyBondAmount: "",
+      suretyBondAmount: (intake.surety_bond_amount as string) ?? "",
       designProfessional,
-      designProfessionalAddress: "",
+      designProfessionalAddress: (intake.designee_address as string) ?? "",
       improvementDescription: improvement,
     };
 
