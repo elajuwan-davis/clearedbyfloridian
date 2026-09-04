@@ -396,7 +396,7 @@ function CountyCoverage() {
               to="/coverage/$county"
               params={{ county: c.slug }}
               className="px-4 py-2 text-[13px] no-underline transition-colors"
-              style={{ border: `1px solid ${BORDER}`, color: INK, background: OFF }}
+              style={{ border: `1px solid ${BORDER}`, color: INK, background: "#FFFFFF" }}
             >
               {c.label}
             </Link>
@@ -648,7 +648,7 @@ function MobileApp() {
             {screen === 0 && (
               <div>
                 {ROWS.slice(0, 5).map((r) => (
-                  <div key={r.id} className="px-4 py-3" style={{ borderBottom: `1px solid ${OFF2}` }}>
+                  <div key={r.id} className="px-4 py-3" style={{ borderBottom: `1px solid rgba(0,0,0,0.06)` }}>
                     <div className="flex items-center justify-between gap-2">
                       <span className="text-[11px] font-semibold" style={{ color: "#9C6B3F" }}>{r.id}</span>
                       <Tag>{r.status}</Tag>
@@ -675,7 +675,7 @@ function MobileApp() {
                   </div>
                 </div>
                 {INSPECTIONS.map((r) => (
-                  <div key={r.id} className="px-4 py-2.5" style={{ borderBottom: `1px solid ${OFF2}` }}>
+                  <div key={r.id} className="px-4 py-2.5" style={{ borderBottom: `1px solid rgba(0,0,0,0.06)` }}>
                     <div className="flex items-center justify-between gap-2">
                       <span className="text-[12.5px]" style={{ color: INK }}>{r.type}</span>
                       <Tag>{r.status}</Tag>
@@ -689,17 +689,17 @@ function MobileApp() {
             {screen === 2 && (
               <div>
                 <div className="grid grid-cols-2 gap-3 p-3">
-                  <div className="p-3" style={{ background: OFF, border: `1px solid ${BORDER}` }}>
+                  <div className="p-3" style={{ background: "#FFFFFF", border: `1px solid ${BORDER}` }}>
                     <div className="text-[24px] font-bold" style={{ color: INK }}>4</div>
                     <div className="text-[11px]" style={{ color: GRAY }}>Verified</div>
                   </div>
-                  <div className="p-3" style={{ background: OFF, border: `1px solid ${BORDER}` }}>
+                  <div className="p-3" style={{ background: "#FFFFFF", border: `1px solid ${BORDER}` }}>
                     <div className="text-[24px] font-bold" style={{ color: "#8C3B3B" }}>1</div>
                     <div className="text-[11px]" style={{ color: GRAY }}>Alert</div>
                   </div>
                 </div>
                 {COMPLIANCE.map((c) => (
-                  <div key={c.id} className="px-4 py-2.5" style={{ borderBottom: `1px solid ${OFF2}` }}>
+                  <div key={c.id} className="px-4 py-2.5" style={{ borderBottom: `1px solid rgba(0,0,0,0.06)` }}>
                     <div className="flex items-center justify-between gap-2">
                       <span className="text-[12.5px] truncate" style={{ color: INK }}>{c.name}</span>
                       <Tag>{c.status}</Tag>
@@ -721,7 +721,7 @@ function MobileApp() {
                   "NOC-14-Pelican-Bay.pdf",
                   "Inspection-Report-4810.pdf",
                 ].map((d) => (
-                  <div key={d} className="px-4 py-3 flex items-center justify-between gap-3" style={{ borderBottom: `1px solid ${OFF2}` }}>
+                  <div key={d} className="px-4 py-3 flex items-center justify-between gap-3" style={{ borderBottom: `1px solid rgba(0,0,0,0.06)` }}>
                     <div className="flex items-center gap-2 min-w-0">
                       <FolderOpen className="h-4 w-4 shrink-0" style={{ color: LIGHT }} />
                       <span className="text-[12px] truncate" style={{ color: INK }}>{d}</span>
@@ -738,7 +738,7 @@ function MobileApp() {
               <div
                 key={t.label}
                 className="py-2.5 text-center"
-                style={{ color: i === screen ? INK : LIGHT, background: i === screen ? OFF2 : "transparent" }}
+                style={{ color: i === screen ? INK : LIGHT, background: i === screen ? "rgba(0,0,0,0.06)" : "transparent" }}
               >
                 <div className="text-[14px]">{t.icon}</div>
                 <div className="text-[8px] uppercase tracking-[0.04em] leading-tight">{t.label}</div>
