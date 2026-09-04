@@ -486,7 +486,7 @@ function BundleManagementPage() {
                       </span>
                     </div>
                     <div className="mt-1 text-sm text-obsidian">
-                      {trade.sub_snapshot?.company ?? <span className="text-obsidian/50 italic">No sub assigned</span>}
+                      {trade.sub_snapshot?.company ?? <span className="text-obsidian/50 ">No sub assigned</span>}
                     </div>
                     <div className="mt-0.5 text-[12px] text-obsidian/60">
                       {trade.sub_snapshot?.contact ? `${trade.sub_snapshot.contact} · ` : ""}
@@ -547,7 +547,7 @@ function BundleManagementPage() {
                 {trade.fee_confirmed ? (
                   <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-emerald-700">Confirmed</span>
                 ) : (
-                  <span className="italic text-[12px] text-obsidian/55">Budgeted</span>
+                  <span className="text-[12px] text-obsidian/55">Budgeted</span>
                 )}
                 <label className="inline-flex items-center gap-1.5 text-[11px] text-obsidian/60 cursor-pointer">
                   <input

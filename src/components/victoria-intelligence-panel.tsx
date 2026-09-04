@@ -309,5 +309,5 @@ function Bullet({ sev, children }: { sev: Severity; children: React.ReactNode })
 }
 
 function Empty({ children }: { children: React.ReactNode }) {
-  return <div className="text-[11px] text-obsidian/50 italic">{children}</div>;
+  return <div className="text-[11px] text-obsidian/50 ">{children}</div>;
 }

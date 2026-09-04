@@ -506,7 +506,7 @@ function CustomCard({
       )}
 
       {rec.notes && (
-        <div className="text-xs italic text-muted-foreground border-l-2 border-obsidian/10 pl-2">{rec.notes}</div>
+        <div className="text-xs text-muted-foreground border-l-2 border-obsidian/10 pl-2">{rec.notes}</div>
       )}
 
       {internal && (

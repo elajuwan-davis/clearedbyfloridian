@@ -116,7 +116,7 @@ export function InspectionsPanel({ permitId, tenantId, permitStatus }: { permitI
         {loading ? (
           <div className="text-sm text-obsidian/50 p-4">Loading…</div>
         ) : rows.length === 0 ? (
-          <div className="text-sm text-obsidian/50 p-4 italic">No inspections yet.</div>
+          <div className="text-sm text-obsidian/50 p-4 ">No inspections yet.</div>
         ) : (
           <div className="divide-y divide-obsidian/10 border border-obsidian/10 rounded-[3px] bg-white">
             {rows.map((r) => (

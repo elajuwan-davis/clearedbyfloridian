@@ -136,7 +136,7 @@ function TimelinePage() {
             />
           </div>
 
-          <p className="mt-5 text-[12.5px] italic" style={{ color: SLATE, opacity: 0.65 }}>
+          <p className="mt-5 text-[12.5px] " style={{ color: SLATE, opacity: 0.65 }}>
             Beta estimate from published county-level data — not yet from live Cleard pipeline data
             for {county.name} County specifically.
           </p>

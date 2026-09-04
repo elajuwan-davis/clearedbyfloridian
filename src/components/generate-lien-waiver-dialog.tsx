@@ -147,7 +147,7 @@ export function GenerateLienWaiverDialog({ sub, projectId, propertyAddress, onCl
             <div className="mt-1 text-sm text-obsidian">{propertyAddress}</div>
           </div>
 
-          <p className="text-[11px] italic text-obsidian/60">
+          <p className="text-[11px] text-obsidian/60">
             This waiver is executed pursuant to Florida Statute §713.20.
           </p>
         </div>

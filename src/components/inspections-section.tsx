@@ -194,7 +194,7 @@ export function InspectionsSection({
                   <div className="mt-3 border border-obsidian/10 bg-sky/10 px-3 py-2 text-xs text-obsidian/80 rounded-[3px]">
                     <span className="font-semibold">Scheduled:</span> {fmtDate(ins.scheduledDate)}
                     {ins.scheduledWindow && ` · ${WINDOW_LABEL[ins.scheduledWindow]}`}
-                    {ins.scheduledNotes && <div className="mt-1 italic">"{ins.scheduledNotes}"</div>}
+                    {ins.scheduledNotes && <div className="mt-1 ">"{ins.scheduledNotes}"</div>}
                   </div>
                 )}
 

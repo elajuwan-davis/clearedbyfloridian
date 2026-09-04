@@ -627,7 +627,7 @@ function TeamOnboardingSection() {
               </li>
             ))}
             {state && state.invites.length === 0 && (
-              <li className="text-[11.5px] text-muted-foreground italic">No invite links yet.</li>
+              <li className="text-[11.5px] text-muted-foreground ">No invite links yet.</li>
             )}
           </ul>
         </div>

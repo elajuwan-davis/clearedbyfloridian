@@ -108,7 +108,7 @@ function PortalBlogIndex() {
                     params={{ id: p.id }}
                     className="block truncate text-sm font-medium hover:text-accent"
                   >
-                    {p.title || <span className="italic text-muted-foreground">Untitled</span>}
+                    {p.title || <span className="text-muted-foreground">Untitled</span>}
                   </Link>
                   <div className="mt-0.5 truncate font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
                     /{p.slug}

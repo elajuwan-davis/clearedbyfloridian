@@ -125,7 +125,7 @@ export function LienReleasesPanel({ permit }: Props) {
       )}
 
       {!hasSubs && (
-        <div className="text-sm text-obsidian/60 italic p-6 bg-white border border-obsidian/10 rounded-[3px]">
+        <div className="text-sm text-obsidian/60 p-6 bg-white border border-obsidian/10 rounded-[3px]">
           Add subcontractors to this permit to track lien releases.
         </div>
       )}

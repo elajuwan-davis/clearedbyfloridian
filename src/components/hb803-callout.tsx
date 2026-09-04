@@ -37,7 +37,7 @@ export function Hb803Callout({ background = OAT }: { background?: string }) {
             }}
           >
             Using a private provider{" "}
-            <span style={{ fontStyle: "italic", color: BRONZE }}>
+            <span style={{ color: BRONZE }}>
               reduces your permit fees by law.
             </span>
           </h2>

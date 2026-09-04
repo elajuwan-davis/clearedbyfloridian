@@ -30,7 +30,7 @@ export function PermitAlertsInline({ permitId }: { permitId: string }) {
 
   if (loading) return <div className="text-sm text-obsidian/50 p-4">Loading alerts…</div>;
   if (alerts.length === 0) return (
-    <div className="bg-white border border-obsidian/10 rounded-[3px] p-6 text-sm text-obsidian/50 italic">
+    <div className="bg-white border border-obsidian/10 rounded-[3px] p-6 text-sm text-obsidian/50 ">
       No Victoria alerts on this permit yet. She'll flag stale reviews, new municipality requirements, and upcoming inspections as they happen.
     </div>
   );
