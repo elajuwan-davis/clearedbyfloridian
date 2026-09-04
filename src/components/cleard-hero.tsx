@@ -455,36 +455,25 @@ export function ClearedHero() {
 
 
 
-      {/* muted construction-site backdrop video — always autoplaying, silent, endlessly looping */}
-      <video
-        ref={bgVideo}
-        aria-hidden
-        autoPlay
-        muted
-        loop
-        playsInline
-        preload="auto"
-        disablePictureInPicture
-        poster={heroBackdrop}
-        className="pointer-events-none absolute inset-x-0 bottom-0 top-0 h-full w-full"
-        style={{
-          objectFit: "cover",
-          objectPosition: "center",
-          opacity: 1,
-          transform: "translateZ(0)",
-          filter: "grayscale(1) contrast(1.06) brightness(1.02)",
-        }}
-      >
-        <source src={HERO_VIDEO_WEBM_URL} type="video/webm" />
-        <source src={HERO_VIDEO_MP4_URL} type="video/mp4" />
-      </video>
+      {/* real job-site photograph backdrop */}
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0"
         style={{
-          background: `linear-gradient(to bottom, rgba(255,255,255,0.42) 0%, rgba(255,255,255,0.18) 40%, rgba(255,255,255,0.06) 72%, rgba(255,255,255,0.12) 100%)`,
+          backgroundImage: `url(${HERO_PHOTO_URL})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
         }}
       />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background:
+            "linear-gradient(to right, rgba(0,0,0,0.72) 40%, rgba(0,0,0,0.35) 100%)",
+        }}
+      />
+
 
 
       {/* Beat 3 — the paperwork mess that the mark clears away */}
