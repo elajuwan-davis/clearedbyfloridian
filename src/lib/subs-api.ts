@@ -87,27 +87,4 @@ export async function deleteSub(id: string): Promise<void> {
   if (error) throw error;
 }
 
-export function subMissingFields(s: SubRow): string[] {
-  const out: string[] = [];
-  if (!s.license_file_name) out.push("License Upload");
-  if (!s.license_expiration) out.push("License Expiration");
-  if (!s.coi_file_name) out.push("COI Upload");
-  if (!s.coi_expiration) out.push("COI Expiration");
-  if (!s.w9_file_name) out.push("W-9 Upload");
-  return out;
-}
-
-export function subIsComplete(s: SubRow): boolean {
-  return subMissingFields(s).length === 0;
-}
-
-export function coiLifecycle(s: SubRow): "active" | "expiring_soon" | "expired" | "missing" {
-  if (!s.coi_expiration) return "missing";
-  const exp = new Date(s.coi_expiration);
-  if (isNaN(exp.getTime())) return "missing";
-  const today = new Date(new Date().toDateString());
-  const days = Math.floor((exp.getTime() - today.getTime()) / 86400000);
-  if (days < 0) return "expired";
-  if (days <= 30) return "expiring_soon";
-  return "active";
-}
+export { subMissingFields, subIsComplete, coiLifecycle } from "@/lib/sub-status";
