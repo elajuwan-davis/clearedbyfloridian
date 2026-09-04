@@ -21,7 +21,7 @@ const PLUM = "#000000";
 const BORDER = "#E5E5E5";
 const COPPER = "#9C6B3F";
 const COPPER_LT = "#9C6B3F";
-const DARK = "#FFFFFF";
+const DARK = "#F0F0F0";
 const PLUM_DEEP = "#FFFFFF";
 const SERIF = '"Instrument Sans", sans-serif';
 const MONO = '"JetBrains Mono", ui-monospace, monospace';
@@ -227,13 +227,13 @@ export function VictoriaSection() {
             loading="lazy"
             className="absolute inset-0 h-full w-full object-cover"
             initial={{ opacity: 0, scale: 1.06 }}
-            animate={inView ? { opacity: 0.3, scale: 1 } : {}}
+            animate={inView ? { opacity: 0.12, scale: 1 } : {}}
             transition={{ duration: 1.6, ease: [0.16, 1, 0.3, 1] }}
           />
           <div
             className="absolute inset-0"
             style={{
-              background: `radial-gradient(120% 90% at 55% 45%, rgba(255,255,255,0.55), rgba(255,255,255,0.92) 78%)`,
+              background: `radial-gradient(120% 90% at 55% 45%, rgba(240,240,240,0.8), rgba(240,240,240,0.95) 78%)`,
             }}
           />
           {/* blueprint grid */}
@@ -437,13 +437,12 @@ function IntelCard({ card }: { card: Card }) {
     <div
       className="px-4 py-3.5"
       style={{
-        background: "rgba(255,255,255,0.86)",
-        border: "1px solid rgba(201,138,91,0.4)",
-        backdropFilter: "blur(6px)",
-        boxShadow: "0 18px 40px rgba(43,22,32,0.12)",
+        background: "#FFFFFF",
+        border: "1px solid rgba(0,0,0,0.15)",
+        boxShadow: "0 18px 40px rgba(0,0,0,0.14)",
       }}
     >
-      <div className="text-[9px] uppercase" style={{ fontFamily: MONO, letterSpacing: "0.2em", color: "rgba(43,22,32,0.5)" }}>
+      <div className="text-[9px] uppercase" style={{ fontFamily: MONO, letterSpacing: "0.2em", color: "rgba(0,0,0,0.6)" }}>
         {card.project}
       </div>
       <div className="mt-1 text-[11.5px] uppercase" style={{ fontFamily: MONO, letterSpacing: "0.13em", color: INK }}>
@@ -465,11 +464,11 @@ function IntelCard({ card }: { card: Card }) {
           {card.status[1]}
         </div>
       </div>
-      <div className="mt-3 text-[12px]" style={{ color: "rgba(43,22,32,0.8)", fontFamily: SERIF }}>
+      <div className="mt-3 text-[12px]" style={{ color: "#000000", fontFamily: SERIF }}>
         {card.detail}
       </div>
       {card.note && (
-        <div className="mt-1.5 text-[11.5px]" style={{ color: "rgba(43,22,32,0.55)", fontFamily: SERIF }}>
+        <div className="mt-1.5 text-[11.5px]" style={{ color: "rgba(0,0,0,0.6)", fontFamily: SERIF }}>
           {card.note}
         </div>
       )}
