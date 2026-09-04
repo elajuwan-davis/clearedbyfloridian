@@ -186,8 +186,8 @@ function PlatformRequestForm() {
         onChange={(e) => setForm((f) => ({ ...f, [key]: e.target.value }))}
         className="w-full bg-transparent px-0 py-3 text-base outline-none"
         style={{
-          color: OAT,
-          borderBottom: "1px solid rgba(255,255,255,0.28)",
+          color: INK,
+          borderBottom: "1px solid rgba(0,0,0,0.22)",
           borderRadius: 0,
         }}
       />
