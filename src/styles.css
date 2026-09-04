@@ -1072,60 +1072,77 @@ html:not(.dark) .portal-ui .flyout-link[data-active="true"] {
 html.dark .portal-ui,
 html:not(.dark) .portal-ui,
 html:not(.dark) .portal-ui.dark {
-  /* Brand surfaces */
+  /* Brand surfaces — white / black / copper */
   --p-bg:        #FFFFFF;
   --p-card:      #FFFFFF;
-  --p-card-2:    #FFFFFF;
-  --p-border:    #E0D3BC;
-  --p-border-2:  #D8D5D0;
-  --p-text:      #2B1620;
-  --p-text-2:    #5C7370;
-  --p-text-3:    #8B9A97;
+  --p-card-2:    #F8F8F8;
+  --p-border:    rgba(0,0,0,0.10);
+  --p-border-2:  rgba(0,0,0,0.18);
+  --p-text:      #000000;
+  --p-text-2:    rgba(0,0,0,0.55);
+  --p-text-3:    rgba(0,0,0,0.40);
 
   /* Semantics */
-  --p-success:   #2B1620;
-  --p-warning:   #9A7B2E;
-  --p-danger:    #8C3B3B;
-  --p-info:      #2B1620;
-  --p-accent:    #2B1620;
-  --p-purple:    #5C7370;
+  --p-success:   #2E7D32;
+  --p-warning:   #D4A017;
+  --p-danger:    #C0392B;
+  --p-info:      #9C6B3F;
+  --p-accent:    #9C6B3F;
+  --p-purple:    #9C6B3F;
 
-  --primary:            #2B1620;
+  --background:         #FFFFFF;
+  --foreground:         #000000;
+  --card:               #FFFFFF;
+  --card-foreground:    #000000;
+  --popover:            #FFFFFF;
+  --popover-foreground: #000000;
+  --secondary:          #F8F8F8;
+  --secondary-foreground: #000000;
+  --muted:              #F8F8F8;
+  --muted-foreground:   rgba(0,0,0,0.55);
+  --border:             rgba(0,0,0,0.10);
+  --primary:            #9C6B3F;
   --primary-foreground: #FFFFFF;
-  --accent:             #2B1620;
+  --accent:             #9C6B3F;
   --accent-foreground:  #FFFFFF;
-  --ring:               #2B1620;
+  --destructive:        #C0392B;
+  --destructive-foreground: #FFFFFF;
+  --ring:               #9C6B3F;
   --input:              #FFFFFF;
 
   /* Legacy aliases */
-  --sky:           #2B1620;
-  --green:         #2B1620;
-  --green-d:       #2B1620;
-  --amber:         #9A7B2E;
-  --obsidian:      #2B1620;
-  --obsidian-deep: #2B1620;
+  --sky:           #9C6B3F;
+  --green:         #9C6B3F;
+  --green-d:       #7E552F;
+  --amber:         #D4A017;
+  --ink:           #000000;
+  --rule:          rgba(0,0,0,0.10);
+  --obsidian:      #000000;
+  --obsidian-deep: #000000;
   --paper:         #FFFFFF;
   --paper-warm:    #FFFFFF;
-  --paper-deep:    #EFE6D6;
-  --sand:          #EFE6D6;
-  --oxblood:       #8C3B3B;
+  --paper-deep:    #F8F8F8;
+  --sand:          #F8F8F8;
+  --oxblood:       #C0392B;
 
-  --p-tint:      #FFFFFF;
-  --p-tint-2:    #EFE6D6;
-  --p-row-hover: #FFFFFF;
+  --p-tint:      #F8F8F8;
+  --p-tint-2:    rgba(156,107,63,0.10);
+  --p-row-hover: #F8F8F8;
   --p-shadow:    none;
   --p-topbar:    #FFFFFF;
 
   /* Sidebar rail */
-  --rail-bg:                 #FFFFFF;
-  --rail-fg:                 #2B1620;
-  --rail-icon:               #5C7370;
-  --rail-icon-active:        #2B1620;
-  --rail-muted:              #8B9A97;
-  --rail-hover:              #EFE6D6;
-  --rail-item-active-bg:     #EFE6D6;
+  --rail-bg:                 #F8F8F8;
+  --rail-fg:                 #000000;
+  --rail-icon:               rgba(0,0,0,0.55);
+  --rail-icon-active:        #9C6B3F;
+  --rail-muted:              rgba(0,0,0,0.45);
+  --rail-hover:              rgba(0,0,0,0.05);
+  --rail-item-active-bg:     rgba(156,107,63,0.12);
   --rail-item-active-shadow: none;
 
+  background-color: #FFFFFF;
+  color: #000000;
   font-family: "Instrument Sans", sans-serif;
 }
 
