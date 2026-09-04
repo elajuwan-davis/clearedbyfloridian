@@ -32,7 +32,7 @@ const GREEN_LT = "#9C6B3F";
 const BORDER = "rgba(0,0,0,0.1)";
 const DARK = "#2B1620";
 const DARK_2 = "rgba(255,255,255,0.06)";
-const DARK_LINE = "rgba(250,243,230,0.14)";
+const DARK_LINE = "rgba(255,255,255,0.14)";
 const COPPER = "#C98A5B";
 const SERIF = '"Fraunces", "Iowan Old Style", Georgia, serif';
 const MONO = '"JetBrains Mono", ui-monospace, monospace';
@@ -122,7 +122,7 @@ const CC_CHECKS = [
 function toneStyle(t: "review" | "ok" | "warn") {
   if (t === "ok") return { background: "rgba(156,107,63,0.14)", color: "#9C6B3F" };
   if (t === "warn") return { background: "rgba(156,107,63,0.10)", color: "#9C6B3F" };
-  return { background: "rgba(250,243,230,0.10)", color: "rgba(250,243,230,0.62)" };
+  return { background: "rgba(255,255,255,0.10)", color: "rgba(255,255,255,0.62)" };
 }
 
 export function LiveCommandCenter() {
@@ -158,7 +158,7 @@ export function LiveCommandCenter() {
             <div className="text-[34px] leading-none tabular-nums" style={{ fontFamily: SERIF, fontWeight: 600, color: OFF }}>
               17
             </div>
-            <div className="mt-1.5 text-[10px] uppercase" style={{ fontFamily: MONO, letterSpacing: "0.18em", color: "rgba(250,243,230,0.5)" }}>
+            <div className="mt-1.5 text-[10px] uppercase" style={{ fontFamily: MONO, letterSpacing: "0.18em", color: "rgba(255,255,255,0.5)" }}>
               Active projects
             </div>
           </div>
@@ -166,12 +166,12 @@ export function LiveCommandCenter() {
             <div className="text-[22px] leading-none tabular-nums" style={{ fontFamily: SERIF, fontWeight: 600, color: GREEN_LT }}>
               100%
             </div>
-            <div className="mt-1.5 text-[10px] uppercase" style={{ fontFamily: MONO, letterSpacing: "0.18em", color: "rgba(250,243,230,0.5)" }}>
+            <div className="mt-1.5 text-[10px] uppercase" style={{ fontFamily: MONO, letterSpacing: "0.18em", color: "rgba(255,255,255,0.5)" }}>
               On time
             </div>
           </div>
         </div>
-        <div className="mt-3 h-[3px] w-full" style={{ background: "rgba(250,243,230,0.12)" }}>
+        <div className="mt-3 h-[3px] w-full" style={{ background: "rgba(255,255,255,0.12)" }}>
           <div style={{ width: "100%", height: "100%", background: GREEN_LT, transition: "width 900ms ease" }} />
         </div>
       </div>
@@ -187,7 +187,7 @@ export function LiveCommandCenter() {
               style={{
                 fontFamily: MONO,
                 letterSpacing: "0.14em",
-                color: on ? OFF : "rgba(250,243,230,0.4)",
+                color: on ? OFF : "rgba(255,255,255,0.4)",
                 background: on ? DARK_2 : "transparent",
                 transition: "background 300ms ease, color 300ms ease",
               }}
@@ -206,7 +206,7 @@ export function LiveCommandCenter() {
               <div className="text-[15px]" style={{ fontFamily: SERIF, fontWeight: 600, color: OFF, letterSpacing: "-0.02em" }}>
                 14 Pelican Bay Ln
               </div>
-              <div className="mt-1 text-[10.5px] uppercase" style={{ fontFamily: MONO, letterSpacing: "0.14em", color: "rgba(250,243,230,0.45)" }}>
+              <div className="mt-1 text-[10.5px] uppercase" style={{ fontFamily: MONO, letterSpacing: "0.14em", color: "rgba(255,255,255,0.45)" }}>
                 Collier County · CLR-2026-0212
               </div>
             </div>
@@ -227,14 +227,14 @@ export function LiveCommandCenter() {
                   key={c}
                   className="flex items-center gap-2.5 text-[12.5px]"
                   style={{
-                    color: done ? OFF : "rgba(250,243,230,0.3)",
+                    color: done ? OFF : "rgba(255,255,255,0.3)",
                     transition: "color 400ms ease",
                   }}
                 >
                   <span
                     className="grid h-4 w-4 shrink-0 place-items-center"
                     style={{
-                      border: `1px solid ${done ? GREEN_LT : "rgba(250,243,230,0.2)"}`,
+                      border: `1px solid ${done ? GREEN_LT : "rgba(255,255,255,0.2)"}`,
                       background: done ? "rgba(156,107,63,0.14)" : "transparent",
                       transition: "all 400ms ease",
                     }}
@@ -274,7 +274,7 @@ export function LiveCommandCenter() {
               <div className="text-[12.5px]" style={{ color: OFF }}>
                 {beat.toast.title}
               </div>
-              <div className="mt-0.5 text-[10.5px] uppercase" style={{ fontFamily: MONO, letterSpacing: "0.12em", color: "rgba(250,243,230,0.45)" }}>
+              <div className="mt-0.5 text-[10.5px] uppercase" style={{ fontFamily: MONO, letterSpacing: "0.12em", color: "rgba(255,255,255,0.45)" }}>
                 {beat.toast.sub}
               </div>
             </div>
@@ -354,7 +354,7 @@ export function WatchItRun() {
 
           {/* horizontal scroll rail */}
           <div className="relative mt-12">
-            <div className="absolute left-0 right-0 h-px" style={{ top: 7, background: "rgba(250,243,230,0.18)" }} />
+            <div className="absolute left-0 right-0 h-px" style={{ top: 7, background: "rgba(255,255,255,0.18)" }} />
             <div
               className="absolute left-0 h-px"
               style={{
@@ -378,7 +378,7 @@ export function WatchItRun() {
                         height: now ? 15 : 11,
                         marginTop: now ? 0 : 2,
                         borderRadius: 999,
-                        border: `1px solid ${done ? COPPER : "rgba(250,243,230,0.3)"}`,
+                        border: `1px solid ${done ? COPPER : "rgba(255,255,255,0.3)"}`,
                         backgroundColor: done ? COPPER : "transparent",
                         boxShadow: now
                           ? `0 0 0 5px ${COPPER}22, 0 0 10px ${COPPER}88, inset 0 1px 0 rgba(255,255,255,0.4)`
@@ -394,7 +394,7 @@ export function WatchItRun() {
                       style={{
                         fontFamily: MONO,
                         letterSpacing: "0.16em",
-                        color: now ? OAT : done ? "rgba(250,243,230,0.62)" : "rgba(250,243,230,0.3)",
+                        color: now ? OAT : done ? "rgba(255,255,255,0.62)" : "rgba(255,255,255,0.3)",
                         transition: "color 320ms ease",
                       }}
                     >
@@ -433,7 +433,7 @@ export function WatchItRun() {
               <h3 className="mt-3" style={{ fontFamily: SERIF, fontWeight: 600, fontSize: "clamp(1.6rem, 3vw, 2.35rem)", letterSpacing: "-0.03em", color: OAT }}>
                 {step.t}
               </h3>
-              <p className="mt-4 max-w-2xl text-[15.5px] leading-relaxed" style={{ color: "rgba(250,243,230,0.66)" }}>
+              <p className="mt-4 max-w-2xl text-[15.5px] leading-relaxed" style={{ color: "rgba(255,255,255,0.66)" }}>
                 {step.b}
               </p>
               <div
@@ -523,7 +523,7 @@ export function VictoriaSpotlight() {
               <div className="mt-4 text-[21px] leading-tight" style={{ fontFamily: SERIF, fontWeight: 600, letterSpacing: "-0.03em", color: OFF }}>
                 {card.head}
               </div>
-              <p className="mt-3 text-[14px] leading-relaxed" style={{ color: "rgba(250,243,230,0.58)" }}>
+              <p className="mt-3 text-[14px] leading-relaxed" style={{ color: "rgba(255,255,255,0.58)" }}>
                 {card.body}
               </p>
               <span
@@ -532,7 +532,7 @@ export function VictoriaSpotlight() {
                   backgroundImage: "var(--gradient-copper)",
                   color: "#FFF8EC",
                   fontWeight: 600,
-                  border: "1px solid rgba(250,243,230,0.22)",
+                  border: "1px solid rgba(255,255,255,0.22)",
                   backdropFilter: "blur(12px) saturate(150%)",
                   boxShadow: "0 10px 26px rgba(43,22,32,0.3), inset 0 1px 0 rgba(255,255,255,0.24)",
                 }}
@@ -547,7 +547,7 @@ export function VictoriaSpotlight() {
                 <span
                   key={c.head}
                   className="h-[3px]"
-                  style={{ background: idx === i ? PLUM_LT : "rgba(250,243,230,0.14)", transition: "background 400ms ease" }}
+                  style={{ background: idx === i ? PLUM_LT : "rgba(255,255,255,0.14)", transition: "background 400ms ease" }}
                 />
               ))}
             </div>
@@ -1136,7 +1136,7 @@ export function AskVictoriaLauncher() {
             <span className="flex items-center gap-2 text-[12.5px]" style={{ color: OFF }}>
               <Sparkle className="h-3.5 w-3.5" style={{ color: PLUM_LT }} strokeWidth={1.75} /> Victoria
             </span>
-            <button type="button" aria-label="Close" onClick={() => setOpen(false)} style={{ color: "rgba(250,243,230,0.5)" }}>
+            <button type="button" aria-label="Close" onClick={() => setOpen(false)} style={{ color: "rgba(255,255,255,0.5)" }}>
               <X className="h-4 w-4" />
             </button>
           </div>
@@ -1144,15 +1144,15 @@ export function AskVictoriaLauncher() {
             <div className="text-[13.5px]" style={{ color: OFF }}>
               What are you working on?
             </div>
-            <div className="mt-3 px-3 py-2.5 text-[12.5px]" style={{ background: DARK_2, border: `1px solid ${DARK_LINE}`, color: "rgba(250,243,230,0.42)" }}>
+            <div className="mt-3 px-3 py-2.5 text-[12.5px]" style={{ background: DARK_2, border: `1px solid ${DARK_LINE}`, color: "rgba(255,255,255,0.42)" }}>
               Ask anything...
             </div>
-            <div className="mt-4 text-[10px] uppercase" style={{ fontFamily: MONO, letterSpacing: "0.18em", color: "rgba(250,243,230,0.4)" }}>
+            <div className="mt-4 text-[10px] uppercase" style={{ fontFamily: MONO, letterSpacing: "0.18em", color: "rgba(255,255,255,0.4)" }}>
               Try
             </div>
             <div className="mt-2.5 space-y-2">
               {V_SUGGESTIONS.map((s) => (
-                <div key={s} className="flex items-center gap-2 text-[12.5px]" style={{ color: "rgba(250,243,230,0.7)" }}>
+                <div key={s} className="flex items-center gap-2 text-[12.5px]" style={{ color: "rgba(255,255,255,0.7)" }}>
                   <span className="inline-block h-1 w-1" style={{ background: PLUM_LT, borderRadius: 999 }} />
                   {s}
                 </div>
