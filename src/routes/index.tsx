@@ -417,16 +417,16 @@ function CountyCoverage() {
 function MunicipalityTrack() {
   const CARD_BG = "#2F4F4F";
   const CARD_BORDER = "#3F5C5A";
-  const TEAL = "#673147";
+  const TEAL = "#2B1620";
   return (
     <section style={{ background: WHITE }}>
       <div className="mx-auto max-w-7xl px-5 lg:px-8 pb-24 md:pb-28">
-        <div className="mb-6 flex items-center gap-3 text-[10.5px] font-bold uppercase tracking-[0.22em]" style={{ color: GREEN }}>
+        <div className="copper-text mb-6 flex items-center gap-3 text-[10.5px] font-bold uppercase tracking-[0.22em]">
           <span className="copper-hairline inline-block h-px w-7" />
           For municipalities
         </div>
 
-        <div className="p-8 md:p-14" style={{ background: CARD_BG, borderLeft: `3px solid ${TEAL}` }}>
+        <div className="p-8 md:p-14" style={{ background: CARD_BG, borderLeft: "3px solid var(--copper)" }}>
           <div style={{ color: "#F3EAD9", fontSize: 32, fontWeight: 700, letterSpacing: "-0.03em" }}>
             CleardGov
           </div>
