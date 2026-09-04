@@ -2244,13 +2244,6 @@ function NewPermitPage() {
                     Property, owner, and contractor fields come from the sections above — edit them
                     there and this preview updates to match.
                   </p>
-                  <button
-                    type="button"
-                    onClick={previewNOCPdf}
-                    className="inline-flex items-center gap-2 bg-obsidian text-white px-4 py-2 font-mono text-[10px] uppercase tracking-[0.14em] hover:bg-obsidian/90 rounded-[3px]"
-                  >
-                    Preview NOC PDF
-                  </button>
                 </div>
                 <div className="xl:sticky xl:top-4">
                   <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
