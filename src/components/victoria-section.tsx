@@ -14,14 +14,14 @@ import {
 import siteImg from "@/assets/victoria-site.jpg";
 
 /* --------------------- LOCKED NORDIC LUXURY TOKENS ----------------------- */
-const OAT = "#FAF3E6";
-const INK = "#2F4F4F";
-const GRAY = "#7A5C68";
-const PLUM = "#673147";
-const BORDER = "#E0D3BC";
-const COPPER = "#C98A5B";
-const COPPER_LT = "#E4B584";
-const DARK = "#150A0F";
+const OAT = "#FFFFFF";
+const INK = "#2B1620";
+const GRAY = "#6B6B6B";
+const PLUM = "#2B1620";
+const BORDER = "#E5E5E5";
+const COPPER = "#9C6B3F";
+const COPPER_LT = "#9C6B3F";
+const DARK = "#2B1620";
 const PLUM_DEEP = "#2B1620";
 const SERIF = '"Fraunces", "Iowan Old Style", Georgia, serif';
 const MONO = '"JetBrains Mono", ui-monospace, monospace';
@@ -322,7 +322,7 @@ export function VictoriaSection() {
           {/* top bar */}
           <div
             className="absolute inset-x-0 top-0 flex items-center justify-between px-5 pb-4 pt-6 sm:px-7"
-            style={{ fontFamily: MONO, fontSize: 9.5, letterSpacing: "0.2em", color: "rgba(250,243,230,0.72)" }}
+            style={{ fontFamily: MONO, fontSize: 9.5, letterSpacing: "0.2em", color: "rgba(255,255,255,0.72)" }}
           >
             <span className="flex items-center gap-2 uppercase">
               Victoria / Live
@@ -357,12 +357,12 @@ export function VictoriaSection() {
             className="absolute inset-x-0 bottom-0 flex items-center justify-between gap-4 px-5 py-4 sm:px-7"
             style={{ borderTop: "1px solid rgba(201,138,91,0.28)", background: "rgba(21,10,15,0.66)" }}
           >
-            <span className="text-[13px]" style={{ color: "rgba(250,243,230,0.9)", fontFamily: SERIF }}>
+            <span className="text-[13px]" style={{ color: "rgba(255,255,255,0.9)", fontFamily: SERIF }}>
               Victoria is watching your projects, 24/7.
             </span>
             <span
               className="hidden items-center gap-2 uppercase sm:flex"
-              style={{ fontFamily: MONO, fontSize: 9.5, letterSpacing: "0.2em", color: "rgba(250,243,230,0.6)" }}
+              style={{ fontFamily: MONO, fontSize: 9.5, letterSpacing: "0.2em", color: "rgba(255,255,255,0.6)" }}
             >
               <span
                 className="v-blink inline-block h-[5px] w-[5px] rounded-full cl-dot"
@@ -414,7 +414,7 @@ export function VictoriaSection() {
                   >
                     {s.n} — {s.title}
                   </div>
-                  <div className="mt-3 space-y-1 text-[13.5px] leading-[1.6]" style={{ color: "rgba(250,243,230,0.62)" }}>
+                  <div className="mt-3 space-y-1 text-[13.5px] leading-[1.6]" style={{ color: "rgba(255,255,255,0.62)" }}>
                     {s.lines.map((l) => (
                       <div key={l}>{l}</div>
                     ))}
@@ -432,7 +432,7 @@ export function VictoriaSection() {
 /* ------------------------------ INTEL CARD ------------------------------- */
 
 function IntelCard({ card }: { card: Card }) {
-  const dot = card.tone === "warn" ? COPPER : card.tone === "copper" ? COPPER_LT : "#9CBEB2";
+  const dot = card.tone === "warn" ? COPPER : card.tone === "copper" ? COPPER_LT : COPPER;
   return (
     <div
       className="px-4 py-3.5"
@@ -443,7 +443,7 @@ function IntelCard({ card }: { card: Card }) {
         boxShadow: "0 18px 40px rgba(10,4,7,0.45)",
       }}
     >
-      <div className="text-[9px] uppercase" style={{ fontFamily: MONO, letterSpacing: "0.2em", color: "rgba(250,243,230,0.5)" }}>
+      <div className="text-[9px] uppercase" style={{ fontFamily: MONO, letterSpacing: "0.2em", color: "rgba(255,255,255,0.5)" }}>
         {card.project}
       </div>
       <div className="mt-1 text-[11.5px] uppercase" style={{ fontFamily: MONO, letterSpacing: "0.13em", color: OAT }}>
@@ -465,11 +465,11 @@ function IntelCard({ card }: { card: Card }) {
           {card.status[1]}
         </div>
       </div>
-      <div className="mt-3 text-[12px]" style={{ color: "rgba(250,243,230,0.8)", fontFamily: SERIF }}>
+      <div className="mt-3 text-[12px]" style={{ color: "rgba(255,255,255,0.8)", fontFamily: SERIF }}>
         {card.detail}
       </div>
       {card.note && (
-        <div className="mt-1.5 text-[11.5px]" style={{ color: "rgba(250,243,230,0.55)", fontFamily: SERIF }}>
+        <div className="mt-1.5 text-[11.5px]" style={{ color: "rgba(255,255,255,0.55)", fontFamily: SERIF }}>
           {card.note}
         </div>
       )}
