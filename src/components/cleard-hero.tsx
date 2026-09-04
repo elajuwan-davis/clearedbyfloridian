@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import mark3d from "@/assets/cleard-3d-mark.png.asset.json";
+import heroVideo from "@/assets/hero-wireframe.mp4.asset.json";
 import mark2d from "@/assets/cleard-logo-copper.png.asset.json";
 import wordmarkCopper from "@/assets/cleard-wordmark-copper.png.asset.json";
 import { HomeMotionStyles } from "@/components/home-command-center";
 import { HeroStage } from "@/components/hero-stage";
-import { WireframeBackdrop } from "@/components/wireframe-backdrop";
 import { TRADES } from "@/lib/trades";
 
 
@@ -147,7 +147,7 @@ function HeroSolutions() {
         onClick={() => setOpen((s) => !s)}
         className="text-[13.5px] transition-colors"
         style={{
-          color: "#FFFFFF",
+          color: SLATE,
           whiteSpace: "nowrap",
           background: "none",
           border: "none",
@@ -199,7 +199,7 @@ function HeroTrades() {
         onClick={() => setOpen((s) => !s)}
         className="text-[13.5px] transition-colors"
         style={{
-          color: "#FFFFFF",
+          color: SLATE,
           whiteSpace: "nowrap",
           background: "none",
           border: "none",
@@ -252,9 +252,9 @@ function HeroNav({ logoSlot, logoVisible }: { logoSlot: React.Ref<HTMLDivElement
     <header
       className="fixed inset-x-0 top-0 z-[100] transition-all duration-300"
       style={{
-        background: "#000000",
-        boxShadow: scrolled || open ? "0 1px 0 rgba(255,255,255,0.10)" : "none",
-        borderBottom: `1px solid ${scrolled || open ? "rgba(255,255,255,0.14)" : "transparent"}`,
+        background: "#FFFFFF",
+        boxShadow: scrolled || open ? "0 1px 0 rgba(0,0,0,0.06)" : "none",
+        borderBottom: `1px solid ${scrolled || open ? "rgba(0,0,0,0.12)" : "transparent"}`,
       }}
     >
       <div className="mx-auto grid h-[68px] max-w-7xl grid-cols-[1fr_auto_1fr] items-center gap-4 px-5 lg:px-10">
@@ -263,8 +263,8 @@ function HeroNav({ logoSlot, logoVisible }: { logoSlot: React.Ref<HTMLDivElement
             <img
               src={wordmarkCopper.url}
               alt="CLEARD"
-              className="h-11 w-auto object-contain transition-opacity duration-300"
-              style={{ opacity: logoVisible ? 1 : 0, filter: "brightness(1.4) saturate(1.15) drop-shadow(0 1px 8px rgba(156,107,63,0.5))" }}
+              className="h-9 w-auto object-contain transition-opacity duration-300"
+              style={{ opacity: logoVisible ? 1 : 0 }}
             />
           </div>
         </Link>
@@ -283,7 +283,7 @@ function HeroNav({ logoSlot, logoVisible }: { logoSlot: React.Ref<HTMLDivElement
                 to={l.to}
                 hash={l.hash}
                 className="text-[13.5px] no-underline transition-colors"
-                style={{ color: "#FFFFFF", whiteSpace: "nowrap" }}
+                style={{ color: SLATE, whiteSpace: "nowrap" }}
               >
                 {l.label}
               </Link>
@@ -295,7 +295,7 @@ function HeroNav({ logoSlot, logoVisible }: { logoSlot: React.Ref<HTMLDivElement
           <Link
             to="/login"
             className="hidden text-[13.5px] no-underline sm:inline"
-            style={{ color: "#FFFFFF", whiteSpace: "nowrap" }}
+            style={{ color: SLATE, whiteSpace: "nowrap" }}
           >
             Sign in
           </Link>
@@ -313,7 +313,7 @@ function HeroNav({ logoSlot, logoVisible }: { logoSlot: React.Ref<HTMLDivElement
             className="-mr-1 p-2 text-[13px] md:hidden"
             aria-label="Menu"
             onClick={() => setOpen((s) => !s)}
-            style={{ color: "#FFFFFF" }}
+            style={{ color: SLATE }}
           >
             {open ? "Close" : "Menu"}
           </button>
@@ -321,7 +321,7 @@ function HeroNav({ logoSlot, logoVisible }: { logoSlot: React.Ref<HTMLDivElement
       </div>
 
       {open && (
-        <div className="md:hidden" style={{ background: "#000000", borderTop: `1px solid rgba(255,255,255,0.14)` }}>
+        <div className="md:hidden" style={{ background: "#FFFFFF", borderTop: `1px solid rgba(0,0,0,0.12)` }}>
           <div className="space-y-4 px-5 py-6">
             {[...NAV, { to: "/login", label: "Sign in" } as const].map((l) => (
               <Link
@@ -329,13 +329,13 @@ function HeroNav({ logoSlot, logoVisible }: { logoSlot: React.Ref<HTMLDivElement
                 to={l.to}
                 onClick={() => setOpen(false)}
                 className="block text-[15px] no-underline"
-                style={{ color: "#FFFFFF" }}
+                style={{ color: SLATE }}
               >
                 {l.label}
               </Link>
             ))}
 
-            <div className="pt-2" style={{ borderTop: "1px solid rgba(255,255,255,0.14)" }}>
+            <div className="pt-2" style={{ borderTop: "1px solid rgba(0,0,0,0.12)" }}>
               <div
                 className="pt-3 text-[10.5px] uppercase tracking-[0.22em]"
                 style={{ color: "#9C6B3F", fontWeight: 700 }}
@@ -349,7 +349,7 @@ function HeroNav({ logoSlot, logoVisible }: { logoSlot: React.Ref<HTMLDivElement
                     to={s.to}
                     onClick={() => setOpen(false)}
                     className="block text-[15px] no-underline"
-                    style={{ color: "#FFFFFF" }}
+                    style={{ color: SLATE }}
                   >
                     {s.label}
                   </Link>
@@ -398,10 +398,16 @@ export function ClearedHero() {
 
 
 
-      {/* code-drawn wireframe city backdrop (no video) */}
-      <WireframeBackdrop
+      {/* looping wireframe city video backdrop */}
+      <video
+        src={heroVideo.url}
+        autoPlay
+        muted
+        loop
+        playsInline
+        aria-hidden
         className="pointer-events-none absolute inset-0 h-full w-full"
-        style={{ zIndex: 0 }}
+        style={{ zIndex: 0, objectFit: "cover" }}
       />
 
       <div

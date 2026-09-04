@@ -9,8 +9,7 @@ function LogoMark() {
     <img
       src={wordmarkCopper.url}
       alt="CLEARD"
-      className="h-11 w-auto object-contain"
-      style={{ filter: "brightness(1.4) saturate(1.15) drop-shadow(0 1px 8px rgba(156,107,63,0.5))" }}
+      className="h-9 w-auto object-contain"
     />
   );
 }
