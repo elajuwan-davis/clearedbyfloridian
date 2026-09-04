@@ -219,13 +219,26 @@ export function AddressAutocomplete({
         const lib = placesLibRef.current;
         if (!lib) return;
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const { suggestions: raw } = await (lib as any).AutocompleteSuggestion.fetchAutocompleteSuggestions({
+        const anyLib = lib as any;
+        const request: Record<string, unknown> = {
           input: q,
           sessionToken: sessionTokenRef.current,
-          includedPrimaryTypes: ["street_address", "premise", "subpremise", "route"],
           includedRegionCodes: ["us"],
           locationRestriction: FLORIDA_BOUNDS,
-        });
+        };
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        let raw: any[] | undefined;
+        try {
+          ({ suggestions: raw } = await anyLib.AutocompleteSuggestion.fetchAutocompleteSuggestions({
+            ...request,
+            includedPrimaryTypes: ["street_address", "premise", "subpremise", "route"],
+          }));
+        } catch (typeErr) {
+          // Some inputs / type combinations are rejected outright. Retry once
+          // with no type filter before ever considering Google unusable.
+          console.warn("[AddressAutocomplete] typed request failed, retrying unfiltered —", typeErr);
+          ({ suggestions: raw } = await anyLib.AutocompleteSuggestion.fetchAutocompleteSuggestions(request));
+        }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const list: Suggestion[] = (raw ?? [])
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -239,17 +252,31 @@ export function AddressAutocomplete({
             };
           })
           .filter(Boolean) as Suggestion[];
+        failureStreakRef.current = 0;
         setSuggestions(list);
         setActiveIdx(0);
         setOpen(list.length > 0);
       } catch (err) {
-        // A rejected Places call means the key/API isn't usable — hand over to
-        // the Census lookup rather than leaving a silent, dead input.
+        // A single rejected call is usually transient (network blip, quota
+        // hiccup, odd input) — it must NOT kill autocomplete for the whole
+        // session. Only a hard auth/config error, or several consecutive
+        // failures, hands the field over to the Census lookup.
         setSuggestions([]);
-        giveUp(err);
+        const msg = String((err as { message?: string })?.message ?? err);
+        const fatal = /denied|not.?authoriz|ApiNotActivated|ApiTargetBlocked|api key|referer|billing|forbidden|403/i.test(msg);
+        failureStreakRef.current += 1;
+        if (fatal || failureStreakRef.current >= 4) {
+          giveUp(err);
+        } else {
+          console.warn(
+            `[AddressAutocomplete] suggestion call failed (${failureStreakRef.current}/4, staying on Google) —`,
+            err,
+          );
+        }
       } finally {
         setLoading(false);
       }
+
     }, 220);
   }
 
