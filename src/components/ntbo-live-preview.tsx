@@ -27,16 +27,16 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 export function NTBOLivePreview({ fields }: { fields: NTBOFields }) {
   return (
     <div className="bg-white border border-obsidian/15 rounded-[3px] overflow-hidden text-obsidian">
-      <div className="bg-obsidian text-white px-5 py-4">
-        <div className="font-mono text-[9px] uppercase tracking-[0.18em] text-sky/90">
-          Flōridian — Cleard Private Provider
+      <div className="bg-black text-white px-6 py-5">
+        <div className="font-mono text-[9px] uppercase tracking-[0.18em] text-[#C08A55]">
+          Cleared Private Provider
         </div>
-        <div className="text-lg font-semibold mt-1">Notice to Building Official</div>
+        <div className="text-xl font-semibold mt-1">Notice to Building Official</div>
         <div className="text-[10px] text-white/70 mt-1">
           Use of Private Provider — Form 61G20-2.005 · FL Statute §553.791
         </div>
       </div>
-      <div className="px-5 py-4">
+      <div className="px-6 py-5">
         <Section title="Project Information">
           <Field label="Project Name" value={fields.projectName} />
           <Field label="Parcel Tax ID (PCN)" value={fields.parcelTaxId} />

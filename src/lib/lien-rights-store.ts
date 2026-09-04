@@ -40,12 +40,7 @@ export type LienDoc = {
 
 export type LienProject = { id: string; name: string; address: string; county: string };
 
-export const LIEN_PROJECTS: LienProject[] = [
-  { id: "p-1", name: "Aldrich Residence", address: "418 Seabreeze Ave, Palm Beach, FL 33480", county: "Palm Beach" },
-  { id: "p-2", name: "Coastline — Jupiter Ridge", address: "1120 Ridge Rd, Jupiter, FL 33477", county: "Palm Beach" },
-  { id: "p-3", name: "Marlow Estate", address: "77 Sewall's Point Rd, Stuart, FL 34996", county: "Martin" },
-  { id: "p-4", name: "Vista Bay Villas", address: "3402 Indian River Dr, Fort Pierce, FL 34949", county: "St. Lucie" },
-];
+export const LIEN_PROJECTS: LienProject[] = [];
 
 export const FL_COUNTIES = [
   "Miami-Dade",
@@ -82,69 +77,19 @@ export type LienSettings = {
   signwellConnected: boolean;
 };
 
-const today = new Date();
-function iso(offsetDays: number) {
-  const d = new Date(today);
-  d.setDate(d.getDate() + offsetDays);
-  return d.toISOString().slice(0, 10);
-}
 
-let docs: LienDoc[] = [
-  {
-    id: "LD-1041",
-    type: "Notice of Commencement (NOC)",
-    project: "Aldrich Residence",
-    address: LIEN_PROJECTS[0]!.address,
-    claimant: "Floridian LLC",
-    ownerOrGc: "Marion Aldrich",
-    contractAmount: "$1,480,000",
-    generatedAt: iso(-24),
-    status: "Recorded",
-  },
-  {
-    id: "LD-1042",
-    type: "Preliminary Notice",
-    project: "Coastline — Jupiter Ridge",
-    address: LIEN_PROJECTS[1]!.address,
-    claimant: "Floridian LLC",
-    ownerOrGc: "Coastline Builders Group",
-    contractAmount: "$865,000",
-    generatedAt: iso(-11),
-    status: "Sent",
-  },
-  {
-    id: "LD-1043",
-    type: "Lien Waiver — Conditional on Progress Payment",
-    project: "Marlow Estate",
-    address: LIEN_PROJECTS[2]!.address,
-    claimant: "Floridian LLC",
-    ownerOrGc: "Dana Marlow",
-    contractAmount: "$392,500",
-    throughDate: iso(-5),
-    generatedAt: iso(-4),
-    status: "Draft",
-  },
-];
+let docs: LienDoc[] = [];
 
-let requests: ERecordRequest[] = [
-  {
-    id: "ER-2071",
-    documentId: "LD-1041",
-    documentType: "Notice of Commencement (NOC)",
-    county: "Palm Beach",
-    submittedAt: iso(-22),
-    status: "Recorded",
-  },
-];
+let requests: ERecordRequest[] = [];
 
 let settings: LienSettings = {
   claimant: {
-    companyName: "Floridian LLC",
-    licenseNumber: "CGC1521884",
-    licenseType: "Certified General Contractor",
-    mailingAddress: "215 Clematis St, Suite 200, West Palm Beach, FL 33401",
-    noticeEmail: "liens@floridianinc.com",
-    phone: "(561) 555-0142",
+    companyName: "",
+    licenseNumber: "",
+    licenseType: "",
+    mailingAddress: "",
+    noticeEmail: "",
+    phone: "",
   },
   signwellConnected: false,
 };
@@ -237,20 +182,7 @@ export type LienDeadline = {
   complete?: boolean;
 };
 
-export const LIEN_DEADLINES: LienDeadline[] = [
-  { project: "Aldrich Residence", milestone: "NOC Recording", deadline: iso(-24), complete: true },
-  { project: "Aldrich Residence", milestone: "Preliminary Notice", deadline: iso(9) },
-  { project: "Aldrich Residence", milestone: "Claim of Lien", deadline: iso(64) },
-  { project: "Coastline — Jupiter Ridge", milestone: "NOC Recording", deadline: iso(-40), complete: true },
-  { project: "Coastline — Jupiter Ridge", milestone: "Preliminary Notice", deadline: iso(-3) },
-  { project: "Coastline — Jupiter Ridge", milestone: "Claim of Lien", deadline: iso(41) },
-  { project: "Marlow Estate", milestone: "Preliminary Notice", deadline: iso(12) },
-  { project: "Marlow Estate", milestone: "Claim of Lien", deadline: iso(78) },
-  { project: "Marlow Estate", milestone: "Action on Lien", deadline: iso(320) },
-  { project: "Vista Bay Villas", milestone: "NOC Recording", deadline: iso(4) },
-  { project: "Vista Bay Villas", milestone: "Preliminary Notice", deadline: iso(31) },
-  { project: "Vista Bay Villas", milestone: "Action on Lien", deadline: iso(-9) },
-];
+export const LIEN_DEADLINES: LienDeadline[] = [];
 
 export function daysRemaining(deadline: string): number {
   const d = new Date(`${deadline}T00:00:00`);

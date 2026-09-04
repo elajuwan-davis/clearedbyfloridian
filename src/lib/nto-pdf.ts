@@ -3,7 +3,8 @@
 import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
 import type { NtoRow } from "@/lib/nto-api";
 
-const OBSIDIAN = rgb(21 / 255, 49 / 255, 87 / 255);
+const OBSIDIAN = rgb(0, 0, 0);
+const COPPER = rgb(0.612, 0.42, 0.247); // #9C6B3F
 const INK = rgb(0.1, 0.1, 0.1);
 
 export async function buildNtoPdfBytes(nto: Partial<NtoRow>): Promise<Uint8Array> {
@@ -19,7 +20,7 @@ export async function buildNtoPdfBytes(nto: Partial<NtoRow>): Promise<Uint8Array
     x: 50, y, size: 9, font, color: INK,
   });
   y -= 24;
-  page.drawLine({ start: { x: 50, y }, end: { x: 562, y }, thickness: 1, color: OBSIDIAN });
+  page.drawLine({ start: { x: 50, y }, end: { x: 562, y }, thickness: 1, color: COPPER });
   y -= 24;
 
   const rows: Array<[string, string]> = [
@@ -33,7 +34,7 @@ export async function buildNtoPdfBytes(nto: Partial<NtoRow>): Promise<Uint8Array
   ];
 
   for (const [label, val] of rows) {
-    page.drawText(label.toUpperCase(), { x: 50, y, size: 8, font: bold, color: OBSIDIAN });
+    page.drawText(label.toUpperCase(), { x: 50, y, size: 8, font: bold, color: COPPER });
     y -= 14;
     const lines = wrap(val, 90);
     for (const line of lines) {

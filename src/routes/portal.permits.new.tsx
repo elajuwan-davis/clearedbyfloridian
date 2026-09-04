@@ -2151,7 +2151,7 @@ function NewPermitPage() {
               </div>
             </div>
 
-            <div className="bg-white border border-obsidian/10 rounded-[3px] p-6 sm:p-8 space-y-6">
+            <div className="bg-white border border-obsidian/10 rounded-[3px] p-6 sm:p-8 space-y-6 xl:-mr-[344px]">
               <div>
                 <div className={sectionCls}>Notice of Commencement — Review</div>
                 <p className="mt-1 text-[12px] text-obsidian/60">
@@ -2192,7 +2192,7 @@ function NewPermitPage() {
                 )}
               </div>
 
-              <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] items-start">
+              <div className="grid gap-8 xl:grid-cols-[minmax(0,420px)_minmax(0,1fr)] items-start">
                 <div className="space-y-5">
                   <div className="grid gap-5 sm:grid-cols-2">
                     <div>
@@ -2251,8 +2251,20 @@ function NewPermitPage() {
                     Preview NOC PDF
                   </button>
                 </div>
-                <div className="lg:sticky lg:top-4">
-                  <NOCLivePreview fields={nocFields} />
+                <div className="xl:sticky xl:top-4">
+                  <div className="mb-2 flex items-center justify-between">
+                    <div className="font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/45">
+                      Live document preview
+                    </div>
+                    <div className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#9C6B3F]">
+                      Updates as you type
+                    </div>
+                  </div>
+                  <div className="rounded-[3px] bg-obsidian/[0.03] p-4 sm:p-6">
+                    <div className="mx-auto max-h-[70vh] w-full max-w-[760px] overflow-y-auto shadow-[0_18px_44px_-24px_rgba(0,0,0,0.45)]">
+                      <NOCLivePreview fields={nocFields} />
+                    </div>
+                  </div>
                 </div>
               </div>
 
@@ -2262,15 +2274,19 @@ function NewPermitPage() {
                   Filed with the building official under Cleard's private-provider identity — the GC
                   does not sign this one, but here's exactly what goes out.
                 </p>
-                <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] items-start">
-                  <NTBOLivePreview fields={ntboFields} />
-                  <button
-                    type="button"
-                    onClick={previewNTBOPdf}
-                    className="inline-flex items-center gap-2 border border-obsidian/20 px-4 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/70 hover:border-obsidian/40 rounded-[3px]"
-                  >
-                    Preview NTBO PDF
-                  </button>
+                <div className="rounded-[3px] bg-obsidian/[0.03] p-4 sm:p-6">
+                  <div className="mx-auto w-full max-w-[860px] shadow-[0_18px_44px_-24px_rgba(0,0,0,0.45)]">
+                    <NTBOLivePreview fields={ntboFields} />
+                  </div>
+                  <div className="mt-4 flex justify-center">
+                    <button
+                      type="button"
+                      onClick={previewNTBOPdf}
+                      className="inline-flex items-center gap-2 border border-obsidian/20 bg-white px-4 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/70 hover:border-obsidian/40 rounded-[3px]"
+                    >
+                      Preview NTBO PDF
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
