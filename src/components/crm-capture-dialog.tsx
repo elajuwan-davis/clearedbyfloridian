@@ -12,7 +12,7 @@ import {
 const INK = "#2F4F4F";
 const OAT = "#FAF3E6";
 const BORDER = "#E0D3BC";
-const SERIF = "'Fraunces', 'Iowan Old Style', Georgia, serif";
+const SERIF = "'Unbounded', sans-serif";
 
 /**
  * The only place a Google-auth account is asked which tool it runs.

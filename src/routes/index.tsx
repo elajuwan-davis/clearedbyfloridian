@@ -75,7 +75,7 @@ const PLUM_LT = "var(--copper)"; /* light copper, legible on dark surfaces */
 const GREEN = "rgba(43,22,32,0.5)"; /* neutral muted ink for secondary labels */
 const GREEN_LT = "rgba(255,255,255,0.72)"; /* warm copper-lite on dark */
 const BORDER = "rgba(43,22,32,0.1)";
-const SANS = "'Fraunces', 'Iowan Old Style', Georgia, serif";
+const SANS = "'Unbounded', sans-serif";
 
 /* --------------------------------- PAGE ---------------------------------- */
 

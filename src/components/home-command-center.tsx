@@ -34,7 +34,7 @@ const DARK = "#FFFFFF";
 const DARK_2 = "rgba(0,0,0,0.04)";
 const DARK_LINE = "rgba(0,0,0,0.10)";
 const COPPER = "#C98A5B";
-const SERIF = '"Fraunces", "Iowan Old Style", Georgia, serif';
+const SERIF = '"Unbounded", sans-serif';
 const MONO = '"JetBrains Mono", ui-monospace, monospace';
 
 /* Shared keyframes for every home motion primitive. Product motion only. */

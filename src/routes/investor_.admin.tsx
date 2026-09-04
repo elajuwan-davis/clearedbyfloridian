@@ -30,7 +30,7 @@ const BORDER = "#3F5C5A";
 const TEAL = "#E6E6FA";
 const OFF = "#F3EAD9";
 const MUTED = "rgba(250, 243, 230, 0.62)";
-const SANS = "'Fraunces', 'Iowan Old Style', Georgia, serif";
+const SANS = "'Unbounded', sans-serif";
 const MONO = "ui-monospace, Menlo, Monaco, monospace";
 const SESSION_KEY = "investor_admin_ok";
 

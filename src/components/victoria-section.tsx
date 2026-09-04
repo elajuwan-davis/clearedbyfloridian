@@ -23,7 +23,7 @@ const COPPER = "#9C6B3F";
 const COPPER_LT = "#9C6B3F";
 const DARK = "#FFFFFF";
 const PLUM_DEEP = "#FFFFFF";
-const SERIF = '"Fraunces", "Iowan Old Style", Georgia, serif';
+const SERIF = '"Unbounded", sans-serif';
 const MONO = '"JetBrains Mono", ui-monospace, monospace';
 
 const METRICS = [

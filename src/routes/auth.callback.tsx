@@ -140,7 +140,7 @@ function AuthCallback() {
             <div className="label-eyebrow">Access pending</div>
             <h1
               className="text-3xl font-bold"
-              style={{ fontFamily: "'Fraunces', 'Iowan Old Style', Georgia, serif" }}
+              style={{ fontFamily: "'Unbounded', sans-serif" }}
             >
               We're reviewing your request.
             </h1>
@@ -165,7 +165,7 @@ function AuthCallback() {
             <div className="label-eyebrow">Email not verified</div>
             <h1
               className="text-3xl font-bold"
-              style={{ fontFamily: "'Fraunces', 'Iowan Old Style', Georgia, serif" }}
+              style={{ fontFamily: "'Unbounded', sans-serif" }}
             >
               Confirm your email first.
             </h1>

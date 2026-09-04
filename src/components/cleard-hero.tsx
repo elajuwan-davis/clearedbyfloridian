@@ -20,7 +20,7 @@ const SLATE = "#2B1620";
 const PLUM = "#2B1620";
 const GREEN = "#2B1620"; /* minor accent only: eyebrows, secondary CTA, metadata */
 
-const SERIF = '"Fraunces", "Iowan Old Style", Georgia, serif';
+const SERIF = '"Unbounded", sans-serif';
 
 const NAV = [
   { to: "/", label: "Home", hash: undefined },

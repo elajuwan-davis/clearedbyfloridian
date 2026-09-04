@@ -7,7 +7,7 @@ const INK = "#2F4F4F";
 const GRAY = "#7A5C68";
 const PLUM = "#673147";
 const BORDER = "#E0D3BC";
-const SERIF = "'Fraunces', 'Iowan Old Style', Georgia, serif";
+const SERIF = "'Unbounded', sans-serif";
 const MONO = "'JetBrains Mono', ui-monospace, monospace";
 
 const PROJECT_TYPES = [
