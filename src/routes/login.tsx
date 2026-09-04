@@ -296,7 +296,7 @@ function LoginPage() {
             <Button
               type="submit"
               disabled={loading}
-              className="p-btn p-btn-primary cl-glass w-full gap-2"
+              className="p-btn p-btn-primary cl-glass w-full h-11 gap-2 rounded-[3px]"
             >
               {loading ? (
                 <>
