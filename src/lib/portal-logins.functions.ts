@@ -101,7 +101,7 @@ export const listPortalLoginFlags = createServerFn({ method: "GET" })
   .inputValidator((data: unknown) => ListSchema.parse(data ?? {}))
   .handler(async ({ data, context }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { isInternalEmail, isStaff, ownerEmails } =
+    const { isStaff, ownerEmails, staffMaySeeVaultRow } =
       await import("@/lib/portal-logins-access.server");
     const staff =
       data.scope === "all" &&
@@ -122,8 +122,8 @@ export const listPortalLoginFlags = createServerFn({ method: "GET" })
       ...new Set(rows.map((r) => r.user_id)),
     ]);
     return rows
-      .filter(
-        (r) => r.user_id === context.userId || isInternalEmail(emailById.get(r.user_id) ?? null),
+      .filter((r) =>
+        staffMaySeeVaultRow(r.user_id, context.userId, emailById.get(r.user_id) ?? null),
       )
       .map((r) => ({ ...r, owner_email: emailById.get(r.user_id) ?? null }));
   });
@@ -162,14 +162,16 @@ export const revealPortalLogin = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     const { decryptSecret } = await import("@/lib/portal-logins-crypto.server");
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { isInternalEmail, isStaff, ownerEmails } =
+    const { isStaff, ownerEmails, staffMaySeeVaultRow } =
       await import("@/lib/portal-logins-access.server");
     if (!(await isStaff(accessClient(supabaseAdmin), context.userId, context.claims))) {
       throw new Error("Forbidden");
     }
     if (data.user_id !== context.userId) {
       const emailById = await ownerEmails(accessClient(supabaseAdmin), [data.user_id]);
-      if (!isInternalEmail(emailById.get(data.user_id) ?? null)) throw new Error("Forbidden");
+      if (!staffMaySeeVaultRow(data.user_id, context.userId, emailById.get(data.user_id))) {
+        throw new Error("Forbidden");
+      }
     }
     const { data: row, error } = await supabaseAdmin
       .from("gc_portal_logins" as any)

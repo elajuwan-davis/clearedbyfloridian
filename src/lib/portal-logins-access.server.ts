@@ -45,6 +45,18 @@ export function isInternalEmail(email: string | null | undefined): boolean {
   return at > 0 && INTERNAL_EMAIL_DOMAINS.includes(normalized.slice(at + 1));
 }
 
+/**
+ * Staff-wide vault listing/reveal: a row is visible if the caller owns it, or the
+ * owner is a Cleard account. Customer GC credentials stay hidden even from admins.
+ */
+export function staffMaySeeVaultRow(
+  rowUserId: string,
+  callerUserId: string,
+  ownerEmail: string | null | undefined,
+): boolean {
+  return rowUserId === callerUserId || isInternalEmail(ownerEmail);
+}
+
 function isAdminEmail(claims: Record<string, unknown> | undefined | null): boolean {
   const email = (claims as { email?: string } | null | undefined)?.email;
   return !!email && ADMIN_EMAILS.has(email.toLowerCase());
