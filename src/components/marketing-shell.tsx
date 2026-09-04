@@ -414,28 +414,8 @@ export function MarketingFooter() {
           </div>
         </div>
 
-        <div
-          className="flex flex-wrap items-center gap-3 py-6"
-          style={{ borderTop: "1px solid rgba(255,255,255,0.12)" }}
-        >
-          {[
-            "Encrypted document storage",
-            "Role-based access control",
-          ].map((b) => (
-            <span
-              key={b}
-              className="inline-flex items-center gap-2 px-3 py-1.5 text-[11px] uppercase"
-              style={{
-                letterSpacing: "0.14em",
-                color: "rgba(255,255,255,0.7)",
-                border: "1px solid rgba(255,255,255,0.18)",
-              }}
-            >
-              <ShieldCheck className="h-3.5 w-3.5" strokeWidth={1.75} />
-              {b}
-            </span>
-          ))}
-        </div>
+
+
 
         <div className="pb-10 text-[12px]" style={{ color: "rgba(255,255,255,0.45)" }}>
           © 2026 Cleard
