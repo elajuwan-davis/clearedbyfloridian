@@ -160,7 +160,7 @@ function LoginPage() {
             </div>
             <span
               className="font-semibold text-[20px]"
-              style={{ fontFamily: "'Instrument Sans', sans-serif", color: "#000000" }}
+              style={{ fontFamily: "'Instrument Sans', sans-serif", color: "var(--copper)" }}
             >
               Cleard
             </span>
@@ -210,7 +210,7 @@ function LoginPage() {
             </div>
             <span
               className="font-semibold text-[17px]"
-              style={{ fontFamily: "'Instrument Sans', sans-serif", color: "var(--foreground)" }}
+              style={{ fontFamily: "'Instrument Sans', sans-serif", color: "var(--copper)" }}
             >
               Cleard
             </span>
@@ -296,7 +296,7 @@ function LoginPage() {
             <Button
               type="submit"
               disabled={loading}
-              className="p-btn p-btn-primary cl-glass w-full gap-2"
+              className="p-btn p-btn-primary cl-glass w-full h-11 gap-2 rounded-[3px]"
             >
               {loading ? (
                 <>

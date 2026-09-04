@@ -354,7 +354,7 @@ function SidebarNav({
         ) : (
           <span
             className="truncate text-[19px] font-bold tracking-[-0.03em]"
-            style={{ color: "var(--rail-fg)" }}
+            style={{ color: "var(--copper)" }}
           >
             Cleard
           </span>
@@ -816,7 +816,7 @@ function PortalShellInner({ children }: { children: ReactNode }) {
             </SheetContent>
           </Sheet>
 
-          <Link to="/" className="text-[15px] font-semibold lg:hidden" style={{ color: "var(--foreground)" }}>
+          <Link to="/" className="text-[15px] font-semibold lg:hidden" style={{ color: "var(--copper)" }}>
             Cleard
           </Link>
 

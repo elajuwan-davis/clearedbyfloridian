@@ -226,14 +226,15 @@ export function VictoriaSection() {
             height={1200}
             loading="lazy"
             className="absolute inset-0 h-full w-full object-cover"
+            style={{ filter: "grayscale(1) contrast(1.08)" }}
             initial={{ opacity: 0, scale: 1.06 }}
-            animate={inView ? { opacity: 0.12, scale: 1 } : {}}
+            animate={inView ? { opacity: 0.62, scale: 1 } : {}}
             transition={{ duration: 1.6, ease: [0.16, 1, 0.3, 1] }}
           />
           <div
             className="absolute inset-0"
             style={{
-              background: `radial-gradient(120% 90% at 55% 45%, rgba(240,240,240,0.8), rgba(240,240,240,0.95) 78%)`,
+              background: `radial-gradient(120% 90% at 55% 45%, rgba(255,255,255,0.28), rgba(255,255,255,0.72) 82%)`,
             }}
           />
           {/* blueprint grid */}

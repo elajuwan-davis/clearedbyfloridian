@@ -910,8 +910,8 @@ tbody tr:last-child td { border-bottom: 0; }
 .driver-popover.cleard-tour-popover .driver-popover-arrow-side-bottom { border-color: var(--white); }
 
 /* Marketing / portal CTAs — glassmorphic, copper border accent only */
-.cl-glass,
-.foil-sheen {
+.cl-glass:not(.cta-copper),
+.foil-sheen:not(.cta-copper) {
   border-radius: var(--radius) !important;
   background: var(--glass-bg) !important;
   background-image: none !important;
@@ -926,8 +926,8 @@ tbody tr:last-child td { border-bottom: 0; }
   padding: 0 16px !important;
   font-size: 13px !important;
 }
-.cl-glass:hover,
-.foil-sheen:hover {
+.cl-glass:not(.cta-copper):hover,
+.foil-sheen:not(.cta-copper):hover {
   background: rgba(255, 255, 255, 0.85) !important;
   border-color: var(--copper) !important;
   color: var(--black) !important;
@@ -988,11 +988,11 @@ tbody tr:last-child td { border-bottom: 0; }
 }
 
 /* Glass CTAs on dark marketing sections — brighter frost so they read as glass, not gray slabs */
-.md-section-dark .cl-glass,
-.md-section-dark .p-btn-primary,
-.md-section-dark a.cl-glass,
+.md-section-dark .cl-glass:not(.cta-copper),
+.md-section-dark .p-btn-primary:not(.cta-copper),
+.md-section-dark a.cl-glass:not(.cta-copper),
 .cl-home section[style*="background: #000"],
-section .cl-glass.foil-sheen {
+section .cl-glass.foil-sheen:not(.cta-copper) {
   background: rgba(255, 255, 255, 0.78) !important;
   border-color: rgba(156, 107, 63, 0.45) !important;
   color: var(--black) !important;
@@ -1044,6 +1044,12 @@ a.cta-copper,
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
   box-shadow: inset 0 1px 0 rgba(255,255,255,0.35), 0 10px 24px -14px rgba(127,86,47,0.8) !important;
+  min-height: 38px;
+  padding: 0 18px !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
 }
 .cta-copper:hover {
   color: #FFFFFF !important;

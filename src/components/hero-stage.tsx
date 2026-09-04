@@ -1257,12 +1257,12 @@ function SceneArrow({
       onClick={onClick}
       className="inline-flex h-11 w-11 shrink-0 items-center justify-center text-[21px] leading-none transition-all duration-200 hover:scale-105 hover:brightness-110"
       style={{
-        background: "#2B1620",
-        border: "1.5px solid var(--copper)",
+        background: "linear-gradient(140deg, #7F562F 0%, #9C6B3F 45%, #D8A870 100%)",
+        border: "1.5px solid #7F562F",
         color: "#FFFFFF",
         borderRadius: 999,
         cursor: "pointer",
-        boxShadow: "0 4px 16px rgba(43,22,32,0.35)",
+        boxShadow: "inset 0 1px 0 rgba(255,255,255,0.35), 0 8px 20px -12px rgba(127,86,47,0.9)",
       }}
     >
       {glyph}

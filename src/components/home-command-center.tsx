@@ -362,6 +362,7 @@ export function WatchItRun() {
               style={{
                 top: 7,
                 width: `${fill}%`,
+                background: `linear-gradient(90deg, #7F562F, ${COPPER}, #D8A870)`,
                 boxShadow: `0 0 12px ${COPPER}66`,
                 transition: "width 220ms linear",
               }}
