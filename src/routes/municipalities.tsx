@@ -38,7 +38,7 @@ const SURFACE = "#FFFFFF";
 const BORDER = "rgba(0,0,0,0.12)";
 const TEAL = "#9C6B3F";
 const TITLE = "#000000";
-const MUTED = "rgba(250, 243, 230, 0.66)";
+const MUTED = "rgba(0,0,0,0.55)";
 
 const PROBLEM = [
   {

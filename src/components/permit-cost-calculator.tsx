@@ -4,9 +4,9 @@ import { Link } from "@tanstack/react-router";
 const OAT = "#FFFFFF";
 const OFF = "#FFFFFF";
 const INK = "#000000";
-const GRAY = "#000000";
-const PLUM = "#000000";
-const BORDER = "#FFFFFF";
+const GRAY = "rgba(0,0,0,0.55)";
+const PLUM = "#9C6B3F";
+const BORDER = "rgba(0,0,0,0.12)";
 const SERIF = "'Instrument Sans', sans-serif";
 const MONO = "'JetBrains Mono', ui-monospace, monospace";
 
@@ -190,7 +190,7 @@ export function PermitCostCalculator({ background = OFF }: { background?: string
           </div>
 
           {/* Outputs */}
-          <div className="p-6 md:p-8" style={{ background: INK }}>
+          <div className="p-6 md:p-8" style={{ background: "#FFFFFF", border: `1px solid ${BORDER}` }}>
             <div
               className="text-[10px] uppercase"
               style={{ fontFamily: MONO, letterSpacing: "0.2em", color: "rgba(0,0,0,0.6)" }}

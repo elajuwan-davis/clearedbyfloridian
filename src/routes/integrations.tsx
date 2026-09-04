@@ -29,8 +29,8 @@ export const Route = createFileRoute("/integrations")({
 
 const INK = "#000000";
 const OAT = "#FFFFFF";
-const GRAY = "#000000";
-const PLUM = "#000000";
+const GRAY = "rgba(0,0,0,0.55)";
+const PLUM = "#9C6B3F";
 const BORDER = "rgba(0,0,0,0.12)";
 const SERIF = "'Instrument Sans', sans-serif";
 const MONO = "'JetBrains Mono', ui-monospace, monospace";
@@ -195,7 +195,7 @@ function PlatformRequestForm() {
   );
 
   return (
-    <section style={{ background: INK }}>
+    <section style={{ background: OAT, borderTop: `1px solid ${BORDER}` }}>
       <div className="mx-auto grid max-w-7xl gap-14 px-5 py-20 md:py-24 lg:grid-cols-2 lg:px-8">
         <div>
           <div
@@ -245,7 +245,7 @@ function PlatformRequestForm() {
               type="submit"
               disabled={state === "sending"}
               className="inline-flex h-14 w-full items-center justify-center gap-2 font-mono text-[11px] uppercase transition-opacity hover:opacity-85 disabled:opacity-50"
-              style={{ background: OAT, color: INK, letterSpacing: "0.24em", borderRadius: 0 }}
+              style={{ backgroundImage: "var(--gradient-copper)", color: "#FFFFFF", letterSpacing: "0.24em", borderRadius: 0 }}
             >
               {state === "sending" ? <Loader2 className="h-4 w-4 animate-spin" /> : "Send it over"}
             </button>

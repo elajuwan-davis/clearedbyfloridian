@@ -3,7 +3,7 @@ import { Landmark } from "lucide-react";
 
 const OAT = "#FFFFFF";
 const INK = "#000000";
-const PLUM = "#000000";
+const PLUM = "#9C6B3F";
 const BRONZE = "#9C6B3F";
 const SERIF = "'Instrument Sans', sans-serif";
 const MONO = "'JetBrains Mono', ui-monospace, monospace";
