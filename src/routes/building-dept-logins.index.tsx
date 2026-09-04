@@ -23,7 +23,7 @@ import {
 import { toast } from "sonner";
 import { friendlyServerError } from "@/lib/server-fn-error";
 import {
-  ChevronDown, Copy, Eye, EyeOff, FileText, KeyRound, Plus, Search, Check, ExternalLink, Loader2, Upload,
+  ChevronDown, Copy, Eye, EyeOff, FileText, KeyRound, Pencil, Plus, Search, Check, ExternalLink, Loader2, Upload,
 } from "lucide-react";
 
 export const Route = createFileRoute("/building-dept-logins/")({
@@ -214,6 +214,16 @@ function BuildingDeptLoginsPage() {
                     <StatusChip tone="danger">{expiredCount} expired</StatusChip>
                   )}
                   <StatusBadge status={l.status} />
+                  <Link
+                    to="/building-dept-logins/submit"
+                    search={{ edit: l.municipality_slug, owner: othersLogin ? l.user_id : undefined }}
+                    onClick={(e) => e.stopPropagation()}
+                    aria-label={`Edit ${l.city_name} login`}
+                    title="Edit login"
+                    className="p-1.5 text-muted-foreground transition-colors hover:text-foreground"
+                  >
+                    <Pencil className="h-3.5 w-3.5" />
+                  </Link>
                 </button>
 
                 {isOpen && (

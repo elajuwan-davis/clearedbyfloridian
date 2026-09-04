@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useMemo, useRef, useState, type DragEvent } from "react";
+import { useEffect, useMemo, useRef, useState, type DragEvent } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { PortalShell } from "@/components/portal-shell";
 import { Button } from "@/components/ui/button";
@@ -9,11 +9,20 @@ import { ArrowLeft, Eye, EyeOff, Search, Check, Loader2, FileText, Upload, X } f
 import { toast } from "sonner";
 import { friendlyServerError } from "@/lib/server-fn-error";
 import { MUNICIPALITIES as SHARED_MUNICIPALITIES } from "@/lib/municipalities";
-import { savePortalLogin } from "@/lib/portal-logins.functions";
+import {
+  savePortalLogin,
+  listPortalLoginFlags,
+  revealOwnPortalLogin,
+  revealPortalLogin,
+} from "@/lib/portal-logins.functions";
 import { bulkUploadPortalLoginDocs, BULK_LOGIN_DOC_MAX_FILES } from "@/lib/bulk-portal-login-docs";
 import { useSession } from "@/lib/use-session";
 
 export const Route = createFileRoute("/building-dept-logins/submit")({
+  validateSearch: (search: Record<string, unknown>) => ({
+    edit: typeof search.edit === "string" ? search.edit : undefined,
+    owner: typeof search.owner === "string" ? search.owner : undefined,
+  }),
   head: () => ({
     meta: [{ title: "Submit Login — Cleard" }, { name: "robots", content: "noindex" }],
   }),
@@ -42,6 +51,12 @@ function SubmitLoginPage() {
   const navigate = useNavigate();
   const session = useSession();
   const saveFn = useServerFn(savePortalLogin);
+  const listFlags = useServerFn(listPortalLoginFlags);
+  const revealOwn = useServerFn(revealOwnPortalLogin);
+  const revealAsStaff = useServerFn(revealPortalLogin);
+  const { edit: editSlug, owner: ownerUserId } = Route.useSearch();
+  const isEditing = !!editSlug;
+  const [loadingExisting, setLoadingExisting] = useState(!!editSlug);
 
   const [muniQuery, setMuniQuery] = useState("");
   const [muni, setMuni] = useState("");
@@ -56,6 +71,43 @@ function SubmitLoginPage() {
   const [submitting, setSubmitting] = useState(false);
   const [docQueue, setDocQueue] = useState<File[]>([]);
   const [docProgress, setDocProgress] = useState<{ done: number; total: number } | null>(null);
+
+  // Editing an existing vault row: pull its metadata and decrypt the credentials
+  // so the same form can save it straight back (savePortalLogin upserts on the slug).
+  useEffect(() => {
+    if (!editSlug) return;
+    let cancelled = false;
+    void (async () => {
+      try {
+        const flags = await listFlags({ data: { scope: "all" } });
+        const row = flags.find(
+          (f) => f.municipality_slug === editSlug && (!ownerUserId || f.user_id === ownerUserId),
+        );
+        const creds = ownerUserId
+          ? await revealAsStaff({ data: { user_id: ownerUserId, municipality_slug: editSlug } })
+          : await revealOwn({ data: { municipality_slug: editSlug } });
+        if (cancelled) return;
+        if (row) {
+          setMuni(row.city_name);
+          setRegistration(row.registration ?? "");
+          setPortalUrl(row.portal_url ?? "");
+          setEPlan(!!row.e_plan);
+          setDerm(!!row.derm);
+        }
+        if (creds) {
+          setUsername(creds.username);
+          setPassword(creds.password);
+        }
+      } catch (e) {
+        if (!cancelled) toast.error(friendlyServerError(e, "Could not load this login"));
+      } finally {
+        if (!cancelled) setLoadingExisting(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [editSlug, ownerUserId, listFlags, revealOwn, revealAsStaff]);
 
   const muniMeta = useMemo(
     () => SHARED_MUNICIPALITIES.find((m) => m.name === muni) ?? null,
@@ -101,7 +153,7 @@ function SubmitLoginPage() {
         },
       });
 
-      toast.success(`Login saved for ${muni}.`);
+      toast.success(isEditing ? `Login updated for ${muni}.` : `Login saved for ${muni}.`);
 
       // Documents are optional and attach after the credentials are safely
       // saved — a failed or skipped upload never blocks the login itself.
@@ -176,7 +228,9 @@ function SubmitLoginPage() {
 
         <div className="mt-4 border-b border-obsidian/10 pb-8">
           <div className="eyebrow text-obsidian/50">Credentials Vault</div>
-          <h1 className="mt-3 text-[22px] font-bold tracking-[-0.02em] text-obsidian">Submit New Login</h1>
+          <h1 className="mt-3 text-[22px] font-bold tracking-[-0.02em] text-obsidian">
+            {isEditing ? "Edit Login" : "Submit New Login"}
+          </h1>
           <p className="mt-2 text-sm text-obsidian/60">
             Paste the portal link, your username and your password — Cleard encrypts the credentials
             at rest. Attaching related documents is optional.
@@ -351,11 +405,17 @@ function SubmitLoginPage() {
             <Button
               type="submit"
               variant="dark"
-              disabled={!canSubmit || submitting}
+              disabled={!canSubmit || submitting || loadingExisting}
               className="rounded-[3px] gap-2"
             >
               {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
-              {submitting ? "Saving…" : "Save Login"}
+              {submitting
+                ? "Saving…"
+                : loadingExisting
+                  ? "Loading…"
+                  : isEditing
+                    ? "Update Login"
+                    : "Save Login"}
             </Button>
           </div>
         </form>
