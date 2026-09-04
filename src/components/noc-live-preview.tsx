@@ -30,7 +30,7 @@ export function NOCLivePreview({ fields }: { fields: NOCFields }) {
     <div className="bg-white border border-obsidian/15 rounded-[3px] overflow-hidden text-obsidian">
       <div className="bg-obsidian text-white px-5 py-4">
         <div className="font-mono text-[9px] uppercase tracking-[0.18em] text-sky/90">
-          Flōridian — Cleard Private Provider
+          Cleared Private Provider
         </div>
         <div className="text-lg font-semibold mt-1">Notice of Commencement</div>
         <div className="text-[10px] text-white/70 mt-1">
