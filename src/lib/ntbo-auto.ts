@@ -4,37 +4,18 @@
 // Failures are swallowed — permit creation must not fail because of NTBO.
 
 import { supabase } from "@/integrations/supabase/client";
-import { generateNTBO, type NTBOFields } from "@/lib/private-provider-forms";
+import { generateNTBO } from "@/lib/private-provider-forms";
+import { buildNTBOFields } from "@/lib/noc-fields";
 import type { PermitRow } from "@/lib/permits-api";
-
-// Hardcoded Cleard private-provider identity.
-const FLORIDIAN = {
-  firmName: "Flōridian LLC",
-  privateProvider: "Cleard",
-  addressLine1: "215 Clematis Street",
-  addressLine2: "West Palm Beach, FL 33401",
-  telephone: "(561) 555-0100",
-  email: "permits@floridianinc.com",
-  licenseNumber: "CGC1234567",
-};
 
 export async function autoGenerateNTBOForPermit(permit: PermitRow): Promise<void> {
   try {
-    const fields: NTBOFields = {
+    // Same field-building logic the intake wizard's live preview uses, so
+    // what a GC previews as "exactly what goes out" is exactly what's filed.
+    const fields = buildNTBOFields({
       projectName: permit.project_name,
       parcelTaxId: permit.pcn ?? "",
-      services: { plansReview: true, inspections: true },
-      signatoryType: "LLC",
-      firmName: FLORIDIAN.firmName,
-      privateProvider: FLORIDIAN.privateProvider,
-      addressLine1: FLORIDIAN.addressLine1,
-      addressLine2: FLORIDIAN.addressLine2,
-      telephone: FLORIDIAN.telephone,
-      email: FLORIDIAN.email,
-      licenseNumber: FLORIDIAN.licenseNumber,
-      printNameCorporation: FLORIDIAN.firmName,
-      representativeName: FLORIDIAN.privateProvider,
-    };
+    });
     const bytes = await generateNTBO(fields);
     const path = `ntbo/${permit.id}/${Date.now()}-ntbo.pdf`;
     const { error: upErr } = await supabase.storage

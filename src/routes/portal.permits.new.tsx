@@ -824,6 +824,7 @@ function NewPermitPage() {
         contractorAddress: form.companyAddress,
         contractorLicense: form.licenseNumber,
         contractorPhone: form.pocPhone || form.signerPhone,
+        ownerPhone: form.signerPhone,
         lenderName: form.lenderName,
         lenderAddress: form.lenderAddress,
         suretyBondAmount: form.suretyBondAmount,
@@ -2221,6 +2222,14 @@ function NewPermitPage() {
                         value={form.designeeName}
                         onChange={(e) => update("designeeName", e.target.value)}
                         placeholder={form.architectFirm || form.engineerFirm || "Defaults to owner"}
+                      />
+                    </div>
+                    <div>
+                      <label className={labelCls}>Designee Address</label>
+                      <input
+                        className={inputCls}
+                        value={form.designeeAddress}
+                        onChange={(e) => update("designeeAddress", e.target.value)}
                       />
                     </div>
                   </div>

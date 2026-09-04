@@ -8,15 +8,12 @@
 // never blocked by NOC generation.
 
 import { supabase } from "@/integrations/supabase/client";
-import { generateNOC, type NOCFields } from "@/lib/private-provider-forms";
+import { generateNOC } from "@/lib/private-provider-forms";
 import { updatePermitDocuments, type PermitDoc, type PermitRow } from "@/lib/permits-api";
+import { buildNOCFields, type NOCFilerType } from "@/lib/noc-fields";
 
 export const NOC_REVIEW_DOC_KEY = "notice_of_commencement_review";
 export const NOC_REVIEW_DOC_LABEL = "Notice of Commencement — Review & Sign";
-
-// Cleard is the private provider / surety on record.
-const FLORIDIAN_PRIVATE_PROVIDER = "Cleard";
-const FLORIDIAN_PROVIDER_ADDRESS = "215 Clematis Street, West Palm Beach, FL 33401";
 
 export async function autoGenerateNOCForPermit(permit: PermitRow): Promise<void> {
   try {
@@ -26,42 +23,41 @@ export async function autoGenerateNOCForPermit(permit: PermitRow): Promise<void>
     const engineer = intake.engineer ?? {};
 
     const ownerName = [permit.owner_name, permit.owner_entity].filter(Boolean).join(" — ");
-    const designProfessional =
+    const ownerAddress = (intake.owner_address as string) ?? permit.job_address ?? "";
+    const designeeName =
       (intake.designee_name as string) ||
       (architect.firm as string | undefined) ||
       (engineer.firm as string | undefined) ||
       "";
-    const isOwnerBuilder = intake.filer_type === "owner_builder";
 
     const scopes: string[] = Array.isArray(intake.scopes) ? intake.scopes : [];
     const improvement =
-      scopes.join(", ") || permit.permit_type || permit.description || "General construction improvements";
+      scopes.join(", ") ||
+      permit.permit_type ||
+      permit.description ||
+      "General construction improvements";
 
-    const fields: NOCFields = {
+    // Same field-building logic the intake wizard's live preview uses, so
+    // what a GC previews as "exactly what goes out" is exactly what's filed.
+    const fields = buildNOCFields({
       propertyAddress: permit.job_address ?? "",
       parcelTaxId: permit.pcn ?? "",
       legalDescription: (intake.legal_description as string) ?? "",
+      filerType: (intake.filer_type as NOCFilerType) === "owner_builder" ? "owner_builder" : "gc",
       ownerName,
-      ownerAddress: (intake.owner_address as string) ?? permit.job_address ?? "",
-      // Florida allows an owner acting as their own contractor to file as
-      // Owner-Builder instead of naming a licensed contractor (§489.103(7)).
-      contractorName: isOwnerBuilder
-        ? `${ownerName || "Owner"} (Owner-Builder)`
-        : (permit.contractor_company ?? ""),
-      contractorAddress: isOwnerBuilder
-        ? ((intake.owner_address as string) ?? permit.job_address ?? "")
-        : (permit.company_address ?? ""),
-      contractorLicense: isOwnerBuilder ? "N/A — Owner-Builder" : (permit.license_number ?? ""),
+      ownerAddress,
+      contractorName: permit.contractor_company ?? "",
+      contractorAddress: permit.company_address ?? "",
+      contractorLicense: permit.license_number ?? "",
       contractorPhone: permit.poc_phone ?? permit.signer_phone ?? "",
+      ownerPhone: permit.signer_phone ?? "",
       lenderName: (lender.name as string) ?? "",
       lenderAddress: (lender.address as string) ?? "",
-      suretyName: FLORIDIAN_PRIVATE_PROVIDER,
-      suretyAddress: FLORIDIAN_PROVIDER_ADDRESS,
       suretyBondAmount: (intake.surety_bond_amount as string) ?? "",
-      designProfessional,
-      designProfessionalAddress: (intake.designee_address as string) ?? "",
+      designeeName,
+      designeeAddress: (intake.designee_address as string) ?? "",
       improvementDescription: improvement,
-    };
+    });
 
     const bytes = await generateNOC(fields);
     const filename = `NOC_${permit.id}.pdf`;

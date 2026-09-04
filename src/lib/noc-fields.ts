@@ -20,6 +20,8 @@ export type NOCFieldsInput = {
   contractorAddress: string;
   contractorLicense: string;
   contractorPhone: string;
+  /** Owner's own phone — used instead of the GC's when filing Owner-Builder. */
+  ownerPhone: string;
   lenderName: string;
   lenderAddress: string;
   suretyBondAmount: string;
@@ -49,7 +51,11 @@ export function buildNOCFields(input: NOCFieldsInput): NOCFields {
       : input.contractorName,
     contractorAddress: isOwnerBuilder ? input.ownerAddress : input.contractorAddress,
     contractorLicense: isOwnerBuilder ? "N/A — Owner-Builder" : input.contractorLicense,
-    contractorPhone: input.contractorPhone,
+    // Owner-Builder means the owner *is* the contractor of record — their own
+    // phone belongs here, not the (Cleard-default) GC point-of-contact number.
+    contractorPhone: isOwnerBuilder
+      ? input.ownerPhone || input.contractorPhone
+      : input.contractorPhone,
     lenderName: input.lenderName,
     lenderAddress: input.lenderAddress,
     suretyName: NOC_SURETY.name,
