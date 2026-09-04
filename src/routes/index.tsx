@@ -104,7 +104,11 @@ function HomePage() {
         <div id="watch-it-run">
           <WatchItRun />
         </div>
-        <ProductWalkthroughs />
+        {/* Product walkthrough recordings hidden until final videos are ready. */}
+        <div hidden style={{ display: "none" }}>
+          <ProductWalkthroughs />
+        </div>
+
         <VictoriaSection />
         <ReplaceThePermitOffice />
         
