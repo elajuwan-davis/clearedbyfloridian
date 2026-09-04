@@ -2,10 +2,10 @@ import { useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { Menu } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
-import logoCopper from "@/assets/cleard-logo-copper.png.asset.json";
+import wordmarkCopper from "@/assets/cleard-wordmark-copper.png.asset.json";
 
 function LogoMark() {
-  return <img src={logoCopper.url} alt="Cleard" className="h-8 w-8 object-contain" />;
+  return <img src={wordmarkCopper.url} alt="CLEARD" className="h-7 w-auto object-contain" />;
 }
 
 const navLinks = [
@@ -21,11 +21,8 @@ export function SiteHeader() {
   return (
     <header className="sticky top-0 z-40 border-b hairline bg-background/85 backdrop-blur supports-[backdrop-filter]:bg-background/70">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-3 px-4 sm:px-6">
-        <Link to="/" className="flex items-center gap-3 group min-w-0">
+        <Link to="/" className="flex items-center group min-w-0">
           <LogoMark />
-          <div className="flex flex-col leading-[1] min-w-0">
-            <span className="wordmark text-2xl tracking-[0.02em]">CLEARD</span>
-          </div>
         </Link>
 
         {/* Desktop nav */}
@@ -55,7 +52,7 @@ export function SiteHeader() {
             <SheetTitle className="sr-only">Site navigation</SheetTitle>
             <div className="flex h-full flex-col">
               <div className="px-6 py-6 border-b hairline">
-                <div className="wordmark text-2xl tracking-[0.02em]">CLEARD</div>
+                <img src={wordmarkCopper.url} alt="CLEARD" className="h-6 w-auto object-contain" />
               </div>
               <nav className="flex-1 px-3 py-4">
                 {navLinks.map((l) => (

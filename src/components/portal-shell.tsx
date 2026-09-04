@@ -1,4 +1,5 @@
 import logoCopper from "@/assets/cleard-logo-copper.png.asset.json";
+import wordmarkCopper from "@/assets/cleard-wordmark-copper.png.asset.json";
 import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
 import { ChevronDown, ChevronRight, ChevronLeft, LogOut, Menu, X, Building2, Check, ShieldCheck, FileText, MessageSquare, Calendar, Bell, Bookmark, BookmarkCheck, Sparkle } from "lucide-react";
@@ -342,17 +343,13 @@ function SidebarNav({
       <Link
         to="/"
         onClick={onNavigate}
-        className={cn("flex h-12 shrink-0 items-center gap-2.5", isRail ? "justify-center px-0" : "px-3.5")}
-        title="Cleard"
+        className={cn("flex h-12 shrink-0 items-center", isRail ? "justify-center px-0" : "px-3.5")}
+        title="CLEARD"
       >
-        <img src={logoCopper.url} alt="Cleard" className="h-7 w-7 shrink-0 object-contain" />
-        {!isRail && (
-          <span
-            className="truncate text-[19px] font-bold tracking-[0.02em]"
-            style={{ color: "var(--copper)" }}
-          >
-            CLEARD
-          </span>
+        {isRail ? (
+          <img src={logoCopper.url} alt="CLEARD" className="h-7 w-7 shrink-0 object-contain" />
+        ) : (
+          <img src={wordmarkCopper.url} alt="CLEARD" className="h-6 w-auto object-contain" />
         )}
       </Link>
 
@@ -811,9 +808,8 @@ function PortalShellInner({ children }: { children: ReactNode }) {
             </SheetContent>
           </Sheet>
 
-          <Link to="/" className="flex items-center gap-2 text-[15px] font-semibold lg:hidden" style={{ color: "var(--copper)" }}>
-            <img src={logoCopper.url} alt="" className="h-6 w-6 object-contain" />
-            CLEARD
+          <Link to="/" className="flex items-center lg:hidden">
+            <img src={wordmarkCopper.url} alt="CLEARD" className="h-5 w-auto object-contain" />
           </Link>
 
           {/* Breadcrumb spine — same place on every page */}
