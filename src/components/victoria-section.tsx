@@ -166,7 +166,7 @@ export function VictoriaSection() {
             >
               Meet Victoria.
               <br />
-              <span style={{ color: INK }}>
+              <span className="copper-emph">
                 Your project
                 <br />
                 intelligence.

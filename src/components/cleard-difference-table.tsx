@@ -65,7 +65,7 @@ export function ClearedDifferenceTable({ background = OAT }: { background?: stri
             color: INK,
           }}
         >
-          The Cleard <span style={{ color: PLUM }}>difference.</span>
+          The Cleard <span className="copper-emph">difference.</span>
         </h2>
 
         <div className="mt-12 overflow-x-auto">

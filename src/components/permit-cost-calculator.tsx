@@ -124,7 +124,7 @@ export function PermitCostCalculator({ background = OFF }: { background?: string
           }}
         >
           What is your current permit process{" "}
-          <span style={{ color: PLUM }}>actually costing you?</span>
+          <span className="copper-emph">actually costing you?</span>
         </h2>
 
         <div className="mt-12 grid gap-6 lg:grid-cols-[1.15fr_1fr] items-start">

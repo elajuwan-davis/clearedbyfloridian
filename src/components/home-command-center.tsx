@@ -349,7 +349,7 @@ export function WatchItRun() {
           >
             From signed contract to
             <br />
-            <span style={{ color: GREEN_LT }}>certificate of occupancy.</span>
+            <span className="copper-emph">certificate of occupancy.</span>
           </h2>
 
           {/* horizontal scroll rail */}
@@ -488,7 +488,7 @@ export function VictoriaSpotlight() {
           >
             Meet Victoria.
             <br />
-            <span style={{ color: INK }}>Your project intelligence.</span>
+            <span className="copper-emph">Your project intelligence.</span>
           </h2>
           <p className="mt-7 max-w-xl text-[16.5px] leading-[1.75]" style={{ color: GRAY }}>
             Victoria reads every drawing, jurisdiction rule, certificate and deadline behind your
@@ -703,7 +703,7 @@ export function ReplaceThePermitOffice() {
               }}
             >
               Replace the permit office.{" "}
-              <span style={{ color: INK }}>With Cleard.</span>
+              <span className="copper-emph">With Cleard.</span>
             </h2>
             <div
               className="mt-3 flex flex-wrap items-center gap-x-6 gap-y-2 text-[11px] uppercase"
