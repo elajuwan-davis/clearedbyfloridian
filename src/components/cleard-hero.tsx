@@ -20,7 +20,7 @@ const SLATE = "#2B1620";
 const PLUM = "#2B1620";
 const GREEN = "#2B1620"; /* minor accent only: eyebrows, secondary CTA, metadata */
 
-const SERIF = '"Fraunces", "Iowan Old Style", Georgia, serif';
+const SERIF = '"Unbounded", sans-serif';
 
 const NAV = [
   { to: "/", label: "Home", hash: undefined },
@@ -467,7 +467,13 @@ export function ClearedHero() {
         disablePictureInPicture
         poster={heroBackdrop}
         className="pointer-events-none absolute inset-x-0 bottom-0 top-0 h-full w-full"
-        style={{ objectFit: "cover", objectPosition: "center", opacity: 1, transform: "translateZ(0)" }}
+        style={{
+          objectFit: "cover",
+          objectPosition: "center",
+          opacity: 1,
+          transform: "translateZ(0)",
+          filter: "grayscale(1) contrast(1.06) brightness(1.02)",
+        }}
       >
         <source src={HERO_VIDEO_WEBM_URL} type="video/webm" />
         <source src={HERO_VIDEO_MP4_URL} type="video/mp4" />

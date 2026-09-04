@@ -5,7 +5,7 @@ const OAT = "#FFFFFF";
 const INK = "#2B1620";
 const PLUM = "#2B1620";
 const BRONZE = "#9C6B3F";
-const SERIF = "'Fraunces', 'Iowan Old Style', Georgia, serif";
+const SERIF = "'Unbounded', sans-serif";
 const MONO = "'JetBrains Mono', ui-monospace, monospace";
 
 /** Florida HB 803 permit-fee reduction callout. Factual, no guarantee language. */

@@ -16,7 +16,7 @@ const PLUM = "#673147";
 const PLUM_DARK = "#4E2438";
 const LAVENDER = "#E6E6FA";
 const LINE = "#E4DACB";
-const SERIF = '"Fraunces", "Iowan Old Style", Georgia, serif';
+const SERIF = '"Unbounded", sans-serif';
 
 export const Route = createFileRoute("/coverage/$county/$permitType")({
   loader: ({ params }) => {

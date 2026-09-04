@@ -42,7 +42,7 @@ const TEAL = "#E6E6FA";
 const OFF = "#F3EAD9";
 const MUTED = "rgba(250, 243, 230, 0.62)";
 const MUTED_LT = "#6B6A5E";
-const SANS = "'Fraunces', 'Iowan Old Style', Georgia, serif";
+const SANS = "'Unbounded', sans-serif";
 const MONO = "ui-monospace, Menlo, Monaco, monospace";
 
 const TOTAL = 11;

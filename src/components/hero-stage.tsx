@@ -9,7 +9,7 @@ const BORDER = "rgba(43,22,32,0.09)";
 const INK = "#2B1620";
 const BRONZE = "#9C6B3F";
 const MONO = '"JetBrains Mono", ui-monospace, monospace';
-const SERIF = '"Fraunces", "Iowan Old Style", Georgia, serif';
+const SERIF = '"Unbounded", sans-serif';
 
 const FRAME_H = 640;
 

@@ -148,7 +148,7 @@ function SignupPage() {
               className="h-9 w-9 rounded-xl flex items-center justify-center text-white font-bold text-base"
               style={{
                 background: "linear-gradient(135deg, #673147 0%, #4E6B5C 100%)",
-                fontFamily: "'Fraunces', 'Iowan Old Style', Georgia, serif",
+                fontFamily: "'Unbounded', sans-serif",
               }}
             >
               C
@@ -156,7 +156,7 @@ function SignupPage() {
             <span
               className="font-semibold text-[20px]"
               style={{
-                fontFamily: "'Fraunces', 'Iowan Old Style', Georgia, serif",
+                fontFamily: "'Unbounded', sans-serif",
                 color: "var(--paper)",
               }}
             >
@@ -172,7 +172,7 @@ function SignupPage() {
           <p
             className="text-3xl leading-[1.15] text-paper font-bold"
             style={{
-              fontFamily: "'Fraunces', 'Iowan Old Style', Georgia, serif",
+              fontFamily: "'Unbounded', sans-serif",
               letterSpacing: "-0.02em",
             }}
           >
@@ -203,7 +203,7 @@ function SignupPage() {
             <div className="space-y-5">
               <h1
                 className="text-3xl font-bold"
-                style={{ fontFamily: "'Fraunces', 'Iowan Old Style', Georgia, serif" }}
+                style={{ fontFamily: "'Unbounded', sans-serif" }}
               >
                 Check your email
               </h1>
@@ -236,7 +236,7 @@ function SignupPage() {
             <>
               <h1
                 className="text-3xl font-bold mb-2"
-                style={{ fontFamily: "'Fraunces', 'Iowan Old Style', Georgia, serif" }}
+                style={{ fontFamily: "'Unbounded', sans-serif" }}
               >
                 Create an account
               </h1>

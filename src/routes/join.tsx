@@ -118,7 +118,7 @@ function JoinPage() {
 
   return (
     <MarketingShell>
-    <div style={{ color: OBSIDIAN, fontFamily: "'Fraunces', 'Iowan Old Style', Georgia, serif" }}>
+    <div style={{ color: OBSIDIAN, fontFamily: "'Unbounded', sans-serif" }}>
 
 
       {/* HERO */}

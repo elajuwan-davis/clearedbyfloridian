@@ -101,7 +101,7 @@ function ResetPasswordPage() {
           <h1
             className="text-4xl leading-[1.05] font-bold"
             style={{
-              fontFamily: "'Fraunces', 'Iowan Old Style', Georgia, serif",
+              fontFamily: "'Unbounded', sans-serif",
               letterSpacing: "-0.02em",
               color: "var(--foreground)",
             }}

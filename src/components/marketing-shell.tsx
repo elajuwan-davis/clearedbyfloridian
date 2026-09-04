@@ -30,7 +30,7 @@ const INK = "#2B1620";
 const TEAL = "#2B1620";
 const OAT = "#FFFFFF";
 const BORDER = "rgba(0,0,0,0.1)";
-const SERIF = '"Fraunces", "Iowan Old Style", Georgia, serif';
+const SERIF = '"Unbounded", sans-serif';
 
 
 /** The single marketing nav — identical on every public page. */
