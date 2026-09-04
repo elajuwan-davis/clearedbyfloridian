@@ -16,7 +16,6 @@ import {
 import { PageShell, TableShell, StatusChip, EmptyState, type MetricTone } from "@/components/ui-kit";
 import {
   LIEN_DOC_TYPES,
-  LIEN_PROJECTS,
   addLienDoc,
   getLienSettings,
   listLienDocs,
@@ -188,7 +187,8 @@ function GenerateDialog({
 }) {
   const claimantDefault = getLienSettings().claimant.companyName;
   const [type, setType] = useState<LienDocType>(LIEN_DOC_TYPES[0]!);
-  const [projectId, setProjectId] = useState(LIEN_PROJECTS[0]!.id);
+  const [projectName, setProjectName] = useState("");
+  const [projectAddress, setProjectAddress] = useState("");
   const [claimant, setClaimant] = useState(claimantDefault);
   const [ownerOrGc, setOwnerOrGc] = useState("");
   const [amount, setAmount] = useState("");
@@ -196,15 +196,12 @@ function GenerateDialog({
   const [error, setError] = useState<string | null>(null);
   const [created, setCreated] = useState<LienDoc | null>(null);
 
-  const project = useMemo(
-    () => LIEN_PROJECTS.find((p) => p.id === projectId) ?? LIEN_PROJECTS[0]!,
-    [projectId],
-  );
   const isWaiver = type.startsWith("Lien Waiver");
 
   function reset() {
     setType(LIEN_DOC_TYPES[0]!);
-    setProjectId(LIEN_PROJECTS[0]!.id);
+    setProjectName("");
+    setProjectAddress("");
     setClaimant(claimantDefault);
     setOwnerOrGc("");
     setAmount("");
@@ -214,6 +211,10 @@ function GenerateDialog({
   }
 
   function submit() {
+    if (!projectName.trim() || !projectAddress.trim()) {
+      setError("Project name and property address are required.");
+      return;
+    }
     if (!claimant.trim() || !ownerOrGc.trim() || !amount.trim()) {
       setError("Claimant, owner/GC, and contract amount are required.");
       return;
@@ -226,8 +227,8 @@ function GenerateDialog({
     setCreated(
       addLienDoc({
         type,
-        project: project.name,
-        address: project.address,
+        project: projectName.trim(),
+        address: projectAddress.trim(),
         claimant: claimant.trim(),
         ownerOrGc: ownerOrGc.trim(),
         contractAmount: amount.trim(),
@@ -293,19 +294,13 @@ function GenerateDialog({
                 </Select>
               </Field>
 
-              <Field label="Project">
-                <Select value={projectId} onValueChange={setProjectId}>
-                  <SelectTrigger className="rounded-none">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {LIEN_PROJECTS.map((p) => (
-                      <SelectItem key={p.id} value={p.id}>
-                        {p.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+              <Field label="Project name">
+                <Input
+                  className="rounded-none"
+                  value={projectName}
+                  onChange={(e) => setProjectName(e.target.value)}
+                  placeholder="Project or job name"
+                />
               </Field>
 
               <Field label="Claimant name">
@@ -321,12 +316,17 @@ function GenerateDialog({
                   className="rounded-none"
                   value={ownerOrGc}
                   onChange={(e) => setOwnerOrGc(e.target.value)}
-                  placeholder="Coastline Builders Group"
+                  placeholder="Owner or general contractor"
                 />
               </Field>
 
               <Field label="Property address">
-                <Input className="rounded-none" value={project.address} readOnly />
+                <Input
+                  className="rounded-none"
+                  value={projectAddress}
+                  onChange={(e) => setProjectAddress(e.target.value)}
+                  placeholder="Street, city, FL ZIP"
+                />
               </Field>
 
               <Field label="Contract amount">
