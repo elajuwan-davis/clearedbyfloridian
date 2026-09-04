@@ -3,7 +3,7 @@ import { Link } from "@tanstack/react-router";
 import cLogo from "@/assets/cleard-c-copper.png.asset.json";
 
 /* Nordic Luxury tokens (marketing only) */
-const OAT = "#FDFCF9";
+const OAT = "#FFFFFF";
 const PAPER = "#FFFFFF";
 const BORDER = "rgba(43,22,32,0.09)";
 const INK = "#2B1620";
@@ -95,7 +95,7 @@ function Chip({ label }: { label: string }) {
   return (
     <span
       className="shrink-0 px-1.5 py-[2px] text-[7.5px] uppercase"
-      style={{ fontFamily: MONO, letterSpacing: "0.14em", color: OAT, background: BRONZE }}
+      style={{ fontFamily: MONO, letterSpacing: "0.14em", color: "#FFFFFF", background: BRONZE }}
     >
       {label}
     </span>
@@ -343,7 +343,7 @@ function BentoCard({
       className="group relative flex min-h-0 min-w-0 flex-col overflow-hidden"
       style={{
         gridArea: area,
-        background: active ? PAPER : OAT,
+        background: active ? PAPER : "#FFFFFF",
         border: `1px solid ${active ? BRONZE : BORDER}`,
         borderRadius: 10,
         boxShadow: active
@@ -387,13 +387,13 @@ function BentoCard({
 }
 
 const REPORT_BARS = [
-  { key: "Palm Bch", value: 22, color: "#4A3038" },
+  { key: "Palm Bch", value: 22, color: "#2B1620" },
   { key: "Martin", value: 14, color: BRONZE },
-  { key: "St Lucie", value: 18, color: "#6B5040" },
-  { key: "Broward", value: 9, color: "#8B6B50" },
-  { key: "Ind River", value: 12, color: "#B4854F" },
-  { key: "Sarasota", value: 16, color: "#6B5040" },
-  { key: "Collier", value: 7, color: "#4A3038" },
+  { key: "St Lucie", value: 18, color: "rgba(43,22,32,0.65)" },
+  { key: "Broward", value: 9, color: "rgba(43,22,32,0.48)" },
+  { key: "Ind River", value: 12, color: "rgba(43,22,32,0.35)" },
+  { key: "Sarasota", value: 16, color: "rgba(43,22,32,0.65)" },
+  { key: "Collier", value: 7, color: "#2B1620" },
 ];
 
 function TrendArrow({ dir }: { dir: "up" | "down" }) {
@@ -523,7 +523,7 @@ function ReportCard() {
             <div className="flex min-w-0 items-center gap-1.5">
               <span
                 className="h-1.5 w-1.5 shrink-0"
-                style={{ background: i === 2 ? "#6B5040" : i === 1 ? BRONZE : "#4A3038", transform: "rotate(45deg)" }}
+                style={{ background: i === 2 ? "rgba(43,22,32,0.5)" : i === 1 ? BRONZE : "rgba(43,22,32,0.75)", transform: "rotate(45deg)" }}
               />
               <span className="min-w-0 truncate text-[9.5px]" style={{ color: INK, opacity: 0.75 }}>
                 {label}
@@ -674,7 +674,7 @@ function SceneOrbit() {
         className="pointer-events-none absolute inset-x-0 bottom-0 z-30 hidden items-center justify-center md:flex"
         style={{
           height: 38,
-          background: "rgba(250,243,230,0.94)",
+          background: "rgba(255,255,255,0.94)",
           backdropFilter: "blur(3px)",
           borderTop: `1px solid ${BORDER}`,
         }}
@@ -1252,12 +1252,12 @@ function SceneArrow({
       onClick={onClick}
       className="inline-flex h-11 w-11 shrink-0 items-center justify-center text-[21px] leading-none transition-all duration-200 hover:scale-105 hover:brightness-110"
       style={{
-        background: "rgba(103,49,71,0.82)",
-        border: "1.5px solid rgba(156,107,63,0.75)",
-        color: "#FAF3E6",
+        background: "#2B1620",
+        border: "1.5px solid var(--copper)",
+        color: "#FFFFFF",
         borderRadius: 999,
         cursor: "pointer",
-        boxShadow: "0 4px 16px rgba(103,49,71,0.35)",
+        boxShadow: "0 4px 16px rgba(43,22,32,0.35)",
       }}
     >
       {glyph}
@@ -1308,7 +1308,7 @@ export function HeroStage() {
           className="relative min-w-0 flex-1 overflow-hidden"
           style={{
             height: FRAME_H,
-            background: `radial-gradient(120% 90% at 50% 40%, ${PAPER} 0%, ${OAT} 62%, #F3E9D6 100%)`,
+            background: "#FFFFFF",
             border: `1px solid ${BORDER}`,
             borderRadius: 14,
             boxShadow: "0 40px 80px -60px rgba(43,22,32,0.45)",
@@ -1362,7 +1362,7 @@ export function HeroStage() {
             style={{
               width: i === scene ? 20 : 8,
               borderRadius: 999,
-              background: i === scene ? BRONZE : "rgba(103,49,71,0.35)",
+              background: i === scene ? BRONZE : "rgba(43,22,32,0.18)",
               border: "none",
               padding: 0,
               cursor: "pointer",

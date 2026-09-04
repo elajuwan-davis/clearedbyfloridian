@@ -15,7 +15,7 @@ const HERO_VIDEO_WEBM_URL = `${HERO_ASSET_ORIGIN}${heroVideoWebm.url}`;
 
 /* ---------------------- NORDIC LUXURY BRAND TOKENS ---------------------- */
 
-const OAT = "#FDFCF9";
+const OAT = "#FFFFFF";
 const SLATE = "#2B1620";
 const PLUM = "#2B1620";
 const GREEN = "#2B1620"; /* minor accent only: eyebrows, secondary CTA, metadata */
@@ -168,7 +168,7 @@ function HeroSolutions() {
         <div className="absolute left-0 top-full pt-3" style={{ zIndex: 10 }}>
           <div
             className="grid grid-cols-1"
-            style={{ background: OAT, border: "1px solid #E0D3BC", minWidth: 280 }}
+            style={{ background: "#FFFFFF", border: "1px solid rgba(0,0,0,0.1)", minWidth: 280 }}
           >
             {SOLUTIONS.map((s) => (
               <Link
@@ -220,7 +220,7 @@ function HeroTrades() {
         <div className="absolute left-0 top-full pt-3" style={{ zIndex: 10 }}>
           <div
             className="grid grid-cols-2"
-            style={{ background: OAT, border: "1px solid #E0D3BC", minWidth: 460 }}
+            style={{ background: "#FFFFFF", border: "1px solid rgba(0,0,0,0.1)", minWidth: 460 }}
           >
             {TRADES.map((t) => (
               <Link
@@ -255,9 +255,9 @@ function HeroNav({ logoSlot, logoVisible }: { logoSlot: React.Ref<HTMLDivElement
     <header
       className="fixed inset-x-0 top-0 z-[100] transition-all duration-300"
       style={{
-        background: "#FDFCF9",
+        background: "#FFFFFF",
         boxShadow: scrolled || open ? "0 1px 0 rgba(43,22,32,0.06)" : "none",
-        borderBottom: `1px solid ${scrolled || open ? "#E0D3BC" : "transparent"}`,
+        borderBottom: `1px solid ${scrolled || open ? "rgba(0,0,0,0.1)" : "transparent"}`,
       }}
     >
       <div className="mx-auto grid h-[68px] max-w-7xl grid-cols-[1fr_auto_1fr] items-center gap-4 px-5 lg:px-10">
@@ -345,7 +345,7 @@ function HeroNav({ logoSlot, logoVisible }: { logoSlot: React.Ref<HTMLDivElement
       </div>
 
       {open && (
-        <div className="md:hidden" style={{ background: OAT, borderTop: `1px solid #E0D3BC` }}>
+        <div className="md:hidden" style={{ background: "#FFFFFF", borderTop: `1px solid rgba(0,0,0,0.1)` }}>
           <div className="space-y-4 px-5 py-6">
             {[...NAV, { to: "/login", label: "Sign in" } as const].map((l) => (
               <Link
@@ -359,7 +359,7 @@ function HeroNav({ logoSlot, logoVisible }: { logoSlot: React.Ref<HTMLDivElement
               </Link>
             ))}
 
-            <div className="pt-2" style={{ borderTop: "1px solid #E0D3BC" }}>
+            <div className="pt-2" style={{ borderTop: "1px solid rgba(0,0,0,0.1)" }}>
               <div
                 className="pt-3 text-[10.5px] uppercase tracking-[0.22em]"
                 style={{ color: PLUM, fontWeight: 700 }}
@@ -445,7 +445,7 @@ export function ClearedHero() {
   return (
     <>
       <HeroNav logoSlot={navSlot} logoVisible={!running} />
-    <section data-beat={beat} className="relative isolate overflow-hidden" style={{ background: OAT, color: SLATE }}>
+    <section data-beat={beat} className="relative isolate overflow-hidden" style={{ background: "#FFFFFF", color: SLATE }}>
       <style>{`
         @keyframes clShardIn { to { transform: none; opacity: 1; } }
         @keyframes clGloss { 0% { transform: translateX(-140%) skewX(-16deg); opacity: 0; }
@@ -476,7 +476,7 @@ export function ClearedHero() {
         aria-hidden
         className="pointer-events-none absolute inset-0"
         style={{
-          background: `linear-gradient(to bottom, rgba(253,252,249,0.42) 0%, rgba(253,252,249,0.18) 40%, rgba(253,252,249,0.06) 72%, rgba(253,252,249,0.12) 100%)`,
+          background: `linear-gradient(to bottom, rgba(255,255,255,0.42) 0%, rgba(255,255,255,0.18) 40%, rgba(255,255,255,0.06) 72%, rgba(255,255,255,0.12) 100%)`,
         }}
       />
 
