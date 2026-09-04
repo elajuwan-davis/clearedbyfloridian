@@ -391,41 +391,8 @@ function HeroNav({ logoSlot, logoVisible }: { logoSlot: React.Ref<HTMLDivElement
 
 export function ClearedHero() {
   const navSlot = useRef<HTMLDivElement | null>(null);
-  const bgVideo = useRef<HTMLVideoElement | null>(null);
   const { beat, dockTf, stageMark, skip } = useHeroSequence(navSlot);
 
-  /* keep the backdrop video playing forever, whatever the browser does */
-  useEffect(() => {
-    const v = bgVideo.current;
-    if (!v) return;
-    const kick = () => {
-      v.muted = true;
-      v.loop = true;
-      const p = v.play();
-      if (p && typeof p.catch === "function") p.catch(() => {});
-    };
-    const keepLooping = () => {
-      if (Number.isFinite(v.duration) && v.duration - v.currentTime < 0.12) {
-        v.currentTime = 0;
-        kick();
-      }
-    };
-    kick();
-    v.addEventListener("pause", kick);
-    v.addEventListener("ended", kick);
-    v.addEventListener("timeupdate", keepLooping);
-    document.addEventListener("visibilitychange", kick);
-    const id = window.setInterval(() => {
-      if (v.paused || v.ended) kick();
-    }, 1500);
-    return () => {
-      v.removeEventListener("pause", kick);
-      v.removeEventListener("ended", kick);
-      v.removeEventListener("timeupdate", keepLooping);
-      document.removeEventListener("visibilitychange", kick);
-      window.clearInterval(id);
-    };
-  }, []);
 
   /* The hero moment now lives in HeroStage (mark + capability boxes + app). */
   const running = false;
