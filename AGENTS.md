@@ -66,6 +66,15 @@ environment problem; do not mass-reformat unrelated files to "fix" lint.
 - `supabase/functions/*` are Deno edge functions; they are not part of the local `bun run dev`
   app runtime.
 
+### Feature tracker (do this, don't wait to be asked)
+- Roadmap build state lives in the **Features** tab of the *Cleard Feature Build* sheet, not in
+  chat history. When you start or finish real work on a roadmap feature, update its row in the
+  same session: `bun run feature-tracker -- --feature="…" --status="In Progress" --owner=<agent id>`
+  (see `docs/feature-tracker.md` for the columns, the status rules and the evidence bar).
+- `Complete` requires a merged PR/commit/file named in Notes. Groundwork is `Not Started` with the
+  detail in Notes — never mark an idea as progress. `Killed` rows stay. Never write to the
+  *Master Contractor Outbound* sheet from this work; that one is permit data only.
+
 ### Plan gating (trial vs full)
 - `tenants.plan` decides which features a tenant can use: `full` (invited/managed accounts and
   staff — no locks) or `trial` (self-serve `/join` signup — its own permits end to end, nothing
