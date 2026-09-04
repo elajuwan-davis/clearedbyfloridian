@@ -2,16 +2,13 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react
 import { Link } from "@tanstack/react-router";
 import mark3d from "@/assets/cleard-3d-mark.png.asset.json";
 import mark2d from "@/assets/cleard-mark-2d.png.asset.json";
-import heroBackdrop from "@/assets/hero-construction.jpg";
-import heroVideoMp4 from "@/assets/hero-loop.mp4.asset.json";
-import heroVideoWebm from "@/assets/hero-loop.webm.asset.json";
 import { HomeMotionStyles } from "@/components/home-command-center";
 import { HeroStage } from "@/components/hero-stage";
 import { TRADES } from "@/lib/trades";
 
-const HERO_ASSET_ORIGIN = "https://project--0b3e81be-56ac-4636-ba0c-f0ab606037c7.lovable.app";
-const HERO_VIDEO_MP4_URL = `${HERO_ASSET_ORIGIN}${heroVideoMp4.url}`;
-const HERO_VIDEO_WEBM_URL = `${HERO_ASSET_ORIGIN}${heroVideoWebm.url}`;
+const HERO_PHOTO_URL =
+  "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=1920&q=85";
+
 
 /* ---------------------- NORDIC LUXURY BRAND TOKENS ---------------------- */
 
