@@ -9,26 +9,26 @@ import { Check, Minus, Sparkles } from "lucide-react";
 /* ------------------------------- tokens ---------------------------------- */
 
 export const M = {
-  bg0: "#241017",
-  bg1: "#2F4F4F",
-  bg2: "#2F4F4F",
+  bg0: "#2B1620",
+  bg1: "#2B1620",
+  bg2: "rgba(255,255,255,0.05)",
   line: "rgba(250,243,230,0.12)",
   line2: "rgba(250,243,230,0.07)",
-  text: "#F3EAD9",
+  text: "#FFFFFF",
   muted: "rgba(250,243,230,0.56)",
   faint: "rgba(250,243,230,0.34)",
-  teal: "#D9AFC1",
+  teal: "#9C6B3F",
   amber: "#E0A83A",
   red: "#E06060",
   blue: "#5FA8E0",
 } as const;
 
 const CHIP: Record<string, { bg: string; fg: string }> = {
-  APPROVED: { bg: "rgba(217,175,193,0.16)", fg: M.teal },
-  PASSED: { bg: "rgba(217,175,193,0.16)", fg: M.teal },
-  CLEAR: { bg: "rgba(217,175,193,0.16)", fg: M.teal },
-  VERIFIED: { bg: "rgba(217,175,193,0.16)", fg: M.teal },
-  RECORDED: { bg: "rgba(217,175,193,0.16)", fg: M.teal },
+  APPROVED: { bg: "rgba(156,107,63,0.15)", fg: M.teal },
+  PASSED: { bg: "rgba(156,107,63,0.15)", fg: M.teal },
+  CLEAR: { bg: "rgba(156,107,63,0.15)", fg: M.teal },
+  VERIFIED: { bg: "rgba(156,107,63,0.15)", fg: M.teal },
+  RECORDED: { bg: "rgba(156,107,63,0.15)", fg: M.teal },
   "IN REVIEW": { bg: "rgba(95,168,224,0.16)", fg: M.blue },
   SCHEDULED: { bg: "rgba(95,168,224,0.16)", fg: M.blue },
   SIGNED: { bg: "rgba(95,168,224,0.16)", fg: M.blue },
@@ -687,7 +687,7 @@ export function VictoriaChatMock() {
         <div className="flex">
           <div
             className="max-w-[92%] px-3.5 py-2.5 text-[12px] leading-relaxed"
-            style={{ background: "rgba(103,49,71,0.1)", borderLeft: `2px solid ${M.teal}`, color: M.text }}
+            style={{ background: "rgba(156,107,63,0.08)", borderLeft: `2px solid ${M.teal}`, color: M.text }}
           >
             Martin County requires a 7.5-ft rear setback for pool equipment and 6 ft from the water&apos;s
             edge to the rear property line. Screen enclosures reduce to 5 ft with an engineered tie-down
