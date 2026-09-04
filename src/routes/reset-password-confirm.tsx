@@ -165,7 +165,7 @@ function ResetPasswordConfirmPage() {
             <Link to="/reset-password">
               <Button
                 className="w-full h-11 rounded-[3px] font-subline tracking-wide gap-2"
-                style={{ backgroundColor: "#4E6B5C", color: "#FAF3E6" }}
+                style={{ backgroundColor: "#4E6B5C", color: "#FFFFFF" }}
               >
                 Request a new link <ArrowRight className="h-4 w-4" strokeWidth={1.5} />
               </Button>
@@ -216,7 +216,7 @@ function ResetPasswordConfirmPage() {
               type="submit"
               disabled={loading}
               className="w-full h-11 rounded-[3px] font-subline tracking-wide gap-2"
-              style={{ backgroundColor: "#4E6B5C", color: "#FAF3E6" }}
+              style={{ backgroundColor: "#4E6B5C", color: "#FFFFFF" }}
             >
               {loading ? (
                 <>

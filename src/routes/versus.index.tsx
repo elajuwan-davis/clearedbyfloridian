@@ -73,7 +73,7 @@ function VersusHub() {
             >
               <div
                 className="h-11 w-11 rounded-md border md-hairline flex items-center justify-center text-lg font-semibold"
-                style={{ color: "var(--md-muted, #7A5C68)" }}
+                style={{ color: "var(--md-muted, #000000)" }}
               >
                 {c.initial}
               </div>
@@ -81,7 +81,7 @@ function VersusHub() {
                 {c.name}
               </div>
               <p className="text-sm md-muted leading-relaxed flex-1">{c.cardBlurb}</p>
-              <span className="text-[13px] inline-flex items-center gap-1.5" style={{ color: "var(--brand, #673147)" }}>
+              <span className="text-[13px] inline-flex items-center gap-1.5" style={{ color: "var(--brand, #9C6B3F)" }}>
                 Cleard vs {c.name} <ArrowRight className="h-3.5 w-3.5" />
               </span>
             </Link>
@@ -92,7 +92,7 @@ function VersusHub() {
       {/* Why Cleard wins */}
       <section className="md-section-dark">
         <div className="mx-auto max-w-7xl px-6 lg:px-10 py-20 md:py-24">
-          <h2 className="md-serif text-3xl md:text-4xl" style={{ color: "#FAF3E6" }}>
+          <h2 className="md-serif text-3xl md:text-4xl" style={{ color: "#FFFFFF" }}>
             Why Cleard wins
           </h2>
           <div className="mt-10 grid gap-10 md:grid-cols-3">
@@ -111,7 +111,7 @@ function VersusHub() {
               },
             ].map((s) => (
               <div key={s.k}>
-                <div className="md-serif text-2xl" style={{ color: "#FAF3E6" }}>
+                <div className="md-serif text-2xl" style={{ color: "#FFFFFF" }}>
                   {s.k}
                 </div>
                 <p className="mt-3 text-sm md-muted leading-relaxed">{s.v}</p>

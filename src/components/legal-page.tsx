@@ -1,10 +1,10 @@
 import type { ReactNode } from "react";
 
-const OAT = "#FAF3E6";
-const SLATE = "#2F4F4F";
-const PLUM = "#673147";
-const BODY = "#7A5C68";
-const BORDER = "#E0D3BC";
+const OAT = "#FFFFFF";
+const SLATE = "#000000";
+const PLUM = "#000000";
+const BODY = "#000000";
+const BORDER = "#FFFFFF";
 const SERIF = '"Instrument Sans", sans-serif';
 
 /** Shared shell for the Privacy / Terms documents — Nordic Luxury theme. */

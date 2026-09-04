@@ -41,7 +41,7 @@ function TradeRoute() {
 function TradeNotFound() {
   return (
     <MarketingShell>
-      <div style={{ background: "#FAF3E6", color: "#2F4F4F" }}>
+      <div style={{ background: "#FFFFFF", color: "#FFFFFF" }}>
         <div className="mx-auto max-w-3xl px-5 py-32 lg:px-8">
           <h1 style={{ fontWeight: 800, fontSize: "2.25rem", letterSpacing: "-0.03em" }}>
             We don't have a page for that trade yet.
@@ -53,7 +53,7 @@ function TradeNotFound() {
                   to="/trades/$slug"
                   params={{ slug: t.slug }}
                   className="text-[15px] underline"
-                  style={{ color: "#673147" }}
+                  style={{ color: "#9C6B3F" }}
                 >
                   {t.navLabel}
                 </Link>

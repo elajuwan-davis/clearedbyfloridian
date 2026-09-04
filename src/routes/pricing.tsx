@@ -27,13 +27,13 @@ export const Route = createFileRoute("/pricing")({
   component: PricingPage,
 });
 
-const INK = "#2F4F4F";
-const GRAY = "#7A5C68";
-const LIGHT = "#8B9A97";
-const GREEN = "#2F4F4F"; /* minor accent only */
-const TEAL = "#673147";
-const BORDER = "#E0D3BC";
-const OFF = "#F3EAD9";
+const INK = "#000000";
+const GRAY = "#000000";
+const LIGHT = "#000000";
+const GREEN = "#000000"; /* minor accent only */
+const TEAL = "#9C6B3F";
+const BORDER = "#FFFFFF";
+const OFF = "#FFFFFF";
 
 type Plan = {
   name: string;
@@ -148,11 +148,11 @@ function PricingLockOverlay() {
       <div
         className="sticky top-40 w-full max-w-md p-8 text-center"
         style={{
-          background: "rgba(250,243,230,0.92)",
+          background: "rgba(255,255,255,0.92)",
           border: `1px solid ${BORDER}`,
           backdropFilter: "blur(6px)",
           WebkitBackdropFilter: "blur(6px)",
-          boxShadow: "0 30px 60px -30px rgba(43,22,32,0.35)",
+          boxShadow: "0 30px 60px -30px rgba(0,0,0,0.35)",
         }}
       >
         <div className="flex justify-center" style={{ color: TEAL }}>
@@ -172,7 +172,7 @@ function PricingLockOverlay() {
           to="/join"
           hash="request"
           className="mt-6 inline-flex items-center px-5 py-3 text-[14px] no-underline"
-          style={{ background: TEAL, color: "#FAF3E6", fontWeight: 600 }}
+          style={{ background: TEAL, color: "#FFFFFF", fontWeight: 600 }}
         >
           Request access
         </Link>
@@ -185,7 +185,7 @@ function PricingPage() {
   return (
     <MarketingShell>
       <PermitCostCalculator />
-      <div className="relative" style={{ background: "#FAF3E6", color: INK }}>
+      <div className="relative" style={{ background: "#FFFFFF", color: INK }}>
         <PricingLockOverlay />
         <div
           aria-hidden
@@ -221,7 +221,7 @@ function PricingPage() {
                 key={p.name}
                 className="flex flex-col p-7"
                 style={{
-                  background: p.popular ? OFF : "#FAF3E6",
+                  background: p.popular ? OFF : "#FFFFFF",
                   border: `1px solid ${p.popular ? TEAL : BORDER}`,
                 }}
               >
@@ -235,7 +235,7 @@ function PricingPage() {
                   {p.popular && (
                     <span
                       className="px-2 py-1 text-[10px] uppercase tracking-[0.16em]"
-                      style={{ background: TEAL, color: "#FAF3E6", fontWeight: 700 }}
+                      style={{ background: TEAL, color: "#FFFFFF", fontWeight: 700 }}
                     >
                       Most popular
                     </span>
@@ -284,9 +284,9 @@ function PricingPage() {
                   className="mt-7 inline-flex items-center justify-center px-5 py-3 text-[14px] no-underline"
                   style={
                     p.popular
-                      ? { background: TEAL, color: "#FAF3E6", fontWeight: 700 }
+                      ? { background: TEAL, color: "#FFFFFF", fontWeight: 700 }
                       : {
-                          background: "#FAF3E6",
+                          background: "#FFFFFF",
                           color: INK,
                           border: `1px solid ${BORDER}`,
                           fontWeight: 600,

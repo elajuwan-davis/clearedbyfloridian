@@ -10,9 +10,9 @@ import {
   findTimelinePermitType,
 } from "@/lib/permit-timelines";
 
-const OAT = "#FAF3E6";
-const SLATE = "#2F4F4F";
-const PLUM = "#673147";
+const OAT = "#FFFFFF";
+const SLATE = "#000000";
+const PLUM = "#000000";
 const PLUM_DARK = "#4E2438";
 const LAVENDER = "#E6E6FA";
 const LINE = "#E4DACB";

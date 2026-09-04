@@ -27,7 +27,7 @@ type Props = {
 const STATUS_META: Record<InspectionStatus, { label: string; pill: string }> = {
   passed: { label: "Passed", pill: "bg-[#3f5749] text-white border-[#3f5749]" },
   pending: { label: "Pending", pill: "bg-[#5c7370] text-white border-[#5c7370]" },
-  scheduled: { label: "Scheduled", pill: "bg-[#2F4F4F] text-white border-[#2F4F4F]" },
+  scheduled: { label: "Scheduled", pill: "bg-[#000000] text-white border-[#000000]" },
   corrections: {
     label: "Corrections Required",
     pill: "bg-[#8c3b3b] text-white border-[#8c3b3b]",
@@ -121,7 +121,7 @@ export function InspectionsSection({
             return (
               <li key={ins.code} className="px-5 py-4">
                 <div className="flex flex-wrap items-center gap-3">
-                  <span className="inline-flex h-8 min-w-[3rem] items-center justify-center bg-[#2F4F4F] px-2 font-mono text-[11px] font-semibold tracking-[0.08em] text-white rounded-[3px]">
+                  <span className="inline-flex h-8 min-w-[3rem] items-center justify-center bg-[#000000] px-2 font-mono text-[11px] font-semibold tracking-[0.08em] text-white rounded-[3px]">
                     {ins.code.replace(/-.*$/, "")}
 
                   </span>

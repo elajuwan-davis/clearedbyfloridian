@@ -154,7 +154,7 @@ function LoginPage() {
           <Link to="/" className="flex items-center gap-3">
             <div
               className="h-9 w-9 rounded-xl flex items-center justify-center text-white font-bold text-base"
-              style={{ background: "linear-gradient(135deg, #673147 0%, #4E6B5C 100%)", fontFamily: "'Instrument Sans', sans-serif" }}
+              style={{ background: "linear-gradient(135deg, #9C6B3F 0%, #4E6B5C 100%)", fontFamily: "'Instrument Sans', sans-serif" }}
             >
               C
             </div>
@@ -204,7 +204,7 @@ function LoginPage() {
           <Link to="/" className="lg:hidden flex items-center gap-2.5 mb-10">
             <div
               className="h-7 w-7 rounded-lg flex items-center justify-center text-white font-bold text-sm"
-              style={{ background: "linear-gradient(135deg, #673147 0%, #4E6B5C 100%)", fontFamily: "'Instrument Sans', sans-serif" }}
+              style={{ background: "linear-gradient(135deg, #9C6B3F 0%, #4E6B5C 100%)", fontFamily: "'Instrument Sans', sans-serif" }}
             >
               C
             </div>
@@ -296,7 +296,7 @@ function LoginPage() {
               type="submit"
               disabled={loading}
               className="w-full h-11 rounded-[3px] font-subline tracking-wide gap-2"
-              style={{ backgroundColor: "#4E6B5C", color: "#FAF3E6" }}
+              style={{ backgroundColor: "#4E6B5C", color: "#FFFFFF" }}
             >
               {loading ? (
                 <>

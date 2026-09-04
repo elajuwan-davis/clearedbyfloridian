@@ -24,8 +24,8 @@ export const Route = createFileRoute("/comparison")({
   component: ComparisonPage,
 });
 
-const INK = "#2F4F4F";
-const OAT = "#FAF3E6";
+const INK = "#000000";
+const OAT = "#FFFFFF";
 const MONO = "'JetBrains Mono', ui-monospace, monospace";
 
 function ComparisonPage() {

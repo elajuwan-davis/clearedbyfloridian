@@ -1,12 +1,12 @@
 import { useMemo, useState } from "react";
 import { Link } from "@tanstack/react-router";
 
-const OAT = "#FAF3E6";
-const OFF = "#F3EAD9";
-const INK = "#2F4F4F";
-const GRAY = "#7A5C68";
-const PLUM = "#673147";
-const BORDER = "#E0D3BC";
+const OAT = "#FFFFFF";
+const OFF = "#FFFFFF";
+const INK = "#000000";
+const GRAY = "#000000";
+const PLUM = "#000000";
+const BORDER = "#FFFFFF";
 const SERIF = "'Instrument Sans', sans-serif";
 const MONO = "'JetBrains Mono', ui-monospace, monospace";
 
@@ -193,7 +193,7 @@ export function PermitCostCalculator({ background = OFF }: { background?: string
           <div className="p-6 md:p-8" style={{ background: INK }}>
             <div
               className="text-[10px] uppercase"
-              style={{ fontFamily: MONO, letterSpacing: "0.2em", color: "rgba(250,243,230,0.6)" }}
+              style={{ fontFamily: MONO, letterSpacing: "0.2em", color: "rgba(255,255,255,0.6)" }}
             >
               {projectType} · Annual estimate
             </div>
@@ -202,7 +202,7 @@ export function PermitCostCalculator({ background = OFF }: { background?: string
               <div>
                 <div
                   className="text-[10px] uppercase"
-                  style={{ fontFamily: MONO, letterSpacing: "0.16em", color: "rgba(250,243,230,0.55)" }}
+                  style={{ fontFamily: MONO, letterSpacing: "0.16em", color: "rgba(255,255,255,0.55)" }}
                 >
                   Admin-hour cost
                 </div>
@@ -218,15 +218,15 @@ export function PermitCostCalculator({ background = OFF }: { background?: string
                 >
                   {usd(r.adminCost)}
                 </div>
-                <div className="mt-1 text-[13px]" style={{ color: "rgba(250,243,230,0.6)" }}>
+                <div className="mt-1 text-[13px]" style={{ color: "rgba(255,255,255,0.6)" }}>
                   {r.annualHours.toLocaleString()} staff hours per year
                 </div>
               </div>
 
-              <div style={{ borderTop: "1px solid rgba(250,243,230,0.16)" }} className="pt-6">
+              <div style={{ borderTop: "1px solid rgba(255,255,255,0.16)" }} className="pt-6">
                 <div
                   className="text-[10px] uppercase"
-                  style={{ fontFamily: MONO, letterSpacing: "0.16em", color: "rgba(250,243,230,0.55)" }}
+                  style={{ fontFamily: MONO, letterSpacing: "0.16em", color: "rgba(255,255,255,0.55)" }}
                 >
                   Schedule exposure
                 </div>
@@ -242,16 +242,16 @@ export function PermitCostCalculator({ background = OFF }: { background?: string
                 >
                   {r.annualDays.toLocaleString()} days
                 </div>
-                <div className="mt-1 text-[13px]" style={{ color: "rgba(250,243,230,0.6)" }}>
+                <div className="mt-1 text-[13px]" style={{ color: "rgba(255,255,255,0.6)" }}>
                   {r.daysPerProject} business days per project against Cleard&apos;s 2-day plan review
                   and same-day inspections
                 </div>
               </div>
 
-              <div style={{ borderTop: "1px solid rgba(250,243,230,0.16)" }} className="pt-6">
+              <div style={{ borderTop: "1px solid rgba(255,255,255,0.16)" }} className="pt-6">
                 <div
                   className="text-[10px] uppercase"
-                  style={{ fontFamily: MONO, letterSpacing: "0.16em", color: "#D9AFC1" }}
+                  style={{ fontFamily: MONO, letterSpacing: "0.16em", color: "#9C6B3F" }}
                 >
                   Total identifiable cost exposure
                 </div>
@@ -280,7 +280,7 @@ export function PermitCostCalculator({ background = OFF }: { background?: string
 
             <p
               className="mt-6 text-[11.5px] leading-relaxed"
-              style={{ color: "rgba(250,243,230,0.5)" }}
+              style={{ color: "rgba(255,255,255,0.5)" }}
             >
               These are planning estimates, not guaranteed savings. Actual results vary by project
               scope, jurisdiction, and conditions.

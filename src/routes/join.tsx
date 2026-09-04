@@ -28,7 +28,7 @@ export const Route = createFileRoute("/join")({
   }),
 });
 
-const OBSIDIAN = "#2F4F4F";
+const OBSIDIAN = "#000000";
 const MUTED = `color-mix(in oklab, ${OBSIDIAN} 55%, transparent)`;
 const HAIRLINE = `color-mix(in oklab, ${OBSIDIAN} 12%, transparent)`;
 
@@ -151,7 +151,7 @@ function JoinPage() {
               <a
                 href="#request"
                 className="inline-flex items-center px-8 h-14 text-[12px] font-mono uppercase tracking-[0.24em] transition-opacity hover:opacity-85"
-                style={{ backgroundColor: OBSIDIAN, color: "#FAF3E6", borderRadius: 0 }}
+                style={{ backgroundColor: OBSIDIAN, color: "#FFFFFF", borderRadius: 0 }}
               >
                 Get Started
               </a>
@@ -223,7 +223,7 @@ function JoinPage() {
       </section>
 
       {/* PROBLEM */}
-      <section id="problem" className="px-6 lg:px-10 py-24" style={{ backgroundColor: "#FAF3E6" }}>
+      <section id="problem" className="px-6 lg:px-10 py-24" style={{ backgroundColor: "#FFFFFF" }}>
         <div className="max-w-7xl mx-auto">
           <div
             className="font-mono text-[10px] uppercase mb-6"
@@ -338,7 +338,7 @@ function JoinPage() {
             <div key={s.l}>
               <div
                 className="display-serif font-bold leading-none mb-4"
-                style={{ color: "#FAF3E6", fontSize: "clamp(2.25rem, 5vw, 3.75rem)", letterSpacing: "-0.02em" }}
+                style={{ color: "#FFFFFF", fontSize: "clamp(2.25rem, 5vw, 3.75rem)", letterSpacing: "-0.02em" }}
               >
                 {s.n}
               </div>
@@ -354,7 +354,7 @@ function JoinPage() {
       </section>
 
       {/* REQUEST FORM */}
-      <section id="request" className="py-28 px-6" style={{ backgroundColor: "#FAF3E6" }}>
+      <section id="request" className="py-28 px-6" style={{ backgroundColor: "#FFFFFF" }}>
         <div className="max-w-lg mx-auto">
           <div
             className="font-mono text-[10px] uppercase mb-4 text-center"
@@ -558,7 +558,7 @@ function JoinPage() {
                 type="submit"
                 disabled={state === "submitting"}
                 className="w-full h-14 text-[12px] font-mono uppercase tracking-[0.24em] transition-opacity hover:opacity-85 disabled:opacity-50"
-                style={{ backgroundColor: OBSIDIAN, color: "#FAF3E6", borderRadius: 0 }}
+                style={{ backgroundColor: OBSIDIAN, color: "#FFFFFF", borderRadius: 0 }}
               >
                 {state === "submitting" ? "Creating your account…" : "Create My Account"}
               </button>

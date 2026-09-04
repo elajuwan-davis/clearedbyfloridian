@@ -8,9 +8,9 @@ import {
   computeEstimate,
 } from "@/lib/permit-timelines";
 
-const OAT = "#FAF3E6";
-const SLATE = "#2F4F4F";
-const PLUM = "#673147";
+const OAT = "#FFFFFF";
+const SLATE = "#000000";
+const PLUM = "#000000";
 const LINE = "#E4DACB";
 const SERIF = '"Instrument Sans", sans-serif';
 

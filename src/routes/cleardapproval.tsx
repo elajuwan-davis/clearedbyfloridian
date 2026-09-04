@@ -1,11 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { MarketingShell } from "@/components/marketing-shell";
 
-const OAT = "#FAF3E6";
-const SLATE = "#2F4F4F";
-const PLUM = "#673147";
-const BORDER = "#E0D3BC";
-const BODY = "#7A5C68";
+const OAT = "#FFFFFF";
+const SLATE = "#000000";
+const PLUM = "#000000";
+const BORDER = "#FFFFFF";
+const BODY = "#000000";
 const SERIF = '"Instrument Sans", sans-serif';
 
 export const Route = createFileRoute("/cleardapproval")({
