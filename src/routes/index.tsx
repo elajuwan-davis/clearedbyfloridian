@@ -416,7 +416,6 @@ function CountyCoverage() {
 
 function MunicipalityTrack() {
   const CARD_BG = "#2F4F4F";
-  const CARD_BORDER = "#3F5C5A";
   const TEAL = "#2B1620";
   return (
     <section style={{ background: WHITE }}>
