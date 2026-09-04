@@ -399,17 +399,12 @@ export function ClearedHero() {
 
 
 
-      {/* fullscreen job-site video backdrop */}
-      <video
-        aria-hidden
-        autoPlay
-        muted
-        loop
-        playsInline
-        src={HERO_VIDEO_URL}
+      {/* code-drawn wireframe city backdrop (no video) */}
+      <WireframeBackdrop
         className="pointer-events-none absolute inset-0 h-full w-full"
-        style={{ objectFit: "cover", zIndex: 0 }}
+        style={{ zIndex: 0 }}
       />
+
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0"
