@@ -1,10 +1,10 @@
-import { Check, Minus, X } from "lucide-react";
+import { Check, Minus } from "lucide-react";
 
 const OAT = "#FFFFFF";
 const INK = "#000000";
 const GRAY = "#000000";
 const PLUM = "#000000";
-const BORDER = "#FFFFFF";
+const BORDER = "rgba(0,0,0,0.10)";
 const SERIF = "'Instrument Sans', sans-serif";
 const MONO = "'JetBrains Mono', ui-monospace, monospace";
 
@@ -25,18 +25,45 @@ const ROWS: Array<{ label: string; marks: [Mark, Mark, Mark] }> = [
   { label: "Statewide Florida coverage", marks: ["partial", "partial", "yes"] },
 ];
 
-function MarkCell({ mark, emphasis }: { mark: Mark; emphasis?: boolean }) {
-  const color = mark === "yes" ? (emphasis ? OAT : PLUM) : emphasis ? OAT : GRAY;
-  const Icon = mark === "yes" ? Check : mark === "no" ? X : Minus;
-  const label = mark === "yes" ? "Yes" : mark === "no" ? "No" : "Partial";
+const COL_COLOR = ["#C0392B", "#D4A017", "#2E7D32"] as const;
+const NEUTRAL = "rgba(0,0,0,0.35)";
+
+function MarkCell({ mark, colorIndex }: { mark: Mark; colorIndex: number }) {
+  const color = COL_COLOR[colorIndex] ?? INK;
+  if (mark === "no") {
+    return (
+      <span
+        className="inline-flex items-center gap-2 text-[13px]"
+        style={{ color: NEUTRAL, fontFamily: MONO }}
+      >
+        —
+      </span>
+    );
+  }
+  if (mark === "partial") {
+    return (
+      <span
+        className="inline-flex items-center gap-2 text-[11px] uppercase"
+        style={{ color, opacity: 0.6, fontFamily: MONO, letterSpacing: "0.14em" }}
+      >
+        <Minus className="h-4 w-4 shrink-0" strokeWidth={2} />
+        Partial
+      </span>
+    );
+  }
   return (
     <span className="inline-flex items-center gap-2" style={{ color }}>
-      <Icon className="h-4 w-4 shrink-0" strokeWidth={mark === "yes" ? 2.5 : 2} />
+      <span
+        className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full"
+        style={{ background: color, color: "#FFFFFF" }}
+      >
+        <Check className="h-3 w-3" strokeWidth={3} />
+      </span>
       <span
         className="text-[11px] uppercase"
         style={{ fontFamily: MONO, letterSpacing: "0.14em" }}
       >
-        {label}
+        Yes
       </span>
     </span>
   );
@@ -87,8 +114,9 @@ export function ClearedDifferenceTable({ background = OAT }: { background?: stri
                 >
                   Capability
                 </th>
-                {COLUMNS.map((c) => {
+                {COLUMNS.map((c, ci) => {
                   const isCleard = c === "Cleard";
+                  const bg = COL_COLOR[ci];
                   return (
                     <th
                       key={c}
@@ -96,11 +124,12 @@ export function ClearedDifferenceTable({ background = OAT }: { background?: stri
                       style={{
                         fontFamily: MONO,
                         letterSpacing: "0.18em",
-                        color: isCleard ? OAT : INK,
-                        background: isCleard ? PLUM : "transparent",
-                        borderBottom: `1px solid ${isCleard ? PLUM : BORDER}`,
-                        fontWeight: 700,
+                        color: "#FFFFFF",
+                        background: bg,
+                        borderBottom: `1px solid ${bg}`,
+                        fontWeight: isCleard ? 800 : 700,
                         whiteSpace: "nowrap",
+                        width: isCleard ? "22%" : "18%",
                       }}
                     >
                       {c}
@@ -110,31 +139,35 @@ export function ClearedDifferenceTable({ background = OAT }: { background?: stri
               </tr>
             </thead>
             <tbody>
-              {ROWS.map((r) => (
-                <tr key={r.label}>
-                  <td
-                    className="px-5 py-4 align-middle text-[14.5px]"
-                    style={{ color: INK, borderBottom: `1px solid ${BORDER}`, fontWeight: 500 }}
-                  >
-                    {r.label}
-                  </td>
-                  {r.marks.map((m, i) => {
-                    const isCleard = i === 2;
-                    return (
+              {ROWS.map((r, ri) => {
+                const stripe = ri % 2 === 0 ? "#FFFFFF" : "#F8F8F8";
+                return (
+                  <tr key={r.label} style={{ background: stripe }}>
+                    <td
+                      className="px-5 py-4 align-middle text-[14.5px]"
+                      style={{
+                        color: INK,
+                        borderBottom: "1px solid rgba(0,0,0,0.10)",
+                        fontWeight: 500,
+                      }}
+                    >
+                      {r.label}
+                    </td>
+                    {r.marks.map((m, i) => (
                       <td
                         key={i}
                         className="px-5 py-4 align-middle"
                         style={{
-                          borderBottom: `1px solid ${isCleard ? "rgba(255,255,255,0.18)" : BORDER}`,
-                          background: isCleard ? PLUM : "transparent",
+                          borderBottom: "1px solid rgba(0,0,0,0.10)",
+                          background: i === 2 ? "rgba(46,125,50,0.06)" : "transparent",
                         }}
                       >
-                        <MarkCell mark={m} emphasis={isCleard} />
+                        <MarkCell mark={m} colorIndex={i} />
                       </td>
-                    );
-                  })}
-                </tr>
-              ))}
+                    ))}
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
