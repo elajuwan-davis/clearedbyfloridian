@@ -137,7 +137,7 @@ export function WireframeBackdrop({ className, style }: { className?: string; st
       const firstZ = Math.ceil((camZ + NEAR) / gridStep) * gridStep;
       for (let z = firstZ; z < camZ + DEPTH * 0.75; z += gridStep) {
         const fade = 1 - (z - camZ) / (DEPTH * 0.75);
-        const a = Math.max(0, fade * 0.16);
+        const a = Math.max(0, fade * 0.3);
         seg({ x: -120, y: 0, z }, { x: 120, y: 0, z }, a, false, 1);
       }
       for (const railX of [-120, -60, 0, 60, 120]) {
@@ -174,7 +174,7 @@ export function WireframeBackdrop({ className, style }: { className?: string; st
         if (p <= 0) continue;
         const eased = 1 - Math.pow(1 - p, 2);
         const hh = b.h * eased;
-        const base = 0.5 * depthFade * (0.45 + 0.55 * p);
+        const base = 0.78 * depthFade * (0.45 + 0.55 * p);
         const lw = Math.max(0.6, 1.15 * depthFade);
 
         const x0 = b.x - b.w / 2;
