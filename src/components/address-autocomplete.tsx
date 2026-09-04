@@ -147,6 +147,7 @@ export function AddressAutocomplete({
   const placesLibRef = useRef<PlacesLib | null>(null);
   const sessionTokenRef = useRef<unknown>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const failureStreakRef = useRef(0);
   const containerRef = useRef<HTMLDivElement>(null);
   const unavailableRef = useRef(onUnavailable);
   unavailableRef.current = onUnavailable;
