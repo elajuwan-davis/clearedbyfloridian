@@ -228,6 +228,8 @@ export function ProjectDetail({ project }: { project: Project }) {
             <TabTrigger value="inspections" icon={<ClipboardCheck className="h-3.5 w-3.5" />} label="Inspections" />
             <TabTrigger value="documents" icon={<FileText className="h-3.5 w-3.5" />} label="Documents" />
             <TabTrigger value="hoa" icon={<FileSignature className="h-3.5 w-3.5" />} label="HOA Submittal" />
+            <TabTrigger value="notarization" icon={<Stamp className="h-3.5 w-3.5" />} label="Notarization" />
+
             <TabTrigger value="subs" icon={<Users className="h-3.5 w-3.5" />} label="Subcontractors" />
             <TabTrigger value="compliance" icon={<ShieldCheck className="h-3.5 w-3.5" />} label="Compliance" />
             <TabTrigger value="fees" icon={<DollarSign className="h-3.5 w-3.5" />} label="Permit Fees" />
