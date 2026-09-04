@@ -21,8 +21,8 @@ const PLUM = "#2B1620";
 const BORDER = "#E5E5E5";
 const COPPER = "#9C6B3F";
 const COPPER_LT = "#9C6B3F";
-const DARK = "#2B1620";
-const PLUM_DEEP = "#2B1620";
+const DARK = "#FFFFFF";
+const PLUM_DEEP = "#FFFFFF";
 const SERIF = '"Fraunces", "Iowan Old Style", Georgia, serif';
 const MONO = '"JetBrains Mono", ui-monospace, monospace';
 
@@ -227,13 +227,13 @@ export function VictoriaSection() {
             loading="lazy"
             className="absolute inset-0 h-full w-full object-cover"
             initial={{ opacity: 0, scale: 1.06 }}
-            animate={inView ? { opacity: 0.95, scale: 1 } : {}}
+            animate={inView ? { opacity: 0.3, scale: 1 } : {}}
             transition={{ duration: 1.6, ease: [0.16, 1, 0.3, 1] }}
           />
           <div
             className="absolute inset-0"
             style={{
-              background: `radial-gradient(120% 90% at 55% 45%, rgba(21,10,15,0.15), rgba(21,10,15,0.82) 78%)`,
+              background: `radial-gradient(120% 90% at 55% 45%, rgba(255,255,255,0.55), rgba(255,255,255,0.92) 78%)`,
             }}
           />
           {/* blueprint grid */}
@@ -322,7 +322,7 @@ export function VictoriaSection() {
           {/* top bar */}
           <div
             className="absolute inset-x-0 top-0 flex items-center justify-between px-5 pb-4 pt-6 sm:px-7"
-            style={{ fontFamily: MONO, fontSize: 9.5, letterSpacing: "0.2em", color: "rgba(255,255,255,0.72)" }}
+            style={{ fontFamily: MONO, fontSize: 9.5, letterSpacing: "0.2em", color: "rgba(43,22,32,0.72)" }}
           >
             <span className="flex items-center gap-2 uppercase">
               Victoria / Live
@@ -355,14 +355,14 @@ export function VictoriaSection() {
           {/* bottom bar */}
           <div
             className="absolute inset-x-0 bottom-0 flex items-center justify-between gap-4 px-5 py-4 sm:px-7"
-            style={{ borderTop: "1px solid rgba(201,138,91,0.28)", background: "rgba(21,10,15,0.66)" }}
+            style={{ borderTop: "1px solid rgba(201,138,91,0.28)", background: "rgba(255,255,255,0.82)" }}
           >
-            <span className="text-[13px]" style={{ color: "rgba(255,255,255,0.9)", fontFamily: SERIF }}>
+            <span className="text-[13px]" style={{ color: "rgba(43,22,32,0.9)", fontFamily: SERIF }}>
               Victoria is watching your projects, 24/7.
             </span>
             <span
               className="hidden items-center gap-2 uppercase sm:flex"
-              style={{ fontFamily: MONO, fontSize: 9.5, letterSpacing: "0.2em", color: "rgba(255,255,255,0.6)" }}
+              style={{ fontFamily: MONO, fontSize: 9.5, letterSpacing: "0.2em", color: "rgba(43,22,32,0.6)" }}
             >
               <span
                 className="v-blink inline-block h-[5px] w-[5px] rounded-full cl-dot"
@@ -380,7 +380,7 @@ export function VictoriaSection() {
           <div className="grid gap-12 lg:grid-cols-[0.9fr_2.6fr] lg:items-start">
             <div>
               <h3
-                style={{ fontFamily: SERIF, fontSize: "clamp(1.8rem,2.6vw,2.3rem)", lineHeight: 1.06, letterSpacing: "-0.035em", color: OAT, fontWeight: 600 }}
+                style={{ fontFamily: SERIF, fontSize: "clamp(1.8rem,2.6vw,2.3rem)", lineHeight: 1.06, letterSpacing: "-0.035em", color: INK, fontWeight: 600 }}
               >
                 How Victoria thinks.
               </h3>
@@ -396,7 +396,7 @@ export function VictoriaSection() {
                     className="grid h-11 w-11 place-items-center rounded-full cl-dot"
                     style={{ border: "1px solid rgba(201,138,91,0.45)" }}
                   >
-                    <s.icon className="h-[17px] w-[17px]" strokeWidth={1.4} style={{ color: OAT }} />
+                    <s.icon className="h-[17px] w-[17px]" strokeWidth={1.4} style={{ color: INK }} />
                   </div>
                   {i < STEPS.length - 1 && (
                     <span
@@ -410,11 +410,11 @@ export function VictoriaSection() {
                   )}
                   <div
                     className="mt-6 text-[10.5px] uppercase"
-                    style={{ fontFamily: MONO, letterSpacing: "0.18em", color: OAT }}
+                    style={{ fontFamily: MONO, letterSpacing: "0.18em", color: INK }}
                   >
                     {s.n} — {s.title}
                   </div>
-                  <div className="mt-3 space-y-1 text-[13.5px] leading-[1.6]" style={{ color: "rgba(255,255,255,0.62)" }}>
+                  <div className="mt-3 space-y-1 text-[13.5px] leading-[1.6]" style={{ color: "rgba(43,22,32,0.62)" }}>
                     {s.lines.map((l) => (
                       <div key={l}>{l}</div>
                     ))}
@@ -437,16 +437,16 @@ function IntelCard({ card }: { card: Card }) {
     <div
       className="px-4 py-3.5"
       style={{
-        background: "rgba(30,14,20,0.72)",
+        background: "rgba(255,255,255,0.86)",
         border: "1px solid rgba(201,138,91,0.4)",
         backdropFilter: "blur(6px)",
-        boxShadow: "0 18px 40px rgba(10,4,7,0.45)",
+        boxShadow: "0 18px 40px rgba(43,22,32,0.12)",
       }}
     >
-      <div className="text-[9px] uppercase" style={{ fontFamily: MONO, letterSpacing: "0.2em", color: "rgba(255,255,255,0.5)" }}>
+      <div className="text-[9px] uppercase" style={{ fontFamily: MONO, letterSpacing: "0.2em", color: "rgba(43,22,32,0.5)" }}>
         {card.project}
       </div>
-      <div className="mt-1 text-[11.5px] uppercase" style={{ fontFamily: MONO, letterSpacing: "0.13em", color: OAT }}>
+      <div className="mt-1 text-[11.5px] uppercase" style={{ fontFamily: MONO, letterSpacing: "0.13em", color: INK }}>
         {card.name}
       </div>
       <div className="my-3 h-px" style={{ background: "rgba(201,138,91,0.28)" }} />
@@ -465,18 +465,18 @@ function IntelCard({ card }: { card: Card }) {
           {card.status[1]}
         </div>
       </div>
-      <div className="mt-3 text-[12px]" style={{ color: "rgba(255,255,255,0.8)", fontFamily: SERIF }}>
+      <div className="mt-3 text-[12px]" style={{ color: "rgba(43,22,32,0.8)", fontFamily: SERIF }}>
         {card.detail}
       </div>
       {card.note && (
-        <div className="mt-1.5 text-[11.5px]" style={{ color: "rgba(255,255,255,0.55)", fontFamily: SERIF }}>
+        <div className="mt-1.5 text-[11.5px]" style={{ color: "rgba(43,22,32,0.55)", fontFamily: SERIF }}>
           {card.note}
         </div>
       )}
       {card.action && (
         <span
           className="cl-hoverable mt-3 inline-flex items-center gap-1.5 text-[11.5px]"
-          style={{ color: OAT, fontFamily: SERIF }}
+          style={{ color: INK, fontFamily: SERIF }}
         >
           {card.action}
           <ArrowRight className="cl-arrow h-3 w-3" strokeWidth={1.7} style={{ color: COPPER_LT }} />
