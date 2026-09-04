@@ -456,12 +456,11 @@ function MunicipalityTrack() {
           </div>
           <Link
             to="/contact"
-            className="p-btn p-btn-primary cl-glass mt-10 inline-flex items-center gap-2 no-underline"
+            className="p-btn mt-10 inline-flex items-center gap-2 no-underline"
             style={{
               border: "1px solid color-mix(in oklab, var(--copper-deep) 70%, transparent)",
-              backdropFilter: "blur(12px) saturate(140%)",
-              WebkitBackdropFilter: "blur(12px) saturate(140%)",
-              color: "var(--black)",
+              background: "linear-gradient(135deg, #C6885A 0%, #9C6B3F 55%, #7A5230 100%)",
+              color: "#FFFFFF",
               fontWeight: 700,
               boxShadow:
                 "inset 0 1px 0 rgba(255,255,255,0.45), 0 18px 34px -20px rgba(100,55,10,0.4)",

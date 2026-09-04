@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ArrowRight, Loader2 } from "lucide-react";
 import { isPermitsOnlyEmail, PERMITS_ONLY_HOME } from "@/lib/permits-only";
+import logoCopper from "@/assets/cleard-logo-copper.png.asset.json";
 
 
 export const Route = createFileRoute("/login")({
@@ -152,17 +153,12 @@ function LoginPage() {
 
         <div className="relative">
           <Link to="/" className="flex items-center gap-3">
-            <div
-              className="h-9 w-9 rounded-xl flex items-center justify-center font-bold text-base"
-              style={{ background: "var(--copper-soft)", color: "var(--copper)", fontFamily: "'Instrument Sans', sans-serif" }}
-            >
-              C
-            </div>
+            <img src={logoCopper.url} alt="Cleard" className="h-9 w-9 object-contain" />
             <span
               className="font-semibold text-[20px]"
               style={{ fontFamily: "'Instrument Sans', sans-serif", color: "var(--copper)" }}
             >
-              Cleard
+              CLEARED
             </span>
           </Link>
         </div>
@@ -202,17 +198,12 @@ function LoginPage() {
         <div className="w-full max-w-sm mx-auto p-8" style={{ background: "#FFFFFF", border: "1px solid rgba(0,0,0,0.10)", boxShadow: "0 2px 14px rgba(0,0,0,0.06)" }}>
           {/* Mobile wordmark */}
           <Link to="/" className="lg:hidden flex items-center gap-2.5 mb-10">
-            <div
-              className="h-7 w-7 rounded-lg flex items-center justify-center font-bold text-sm"
-              style={{ background: "var(--copper-soft)", color: "var(--copper)", fontFamily: "'Instrument Sans', sans-serif" }}
-            >
-              C
-            </div>
+            <img src={logoCopper.url} alt="Cleard" className="h-7 w-7 object-contain" />
             <span
               className="font-semibold text-[17px]"
               style={{ fontFamily: "'Instrument Sans', sans-serif", color: "var(--copper)" }}
             >
-              Cleard
+              CLEARED
             </span>
           </Link>
 
@@ -296,7 +287,8 @@ function LoginPage() {
             <Button
               type="submit"
               disabled={loading}
-              className="p-btn p-btn-primary cl-glass w-full h-11 gap-2 rounded-[3px]"
+              className="p-btn p-btn-primary cl-glass gap-2 rounded-[3px]"
+              style={{ width: "100%", height: 44, justifyContent: "center" }}
             >
               {loading ? (
                 <>
