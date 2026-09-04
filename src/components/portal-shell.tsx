@@ -354,7 +354,7 @@ function SidebarNav({
         ) : (
           <span
             className="truncate text-[19px] font-bold tracking-[-0.03em]"
-            style={{ color: "var(--rail-fg)" }}
+            style={{ color: "var(--copper)" }}
           >
             Cleard
           </span>
