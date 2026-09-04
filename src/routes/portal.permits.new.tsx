@@ -221,6 +221,7 @@ function NewPermitPage() {
   const [extraFiles, setExtraFiles] = useState<File[]>([]);
   const [subsSkipped, setSubsSkipped] = useState(false);
   const [docsSkipped, setDocsSkipped] = useState(false);
+  const [previewDoc, setPreviewDoc] = useState<"noc" | "ntbo">("noc");
   const [saveArchitectToContacts, setSaveArchitectToContacts] = useState(false);
   const [saveEngineerToContacts, setSaveEngineerToContacts] = useState(false);
   const [dispatch, setDispatch] = useState<DispatchResult | null>(null);
