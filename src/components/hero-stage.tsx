@@ -3,12 +3,10 @@ import { Link } from "@tanstack/react-router";
 import cLogo from "@/assets/cleard-c-copper.png.asset.json";
 
 /* Nordic Luxury tokens (marketing only) */
-const OAT = "#FAF3E6";
-const PAPER = "#FFFDF7";
-const BORDER = "#E0D3BC";
-const PLUM = "#673147";
+const OAT = "#FDFCF9";
+const PAPER = "#FFFFFF";
+const BORDER = "rgba(43,22,32,0.09)";
 const INK = "#2B1620";
-const GREEN = "#2F4F4F";
 const BRONZE = "#9C6B3F";
 const MONO = '"JetBrains Mono", ui-monospace, monospace';
 const SERIF = '"Fraunces", "Iowan Old Style", Georgia, serif';
@@ -67,7 +65,7 @@ function useLiveNumber(to: number, { live = 0, period = 2600 }: { live?: number;
   return value;
 }
 
-function Eyebrow({ children, color = GREEN }: { children: React.ReactNode; color?: string }) {
+function Eyebrow({ children, color = BRONZE }: { children: React.ReactNode; color?: string }) {
   return (
     <div
       className="text-[8px] uppercase"
@@ -78,7 +76,7 @@ function Eyebrow({ children, color = GREEN }: { children: React.ReactNode; color
   );
 }
 
-function Meter({ pct, color = PLUM }: { pct: number; color?: string }) {
+function Meter({ pct, color = BRONZE }: { pct: number; color?: string }) {
   return (
     <div className="h-[3px] w-full overflow-hidden" style={{ background: "rgba(43,22,32,0.10)" }}>
       <div
@@ -93,12 +91,11 @@ function Meter({ pct, color = PLUM }: { pct: number; color?: string }) {
   );
 }
 
-function Chip({ label, tone = "green" }: { label: string; tone?: "green" | "plum" | "bronze" }) {
-  const bg = tone === "green" ? GREEN : tone === "bronze" ? BRONZE : PLUM;
+function Chip({ label }: { label: string }) {
   return (
     <span
       className="shrink-0 px-1.5 py-[2px] text-[7.5px] uppercase"
-      style={{ fontFamily: MONO, letterSpacing: "0.14em", color: OAT, background: bg }}
+      style={{ fontFamily: MONO, letterSpacing: "0.14em", color: OAT, background: BRONZE }}
     >
       {label}
     </span>
@@ -132,12 +129,12 @@ function PermitBody({ active }: { active: boolean }) {
             <span className="text-[9.5px]" style={{ color: INK, fontWeight: 600 }}>
               {id}
             </span>
-            <span className="text-[8.5px]" style={{ fontFamily: MONO, color: GREEN }}>
+            <span className="text-[8.5px]" style={{ fontFamily: MONO, color: "rgba(43,22,32,0.45)" }}>
               {pcts[i]}%
             </span>
           </div>
           <div className="mt-1">
-            <Meter pct={pcts[i]} color={active ? BRONZE : PLUM} />
+            <Meter pct={pcts[i]} color={active ? BRONZE : "#8B6B50"} />
           </div>
         </div>
       ))}
@@ -150,8 +147,8 @@ function ReviewBody() {
   return (
     <div className="space-y-1.5">
       <div className="flex items-end gap-1.5">
-        <span style={{ fontFamily: SERIF, fontSize: 26, lineHeight: 1, color: PLUM }}>{hours}h</span>
-        <span className="pb-[3px] text-[8px] uppercase" style={{ fontFamily: MONO, color: GREEN }}>
+        <span className="copper-sweep" style={{ fontFamily: SERIF, fontSize: 26, lineHeight: 1 }}>{hours}h</span>
+        <span className="pb-[3px] text-[8px] uppercase" style={{ fontFamily: MONO, color: "rgba(43,22,32,0.45)" }}>
           avg review
         </span>
       </div>
@@ -196,9 +193,9 @@ function InspectionBody() {
         >
           <span className="min-w-0 flex-1 truncate text-[9.5px]" style={{ color: INK }}>
             {addr}
-            <span style={{ color: GREEN, opacity: 0.7 }}> · {trade}</span>
+            <span style={{ color: "rgba(43,22,32,0.45)" }}> · {trade}</span>
           </span>
-          {idx === i ? <Chip label={ok ? "Passed" : "Correction"} tone={ok ? "green" : "plum"} /> : null}
+          {idx === i ? <Chip label={ok ? "Passed" : "Correction"} /> : null}
         </div>
       ))}
     </div>
@@ -210,11 +207,11 @@ function LicenseBody() {
   return (
     <div className="space-y-1.5">
       <div className="flex items-baseline justify-between">
-        <span style={{ fontFamily: SERIF, fontSize: 26, lineHeight: 1, color: PLUM }}>{n}</span>
+        <span className="copper-sweep" style={{ fontFamily: SERIF, fontSize: 26, lineHeight: 1 }}>{n}</span>
         <Chip label="All current" />
       </div>
-      <Meter pct={100} color={GREEN} />
-      <div className="text-[8.5px] uppercase" style={{ fontFamily: MONO, color: GREEN }}>
+      <Meter pct={100} color={BRONZE} />
+      <div className="text-[8.5px] uppercase" style={{ fontFamily: MONO, color: "rgba(43,22,32,0.45)" }}>
         0 expiring · 90d window
       </div>
     </div>
@@ -226,12 +223,12 @@ function InsuranceBody() {
   return (
     <div className="space-y-1.5">
       <div className="flex items-baseline justify-between">
-        <span style={{ fontFamily: SERIF, fontSize: 26, lineHeight: 1, color: PLUM }}>{n}</span>
-        <span className="text-[8.5px] uppercase" style={{ fontFamily: MONO, color: GREEN }}>
+        <span className="copper-sweep" style={{ fontFamily: SERIF, fontSize: 26, lineHeight: 1 }}>{n}</span>
+        <span className="text-[8.5px] uppercase" style={{ fontFamily: MONO, color: "rgba(43,22,32,0.45)" }}>
           COIs valid
         </span>
       </div>
-      <Meter pct={97} color={PLUM} />
+      <Meter pct={97} color={BRONZE} />
       <div className="flex items-center justify-between">
         <span className="text-[9.5px]" style={{ color: INK }}>
           Roofing · Gen. liability
@@ -361,11 +358,11 @@ function BentoCard({
         className="flex shrink-0 items-center justify-between px-3 pb-1.5 pt-2.5"
         style={{ borderBottom: `1px solid ${active ? "rgba(156,107,63,0.28)" : "rgba(43,22,32,0.07)"}` }}
       >
-        <Eyebrow color={active ? BRONZE : GREEN}>{title}</Eyebrow>
+        <Eyebrow color={active ? BRONZE : "rgba(43,22,32,0.45)"}>{title}</Eyebrow>
         {hint ? (
           <span
             className="shrink-0 text-[7.5px] uppercase"
-            style={{ fontFamily: MONO, letterSpacing: "0.14em", color: GREEN, opacity: 0.65 }}
+            style={{ fontFamily: MONO, letterSpacing: "0.14em", color: "rgba(43,22,32,0.45)", opacity: 0.65 }}
           >
             {hint}
           </span>
@@ -390,17 +387,17 @@ function BentoCard({
 }
 
 const REPORT_BARS = [
-  { key: "Palm Bch", value: 22, color: PLUM },
+  { key: "Palm Bch", value: 22, color: "#4A3038" },
   { key: "Martin", value: 14, color: BRONZE },
-  { key: "St Lucie", value: 18, color: GREEN },
-  { key: "Broward", value: 9, color: "#8E5A76" },
+  { key: "St Lucie", value: 18, color: "#6B5040" },
+  { key: "Broward", value: 9, color: "#8B6B50" },
   { key: "Ind River", value: 12, color: "#B4854F" },
-  { key: "Sarasota", value: 16, color: "#4C6E68" },
-  { key: "Collier", value: 7, color: "#7A4258" },
+  { key: "Sarasota", value: 16, color: "#6B5040" },
+  { key: "Collier", value: 7, color: "#4A3038" },
 ];
 
 function TrendArrow({ dir }: { dir: "up" | "down" }) {
-  const color = dir === "down" ? GREEN : BRONZE;
+  const color = dir === "down" ? BRONZE : BRONZE;
   return (
     <svg width="9" height="9" viewBox="0 0 10 10" aria-hidden style={{ overflow: "visible" }}>
       <path
@@ -442,10 +439,10 @@ function ReportCard() {
     <div className="flex h-full min-h-0 flex-col">
       <div className="flex items-end justify-between">
         <div>
-          <div style={{ fontFamily: SERIF, fontSize: 30, lineHeight: 1, color: PLUM }}>{filed}</div>
+          <div className="copper-sweep" style={{ fontFamily: SERIF, fontSize: 30, lineHeight: 1 }}>{filed}</div>
           <div
             className="mt-1 text-[8px] uppercase"
-            style={{ fontFamily: MONO, letterSpacing: "0.16em", color: GREEN }}
+            style={{ fontFamily: MONO, letterSpacing: "0.16em", color: "rgba(43,22,32,0.45)" }}
           >
             permits filed · 30 days
           </div>
@@ -526,7 +523,7 @@ function ReportCard() {
             <div className="flex min-w-0 items-center gap-1.5">
               <span
                 className="h-1.5 w-1.5 shrink-0"
-                style={{ background: i === 2 ? GREEN : i === 1 ? BRONZE : PLUM, transform: "rotate(45deg)" }}
+                style={{ background: i === 2 ? "#6B5040" : i === 1 ? BRONZE : "#4A3038", transform: "rotate(45deg)" }}
               />
               <span className="min-w-0 truncate text-[9.5px]" style={{ color: INK, opacity: 0.75 }}>
                 {label}
@@ -1339,7 +1336,7 @@ export function HeroStage() {
           {/* scene label */}
           <div
             className="pointer-events-none absolute left-4 top-4 text-[8px] uppercase"
-            style={{ fontFamily: MONO, letterSpacing: "0.2em", color: GREEN, opacity: 0.7 }}
+            style={{ fontFamily: MONO, letterSpacing: "0.2em", color: BRONZE, opacity: 0.6 }}
           >
             {SCENES[scene].label}
           </div>
