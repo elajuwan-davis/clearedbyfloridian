@@ -6,8 +6,8 @@ import { HomeMotionStyles } from "@/components/home-command-center";
 import { HeroStage } from "@/components/hero-stage";
 import { TRADES } from "@/lib/trades";
 
-const HERO_PHOTO_URL =
-  "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=1920&q=85";
+const HERO_VIDEO_URL =
+  "https://videos.pexels.com/video-files/3195394/3195394-uhd_2560_1440_25fps.mp4";
 
 
 /* ---------------------- NORDIC LUXURY BRAND TOKENS ---------------------- */
@@ -419,24 +419,27 @@ export function ClearedHero() {
 
 
 
-      {/* real job-site photograph backdrop */}
-      <div
+      {/* fullscreen job-site video backdrop */}
+      <video
         aria-hidden
-        className="pointer-events-none absolute inset-0"
-        style={{
-          backgroundImage: `url(${HERO_PHOTO_URL})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        }}
+        autoPlay
+        muted
+        loop
+        playsInline
+        src={HERO_VIDEO_URL}
+        className="pointer-events-none absolute inset-0 h-full w-full"
+        style={{ objectFit: "cover", zIndex: 0 }}
       />
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0"
         style={{
+          zIndex: 0,
           background:
             "linear-gradient(to right, rgba(0,0,0,0.72) 40%, rgba(0,0,0,0.35) 100%)",
         }}
       />
+
 
 
 
