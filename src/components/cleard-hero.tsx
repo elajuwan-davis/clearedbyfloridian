@@ -147,7 +147,7 @@ function HeroSolutions() {
         onClick={() => setOpen((s) => !s)}
         className="text-[13.5px] transition-colors"
         style={{
-          color: SLATE,
+          color: "#FFFFFF",
           whiteSpace: "nowrap",
           background: "none",
           border: "none",
@@ -199,7 +199,7 @@ function HeroTrades() {
         onClick={() => setOpen((s) => !s)}
         className="text-[13.5px] transition-colors"
         style={{
-          color: SLATE,
+          color: "#FFFFFF",
           whiteSpace: "nowrap",
           background: "none",
           border: "none",
