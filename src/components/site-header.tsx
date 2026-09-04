@@ -52,7 +52,7 @@ export function SiteHeader() {
             <SheetTitle className="sr-only">Site navigation</SheetTitle>
             <div className="flex h-full flex-col">
               <div className="px-6 py-6 border-b hairline">
-                <div className="wordmark text-2xl tracking-[0.02em]">CLEARD</div>
+                <img src={wordmarkCopper.url} alt="CLEARD" className="h-6 w-auto object-contain" />
               </div>
               <nav className="flex-1 px-3 py-4">
                 {navLinks.map((l) => (
