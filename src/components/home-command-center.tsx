@@ -20,18 +20,18 @@ import copperMark from "@/assets/cleard-c-copper.png.asset.json";
 
 /* ----------------------- LOCKED NORDIC LUXURY TOKENS ---------------------- */
 
-const OAT = "#FAF3E6";
-const OFF = "#F3EAD9";
-const INK = "#2F4F4F";
-const GRAY = "#7A5C68";
-const LIGHT = "#8B9A97";
-const PLUM = "#673147";
-const PLUM_LT = "#D9AFC1";
-const GREEN = "#2F4F4F";
-const GREEN_LT = "#9CBEB2";
-const BORDER = "#E0D3BC";
-const DARK = "#241017";
-const DARK_2 = "#2F4F4F";
+const OAT = "#FFFFFF";
+const OFF = "#FFFFFF";
+const INK = "#2B1620";
+const GRAY = "rgba(43,22,32,0.55)";
+const LIGHT = "rgba(43,22,32,0.38)";
+const PLUM = "#2B1620";
+const PLUM_LT = "#9C6B3F";
+const GREEN = "#2B1620";
+const GREEN_LT = "#9C6B3F";
+const BORDER = "rgba(0,0,0,0.1)";
+const DARK = "#2B1620";
+const DARK_2 = "rgba(255,255,255,0.06)";
 const DARK_LINE = "rgba(250,243,230,0.14)";
 const COPPER = "#C98A5B";
 const SERIF = '"Fraunces", "Iowan Old Style", Georgia, serif';
