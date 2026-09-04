@@ -128,25 +128,25 @@ function LoginPage() {
 
 
   return (
-    <div className="cl-public min-h-screen grid grid-cols-1 lg:grid-cols-2 bg-background">
+    <div className="cl-public min-h-screen grid grid-cols-1 lg:grid-cols-2" style={{ background: "#FFFFFF" }}>
       {/* Left — obsidian panel with wave */}
       <aside
         className="relative hidden lg:flex flex-col justify-between p-12 overflow-hidden"
-        style={{ backgroundColor: "var(--obsidian)" }}
+        style={{ backgroundColor: "#FFFFFF", borderRight: "1px solid rgba(0,0,0,0.10)" }}
       >
         {/* Sky wave pattern */}
         <div
           aria-hidden
           className="absolute inset-0 pointer-events-none"
           style={{
-            backgroundImage: `repeating-linear-gradient(-45deg, color-mix(in oklab, var(--sky) 4%, transparent) 0 1px, transparent 1px 18px), repeating-linear-gradient(-45deg, transparent 0 19px, color-mix(in oklab, var(--sky) 4%, transparent) 19px 20px)`,
+            backgroundImage: `repeating-linear-gradient(-45deg, rgba(156,107,63,0.10) 0 1px, transparent 1px 18px), repeating-linear-gradient(-45deg, transparent 0 19px, rgba(156,107,63,0.10) 19px 20px)`,
           }}
         />
         <div
           aria-hidden
           className="absolute -top-32 -right-32 h-[420px] w-[420px] rounded-full"
           style={{
-            background: "radial-gradient(circle, color-mix(in oklab, var(--sky) 12%, transparent), transparent 70%)",
+            background: "radial-gradient(circle, rgba(156,107,63,0.10), transparent 70%)",
           }}
         />
 
@@ -154,13 +154,13 @@ function LoginPage() {
           <Link to="/" className="flex items-center gap-3">
             <div
               className="h-9 w-9 rounded-xl flex items-center justify-center text-white font-bold text-base"
-              style={{ background: "linear-gradient(135deg, #9C6B3F 0%, #4E6B5C 100%)", fontFamily: "'Instrument Sans', sans-serif" }}
+              style={{ background: "#9C6B3F", fontFamily: "'Instrument Sans', sans-serif" }}
             >
               C
             </div>
             <span
               className="font-semibold text-[20px]"
-              style={{ fontFamily: "'Instrument Sans', sans-serif", color: "var(--paper)" }}
+              style={{ fontFamily: "'Instrument Sans', sans-serif", color: "#000000" }}
             >
               Cleard
             </span>
@@ -170,19 +170,19 @@ function LoginPage() {
         <div className="relative max-w-md space-y-6">
           <div
             className="label-eyebrow"
-            style={{ color: "var(--nl-lavender)" }}
+            style={{ color: "#9C6B3F" }}
           >
             FL Statute 553.791
           </div>
           <p
-            className="text-3xl leading-[1.15] text-paper font-bold"
-            style={{ fontFamily: "'Instrument Sans', sans-serif", letterSpacing: "-0.02em" }}
+            className="text-3xl leading-[1.15] font-bold"
+            style={{ fontFamily: "'Instrument Sans', sans-serif", letterSpacing: "-0.02em", color: "#000000" }}
           >
             Private‑provider permitting on a statutory clock.
           </p>
           <p
             className="text-sm leading-relaxed"
-            style={{ color: "color-mix(in oklab, var(--paper) 65%, transparent)" }}
+            style={{ color: "rgba(0,0,0,0.55)" }}
           >
             Affidavit to permit in 10 business days. Certificate of compliance to CO in 2.
             Broward through the Treasure Coast.
@@ -191,7 +191,7 @@ function LoginPage() {
 
         <div
           className="relative font-mono text-[10px] tracking-[0.2em] uppercase"
-          style={{ color: "color-mix(in oklab, var(--nl-oat) 55%, transparent)" }}
+          style={{ color: "rgba(0,0,0,0.45)" }}
         >
           FL Statute 553.791
         </div>
@@ -199,12 +199,12 @@ function LoginPage() {
 
       {/* Right — sign in form */}
       <main className="flex flex-col justify-center px-6 py-12 sm:px-12 lg:px-16">
-        <div className="w-full max-w-sm mx-auto">
+        <div className="w-full max-w-sm mx-auto p-8" style={{ background: "#FFFFFF", border: "1px solid rgba(0,0,0,0.10)", boxShadow: "0 2px 14px rgba(0,0,0,0.06)" }}>
           {/* Mobile wordmark */}
           <Link to="/" className="lg:hidden flex items-center gap-2.5 mb-10">
             <div
               className="h-7 w-7 rounded-lg flex items-center justify-center text-white font-bold text-sm"
-              style={{ background: "linear-gradient(135deg, #9C6B3F 0%, #4E6B5C 100%)", fontFamily: "'Instrument Sans', sans-serif" }}
+              style={{ background: "#9C6B3F", fontFamily: "'Instrument Sans', sans-serif" }}
             >
               C
             </div>
@@ -217,14 +217,14 @@ function LoginPage() {
           </Link>
 
           <div className="space-y-2 mb-8">
-            <div className="label-eyebrow">Builder portal</div>
+            <div className="label-eyebrow" style={{ color: "#9C6B3F", textTransform: "uppercase", letterSpacing: "0.18em" }}>Builder portal</div>
             <h1
               className="text-4xl leading-[1.05] font-bold"
-              style={{ fontFamily: "'Instrument Sans', sans-serif", letterSpacing: "-0.02em", color: "var(--foreground)" }}
+              style={{ fontFamily: "'Instrument Sans', sans-serif", letterSpacing: "-0.02em", color: "#000000" }}
             >
               Sign in.
             </h1>
-            <p className="text-sm text-muted-foreground mt-2">
+            <p className="text-sm mt-2" style={{ color: "rgba(0,0,0,0.55)" }}>
               Access for licensed Florida general contractors.
             </p>
           </div>
@@ -251,7 +251,7 @@ function LoginPage() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="rounded-[3px] h-11"
+                className="rounded-[3px] h-11" style={{ background: "#FFFFFF", border: "1px solid rgba(0,0,0,0.18)", color: "#000000" }}
               />
             </div>
 
@@ -262,7 +262,7 @@ function LoginPage() {
                 </Label>
                 <Link
                   to="/reset-password"
-                  className="font-subline text-[11px] tracking-wide text-muted-foreground hover:text-foreground"
+                  className="font-subline text-[11px] tracking-wide" style={{ color: "#9C6B3F" }}
                 >
                   Forgot?
                 </Link>
@@ -274,7 +274,7 @@ function LoginPage() {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="rounded-[3px] h-11"
+                className="rounded-[3px] h-11" style={{ background: "#FFFFFF", border: "1px solid rgba(0,0,0,0.18)", color: "#000000" }}
               />
             </div>
 
@@ -296,7 +296,7 @@ function LoginPage() {
               type="submit"
               disabled={loading}
               className="w-full h-11 rounded-[3px] font-subline tracking-wide gap-2"
-              style={{ backgroundColor: "#4E6B5C", color: "#FFFFFF" }}
+              style={{ backgroundColor: "#9C6B3F", color: "#FFFFFF" }}
             >
               {loading ? (
                 <>
@@ -324,6 +324,7 @@ function LoginPage() {
             onClick={handleGoogle}
             disabled={googleLoading || loading}
             className="w-full h-11 rounded-[3px] font-subline tracking-wide gap-2"
+            style={{ background: "#FFFFFF", border: "1px solid #000000", color: "#000000" }}
           >
             {googleLoading ? (
               <Loader2 className="h-4 w-4 animate-spin" />
@@ -343,7 +344,7 @@ function LoginPage() {
           <div className="mt-8 pt-6 border-t hairline space-y-3">
             <p className="text-sm">
               New here?{" "}
-              <Link to="/signup" className="underline font-medium">
+              <Link to="/signup" className="underline font-medium" style={{ color: "#9C6B3F" }}>
                 Create an account
               </Link>{" "}
               or continue with Google.
