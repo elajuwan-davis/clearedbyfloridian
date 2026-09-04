@@ -45,6 +45,8 @@ export type DispatchResult = {
     source?: string | null;
     /** Tax roll the valuation came from — the statewide source is a roll behind. */
     assessment_year?: number | null;
+    /** From the FDOR statewide layer; PAPA doesn't return this field. */
+    legal_description?: string | null;
   };
   permit_history: DispatchPriorPermit[];
 };
@@ -186,6 +188,7 @@ export async function runDispatch(input: {
       living_area_sqft?: number | null;
       parcel_source?: string | null;
       assessment_year?: number | null;
+      legal_description?: string | null;
       fetched_at?: string;
     } | null = null;
 
@@ -230,6 +233,7 @@ export async function runDispatch(input: {
         living_area_sqft: parcel?.living_area_sqft ?? null,
         source: parcel?.parcel_source ?? null,
         assessment_year: parcel?.assessment_year ?? null,
+        legal_description: parcel?.legal_description ?? null,
       },
     };
   } catch (err) {

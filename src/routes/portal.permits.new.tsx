@@ -256,6 +256,8 @@ function NewPermitPage() {
     municipalityRegistered: "" as "" | "yes" | "no",
     ownerName: "",
     ownerEntity: "",
+    pcn: "",
+    legalDescription: "",
     signerPhone: "",
     signerEmail: "",
     additionalNotes: "",
@@ -421,6 +423,8 @@ function NewPermitPage() {
                 : "",
           ownerName: r.owner_name ?? "",
           ownerEntity: r.owner_entity ?? "",
+          pcn: r.pcn ?? "",
+          legalDescription: (ip.legal_description as string) ?? "",
           signerPhone: r.signer_phone ?? "",
           signerEmail: r.signer_email ?? "",
           additionalNotes: r.additional_notes ?? "",
@@ -661,6 +665,14 @@ function NewPermitPage() {
       });
       setDispatch(result);
       setDispatchConfirmed(false);
+      // Tax roll data auto-fills the NOC's parcel fields. Owner name is left
+      // alone — the GC's typed owner (from the contract) is the source of
+      // truth, not the tax roll, which can lag a recent sale.
+      setForm((f) => ({
+        ...f,
+        pcn: result.parcel.parcel_id || f.pcn,
+        legalDescription: result.parcel.legal_description || f.legalDescription,
+      }));
     }
   }
 
@@ -968,6 +980,7 @@ function NewPermitPage() {
       // Snapshot the compliance docs the GC chose to attach to this submittal.
       // Persist even an empty array so a later "cleared all" reflects on the permit.
       intake_payload.compliance_submittal = submittalPackage;
+      intake_payload.legal_description = form.legalDescription || null;
 
       const permitPatch = {
         project_name: form.projectName,
@@ -978,6 +991,7 @@ function NewPermitPage() {
         additional_notes: form.additionalNotes || null,
         owner_name: form.ownerName || null,
         owner_entity: form.ownerEntity || null,
+        pcn: form.pcn || null,
         contractor_company: form.contractorCompany || null,
         contractor_qualifier: form.contractorQualifier || null,
         company_address: form.companyAddress || null,
@@ -1938,6 +1952,22 @@ function NewPermitPage() {
                   value={form.ownerName}
                   onChange={(e) => update("ownerName", e.target.value)}
                 />
+                {dispatch?.parcel.owner_name &&
+                  dispatch.parcel.owner_name.trim().toLowerCase() !==
+                    form.ownerName.trim().toLowerCase() && (
+                    <p className="mt-1.5 text-[11px] text-obsidian/60 flex items-center gap-2 flex-wrap">
+                      Tax roll shows:{" "}
+                      <span className="font-medium">{dispatch.parcel.owner_name}</span> — does this
+                      match?
+                      <button
+                        type="button"
+                        onClick={() => update("ownerName", dispatch.parcel.owner_name || "")}
+                        className="font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian underline underline-offset-2"
+                      >
+                        Use this
+                      </button>
+                    </p>
+                  )}
               </div>
               <div>
                 <label className={labelCls}>Name of Trust / Corp / LLC</label>
@@ -1946,6 +1976,28 @@ function NewPermitPage() {
                   value={form.ownerEntity}
                   onChange={(e) => update("ownerEntity", e.target.value)}
                 />
+              </div>
+              <div className="grid gap-5 sm:grid-cols-2">
+                <div>
+                  <label className={labelCls}>Parcel Control Number (PCN)</label>
+                  <input
+                    className={inputCls + " font-mono"}
+                    value={form.pcn}
+                    onChange={(e) => update("pcn", e.target.value)}
+                    placeholder={dispatch?.parcel.parcel_id ? "" : "Not yet resolved from tax roll"}
+                  />
+                </div>
+                <div>
+                  <label className={labelCls}>Legal Description</label>
+                  <input
+                    className={inputCls}
+                    value={form.legalDescription}
+                    onChange={(e) => update("legalDescription", e.target.value)}
+                    placeholder={
+                      dispatch?.parcel.legal_description ? "" : "Not yet resolved from tax roll"
+                    }
+                  />
+                </div>
               </div>
               <div className="grid gap-5 sm:grid-cols-2">
                 <div>
