@@ -337,19 +337,19 @@ function SidebarNav({
   return (
     <div
       className="relative flex h-full min-h-0 flex-col"
-      style={{ backgroundColor: "var(--rail-bg)", borderRight: "1px solid var(--p-border)" }}
+      style={{ backgroundColor: "var(--rail-bg)", borderRight: "1px solid var(--rail-border)" }}
       onMouseLeave={() => isRail && scheduleClose()}
     >
       <Link
         to="/"
         onClick={onNavigate}
-        className={cn("flex h-12 shrink-0 items-center", isRail ? "justify-center px-0" : "px-3.5")}
+        className={cn("flex h-14 shrink-0 items-center", isRail ? "justify-center px-0" : "px-3.5")}
         title="CLEARD"
       >
         {isRail ? (
-          <img src={logoCopper.url} alt="CLEARD" className="h-7 w-7 shrink-0 object-contain" />
+          <img src={logoCopper.url} alt="CLEARD" className="h-9 w-9 shrink-0 object-contain" style={{ filter: "brightness(1.35) saturate(1.15) drop-shadow(0 1px 6px rgba(156,107,63,0.45))" }} />
         ) : (
-          <img src={wordmarkCopper.url} alt="CLEARD" className="h-6 w-auto object-contain" />
+          <img src={wordmarkCopper.url} alt="CLEARD" className="h-9 w-auto object-contain" style={{ filter: "brightness(1.35) saturate(1.15) drop-shadow(0 1px 6px rgba(156,107,63,0.45))" }} />
         )}
       </Link>
 
@@ -510,11 +510,11 @@ function SidebarNav({
       {isAdmin && (
         <div
           className={cn("shrink-0 pb-2", isRail ? "px-1.5 pt-2" : "px-3 pt-2")}
-          style={{ borderTop: "1px solid var(--p-border)" }}
+          style={{ borderTop: "1px solid var(--rail-border)" }}
         >
           <div
             className={cn("flex gap-0.5 rounded-lg p-0.5", isRail ? "flex-col" : "items-stretch")}
-            style={{ backgroundColor: "var(--gray-bg-2)" }}
+            style={{ backgroundColor: "rgba(255,255,255,0.08)" }}
             role="group"
             aria-label="View mode"
           >
@@ -553,7 +553,7 @@ function SidebarNav({
 
       <div
         className={cn("shrink-0 py-2", isRail ? "px-2" : "px-3")}
-        style={{ borderTop: "1px solid var(--p-border)" }}
+        style={{ borderTop: "1px solid var(--rail-border)" }}
       >
         <div className={cn("flex min-w-0 items-center gap-2.5", isRail && "justify-center")}>
           <Link
@@ -809,7 +809,7 @@ function PortalShellInner({ children }: { children: ReactNode }) {
           </Sheet>
 
           <Link to="/" className="flex items-center lg:hidden">
-            <img src={wordmarkCopper.url} alt="CLEARD" className="h-5 w-auto object-contain" />
+            <img src={wordmarkCopper.url} alt="CLEARD" className="h-8 w-auto object-contain" style={{ filter: "brightness(1.3) saturate(1.15)" }} />
           </Link>
 
           {/* Breadcrumb spine — same place on every page */}
