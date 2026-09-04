@@ -47,10 +47,19 @@ const MAPS_KEY: string | undefined =
 
 // Rough bounding box for the state of Florida — used as locationRestriction so
 // suggestions never leak out to Georgia / Alabama / the Bahamas.
+//
+// NOTE: the Maps JS API expects LatLngBoundsLiteral ({south,west,north,east}).
+// The REST-style {low:{latitude,longitude}, high:{...}} shape from the Places
+// HTTP docs is rejected here with `InvalidValueError: in property
+// locationRestriction`, which made every keystroke throw and hand the field
+// over to the Census fallback.
 const FLORIDA_BOUNDS = {
-  low: { latitude: 24.396308, longitude: -87.634896 },
-  high: { latitude: 31.000968, longitude: -79.974307 },
+  south: 24.396308,
+  west: -87.634896,
+  north: 31.000968,
+  east: -79.974307,
 };
+
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type GoogleNS = any;
