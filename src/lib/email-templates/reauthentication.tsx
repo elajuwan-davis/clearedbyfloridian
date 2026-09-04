@@ -39,7 +39,7 @@ const container = { padding: '20px 25px' }
 const h1 = {
   fontSize: '22px',
   fontWeight: 'bold' as const,
-  color: '#2F4F4F',
+  color: '#000000',
   margin: '0 0 20px',
 }
 const text = {
@@ -52,7 +52,7 @@ const codeStyle = {
   fontFamily: 'Courier, monospace',
   fontSize: '22px',
   fontWeight: 'bold' as const,
-  color: '#2F4F4F',
+  color: '#000000',
   margin: '0 0 30px',
 }
-const footer = { fontSize: '12px', color: '#8B9A97', margin: '30px 0 0' }
+const footer = { fontSize: '12px', color: 'rgba(0,0,0,0.45)', margin: '30px 0 0' }

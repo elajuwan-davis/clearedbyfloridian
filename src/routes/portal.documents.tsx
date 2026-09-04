@@ -221,7 +221,7 @@ function DocumentsPage() {
                     <button
                       type="button"
                       onClick={() => setPreview(d)}
-                      className="flex w-full min-w-0 items-center gap-3 text-left transition-colors hover:bg-[#F3EAD9]"
+                      className="flex w-full min-w-0 items-center gap-3 text-left transition-colors hover:bg-[#F6F6F6]"
                       style={{ borderBottom: `1px solid ${CDS.off2}`, padding: "10px 12px" }}
                     >
                       <span

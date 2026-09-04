@@ -33,7 +33,7 @@ function baseOptions() {
   return {
     showProgress: true,
     allowClose: true,
-    overlayColor: "#2F4F4F",
+    overlayColor: "#000000",
     overlayOpacity: 0.6,
     popoverClass: POPOVER_CLASS,
     nextBtnText: "Next",

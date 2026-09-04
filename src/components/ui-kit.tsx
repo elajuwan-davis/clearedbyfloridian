@@ -51,7 +51,7 @@ export function PageShell({
       >
         <div
           className={cn(
-            "mx-auto flex min-h-[56px] flex-wrap items-center gap-x-4 gap-y-2 px-4 py-2.5 sm:px-6",
+            "mx-auto flex min-h-[64px] flex-wrap items-center gap-x-4 gap-y-2 px-4 py-3 sm:px-6 lg:px-8",
             width === "narrow" ? "max-w-3xl" : "max-w-[1600px]",
           )}
         >
@@ -78,7 +78,7 @@ export function PageShell({
               </nav>
             )}
             <div className="flex min-w-0 items-center gap-2.5">
-              <h1 className="truncate text-[18px] font-semibold leading-tight tracking-[-0.02em]">
+              <h1 className="truncate text-[22px] font-bold leading-tight tracking-[-0.02em]">
                 {title}
               </h1>
               {meta && (
@@ -91,7 +91,7 @@ export function PageShell({
         {toolbar && (
           <div
             className={cn(
-              "mx-auto flex min-w-0 flex-wrap items-center gap-2 px-4 pb-2.5 sm:px-6",
+              "mx-auto flex min-w-0 flex-wrap items-center gap-2 px-4 pb-3 sm:px-6 lg:px-8",
               width === "narrow" ? "max-w-3xl" : "max-w-[1600px]",
             )}
           >
@@ -101,7 +101,7 @@ export function PageShell({
       </div>
       <div
         className={cn(
-          "mx-auto min-w-0 px-4 py-4 sm:px-6",
+          "mx-auto min-w-0 px-4 py-6 sm:px-6 lg:px-8",
           width === "narrow" ? "max-w-3xl" : "max-w-[1600px]",
         )}
       >
@@ -148,7 +148,7 @@ export function PageHeader({
       )}
       <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 sm:flex sm:flex-wrap sm:justify-between">
         <div className="min-w-0">
-          <h1 className="truncate text-[18px] font-semibold leading-tight tracking-[-0.02em]">
+          <h1 className="truncate text-[22px] font-bold leading-tight tracking-[-0.02em]">
             {title}
           </h1>
           {description && (
@@ -323,14 +323,14 @@ export function SearchInput({
   return (
     <div className={cn("relative min-w-0", className)}>
       <Search
-        className="pointer-events-none absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground"
+        className="pointer-events-none absolute left-2.5 top-1/2 z-[1] h-3.5 w-3.5 -translate-y-1/2 text-[#9C6B3F]"
         strokeWidth={1.75}
       />
       <input
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="w-full border-0 pl-8 pr-2 text-[12.5px] outline-none focus:ring-1 focus:ring-[var(--p-info)]"
+        className="w-full !pl-8 pr-2 text-[13px]"
       />
     </div>
   );
@@ -354,20 +354,20 @@ export type MetricTone = "neutral" | "info" | "success" | "warning" | "danger" |
 
 const toneText: Record<MetricTone, string> = {
   neutral: "text-foreground",
-  info: "text-[#673147]",
-  success: "text-[#4E6B5C]",
-  warning: "text-[#9A7B2E]",
-  danger: "text-[#8C3B3B]",
-  purple: "text-[#7A5C8A]",
+  info: "text-[#9C6B3F]",
+  success: "text-[#2E7D32]",
+  warning: "text-[#B7791F]",
+  danger: "text-[#C0392B]",
+  purple: "text-[#9C6B3F]",
 };
 
 const toneWash: Record<MetricTone, string> = {
   neutral: "bg-white/[0.06] text-muted-foreground",
-  info: "bg-[#673147]/12 text-[#673147]",
-  success: "bg-[#673147]/12 text-[#4E6B5C]",
-  warning: "bg-[#9A7B2E]/12 text-[#9A7B2E]",
-  danger: "bg-[#8C3B3B]/12 text-[#8C3B3B]",
-  purple: "bg-[#7A5C8A]/12 text-[#7A5C8A]",
+  info: "bg-[#9C6B3F]/12 text-[#9C6B3F]",
+  success: "bg-[#2E7D32]/12 text-[#2E7D32]",
+  warning: "bg-[#B7791F]/12 text-[#B7791F]",
+  danger: "bg-[#C0392B]/12 text-[#C0392B]",
+  purple: "bg-[#9C6B3F]/12 text-[#9C6B3F]",
 };
 
 /** Compact metric — label above, bold number, muted context. No card chrome. */
@@ -485,7 +485,7 @@ export function EmptyState({
 }) {
   return (
     <div className="flex flex-col items-center justify-center gap-2 px-6 py-14 text-center">
-      <span className="grid h-10 w-10 place-items-center rounded-xl bg-white/[0.05] text-muted-foreground">
+      <span className="grid h-10 w-10 place-items-center rounded-xl bg-[#9C6B3F]/10 text-[#9C6B3F]">
         {icon ?? <Inbox className="h-4 w-4" strokeWidth={1.75} />}
       </span>
       <div className="text-[14px] font-medium">{title}</div>
@@ -507,5 +507,5 @@ export function LoadingRow({ label = "Loading" }: { label?: string }) {
 }
 
 export function SkeletonBlock({ className }: { className?: string }) {
-  return <div className={cn("animate-pulse rounded-lg bg-white/[0.05]", className)} />;
+  return <div className={cn("animate-pulse rounded-lg bg-[#F0F0F0]", className)} />;
 }

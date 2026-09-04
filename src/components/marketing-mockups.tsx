@@ -12,11 +12,11 @@ export const M = {
   bg0: "#2B1620",
   bg1: "#2B1620",
   bg2: "rgba(255,255,255,0.05)",
-  line: "rgba(250,243,230,0.12)",
-  line2: "rgba(250,243,230,0.07)",
+  line: "rgba(255,255,255,0.12)",
+  line2: "rgba(255,255,255,0.07)",
   text: "#FFFFFF",
-  muted: "rgba(250,243,230,0.56)",
-  faint: "rgba(250,243,230,0.34)",
+  muted: "rgba(255,255,255,0.56)",
+  faint: "rgba(255,255,255,0.34)",
   teal: "#9C6B3F",
   amber: "#E0A83A",
   red: "#E06060",
@@ -42,7 +42,7 @@ const CHIP: Record<string, { bg: string; fg: string }> = {
 };
 
 export function Chip({ children }: { children: string }) {
-  const c = CHIP[children.toUpperCase()] ?? { bg: "rgba(250,243,230,0.08)", fg: M.faint };
+  const c = CHIP[children.toUpperCase()] ?? { bg: "rgba(255,255,255,0.08)", fg: M.faint };
   return (
     <span
       className="inline-block px-2 py-[3px] text-[9.5px] font-bold uppercase tracking-[0.1em] whitespace-nowrap"
@@ -92,7 +92,7 @@ export function BrowserFrame({
         style={{ background: M.bg0, borderBottom: `1px solid ${M.line}` }}
       >
         <div className="flex items-center gap-1.5">
-          {["rgba(250,243,230,0.22)", "rgba(250,243,230,0.16)", "rgba(250,243,230,0.12)"].map((c) => (
+          {["rgba(255,255,255,0.22)", "rgba(255,255,255,0.16)", "rgba(255,255,255,0.12)"].map((c) => (
             <span key={c} className="h-2 w-2" style={{ background: c, borderRadius: 999 }} />
           ))}
         </div>

@@ -481,7 +481,7 @@ export function VictoriaPermitAssistant({
         data-tour="victoria-permit"
         onClick={start}
         title="Fill this permit by voice"
-        className="fixed bottom-6 right-6 z-40 inline-flex items-center gap-2 rounded-full bg-obsidian px-5 py-3.5 font-mono text-[10px] uppercase tracking-[0.16em] text-paper shadow-[0_18px_40px_-16px_rgba(47,79,79,0.65)] hover:bg-obsidian/90"
+        className="fixed bottom-6 right-6 z-40 inline-flex items-center gap-2 rounded-full bg-obsidian px-5 py-3.5 font-mono text-[10px] uppercase tracking-[0.16em] text-paper shadow-[0_18px_40px_-16px_rgba(0,0,0,0.65)] hover:bg-obsidian/90"
       >
         <Mic className="h-4 w-4" strokeWidth={1.75} />
         Fill with Victoria
@@ -492,7 +492,7 @@ export function VictoriaPermitAssistant({
   return (
     <div
       data-tour="victoria-permit"
-      className="fixed bottom-6 right-6 z-40 w-[21rem] rounded-[3px] border border-obsidian/20 bg-white p-4 shadow-[0_24px_60px_-20px_rgba(47,79,79,0.5)]"
+      className="fixed bottom-6 right-6 z-40 w-[21rem] rounded-[3px] border border-obsidian/20 bg-white p-4 shadow-[0_24px_60px_-20px_rgba(0,0,0,0.5)]"
     >
       <div className="flex items-center justify-between gap-3">
         <div className="inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.16em] text-obsidian/55">

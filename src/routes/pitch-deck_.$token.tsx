@@ -58,7 +58,7 @@ function InvitePitchDeck() {
   return (
     <div className="cl-public flex min-h-screen items-center justify-center px-6" style={{ background: SLATE }}>
       {state.status === "loading" && (
-        <div className="text-sm" style={{ color: "rgba(250,243,230,0.7)" }}>
+        <div className="text-sm" style={{ color: "rgba(255,255,255,0.7)" }}>
           Checking your invitation…
         </div>
       )}
@@ -83,7 +83,7 @@ function Dead({ state }: { state: Extract<State, { status: "invalid" | "revoked"
       <h1 className="mt-4 text-2xl" style={{ color: OAT, fontWeight: 500 }}>
         Access closed
       </h1>
-      <p className="mt-2 text-sm" style={{ color: "rgba(250,243,230,0.7)" }}>
+      <p className="mt-2 text-sm" style={{ color: "rgba(255,255,255,0.7)" }}>
         {copy} Please request a new link from the Cleard team.
       </p>
       <Link to="/" className="mt-6 inline-block px-4 py-2.5 text-[13.5px]" style={{ background: OAT, color: SLATE, fontWeight: 600 }}>
@@ -140,7 +140,7 @@ function Unlock({
       <div className="mt-5 flex items-center gap-2">
         <div
           className="flex-1 px-3 py-3 text-center text-lg tracking-[0.32em]"
-          style={{ background: "rgba(47,79,79,0.1)", fontWeight: 600 }}
+          style={{ background: "rgba(0,0,0,0.1)", fontWeight: 600 }}
         >
           {invite.passcode}
         </div>
@@ -170,10 +170,10 @@ function Unlock({
           }}
           placeholder="Passcode"
           className="mt-2 w-full px-3 py-2.5 text-sm tracking-[0.2em] outline-none"
-          style={{ border: "1px solid rgba(47,79,79,0.35)", background: "#fff" }}
+          style={{ border: "1px solid rgba(0,0,0,0.35)", background: "#fff" }}
         />
         {error && (
-          <div className="mt-2 text-[12.5px]" style={{ color: "#673147" }}>
+          <div className="mt-2 text-[12.5px]" style={{ color: "#9C6B3F" }}>
             {error}
           </div>
         )}

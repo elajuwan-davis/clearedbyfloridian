@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight, Maximize2 } from "lucide-react";
 
-export const SLATE = "#2F4F4F";
-export const OAT = "#FAF3E6";
+export const SLATE = "#000000";
+export const OAT = "#FFFFFF";
 
 type Slide = { img: string };
 
@@ -158,7 +158,7 @@ export function DeckViewer({ footer }: { footer?: React.ReactNode }) {
 
       <div
         className="absolute right-4 top-4 flex items-center gap-4 text-[12px]"
-        style={{ color: "rgba(250,243,230,0.7)" }}
+        style={{ color: "rgba(255,255,255,0.7)" }}
       >
         {footer}
         <span>

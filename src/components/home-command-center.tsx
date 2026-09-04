@@ -527,7 +527,7 @@ export function VictoriaSpotlight() {
                 {card.body}
               </p>
               <span
-                className="cl-glass foil-sheen cl-hoverable mt-6 inline-flex cursor-default items-center gap-2 px-5 py-2.5 text-[12.5px]"
+                className="p-btn p-btn-primary cl-glass foil-sheen cl-hoverable mt-6 inline-flex cursor-default items-center gap-2"
                 style={{
                   backgroundImage: "var(--gradient-copper)",
                   color: "#FFF8EC",
@@ -1017,14 +1017,14 @@ export function ReplaceThePermitOffice() {
       <style>{`
         .cl-handoff:hover { color: ${PLUM} !important; }
         .cl-chaos { transition: transform 220ms ease, box-shadow 220ms ease; }
-        .cl-chaos:hover { transform: rotate(0deg) !important; box-shadow: 5px 6px 0 rgba(103,49,71,0.12); z-index: 20; }
+        .cl-chaos:hover { transform: rotate(0deg) !important; box-shadow: 5px 6px 0 rgba(156,107,63,0.12); z-index: 20; }
         .cl-copper {
           background:
             linear-gradient(145deg, #F6DCB6 0%, #D79A62 24%, #A9683C 52%, #8E5A38 68%, #E9C49B 86%, #7A4A2C 100%);
           box-shadow:
             inset 0 1px 1px rgba(255,244,224,0.75),
             inset 0 -2px 4px rgba(70,35,15,0.55),
-            0 2px 6px rgba(103,49,71,0.22);
+            0 2px 6px rgba(156,107,63,0.22);
           position: relative;
           overflow: hidden;
         }
@@ -1162,7 +1162,7 @@ export function AskVictoriaLauncher() {
               to="/join"
               hash="request"
               onClick={() => setOpen(false)}
-              className="cl-hoverable mt-5 inline-flex items-center gap-2 px-4 py-2.5 text-[12.5px] no-underline"
+              className="p-btn p-btn-primary cl-hoverable mt-5 inline-flex items-center gap-2 no-underline"
               style={{ backgroundImage: "var(--gradient-copper)", color: "#FFF8EC", fontWeight: 600 }}
             >
               Get access to Victoria <ArrowRight className="cl-arrow h-3.5 w-3.5" strokeWidth={2} />

@@ -204,7 +204,7 @@ export function ProjectDetail({ project }: { project: Project }) {
             </Button>
             {portal?.url ? (
               <a href={portal.url} target="_blank" rel="noopener noreferrer"
-                 className="inline-flex items-center gap-1.5 border border-[#2F4F4F] bg-[#2F4F4F] px-3 py-1.5 text-xs font-medium text-white rounded-[3px] hover:opacity-90">
+                 className="inline-flex items-center gap-1.5 border border-[#000000] bg-[#000000] px-3 py-1.5 text-xs font-medium text-white rounded-[3px] hover:opacity-90">
                 <ExternalLink className="h-3.5 w-3.5" /> Open {portal.name} Portal
               </a>
             ) : (
@@ -289,7 +289,7 @@ function TabTrigger({ value, icon, label }: { value: string; icon: React.ReactNo
   return (
     <TabsTrigger
       value={value}
-      className="gap-1.5 rounded-[3px] px-3 py-2 text-xs font-medium data-[state=active]:bg-[#2F4F4F] data-[state=active]:text-white data-[state=active]:shadow-sm"
+      className="gap-1.5 rounded-[3px] px-3 py-2 text-xs font-medium data-[state=active]:bg-[#000000] data-[state=active]:text-white data-[state=active]:shadow-sm"
     >
       {icon}
       <span>{label}</span>
@@ -369,7 +369,7 @@ function OverviewTab({ project }: { project: Project }) {
                 <li key={s.key} className="relative">
                   <span
                     className={`absolute -left-[29px] top-1 flex h-4 w-4 items-center justify-center rounded-full border-2 ${
-                      done || current ? "border-[#2F4F4F] bg-[#2F4F4F]" : "border-obsidian/25 bg-white"
+                      done || current ? "border-[#000000] bg-[#000000]" : "border-obsidian/25 bg-white"
                     }`}
                   >
                     {done ? <CheckCircle2 className="h-2.5 w-2.5 text-white" /> : <Circle className="h-1.5 w-1.5 text-white/70" />}
@@ -1257,7 +1257,7 @@ function PortalLoginPopover({ project }: { project: Project }) {
       <PopoverTrigger asChild>
         <button
           type="button"
-          className="inline-flex items-center gap-1.5 border border-[#2F4F4F] bg-[#2F4F4F] px-3 py-1.5 text-xs font-medium text-white rounded-[3px] hover:opacity-90"
+          className="inline-flex items-center gap-1.5 border border-[#000000] bg-[#000000] px-3 py-1.5 text-xs font-medium text-white rounded-[3px] hover:opacity-90"
         >
           <KeyRound className="h-3.5 w-3.5" /> Portal Login
         </button>

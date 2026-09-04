@@ -710,7 +710,7 @@ function Laptop({ activeTab, children }: { activeTab: number; children: React.Re
         className="flex h-full max-h-[400px] w-full max-w-[720px] flex-col overflow-hidden"
         style={{
           background: "#241017",
-          border: "1px solid rgba(250,243,230,0.14)",
+          border: "1px solid rgba(255,255,255,0.14)",
           borderRadius: 10,
           boxShadow: "0 40px 70px -40px rgba(43,22,32,0.55)",
           animation: "clRise 700ms cubic-bezier(0.16,1,0.3,1) both",
@@ -718,7 +718,7 @@ function Laptop({ activeTab, children }: { activeTab: number; children: React.Re
       >
         <div
           className="flex items-center gap-3 px-3.5 py-2.5"
-          style={{ borderBottom: "1px solid rgba(250,243,230,0.12)" }}
+          style={{ borderBottom: "1px solid rgba(255,255,255,0.12)" }}
         >
           <img src={cLogo.url} alt="" className="h-3.5 w-3.5 object-contain" />
           <span style={{ fontFamily: SERIF, color: OAT, fontSize: 12.5, fontWeight: 600 }}>Cleard</span>
@@ -730,7 +730,7 @@ function Laptop({ activeTab, children }: { activeTab: number; children: React.Re
                 style={{
                   fontFamily: MONO,
                   letterSpacing: "0.14em",
-                  color: i === activeTab ? OAT : "rgba(250,243,230,0.42)",
+                  color: i === activeTab ? OAT : "rgba(255,255,255,0.42)",
                   borderBottom: i === activeTab ? `1px solid ${BRONZE}` : "1px solid transparent",
                   paddingBottom: 2,
                 }}
@@ -801,15 +801,15 @@ function Metric({
     <div
       className="group flex flex-col justify-center px-2.5 py-2.5 transition-colors duration-300"
       style={{
-        border: "1px solid rgba(250,243,230,0.14)",
+        border: "1px solid rgba(255,255,255,0.14)",
         borderRadius: 6,
-        background: "rgba(250,243,230,0.02)",
+        background: "rgba(255,255,255,0.02)",
         animation: `clRise 640ms cubic-bezier(0.16,1,0.3,1) ${delay}ms both`,
       }}
     >
       <div
         className="flex items-center gap-1.5 text-[7.5px] uppercase"
-        style={{ fontFamily: MONO, letterSpacing: "0.16em", color: "rgba(250,243,230,0.55)" }}
+        style={{ fontFamily: MONO, letterSpacing: "0.16em", color: "rgba(255,255,255,0.55)" }}
       >
         <span className="h-1 w-1 rounded-full" style={{ background: color, boxShadow: `0 0 6px ${color}` }} />
         {label}
@@ -867,7 +867,7 @@ function PermitAreaChart() {
             x2={W}
             y1={H * g}
             y2={H * g}
-            stroke="rgba(250,243,230,0.09)"
+            stroke="rgba(255,255,255,0.09)"
             strokeWidth={0.6}
           />
         ))}
@@ -898,7 +898,7 @@ function PermitAreaChart() {
         })}
 
         {hover !== null && (
-          <line x1={x(hover)} x2={x(hover)} y1={0} y2={H} stroke="rgba(250,243,230,0.35)" strokeWidth={0.7} />
+          <line x1={x(hover)} x2={x(hover)} y1={0} y2={H} stroke="rgba(255,255,255,0.35)" strokeWidth={0.7} />
         )}
 
         {CHART_LABELS.map((_, i) => (
@@ -920,7 +920,7 @@ function PermitAreaChart() {
             <span
               key={s.key}
               className="flex items-center gap-1 text-[7.5px] uppercase"
-              style={{ fontFamily: MONO, letterSpacing: "0.13em", color: "rgba(250,243,230,0.6)" }}
+              style={{ fontFamily: MONO, letterSpacing: "0.13em", color: "rgba(255,255,255,0.6)" }}
             >
               <span className="h-[5px] w-[5px] rounded-full" style={{ background: s.color }} />
               {s.key}
@@ -929,7 +929,7 @@ function PermitAreaChart() {
         </div>
         <span
           className="text-[7.5px] uppercase tabular-nums"
-          style={{ fontFamily: MONO, letterSpacing: "0.13em", color: hover === null ? "rgba(250,243,230,0.4)" : OAT }}
+          style={{ fontFamily: MONO, letterSpacing: "0.13em", color: hover === null ? "rgba(255,255,255,0.4)" : OAT }}
         >
           {hover === null
             ? "Hover for detail"
@@ -971,7 +971,7 @@ function SceneDashboard() {
           <div
             className="min-w-0 sm:col-span-3"
             style={{
-              border: "1px solid rgba(250,243,230,0.14)",
+              border: "1px solid rgba(255,255,255,0.14)",
               borderRadius: 6,
               padding: 10,
               animation: "clRise 700ms 220ms cubic-bezier(0.16,1,0.3,1) both",
@@ -986,7 +986,7 @@ function SceneDashboard() {
           <div
             className="min-w-0 sm:col-span-2"
             style={{
-              border: "1px solid rgba(250,243,230,0.14)",
+              border: "1px solid rgba(255,255,255,0.14)",
               borderRadius: 6,
               padding: 10,
               animation: "clRise 700ms 320ms cubic-bezier(0.16,1,0.3,1) both",
@@ -1004,7 +1004,7 @@ function SceneDashboard() {
                     onFocus={() => setSel(i)}
                     className="w-full cursor-default px-1.5 py-1 text-left transition-all duration-300"
                     style={{
-                      background: on ? "rgba(250,243,230,0.07)" : "transparent",
+                      background: on ? "rgba(255,255,255,0.07)" : "transparent",
                       border: `1px solid ${on ? `${STATUS[p.status].color}55` : "transparent"}`,
                       borderRadius: 4,
                     }}
@@ -1016,7 +1016,7 @@ function SceneDashboard() {
                       <StatusPill k={p.status} />
                     </div>
                     <div className="mt-1 flex items-center gap-2">
-                      <div className="h-[3px] flex-1" style={{ background: "rgba(250,243,230,0.14)" }}>
+                      <div className="h-[3px] flex-1" style={{ background: "rgba(255,255,255,0.14)" }}>
                         <div
                           className="h-full transition-all duration-700"
                           style={{ background: STATUS[p.status].color, width: on ? `${p.pct}%` : `${p.pct * 0.9}%` }}
@@ -1024,14 +1024,14 @@ function SceneDashboard() {
                       </div>
                       <span
                         className="shrink-0 text-[7.5px] tabular-nums"
-                        style={{ fontFamily: MONO, color: "rgba(250,243,230,0.55)" }}
+                        style={{ fontFamily: MONO, color: "rgba(255,255,255,0.55)" }}
                       >
                         {p.pct}%
                       </span>
                     </div>
                     <div
                       className="truncate text-[8px]"
-                      style={{ color: "rgba(250,243,230,0.45)", height: on ? 12 : 0, overflow: "hidden", transition: "height 300ms ease" }}
+                      style={{ color: "rgba(255,255,255,0.45)", height: on ? 12 : 0, overflow: "hidden", transition: "height 300ms ease" }}
                     >
                       {p.addr}
                     </div>
@@ -1053,8 +1053,8 @@ function DarkEyebrow({ children }: { children: React.ReactNode }) {
       style={{
         fontFamily: MONO,
         letterSpacing: "0.16em",
-        color: "rgba(250,243,230,0.55)",
-        borderBottom: "1px solid rgba(250,243,230,0.12)",
+        color: "rgba(255,255,255,0.55)",
+        borderBottom: "1px solid rgba(255,255,255,0.12)",
       }}
     >
       {children}
@@ -1111,7 +1111,7 @@ function ScenePortal() {
           <div
             className="min-w-0 sm:col-span-2"
             style={{
-              border: "1px solid rgba(250,243,230,0.14)",
+              border: "1px solid rgba(255,255,255,0.14)",
               borderRadius: 6,
               padding: 10,
               animation: "clRise 640ms cubic-bezier(0.16,1,0.3,1) both",
@@ -1128,7 +1128,7 @@ function ScenePortal() {
                       className="flex h-[13px] w-[13px] shrink-0 items-center justify-center text-[7px] transition-all duration-400"
                       style={{
                         borderRadius: 3,
-                        border: `1px solid ${done ? STATUS.completed.color : now ? BRONZE : "rgba(250,243,230,0.22)"}`,
+                        border: `1px solid ${done ? STATUS.completed.color : now ? BRONZE : "rgba(255,255,255,0.22)"}`,
                         background: done ? `${STATUS.completed.color}26` : "transparent",
                         color: STATUS.completed.color,
                         fontFamily: MONO,
@@ -1138,14 +1138,14 @@ function ScenePortal() {
                     </span>
                     <span
                       className="min-w-0 truncate text-[9.5px] transition-colors duration-400"
-                      style={{ color: done || now ? OAT : "rgba(250,243,230,0.4)" }}
+                      style={{ color: done || now ? OAT : "rgba(255,255,255,0.4)" }}
                     >
                       {s}
                     </span>
                     {now && (
                       <span
                         className="ml-auto h-[3px] w-6 shrink-0 overflow-hidden"
-                        style={{ background: "rgba(250,243,230,0.16)" }}
+                        style={{ background: "rgba(255,255,255,0.16)" }}
                       >
                         <span
                           className="block h-full"
@@ -1163,8 +1163,8 @@ function ScenePortal() {
                 fontFamily: MONO,
                 letterSpacing: "0.16em",
                 borderRadius: 4,
-                border: `1px solid ${step >= FILING_STEPS.length ? STATUS.completed.color : "rgba(250,243,230,0.2)"}`,
-                color: step >= FILING_STEPS.length ? STATUS.completed.color : "rgba(250,243,230,0.45)",
+                border: `1px solid ${step >= FILING_STEPS.length ? STATUS.completed.color : "rgba(255,255,255,0.2)"}`,
+                color: step >= FILING_STEPS.length ? STATUS.completed.color : "rgba(255,255,255,0.45)",
                 background: step >= FILING_STEPS.length ? `${STATUS.completed.color}1A` : "transparent",
               }}
             >
@@ -1176,7 +1176,7 @@ function ScenePortal() {
           <div
             className="relative min-w-0 overflow-hidden sm:col-span-3"
             style={{
-              border: "1px solid rgba(250,243,230,0.14)",
+              border: "1px solid rgba(255,255,255,0.14)",
               borderRadius: 6,
               padding: 10,
               animation: "clRise 640ms 140ms cubic-bezier(0.16,1,0.3,1) both",
@@ -1194,16 +1194,16 @@ function ScenePortal() {
                     key={`${p.id}-${i}`}
                     className="mb-1.5 flex items-center gap-2 px-2 py-1.5"
                     style={{
-                      border: "1px solid rgba(250,243,230,0.1)",
+                      border: "1px solid rgba(255,255,255,0.1)",
                       borderLeft: `2px solid ${STATUS[p.status].color}`,
                       borderRadius: 4,
-                      background: "rgba(250,243,230,0.03)",
+                      background: "rgba(255,255,255,0.03)",
                     }}
                   >
                     <span className="shrink-0 text-[9px]" style={{ fontFamily: MONO, color: OAT }}>
                       {p.id}
                     </span>
-                    <span className="min-w-0 flex-1 truncate text-[8.5px]" style={{ color: "rgba(250,243,230,0.55)" }}>
+                    <span className="min-w-0 flex-1 truncate text-[8.5px]" style={{ color: "rgba(255,255,255,0.55)" }}>
                       {p.addr} · {p.juris}
                     </span>
                     <StatusPill k={p.status} />

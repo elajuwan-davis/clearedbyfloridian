@@ -167,7 +167,7 @@ function FourEleven() {
         <div className="mt-16">
           <Link
             to="/contact"
-            className="inline-flex items-center px-6 py-3 text-[14px] no-underline"
+            className="p-btn p-btn-primary inline-flex items-center no-underline"
             style={{
               backgroundImage: "var(--gradient-copper)",
               border: "1px solid color-mix(in oklab, var(--copper-deep) 70%, transparent)",

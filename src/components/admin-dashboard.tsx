@@ -253,11 +253,11 @@ export function AdminDashboard() {
 
   const donut = useMemo(() => {
     const buckets: Array<{ name: string; value: number; color: string }> = [
-      { name: "Pre-check", value: permits.filter((p) => ["submitted", "in_review", "pending"].includes(p.status)).length, color: "#9A7B2E" },
-      { name: "En route", value: permits.filter((p) => ["inspection_scheduled", "permit_issued"].includes(p.status)).length, color: "#673147" },
-      { name: "Corrections", value: correctionsCount, color: "#7A5C8A" },
-      { name: "On hold", value: permits.filter((p) => p.status === "on_hold").length, color: "#8C3B3B" },
-      { name: "Cleared", value: permits.filter((p) => ["approved", "inspection_complete", "resubmitted", "resubmitted_to_county", "correction_response_under_review"].includes(p.status)).length, color: "#673147" },
+      { name: "Pre-check", value: permits.filter((p) => ["submitted", "in_review", "pending"].includes(p.status)).length, color: "#B7791F" },
+      { name: "En route", value: permits.filter((p) => ["inspection_scheduled", "permit_issued"].includes(p.status)).length, color: "#9C6B3F" },
+      { name: "Corrections", value: correctionsCount, color: "#9C6B3F" },
+      { name: "On hold", value: permits.filter((p) => p.status === "on_hold").length, color: "#C0392B" },
+      { name: "Cleared", value: permits.filter((p) => ["approved", "inspection_complete", "resubmitted", "resubmitted_to_county", "correction_response_under_review"].includes(p.status)).length, color: "#9C6B3F" },
     ];
     return buckets.filter((b) => b.value > 0);
   }, [permits, correctionsCount]);
@@ -380,7 +380,7 @@ export function AdminDashboard() {
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   placeholder="Search permits, projects, clients, addresses…"
-                  className="h-8 w-full border pl-8 pr-3 text-[13px] outline-none focus:border-white/15"
+                  className="h-8 w-full border pl-9 pr-3 text-[13px] outline-none focus:border-copper"
                 />
               </div>
               <Select value={countyFilter} onValueChange={(v) => setCountyFilter(v as typeof countyFilter)}>
@@ -493,7 +493,7 @@ export function AdminDashboard() {
                     <li key={`${e.title}-${i}`} className="flex min-w-0 items-start gap-2.5">
                       <span
                         className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full"
-                        style={{ backgroundColor: e.tone === "success" ? "#673147" : "#673147" }}
+                        style={{ backgroundColor: e.tone === "success" ? "#9C6B3F" : "#9C6B3F" }}
                       />
                       <div className="min-w-0 flex-1">
                         <div className="truncate text-[13px] font-medium">{e.title}</div>
@@ -553,7 +553,7 @@ export function AdminDashboard() {
                   <span className="font-medium tabular-nums">{onTime}%</span>
                 </div>
                 <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-white/[0.07]">
-                  <div className="h-full rounded-full" style={{ width: `${onTime}%`, backgroundColor: "#673147" }} />
+                  <div className="h-full rounded-full" style={{ width: `${onTime}%`, backgroundColor: "#9C6B3F" }} />
                 </div>
               </div>
             </div>
@@ -566,14 +566,14 @@ export function AdminDashboard() {
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
                     <Pie
-                      data={donut.length ? donut : [{ name: "None", value: 1, color: "#1E3434" }]}
+                      data={donut.length ? donut : [{ name: "None", value: 1, color: "#2B1620" }]}
                       dataKey="value"
                       innerRadius={48}
                       outerRadius={66}
                       paddingAngle={2}
                       stroke="none"
                     >
-                      {(donut.length ? donut : [{ name: "None", value: 1, color: "#1E3434" }]).map((d) => (
+                      {(donut.length ? donut : [{ name: "None", value: 1, color: "#2B1620" }]).map((d) => (
                         <Cell key={d.name} fill={d.color} />
                       ))}
                     </Pie>

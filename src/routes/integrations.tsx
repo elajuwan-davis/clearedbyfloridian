@@ -261,7 +261,7 @@ function PlatformRequestForm() {
             <button
               type="submit"
               disabled={state === "sending"}
-              className="inline-flex h-14 w-full items-center justify-center gap-2 font-mono text-[11px] uppercase transition-opacity hover:opacity-85 disabled:opacity-50"
+              className="p-btn p-btn-primary inline-flex w-full items-center justify-center gap-2 transition-opacity hover:opacity-85 disabled:opacity-50"
               style={{ backgroundImage: "var(--gradient-copper)", color: "#FFFFFF", letterSpacing: "0.24em", borderRadius: 0 }}
             >
               {state === "sending" ? <Loader2 className="h-4 w-4 animate-spin" /> : "Send it over"}

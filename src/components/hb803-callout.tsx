@@ -85,7 +85,7 @@ export function Hb803Callout({ background = OAT }: { background?: string }) {
 
           <Link
             to="/join"
-            className="mt-10 inline-flex items-center px-6 py-3 text-[14px] no-underline"
+            className="p-btn p-btn-primary mt-10 inline-flex items-center no-underline"
             style={{ backgroundImage: "var(--gradient-copper)", color: "#FFFFFF", fontWeight: 700 }}
           >
             Put the reduction to work →

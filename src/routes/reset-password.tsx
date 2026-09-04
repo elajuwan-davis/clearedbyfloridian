@@ -158,7 +158,7 @@ function ResetPasswordPage() {
                 type="submit"
                 disabled={loading}
                 className="w-full h-11 rounded-[3px] font-subline tracking-wide gap-2"
-                style={{ backgroundColor: "#4E6B5C", color: "#FFFFFF" }}
+                style={{ backgroundColor: "#2E7D32", color: "#FFFFFF" }}
               >
                 {loading ? (
                   <>
@@ -213,7 +213,7 @@ function ResetPasswordPage() {
               type="submit"
               disabled={loading}
               className="w-full h-11 rounded-[3px] font-subline tracking-wide gap-2"
-              style={{ backgroundColor: "#4E6B5C", color: "#FFFFFF" }}
+              style={{ backgroundColor: "#2E7D32", color: "#FFFFFF" }}
             >
               {loading ? (
                 <>

@@ -272,7 +272,7 @@ export function PermitCostCalculator({ background = OFF }: { background?: string
 
             <Link
               to="/join"
-              className="mt-8 inline-flex items-center px-6 py-3 text-[14px] no-underline"
+              className="p-btn p-btn-primary mt-8 inline-flex items-center no-underline"
               style={{ backgroundImage: "var(--gradient-copper)", color: "#FFFFFF", fontWeight: 700 }}
             >
               See how Cleard compares →

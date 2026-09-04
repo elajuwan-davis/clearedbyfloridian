@@ -48,7 +48,7 @@ const container = { padding: '20px 25px' }
 const h1 = {
   fontSize: '22px',
   fontWeight: 'bold' as const,
-  color: '#2F4F4F',
+  color: '#000000',
   margin: '0 0 20px',
 }
 const text = {
@@ -58,11 +58,11 @@ const text = {
   margin: '0 0 25px',
 }
 const button = {
-  backgroundColor: '#2F4F4F',
+  backgroundColor: '#000000',
   color: '#faf3e6',
   fontSize: '14px',
   borderRadius: '8px',
   padding: '12px 20px',
   textDecoration: 'none',
 }
-const footer = { fontSize: '12px', color: '#8B9A97', margin: '30px 0 0' }
+const footer = { fontSize: '12px', color: 'rgba(0,0,0,0.45)', margin: '30px 0 0' }
