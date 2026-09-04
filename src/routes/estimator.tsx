@@ -11,7 +11,7 @@ import {
 const OAT = "#FFFFFF";
 const SLATE = "#000000";
 const PLUM = "#000000";
-const LINE = "#E4DACB";
+const LINE = "rgba(0,0,0,0.12)";
 const SERIF = '"Instrument Sans", sans-serif';
 
 export const Route = createFileRoute("/estimator")({

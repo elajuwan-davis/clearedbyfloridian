@@ -35,9 +35,9 @@ export const Route = createFileRoute("/municipalities")({
 
 const BG = "#FFFFFF";
 const SURFACE = "#FFFFFF";
-const BORDER = "#3F5C5A";
+const BORDER = "rgba(0,0,0,0.12)";
 const TEAL = "#9C6B3F";
-const TITLE = "#FFFFFF";
+const TITLE = "#000000";
 const MUTED = "rgba(250, 243, 230, 0.66)";
 
 const PROBLEM = [

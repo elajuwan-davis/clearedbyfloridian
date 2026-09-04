@@ -17,7 +17,7 @@ const GRAY = "#000000";
 const LIGHT = "#000000";
 const GREEN = "#000000";
 const TEAL = "#9C6B3F";
-const BORDER = "#FFFFFF";
+const BORDER = "rgba(0,0,0,0.12)";
 const OFF = "#FFFFFF";
 const PAPER = "#FFFFFF";
 

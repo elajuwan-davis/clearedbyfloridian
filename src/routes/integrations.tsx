@@ -31,7 +31,7 @@ const INK = "#000000";
 const OAT = "#FFFFFF";
 const GRAY = "#000000";
 const PLUM = "#000000";
-const BORDER = "#FFFFFF";
+const BORDER = "rgba(0,0,0,0.12)";
 const SERIF = "'Instrument Sans', sans-serif";
 const MONO = "'JetBrains Mono', ui-monospace, monospace";
 

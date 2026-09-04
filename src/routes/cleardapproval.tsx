@@ -4,7 +4,7 @@ import { MarketingShell } from "@/components/marketing-shell";
 const OAT = "#FFFFFF";
 const SLATE = "#000000";
 const PLUM = "#000000";
-const BORDER = "#FFFFFF";
+const BORDER = "rgba(0,0,0,0.12)";
 const BODY = "#000000";
 const SERIF = '"Instrument Sans", sans-serif';
 

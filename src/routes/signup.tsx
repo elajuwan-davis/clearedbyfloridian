@@ -31,7 +31,7 @@ export const Route = createFileRoute("/signup")({
   component: SignupPage,
 });
 
-const OBSIDIAN = "#000000";
+const OBSIDIAN = "#9C6B3F";
 
 function SignupPage() {
   const navigate = useNavigate();

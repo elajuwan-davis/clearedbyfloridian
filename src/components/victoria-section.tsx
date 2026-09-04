@@ -438,7 +438,7 @@ function IntelCard({ card }: { card: Card }) {
       className="px-4 py-3.5"
       style={{
         background: "#FFFFFF",
-        border: "1px solid rgba(0,0,0,0.15)",
+        border: "1px solid rgba(0,0,0,0.12)",
         boxShadow: "0 18px 40px rgba(0,0,0,0.14)",
       }}
     >

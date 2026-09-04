@@ -28,7 +28,7 @@ export const Route = createFileRoute("/join")({
   }),
 });
 
-const OBSIDIAN = "#000000";
+const OBSIDIAN = "#9C6B3F";
 const MUTED = `color-mix(in oklab, ${OBSIDIAN} 55%, transparent)`;
 const HAIRLINE = `color-mix(in oklab, ${OBSIDIAN} 12%, transparent)`;
 

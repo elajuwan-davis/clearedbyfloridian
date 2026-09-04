@@ -38,9 +38,9 @@ export const Route = createFileRoute("/compare")({
 const INK = "#000000";
 const GRAY = "#000000";
 const PLUM = "#000000";
-const BORDER = "#FFFFFF";
+const BORDER = "rgba(0,0,0,0.12)";
 const OFF = "#FFFFFF";
-const LAV = "#E6E6FA";
+const LAV = "#FFFFFF";
 
 const SERVICES = [
   "Permitting Administration",
