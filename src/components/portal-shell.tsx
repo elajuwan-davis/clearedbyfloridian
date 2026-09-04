@@ -1,3 +1,4 @@
+import logoCopper from "@/assets/cleard-logo-copper.png.asset.json";
 import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
 import { ChevronDown, ChevronRight, ChevronLeft, LogOut, Menu, X, Building2, Check, ShieldCheck, FileText, MessageSquare, Calendar, Bell, Bookmark, BookmarkCheck, Sparkle } from "lucide-react";
@@ -344,19 +345,13 @@ function SidebarNav({
         className={cn("flex h-12 shrink-0 items-center gap-2.5", isRail ? "justify-center px-0" : "px-3.5")}
         title="Cleard"
       >
-        {isRail ? (
-          <div
-            className="grid h-7 w-7 shrink-0 place-items-center rounded-lg text-[13px] font-bold"
-            style={{ background: "var(--copper-soft)", color: "var(--copper)", border: "1px solid var(--glass-border)" }}
-          >
-            C
-          </div>
-        ) : (
+        <img src={logoCopper.url} alt="Cleard" className="h-7 w-7 shrink-0 object-contain" />
+        {!isRail && (
           <span
-            className="truncate text-[19px] font-bold tracking-[-0.03em]"
+            className="truncate text-[19px] font-bold tracking-[0.02em]"
             style={{ color: "var(--copper)" }}
           >
-            Cleard
+            CLEARED
           </span>
         )}
       </Link>
@@ -816,8 +811,9 @@ function PortalShellInner({ children }: { children: ReactNode }) {
             </SheetContent>
           </Sheet>
 
-          <Link to="/" className="text-[15px] font-semibold lg:hidden" style={{ color: "var(--copper)" }}>
-            Cleard
+          <Link to="/" className="flex items-center gap-2 text-[15px] font-semibold lg:hidden" style={{ color: "var(--copper)" }}>
+            <img src={logoCopper.url} alt="" className="h-6 w-6 object-contain" />
+            CLEARED
           </Link>
 
           {/* Breadcrumb spine — same place on every page */}
