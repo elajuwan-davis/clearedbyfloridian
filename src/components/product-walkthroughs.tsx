@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { Play } from "lucide-react";
 
-const OAT = "#FAF3E6";
-const INK = "#2F4F4F";
-const GRAY = "#7A5C68";
-const PLUM = "#673147";
+const OAT = "#FFFFFF";
+const INK = "#2B1620";
+const GRAY = "rgba(43,22,32,0.55)";
+const PLUM = "#2B1620";
 const BRONZE = "#9C6B3F";
-const BORDER = "#E0D3BC";
+const BORDER = "rgba(0,0,0,0.1)";
 const SERIF = "'Fraunces', 'Iowan Old Style', Georgia, serif";
 const MONO = "'JetBrains Mono', ui-monospace, monospace";
 
@@ -76,7 +76,7 @@ function VideoCard({ w }: { w: Walkthrough }) {
                 className="absolute inset-0"
                 style={{
                   backgroundImage:
-                    "repeating-linear-gradient(-45deg, rgba(250,243,230,0.05) 0 1px, transparent 1px 18px)",
+                    "repeating-linear-gradient(-45deg, rgba(255,255,255,0.05) 0 1px, transparent 1px 18px)",
                 }}
               />
             )}
@@ -92,7 +92,7 @@ function VideoCard({ w }: { w: Walkthrough }) {
                 className="grid h-16 w-16 place-items-center"
                 style={{
                   borderRadius: 999,
-                  background: "rgba(103,49,71,0.86)",
+                  background: "rgba(43,22,32,0.75)",
                   border: `1.5px solid ${BRONZE}`,
                   color: OAT,
                   boxShadow: "0 10px 30px -12px rgba(0,0,0,0.55)",
@@ -108,14 +108,14 @@ function VideoCard({ w }: { w: Walkthrough }) {
                 fontFamily: MONO,
                 letterSpacing: "0.16em",
                 color: OAT,
-                border: "1px solid rgba(250,243,230,0.3)",
+                border: "1px solid rgba(255,255,255,0.3)",
               }}
             >
               {w.eyebrow}
             </span>
             <span
               className="absolute bottom-4 right-4 text-[10px] uppercase"
-              style={{ fontFamily: MONO, letterSpacing: "0.16em", color: "rgba(250,243,230,0.7)" }}
+              style={{ fontFamily: MONO, letterSpacing: "0.16em", color: "rgba(255,255,255,0.7)" }}
             >
               {w.src ? w.runtime : "Recording coming soon"}
             </span>
@@ -141,7 +141,7 @@ function VideoCard({ w }: { w: Walkthrough }) {
 /** Two product walkthrough videos, styled to match the hero dashboard demo. */
 export function ProductWalkthroughs() {
   return (
-    <section style={{ background: "#F3EAD9" }}>
+    <section style={{ background: "#FFFFFF" }}>
       <div className="mx-auto max-w-7xl px-5 py-20 md:py-28 lg:px-8">
         <div
           className="flex items-center gap-3 text-[10.5px] font-bold uppercase"
