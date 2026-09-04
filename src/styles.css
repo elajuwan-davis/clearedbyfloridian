@@ -169,15 +169,17 @@
   --p-tint: var(--gray-bg);      --p-tint-2: var(--copper-soft);
   --p-row-hover: var(--gray-bg); --p-shadow: none;            --p-topbar: var(--white);
 
-  /* Sidebar rail — light gray on white, copper active */
-  --rail-bg: var(--gray-bg);
-  --rail-fg: var(--black);
-  --rail-icon: var(--text-2);
-  --rail-icon-active: var(--copper);
-  --rail-muted: var(--text-3);
-  --rail-hover: rgba(0, 0, 0, 0.05);
-  --rail-item-active-bg: var(--copper-soft);
+  /* Sidebar rail — true black with white text, copper active */
+  --rail-bg: #000000;
+  --rail-fg: #FFFFFF;
+  --rail-fg-2: rgba(255, 255, 255, 0.78);
+  --rail-icon: rgba(255, 255, 255, 0.78);
+  --rail-icon-active: var(--copper-light);
+  --rail-muted: rgba(255, 255, 255, 0.55);
+  --rail-hover: rgba(255, 255, 255, 0.1);
+  --rail-item-active-bg: rgba(156, 107, 63, 0.3);
   --rail-item-active-shadow: none;
+
 
   /* Marketing */
   --md-bg: var(--white);         --md-surface: var(--white);   --md-surface-2: var(--gray-bg);
