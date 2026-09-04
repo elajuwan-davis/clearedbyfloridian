@@ -197,10 +197,11 @@ function BuildingDeptLoginsPage() {
             const othersLogin = !!session.userId && l.user_id !== session.userId;
             return (
               <div key={l.key} className="border-b border-[color:var(--line)] last:border-0">
+                <div className="flex items-center pr-2 transition-colors hover:bg-[color:var(--gray-bg)]">
                 <button
                   type="button"
                   onClick={() => setOpen(isOpen ? null : l.key)}
-                  className="flex w-full flex-wrap items-center gap-2.5 px-3 py-2.5 text-left transition-colors hover:bg-[color:var(--gray-bg)]"
+                  className="flex min-w-0 flex-1 flex-wrap items-center gap-2.5 px-3 py-2.5 text-left"
                 >
                   <ChevronDown className={`h-3.5 w-3.5 shrink-0 text-muted-foreground transition-transform ${isOpen ? "rotate-180" : ""}`} />
                   <div className="min-w-0 flex-1">
@@ -214,17 +215,17 @@ function BuildingDeptLoginsPage() {
                     <StatusChip tone="danger">{expiredCount} expired</StatusChip>
                   )}
                   <StatusBadge status={l.status} />
-                  <Link
-                    to="/building-dept-logins/submit"
-                    search={{ edit: l.municipality_slug, owner: othersLogin ? l.user_id : undefined }}
-                    onClick={(e) => e.stopPropagation()}
-                    aria-label={`Edit ${l.city_name} login`}
-                    title="Edit login"
-                    className="p-1.5 text-muted-foreground transition-colors hover:text-foreground"
-                  >
-                    <Pencil className="h-3.5 w-3.5" />
-                  </Link>
                 </button>
+                <Link
+                  to="/building-dept-logins/submit"
+                  search={{ edit: l.municipality_slug, owner: othersLogin ? l.user_id : undefined }}
+                  aria-label={`Edit ${l.city_name} login`}
+                  title="Edit login"
+                  className="shrink-0 p-1.5 text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  <Pencil className="h-3.5 w-3.5" />
+                </Link>
+                </div>
 
                 {isOpen && (
                   <div className="space-y-4 px-3 pb-4 pt-1 sm:px-9">
