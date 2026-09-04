@@ -403,11 +403,20 @@ export function ClearedHero() {
         src={heroVideo.url}
         autoPlay
         muted
+        defaultMuted
         loop
         playsInline
+        preload="auto"
+        disablePictureInPicture
         aria-hidden
+        ref={(el) => {
+          if (el) {
+            el.muted = true;
+            void el.play().catch(() => {});
+          }
+        }}
         className="pointer-events-none absolute inset-0 h-full w-full"
-        style={{ zIndex: 0, objectFit: "cover" }}
+        style={{ zIndex: 0, objectFit: "cover", willChange: "transform", transform: "translateZ(0)" }}
       />
 
       <div
