@@ -16,15 +16,15 @@ const HERO_VIDEO_WEBM_URL = `${HERO_ASSET_ORIGIN}${heroVideoWebm.url}`;
 /* ---------------------- NORDIC LUXURY BRAND TOKENS ---------------------- */
 
 const OAT = "#FFFFFF";
-const SLATE = "#2B1620";
-const PLUM = "#2B1620";
-const GREEN = "#2B1620"; /* minor accent only: eyebrows, secondary CTA, metadata */
+const SLATE = "#000000";
+const PLUM = "#000000";
+const GREEN = "#000000"; /* minor accent only: eyebrows, secondary CTA, metadata */
 
-const SERIF = '"Unbounded", sans-serif';
+const SERIF = '"Instrument Sans", sans-serif';
 
 const NAV = [
   { to: "/", label: "Home", hash: undefined },
-  { to: "/contact", label: "Partnerships", hash: undefined },
+  { to: "/integrations", label: "Integrations", hash: undefined },
   { to: "/pricing", label: "Pricing", hash: undefined },
   { to: "/411", label: "411", hash: undefined },
 ] as const;

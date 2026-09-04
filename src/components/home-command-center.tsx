@@ -22,19 +22,19 @@ import copperMark from "@/assets/cleard-c-copper.png.asset.json";
 
 const OAT = "#FFFFFF";
 const OFF = "#FFFFFF";
-const INK = "#2B1620";
+const INK = "#000000";
 const GRAY = "rgba(43,22,32,0.55)";
 const LIGHT = "rgba(43,22,32,0.38)";
-const PLUM = "#2B1620";
+const PLUM = "#000000";
 const PLUM_LT = "#9C6B3F";
-const GREEN = "#2B1620";
+const GREEN = "#000000";
 const GREEN_LT = "#9C6B3F";
 const BORDER = "rgba(0,0,0,0.1)";
 const DARK = "#FFFFFF";
 const DARK_2 = "rgba(0,0,0,0.04)";
 const DARK_LINE = "rgba(0,0,0,0.10)";
 const COPPER = "#C98A5B";
-const SERIF = '"Unbounded", sans-serif';
+const SERIF = '"Instrument Sans", sans-serif';
 const MONO = '"JetBrains Mono", ui-monospace, monospace';
 
 /* Shared keyframes for every home motion primitive. Product motion only. */
@@ -340,7 +340,7 @@ export function WatchItRun() {
     <section ref={wrapRef} style={{ background: "#FFFFFF", position: "relative", height: reduced ? "auto" : `${RUN_STEPS.length * 62}vh` }}>
       <div className={reduced ? "" : "sticky top-0"} style={{ minHeight: reduced ? undefined : "100vh", display: "flex", alignItems: "center", overflow: "hidden" }}>
         <div className="mx-auto w-full max-w-7xl px-5 py-20 lg:px-8">
-          <div className="text-[10.5px] font-bold uppercase" style={{ letterSpacing: "0.22em", color: "#2B1620", fontFamily: MONO }}>
+          <div className="text-[10.5px] font-bold uppercase" style={{ letterSpacing: "0.22em", color: "#000000", fontFamily: MONO }}>
             Watch it run
           </div>
           <h2
@@ -410,7 +410,7 @@ export function WatchItRun() {
           <div className="mt-14 grid items-start gap-6 md:grid-cols-[minmax(0,180px)_1fr] md:gap-12">
             <div
               key={`n-${active}`}
-              style={{ fontFamily: SERIF, fontWeight: 600, fontSize: "clamp(4rem, 9vw, 7.5rem)", lineHeight: 0.85, letterSpacing: "-0.05em", color: "#2B1620", animation: "clRise 520ms cubic-bezier(0.16,1,0.3,1) both" }}
+              style={{ fontFamily: SERIF, fontWeight: 600, fontSize: "clamp(4rem, 9vw, 7.5rem)", lineHeight: 0.85, letterSpacing: "-0.05em", color: "#000000", animation: "clRise 520ms cubic-bezier(0.16,1,0.3,1) both" }}
             >
               {String(active + 1).padStart(2, "0")}
             </div>

@@ -17,7 +17,7 @@ export function ClearedWordmark({
       xmlns="http://www.w3.org/2000/svg"
     >
       <g
-        fontFamily="Unbounded, sans-serif"
+        fontFamily="Instrument Sans, sans-serif"
         fontSize="390"
         fontWeight="700"
         letterSpacing="24"
