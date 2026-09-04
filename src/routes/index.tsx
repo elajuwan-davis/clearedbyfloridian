@@ -367,10 +367,8 @@ function CountyCoverage() {
   return (
     <section style={{ background: WHITE }}>
       <div className="mx-auto max-w-7xl px-5 pb-20 pt-20 lg:px-8 md:pb-24">
-        <div
-          className="mb-6 flex items-center gap-3 text-[10.5px] font-bold uppercase tracking-[0.22em]"
-          style={{ color: GREEN }}
-        >
+        <div className="copper-text mb-6 flex items-center gap-3 text-[10.5px] font-bold uppercase tracking-[0.22em]">
+
           <span className="copper-hairline inline-block h-px w-7" />
           Statewide coverage
         </div>
