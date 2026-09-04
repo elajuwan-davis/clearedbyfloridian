@@ -4,7 +4,6 @@ import { toast } from "sonner";
 import {
   Users,
   Plus,
-  CheckCircle2,
   AlertTriangle,
   Link2,
   Copy,
@@ -20,6 +19,7 @@ import { verifyDbprLicense, dbprLookupUrl, type DbprResult } from "@/lib/dbpr-ap
 import { MarketplacePanel } from "@/components/marketplace-panel";
 import { LockedFeatureButton } from "@/components/feature-lock";
 import { usePlanAccess } from "@/lib/plan-access";
+import { StatusChip, type MetricTone } from "@/components/ui-kit";
 
 const dbprTone: Record<string, { label: string; tone: MetricTone }> = {
   active: { label: "Verified · Active", tone: "success" },
