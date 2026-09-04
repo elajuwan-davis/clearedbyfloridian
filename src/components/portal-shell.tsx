@@ -347,7 +347,7 @@ function SidebarNav({
         {isRail ? (
           <div
             className="grid h-7 w-7 shrink-0 place-items-center rounded-lg text-[13px] font-bold"
-            style={{ background: "var(--copper)", color: "#FFFFFF" }}
+            style={{ background: "var(--copper-soft)", color: "var(--copper)", border: "1px solid var(--glass-border)" }}
           >
             C
           </div>
@@ -545,8 +545,9 @@ function SidebarNav({
                     isRail && "px-0 text-center",
                   )}
                   style={{
-                    backgroundColor: active ? "var(--copper)" : "transparent",
-                    color: active ? "#FFFFFF" : "var(--rail-muted)",
+                    backgroundColor: active ? "var(--copper-soft)" : "transparent",
+                    color: active ? "var(--copper-hover)" : "var(--rail-muted)",
+                    border: active ? "1px solid var(--glass-border)" : "1px solid transparent",
                   }}
                 >
                   {isRail ? opt.short : opt.label}
@@ -566,8 +567,8 @@ function SidebarNav({
           <Link
             to="/profile"
             onClick={onNavigate}
-            className="grid h-8 w-8 shrink-0 place-items-center rounded-lg text-[11px] font-semibold text-white"
-            style={{ backgroundColor: "var(--copper)" }}
+            className="grid h-8 w-8 shrink-0 place-items-center rounded-lg text-[11px] font-semibold"
+            style={{ backgroundColor: "var(--copper-soft)", color: "var(--copper-hover)", border: "1px solid var(--glass-border)" }}
             title={displayName}
           >
             {initials}
@@ -870,7 +871,7 @@ function PortalShellInner({ children }: { children: ReactNode }) {
                 <DropdownMenuTrigger className="flex h-8 items-center gap-1.5 rounded-lg px-1 outline-none hover:bg-[var(--rail-hover)]">
                   <div
                     className="grid h-7 w-7 place-items-center rounded-lg text-[11px] font-semibold"
-                    style={{ backgroundColor: "var(--copper)", color: "#FFFFFF" }}
+                    style={{ backgroundColor: "var(--copper-soft)", color: "var(--copper-hover)", border: "1px solid var(--glass-border)" }}
                   >
                     {me.initials}
                   </div>

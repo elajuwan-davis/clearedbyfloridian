@@ -8,7 +8,7 @@ const GRAY = "rgba(0,0,0,0.55)";
 const PLUM = "#9C6B3F";
 const BORDER = "rgba(0,0,0,0.12)";
 const SERIF = "'Instrument Sans', sans-serif";
-const MONO = "'JetBrains Mono', ui-monospace, monospace";
+const MONO = '"Instrument Sans", sans-serif';
 
 const PROJECT_TYPES = [
   "Pool & Spa",
@@ -251,7 +251,7 @@ export function PermitCostCalculator({ background = OFF }: { background?: string
               <div style={{ borderTop: "1px solid rgba(0,0,0,0.10)" }} className="pt-6">
                 <div
                   className="text-[10px] uppercase"
-                  style={{ fontFamily: MONO, letterSpacing: "0.16em", color: "#9C6B3F" }}
+                  style={{ fontFamily: MONO, letterSpacing: "0.16em", color: "rgba(0,0,0,0.55)" }}
                 >
                   Total identifiable cost exposure
                 </div>
@@ -273,7 +273,7 @@ export function PermitCostCalculator({ background = OFF }: { background?: string
             <Link
               to="/join"
               className="p-btn p-btn-primary mt-8 inline-flex items-center no-underline"
-              style={{ backgroundImage: "var(--gradient-copper)", color: "#FFFFFF", fontWeight: 700 }}
+              style={{ fontWeight: 700 }}
             >
               See how Cleard compares →
             </Link>

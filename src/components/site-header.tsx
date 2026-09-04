@@ -6,8 +6,8 @@ import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/s
 function LogoMark() {
   return (
     <div
-      className="h-8 w-8 rounded-lg flex items-center justify-center text-white font-bold text-sm"
-      style={{ background: "var(--copper)" }}
+      className="h-8 w-8 rounded-lg flex items-center justify-center font-bold text-sm"
+      style={{ background: "var(--copper-soft)", color: "var(--copper)" }}
     >
       C
     </div>

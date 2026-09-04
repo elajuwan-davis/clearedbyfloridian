@@ -448,7 +448,7 @@ export function MyPermitsPage() {
                                 )}
                               </div>
                               <div className="mt-0.5 flex min-w-0 flex-wrap items-center gap-x-2 text-[12px] text-muted-foreground">
-                                <span className="tabular-nums font-medium" style={{ color: CDS.copper }}>
+                                <span className="tabular-nums font-medium" style={{ color: CDS.black }}>
                                   {p.permit_number ?? p.id.slice(0, 8).toUpperCase()}
                                 </span>
                                 {p.job_address && p.project_name && (
@@ -560,7 +560,7 @@ function toneColor(tone: "danger" | "success" | "info" | "neutral") {
     case "success":
       return CDS.tealText;
     case "info":
-      return CDS.copper;
+      return "#2563EB";
     default:
       return CDS.gray;
   }

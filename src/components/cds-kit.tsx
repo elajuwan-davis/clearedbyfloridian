@@ -30,13 +30,13 @@ export const CDS = {
   copper: "#9C6B3F",
   copperDark: "#7F562F",
   copperSoft: "rgba(156,107,63,0.10)",
-  teal: "#9C6B3F",
-  tealDark: "#7F562F",
+  teal: "#2563EB",
+  tealDark: "#1D4ED8",
   tealText: "#2E7D32",
   border: "rgba(0,0,0,0.10)",
   red: "#C0392B",
-  blue: "#9C6B3F",
-  purple: "#9C6B3F",
+  blue: "#2563EB",
+  purple: "#2563EB",
 } as const;
 
 /* ───────────────────────── Scroll reveal ───────────────────────── */

@@ -393,13 +393,13 @@ function HoaSubmittalEditor() {
 
   return (
     <>
-      <div className="space-y-8 max-w-5xl">
+      <div className="mx-auto max-w-5xl space-y-6 px-4 py-6 sm:px-6 lg:px-8">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
             <Link to="/portal/hoa-submittals" className="inline-flex items-center gap-1 text-xs text-obsidian/60 hover:text-obsidian">
               <ArrowLeft className="h-3 w-3" /> HOA Submittals
             </Link>
-            <h1 className="mt-4 font-display text-4xl tracking-tight text-obsidian">
+            <h1 className="mt-4 text-[22px] font-bold tracking-tight text-obsidian">
               {row.property_address || "HOA Submittal"}
             </h1>
             <p className="mt-2 text-sm text-muted-foreground">

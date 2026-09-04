@@ -204,15 +204,15 @@ function PaymentAuthPage() {
       <div className="mx-auto max-w-2xl px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
         <div className="border-b border-obsidian/10 pb-6">
           <div className="eyebrow text-obsidian/50">Payment Authorization</div>
-          <h1 className="display-serif mt-3 text-4xl text-obsidian">Payment Authorization</h1>
+          <h1 className="mt-2 text-[22px] font-bold tracking-tight text-obsidian">Payment Authorization</h1>
           <p className="mt-3 text-sm text-obsidian/55">
             Card and bank details are collected and stored by Stripe. Cleard never sees or stores
             your payment credentials.
           </p>
         </div>
 
-        <section className="mt-10 space-y-4">
-          <h2 className="display-serif text-2xl text-obsidian">Payment methods on file</h2>
+        <section className="mt-8 space-y-3">
+          <h2 className="text-[16px] font-semibold tracking-tight text-obsidian">Payment methods on file</h2>
           {loadingMethods ? (
             <p className="text-sm text-obsidian/55">Loading…</p>
           ) : methods.length === 0 ? (
@@ -249,8 +249,8 @@ function PaymentAuthPage() {
           )}
         </section>
 
-        <section className="mt-12 space-y-6">
-          <h2 className="display-serif text-2xl text-obsidian">Authorized account holder</h2>
+        <section className="mt-8 space-y-4">
+          <h2 className="text-[16px] font-semibold tracking-tight text-obsidian">Authorized account holder</h2>
 
           <Field label="Account Holder Name" required>
             <Input
@@ -278,8 +278,8 @@ function PaymentAuthPage() {
           </Field>
         </section>
 
-        <section className="mt-12 space-y-4">
-          <h2 className="display-serif text-2xl text-obsidian">Terms and Conditions</h2>
+        <section className="mt-8 space-y-3">
+          <h2 className="text-[16px] font-semibold tracking-tight text-obsidian">Terms and Conditions</h2>
           {/* Rendered from the same list the signed PDF is built from. */}
           <div className="border border-obsidian/15 bg-paper-warm rounded-[3px] p-5 text-sm text-obsidian/75 leading-relaxed max-h-72 overflow-y-auto space-y-3">
             {PAYMENT_AUTH_TERMS.map((t) => (

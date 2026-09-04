@@ -28,9 +28,10 @@ export const Route = createFileRoute("/join")({
   }),
 });
 
-const OBSIDIAN = "#9C6B3F";
+const OBSIDIAN = "#000000";
 const MUTED = `color-mix(in oklab, ${OBSIDIAN} 55%, transparent)`;
 const HAIRLINE = `color-mix(in oklab, ${OBSIDIAN} 12%, transparent)`;
+const COPPER = "#9C6B3F";
 
 function JoinPage() {
   const signUp = useServerFn(selfServeSignupFn);
@@ -122,27 +123,27 @@ function JoinPage() {
 
 
       {/* HERO */}
-      <section className="px-6 lg:px-10 py-20 lg:py-28">
-        <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-16 items-center">
+      <section className="px-6 lg:px-10 py-12 lg:py-16">
+        <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-10 items-center">
           <div>
             <div
-              className="font-mono text-[10px] uppercase mb-8"
-              style={{ color: OBSIDIAN, letterSpacing: "0.32em" }}
+              className="font-mono text-[10px] uppercase mb-3"
+              style={{ color: MUTED, letterSpacing: "0.22em" }}
             >
               Permit Management for Licensed Contractors
             </div>
             <h1
-              className="display-serif font-bold leading-[1.02] mb-8"
+              className="font-bold leading-[1.08] mb-4"
               style={{
                 color: OBSIDIAN,
-                fontSize: "clamp(2.5rem, 6vw, 5rem)",
+                fontSize: "clamp(1.75rem, 3.5vw, 2.75rem)",
                 letterSpacing: "-0.02em",
               }}
             >
               Stop losing weeks to the permit process.
             </h1>
             <p
-              className="text-lg mb-10 max-w-xl"
+              className="text-[15px] mb-6 max-w-xl"
               style={{ color: MUTED, lineHeight: 1.55 }}
             >
               Cleard is the permit management platform that handles jurisdiction requirements, sub coordination, document collection, and submission — so your projects don't stall.
@@ -150,8 +151,7 @@ function JoinPage() {
             <div className="flex items-center gap-8">
               <a
                 href="#request"
-                className="inline-flex items-center px-8 h-14 text-[12px] font-mono uppercase tracking-[0.24em] transition-opacity hover:opacity-85"
-                style={{ backgroundColor: OBSIDIAN, color: "#FFFFFF", borderRadius: 0 }}
+                className="p-btn p-btn-primary cl-glass inline-flex items-center no-underline"
               >
                 Get Started
               </a>
@@ -223,7 +223,7 @@ function JoinPage() {
       </section>
 
       {/* PROBLEM */}
-      <section id="problem" className="px-6 lg:px-10 py-24" style={{ backgroundColor: "#FFFFFF" }}>
+      <section id="problem" className="px-6 lg:px-10 py-12" style={{ backgroundColor: "#FFFFFF" }}>
         <div className="max-w-7xl mx-auto">
           <div
             className="font-mono text-[10px] uppercase mb-6"
@@ -233,7 +233,7 @@ function JoinPage() {
           </div>
           <h2
             className="display-serif font-bold leading-[1.05] mb-16 max-w-3xl"
-            style={{ color: OBSIDIAN, fontSize: "clamp(1.75rem, 4vw, 3rem)", letterSpacing: "-0.02em" }}
+            style={{ color: OBSIDIAN, fontSize: "clamp(1.5rem, 3vw, 2.25rem)", letterSpacing: "-0.02em" }}
           >
             The way permitting works today is broken.
           </h2>
@@ -275,7 +275,7 @@ function JoinPage() {
       </section>
 
       {/* SOLUTION */}
-      <section className="px-6 lg:px-10 py-24">
+      <section className="px-6 lg:px-10 py-12">
         <div className="max-w-7xl mx-auto">
           <div
             className="font-mono text-[10px] uppercase mb-6"
@@ -285,14 +285,14 @@ function JoinPage() {
           </div>
           <h2
             className="display-serif font-bold leading-[1.05] mb-4 max-w-3xl"
-            style={{ color: OBSIDIAN, fontSize: "clamp(1.75rem, 4vw, 3rem)", letterSpacing: "-0.02em" }}
+            style={{ color: OBSIDIAN, fontSize: "clamp(1.5rem, 3vw, 2.25rem)", letterSpacing: "-0.02em" }}
           >
             Cleard fixes all of it.
           </h2>
           <p className="text-lg mb-16 max-w-2xl" style={{ color: MUTED }}>
             One platform. Every permit.
           </p>
-          <div className="grid md:grid-cols-3 gap-12 lg:gap-16">
+          <div className="grid md:grid-cols-3 gap-8 lg:gap-10">
             {[
               {
                 Icon: FileStack,
@@ -311,7 +311,7 @@ function JoinPage() {
               },
             ].map((b) => (
               <div key={b.label}>
-                <b.Icon size={28} strokeWidth={1.25} style={{ color: OBSIDIAN }} className="mb-6" />
+                <b.Icon size={28} strokeWidth={1.25} style={{ color: COPPER }} className="mb-6" />
                 <h3
                   className="display-serif font-bold mb-4"
                   style={{ color: OBSIDIAN, fontSize: "1.5rem", letterSpacing: "-0.01em" }}
@@ -328,8 +328,8 @@ function JoinPage() {
       </section>
 
       {/* STAT ROW */}
-      <section className="px-6 lg:px-10 py-24" style={{ backgroundColor: OBSIDIAN }}>
-        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-16 md:gap-8 text-center">
+      <section className="px-6 lg:px-10 py-12" style={{ backgroundColor: OBSIDIAN }}>
+        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-6 text-center">
           {[
             { n: "400+", l: "Jurisdictions mapped" },
             { n: "All scopes", l: "Bundled in one submission" },
@@ -338,13 +338,13 @@ function JoinPage() {
             <div key={s.l}>
               <div
                 className="display-serif font-bold leading-none mb-4"
-                style={{ color: "#000000", fontSize: "clamp(2.25rem, 5vw, 3.75rem)", letterSpacing: "-0.02em" }}
+                style={{ color: "#FFFFFF", fontSize: "clamp(2.25rem, 5vw, 3.75rem)", letterSpacing: "-0.02em" }}
               >
                 {s.n}
               </div>
               <div
                 className="text-[13px] font-light"
-                style={{ color: "rgba(0,0,0,0.65)" }}
+                style={{ color: "rgba(255,255,255,0.65)" }}
               >
                 {s.l}
               </div>
@@ -354,7 +354,7 @@ function JoinPage() {
       </section>
 
       {/* REQUEST FORM */}
-      <section id="request" className="py-28 px-6" style={{ backgroundColor: "#FFFFFF" }}>
+      <section id="request" className="py-14 px-6" style={{ backgroundColor: "#FFFFFF" }}>
         <div className="max-w-lg mx-auto">
           <div
             className="font-mono text-[10px] uppercase mb-4 text-center"
@@ -364,7 +364,7 @@ function JoinPage() {
           </div>
           <h2
             className="display-serif font-bold text-center mb-4"
-            style={{ color: OBSIDIAN, fontSize: "clamp(1.75rem, 3.5vw, 2.5rem)", letterSpacing: "-0.01em" }}
+            style={{ color: OBSIDIAN, fontSize: "clamp(1.5rem, 3vw, 2rem)", letterSpacing: "-0.01em" }}
           >
             Ready to clear the backlog?
           </h2>
@@ -557,8 +557,7 @@ function JoinPage() {
               <button
                 type="submit"
                 disabled={state === "submitting"}
-                className="w-full h-14 text-[12px] font-mono uppercase tracking-[0.24em] transition-opacity hover:opacity-85 disabled:opacity-50"
-                style={{ backgroundColor: OBSIDIAN, color: "#FFFFFF", borderRadius: 0 }}
+                className="p-btn p-btn-primary cl-glass w-full disabled:opacity-50"
               >
                 {state === "submitting" ? "Creating your account…" : "Create My Account"}
               </button>

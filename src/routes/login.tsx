@@ -153,8 +153,8 @@ function LoginPage() {
         <div className="relative">
           <Link to="/" className="flex items-center gap-3">
             <div
-              className="h-9 w-9 rounded-xl flex items-center justify-center text-white font-bold text-base"
-              style={{ background: "#9C6B3F", fontFamily: "'Instrument Sans', sans-serif" }}
+              className="h-9 w-9 rounded-xl flex items-center justify-center font-bold text-base"
+              style={{ background: "var(--copper-soft)", color: "var(--copper)", fontFamily: "'Instrument Sans', sans-serif" }}
             >
               C
             </div>
@@ -170,7 +170,7 @@ function LoginPage() {
         <div className="relative max-w-md space-y-6">
           <div
             className="label-eyebrow"
-            style={{ color: "#9C6B3F" }}
+            style={{ color: "rgba(0,0,0,0.55)" }}
           >
             FL Statute 553.791
           </div>
@@ -203,8 +203,8 @@ function LoginPage() {
           {/* Mobile wordmark */}
           <Link to="/" className="lg:hidden flex items-center gap-2.5 mb-10">
             <div
-              className="h-7 w-7 rounded-lg flex items-center justify-center text-white font-bold text-sm"
-              style={{ background: "#9C6B3F", fontFamily: "'Instrument Sans', sans-serif" }}
+              className="h-7 w-7 rounded-lg flex items-center justify-center font-bold text-sm"
+              style={{ background: "var(--copper-soft)", color: "var(--copper)", fontFamily: "'Instrument Sans', sans-serif" }}
             >
               C
             </div>
@@ -217,7 +217,7 @@ function LoginPage() {
           </Link>
 
           <div className="space-y-2 mb-8">
-            <div className="label-eyebrow" style={{ color: "#9C6B3F", textTransform: "uppercase", letterSpacing: "0.18em" }}>Builder portal</div>
+            <div className="label-eyebrow" style={{ color: "rgba(0,0,0,0.55)", textTransform: "uppercase", letterSpacing: "0.18em" }}>Builder portal</div>
             <h1
               className="text-4xl leading-[1.05] font-bold"
               style={{ fontFamily: "'Instrument Sans', sans-serif", letterSpacing: "-0.02em", color: "#000000" }}
@@ -262,7 +262,8 @@ function LoginPage() {
                 </Label>
                 <Link
                   to="/reset-password"
-                  className="font-subline text-[11px] tracking-wide" style={{ color: "#9C6B3F" }}
+                  className="font-subline text-[11px] tracking-wide underline"
+                  style={{ color: "#000000", textDecorationColor: "var(--copper)" }}
                 >
                   Forgot?
                 </Link>
@@ -295,8 +296,7 @@ function LoginPage() {
             <Button
               type="submit"
               disabled={loading}
-              className="w-full h-11 rounded-[3px] font-subline tracking-wide gap-2"
-              style={{ backgroundColor: "#9C6B3F", color: "#FFFFFF" }}
+              className="p-btn p-btn-primary cl-glass w-full gap-2"
             >
               {loading ? (
                 <>
@@ -344,7 +344,11 @@ function LoginPage() {
           <div className="mt-8 pt-6 border-t hairline space-y-3">
             <p className="text-sm">
               New here?{" "}
-              <Link to="/signup" className="underline font-medium" style={{ color: "#9C6B3F" }}>
+              <Link
+                to="/signup"
+                className="underline font-medium"
+                style={{ color: "#000000", textDecorationColor: "var(--copper)" }}
+              >
                 Create an account
               </Link>{" "}
               or continue with Google.

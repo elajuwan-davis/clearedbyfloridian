@@ -191,12 +191,12 @@ function NewHoaTemplate() {
 
   return (
     <>
-      <div className="space-y-8 max-w-4xl">
+      <div className="mx-auto max-w-4xl space-y-6 px-4 py-6 sm:px-6 lg:px-8">
         <div>
           <Link to="/portal/hoa-submittals/new" className="inline-flex items-center gap-1 text-xs text-obsidian/60 hover:text-obsidian">
             <ArrowLeft className="h-3 w-3" /> Repository
           </Link>
-          <h1 className="mt-4 font-display text-4xl tracking-tight text-obsidian">Add HOA to Repository</h1>
+          <h1 className="mt-4 text-[22px] font-bold tracking-tight text-obsidian">Add HOA to Repository</h1>
           <p className="mt-2 text-sm text-muted-foreground max-w-2xl">
             Set up this community once. Every future Cleard submittal for the same HOA pre-fills from this template.
           </p>

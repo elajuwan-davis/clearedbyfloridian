@@ -171,8 +171,7 @@ function PricingLockOverlay() {
         <Link
           to="/join"
           hash="request"
-          className="mt-6 inline-flex items-center px-5 py-3 text-[14px] no-underline"
-          style={{ background: TEAL, color: "#FFFFFF", fontWeight: 600 }}
+          className="p-btn p-btn-primary cl-glass mt-6 inline-flex items-center no-underline"
         >
           Request access
         </Link>
@@ -235,7 +234,12 @@ function PricingPage() {
                   {p.popular && (
                     <span
                       className="px-2 py-1 text-[10px] uppercase tracking-[0.16em]"
-                      style={{ background: TEAL, color: "#FFFFFF", fontWeight: 700 }}
+                      style={{
+                        background: "var(--copper-soft)",
+                        color: "var(--black)",
+                        fontWeight: 700,
+                        border: "1px solid var(--glass-border)",
+                      }}
                     >
                       Most popular
                     </span>
@@ -251,7 +255,7 @@ function PricingPage() {
                   </span>
                 </div>
 
-                <p className="mt-4 text-[14px] leading-snug" style={{ color: TEAL }}>
+                <p className="mt-4 text-[14px] leading-snug" style={{ color: GRAY }}>
                   {p.tagline}
                 </p>
 
@@ -281,10 +285,14 @@ function PricingPage() {
                 <Link
                   to="/join"
                   hash="request"
-                  className="mt-7 inline-flex items-center justify-center px-5 py-3 text-[14px] no-underline"
+                  className={
+                    p.popular
+                      ? "p-btn p-btn-primary cl-glass mt-7 inline-flex items-center justify-center no-underline"
+                      : "mt-7 inline-flex items-center justify-center px-5 py-3 text-[14px] no-underline"
+                  }
                   style={
                     p.popular
-                      ? { background: TEAL, color: "#FFFFFF", fontWeight: 700 }
+                      ? undefined
                       : {
                           background: "#FFFFFF",
                           color: INK,
@@ -349,7 +357,7 @@ function PricingPage() {
                           </td>
                           <td
                             className="py-3 align-top text-right text-[14px] whitespace-nowrap"
-                            style={{ color: TEAL, borderTop: `1px solid ${BORDER}`, fontWeight: 700 }}
+                            style={{ color: INK, borderTop: `1px solid ${BORDER}`, fontWeight: 700 }}
                           >
                             {r.price}
                           </td>

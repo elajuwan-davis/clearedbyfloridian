@@ -86,7 +86,7 @@ function CountyPage() {
       />
 
       <section className="mx-auto max-w-6xl px-6 py-20 lg:px-10">
-        <div className="label-eyebrow" style={{ color: "var(--copper-deep)" }}>
+        <div className="label-eyebrow" style={{ color: "var(--text-2)" }}>
           In {county.name}
         </div>
         <h2
@@ -124,9 +124,8 @@ function CountyPage() {
             to="/join"
             className="p-btn p-btn-primary inline-flex items-center no-underline"
             style={{
-              backgroundImage: "var(--gradient-copper)",
               border: "1px solid color-mix(in oklab, var(--copper-deep) 70%, transparent)",
-              color: "#FFF8EC",
+              color: "var(--black)",
               fontWeight: 600,
             }}
           >
@@ -140,7 +139,7 @@ function CountyPage() {
           className="mx-auto max-w-6xl px-6 py-16 lg:px-10"
           style={{ borderTop: "1px solid color-mix(in oklab, var(--md-text) 12%, transparent)" }}
         >
-          <div className="label-eyebrow" style={{ color: "var(--copper-deep)" }}>
+          <div className="label-eyebrow" style={{ color: "var(--text-2)" }}>
             Permit timelines by type
           </div>
           <h2 className="mt-3 text-[24px]" style={{ color: "var(--md-text)", fontWeight: 600 }}>
@@ -187,7 +186,7 @@ function CountyPage() {
         style={{ borderTop: "1px solid color-mix(in oklab, var(--md-text) 12%, transparent)" }}
       >
         <div className="pt-14">
-          <div className="label-eyebrow" style={{ color: "var(--copper-deep)" }}>
+          <div className="label-eyebrow" style={{ color: "var(--text-2)" }}>
             Statewide
           </div>
           <h2 className="mt-3 text-[24px]" style={{ color: "var(--md-text)", fontWeight: 600 }}>
@@ -213,7 +212,7 @@ function CountyPage() {
               className="px-4 py-2 text-[13px] no-underline"
               style={{
                 border: "1px solid color-mix(in oklab, var(--copper-deep) 50%, transparent)",
-                color: "var(--copper-deep)",
+                color: "var(--md-text)",
               }}
             >
               All counties →

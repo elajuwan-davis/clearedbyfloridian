@@ -53,7 +53,7 @@ function TradeNotFound() {
                   to="/trades/$slug"
                   params={{ slug: t.slug }}
                   className="text-[15px] underline"
-                  style={{ color: "#9C6B3F" }}
+                  style={{ color: "#000000" }}
                 >
                   {t.navLabel}
                 </Link>

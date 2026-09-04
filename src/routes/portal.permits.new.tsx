@@ -1270,18 +1270,18 @@ function NewPermitPage() {
   }
 
   const inputCls =
-    "block w-full border border-obsidian/15 bg-white px-3 py-2 text-sm text-obsidian placeholder:text-obsidian/40 focus:border-obsidian/40 focus:outline-none rounded-[3px]";
+    "block w-full h-9 border border-obsidian/15 bg-white px-3 text-[13px] text-obsidian placeholder:text-obsidian/40 focus:border-obsidian/40 focus:outline-none rounded-[3px]";
   const labelCls =
     "block text-[11px] font-mono uppercase tracking-[0.14em] text-obsidian/60 mb-1.5";
   const sectionCls = "text-[11px] font-mono uppercase tracking-[0.18em] text-obsidian/75";
 
   return (
-    <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-8 lg:py-12 grid gap-8 lg:grid-cols-[minmax(0,1fr)_320px]">
+    <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-6 lg:py-8 grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
       <div className="min-w-0">
         <div className="border-b border-obsidian/10 pb-6">
           <div className="eyebrow text-obsidian/50">Permit Intake</div>
           <div className="mt-2 flex flex-wrap items-end justify-between gap-3">
-            <h1 className="display-serif text-4xl sm:text-5xl text-obsidian">
+            <h1 className="text-[22px] sm:text-[26px] font-bold tracking-tight text-obsidian">
               {isEditing ? "Edit Submission" : "New Permit"}
             </h1>
             <Link

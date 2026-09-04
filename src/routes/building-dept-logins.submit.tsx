@@ -166,7 +166,7 @@ function SubmitLoginPage() {
 
   return (
     <PortalShell>
-      <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
+      <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 pt-10 pb-8 lg:pt-14 lg:pb-12">
         <Link
           to="/building-dept-logins"
           className="inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/55 hover:text-obsidian"
@@ -176,7 +176,7 @@ function SubmitLoginPage() {
 
         <div className="mt-4 border-b border-obsidian/10 pb-8">
           <div className="eyebrow text-obsidian/50">Credentials Vault</div>
-          <h1 className="display-serif mt-3 text-4xl text-obsidian">Submit New Login</h1>
+          <h1 className="mt-3 text-[22px] font-bold tracking-[-0.02em] text-obsidian">Submit New Login</h1>
           <p className="mt-2 text-sm text-obsidian/60">
             Paste the portal link, your username and your password — Cleard encrypts the credentials
             at rest. Attaching related documents is optional.

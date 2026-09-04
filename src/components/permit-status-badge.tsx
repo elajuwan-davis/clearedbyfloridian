@@ -2,9 +2,9 @@
 export function StatusBadge({ status }: { status: string }) {
   const tone: Record<string, string> = {
     "Approved": "bg-emerald-100 text-emerald-900 border-emerald-200",
-    "Plan Review": "bg-blue-100 text-blue-900 border-blue-200",
+    "Plan Review": "bg-sky-100 text-sky-900 border-sky-200",
     "Revisions Required": "bg-amber-100 text-amber-900 border-amber-200",
-    "Inspections": "bg-violet-100 text-violet-900 border-violet-200",
+    "Inspections": "bg-sky-50 text-sky-800 border-sky-200",
     "Intake": "bg-secondary text-foreground border-border",
     "Closed": "bg-muted text-muted-foreground border-border",
   };

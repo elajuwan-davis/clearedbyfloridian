@@ -24,19 +24,19 @@ import { usePlanAccess } from "@/lib/plan-access";
 const dbprTone: Record<string, { label: string; cls: string }> = {
   active: {
     label: "Verified · Active",
-    cls: "bg-emerald-600/10 text-emerald-700 border-emerald-600/30",
+    cls: "bg-emerald-50 text-emerald-800 border-emerald-200",
   },
-  expired: { label: "Expired", cls: "bg-red-500/10 text-red-700 border-red-600/30" },
-  inactive: { label: "Inactive", cls: "bg-red-500/10 text-red-700 border-red-600/30" },
-  not_found: { label: "Not Found", cls: "bg-amber-500/10 text-amber-700 border-amber-600/30" },
-  unknown: { label: "Unverified", cls: "bg-obsidian/5 text-obsidian/60 border-obsidian/20" },
+  expired: { label: "Expired", cls: "bg-red-50 text-red-800 border-red-200" },
+  inactive: { label: "Inactive", cls: "bg-red-50 text-red-800 border-red-200" },
+  not_found: { label: "Not Found", cls: "bg-amber-50 text-amber-800 border-amber-200" },
+  unknown: { label: "Unverified", cls: "bg-blue-50 text-blue-700 border-blue-200" },
 };
 
 const coiTone: Record<ReturnType<typeof coiLifecycle>, { label: string; cls: string }> = {
-  active: { label: "Active", cls: "bg-emerald-600/10 text-emerald-700 border-emerald-600/30" },
-  expiring_soon: { label: "Expiring", cls: "bg-amber-500/10 text-amber-700 border-amber-600/30" },
-  expired: { label: "Expired", cls: "bg-red-500/10 text-red-700 border-red-600/30" },
-  missing: { label: "Missing", cls: "bg-amber-500/10 text-amber-700 border-amber-600/30" },
+  active: { label: "Active", cls: "bg-emerald-50 text-emerald-800 border-emerald-200" },
+  expiring_soon: { label: "Expiring", cls: "bg-amber-50 text-amber-800 border-amber-200" },
+  expired: { label: "Expired", cls: "bg-red-50 text-red-800 border-red-200" },
+  missing: { label: "Missing", cls: "bg-amber-50 text-amber-800 border-amber-200" },
 };
 
 export function SubcontractorsManager() {
@@ -181,11 +181,11 @@ export function SubcontractorsManager() {
                 </div>
                 <div>
                   {complete ? (
-                    <span className="inline-flex items-center gap-1 px-2 py-0.5 border rounded-[2px] font-mono text-[10px] uppercase tracking-[0.12em] bg-emerald-600/10 text-emerald-700 border-emerald-600/30">
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 border rounded-[2px] font-mono text-[10px] uppercase tracking-[0.12em] bg-emerald-50 text-emerald-800 border-emerald-200">
                       <CheckCircle2 className="h-3 w-3" /> Complete
                     </span>
                   ) : (
-                    <span className="inline-flex items-center gap-1 px-2 py-0.5 border rounded-[2px] font-mono text-[10px] uppercase tracking-[0.12em] bg-amber-500/10 text-amber-700 border-amber-600/30" title={missing.join(", ")}>
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 border rounded-[2px] font-mono text-[10px] uppercase tracking-[0.12em] bg-amber-50 text-amber-800 border-amber-200" title={missing.join(", ")}>
                       <AlertTriangle className="h-3 w-3" /> {missing.length} missing
                     </span>
                   )}

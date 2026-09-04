@@ -31,7 +31,7 @@ export const Route = createFileRoute("/signup")({
   component: SignupPage,
 });
 
-const OBSIDIAN = "#9C6B3F";
+const INK = "#000000";
 
 function SignupPage() {
   const navigate = useNavigate();
@@ -145,9 +145,10 @@ function SignupPage() {
         <div className="relative">
           <Link to="/" className="flex items-center gap-3">
             <div
-              className="h-9 w-9 rounded-xl flex items-center justify-center text-white font-bold text-base"
+              className="h-9 w-9 rounded-xl flex items-center justify-center font-bold text-base"
               style={{
-                background: "linear-gradient(135deg, #9C6B3F 0%, #2E7D32 100%)",
+                background: "var(--copper-soft)",
+                color: "var(--copper)",
                 fontFamily: "'Instrument Sans', sans-serif",
               }}
             >
@@ -198,7 +199,7 @@ function SignupPage() {
 
       {/* Right — form */}
       <main className="flex items-center justify-center p-6 sm:p-12">
-        <div className="w-full max-w-md" style={{ color: OBSIDIAN }}>
+        <div className="w-full max-w-md" style={{ color: INK }}>
           {state === "verify" ? (
             <div className="space-y-5">
               <h1

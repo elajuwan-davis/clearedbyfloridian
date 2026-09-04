@@ -228,15 +228,7 @@ export function MarketingNav() {
           <Link
             to="/join"
             hash="request"
-            className="cl-glass foil-sheen inline-flex items-center px-5 py-2 text-[13.5px] no-underline transition-transform duration-200 hover:scale-[1.03]"
-            style={{
-              backgroundImage: "var(--gradient-copper)",
-              border: "1px solid color-mix(in oklab, var(--copper-deep) 70%, transparent)",
-              color: "#FFFFFF",
-              fontWeight: 600,
-              whiteSpace: "nowrap",
-              boxShadow: "inset 0 1px 0 rgba(255,255,255,0.45)",
-            }}
+            className="p-btn p-btn-primary cl-glass inline-flex items-center no-underline"
           >
             Get early access
           </Link>
@@ -317,14 +309,7 @@ export function MarketingNav() {
               to="/join"
               hash="request"
               onClick={() => setOpen(false)}
-              className="cl-glass foil-sheen inline-flex w-full items-center justify-center px-4 py-2.5 text-sm no-underline"
-              style={{
-                color: "#FFFFFF",
-                backgroundImage: "var(--gradient-copper)",
-                border: "1px solid color-mix(in oklab, var(--copper-deep) 70%, transparent)",
-                fontWeight: 600,
-                boxShadow: "inset 0 1px 0 rgba(255,255,255,0.45)",
-              }}
+              className="p-btn p-btn-primary cl-glass inline-flex w-full items-center justify-center no-underline"
             >
               Get early access
             </Link>
@@ -396,14 +381,14 @@ export function PageHeader({
   return (
     <section className="relative border-b md-hairline overflow-hidden">
       <div className="absolute inset-0 md-grain opacity-60" />
-      <div className="relative mx-auto max-w-7xl px-6 lg:px-10 py-24 md:py-36">
+      <div className="relative mx-auto max-w-7xl px-6 lg:px-10 py-12 md:py-16">
         <div className="md-eyebrow md-in md-in-1">{eyebrow}</div>
         <h1
-          className="mt-6 md-in md-in-2 max-w-4xl"
+          className="mt-3 md-in md-in-2 max-w-4xl"
           style={{
             fontFamily: SERIF,
             fontWeight: 500,
-            fontSize: "clamp(2.25rem, 6vw, 4.5rem)",
+            fontSize: "clamp(1.75rem, 4vw, 2.75rem)",
             lineHeight: 1.05,
             letterSpacing: "-0.03em",
             color: "var(--md-text)",

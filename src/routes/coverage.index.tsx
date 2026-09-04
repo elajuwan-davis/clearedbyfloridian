@@ -48,7 +48,7 @@ function CoverageIndex() {
             >
               <span
                 className="font-mono text-[10px] uppercase tracking-[0.16em]"
-                style={{ color: "var(--copper-deep)" }}
+                style={{ color: "var(--text-2)" }}
               >
                 {c.region}
               </span>

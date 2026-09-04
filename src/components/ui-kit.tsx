@@ -323,7 +323,7 @@ export function SearchInput({
   return (
     <div className={cn("relative min-w-0", className)}>
       <Search
-        className="pointer-events-none absolute left-2.5 top-1/2 z-[1] h-3.5 w-3.5 -translate-y-1/2 text-[#9C6B3F]"
+        className="pointer-events-none absolute left-2.5 top-1/2 z-[1] h-3.5 w-3.5 -translate-y-1/2 text-[color:var(--copper)]"
         strokeWidth={1.75}
       />
       <input
@@ -354,20 +354,20 @@ export type MetricTone = "neutral" | "info" | "success" | "warning" | "danger" |
 
 const toneText: Record<MetricTone, string> = {
   neutral: "text-foreground",
-  info: "text-[#9C6B3F]",
+  info: "text-[color:var(--info)]",
   success: "text-[#2E7D32]",
   warning: "text-[#B7791F]",
   danger: "text-[#C0392B]",
-  purple: "text-[#9C6B3F]",
+  purple: "text-[color:var(--info)]",
 };
 
 const toneWash: Record<MetricTone, string> = {
-  neutral: "bg-white/[0.06] text-muted-foreground",
-  info: "bg-[#9C6B3F]/12 text-[#9C6B3F]",
+  neutral: "bg-[color:var(--gray-bg)] text-muted-foreground",
+  info: "bg-[color:var(--info-soft)] text-[color:var(--info)]",
   success: "bg-[#2E7D32]/12 text-[#2E7D32]",
   warning: "bg-[#B7791F]/12 text-[#B7791F]",
   danger: "bg-[#C0392B]/12 text-[#C0392B]",
-  purple: "bg-[#9C6B3F]/12 text-[#9C6B3F]",
+  purple: "bg-[color:var(--info-soft)] text-[color:var(--info)]",
 };
 
 /** Compact metric — label above, bold number, muted context. No card chrome. */
@@ -485,7 +485,7 @@ export function EmptyState({
 }) {
   return (
     <div className="flex flex-col items-center justify-center gap-2 px-6 py-14 text-center">
-      <span className="grid h-10 w-10 place-items-center rounded-xl bg-[#9C6B3F]/10 text-[#9C6B3F]">
+      <span className="grid h-10 w-10 place-items-center rounded-xl bg-[#9C6B3F]/10 text-[color:var(--copper)]">
         {icon ?? <Inbox className="h-4 w-4" strokeWidth={1.75} />}
       </span>
       <div className="text-[14px] font-medium">{title}</div>
