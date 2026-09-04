@@ -5,10 +5,9 @@ import mark2d from "@/assets/cleard-logo-copper.png.asset.json";
 import wordmarkCopper from "@/assets/cleard-wordmark-copper.png.asset.json";
 import { HomeMotionStyles } from "@/components/home-command-center";
 import { HeroStage } from "@/components/hero-stage";
+import { WireframeBackdrop } from "@/components/wireframe-backdrop";
 import { TRADES } from "@/lib/trades";
 
-const HERO_VIDEO_URL =
-  "https://videos.pexels.com/video-files/2278095/2278095-uhd_2560_1440_30fps.mp4";
 
 
 /* ---------------------- NORDIC LUXURY BRAND TOKENS ---------------------- */
@@ -399,17 +398,12 @@ export function ClearedHero() {
 
 
 
-      {/* fullscreen job-site video backdrop */}
-      <video
-        aria-hidden
-        autoPlay
-        muted
-        loop
-        playsInline
-        src={HERO_VIDEO_URL}
+      {/* code-drawn wireframe city backdrop (no video) */}
+      <WireframeBackdrop
         className="pointer-events-none absolute inset-0 h-full w-full"
-        style={{ objectFit: "cover", zIndex: 0 }}
+        style={{ zIndex: 0 }}
       />
+
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0"
