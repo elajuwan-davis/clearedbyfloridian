@@ -268,12 +268,12 @@ function HeroNav({ logoSlot, logoVisible }: { logoSlot: React.Ref<HTMLDivElement
             />
           </div>
           <span
+            className="wordmark-copper"
             style={{
               fontFamily: SERIF,
               fontWeight: 600,
               fontSize: 21,
               letterSpacing: "-0.02em",
-              color: PLUM,
             }}
           >
             Cleard
@@ -312,7 +312,7 @@ function HeroNav({ logoSlot, logoVisible }: { logoSlot: React.Ref<HTMLDivElement
           <Link
             to="/join"
             hash="request"
-            className="cl-glass foil-sheen inline-flex items-center no-underline"
+            className="cl-glass foil-sheen cta-copper inline-flex items-center no-underline"
           >
             Get early access
           </Link>

@@ -1381,7 +1381,7 @@ export function HeroStage() {
       <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
         <Link
           to="/contact"
-          className="cl-glass foil-sheen inline-flex items-center px-6 py-2.5 text-[12.5px] no-underline transition-all duration-200 hover:scale-[1.03]"
+          className="cl-glass foil-sheen cta-copper inline-flex items-center px-6 py-2.5 text-[12.5px] no-underline transition-all duration-200 hover:scale-[1.03]"
           style={{
             border: "1px solid color-mix(in oklab, var(--copper-deep) 70%, transparent)",
             backdropFilter: "blur(12px) saturate(140%)",
@@ -1398,7 +1398,7 @@ export function HeroStage() {
         <Link
           to="/join"
           hash="request"
-          className="cl-glass foil-sheen inline-flex items-center px-6 py-2.5 text-[12.5px] no-underline transition-all duration-200 hover:scale-[1.03]"
+          className="cl-glass foil-sheen cta-copper inline-flex items-center px-6 py-2.5 text-[12.5px] no-underline transition-all duration-200 hover:scale-[1.03]"
           style={{
             border: "1px solid color-mix(in oklab, var(--copper-deep) 70%, transparent)",
             backdropFilter: "blur(12px) saturate(140%)",
