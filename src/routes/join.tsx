@@ -338,13 +338,13 @@ function JoinPage() {
             <div key={s.l}>
               <div
                 className="display-serif font-bold leading-none mb-4"
-                style={{ color: "#FFFFFF", fontSize: "clamp(2.25rem, 5vw, 3.75rem)", letterSpacing: "-0.02em" }}
+                style={{ color: "#000000", fontSize: "clamp(2.25rem, 5vw, 3.75rem)", letterSpacing: "-0.02em" }}
               >
                 {s.n}
               </div>
               <div
                 className="text-[13px] font-light"
-                style={{ color: "rgba(255,255,255,0.65)" }}
+                style={{ color: "rgba(0,0,0,0.65)" }}
               >
                 {s.l}
               </div>

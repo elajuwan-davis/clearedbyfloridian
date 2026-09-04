@@ -197,7 +197,7 @@ function VersusDetail() {
       {/* CTA strip */}
       <section className="md-section-dark">
         <div className="mx-auto max-w-7xl px-6 lg:px-10 py-20 text-center">
-          <h2 className="md-serif text-3xl md:text-5xl" style={{ color: "#FFFFFF" }}>
+          <h2 className="md-serif text-3xl md:text-5xl" style={{ color: "#000000" }}>
             Ready to switch?
           </h2>
           <div className="mt-8">

@@ -347,7 +347,7 @@ function SidebarNav({
         {isRail ? (
           <div
             className="grid h-7 w-7 shrink-0 place-items-center text-[13px] font-bold"
-            style={{ background: "#FFFFFF", color: "#FFFFFF" }}
+            style={{ background: "#FFFFFF", color: "#000000" }}
           >
             C
           </div>

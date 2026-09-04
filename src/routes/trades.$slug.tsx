@@ -41,7 +41,7 @@ function TradeRoute() {
 function TradeNotFound() {
   return (
     <MarketingShell>
-      <div style={{ background: "#FFFFFF", color: "#FFFFFF" }}>
+      <div style={{ background: "#FFFFFF", color: "#000000" }}>
         <div className="mx-auto max-w-3xl px-5 py-32 lg:px-8">
           <h1 style={{ fontWeight: 800, fontSize: "2.25rem", letterSpacing: "-0.03em" }}>
             We don't have a page for that trade yet.

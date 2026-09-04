@@ -193,7 +193,7 @@ export function PermitCostCalculator({ background = OFF }: { background?: string
           <div className="p-6 md:p-8" style={{ background: INK }}>
             <div
               className="text-[10px] uppercase"
-              style={{ fontFamily: MONO, letterSpacing: "0.2em", color: "rgba(255,255,255,0.6)" }}
+              style={{ fontFamily: MONO, letterSpacing: "0.2em", color: "rgba(0,0,0,0.6)" }}
             >
               {projectType} · Annual estimate
             </div>
@@ -202,7 +202,7 @@ export function PermitCostCalculator({ background = OFF }: { background?: string
               <div>
                 <div
                   className="text-[10px] uppercase"
-                  style={{ fontFamily: MONO, letterSpacing: "0.16em", color: "rgba(255,255,255,0.55)" }}
+                  style={{ fontFamily: MONO, letterSpacing: "0.16em", color: "rgba(0,0,0,0.55)" }}
                 >
                   Admin-hour cost
                 </div>
@@ -218,7 +218,7 @@ export function PermitCostCalculator({ background = OFF }: { background?: string
                 >
                   {usd(r.adminCost)}
                 </div>
-                <div className="mt-1 text-[13px]" style={{ color: "rgba(255,255,255,0.6)" }}>
+                <div className="mt-1 text-[13px]" style={{ color: "rgba(0,0,0,0.6)" }}>
                   {r.annualHours.toLocaleString()} staff hours per year
                 </div>
               </div>
@@ -226,7 +226,7 @@ export function PermitCostCalculator({ background = OFF }: { background?: string
               <div style={{ borderTop: "1px solid rgba(255,255,255,0.16)" }} className="pt-6">
                 <div
                   className="text-[10px] uppercase"
-                  style={{ fontFamily: MONO, letterSpacing: "0.16em", color: "rgba(255,255,255,0.55)" }}
+                  style={{ fontFamily: MONO, letterSpacing: "0.16em", color: "rgba(0,0,0,0.55)" }}
                 >
                   Schedule exposure
                 </div>
@@ -242,7 +242,7 @@ export function PermitCostCalculator({ background = OFF }: { background?: string
                 >
                   {r.annualDays.toLocaleString()} days
                 </div>
-                <div className="mt-1 text-[13px]" style={{ color: "rgba(255,255,255,0.6)" }}>
+                <div className="mt-1 text-[13px]" style={{ color: "rgba(0,0,0,0.6)" }}>
                   {r.daysPerProject} business days per project against Cleard&apos;s 2-day plan review
                   and same-day inspections
                 </div>
@@ -280,7 +280,7 @@ export function PermitCostCalculator({ background = OFF }: { background?: string
 
             <p
               className="mt-6 text-[11.5px] leading-relaxed"
-              style={{ color: "rgba(255,255,255,0.5)" }}
+              style={{ color: "rgba(0,0,0,0.5)" }}
             >
               These are planning estimates, not guaranteed savings. Actual results vary by project
               scope, jurisdiction, and conditions.

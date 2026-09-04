@@ -92,7 +92,7 @@ function VersusHub() {
       {/* Why Cleard wins */}
       <section className="md-section-dark">
         <div className="mx-auto max-w-7xl px-6 lg:px-10 py-20 md:py-24">
-          <h2 className="md-serif text-3xl md:text-4xl" style={{ color: "#FFFFFF" }}>
+          <h2 className="md-serif text-3xl md:text-4xl" style={{ color: "#000000" }}>
             Why Cleard wins
           </h2>
           <div className="mt-10 grid gap-10 md:grid-cols-3">
@@ -111,7 +111,7 @@ function VersusHub() {
               },
             ].map((s) => (
               <div key={s.k}>
-                <div className="md-serif text-2xl" style={{ color: "#FFFFFF" }}>
+                <div className="md-serif text-2xl" style={{ color: "#000000" }}>
                   {s.k}
                 </div>
                 <p className="mt-3 text-sm md-muted leading-relaxed">{s.v}</p>

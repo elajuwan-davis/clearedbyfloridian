@@ -175,7 +175,7 @@ function PlatformRequestForm() {
     <div key={key}>
       <label
         className="mb-2 block font-mono text-[10px] uppercase"
-        style={{ color: "rgba(255,255,255,0.6)", letterSpacing: "0.2em" }}
+        style={{ color: "rgba(0,0,0,0.6)", letterSpacing: "0.2em" }}
       >
         {label}
       </label>
@@ -200,7 +200,7 @@ function PlatformRequestForm() {
         <div>
           <div
             className="text-[10.5px] font-bold uppercase"
-            style={{ fontFamily: MONO, letterSpacing: "0.22em", color: "rgba(255,255,255,0.6)" }}
+            style={{ fontFamily: MONO, letterSpacing: "0.22em", color: "rgba(0,0,0,0.6)" }}
           >
             Tell us what you run
           </div>
@@ -217,7 +217,7 @@ function PlatformRequestForm() {
           >
             Don't see your platform listed?
           </h2>
-          <p className="mt-5 max-w-md text-[15px] leading-relaxed" style={{ color: "rgba(255,255,255,0.65)" }}>
+          <p className="mt-5 max-w-md text-[15px] leading-relaxed" style={{ color: "rgba(0,0,0,0.65)" }}>
             Tell us the tool your team lives in and we'll factor it into the integration roadmap.
           </p>
         </div>
@@ -227,7 +227,7 @@ function PlatformRequestForm() {
             <p className="text-[17px]" style={{ fontFamily: SERIF, color: OAT }}>
               Thanks — we've logged {form.platform.trim() || "your platform"}.
             </p>
-            <p className="mt-3 text-[13.5px]" style={{ color: "rgba(255,255,255,0.6)" }}>
+            <p className="mt-3 text-[13.5px]" style={{ color: "rgba(0,0,0,0.6)" }}>
               We'll reach out if we need detail about how your team uses it.
             </p>
           </div>

@@ -427,7 +427,7 @@ function ComparePage() {
           <div className="mx-auto flex max-w-4xl flex-col items-start gap-5 px-5 py-10 sm:flex-row sm:items-center sm:justify-between lg:px-8">
             <h2
               style={{
-                color: "#FFFFFF",
+                color: "#000000",
                 fontWeight: 800,
                 fontSize: "clamp(1.35rem, 3vw, 1.9rem)",
                 letterSpacing: "-0.03em",

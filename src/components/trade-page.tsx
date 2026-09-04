@@ -175,7 +175,7 @@ export function TradePage({ trade }: { trade: Trade }) {
               </h2>
               <p
                 className="mt-4 max-w-xl text-[15px] leading-relaxed"
-                style={{ color: "rgba(255,255,255,0.6)" }}
+                style={{ color: "rgba(0,0,0,0.6)" }}
               >
                 Cleard coordinates and schedules each stage so your crews never wait on a missed
                 inspection window.
@@ -203,7 +203,7 @@ export function TradePage({ trade }: { trade: Trade }) {
                     </div>
                     <p
                       className="mt-2 text-[13px] leading-relaxed"
-                      style={{ color: "rgba(255,255,255,0.6)" }}
+                      style={{ color: "rgba(0,0,0,0.6)" }}
                     >
                       {insp.description}
                     </p>
@@ -238,7 +238,7 @@ export function TradePage({ trade }: { trade: Trade }) {
                     </div>
                     <p
                       className="mt-2 text-[13px] leading-relaxed"
-                      style={{ color: "rgba(255,255,255,0.6)" }}
+                      style={{ color: "rgba(0,0,0,0.6)" }}
                     >
                       {insp.description}
                     </p>
