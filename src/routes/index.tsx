@@ -64,17 +64,17 @@ export const Route = createFileRoute("/")({
 
 /* ------------------------------ DESIGN TOKENS ----------------------------- */
 
-const WHITE = "#FAF3E6";
-const OFF = "#F3EAD9";
-const OFF2 = "#EDE0C9";
-const INK = "#2F4F4F";
-const GRAY = "#7A5C68";
-const LIGHT = "#8B9A97";
-const TEAL = "#673147";
-const PLUM_LT = "#D9AFC1"; /* accent legible on dark slate surfaces */
-const GREEN = "#2F4F4F"; /* minor accent: numerals, eyebrows, small labels */
-const GREEN_LT = "#9CBEB2"; /* same accent, legible on dark plum */
-const BORDER = "#E0D3BC";
+const WHITE = "#FDFCF9";
+const OFF = "#F7F5F0";
+const OFF2 = "#EEECE8";
+const INK = "#2B1620";
+const GRAY = "rgba(43,22,32,0.55)";
+const LIGHT = "rgba(43,22,32,0.38)";
+const TEAL = "#2B1620";
+const PLUM_LT = "#C8956A"; /* light copper, legible on dark surfaces */
+const GREEN = "rgba(43,22,32,0.5)"; /* neutral muted ink for secondary labels */
+const GREEN_LT = "#D4A96A"; /* warm copper-lite on dark */
+const BORDER = "rgba(43,22,32,0.1)";
 const SANS = "'Fraunces', 'Iowan Old Style', Georgia, serif";
 
 /* --------------------------------- PAGE ---------------------------------- */
