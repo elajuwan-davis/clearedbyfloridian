@@ -14,10 +14,12 @@ import { useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { driver, type Driver } from "driver.js";
 import "driver.js/dist/driver.css";
+import { supabase } from "@/integrations/supabase/client";
 import {
   completeFirstLoginTourFn,
   shouldShowFirstLoginTourFn,
 } from "@/lib/first-login-tour.functions";
+
 
 const PENDING_KEY = "cleard_tour_pending_step";
 const PENDING_VALUE = "victoria-permit";
