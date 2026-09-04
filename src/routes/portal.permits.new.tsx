@@ -704,14 +704,20 @@ function NewPermitPage() {
       if (result.source === "live") {
         const newPcn = result.parcel.parcel_id ?? "";
         const newLegal = result.parcel.legal_description ?? "";
+        // Captured before the refs are updated below — the setForm updater
+        // can run after this synchronous block (React defers it), so reading
+        // the refs directly inside the updater would compare against the
+        // *new* auto-fill instead of the prior one, and a later live lookup
+        // would never overwrite the field it had previously auto-filled.
+        const prevAutoPcn = autoFilledPcnRef.current;
+        const prevAutoLegal = autoFilledLegalDescriptionRef.current;
         setForm((f) => ({
           ...f,
           // Overwrite only a value we auto-filled ourselves (or an empty
           // field) — never a value the GC typed or corrected by hand.
-          pcn: f.pcn === "" || f.pcn === autoFilledPcnRef.current ? newPcn : f.pcn,
+          pcn: f.pcn === "" || f.pcn === prevAutoPcn ? newPcn : f.pcn,
           legalDescription:
-            f.legalDescription === "" ||
-            f.legalDescription === autoFilledLegalDescriptionRef.current
+            f.legalDescription === "" || f.legalDescription === prevAutoLegal
               ? newLegal
               : f.legalDescription,
         }));
