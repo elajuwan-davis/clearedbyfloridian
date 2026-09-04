@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { MapPin, Loader2, Search } from "lucide-react";
 import { AddressAutocomplete, type ResolvedAddress as GoogleResolved } from "@/components/address-autocomplete";
 import {
   activeProvider,
   censusLookup,
+  type AddressProvider,
   type ResolvedAddress,
 } from "@/lib/address-lookup";
 import { MUNICIPALITIES } from "@/lib/municipalities";
@@ -31,7 +32,18 @@ const norm = (s: string) => s.toLowerCase().replace(/[^a-z]/g, "");
 
 export function AddressLookupField({ value, onChange, onResolved, className, required, id }: Props) {
   const [googleDead, setGoogleDead] = useState(false);
-  const provider = activeProvider();
+  // Decided client-side only, after mount. The server that pre-renders this
+  // page and the browser that actually runs it can see the Google Maps key
+  // differently (e.g. a host that separates "server secrets" from the
+  // browser build's .env) — starting from "census" on both the server render
+  // and the client's first render keeps them in agreement, so React never
+  // has to reconcile two different component trees on hydration. The effect
+  // below then re-checks with the browser's own bundle, which is the only
+  // copy of the key that actually matters for this feature.
+  const [provider, setProvider] = useState<AddressProvider>("census");
+  useEffect(() => {
+    setProvider(activeProvider());
+  }, []);
 
   if (provider === "google" && !googleDead) {
     return (
