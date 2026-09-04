@@ -498,7 +498,7 @@ export function ClearedHero() {
               fontSize: "clamp(2.3rem, 5vw, 3.9rem)",
               lineHeight: 0.99,
               letterSpacing: "-0.035em",
-              color: PLUM,
+              color: "#FFFFFF",
               fontVariationSettings: '"SOFT" 0, "WONK" 1',
             }}
           >
@@ -507,9 +507,10 @@ export function ClearedHero() {
 
           <p
             className="mx-auto mt-5 max-w-[52ch] text-[16px] leading-[1.65]"
-            style={{ color: SLATE }}
+            style={{ color: "rgba(255,255,255,0.88)" }}
           >
             Permits, inspections, licenses, and lien rights — cleared automatically.
+
           </p>
         </div>
 
