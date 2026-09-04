@@ -10,6 +10,7 @@
     "preview": "vite preview",
     "lint": "eslint .",
     "format": "prettier --write .",
+    "test": "tsx --test src/lib/*.test.ts",
     "portal-worker": "tsx scripts/portal-worker/municipality-submit-worker.ts",
     "status-worker": "tsx scripts/portal-worker/permit-status-worker.ts",
     "import-portal-logins": "tsx scripts/import-portal-logins.ts",

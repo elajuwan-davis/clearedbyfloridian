@@ -3,6 +3,7 @@
 // cron endpoint.
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { complianceFlagsFromSubs } from "./weekly-report-flags";
 
 export type WeeklyReport = {
   tenant_id: string;
@@ -48,16 +49,7 @@ export async function buildTenantReport(tenantId: string): Promise<WeeklyReport>
       .limit(10),
   ]);
 
-  const soon = new Date(Date.now() + 60 * 24 * 60 * 60 * 1000);
-  const complianceFlags: WeeklyReport["compliance_flags"] = [];
-  for (const s of (subs ?? []) as any[]) {
-    if (s.coi_expiration && new Date(s.coi_expiration) < soon) {
-      complianceFlags.push({ subcontractor: s.company_name, issue: `COI expires ${s.coi_expiration}` });
-    }
-    if (s.license_expiration && new Date(s.license_expiration) < soon) {
-      complianceFlags.push({ subcontractor: s.company_name, issue: `License expires ${s.license_expiration}` });
-    }
-  }
+  const complianceFlags = complianceFlagsFromSubs(subs);
 
   return {
     tenant_id: tenantId,

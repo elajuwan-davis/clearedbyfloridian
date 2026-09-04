@@ -5,6 +5,8 @@
 // data if either call fails (e.g., functions not deployed or upstream APIs
 // unavailable) so the UI always has a stable shape.
 
+import { assessedValueToCents, isHvhzCounty } from "./dispatch-value";
+
 export type DispatchFloodZone = "AE" | "X" | "VE" | "A" | "AO" | "D" | "X (shaded)";
 
 export type DispatchPriorPermit = {
@@ -77,7 +79,7 @@ function buildMock(input: {
 
   const county = input.county.trim() || "Palm Beach County";
   const city = (input.city && input.city.trim()) || "West Palm Beach";
-  const isHVHZ = /miami-dade|broward/i.test(county);
+  const isHVHZ = isHvhzCounty(county);
 
   const zone = FLOOD_ZONES[h % FLOOD_ZONES.length];
   const sfha = zone === "AE" || zone === "VE" || zone === "A" || zone === "AO";
@@ -225,8 +227,7 @@ export async function runDispatch(input: {
         owner_name: parcel?.owner_name ?? null,
         year_built: parcel?.year_built ?? null,
         // The appraiser reports whole dollars; the UI counts in cents.
-        assessed_value_cents:
-          parcel?.assessed_value == null ? null : Math.round(Number(parcel.assessed_value) * 100),
+        assessed_value_cents: assessedValueToCents(parcel?.assessed_value),
         living_area_sqft: parcel?.living_area_sqft ?? null,
         source: parcel?.parcel_source ?? null,
         assessment_year: parcel?.assessment_year ?? null,
