@@ -43,7 +43,7 @@ export function PermitsOnlyBoundary({ children }: { children: ReactNode }) {
 
   if (blocked || checking) {
     return (
-      <div className="portal-ui dark grid min-h-screen place-items-center bg-background">
+      <div className="portal-ui grid min-h-screen place-items-center bg-background">
         <div className="text-[13px] text-muted-foreground">
           {blocked ? "Taking you to Permits…" : "Verifying access…"}
         </div>
