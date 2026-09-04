@@ -41,7 +41,6 @@ import logoProcore from "@/assets/logo-procore.png.asset.json";
 import logoNetic from "@/assets/logo-netic.png.asset.json";
 import logoAvoca from "@/assets/logo-avoca.webp.asset.json";
 import logoPodium from "@/assets/logo-podium.jpg.asset.json";
-import logoCraftflow from "@/assets/logo-craftflow.png.asset.json";
 
 const PLATFORMS: Array<{ name: string; blurb: string; logo?: string }> = [
   { name: "JobTread", logo: logoJobtread.url, blurb: "See your permit status right inside JobTread." },
@@ -50,7 +49,6 @@ const PLATFORMS: Array<{ name: string; blurb: string; logo?: string }> = [
   { name: "Netic.ai", logo: logoNetic.url, blurb: "Route inbound jobs into permit intake without retyping the address." },
   { name: "Avoca.ai", logo: logoAvoca.url, blurb: "Let your call intake hand a permit-ready project straight to Cleard." },
   { name: "Podium.com", logo: logoPodium.url, blurb: "Trigger homeowner updates the moment a permit is issued." },
-  { name: "Craftflow", logo: logoCraftflow.url, blurb: "Sync scopes and subs so intake is filled in before you open it." },
 ];
 
 function Monogram({ name, logo }: { name: string; logo?: string }) {
