@@ -227,7 +227,7 @@ export function VictoriaSection() {
             loading="lazy"
             className="absolute inset-0 h-full w-full object-cover"
             initial={{ opacity: 0, scale: 1.06 }}
-            animate={inView ? { opacity: 0.95, scale: 1 } : {}}
+            animate={inView ? { opacity: 0.3, scale: 1 } : {}}
             transition={{ duration: 1.6, ease: [0.16, 1, 0.3, 1] }}
           />
           <div
