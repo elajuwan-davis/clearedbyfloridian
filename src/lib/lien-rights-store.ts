@@ -77,12 +77,6 @@ export type LienSettings = {
   signwellConnected: boolean;
 };
 
-const today = new Date();
-function iso(offsetDays: number) {
-  const d = new Date(today);
-  d.setDate(d.getDate() + offsetDays);
-  return d.toISOString().slice(0, 10);
-}
 
 let docs: LienDoc[] = [];
 
