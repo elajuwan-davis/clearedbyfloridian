@@ -2,6 +2,7 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react
 import { Link } from "@tanstack/react-router";
 import mark3d from "@/assets/cleard-3d-mark.png.asset.json";
 import mark2d from "@/assets/cleard-logo-copper.png.asset.json";
+import wordmarkCopper from "@/assets/cleard-wordmark-copper.png.asset.json";
 import { HomeMotionStyles } from "@/components/home-command-center";
 import { HeroStage } from "@/components/hero-stage";
 import { TRADES } from "@/lib/trades";
@@ -258,27 +259,17 @@ function HeroNav({ logoSlot, logoVisible }: { logoSlot: React.Ref<HTMLDivElement
       }}
     >
       <div className="mx-auto grid h-[68px] max-w-7xl grid-cols-[1fr_auto_1fr] items-center gap-4 px-5 lg:px-10">
-        <Link to="/" className="flex items-center gap-2.5 no-underline" style={{ flexShrink: 0 }}>
-          <div ref={logoSlot} className="h-8 w-8">
+        <Link to="/" className="flex items-center no-underline" style={{ flexShrink: 0 }}>
+          <div ref={logoSlot} className="flex items-center">
             <img
-              src={mark2d.url}
-              alt="Cleard"
-              className="h-8 w-8 object-contain transition-opacity duration-300"
+              src={wordmarkCopper.url}
+              alt="CLEARD"
+              className="h-7 w-auto object-contain transition-opacity duration-300"
               style={{ opacity: logoVisible ? 1 : 0 }}
             />
           </div>
-          <span
-            className="wordmark-copper"
-            style={{
-              fontFamily: SERIF,
-              fontWeight: 600,
-              fontSize: 21,
-              letterSpacing: "0.02em",
-            }}
-          >
-            CLEARD
-          </span>
         </Link>
+
 
         <nav
           className="hidden items-center justify-center gap-8 md:flex"
