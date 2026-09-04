@@ -529,8 +529,8 @@ export function VictoriaSpotlight() {
               <span
                 className="cl-glass foil-sheen cl-hoverable mt-6 inline-flex cursor-default items-center gap-2 px-5 py-2.5 text-[12.5px]"
                 style={{
-                  background: "rgba(43,22,32,0.65)",
-                  color: OAT,
+                  backgroundImage: "var(--gradient-copper)",
+                  color: "#FFF8EC",
                   fontWeight: 600,
                   border: "1px solid rgba(250,243,230,0.22)",
                   backdropFilter: "blur(12px) saturate(150%)",
@@ -910,7 +910,7 @@ export function ReplaceThePermitOffice() {
                 className="cl-round grid h-[62px] w-[62px] place-items-center overflow-hidden"
                 style={{
                   background: CREAM,
-                  border: `2px solid ${PLUM}`,
+                  border: "2px solid #9C6B3F",
                   boxShadow: "0 0 0 6px rgba(185,128,85,0.10)",
                 }}
               >
@@ -1163,7 +1163,7 @@ export function AskVictoriaLauncher() {
               hash="request"
               onClick={() => setOpen(false)}
               className="cl-hoverable mt-5 inline-flex items-center gap-2 px-4 py-2.5 text-[12.5px] no-underline"
-              style={{ background: PLUM, color: OAT, fontWeight: 600 }}
+              style={{ backgroundImage: "var(--gradient-copper)", color: "#FFF8EC", fontWeight: 600 }}
             >
               Get access to Victoria <ArrowRight className="cl-arrow h-3.5 w-3.5" strokeWidth={2} />
             </Link>
