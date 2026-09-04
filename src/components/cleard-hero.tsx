@@ -15,10 +15,10 @@ const HERO_VIDEO_WEBM_URL = `${HERO_ASSET_ORIGIN}${heroVideoWebm.url}`;
 
 /* ---------------------- NORDIC LUXURY BRAND TOKENS ---------------------- */
 
-const OAT = "#FAF3E6";
-const SLATE = "#2F4F4F";
-const PLUM = "#673147";
-const GREEN = "#2F4F4F"; /* minor accent only: eyebrows, secondary CTA, metadata */
+const OAT = "#FDFCF9";
+const SLATE = "#2B1620";
+const PLUM = "#2B1620";
+const GREEN = "#2B1620"; /* minor accent only: eyebrows, secondary CTA, metadata */
 
 const SERIF = '"Fraunces", "Iowan Old Style", Georgia, serif';
 
@@ -255,7 +255,7 @@ function HeroNav({ logoSlot, logoVisible }: { logoSlot: React.Ref<HTMLDivElement
     <header
       className="fixed inset-x-0 top-0 z-[100] transition-all duration-300"
       style={{
-        background: "#FAF3E6",
+        background: "#FDFCF9",
         boxShadow: scrolled || open ? "0 1px 0 rgba(43,22,32,0.06)" : "none",
         borderBottom: `1px solid ${scrolled || open ? "#E0D3BC" : "transparent"}`,
       }}
@@ -476,7 +476,7 @@ export function ClearedHero() {
         aria-hidden
         className="pointer-events-none absolute inset-0"
         style={{
-          background: `linear-gradient(to bottom, rgba(250,243,230,0.42) 0%, rgba(250,243,230,0.18) 40%, rgba(250,243,230,0.06) 72%, rgba(250,243,230,0.12) 100%)`,
+          background: `linear-gradient(to bottom, rgba(253,252,249,0.42) 0%, rgba(253,252,249,0.18) 40%, rgba(253,252,249,0.06) 72%, rgba(253,252,249,0.12) 100%)`,
         }}
       />
 
@@ -525,8 +525,8 @@ export function ClearedHero() {
         {/* copy */}
         <div className="mx-auto max-w-3xl">
           <div
-            className="text-[10.5px] uppercase"
-            style={{ letterSpacing: "0.32em", color: GREEN, fontWeight: 600 }}
+            className="copper-text text-[10.5px] uppercase"
+            style={{ letterSpacing: "0.32em", fontWeight: 600 }}
           >
             The operating system for contractors
           </div>
@@ -622,7 +622,7 @@ export function ClearedHero() {
           type="button"
           onClick={skip}
           className="absolute bottom-6 left-1/2 z-50 -translate-x-1/2 text-[10px] uppercase"
-          style={{ letterSpacing: "0.24em", color: "rgba(47,79,79,0.5)" }}
+          style={{ letterSpacing: "0.24em", color: "rgba(43,22,32,0.4)" }}
         >
           Skip
         </button>
