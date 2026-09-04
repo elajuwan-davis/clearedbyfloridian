@@ -11,7 +11,7 @@ const BRONZE = "#9C6B3F";
 const MONO = '"JetBrains Mono", ui-monospace, monospace';
 const SERIF = '"Instrument Sans", sans-serif';
 
-const FRAME_H = 640;
+const FRAME_H = 480;
 
 /* ------------------------------ small helpers ------------------------------ */
 
@@ -65,7 +65,7 @@ function useLiveNumber(to: number, { live = 0, period = 2600 }: { live?: number;
   return value;
 }
 
-function Eyebrow({ children, color = BRONZE }: { children: React.ReactNode; color?: string }) {
+function Eyebrow({ children, color = "rgba(0,0,0,0.45)" }: { children: React.ReactNode; color?: string }) {
   return (
     <div
       className="text-[8px] uppercase"
@@ -92,10 +92,15 @@ function Meter({ pct, color = BRONZE }: { pct: number; color?: string }) {
 }
 
 function Chip({ label }: { label: string }) {
+  const tone =
+    /correction|delay|fail/i.test(label) ? { color: "#C0392B", bg: "rgba(192,57,43,0.12)", border: "rgba(192,57,43,0.35)" } :
+    /review|warn/i.test(label) ? { color: "#B7791F", bg: "rgba(183,121,31,0.12)", border: "rgba(183,121,31,0.35)" } :
+    /pass|clear|verif|current|track|complete|ok/i.test(label) ? { color: "#2E7D32", bg: "rgba(46,125,50,0.12)", border: "rgba(46,125,50,0.35)" } :
+    { color: "#2563EB", bg: "rgba(37,99,235,0.10)", border: "rgba(37,99,235,0.35)" };
   return (
     <span
       className="shrink-0 px-1.5 py-[2px] text-[7.5px] uppercase"
-      style={{ fontFamily: MONO, letterSpacing: "0.14em", color: "#FFFFFF", background: BRONZE }}
+      style={{ fontFamily: MONO, letterSpacing: "0.14em", color: tone.color, background: tone.bg, border: `1px solid ${tone.border}` }}
     >
       {label}
     </span>
@@ -358,7 +363,7 @@ function BentoCard({
         className="flex shrink-0 items-center justify-between px-3 pb-1.5 pt-2.5"
         style={{ borderBottom: `1px solid ${active ? "rgba(156,107,63,0.28)" : "rgba(43,22,32,0.07)"}` }}
       >
-        <Eyebrow color={active ? BRONZE : "rgba(43,22,32,0.45)"}>{title}</Eyebrow>
+        <Eyebrow color={active ? INK : "rgba(43,22,32,0.45)"}>{title}</Eyebrow>
         {hint ? (
           <span
             className="shrink-0 text-[7.5px] uppercase"
@@ -688,7 +693,7 @@ function SceneOrbit() {
             animation: reduced ? undefined : "clSceneIn 500ms cubic-bezier(0.16,1,0.3,1) both",
           }}
         >
-          <span style={{ fontFamily: MONO, fontSize: 8, letterSpacing: "0.2em", color: BRONZE, textTransform: "uppercase", marginRight: 10 }}>
+          <span style={{ fontFamily: MONO, fontSize: 8, letterSpacing: "0.2em", color: "rgba(43,22,32,0.45)", textTransform: "uppercase", marginRight: 10 }}>
             {ORBIT[focus].title}
           </span>
           {ORBIT[focus].story}
@@ -752,7 +757,7 @@ const STATUS = {
   enroute: { label: "En Route", color: "#4F9CF9" },
   delayed: { label: "Delayed", color: "#FF6B6B" },
   completed: { label: "Completed", color: "#3ECF8E" },
-  review: { label: "In Review", color: "#C08A4E" },
+  review: { label: "In Review", color: "#B7791F" },
 } as const;
 type StatusKey = keyof typeof STATUS;
 
@@ -779,7 +784,7 @@ function StatusPill({ k }: { k: StatusKey }) {
 const DASH_METRICS: Array<[string, number, string, string]> = [
   ["Active permits", 17, "", STATUS.enroute.color],
   ["On time", 100, "%", STATUS.completed.color],
-  ["Avg review", 48, "h", BRONZE],
+  ["Avg review", 48, "h", STATUS.review.color],
   ["Corrections", 2, "", STATUS.delayed.color],
 ];
 
@@ -1336,7 +1341,7 @@ export function HeroStage() {
           {/* scene label */}
           <div
             className="pointer-events-none absolute left-4 top-4 text-[8px] uppercase"
-            style={{ fontFamily: MONO, letterSpacing: "0.2em", color: BRONZE, opacity: 0.6 }}
+            style={{ fontFamily: MONO, letterSpacing: "0.2em", color: "rgba(255,255,255,0.55)", opacity: 0.9 }}
           >
             {SCENES[scene].label}
           </div>

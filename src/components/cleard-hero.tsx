@@ -477,17 +477,17 @@ export function ClearedHero() {
         <div className="mx-auto max-w-3xl">
           <div
             className="label-eyebrow"
-            style={{ letterSpacing: "0.32em", fontWeight: 600 }}
+            style={{ letterSpacing: "0.32em", fontWeight: 600, color: "rgba(255,255,255,0.72)" }}
           >
             The operating system for contractors
           </div>
 
           <h1
-            className="mx-auto mt-5 max-w-[20ch]"
+            className="mx-auto mt-3 max-w-[20ch]"
             style={{
               fontFamily: SERIF,
               fontWeight: 500,
-              fontSize: "clamp(2.3rem, 5vw, 3.9rem)",
+              fontSize: "clamp(1.85rem, 3.8vw, 2.75rem)",
               lineHeight: 0.99,
               letterSpacing: "-0.035em",
               color: "#FFFFFF",
@@ -498,7 +498,7 @@ export function ClearedHero() {
           </h1>
 
           <p
-            className="mx-auto mt-5 max-w-[52ch] text-[16px] leading-[1.65]"
+            className="mx-auto mt-3 max-w-[52ch] text-[15px] leading-[1.55]"
             style={{ color: "rgba(255,255,255,0.88)" }}
           >
             Permits, inspections, licenses, and lien rights — cleared automatically.
@@ -508,7 +508,7 @@ export function ClearedHero() {
 
 
         {/* the platform itself: mark hovering, capabilities popping out, then the app */}
-        <div className="mt-8 lg:mt-10">
+        <div className="mt-5 lg:mt-6">
           <HeroStage />
         </div>
       </div>

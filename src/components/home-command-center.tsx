@@ -144,7 +144,7 @@ export function LiveCommandCenter() {
         <span style={{ fontFamily: SERIF, fontSize: 15, fontWeight: 600, color: INK, letterSpacing: "-0.02em" }}>
           Cleard
         </span>
-        <span className="flex items-center gap-2 text-[10px] uppercase" style={{ fontFamily: MONO, letterSpacing: "0.16em", color: PLUM_LT }}>
+        <span className="flex items-center gap-2 text-[10px] uppercase" style={{ fontFamily: MONO, letterSpacing: "0.16em", color: GREEN_LT }}>
           <span
             className="inline-block h-1.5 w-1.5"
             style={{ background: GREEN_LT, borderRadius: 999, animation: "clPulse 1.8s ease-in-out infinite" }}
@@ -249,7 +249,7 @@ export function LiveCommandCenter() {
             })}
           </div>
 
-          <div className="mt-4 pt-3 text-[10.5px] uppercase" style={{ borderTop: `1px solid ${DARK_LINE}`, fontFamily: MONO, letterSpacing: "0.16em", color: PLUM_LT }}>
+          <div className="mt-4 pt-3 text-[10.5px] uppercase" style={{ borderTop: `1px solid ${DARK_LINE}`, fontFamily: MONO, letterSpacing: "0.16em", color: GRAY }}>
             Next · {beat.next}
           </div>
         </div>

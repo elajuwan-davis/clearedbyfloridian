@@ -275,7 +275,7 @@ table, thead, tbody, tr, td, th, hr, svg *, path, line, rect, polyline, circle {
   font-weight: 600 !important;
   letter-spacing: 0.12em !important;
   text-transform: uppercase;
-  color: var(--text-3) !important;
+  color: var(--text-3);
 }
 .p-eyebrow::before, .label-eyebrow::before, .eyebrow::before, .md-eyebrow::before, .cl-eyebrow::before {
   content: "";
