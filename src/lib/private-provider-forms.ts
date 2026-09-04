@@ -67,7 +67,8 @@ const PAGE_H = 792;
 const INK = rgb(0.05, 0.05, 0.05);
 const MUTED = rgb(0.35, 0.35, 0.35);
 const RULE = rgb(0.75, 0.75, 0.75);
-const OBSIDIAN = rgb(0.082, 0.192, 0.341); // #2F4F4F
+const HEADER_BG = rgb(0, 0, 0); // #000000
+const COPPER = rgb(0.612, 0.42, 0.247); // #9C6B3F
 
 // Standard Helvetica/WinAnsi throws on characters it cannot encode ("Ō" in
 // FLŌRIDIAN, smart quotes pasted into intake fields), which aborts the whole
@@ -154,14 +155,14 @@ function drawHeader(ctx: DrawCtx, title: string, subtitle: string) {
     y: PAGE_H - 100,
     width: PAGE_W,
     height: 100,
-    color: OBSIDIAN,
+    color: HEADER_BG,
   });
-  ctx.page.drawText(pdfSafe("FLŌRIDIAN — CLEARED PRIVATE PROVIDER"), {
+  ctx.page.drawText(pdfSafe("CLEARED PRIVATE PROVIDER"), {
     x: MARGIN,
     y: PAGE_H - 45,
     size: 9,
     font: ctx.bold,
-    color: rgb(0.71, 0.855, 0.918), // Sky
+    color: COPPER,
   });
   ctx.page.drawText(pdfSafe(title), {
     x: MARGIN,
@@ -187,14 +188,14 @@ function drawSectionTitle(ctx: DrawCtx, text: string) {
     y: ctx.y,
     size: 9,
     font: ctx.bold,
-    color: OBSIDIAN,
+    color: INK,
   });
   ctx.y -= 6;
   ctx.page.drawLine({
     start: { x: MARGIN, y: ctx.y },
     end: { x: PAGE_W - MARGIN, y: ctx.y },
     thickness: 1,
-    color: OBSIDIAN,
+    color: COPPER,
   });
   ctx.y -= 14;
 }
