@@ -560,12 +560,12 @@ export function VictoriaSpotlight() {
 
 /* ================== 4 · THE ARCHITECTURAL ENGINE ======================== */
 
-const CREAM = "#F4EADB";
+const CREAM = "#F8F8F8";
 const TAN = "#B98055";
-const TAN_DEEP = "#8E5A38";
-const HAIR = "rgba(103,49,71,0.20)";
-const HAIR_SOFT = "rgba(103,49,71,0.13)";
-const CAD = "rgba(142,90,56,0.55)";
+const TAN_DEEP = "rgba(43,22,32,0.55)";
+const HAIR = "rgba(0,0,0,0.1)";
+const HAIR_SOFT = "rgba(0,0,0,0.07)";
+const CAD = "rgba(43,22,32,0.22)";
 
 const CHAOS_CARDS: {
   tag: string;
