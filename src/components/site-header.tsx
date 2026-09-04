@@ -2,16 +2,10 @@ import { useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { Menu } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
+import logoCopper from "@/assets/cleard-logo-copper.png.asset.json";
 
 function LogoMark() {
-  return (
-    <div
-      className="h-8 w-8 rounded-lg flex items-center justify-center font-bold text-sm"
-      style={{ background: "var(--copper-soft)", color: "var(--copper)" }}
-    >
-      C
-    </div>
-  );
+  return <img src={logoCopper.url} alt="Cleard" className="h-8 w-8 object-contain" />;
 }
 
 const navLinks = [
@@ -30,7 +24,7 @@ export function SiteHeader() {
         <Link to="/" className="flex items-center gap-3 group min-w-0">
           <LogoMark />
           <div className="flex flex-col leading-[1] min-w-0">
-            <span className="wordmark text-2xl">Cleard</span>
+            <span className="wordmark text-2xl tracking-[0.02em]">CLEARED</span>
           </div>
         </Link>
 
@@ -61,7 +55,7 @@ export function SiteHeader() {
             <SheetTitle className="sr-only">Site navigation</SheetTitle>
             <div className="flex h-full flex-col">
               <div className="px-6 py-6 border-b hairline">
-                <div className="wordmark text-2xl">Cleard</div>
+                <div className="wordmark text-2xl tracking-[0.02em]">CLEARED</div>
               </div>
               <nav className="flex-1 px-3 py-4">
                 {navLinks.map((l) => (

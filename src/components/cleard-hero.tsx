@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import mark3d from "@/assets/cleard-3d-mark.png.asset.json";
-import mark2d from "@/assets/cleard-mark-2d.png.asset.json";
+import mark2d from "@/assets/cleard-logo-copper.png.asset.json";
 import { HomeMotionStyles } from "@/components/home-command-center";
 import { HeroStage } from "@/components/hero-stage";
 import { TRADES } from "@/lib/trades";
@@ -273,10 +273,10 @@ function HeroNav({ logoSlot, logoVisible }: { logoSlot: React.Ref<HTMLDivElement
               fontFamily: SERIF,
               fontWeight: 600,
               fontSize: 21,
-              letterSpacing: "-0.02em",
+              letterSpacing: "0.02em",
             }}
           >
-            Cleard
+            CLEARED
           </span>
         </Link>
 
