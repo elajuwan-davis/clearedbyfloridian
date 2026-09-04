@@ -1313,10 +1313,11 @@ export function HeroStage() {
           className="relative min-w-0 flex-1 overflow-hidden"
           style={{
             height: FRAME_H,
-            background: "#FFFFFF",
-            border: `1px solid ${BORDER}`,
+            background: "rgba(255,255,255,0.42)",
+            backdropFilter: "blur(22px) saturate(150%)",
+            border: "1px solid rgba(255,255,255,0.45)",
             borderRadius: 14,
-            boxShadow: "0 40px 80px -60px rgba(43,22,32,0.45)",
+            boxShadow: "0 40px 90px -55px rgba(0,0,0,0.65), inset 0 1px 0 rgba(255,255,255,0.5)",
           }}
         >
           {/* drafting grid */}
@@ -1329,6 +1330,7 @@ export function HeroStage() {
               backgroundSize: "44px 44px",
             }}
           />
+
 
           <div
             key={scene}

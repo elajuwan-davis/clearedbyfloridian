@@ -147,7 +147,7 @@ function HeroSolutions() {
         onClick={() => setOpen((s) => !s)}
         className="text-[13.5px] transition-colors"
         style={{
-          color: SLATE,
+          color: "#FFFFFF",
           whiteSpace: "nowrap",
           background: "none",
           border: "none",
@@ -199,7 +199,7 @@ function HeroTrades() {
         onClick={() => setOpen((s) => !s)}
         className="text-[13.5px] transition-colors"
         style={{
-          color: SLATE,
+          color: "#FFFFFF",
           whiteSpace: "nowrap",
           background: "none",
           border: "none",
@@ -252,9 +252,9 @@ function HeroNav({ logoSlot, logoVisible }: { logoSlot: React.Ref<HTMLDivElement
     <header
       className="fixed inset-x-0 top-0 z-[100] transition-all duration-300"
       style={{
-        background: "#FFFFFF",
-        boxShadow: scrolled || open ? "0 1px 0 rgba(43,22,32,0.06)" : "none",
-        borderBottom: `1px solid ${scrolled || open ? "rgba(0,0,0,0.1)" : "transparent"}`,
+        background: "#000000",
+        boxShadow: scrolled || open ? "0 1px 0 rgba(255,255,255,0.10)" : "none",
+        borderBottom: `1px solid ${scrolled || open ? "rgba(255,255,255,0.14)" : "transparent"}`,
       }}
     >
       <div className="mx-auto grid h-[68px] max-w-7xl grid-cols-[1fr_auto_1fr] items-center gap-4 px-5 lg:px-10">
@@ -283,7 +283,7 @@ function HeroNav({ logoSlot, logoVisible }: { logoSlot: React.Ref<HTMLDivElement
                 to={l.to}
                 hash={l.hash}
                 className="text-[13.5px] no-underline transition-colors"
-                style={{ color: SLATE, whiteSpace: "nowrap" }}
+                style={{ color: "#FFFFFF", whiteSpace: "nowrap" }}
               >
                 {l.label}
               </Link>
@@ -295,7 +295,7 @@ function HeroNav({ logoSlot, logoVisible }: { logoSlot: React.Ref<HTMLDivElement
           <Link
             to="/login"
             className="hidden text-[13.5px] no-underline sm:inline"
-            style={{ color: SLATE, whiteSpace: "nowrap" }}
+            style={{ color: "#FFFFFF", whiteSpace: "nowrap" }}
           >
             Sign in
           </Link>
@@ -313,7 +313,7 @@ function HeroNav({ logoSlot, logoVisible }: { logoSlot: React.Ref<HTMLDivElement
             className="-mr-1 p-2 text-[13px] md:hidden"
             aria-label="Menu"
             onClick={() => setOpen((s) => !s)}
-            style={{ color: SLATE }}
+            style={{ color: "#FFFFFF" }}
           >
             {open ? "Close" : "Menu"}
           </button>
@@ -321,7 +321,7 @@ function HeroNav({ logoSlot, logoVisible }: { logoSlot: React.Ref<HTMLDivElement
       </div>
 
       {open && (
-        <div className="md:hidden" style={{ background: "#FFFFFF", borderTop: `1px solid rgba(0,0,0,0.1)` }}>
+        <div className="md:hidden" style={{ background: "#000000", borderTop: `1px solid rgba(255,255,255,0.14)` }}>
           <div className="space-y-4 px-5 py-6">
             {[...NAV, { to: "/login", label: "Sign in" } as const].map((l) => (
               <Link
@@ -329,16 +329,16 @@ function HeroNav({ logoSlot, logoVisible }: { logoSlot: React.Ref<HTMLDivElement
                 to={l.to}
                 onClick={() => setOpen(false)}
                 className="block text-[15px] no-underline"
-                style={{ color: SLATE }}
+                style={{ color: "#FFFFFF" }}
               >
                 {l.label}
               </Link>
             ))}
 
-            <div className="pt-2" style={{ borderTop: "1px solid rgba(0,0,0,0.1)" }}>
+            <div className="pt-2" style={{ borderTop: "1px solid rgba(255,255,255,0.14)" }}>
               <div
                 className="pt-3 text-[10.5px] uppercase tracking-[0.22em]"
-                style={{ color: PLUM, fontWeight: 700 }}
+                style={{ color: "#9C6B3F", fontWeight: 700 }}
               >
                 Solutions
               </div>
@@ -349,7 +349,7 @@ function HeroNav({ logoSlot, logoVisible }: { logoSlot: React.Ref<HTMLDivElement
                     to={s.to}
                     onClick={() => setOpen(false)}
                     className="block text-[15px] no-underline"
-                    style={{ color: SLATE }}
+                    style={{ color: "#FFFFFF" }}
                   >
                     {s.label}
                   </Link>

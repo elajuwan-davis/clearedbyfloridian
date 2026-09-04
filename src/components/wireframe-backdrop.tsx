@@ -34,7 +34,7 @@ function mulberry32(seed: number) {
 
 const DEPTH = 220; // world depth of the recycled band
 const NEAR = 6;
-const SPEED = 5.2; // world units / second
+const SPEED = 9.5; // world units / second
 
 export function WireframeBackdrop({ className, style }: { className?: string; style?: React.CSSProperties }) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -51,21 +51,21 @@ export function WireframeBackdrop({ className, style }: { className?: string; st
 
     const rand = mulberry32(20260904);
     const boxes: Box[] = [];
-    for (let i = 0; i < 78; i += 1) {
+    for (let i = 0; i < 96; i += 1) {
       const side = rand() < 0.5 ? -1 : 1;
-      const w = 6 + rand() * 12;
-      const d = 6 + rand() * 14;
-      const h = 8 + rand() * 46;
+      const w = 8 + rand() * 10;
+      const d = 9 + rand() * 12;
+      const h = 26 + rand() * 74;
       boxes.push({
         x: side * (9 + rand() * 46),
         z: rand() * DEPTH,
         w,
         d,
         h,
-        floors: Math.max(1, Math.round(h / 5)),
-        t0: rand() * 6,
-        build: 2.2 + rand() * 3.4,
-        copper: rand() < 0.14,
+        floors: Math.max(3, Math.round(h / 4)),
+        t0: rand() * 3,
+        build: 1.1 + rand() * 1.6,
+        copper: rand() < 0.18,
       });
     }
 
@@ -137,7 +137,7 @@ export function WireframeBackdrop({ className, style }: { className?: string; st
       const firstZ = Math.ceil((camZ + NEAR) / gridStep) * gridStep;
       for (let z = firstZ; z < camZ + DEPTH * 0.75; z += gridStep) {
         const fade = 1 - (z - camZ) / (DEPTH * 0.75);
-        const a = Math.max(0, fade * 0.3);
+        const a = Math.max(0, fade * 0.45);
         seg({ x: -120, y: 0, z }, { x: 120, y: 0, z }, a, false, 1);
       }
       for (const railX of [-120, -60, 0, 60, 120]) {
@@ -145,7 +145,7 @@ export function WireframeBackdrop({ className, style }: { className?: string; st
         const pb = project(railX, 0, camZ + DEPTH * 0.75);
         if (pa && pb) {
           const g = ctx.createLinearGradient(pa.sx, pa.sy, pb.sx, pb.sy);
-          g.addColorStop(0, "rgba(255,255,255,0.22)");
+          g.addColorStop(0, "rgba(255,255,255,0.38)");
           g.addColorStop(1, "rgba(255,255,255,0)");
           ctx.strokeStyle = g;
           ctx.lineWidth = 1;
@@ -160,11 +160,11 @@ export function WireframeBackdrop({ className, style }: { className?: string; st
         // recycle behind the camera and let it rebuild
         if (b.z - camZ < NEAR) {
           b.z += DEPTH;
-          b.t0 = t + rand() * 1.2;
-          b.h = 8 + rand() * 46;
-          b.floors = Math.max(1, Math.round(b.h / 5));
-          b.x = (rand() < 0.5 ? -1 : 1) * (9 + rand() * 46);
-          b.copper = rand() < 0.14;
+          b.t0 = t + rand() * 0.5;
+          b.h = 26 + rand() * 74;
+          b.floors = Math.max(3, Math.round(b.h / 4));
+          b.x = (rand() < 0.5 ? -1 : 1) * (11 + rand() * 42);
+          b.copper = rand() < 0.18;
         }
 
         const dist = b.z - camZ;
@@ -174,8 +174,8 @@ export function WireframeBackdrop({ className, style }: { className?: string; st
         if (p <= 0) continue;
         const eased = 1 - Math.pow(1 - p, 2);
         const hh = b.h * eased;
-        const base = 0.78 * depthFade * (0.45 + 0.55 * p);
-        const lw = Math.max(0.6, 1.15 * depthFade);
+        const base = Math.min(1, 1.15 * depthFade * (0.55 + 0.45 * p));
+        const lw = Math.max(0.75, 1.5 * depthFade);
 
         const x0 = b.x - b.w / 2;
         const x1 = b.x + b.w / 2;
@@ -196,20 +196,28 @@ export function WireframeBackdrop({ className, style }: { className?: string; st
         const rings = Math.max(1, Math.round(b.floors * eased));
         for (let f = 0; f <= rings; f += 1) {
           const y = Math.min(hh, (b.h / b.floors) * f);
-          const a = f === rings ? base * 1.25 : base * 0.72;
+          const a = f === rings ? Math.min(1, base * 1.3) : base * 0.86;
           for (let i = 0; i < 4; i += 1) {
             const [ax, az] = corners[i];
             const [bx, bz] = corners[(i + 1) % 4];
             seg({ x: ax, y, z: az }, { x: bx, y, z: bz }, a, b.copper, lw * 0.9);
           }
         }
-        // interior mullions — a couple of vertical studs per face
-        const studs = 2;
+        // facade mullions on all four faces — reads as a building, not a block
+        const studs = 4;
         for (let s = 1; s <= studs; s += 1) {
           const fx = x0 + ((x1 - x0) * s) / (studs + 1);
-          seg({ x: fx, y: 0, z: z0 }, { x: fx, y: hh, z: z0 }, base * 0.5, false, lw * 0.7);
+          seg({ x: fx, y: 0, z: z0 }, { x: fx, y: hh, z: z0 }, base * 0.62, false, lw * 0.7);
+          seg({ x: fx, y: 0, z: z1 }, { x: fx, y: hh, z: z1 }, base * 0.4, false, lw * 0.6);
           const fz = z0 + ((z1 - z0) * s) / (studs + 1);
-          seg({ x: x0, y: 0, z: fz }, { x: x0, y: hh, z: fz }, base * 0.35, false, lw * 0.7);
+          seg({ x: x0, y: 0, z: fz }, { x: x0, y: hh, z: fz }, base * 0.5, false, lw * 0.7);
+          seg({ x: x1, y: 0, z: fz }, { x: x1, y: hh, z: fz }, base * 0.5, false, lw * 0.7);
+        }
+        // roof crown + core shaft
+        if (eased > 0.98) {
+          seg({ x: x0, y: hh, z: z0 }, { x: x1, y: hh, z: z1 }, base * 0.45, b.copper, lw * 0.7);
+          seg({ x: x1, y: hh, z: z0 }, { x: x0, y: hh, z: z1 }, base * 0.45, b.copper, lw * 0.7);
+          seg({ x: b.x, y: hh, z: b.z + b.d / 2 }, { x: b.x, y: hh + 4, z: b.z + b.d / 2 }, base * 0.8, true, lw * 0.8);
         }
       }
 
