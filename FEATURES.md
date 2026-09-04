@@ -4,7 +4,7 @@ A complete, feature-by-feature account of what the platform does, why each piece
 how it is implemented, and — critically — **which features run on live backend data and
 which are still demo/mock data.**
 
-Last audited: August 2026.
+Last audited: 31 August 2026.
 
 ---
 
@@ -23,8 +23,9 @@ Last audited: August 2026.
 ## 0. What the platform is
 
 Cléared is Flōridian's **private-provider permitting arm**, operating under Florida Statute
-**553.791**. It is an invitation-only portal for licensed general contractors on active
-Flōridian projects ($1M+ custom residential, Palm Beach County + Treasure Coast).
+**553.791**. Managed GC accounts are invited; licensed contractors can also self-serve at
+`/join` onto a **trial** plan (own permits only). Full-plan work is still the invited /
+staff-managed path.
 
 The business promise it exists to operationalize:
 
@@ -63,18 +64,23 @@ float (Permitting Fee = construction value × 1.5%; Private Provider & Admin Fee
 
 ### 1.3 Tenants / Clients (`tenants`, `tenant_members`, `tenant_invites`) — **LIVE**
 - **What it does:** Each GC firm is a tenant. Members belong to a tenant; all permit data is
-  scoped to it. Invite tokens onboard new members (`/join`, `/join/$token`).
+  scoped to it.
+- **How they get in:**
+  - **Self-serve** at `/join` or `/signup` (`selfServeSignupFn`) — creates the tenant
+    (`plan: 'trial'`) and an unconfirmed `gc_owner`. Rate-limited via `signup_attempts`.
+  - **Invite token** at `/join/$token` — joins an existing tenant. Staff-created tenants
+    are written `plan: 'full'`.
+  - **Google sign-in** — `evaluatePortalAccessFn` allows known seats or self-provisions a
+    trial tenant; unverified email is refused.
 - **Why:** Multi-GC isolation — Coastline Builders must never see another builder's jobs.
 - **How:** Tenant ID column on scoped tables, enforced by RLS. Invite pipeline in
   `src/lib/invite-pipeline.functions.ts`.
-- **Status:** Live — 3 tenants, 6 members, 2 pending invites.
 
-### 1.4 Access requests (`access_requests`) — **LIVE**
-- **What it does:** Public request-to-join form; staff approve/deny at `/admin/access-requests`.
-- **Why:** The platform is invitation-only; this is the controlled front door.
-- **How:** Public API route `src/routes/api/public/access-request.ts` writes the row;
-  admin route reviews it.
-- **Status:** Live, 2 requests recorded.
+### 1.4 Access requests (`access_requests`) — **LIVE** (legacy)
+- **What it does:** Staff queue at `/admin/invites` → Access Requests. `/join` no longer
+  writes this table. `POST /api/public/access-request` and the Google-sign-in fallback
+  still do. Approving creates a full-plan tenant.
+- **How:** `src/routes/api/public/access-request.ts`; `approveAccessRequestFn`.
 
 ### 1.5 Onboarding & PAA gate — **LIVE + LOCAL**
 - **What it does:** Three-step onboarding ending with a mandatory **Permit Agent
@@ -86,6 +92,25 @@ float (Permitting Fee = construction value × 1.5%; Private Provider & Admin Fee
   **locally** (LOCAL) with version tracking and download.
 - **Gap to close:** move PAA signature records into a `paa_signatures` table so they are
   legally retrievable server-side.
+
+### 1.6 Plan gating (`tenants.plan`) — **LIVE**
+- **What it does:** `trial` (self-serve) vs `full` (invited/managed). Trial can file its own
+  permits; sub invites, licence verification, COI requests and lien rights show a lock that
+  files a real `feature_requests` row.
+- **How:** `src/lib/plan-access.ts` (`usePlanAccess`, `TRIAL_PATHS`, fail-open to `full`).
+  UI: `src/components/feature-lock.tsx`. Staff switch at `/admin/invites` → Plans
+  (`setTenantPlanFn`). Column default is `full`; only self-serve writes `trial` explicitly.
+  Admins are never gated.
+
+### 1.7 Staff view mode vs impersonation — **LOCAL** (UI filter)
+- **View mode** (`src/lib/view-mode-context.tsx`): sidebar Cleard / Flōridian toggle.
+  Flōridian view hard-scopes permit lists to tenant `3e137bde-7c3b-46b6-bcf9-57b703fd5592`.
+  Admin view with no client picked uses sentinel `"__none__"` and `listPermits` returns `[]`.
+  Drives My Permits, both dashboards, documents, financials, inspections, and which nav rail
+  renders.
+- **Impersonation** (`cleard_impersonate_tenant` via the top-bar switcher): sets
+  `session.effectiveTenantId` for plan reads, messages and contacts. Does **not** fill
+  My Permits. Both are UI filters, not RLS.
 
 ---
 
@@ -223,17 +248,18 @@ float (Permitting Fee = construction value × 1.5%; Private Provider & Admin Fee
 
 ## 5. Compliance & Legal
 
-### 5.1 GC company profile — license, insurance, bond — **LOCAL**
+### 5.1 GC company profile — license, insurance, bond — **LIVE**
 - **What it does:** `/portal/company` tracks the qualifier's DBPR license, General Liability,
   Workers' Comp and surety bond, each with expiration dates. Warns at 60 days (amber) and
   **blocks new permit submissions** when anything is expired (red).
 - **Why:** Filing a permit under a lapsed license is a licensing violation for both the GC and
   Cléared. This is a hard compliance gate, not a nicety.
-- **How:** `src/lib/gc-company.ts` — validation, `complianceFlags()`, `canSubmitNewPermits()`.
-  Staff monitoring dashboard at `/admin/gc-compliance`; banner component
-  `company-compliance-banner.tsx`.
-- **Status:** Logic is complete and enforced in the UI, but records are **LOCAL** — needs a
-  `gc_company_profiles` table before it can be relied on operationally.
+- **How:** `src/lib/gc-company.ts` against `public.gc_company_profiles` (one row per tenant)
+  and private bucket `company-compliance-docs`. Save reuses `verifyDbprLicense()`
+  (`/api/verify-license`). Uploads via `src/lib/company-docs.functions.ts`. Staff monitoring
+  at `/admin/gc-compliance`; banner `company-compliance-banner.tsx`.
+- **Status:** Live. Needs migration `20260804140000_gc_company_profiles.sql` applied on the
+  hosted project.
 
 ### 5.2 Subcontractor compliance (`subcontractors`, `sub_accounts`, `gc_coi_minimums`) — **LIVE + AI**
 - **What it does:** Sub roster per GC, COI (certificate of insurance) collection, minimum
@@ -261,15 +287,16 @@ float (Permitting Fee = construction value × 1.5%; Private Provider & Admin Fee
 - `src/lib/lien-releases.ts` (LIVE) and `src/lib/lien-waivers.ts` (LOCAL) generate conditional
   and unconditional waivers; `generate-lien-waiver-dialog.tsx` drives the flow.
 
-### 5.5 Legal document library & Remote Online Notary queue — **LOCAL**
+### 5.5 Legal document library & Remote Online Notary queue — **LIVE + LOCAL**
 - **What it does:** `/legal` holds PAA templates, NTBO templates and Terms of Service with
-  version history. `/legal/notary-queue` schedules RON sessions, tracks status
-  (`scheduled` / `completed` / `failed`) and auto-files the notarized PDF into the project
-  document vault on completion. GCs get a read-only Legal tab on their profile.
-- **Why:** Several statutory documents require notarization; keeping the queue inside the
+  version history (`legal_documents` + `legal_document_versions`, private bucket
+  `legal-documents`). `/legal/notary-queue` schedules RON sessions — that queue is still
+  **LOCAL** (`notary-requests.ts`).
+- **Why:** Several statutory documents require notarization; keeping the library inside the
   platform preserves the chain of custody.
-- **How:** `src/lib/legal-docs.ts`, `src/lib/notary-requests.ts`,
-  `src/components/request-notary-dialog.tsx`.
+- **How:** `src/lib/legal-docs.ts` + `src/lib/legal-docs.functions.ts`. Admin-only
+  (`is_admin()` + `AdminOnly`). Versioning mirrors HOA templates with a real `file_path` per
+  version. Needs migration `20260804150000_legal_documents.sql`.
 
 ### 5.6 Signatures — **LOCAL**
 - `src/lib/signature-requests.ts` + `send-for-signature-dialog.tsx`: request, track and record
@@ -317,20 +344,23 @@ float (Permitting Fee = construction value × 1.5%; Private Provider & Admin Fee
 
 ## 7. Internal Operations (staff only)
 
-### 7.1 Staff assignment, priority & escalation — **LOCAL**
+### 7.1 Staff assignment, priority & escalation — **LIVE**
 - **What it does:** Every project gets an assignee from the Cléared staff roster, a priority
   (Normal / High / Urgent) and an escalation flag that notifies senior staff.
   Rendered by `src/components/project-internal-ops.tsx` behind an "Internal Ops — Staff Only" header.
 - **Why:** Ownership is what makes a 2-day SLA enforceable. Escalation surfaces the jobs at risk.
-- **How:** `src/lib/staff-ops.ts` + `src/lib/staff-notes.ts`, both `localStorage`-backed with
-  `staff-ops:changed` / `staff-notes:changed` window events for cross-component reactivity.
+- **How:** `src/lib/staff-ops.ts` — roster from `user_roles` ⨝ `profiles`
+  (`listStaffAdmins()`), assignments from `staff_assignments`. Gate with `session.isAdmin`,
+  not `isInternalUser()`.
 
 ### 7.2 Internal notes — **LOCAL**
 - Free-text ops notes explicitly labeled **"Not Visible To The GC."** Authored under the
   signed-in user, timestamped, append-only in practice.
 
-### 7.3 Staff workload — **LOCAL**
+### 7.3 Staff workload — **LIVE**
 - `/admin/workload` aggregates open assignments per staff member so work can be rebalanced.
+  Role column shows `—` when `profiles.job_title` is unset. Excludes `@test.invalid`;
+  duplicate local-parts keep `@cleared.com`.
 
 ### 7.4 Audit trail (`activity_events`) — **LIVE (empty) + LOCAL**
 - **What it does:** Append-only log of every meaningful action — status changes, uploads,
@@ -343,19 +373,22 @@ float (Permitting Fee = construction value × 1.5%; Private Provider & Admin Fee
 
 ### 7.5 Admin console — **LIVE (mixed)**
 - `/admin` hub plus: `/admin/gc-clients`, `/admin/builders`, `/admin/contractors`,
-  `/admin/invites`, `/admin/access-requests`, `/admin/protection`, `/admin/utility-locates`,
-  `/admin/feature-requests`, `/admin/blog`, `/admin/hubspot-simulate`.
+  `/admin/invites` (pipeline, access requests, review queue, **Plans**), `/admin/access-requests`,
+  `/admin/protection`, `/admin/utility-locates`, `/admin/feature-requests`, `/admin/blog`,
+  `/admin/hubspot-simulate`, `/admin/workload`.
 
 ---
 
 ## 8. Communications
 
-### 8.1 Messaging (`message_threads`, `message_posts`) — **LIVE (empty)**
+### 8.1 Messaging (`message_threads`, `message_posts`) — **LIVE**
 - **What it does:** Support-desk model — GCs open a thread, Cléared staff (help@cleardinc.com)
-  reply. Both sides get notifications. Route `/messages`.
+  reply. A trial plan can only write to Cleard (`info@cleardinc.com`); the recipient is fixed.
+  Route `/messages`.
 - **Why:** Permit questions currently live in scattered text threads; centralizing them ties
   every question to a permit record.
-- **How:** `src/lib/messages-api.ts`.
+- **How:** `src/lib/messages-api.ts`. New-thread `tenant_id` follows impersonation
+  (`getImpersonatedTenantId()`), not view-mode.
 
 ### 8.2 Notifications (`notifications`, `notification_prefs`) — **LIVE**
 - **What it does:** Bell icon with unread count; triggers on permit issued, corrections
@@ -376,6 +409,13 @@ float (Permitting Fee = construction value × 1.5%; Private Provider & Admin Fee
 ---
 
 ## 9. Victoria — AI layer
+
+### 9.0 Voice-fill — **LIVE (browser SpeechRecognition, no AI)**
+- **What it does:** Fixed field script on `/join` (`victoria-voice-signup.tsx`) and New Permit
+  (`victoria-permit-assistant.tsx`, `data-tour="victoria-permit"`). Ask → listen → write →
+  advance. First-login tour ends on that mic, not on "Generate Intake Link" (plan-gated).
+- **How:** `src/lib/victoria-speech.ts`. No LLM. Missing API → control is not rendered;
+  typing always works.
 
 ### 9.1 Ask Victoria — **EXTERNAL (real AI)**
 - **What it does:** `/ask-victoria` plus a floating widget: answers Florida Building Code,

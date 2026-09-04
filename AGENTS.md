@@ -35,6 +35,12 @@ Storage. See `README.md` / `FEATURES.md` for the full feature map.
 - The portal and many routes (`/portal`, `/dashboard`, `/fee-calculator`, `/admin`, `/forms`, …)
   are guarded by `PortalShell` (`protectedPortalPrefixes` in `src/components/portal-shell.tsx`) and
   redirect anonymous visitors to `/login`.
+- Staff have **two** UI tenant filters that do not share state. The sidebar **Cleard /
+  Flōridian** toggle (`src/lib/view-mode-context.tsx`) scopes `listPermits` (My Permits,
+  dashboards, documents, financials, inspections). Admin mode with no client picked uses the
+  `"__none__"` sentinel and those pages render empty on purpose. The top-bar "View as client"
+  switcher is impersonation (`cleard_impersonate_tenant`) and drives `session.effectiveTenantId`
+  (plan read, messages, contacts) — it does **not** fill My Permits. See README §2.5.
 - `/join` is **self-serve signup**: `selfServeSignupFn` creates the tenant + an *unconfirmed*
   auth user, the page asks Supabase to send the confirmation email, and the link returns to
   `/auth/callback?entry=selfserve` → PAA. `/login` stays sign-in only, and admin invites are
