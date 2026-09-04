@@ -2253,40 +2253,55 @@ function NewPermitPage() {
                   </button>
                 </div>
                 <div className="xl:sticky xl:top-4">
-                  <div className="mb-2 flex items-center justify-between">
-                    <div className="font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/45">
-                      Live document preview
+                  <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
+                    <div className="inline-flex rounded-[3px] border border-obsidian/15 overflow-hidden">
+                      {(
+                        [
+                          { v: "noc", label: "Notice of Commencement" },
+                          { v: "ntbo", label: "Notice to Building Official" },
+                        ] as const
+                      ).map((opt) => (
+                        <button
+                          key={opt.v}
+                          type="button"
+                          onClick={() => setPreviewDoc(opt.v)}
+                          className={`px-3 py-2 font-mono text-[10px] uppercase tracking-[0.14em] transition-colors ${
+                            previewDoc === opt.v
+                              ? "bg-[#9C6B3F] text-white"
+                              : "bg-white text-obsidian/60 hover:text-obsidian"
+                          }`}
+                        >
+                          {opt.label}
+                        </button>
+                      ))}
                     </div>
                     <div className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#9C6B3F]">
                       Updates as you type
                     </div>
                   </div>
                   <div className="rounded-[3px] bg-obsidian/[0.03] p-4 sm:p-6">
-                    <div className="mx-auto max-h-[70vh] w-full max-w-[760px] overflow-y-auto shadow-[0_18px_44px_-24px_rgba(0,0,0,0.45)]">
-                      <NOCLivePreview fields={nocFields} />
+                    <div className="mx-auto max-h-[78vh] w-full overflow-y-auto shadow-[0_18px_44px_-24px_rgba(0,0,0,0.45)]">
+                      {previewDoc === "noc" ? (
+                        <NOCLivePreview fields={nocFields} />
+                      ) : (
+                        <NTBOLivePreview fields={ntboFields} />
+                      )}
                     </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="pt-2 border-t border-obsidian/10">
-                <div className={sectionCls}>Notice to Building Official — Preview</div>
-                <p className="mt-1 mb-4 text-[12px] text-obsidian/60">
-                  Filed with the building official under Cleard's private-provider identity — the GC
-                  does not sign this one, but here's exactly what goes out.
-                </p>
-                <div className="rounded-[3px] bg-obsidian/[0.03] p-4 sm:p-6">
-                  <div className="mx-auto w-full max-w-[860px] shadow-[0_18px_44px_-24px_rgba(0,0,0,0.45)]">
-                    <NTBOLivePreview fields={ntboFields} />
-                  </div>
-                  <div className="mt-4 flex justify-center">
-                    <button
-                      type="button"
-                      onClick={previewNTBOPdf}
-                      className="inline-flex items-center gap-2 border border-obsidian/20 bg-white px-4 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/70 hover:border-obsidian/40 rounded-[3px]"
-                    >
-                      Preview NTBO PDF
-                    </button>
+                    <div className="mt-4 flex justify-center">
+                      <button
+                        type="button"
+                        onClick={previewDoc === "noc" ? previewNOCPdf : previewNTBOPdf}
+                        className="inline-flex items-center gap-2 border border-obsidian/20 bg-white px-4 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/70 hover:border-[#9C6B3F] hover:text-[#9C6B3F] rounded-[3px]"
+                      >
+                        Preview {previewDoc === "noc" ? "NOC" : "NTBO"} PDF
+                      </button>
+                    </div>
+                    {previewDoc === "ntbo" && (
+                      <p className="mt-3 text-center text-[11px] text-obsidian/50 leading-relaxed">
+                        Filed with the building official under Cleard's private-provider identity —
+                        the GC does not sign this one.
+                      </p>
+                    )}
                   </div>
                 </div>
               </div>
