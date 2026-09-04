@@ -352,62 +352,58 @@ function PermitDetailPage() {
         </>
       }
       actions={
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-wrap items-center gap-1.5">
           {!editing ? (
             <>
               {getBundle(row)?.enabled && (
                 <Link
                   to="/portal/permits/$id/bundle"
                   params={{ id: row.id }}
-                  className="p-btn p-btn-ghost"
+                  className="p-btn p-btn-ghost p-btn-icon"
+                  title="Bundle"
+                  aria-label="Bundle"
                 >
-                  <Package className="h-3.5 w-3.5" /> Bundle
+                  <Package className="h-4 w-4" />
                 </Link>
               )}
-              <span className="inline-flex items-center gap-1.5 text-[11px] text-muted-foreground">
-                <Lock className="h-3 w-3" /> Read only
+              <span className="mr-1 inline-flex items-center gap-1 text-[11px] text-muted-foreground" title="Read only">
+                <Lock className="h-3 w-3" />
               </span>
-              <button onClick={openExport} className="p-btn p-btn-ghost">
-                <Download className="h-3.5 w-3.5" /> Export
+              <button onClick={openExport} className="p-btn p-btn-ghost p-btn-icon" title="Export" aria-label="Export">
+                <Download className="h-4 w-4" />
               </button>
-              <Link to="/portal/bid-review" className="p-btn p-btn-ghost">
-                <Scale className="h-3.5 w-3.5" /> Bid Review
+              <Link to="/portal/bid-review" className="p-btn p-btn-ghost p-btn-icon" title="Bid Review" aria-label="Bid Review">
+                <Scale className="h-4 w-4" />
               </Link>
               <Link
                 to="/permit-card/$id"
                 params={{ id: row.id }}
                 target="_blank"
                 className="p-btn p-btn-ghost"
+                title="Permit Card"
               >
                 <QrCode className="h-3.5 w-3.5" /> Permit Card
               </Link>
-              <Link
-                to="/portal/permits/new"
-                search={{ edit: row.id }}
-                className="p-btn p-btn-ghost"
-              >
-                <Pencil className="h-3.5 w-3.5" /> Edit Submission
-              </Link>
-              <button onClick={() => setEditing(true)} className="p-btn p-btn-primary">
-                <Pencil className="h-3.5 w-3.5" /> Quick Edit
+              <button onClick={() => setEditing(true)} className="p-btn p-btn-ghost p-btn-icon" title="Edit" aria-label="Edit">
+                <Pencil className="h-4 w-4" />
               </button>
-              <button onClick={remove} className="p-btn p-btn-danger">
-                <Trash2 className="h-3.5 w-3.5" /> Delete
+              <button onClick={remove} className="p-btn p-btn-danger p-btn-icon" title="Delete" aria-label="Delete">
+                <Trash2 className="h-4 w-4" />
               </button>
             </>
           ) : (
             <>
-              <button onClick={openExport} className="p-btn p-btn-ghost">
-                <Download className="h-3.5 w-3.5" /> Export
+              <button onClick={openExport} className="p-btn p-btn-ghost p-btn-icon" title="Export" aria-label="Export">
+                <Download className="h-4 w-4" />
               </button>
-              <button onClick={cancelEdit} disabled={saving} className="p-btn p-btn-ghost disabled:opacity-60">
-                <X className="h-3.5 w-3.5" /> Cancel
+              <button onClick={cancelEdit} disabled={saving} className="p-btn p-btn-ghost p-btn-icon disabled:opacity-60" title="Cancel" aria-label="Cancel">
+                <X className="h-4 w-4" />
               </button>
-              <button onClick={save} disabled={saving} className="p-btn p-btn-primary disabled:opacity-60">
+              <button onClick={save} disabled={saving} className="p-btn p-btn-primary disabled:opacity-60" title="Save">
                 <Save className="h-3.5 w-3.5" /> {saving ? "Saving…" : "Save"}
               </button>
-              <button onClick={remove} className="p-btn p-btn-danger">
-                <Trash2 className="h-3.5 w-3.5" /> Delete
+              <button onClick={remove} className="p-btn p-btn-danger p-btn-icon" title="Delete" aria-label="Delete">
+                <Trash2 className="h-4 w-4" />
               </button>
             </>
           )}

@@ -369,7 +369,7 @@ function CountyCoverage() {
   return (
     <section style={{ background: WHITE }}>
       <div className="mx-auto max-w-7xl px-5 pb-20 pt-20 lg:px-8 md:pb-24">
-        <div className="copper-text mb-6 flex items-center gap-3 text-[10.5px] font-bold uppercase tracking-[0.22em]">
+        <div className="label-eyebrow mb-4 flex items-center gap-3 text-[10.5px] font-bold uppercase tracking-[0.22em]">
 
           <span className="copper-hairline inline-block h-px w-7" />
           Statewide coverage
@@ -422,7 +422,7 @@ function MunicipalityTrack() {
   return (
     <section style={{ background: WHITE }}>
       <div className="mx-auto max-w-7xl px-5 lg:px-8 pb-24 md:pb-28">
-        <div className="copper-text mb-6 flex items-center gap-3 text-[10.5px] font-bold uppercase tracking-[0.22em]">
+        <div className="label-eyebrow mb-4 flex items-center gap-3 text-[10.5px] font-bold uppercase tracking-[0.22em]">
           <span className="copper-hairline inline-block h-px w-7" />
           For municipalities
         </div>
@@ -458,11 +458,10 @@ function MunicipalityTrack() {
             to="/contact"
             className="p-btn p-btn-primary cl-glass mt-10 inline-flex items-center gap-2 no-underline"
             style={{
-              backgroundImage: "var(--gradient-copper)",
               border: "1px solid color-mix(in oklab, var(--copper-deep) 70%, transparent)",
               backdropFilter: "blur(12px) saturate(140%)",
               WebkitBackdropFilter: "blur(12px) saturate(140%)",
-              color: "#FFF8EC",
+              color: "var(--black)",
               fontWeight: 700,
               boxShadow:
                 "inset 0 1px 0 rgba(255,255,255,0.45), 0 18px 34px -20px rgba(100,55,10,0.4)",
@@ -483,7 +482,7 @@ function VictoriaLayer() {
   return (
     <section className="relative overflow-hidden" style={{ background: M.bg0 }}>
       <TealGlow opacity={0.45} />
-      <div className="relative mx-auto max-w-7xl px-5 lg:px-8 py-24 md:py-32">
+      <div className="relative mx-auto max-w-7xl px-5 lg:px-8 py-12 md:py-16">
         <div className="grid gap-14 lg:grid-cols-12 lg:items-center">
           <div className="lg:col-span-5">
             <NeuralArt />
@@ -537,7 +536,7 @@ function TrustBar() {
   const marquee = [...TRUST_LOGOS, ...TRUST_LOGOS];
   return (
     <section style={{ background: WHITE, borderTop: `1px solid ${BORDER}` }}>
-      <div className="mx-auto max-w-7xl px-5 lg:px-8 py-20 md:py-24">
+      <div className="mx-auto max-w-7xl px-5 lg:px-8 py-12 md:py-14">
         <div className="flex items-center justify-center gap-3 text-[10.5px] font-bold uppercase tracking-[0.2em]" style={{ color: LIGHT }}>
           <span className="copper-hairline inline-block h-px w-7" />
           Trusted by contractors across the country
@@ -609,7 +608,7 @@ function MobileApp() {
 
   return (
     <section style={{ background: WHITE }}>
-      <div className="mx-auto max-w-7xl px-5 lg:px-8 py-24 md:py-28 grid gap-16 lg:grid-cols-2 lg:items-center">
+      <div className="mx-auto max-w-7xl px-5 lg:px-8 py-12 md:py-16 grid gap-10 lg:grid-cols-2 lg:items-center">
         <div className="mx-auto flex justify-center">
           {/* iPhone shell */}
           <div
@@ -756,7 +755,7 @@ function MobileApp() {
 
         <div>
           <h2 style={{ fontSize: "clamp(2rem, 3.6vw, 2.875rem)", lineHeight: 1.08, letterSpacing: "-0.035em" }}>
-            <span style={{ color: "var(--copper)", fontWeight: 600 }}>Your whole permit office </span>
+            <span style={{ color: INK, fontWeight: 600 }}>Your whole permit office </span>
             <span style={{ color: INK, fontWeight: 800 }}>in your pocket.</span>
           </h2>
           <div className="mt-10 space-y-7">
@@ -800,11 +799,10 @@ function BottomCTA() {
             hash="request"
             className="p-btn p-btn-primary cl-glass inline-flex items-center gap-2 font-bold no-underline"
             style={{
-              backgroundImage: "var(--gradient-copper)",
               border: "1px solid color-mix(in oklab, var(--copper-deep) 70%, transparent)",
               backdropFilter: "blur(12px) saturate(140%)",
               WebkitBackdropFilter: "blur(12px) saturate(140%)",
-              color: "#FFF8EC",
+              color: "var(--black)",
               boxShadow:
                 "inset 0 1px 0 rgba(255,255,255,0.45), 0 18px 34px -20px rgba(100,55,10,0.4)",
             }}

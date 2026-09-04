@@ -124,12 +124,12 @@ function NewHoaSubmittal() {
 
   return (
     <>
-      <div className="space-y-8 max-w-6xl">
+      <div className="mx-auto max-w-6xl space-y-6 px-4 py-6 sm:px-6 lg:px-8">
         <div>
           <Link to="/portal/hoa-submittals" className="inline-flex items-center gap-1 text-xs text-obsidian/60 hover:text-obsidian">
             <ArrowLeft className="h-3 w-3" /> HOA Submittals
           </Link>
-          <h1 className="mt-4 font-display text-4xl tracking-tight text-obsidian">Start an HOA Submittal</h1>
+          <h1 className="mt-4 text-[22px] font-bold tracking-tight text-obsidian">Start an HOA Submittal</h1>
           <p className="mt-2 text-sm text-muted-foreground max-w-2xl">
             Search the Cleard community repository. Every submittal builds this library — find your community and we pre-fill
             everything we know. If it's not listed, add it and it becomes the template for every future submittal.

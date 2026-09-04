@@ -6,17 +6,19 @@
 
 /* =========================================================
    CLEARD DESIGN SYSTEM
-   One palette, one typeface, one radius, one button.
+   One palette, one typeface, one radius, one button language.
 
    White Sand  #FFFFFF  every surface, card and input
    Ink         #2B1620  footer / dark sections, line art
    True Black  #000000  all body and heading text on white
-   Copper      #9C6B3F  accent only: buttons, links, active nav,
-                        icons, eyebrows, nodes and lines
+   Copper      #9C6B3F  accent ONLY — borders, focus rings, active
+                        nav icons, status dots, hairlines. Never
+                        body copy, never headlines, never solid fills.
+   Info Blue   #2563EB  lucid status "in progress / draft / submitted"
+   OK / Warn / Bad      green / amber / red status semantics
 
    Instrument Sans everywhere (400 body · 500/600 labels, nav,
-   buttons · 700 headlines). Italics are disabled; emphasis uses
-   the copper→black gradient (.copper-emph).
+   buttons · 700 headlines). Primary CTAs are glassmorphic.
    ========================================================= */
 
 @theme inline {
@@ -101,16 +103,21 @@
   --line:         rgba(0, 0, 0, 0.10);
   --line-2:       rgba(0, 0, 0, 0.18);
 
-  /* Semantic status */
+  /* Semantic status — lucid, never remapped to copper */
   --ok:           #2E7D32;
   --warn:         #B7791F;
   --bad:          #C0392B;
+  --info:         #2563EB;
+  --info-soft:    rgba(37, 99, 235, 0.10);
 
   /* Motifs */
-  --gradient-emph: linear-gradient(90deg, #9C6B3F 0%, #000000 100%);
+  --gradient-emph: none;
   --hero-overlay:  linear-gradient(to right, rgba(0,0,0,0.72) 40%, rgba(0,0,0,0.35) 100%);
-  --wave:          rgba(156, 107, 63, 0.10);
+  --wave:          rgba(156, 107, 63, 0.08);
   --radius:        8px;
+  --glass-bg:      rgba(255, 255, 255, 0.62);
+  --glass-border:  rgba(156, 107, 63, 0.38);
+  --glass-shadow:  inset 0 1px 0 rgba(255, 255, 255, 0.75), 0 8px 22px rgba(43, 22, 32, 0.08);
 
   /* Legacy aliases — every old token resolves to the four colours */
   --nl-oat: var(--white);       --nl-oat-2: var(--gray-bg);   --nl-oat-3: var(--gray-bg-2);
@@ -125,26 +132,26 @@
   --accent-teal: var(--copper); --accent-dark: var(--copper-hover);
   --cds-border: var(--line);
   --red: var(--bad);            --red-bg: rgba(192, 57, 43, 0.10);
-  --blue: var(--copper);        --blue-bg: var(--copper-soft);
-  --teal: var(--copper);
+  --blue: var(--info);          --blue-bg: var(--info-soft);
+  --teal: var(--info);
 
   --brand: var(--copper);       --brand-d: var(--copper-hover);
-  --green: var(--copper);       --green-d: var(--copper-hover);
+  --green: var(--ok);           --green-d: #256628;
   --amber: var(--warn);         --amber-soft: rgba(183, 121, 31, 0.12);
   --paper: var(--white);        --paper-warm: var(--white);   --paper-deep: var(--gray-bg);
   --sand: var(--gray-bg);
   --ink: var(--black);
   --obsidian: var(--ink-brand); --obsidian-deep: var(--ink-brand);
-  --sky: var(--copper);
+  --sky: var(--info);
   --rule: var(--line);
   --oxblood: var(--bad);
-  --blueprint: var(--copper);
+  --blueprint: var(--info);
 
-  /* shadcn semantic tokens */
+  /* shadcn semantic tokens — primary CTA is glass, not solid copper */
   --background: var(--white);            --foreground: var(--black);
   --card: var(--white);                  --card-foreground: var(--black);
   --popover: var(--white);               --popover-foreground: var(--black);
-  --primary: var(--copper);              --primary-foreground: var(--white);
+  --primary: var(--black);               --primary-foreground: var(--black);
   --secondary: var(--gray-bg);           --secondary-foreground: var(--black);
   --muted: var(--gray-bg);               --muted-foreground: var(--text-2);
   --accent: var(--copper-soft);          --accent-foreground: var(--black);
@@ -158,7 +165,7 @@
   --p-border: var(--line);       --p-border-2: var(--line-2);
   --p-text: var(--black);        --p-text-2: var(--text-2);   --p-text-3: var(--text-3);
   --p-success: var(--ok);        --p-warning: var(--warn);    --p-danger: var(--bad);
-  --p-info: var(--copper);       --p-accent: var(--copper);   --p-purple: var(--copper);
+  --p-info: var(--info);         --p-accent: var(--copper);   --p-purple: var(--info);
   --p-tint: var(--gray-bg);      --p-tint-2: var(--copper-soft);
   --p-row-hover: var(--gray-bg); --p-shadow: none;            --p-topbar: var(--white);
 
@@ -175,7 +182,7 @@
   /* Marketing */
   --md-bg: var(--white);         --md-surface: var(--white);   --md-surface-2: var(--gray-bg);
   --md-border: var(--line);      --md-text: var(--black);      --md-muted: var(--text-2);
-  --md-brand: var(--copper);     --md-green: var(--copper);    --md-amber: var(--warn);
+  --md-brand: var(--copper);     --md-green: var(--ok);      --md-amber: var(--warn);
   --md-obsidian: var(--ink-brand); --md-gold: var(--copper);   --md-gold-soft: var(--copper-soft);
   --md-lavender: var(--copper-soft);
 
@@ -223,12 +230,14 @@ em, i, .italic, [style*="italic"] { font-style: normal !important; }
 .display-serif em, .display-serif .italic,
 .md-serif em, .md-serif .italic,
 .marketing-dark h1 em, .marketing-dark h2 em, .cl-home h1 em, .cl-home h2 em {
-  background: var(--gradient-emph);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
+  background: none;
+  -webkit-background-clip: unset;
+  background-clip: unset;
+  -webkit-text-fill-color: unset;
+  color: var(--black);
   font-style: normal;
   font-weight: 700;
+  box-shadow: inset 0 -2px 0 0 var(--copper-soft-2);
 }
 
 .marketing-dark, .cl-home, .cl-public { background-color: var(--white); color: var(--black); }
@@ -256,23 +265,45 @@ em, i, .italic, [style*="italic"] { font-style: normal !important; }
 table, thead, tbody, tr, td, th, hr, svg *, path, line, rect, polyline, circle { border-radius: 0; }
 
 /* ---------------------------------------------------------
-   EYEBROWS & LABELS
+   EYEBROWS & LABELS — muted ink, copper accent mark only
    --------------------------------------------------------- */
 .p-eyebrow, .label-eyebrow, .eyebrow, .md-eyebrow, .cl-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   font-size: 11px !important;
   font-weight: 600 !important;
   letter-spacing: 0.12em !important;
   text-transform: uppercase;
-  color: var(--copper) !important;
+  color: var(--text-3) !important;
+}
+.p-eyebrow::before, .label-eyebrow::before, .eyebrow::before, .md-eyebrow::before, .cl-eyebrow::before {
+  content: "";
+  width: 12px;
+  height: 2px;
+  border-radius: 1px;
+  background: var(--copper);
+  flex: none;
 }
 .wordmark { font-weight: 700; letter-spacing: -0.02em; }
 .wordmark-subline { font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text-3); }
 
+/* Form field labels — one size everywhere (never bigger than page titles) */
+label, .p-label, [data-slot="label"] {
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-2) !important;
+  line-height: 1.3;
+}
+
 /* ---------------------------------------------------------
-   BUTTONS — one shape on every page
-   Primary: copper fill · Secondary: copper outline · Tertiary: copper text
-   36px tall, 8px radius, 14px/600, 16px side padding. Never full-round,
-   never square, never wider than its label.
+   BUTTONS — glassmorphic primary, consistent 36px height
+   Primary: frosted glass + copper border accent
+   Secondary: white + copper border
+   Tertiary / quiet: ink text, no fill
+   Icon: 36×36 square for toolbar actions
    --------------------------------------------------------- */
 button, .btn, [role="button"] { font-family: var(--nl-font); cursor: pointer; }
 button:disabled, [aria-disabled="true"] { cursor: not-allowed; opacity: 0.55; }
@@ -290,10 +321,12 @@ button.bg-destructive, a.bg-destructive,
   justify-content: center;
   gap: 8px;
   height: 36px;
+  min-height: 36px;
+  max-height: 36px;
   padding: 0 16px;
   border-radius: var(--radius) !important;
   font-family: var(--nl-font) !important;
-  font-size: 14px !important;
+  font-size: 13px !important;
   font-weight: 600 !important;
   line-height: 1;
   letter-spacing: 0;
@@ -301,31 +334,40 @@ button.bg-destructive, a.bg-destructive,
   white-space: nowrap;
   text-decoration: none;
   width: auto;
-  box-shadow: none !important;
-  backdrop-filter: none !important;
-  transition: background-color 140ms ease, border-color 140ms ease, color 140ms ease;
+  transition: background-color 140ms ease, border-color 140ms ease, color 140ms ease, box-shadow 140ms ease;
 }
 .p-btn svg, .cds-btn svg, .md-btn svg,
 .md-btn-primary svg, .md-btn-ghost svg, .md-btn-gold svg, .md-btn-gold-outline svg { width: 16px; height: 16px; flex: none; }
-.p-btn-sm, .cds-btn-sm { height: 30px; padding: 0 12px; font-size: 13px !important; }
-.p-btn-lg, .md-btn-lg { height: 44px; padding: 0 22px; font-size: 15px !important; }
+.p-btn-sm, .cds-btn-sm { height: 30px; min-height: 30px; max-height: 30px; padding: 0 12px; font-size: 12px !important; }
+.p-btn-lg, .md-btn-lg { height: 40px; min-height: 40px; max-height: 40px; padding: 0 18px; font-size: 14px !important; }
+.p-btn-icon {
+  width: 36px !important;
+  min-width: 36px !important;
+  max-width: 36px !important;
+  padding: 0 !important;
+  gap: 0;
+}
 
-/* primary */
+/* primary — glass */
 .p-btn-primary, .cds-btn-primary, .md-btn-primary, .md-btn-gold,
 button.bg-primary, a.bg-primary, button.bg-obsidian, a.bg-obsidian, button.bg-accent, a.bg-accent,
 .driver-popover.cleard-tour-popover .driver-popover-next-btn,
 [data-sonner-toast] [data-button] {
-  background: var(--copper) !important;
-  color: var(--white) !important;
-  border: 1px solid var(--copper) !important;
+  background: var(--glass-bg) !important;
+  color: var(--black) !important;
+  border: 1px solid var(--glass-border) !important;
+  box-shadow: var(--glass-shadow) !important;
+  backdrop-filter: blur(14px) saturate(160%) !important;
+  -webkit-backdrop-filter: blur(14px) saturate(160%) !important;
 }
 .p-btn-primary:hover, .cds-btn-primary:hover, .md-btn-primary:hover, .md-btn-gold:hover,
 button.bg-primary:hover, a.bg-primary:hover, button.bg-obsidian:hover, a.bg-obsidian:hover,
 button.bg-accent:hover, a.bg-accent:hover,
 .driver-popover.cleard-tour-popover .driver-popover-next-btn:hover {
-  background: var(--copper-hover) !important;
-  border-color: var(--copper-hover) !important;
-  color: var(--white) !important;
+  background: rgba(255, 255, 255, 0.82) !important;
+  border-color: var(--copper) !important;
+  color: var(--black) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.9), 0 10px 28px rgba(156, 107, 63, 0.16) !important;
 }
 
 /* secondary (outline) */
@@ -333,46 +375,66 @@ button.bg-accent:hover, a.bg-accent:hover,
 .driver-popover.cleard-tour-popover button,
 [data-sonner-toast] [data-cancel] {
   background: var(--white) !important;
-  color: var(--copper) !important;
-  border: 1px solid var(--copper) !important;
+  color: var(--black) !important;
+  border: 1px solid var(--line-2) !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
 }
 .p-btn-ghost:hover, .p-btn-secondary:hover, .cds-btn-secondary:hover, .md-btn-ghost:hover, .md-btn-gold-outline:hover,
 .driver-popover.cleard-tour-popover button:hover {
-  background: var(--copper-soft) !important;
-  color: var(--copper-hover) !important;
-  border-color: var(--copper-hover) !important;
+  background: var(--gray-bg) !important;
+  color: var(--black) !important;
+  border-color: var(--copper) !important;
 }
 
-/* tertiary (text) */
+/* tertiary (text) — ink, not copper writing */
 .p-btn-quiet, .p-btn-link, .cds-btn-ghost {
   background: transparent !important;
-  color: var(--copper) !important;
+  color: var(--black) !important;
   border: 1px solid transparent !important;
   padding: 0 10px;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
 }
-.p-btn-quiet:hover, .p-btn-link:hover, .cds-btn-ghost:hover { color: var(--copper-hover) !important; background: var(--copper-soft) !important; }
-.p-btn-link { height: auto; padding: 0; text-decoration: underline; text-underline-offset: 3px; }
-.p-btn-link:hover { background: transparent !important; }
+.p-btn-quiet:hover, .p-btn-link:hover, .cds-btn-ghost:hover {
+  color: var(--black) !important;
+  background: var(--gray-bg) !important;
+}
+.p-btn-link { height: auto; max-height: none; padding: 0; text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--copper); }
+.p-btn-link:hover { background: transparent !important; text-decoration-color: var(--copper-hover); }
 
 /* destructive */
 .p-btn-danger, .cds-btn-danger, button.bg-destructive, a.bg-destructive {
-  background: var(--bad) !important;
-  color: var(--white) !important;
-  border: 1px solid var(--bad) !important;
+  background: rgba(192, 57, 43, 0.08) !important;
+  color: var(--bad) !important;
+  border: 1px solid rgba(192, 57, 43, 0.35) !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
 }
-.p-btn-danger:hover, .cds-btn-danger:hover { background: #A33224 !important; border-color: #A33224 !important; }
+.p-btn-danger:hover, .cds-btn-danger:hover {
+  background: rgba(192, 57, 43, 0.14) !important;
+  border-color: var(--bad) !important;
+}
 
-/* Focus ring — the one visible focus treatment */
+/* Focus ring — copper accent */
 button:focus-visible, a:focus-visible, [role="button"]:focus-visible, [role="tab"]:focus-visible {
   outline: 2px solid var(--copper);
   outline-offset: 2px;
 }
 
 /* ---------------------------------------------------------
-   LINKS
+   LINKS — ink text, copper underline accent
    --------------------------------------------------------- */
-.p-link, .md-link, a.text-primary, a.text-sky, a.text-brand { color: var(--copper) !important; text-decoration: underline; text-underline-offset: 3px; }
-.p-link:hover, .md-link:hover { color: var(--copper-hover) !important; }
+.p-link, .md-link, a.text-primary, a.text-sky, a.text-brand {
+  color: var(--black) !important;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: var(--copper);
+}
+.p-link:hover, .md-link:hover {
+  color: var(--black) !important;
+  text-decoration-color: var(--copper-hover);
+}
 
 /* ---------------------------------------------------------
    INPUTS
@@ -413,7 +475,7 @@ select {
   background-position: right 12px center;
   padding-right: 34px;
 }
-label, .p-label { font-size: 13px; font-weight: 500; color: var(--black); }
+label, .p-label { font-size: 11px; font-weight: 600; color: var(--text-2); }
 
 /* ---------------------------------------------------------
    SURFACES / CARDS
@@ -501,10 +563,11 @@ tbody tr:last-child td { border-bottom: 0; }
 }
 .p-chip::before, .cds-tag::before { content: ""; width: 6px; height: 6px; border-radius: 999px; background: currentColor; flex: none; }
 .p-chip-success, .cds-tag-success   { color: var(--ok) !important;   background: rgba(46, 125, 50, 0.10) !important; }
-.p-chip-info, .cds-tag-info, .p-chip-purple, .cds-tag-progress { color: var(--copper) !important; background: var(--copper-soft) !important; }
+.p-chip-info, .cds-tag-info, .p-chip-purple, .cds-tag-progress { color: var(--info) !important; background: var(--info-soft) !important; }
 .p-chip-warning                      { color: var(--warn) !important; background: rgba(183, 121, 31, 0.12) !important; }
 .p-chip-danger, .cds-tag-danger     { color: var(--bad) !important;  background: rgba(192, 57, 43, 0.10) !important; }
 .p-chip-neutral, .cds-tag-neutral   { color: var(--text-2) !important; background: var(--gray-bg) !important; }
+.p-chip-draft                       { color: var(--info) !important; background: var(--info-soft) !important; }
 
 /* ---------------------------------------------------------
    SEGMENTED / FILTER CHIPS / TABS
@@ -692,21 +755,22 @@ tbody tr:last-child td { border-bottom: 0; }
 .border-white { border-color: var(--white) !important; }
 .text-obsidian, .text-ink, .text-foreground { color: var(--black) !important; }
 .text-muted-foreground { color: var(--text-2) !important; }
-.text-sky, .text-brand, .text-accent, .text-primary, .text-copper { color: var(--copper) !important; }
-.bg-copper { background-color: var(--copper) !important; color: var(--white); }
+.text-sky, .text-brand, .text-accent, .text-primary { color: var(--black) !important; }
+.text-copper { color: var(--copper) !important; } /* accent-only utility — do not use for body copy */
+.bg-copper { background-color: var(--copper-soft) !important; color: var(--black); border-color: var(--glass-border); }
 
 [class*="text-red-"], [class*="text-rose-"] { color: var(--bad) !important; }
 [class*="text-amber-"], [class*="text-yellow-"], [class*="text-orange-"] { color: var(--warn) !important; }
 [class*="text-emerald-"], [class*="text-green-"], [class*="text-lime-"], [class*="text-teal-"] { color: var(--ok) !important; }
-[class*="text-blue-"], [class*="text-sky-"], [class*="text-cyan-"], [class*="text-indigo-"],
-[class*="text-violet-"], [class*="text-purple-"], [class*="text-fuchsia-"], [class*="text-pink-"] { color: var(--copper) !important; }
+[class*="text-blue-"], [class*="text-sky-"], [class*="text-cyan-"], [class*="text-indigo-"] { color: var(--info) !important; }
+[class*="text-violet-"], [class*="text-purple-"], [class*="text-fuchsia-"], [class*="text-pink-"] { color: var(--info) !important; }
 [class*="text-slate-"], [class*="text-gray-"], [class*="text-zinc-"], [class*="text-neutral-"], [class*="text-stone-"] { color: var(--text-2) !important; }
 
 [class*="border-red-"], [class*="border-rose-"] { border-color: rgba(192,57,43,0.40) !important; }
 [class*="border-amber-"], [class*="border-yellow-"], [class*="border-orange-"] { border-color: rgba(183,121,31,0.40) !important; }
 [class*="border-emerald-"], [class*="border-green-"], [class*="border-lime-"], [class*="border-teal-"] { border-color: rgba(46,125,50,0.40) !important; }
 [class*="border-blue-"], [class*="border-sky-"], [class*="border-cyan-"], [class*="border-indigo-"],
-[class*="border-violet-"], [class*="border-purple-"], [class*="border-fuchsia-"], [class*="border-pink-"] { border-color: rgba(156,107,63,0.40) !important; }
+[class*="border-violet-"], [class*="border-purple-"], [class*="border-fuchsia-"], [class*="border-pink-"] { border-color: rgba(37,99,235,0.40) !important; }
 [class*="border-slate-"], [class*="border-gray-"], [class*="border-zinc-"], [class*="border-neutral-"], [class*="border-stone-"] { border-color: var(--line) !important; }
 
 [class*="bg-red-50"], [class*="bg-red-100"], [class*="bg-red-200"], [class*="bg-rose-50"], [class*="bg-rose-100"] { background-color: rgba(192,57,43,0.10) !important; }
@@ -715,7 +779,7 @@ tbody tr:last-child td { border-bottom: 0; }
 [class*="bg-emerald-50"], [class*="bg-emerald-100"], [class*="bg-emerald-200"], [class*="bg-green-50"], [class*="bg-green-100"],
 [class*="bg-teal-50"], [class*="bg-teal-100"] { background-color: rgba(46,125,50,0.10) !important; }
 [class*="bg-blue-50"], [class*="bg-blue-100"], [class*="bg-sky-50"], [class*="bg-sky-100"], [class*="bg-indigo-50"], [class*="bg-indigo-100"],
-[class*="bg-violet-50"], [class*="bg-violet-100"], [class*="bg-purple-50"], [class*="bg-purple-100"], [class*="bg-pink-50"], [class*="bg-pink-100"] { background-color: var(--copper-soft) !important; }
+[class*="bg-violet-50"], [class*="bg-violet-100"], [class*="bg-purple-50"], [class*="bg-purple-100"], [class*="bg-pink-50"], [class*="bg-pink-100"] { background-color: var(--info-soft) !important; }
 [class*="bg-slate-50"], [class*="bg-slate-100"], [class*="bg-gray-50"], [class*="bg-gray-100"], [class*="bg-zinc-50"], [class*="bg-zinc-100"],
 [class*="bg-neutral-50"], [class*="bg-neutral-100"], [class*="bg-stone-50"], [class*="bg-stone-100"] { background-color: var(--gray-bg) !important; }
 [class*="bg-red-400"], [class*="bg-red-500"], [class*="bg-red-600"], [class*="bg-red-700"], [class*="bg-red-800"], [class*="bg-red-900"],
@@ -725,8 +789,8 @@ tbody tr:last-child td { border-bottom: 0; }
 [class*="bg-emerald-400"], [class*="bg-emerald-500"], [class*="bg-emerald-600"], [class*="bg-emerald-700"], [class*="bg-emerald-800"], [class*="bg-emerald-900"],
 [class*="bg-green-500"], [class*="bg-green-600"], [class*="bg-teal-500"], [class*="bg-teal-600"] { background-color: var(--ok) !important; color: var(--white) !important; }
 [class*="bg-blue-500"], [class*="bg-blue-600"], [class*="bg-sky-500"], [class*="bg-sky-600"], [class*="bg-indigo-500"], [class*="bg-indigo-600"],
-[class*="bg-violet-500"], [class*="bg-violet-600"], [class*="bg-purple-500"], [class*="bg-purple-600"] { background-color: var(--copper) !important; color: var(--white) !important; }
-[class*="ring-blue-"], [class*="ring-sky-"], [class*="ring-indigo-"] { --tw-ring-color: var(--copper) !important; }
+[class*="bg-violet-500"], [class*="bg-violet-600"], [class*="bg-purple-500"], [class*="bg-purple-600"] { background-color: var(--info) !important; color: var(--white) !important; }
+[class*="ring-blue-"], [class*="ring-sky-"], [class*="ring-indigo-"] { --tw-ring-color: var(--info) !important; }
 [class*="bg-gradient"]:not(.copper-emph):not(.hero-overlay) { background-image: none !important; }
 .shadow-xl, .shadow-2xl { box-shadow: 0 8px 24px rgba(0,0,0,0.08) !important; }
 
@@ -738,7 +802,7 @@ tbody tr:last-child td { border-bottom: 0; }
   --success-bg: var(--white); --success-text: var(--ok); --success-border: var(--line);
   --error-bg: var(--white); --error-text: var(--bad); --error-border: var(--line);
   --warning-bg: var(--white); --warning-text: var(--warn); --warning-border: var(--line);
-  --info-bg: var(--white); --info-text: var(--copper); --info-border: var(--line);
+  --info-bg: var(--white); --info-text: var(--info); --info-border: var(--line);
   font-family: var(--nl-font) !important;
 }
 [data-sonner-toast] {
@@ -802,12 +866,14 @@ tbody tr:last-child td { border-bottom: 0; }
   .text-pretty { text-wrap: pretty; }
 }
 @utility copper-shine {
-  background-image: var(--gradient-copper-shine); background-size: 200% 100%;
-  background-clip: text; -webkit-background-clip: text; color: transparent; animation: copperSweep 6s linear infinite;
+  color: var(--black);
+  background: none;
+  background-clip: unset;
+  -webkit-background-clip: unset;
 }
-@utility copper-metal { background-image: var(--gradient-copper-shine); background-size: 200% 100%; animation: copperSweep 7s linear infinite; }
-@utility copper-text { background: var(--gradient-copper); background-clip: text; -webkit-background-clip: text; color: transparent; }
-@utility copper-hairline { background-image: var(--gradient-copper); opacity: 0.75; }
+@utility copper-metal { background-image: none; background: var(--copper-soft); }
+@utility copper-text { color: var(--text-3) !important; background: none; background-clip: unset; -webkit-background-clip: unset; }
+@utility copper-hairline { background-image: none; background: var(--copper); opacity: 0.75; }
 @utility foil-sheen {
   position: relative; overflow: hidden;
   &::after {
@@ -838,28 +904,103 @@ tbody tr:last-child td { border-bottom: 0; }
 .driver-popover.cleard-tour-popover .driver-popover-arrow-side-top,
 .driver-popover.cleard-tour-popover .driver-popover-arrow-side-bottom { border-color: var(--white); }
 
-/* Marketing CTA buttons: same flat copper button as the portal, no pill/glass. */
+/* Marketing / portal CTAs — glassmorphic, copper border accent only */
 .cl-glass,
 .foil-sheen {
   border-radius: var(--radius) !important;
+  background: var(--glass-bg) !important;
   background-image: none !important;
-  background-color: var(--copper) !important;
-  border: 1px solid var(--copper) !important;
-  color: var(--white) !important;
-  box-shadow: none !important;
-  backdrop-filter: none !important;
+  border: 1px solid var(--glass-border) !important;
+  color: var(--black) !important;
+  box-shadow: var(--glass-shadow) !important;
+  backdrop-filter: blur(14px) saturate(160%) !important;
+  -webkit-backdrop-filter: blur(14px) saturate(160%) !important;
   font-weight: 600 !important;
   min-height: 36px;
+  height: 36px;
+  padding: 0 16px !important;
+  font-size: 13px !important;
 }
 .cl-glass:hover,
 .foil-sheen:hover {
-  background-color: var(--copper-hover) !important;
-  border-color: var(--copper-hover) !important;
+  background: rgba(255, 255, 255, 0.85) !important;
+  border-color: var(--copper) !important;
+  color: var(--black) !important;
   transform: none !important;
 }
 .cl-glass::before,
-.cl-glass::after,
-.foil-sheen::before,
-.foil-sheen::after {
+.foil-sheen::before {
   display: none !important;
+}
+.cl-glass::after,
+.foil-sheen::after {
+  /* keep subtle shine on hover via foil-sheen utility when present */
+  opacity: 0.35;
+}
+
+/* Marketing density — fit the first viewport; cut oversized section padding */
+.cl-home section > .py-24,
+.cl-home .py-24, .cl-home .py-28, .cl-home .py-32,
+.marketing-dark .py-24, .marketing-dark .py-28, .marketing-dark .py-32,
+.cl-public .py-24, .cl-public .py-28, .cl-public .py-32,
+.marketing-dark .md\:py-36, .cl-home .md\:py-36, .cl-public .md\:py-36,
+.marketing-dark .lg\:py-28, .cl-home .lg\:py-28, .cl-public .lg\:py-28,
+.marketing-dark .md\:py-32, .cl-home .md\:py-32, .cl-public .md\:py-32,
+.marketing-dark .sm\:py-28, .cl-home .sm\:py-28 {
+  padding-top: 48px !important;
+  padding-bottom: 48px !important;
+}
+.cl-home .py-20, .cl-home .md\:py-24, .marketing-dark .py-20, .cl-public .py-20 {
+  padding-top: 40px !important;
+  padding-bottom: 40px !important;
+}
+.cl-home h1.display-serif, .cl-home .display-serif.text-5xl, .cl-home .display-serif.text-6xl,
+.cl-home h1.text-5xl, .cl-home h1.text-6xl, .cl-home h1.text-4xl,
+.marketing-dark h1, .cl-public h1 {
+  font-size: clamp(1.75rem, 3.2vw, 2.75rem) !important;
+  line-height: 1.12 !important;
+}
+.cl-home .gap-16 { gap: 2.5rem !important; }
+.cl-home .gap-14 { gap: 2rem !important; }
+.cl-home .min-h-\[420px\] { min-height: 280px !important; }
+
+/* Portal page titles — never bigger than ~26px; labels stay 11px */
+.portal-ui h1.display-serif,
+.portal-ui .display-serif.text-4xl,
+.portal-ui .display-serif.text-5xl,
+.portal-ui h1.text-4xl,
+.portal-ui h1.text-5xl {
+  font-size: clamp(1.25rem, 2vw, 1.625rem) !important;
+  line-height: 1.2 !important;
+  letter-spacing: -0.02em !important;
+}
+.portal-ui h2.display-serif,
+.portal-ui .display-serif.text-2xl,
+.portal-ui .display-serif.text-3xl {
+  font-size: 1rem !important;
+  line-height: 1.3 !important;
+  font-weight: 600 !important;
+}
+
+/* Force glass over leftover solid-copper inline fills on CTAs */
+a.cl-glass[style*="gradient-copper"],
+button.cl-glass[style*="gradient-copper"],
+a.p-btn-primary[style*="gradient-copper"],
+button.p-btn-primary[style*="gradient-copper"],
+.p-btn-primary[style*="gradient-copper"] {
+  background-image: none !important;
+  background: var(--glass-bg) !important;
+  color: var(--black) !important;
+}
+
+/* Portal main content always has breathing room from chrome */
+.portal-ui main > *:first-child:not([class*="px-"]):not([class*="PageShell"]) {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+@media (min-width: 640px) {
+  .portal-ui main > *:first-child:not([class*="px-"]) {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
 }

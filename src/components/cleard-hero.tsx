@@ -312,18 +312,7 @@ function HeroNav({ logoSlot, logoVisible }: { logoSlot: React.Ref<HTMLDivElement
           <Link
             to="/join"
             hash="request"
-            className="cl-glass foil-sheen inline-flex items-center px-5 py-2.5 text-[13px] no-underline transition-transform duration-200 hover:scale-[1.03]"
-            style={{
-              backgroundImage: "var(--gradient-copper)",
-              border: "1px solid color-mix(in oklab, var(--copper-deep) 70%, transparent)",
-              backdropFilter: "blur(12px) saturate(140%)",
-              WebkitBackdropFilter: "blur(12px) saturate(140%)",
-              color: "#FFF8EC",
-              fontWeight: 600,
-              whiteSpace: "nowrap",
-              boxShadow:
-                "inset 0 1px 0 rgba(255,255,255,0.45), 0 12px 26px -16px color-mix(in oklab, var(--copper-deep) 70%, transparent)",
-            }}
+            className="cl-glass foil-sheen inline-flex items-center no-underline"
           >
             Get early access
           </Link>
@@ -487,7 +476,7 @@ export function ClearedHero() {
         {/* copy */}
         <div className="mx-auto max-w-3xl">
           <div
-            className="copper-text text-[10.5px] uppercase"
+            className="label-eyebrow"
             style={{ letterSpacing: "0.32em", fontWeight: 600 }}
           >
             The operating system for contractors

@@ -481,7 +481,7 @@ export function VictoriaPermitAssistant({
         data-tour="victoria-permit"
         onClick={start}
         title="Fill this permit by voice"
-        className="fixed bottom-6 right-6 z-40 inline-flex items-center gap-2 rounded-full bg-obsidian px-5 py-3.5 font-mono text-[10px] uppercase tracking-[0.16em] text-paper shadow-[0_18px_40px_-16px_rgba(0,0,0,0.65)] hover:bg-obsidian/90"
+        className="p-btn p-btn-primary fixed bottom-6 right-6 z-40 inline-flex items-center gap-2"
       >
         <Mic className="h-4 w-4" strokeWidth={1.75} />
         Fill with Victoria

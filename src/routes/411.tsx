@@ -87,7 +87,7 @@ function FourEleven() {
 
       {/* FAQ */}
       <section className="mx-auto max-w-5xl px-6 py-20 lg:px-10">
-        <div className="label-eyebrow" style={{ color: "var(--copper-deep)" }}>
+        <div className="label-eyebrow" style={{ color: "var(--text-2)" }}>
           FAQ
         </div>
         <h2
@@ -119,7 +119,7 @@ function FourEleven() {
         style={{ borderTop: "1px solid color-mix(in oklab, var(--md-text) 12%, transparent)" }}
       >
         <div className="pt-16">
-          <div className="label-eyebrow" style={{ color: "var(--copper-deep)" }}>
+          <div className="label-eyebrow" style={{ color: "var(--text-2)" }}>
             From the field
           </div>
           <h2
@@ -141,7 +141,7 @@ function FourEleven() {
               >
                 <span
                   className="font-mono text-[10px] uppercase tracking-[0.16em]"
-                  style={{ color: "var(--copper-deep)" }}
+                  style={{ color: "var(--text-2)" }}
                 >
                   {p.category}
                 </span>
@@ -169,9 +169,8 @@ function FourEleven() {
             to="/contact"
             className="p-btn p-btn-primary inline-flex items-center no-underline"
             style={{
-              backgroundImage: "var(--gradient-copper)",
               border: "1px solid color-mix(in oklab, var(--copper-deep) 70%, transparent)",
-              color: "#FFF8EC",
+              color: "var(--black)",
               fontWeight: 600,
             }}
           >

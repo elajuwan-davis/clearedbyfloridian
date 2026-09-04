@@ -28,9 +28,10 @@ export const Route = createFileRoute("/join")({
   }),
 });
 
-const OBSIDIAN = "#9C6B3F";
+const OBSIDIAN = "#000000";
 const MUTED = `color-mix(in oklab, ${OBSIDIAN} 55%, transparent)`;
 const HAIRLINE = `color-mix(in oklab, ${OBSIDIAN} 12%, transparent)`;
+const COPPER = "#9C6B3F";
 
 function JoinPage() {
   const signUp = useServerFn(selfServeSignupFn);
@@ -150,8 +151,7 @@ function JoinPage() {
             <div className="flex items-center gap-8">
               <a
                 href="#request"
-                className="inline-flex items-center px-8 h-14 text-[12px] font-mono uppercase tracking-[0.24em] transition-opacity hover:opacity-85"
-                style={{ backgroundColor: OBSIDIAN, color: "#FFFFFF", borderRadius: 0 }}
+                className="p-btn p-btn-primary cl-glass inline-flex items-center no-underline"
               >
                 Get Started
               </a>
@@ -311,7 +311,7 @@ function JoinPage() {
               },
             ].map((b) => (
               <div key={b.label}>
-                <b.Icon size={28} strokeWidth={1.25} style={{ color: OBSIDIAN }} className="mb-6" />
+                <b.Icon size={28} strokeWidth={1.25} style={{ color: COPPER }} className="mb-6" />
                 <h3
                   className="display-serif font-bold mb-4"
                   style={{ color: OBSIDIAN, fontSize: "1.5rem", letterSpacing: "-0.01em" }}
@@ -338,13 +338,13 @@ function JoinPage() {
             <div key={s.l}>
               <div
                 className="display-serif font-bold leading-none mb-4"
-                style={{ color: "#000000", fontSize: "clamp(2.25rem, 5vw, 3.75rem)", letterSpacing: "-0.02em" }}
+                style={{ color: "#FFFFFF", fontSize: "clamp(2.25rem, 5vw, 3.75rem)", letterSpacing: "-0.02em" }}
               >
                 {s.n}
               </div>
               <div
                 className="text-[13px] font-light"
-                style={{ color: "rgba(0,0,0,0.65)" }}
+                style={{ color: "rgba(255,255,255,0.65)" }}
               >
                 {s.l}
               </div>
@@ -557,8 +557,7 @@ function JoinPage() {
               <button
                 type="submit"
                 disabled={state === "submitting"}
-                className="w-full h-14 text-[12px] font-mono uppercase tracking-[0.24em] transition-opacity hover:opacity-85 disabled:opacity-50"
-                style={{ backgroundColor: OBSIDIAN, color: "#FFFFFF", borderRadius: 0 }}
+                className="p-btn p-btn-primary cl-glass w-full disabled:opacity-50"
               >
                 {state === "submitting" ? "Creating your account…" : "Create My Account"}
               </button>

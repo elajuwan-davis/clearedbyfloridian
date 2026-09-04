@@ -360,7 +360,6 @@ export function WatchItRun() {
               style={{
                 top: 7,
                 width: `${fill}%`,
-                backgroundImage: "var(--gradient-copper)",
                 boxShadow: `0 0 12px ${COPPER}66`,
                 transition: "width 220ms linear",
               }}
@@ -476,7 +475,7 @@ export function VictoriaSpotlight() {
   const card = V_CARDS[i];
   return (
     <section className="relative overflow-hidden" style={{ background: OFF, borderTop: `1px solid ${BORDER}`, borderBottom: `1px solid ${BORDER}` }}>
-      <div className="mx-auto grid max-w-7xl items-center gap-14 px-5 py-24 lg:grid-cols-2 lg:px-8 md:py-32">
+      <div className="mx-auto grid max-w-7xl items-center gap-8 px-5 py-12 lg:grid-cols-2 lg:px-8 md:py-16">
         <div>
           <div className="flex items-center gap-2 text-[10.5px] font-bold uppercase" style={{ letterSpacing: "0.22em", color: PLUM }}>
             <span className="copper-hairline inline-block h-px w-7" />
@@ -529,8 +528,7 @@ export function VictoriaSpotlight() {
               <span
                 className="p-btn p-btn-primary cl-glass foil-sheen cl-hoverable mt-6 inline-flex cursor-default items-center gap-2"
                 style={{
-                  backgroundImage: "var(--gradient-copper)",
-                  color: "#FFF8EC",
+                  color: "var(--black)",
                   fontWeight: 600,
                   border: "1px solid rgba(43,22,32,0.22)",
                   backdropFilter: "blur(12px) saturate(150%)",
@@ -732,7 +730,7 @@ export function ReplaceThePermitOffice() {
         <div className="grid gap-6 lg:grid-cols-2">
           {/* LEFT — without Victoria: scattered, out-of-sync paperwork */}
           <div
-            className="flex min-h-[420px] flex-col lg:border-r lg:pr-6"
+            className="flex min-h-[300px] flex-col lg:border-r lg:pr-6"
             style={{ borderColor: HAIR }}
           >
             <div className="text-[10px] uppercase" style={{ fontFamily: MONO, letterSpacing: "0.2em", color: "rgba(43,22,32,0.6)" }}>
@@ -825,7 +823,7 @@ export function ReplaceThePermitOffice() {
 
           {/* RIGHT — compact orrery canvas */}
           <div
-            className="cl-soft relative min-h-[420px] overflow-hidden"
+            className="cl-soft relative min-h-[300px] overflow-hidden"
             style={{ background: CREAM, border: `1px solid ${HAIR}` }}
           >
             {/* blueprint grid */}
@@ -1163,7 +1161,7 @@ export function AskVictoriaLauncher() {
               hash="request"
               onClick={() => setOpen(false)}
               className="p-btn p-btn-primary cl-hoverable mt-5 inline-flex items-center gap-2 no-underline"
-              style={{ backgroundImage: "var(--gradient-copper)", color: "#FFF8EC", fontWeight: 600 }}
+              style={{ fontWeight: 600 }}
             >
               Get access to Victoria <ArrowRight className="cl-arrow h-3.5 w-3.5" strokeWidth={2} />
             </Link>

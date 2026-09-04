@@ -196,11 +196,11 @@ function BuildingDeptLoginsPage() {
             const expiredCount = l.docs.filter((d) => isDocExpired(d.expiration_date)).length;
             const othersLogin = !!session.userId && l.user_id !== session.userId;
             return (
-              <div key={l.key} className="border-b border-white/[0.06] last:border-0">
+              <div key={l.key} className="border-b border-[color:var(--line)] last:border-0">
                 <button
                   type="button"
                   onClick={() => setOpen(isOpen ? null : l.key)}
-                  className="flex w-full flex-wrap items-center gap-2.5 px-3 py-2.5 text-left transition-colors hover:bg-white/[0.03]"
+                  className="flex w-full flex-wrap items-center gap-2.5 px-3 py-2.5 text-left transition-colors hover:bg-[color:var(--gray-bg)]"
                 >
                   <ChevronDown className={`h-3.5 w-3.5 shrink-0 text-muted-foreground transition-transform ${isOpen ? "rotate-180" : ""}`} />
                   <div className="min-w-0 flex-1">
@@ -219,7 +219,7 @@ function BuildingDeptLoginsPage() {
                 {isOpen && (
                   <div className="space-y-4 px-3 pb-4 pt-1 sm:px-9">
                     <Tabs defaultValue="credentials">
-                      <TabsList className="h-auto gap-1 bg-white/[0.04] p-1">
+                      <TabsList className="h-auto gap-1 bg-[color:var(--gray-bg)] p-1">
                         <TabsTrigger value="credentials" className="h-7 px-3 text-[12px]">
                           Credentials
                         </TabsTrigger>
@@ -243,7 +243,7 @@ function BuildingDeptLoginsPage() {
                                 href={l.resolvedPortalUrl}
                                 target="_blank"
                                 rel="noreferrer"
-                                className="inline-flex items-center gap-1.5 text-[12.5px] text-[#8E4B67] hover:opacity-80"
+                                className="inline-flex items-center gap-1.5 text-[12.5px] text-foreground underline decoration-[color:var(--copper)] hover:opacity-80"
                               >
                                 {l.resolvedPortalUrl.replace(/^https?:\/\//, "")}
                                 <ExternalLink className="h-3 w-3" />
@@ -541,7 +541,7 @@ function ViewDocButton({ path }: { path: string }) {
       type="button"
       onClick={() => void open()}
       disabled={opening}
-      className="inline-flex items-center gap-1 text-[11.5px] text-[#8E4B67] hover:opacity-80"
+      className="inline-flex items-center gap-1 text-[11.5px] text-foreground underline decoration-[color:var(--copper)] hover:opacity-80"
     >
       {opening ? <Loader2 className="h-3 w-3 animate-spin" /> : null}
       View

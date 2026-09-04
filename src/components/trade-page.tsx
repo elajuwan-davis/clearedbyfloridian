@@ -138,7 +138,7 @@ export function TradePage({ trade }: { trade: Trade }) {
                   <li key={p} className="flex items-start gap-3">
                     <span
                       className="mt-2 h-1.5 w-1.5 shrink-0"
-                      style={{ background: TEAL }}
+                      style={{ background: "var(--copper-soft)", border: "1px solid var(--glass-border)" }}
                       aria-hidden
                     />
                     <span className="text-[14.5px] leading-snug" style={{ color: INK }}>

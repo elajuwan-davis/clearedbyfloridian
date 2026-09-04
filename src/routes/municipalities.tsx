@@ -160,7 +160,7 @@ function QueueMock() {
             </span>
             <span className="col-span-3">{r.type}</span>
             <span className="col-span-3">{r.who}</span>
-            <span className="col-span-3 flex items-center justify-end gap-2" style={{ color: r.tone }}>
+            <span className="col-span-3 flex items-center justify-end gap-2" style={{ color: TITLE }}>
               <span style={{ width: 6, height: 6, background: r.tone, display: "inline-block" }} />
               {r.status}
             </span>
@@ -177,7 +177,7 @@ function MunicipalitiesPage() {
       <div style={{ background: BG, color: TITLE }}>
         {/* HERO */}
         <section className="mx-auto max-w-7xl px-5 lg:px-8 pt-20 pb-20 md:pt-28">
-          <div className="text-[10.5px] font-bold uppercase tracking-[0.22em]" style={{ color: TEAL }}>
+          <div className="text-[10.5px] font-bold uppercase tracking-[0.22em]" style={{ color: MUTED }}>
             CleardGov · For building departments
           </div>
           <h1
@@ -200,8 +200,7 @@ function MunicipalitiesPage() {
           <div className="mt-9 flex flex-wrap gap-3">
             <Link
               to="/contact"
-              className="inline-flex items-center gap-2 px-6 py-3 text-[14px] no-underline"
-              style={{ background: TEAL, color: "#FFFFFF", fontWeight: 700 }}
+              className="p-btn p-btn-primary cl-glass inline-flex items-center gap-2 no-underline"
             >
               Schedule a conversation <ArrowRight className="h-4 w-4" strokeWidth={2} />
             </Link>
@@ -222,7 +221,7 @@ function MunicipalitiesPage() {
               {PROBLEM.map((p) => (
                 <div key={p.stat} className="p-7" style={{ background: SURFACE, border: `1px solid ${BORDER}` }}>
                   <div
-                    style={{ color: TEAL, fontSize: 28, fontWeight: 700, letterSpacing: "-0.03em" }}
+                    style={{ color: TITLE, fontSize: 28, fontWeight: 700, letterSpacing: "-0.03em" }}
                   >
                     {p.stat}
                   </div>
@@ -238,7 +237,7 @@ function MunicipalitiesPage() {
         {/* WHAT CleardGov DOES */}
         <section className="px-5 lg:px-8 py-20" style={{ borderTop: `1px solid ${BORDER}` }}>
           <div className="mx-auto max-w-7xl">
-            <div className="text-[10.5px] font-bold uppercase tracking-[0.22em]" style={{ color: TEAL }}>
+            <div className="text-[10.5px] font-bold uppercase tracking-[0.22em]" style={{ color: MUTED }}>
               The product
             </div>
             <h2
@@ -266,7 +265,7 @@ function MunicipalitiesPage() {
         {/* HOW IT WORKS */}
         <section id="how-it-works" className="px-5 lg:px-8 py-20" style={{ borderTop: `1px solid ${BORDER}` }}>
           <div className="mx-auto max-w-7xl">
-            <div className="text-[10.5px] font-bold uppercase tracking-[0.22em]" style={{ color: TEAL }}>
+            <div className="text-[10.5px] font-bold uppercase tracking-[0.22em]" style={{ color: MUTED }}>
               How it works
             </div>
             <h2
@@ -280,7 +279,7 @@ function MunicipalitiesPage() {
                 <div key={s.n} className="pt-6" style={{ borderTop: `1px solid ${BORDER}` }}>
                   <div
                     className="inline-flex h-11 w-11 items-center justify-center text-[14px] font-bold tabular-nums"
-                    style={{ background: TEAL, color: "#FFFFFF" }}
+                    style={{ background: TITLE, color: "#FFFFFF" }}
                   >
                     {s.n}
                   </div>
@@ -300,7 +299,7 @@ function MunicipalitiesPage() {
         <section className="px-5 lg:px-8 py-20" style={{ borderTop: `1px solid ${BORDER}` }}>
           <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-2 lg:items-center lg:gap-20">
             <div>
-              <div className="text-[10.5px] font-bold uppercase tracking-[0.22em]" style={{ color: TEAL }}>
+              <div className="text-[10.5px] font-bold uppercase tracking-[0.22em]" style={{ color: MUTED }}>
                 Why Cleard
               </div>
               <h2
@@ -322,7 +321,7 @@ function MunicipalitiesPage() {
         {/* DIFFERENTIATORS */}
         <section className="px-5 lg:px-8 py-20" style={{ borderTop: `1px solid ${BORDER}` }}>
           <div className="mx-auto max-w-7xl">
-            <div className="text-[10.5px] font-bold uppercase tracking-[0.22em]" style={{ color: TEAL }}>
+            <div className="text-[10.5px] font-bold uppercase tracking-[0.22em]" style={{ color: MUTED }}>
               What sets CleardGov apart
             </div>
             <h2
@@ -348,7 +347,7 @@ function MunicipalitiesPage() {
               style={{ background: SURFACE, border: `1px solid ${TEAL}` }}
             >
               <div>
-                <div style={{ color: TEAL, fontSize: 18, fontWeight: 700, letterSpacing: "-0.01em" }}>
+                <div style={{ color: TITLE, fontSize: 18, fontWeight: 700, letterSpacing: "-0.01em" }}>
                   City retains a share
                 </div>
                 <div className="mt-2 text-[13.5px] leading-relaxed" style={{ color: MUTED }}>
@@ -373,7 +372,7 @@ function MunicipalitiesPage() {
         {/* FOR BUILDING OFFICIALS */}
         <section className="px-5 lg:px-8 py-20" style={{ borderTop: `1px solid ${BORDER}` }}>
           <div className="mx-auto max-w-7xl">
-            <div className="text-[10.5px] font-bold uppercase tracking-[0.22em]" style={{ color: TEAL }}>
+            <div className="text-[10.5px] font-bold uppercase tracking-[0.22em]" style={{ color: MUTED }}>
               For building officials
             </div>
             <div className="mt-10 grid gap-4 sm:grid-cols-2">
@@ -409,8 +408,7 @@ function MunicipalitiesPage() {
             </p>
             <Link
               to="/contact"
-              className="mt-9 flex w-full items-center justify-center gap-2 px-6 py-4 text-[14px] no-underline"
-              style={{ background: TEAL, color: "#FFFFFF", fontWeight: 700 }}
+              className="p-btn p-btn-primary cl-glass mt-9 inline-flex w-full items-center justify-center gap-2 no-underline"
             >
               Schedule a conversation <ArrowRight className="h-4 w-4" strokeWidth={2} />
             </Link>
