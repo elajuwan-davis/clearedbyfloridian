@@ -285,6 +285,11 @@ table, thead, tbody, tr, td, th, hr, svg *, path, line, rect, polyline, circle {
   background: var(--copper);
   flex: none;
 }
+/* Dark hero: keep the accent mark light so the eyebrow doesn't read as copper writing */
+.cl-home section .label-eyebrow[style*="255,255,255"]::before,
+.cl-home section .label-eyebrow[style*="255, 255, 255"]::before {
+  background: rgba(255, 255, 255, 0.55);
+}
 .wordmark { font-weight: 700; letter-spacing: -0.02em; }
 .wordmark-subline { font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text-3); }
 
@@ -982,14 +987,14 @@ tbody tr:last-child td { border-bottom: 0; }
   font-weight: 600 !important;
 }
 
-/* Force glass over leftover solid-copper inline fills on CTAs */
-a.cl-glass[style*="gradient-copper"],
-button.cl-glass[style*="gradient-copper"],
-a.p-btn-primary[style*="gradient-copper"],
-button.p-btn-primary[style*="gradient-copper"],
-.p-btn-primary[style*="gradient-copper"] {
-  background-image: none !important;
-  background: var(--glass-bg) !important;
+/* Glass CTAs on dark marketing sections — brighter frost so they read as glass, not gray slabs */
+.md-section-dark .cl-glass,
+.md-section-dark .p-btn-primary,
+.md-section-dark a.cl-glass,
+.cl-home section[style*="background: #000"],
+section .cl-glass.foil-sheen {
+  background: rgba(255, 255, 255, 0.78) !important;
+  border-color: rgba(156, 107, 63, 0.45) !important;
   color: var(--black) !important;
 }
 
