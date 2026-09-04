@@ -251,7 +251,7 @@ function PricingPage() {
                   </span>
                 </div>
 
-                <p className="mt-4 text-[14px] italic leading-snug" style={{ color: TEAL }}>
+                <p className="mt-4 text-[14px] leading-snug" style={{ color: TEAL }}>
                   {p.tagline}
                 </p>
 

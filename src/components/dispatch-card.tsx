@@ -103,7 +103,7 @@ export function DispatchCard({
           <div className="eyebrow text-obsidian/50">Permit History</div>
         </div>
         {data.permit_history.length === 0 ? (
-          <div className="text-xs text-obsidian/50 italic">No prior permits on record for this parcel.</div>
+          <div className="text-xs text-obsidian/50 ">No prior permits on record for this parcel.</div>
         ) : (
           <div className="divide-y divide-obsidian/5">
             {data.permit_history.map((p) => (

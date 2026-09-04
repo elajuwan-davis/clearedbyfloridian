@@ -102,7 +102,7 @@ export function CoChecklistPanel({ permitId, projectName, tenantId }: Props) {
       </ul>
 
       {!isAdmin && (
-        <div className="text-[11px] text-obsidian/50 italic">Only Flōridian admin can check off CO items. Contact your admin to update status.</div>
+        <div className="text-[11px] text-obsidian/50 ">Only Flōridian admin can check off CO items. Contact your admin to update status.</div>
       )}
     </div>
   );

@@ -4,9 +4,9 @@ import { Link } from "@tanstack/react-router";
 const OAT = "#FFFFFF";
 const OFF = "#FFFFFF";
 const INK = "#000000";
-const GRAY = "#000000";
-const PLUM = "#000000";
-const BORDER = "#FFFFFF";
+const GRAY = "rgba(0,0,0,0.55)";
+const PLUM = "#9C6B3F";
+const BORDER = "rgba(0,0,0,0.12)";
 const SERIF = "'Instrument Sans', sans-serif";
 const MONO = "'JetBrains Mono', ui-monospace, monospace";
 
@@ -124,7 +124,7 @@ export function PermitCostCalculator({ background = OFF }: { background?: string
           }}
         >
           What is your current permit process{" "}
-          <span style={{ fontStyle: "italic", color: PLUM }}>actually costing you?</span>
+          <span className="copper-emph">actually costing you?</span>
         </h2>
 
         <div className="mt-12 grid gap-6 lg:grid-cols-[1.15fr_1fr] items-start">
@@ -190,7 +190,7 @@ export function PermitCostCalculator({ background = OFF }: { background?: string
           </div>
 
           {/* Outputs */}
-          <div className="p-6 md:p-8" style={{ background: INK }}>
+          <div className="p-6 md:p-8" style={{ background: "#FFFFFF", border: `1px solid ${BORDER}` }}>
             <div
               className="text-[10px] uppercase"
               style={{ fontFamily: MONO, letterSpacing: "0.2em", color: "rgba(0,0,0,0.6)" }}
@@ -212,7 +212,7 @@ export function PermitCostCalculator({ background = OFF }: { background?: string
                     fontWeight: 600,
                     fontSize: "2.3rem",
                     letterSpacing: "-0.035em",
-                    color: OAT,
+                    color: INK,
                     lineHeight: 1.05,
                   }}
                 >
@@ -223,7 +223,7 @@ export function PermitCostCalculator({ background = OFF }: { background?: string
                 </div>
               </div>
 
-              <div style={{ borderTop: "1px solid rgba(255,255,255,0.16)" }} className="pt-6">
+              <div style={{ borderTop: "1px solid rgba(0,0,0,0.10)" }} className="pt-6">
                 <div
                   className="text-[10px] uppercase"
                   style={{ fontFamily: MONO, letterSpacing: "0.16em", color: "rgba(0,0,0,0.55)" }}
@@ -236,7 +236,7 @@ export function PermitCostCalculator({ background = OFF }: { background?: string
                     fontWeight: 600,
                     fontSize: "2.3rem",
                     letterSpacing: "-0.035em",
-                    color: OAT,
+                    color: INK,
                     lineHeight: 1.05,
                   }}
                 >
@@ -248,7 +248,7 @@ export function PermitCostCalculator({ background = OFF }: { background?: string
                 </div>
               </div>
 
-              <div style={{ borderTop: "1px solid rgba(255,255,255,0.16)" }} className="pt-6">
+              <div style={{ borderTop: "1px solid rgba(0,0,0,0.10)" }} className="pt-6">
                 <div
                   className="text-[10px] uppercase"
                   style={{ fontFamily: MONO, letterSpacing: "0.16em", color: "#9C6B3F" }}
@@ -261,7 +261,7 @@ export function PermitCostCalculator({ background = OFF }: { background?: string
                     fontWeight: 600,
                     fontSize: "2.9rem",
                     letterSpacing: "-0.04em",
-                    color: OAT,
+                    color: INK,
                     lineHeight: 1.02,
                   }}
                 >
@@ -273,7 +273,7 @@ export function PermitCostCalculator({ background = OFF }: { background?: string
             <Link
               to="/join"
               className="mt-8 inline-flex items-center px-6 py-3 text-[14px] no-underline"
-              style={{ background: PLUM, color: OAT, fontWeight: 700 }}
+              style={{ backgroundImage: "var(--gradient-copper)", color: "#FFFFFF", fontWeight: 700 }}
             >
               See how Cleard compares →
             </Link>

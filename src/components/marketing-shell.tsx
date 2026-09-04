@@ -338,91 +338,38 @@ export function MarketingNav() {
 
 
 
-const FOOT_HEAD = "text-[10px] font-bold uppercase";
-const FOOT_HEAD_STYLE = { letterSpacing: "0.18em", color: "rgba(255,255,255,0.45)" } as const;
-const FOOT_LINK = "block text-[13px] no-underline";
-const FOOT_LINK_STYLE = { color: "rgba(255,255,255,0.72)" } as const;
+const FOOT_LINK = "text-[12.5px] no-underline";
+const FOOT_LINK_STYLE = { color: "rgba(255,255,255,0.70)" } as const;
 
-/** The single public footer — identical on every marketing page. */
+/** The single public footer — one compact slim bar on every marketing page. */
 export function MarketingFooter() {
   return (
-    <footer style={{ background: "#2B1620", borderTop: "1px solid rgba(255,255,255,0.12)" }}>
-      <div className="mx-auto max-w-7xl px-5 lg:px-10">
-        <div className="grid gap-12 py-16 md:grid-cols-[1.2fr_2.8fr]">
-          <div>
-            <Link to="/" className="no-underline">
-              <span
-                className="text-[22px] tracking-[-0.03em]"
-                style={{ fontFamily: SERIF, fontWeight: 600, color: "#FFFFFF" }}
-              >
-                Cleard
-              </span>
-            </Link>
-            <p className="mt-4 max-w-xs text-[13.5px] leading-relaxed" style={{ color: "rgba(255,255,255,0.55)" }}>
-              The operating system that runs everything behind your construction projects.
-            </p>
-          </div>
+    <footer style={{ background: "#000000", borderTop: "1px solid rgba(255,255,255,0.12)" }}>
+      <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-3 px-5 py-5 sm:flex-row lg:px-10">
+        <Link to="/" className="no-underline">
+          <span
+            className="text-[18px] tracking-[-0.03em]"
+            style={{ fontFamily: SERIF, fontWeight: 600, color: "#FFFFFF" }}
+          >
+            Cleard
+          </span>
+        </Link>
 
-          <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
-            <div>
-              <div className={FOOT_HEAD} style={FOOT_HEAD_STYLE}>Platform</div>
-              <div className="mt-4 space-y-2.5">
-                <Link to="/pricing" className={FOOT_LINK} style={FOOT_LINK_STYLE}>Pricing</Link>
-                <Link to="/comparison" className={FOOT_LINK} style={FOOT_LINK_STYLE}>Comparison</Link>
-                <Link to="/integrations" className={FOOT_LINK} style={FOOT_LINK_STYLE}>Integrations</Link>
-                <Link to="/coverage" className={FOOT_LINK} style={FOOT_LINK_STYLE}>Coverage</Link>
-                <Link to="/estimator" className={FOOT_LINK} style={FOOT_LINK_STYLE}>Permit Estimator</Link>
+        <nav className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
+          <Link to="/" className={FOOT_LINK} style={FOOT_LINK_STYLE}>Home</Link>
+          <Link to="/pricing" className={FOOT_LINK} style={FOOT_LINK_STYLE}>Pricing</Link>
+          <Link to="/411" className={FOOT_LINK} style={FOOT_LINK_STYLE}>411</Link>
+          <Link to="/terms" className={FOOT_LINK} style={FOOT_LINK_STYLE}>Terms</Link>
+          <Link to="/privacy" className={FOOT_LINK} style={FOOT_LINK_STYLE}>Privacy</Link>
+        </nav>
 
-                <Link to="/" hash="watch-it-run" className={FOOT_LINK} style={FOOT_LINK_STYLE}>How it works</Link>
-              </div>
-            </div>
-
-            <div>
-              <div className={FOOT_HEAD} style={FOOT_HEAD_STYLE}>Solutions</div>
-              <div className="mt-4 space-y-2.5">
-                {SOLUTION_LINKS.map((t) => (
-                  <Link
-                    key={t.label}
-                    to={t.to}
-                    className={FOOT_LINK}
-                    style={FOOT_LINK_STYLE}
-                  >
-                    {t.label}
-                  </Link>
-                ))}
-
-              </div>
-            </div>
-
-            <div>
-              <div className={FOOT_HEAD} style={FOOT_HEAD_STYLE}>Company</div>
-              <div className="mt-4 space-y-2.5">
-                <Link to="/contact" className={FOOT_LINK} style={FOOT_LINK_STYLE}>Contact</Link>
-                <Link to="/pitch-deck" className={FOOT_LINK} style={FOOT_LINK_STYLE}>Pitch Deck</Link>
-                
-              </div>
-            </div>
-
-            <div>
-              <div className={FOOT_HEAD} style={FOOT_HEAD_STYLE}>Resources</div>
-              <div className="mt-4 space-y-2.5">
-                <Link to="/login" className={FOOT_LINK} style={FOOT_LINK_STYLE}>Client portal</Link>
-                <Link to="/privacy" className={FOOT_LINK} style={FOOT_LINK_STYLE}>Privacy Policy</Link>
-                <Link to="/terms" className={FOOT_LINK} style={FOOT_LINK_STYLE}>Terms of Service</Link>
-              </div>
-            </div>
-          </div>
-        </div>
-
-
-
-
-        <div className="pb-10 text-[12px]" style={{ color: "rgba(255,255,255,0.45)" }}>
+        <div className="text-[12px]" style={{ color: "rgba(255,255,255,0.70)" }}>
           © 2026 Cleard
         </div>
       </div>
     </footer>
   );
+
 }
 
 

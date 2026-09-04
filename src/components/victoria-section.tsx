@@ -166,7 +166,7 @@ export function VictoriaSection() {
             >
               Meet Victoria.
               <br />
-              <span style={{ fontStyle: "italic", color: INK }}>
+              <span className="copper-emph">
                 Your project
                 <br />
                 intelligence.
@@ -384,7 +384,7 @@ export function VictoriaSection() {
               >
                 How Victoria thinks.
               </h3>
-              <div className="mt-2" style={{ fontFamily: SERIF, fontStyle: "italic", fontSize: 20, color: COPPER_LT }}>
+              <div className="mt-2" style={{ fontFamily: SERIF, fontSize: 20, color: COPPER_LT }}>
                 From data to action.
               </div>
             </div>

@@ -47,7 +47,7 @@ export function ResubmittalPanel({ permitId, tenantId, permitStatus, onResubmitt
       <div>
         <div className="text-[10px] font-mono uppercase tracking-[0.14em] text-obsidian/60 mb-2">Resubmittal History</div>
         {loading ? <div className="text-sm text-obsidian/50">Loading…</div>
-          : rows.length === 0 ? <div className="text-sm text-obsidian/50 italic">No resubmittals yet.</div>
+          : rows.length === 0 ? <div className="text-sm text-obsidian/50 ">No resubmittals yet.</div>
           : (
             <div className="divide-y divide-obsidian/10 border border-obsidian/10 rounded-[3px] bg-white">
               {rows.map((r) => (

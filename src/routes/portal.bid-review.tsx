@@ -147,7 +147,7 @@ function BidReviewPage() {
           </div>
           <div className="bg-white border border-obsidian/15 rounded-[3px] overflow-hidden">
             {awarded.length === 0 ? (
-              <div className="px-5 py-8 text-sm text-obsidian/50 italic text-center">
+              <div className="px-5 py-8 text-sm text-obsidian/50 text-center">
                 No subs awarded yet. Winners you select from a comparison appear
                 here.
               </div>
@@ -197,7 +197,7 @@ function BidReviewPage() {
           </div>
           <div className="bg-white border border-obsidian/15 rounded-[3px] overflow-hidden">
             {loading ? (
-              <div className="px-5 py-8 text-sm text-obsidian/50 italic text-center">
+              <div className="px-5 py-8 text-sm text-obsidian/50 text-center">
                 Loading…
               </div>
             ) : comparisons.length === 0 ? (

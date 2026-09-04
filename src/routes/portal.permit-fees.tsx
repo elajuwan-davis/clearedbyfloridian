@@ -160,7 +160,7 @@ function PermitFeesPage() {
                         <div>
                           <div>{fmtUsd(total)}</div>
                           {!confirmed && (
-                            <div className="mt-0.5 italic text-[10px] text-obsidian/55 font-sans normal-case tracking-normal">Budgeted</div>
+                            <div className="mt-0.5 text-[10px] text-obsidian/55 font-sans normal-case tracking-normal">Budgeted</div>
                           )}
                         </div>
                       );

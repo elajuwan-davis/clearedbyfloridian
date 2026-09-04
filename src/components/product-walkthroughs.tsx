@@ -162,7 +162,7 @@ export function ProductWalkthroughs() {
           }}
         >
           Two minutes inside{" "}
-          <span style={{ fontStyle: "italic", color: PLUM }}>the actual platform.</span>
+          <span className="copper-emph">the actual platform.</span>
         </h2>
         <p className="mt-5 max-w-2xl text-[15.5px] leading-relaxed" style={{ color: GRAY }}>
           No slides. Real screens, real permit data, start to finish.

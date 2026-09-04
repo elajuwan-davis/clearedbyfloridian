@@ -250,7 +250,7 @@ function GcView({ tenantId }: { tenantId: string | null }) {
   }
   if (!account && myInvoices.length === 0) {
     return (
-      <p className="text-sm text-obsidian/50 italic">
+      <p className="text-sm text-obsidian/50 ">
         No billing account on file yet. Subscribe or wait for a service-fee invoice to appear.
       </p>
     );
@@ -363,7 +363,7 @@ function InvoiceTable({
           ))}
           {invoices.length === 0 && (
             <tr>
-              <td colSpan={6} className="px-3 py-8 text-center text-muted-foreground italic">
+              <td colSpan={6} className="px-3 py-8 text-center text-muted-foreground ">
                 No invoices yet.
               </td>
             </tr>
@@ -478,7 +478,7 @@ function PaymentHistoryTable({ payments }: { payments: PaymentRecord[] }) {
           ))}
           {payments.length === 0 && (
             <tr>
-              <td colSpan={3} className="px-3 py-8 text-center text-muted-foreground italic">
+              <td colSpan={3} className="px-3 py-8 text-center text-muted-foreground ">
                 No payments recorded yet.
               </td>
             </tr>
@@ -635,7 +635,7 @@ function StaffView({ tenantFilter }: { tenantFilter: string | null }) {
             })}
             {accounts.length === 0 && (
               <tr>
-                <td colSpan={6} className="px-3 py-8 text-center text-muted-foreground italic">
+                <td colSpan={6} className="px-3 py-8 text-center text-muted-foreground ">
                   No billing accounts yet.
                 </td>
               </tr>
@@ -710,7 +710,7 @@ function StaffView({ tenantFilter }: { tenantFilter: string | null }) {
             })}
             {invoices.length === 0 && (
               <tr>
-                <td colSpan={6} className="px-3 py-8 text-center text-muted-foreground italic">
+                <td colSpan={6} className="px-3 py-8 text-center text-muted-foreground ">
                   No service-fee invoices yet.
                 </td>
               </tr>

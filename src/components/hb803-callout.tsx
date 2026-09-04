@@ -3,7 +3,7 @@ import { Landmark } from "lucide-react";
 
 const OAT = "#FFFFFF";
 const INK = "#000000";
-const PLUM = "#000000";
+const PLUM = "#9C6B3F";
 const BRONZE = "#9C6B3F";
 const SERIF = "'Instrument Sans', sans-serif";
 const MONO = "'JetBrains Mono', ui-monospace, monospace";
@@ -37,7 +37,7 @@ export function Hb803Callout({ background = OAT }: { background?: string }) {
             }}
           >
             Using a private provider{" "}
-            <span style={{ fontStyle: "italic", color: BRONZE }}>
+            <span className="copper-emph">
               reduces your permit fees by law.
             </span>
           </h2>

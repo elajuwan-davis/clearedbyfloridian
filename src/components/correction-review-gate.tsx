@@ -134,7 +134,7 @@ export function CorrectionReviewGate({ permitId }: Props) {
                     {item.responsible_party}
                   </span>
                 </div>
-                <div className="mt-1 italic text-obsidian/60">“{item.quoted_text}”</div>
+                <div className="mt-1 text-obsidian/60">“{item.quoted_text}”</div>
                 <div className="mt-1 text-obsidian">{item.fix_instruction}</div>
                 {item.code_reference && (
                   <div className="mt-1 font-mono text-[10px] text-obsidian/50">

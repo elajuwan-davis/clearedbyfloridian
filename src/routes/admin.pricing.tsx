@@ -165,7 +165,7 @@ function AdminPricingPage() {
                         <CostRow label="Gross margin" value={t.cost.margin} />
                       </dl>
                     ) : (
-                      <div className="text-[11.5px] italic text-muted-foreground">
+                      <div className="text-[11.5px] text-muted-foreground">
                         Not yet modeled — pending inspection cost inputs.
                       </div>
                     )}

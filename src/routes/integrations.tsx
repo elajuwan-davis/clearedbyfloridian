@@ -29,8 +29,8 @@ export const Route = createFileRoute("/integrations")({
 
 const INK = "#000000";
 const OAT = "#FFFFFF";
-const GRAY = "#000000";
-const PLUM = "#000000";
+const GRAY = "rgba(0,0,0,0.55)";
+const PLUM = "#9C6B3F";
 const BORDER = "rgba(0,0,0,0.12)";
 const SERIF = "'Instrument Sans', sans-serif";
 const MONO = "'JetBrains Mono', ui-monospace, monospace";
@@ -186,8 +186,8 @@ function PlatformRequestForm() {
         onChange={(e) => setForm((f) => ({ ...f, [key]: e.target.value }))}
         className="w-full bg-transparent px-0 py-3 text-base outline-none"
         style={{
-          color: OAT,
-          borderBottom: "1px solid rgba(255,255,255,0.28)",
+          color: INK,
+          borderBottom: "1px solid rgba(0,0,0,0.22)",
           borderRadius: 0,
         }}
       />
@@ -195,7 +195,7 @@ function PlatformRequestForm() {
   );
 
   return (
-    <section style={{ background: INK }}>
+    <section style={{ background: OAT, borderTop: `1px solid ${BORDER}` }}>
       <div className="mx-auto grid max-w-7xl gap-14 px-5 py-20 md:py-24 lg:grid-cols-2 lg:px-8">
         <div>
           <div
@@ -208,7 +208,7 @@ function PlatformRequestForm() {
             className="mt-5 max-w-lg"
             style={{
               fontFamily: SERIF,
-              color: OAT,
+              color: INK,
               fontWeight: 500,
               fontSize: "clamp(1.9rem, 4vw, 3rem)",
               lineHeight: 1.06,
@@ -224,7 +224,7 @@ function PlatformRequestForm() {
 
         {state === "sent" ? (
           <div className="self-center">
-            <p className="text-[17px]" style={{ fontFamily: SERIF, color: OAT }}>
+            <p className="text-[17px]" style={{ fontFamily: SERIF, color: INK }}>
               Thanks — we've logged {form.platform.trim() || "your platform"}.
             </p>
             <p className="mt-3 text-[13.5px]" style={{ color: "rgba(0,0,0,0.6)" }}>
@@ -237,7 +237,7 @@ function PlatformRequestForm() {
             {field("Email", "email", "email")}
             {field("Which platform do you use?", "platform")}
             {state === "error" && (
-              <div className="text-[12.5px]" style={{ color: "#e9b0b0" }}>
+              <div className="text-[12.5px]" style={{ color: "#C0392B" }}>
                 {error}
               </div>
             )}
@@ -245,7 +245,7 @@ function PlatformRequestForm() {
               type="submit"
               disabled={state === "sending"}
               className="inline-flex h-14 w-full items-center justify-center gap-2 font-mono text-[11px] uppercase transition-opacity hover:opacity-85 disabled:opacity-50"
-              style={{ background: OAT, color: INK, letterSpacing: "0.24em", borderRadius: 0 }}
+              style={{ backgroundImage: "var(--gradient-copper)", color: "#FFFFFF", letterSpacing: "0.24em", borderRadius: 0 }}
             >
               {state === "sending" ? <Loader2 className="h-4 w-4 animate-spin" /> : "Send it over"}
             </button>

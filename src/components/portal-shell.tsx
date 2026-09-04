@@ -75,7 +75,7 @@ function PermitsOnlyRedirect() {
     navigate({ to: PERMITS_ONLY_HOME as never, replace: true });
   }, [navigate]);
   return (
-    <div className="portal-ui dark grid min-h-screen place-items-center bg-background">
+    <div className="portal-ui grid min-h-screen place-items-center bg-background">
       <div className="text-[13px] text-muted-foreground">Taking you to Permits…</div>
     </div>
   );
@@ -208,7 +208,7 @@ function RailFlyout({
         visibility: pos ? "visible" : "hidden",
         backgroundColor: "var(--rail-bg)",
         border: "1px solid var(--p-border)",
-        boxShadow: "0 16px 40px rgba(0,0,0,0.45)",
+        boxShadow: "0 16px 40px rgba(0,0,0,0.12)",
       }}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
@@ -347,7 +347,7 @@ function SidebarNav({
         {isRail ? (
           <div
             className="grid h-7 w-7 shrink-0 place-items-center text-[13px] font-bold"
-            style={{ background: "#FFFFFF", color: "#000000" }}
+            style={{ background: "#9C6B3F", color: "#FFFFFF" }}
           >
             C
           </div>
@@ -551,7 +551,7 @@ function SidebarNav({
                     isRail && "px-0 text-center",
                   )}
                   style={{
-                    backgroundColor: active ? "#FFFFFF" : "transparent",
+                    backgroundColor: active ? "#9C6B3F" : "transparent",
                     color: active ? "#FFFFFF" : "var(--rail-muted)",
                   }}
                 >
@@ -573,7 +573,7 @@ function SidebarNav({
             to="/profile"
             onClick={onNavigate}
             className="grid h-8 w-8 shrink-0 place-items-center rounded-lg text-[11px] font-semibold text-white"
-            style={{ backgroundColor: "#1E3434" }}
+            style={{ backgroundColor: "#9C6B3F" }}
             title={displayName}
           >
             {initials}
@@ -729,7 +729,7 @@ function PortalShellInner({ children }: { children: ReactNode }) {
 
   if (authState !== "authed") {
     return (
-      <div className="portal-ui dark grid min-h-screen place-items-center bg-background">
+      <div className="portal-ui grid min-h-screen place-items-center bg-background">
         <div className="text-[13px] text-muted-foreground">
           {authState === "checking" ? "Verifying session…" : "Redirecting to sign in…"}
         </div>
@@ -742,7 +742,7 @@ function PortalShellInner({ children }: { children: ReactNode }) {
   // the standard portal chrome after a redirect or hard refresh.
   if (session.loading) {
     return (
-      <div className="portal-ui dark grid min-h-screen place-items-center bg-background">
+      <div className="portal-ui grid min-h-screen place-items-center bg-background">
         <div className="text-[13px] text-muted-foreground">Verifying access…</div>
       </div>
     );
@@ -766,7 +766,7 @@ function PortalShellInner({ children }: { children: ReactNode }) {
 
 
   return (
-    <div className="portal-ui dark min-h-screen bg-background">
+    <div className="portal-ui min-h-screen bg-background">
       <TrialBillingPrompt />
 
       {/* Sidebar — 56px icon rail with flyouts, or 240px pinned (HubSpot model) */}
@@ -801,7 +801,7 @@ function PortalShellInner({ children }: { children: ReactNode }) {
             >
               {open ? <X className="h-5 w-5" strokeWidth={1.75} /> : <Menu className="h-5 w-5" strokeWidth={1.75} />}
             </SheetTrigger>
-            <SheetContent side="left" className="portal-ui dark w-[268px] border-0 p-0">
+            <SheetContent side="left" className="portal-ui w-[268px] border-0 p-0">
               <SheetTitle className="sr-only">Portal navigation</SheetTitle>
               <SidebarNav
                 pathname={pathname}
@@ -876,7 +876,7 @@ function PortalShellInner({ children }: { children: ReactNode }) {
                 <DropdownMenuTrigger className="flex h-8 items-center gap-1.5 rounded-lg px-1 outline-none hover:bg-[var(--rail-hover)]">
                   <div
                     className="grid h-7 w-7 place-items-center rounded-lg text-[11px] font-semibold"
-                    style={{ backgroundColor: "#1E3434", color: "white" }}
+                    style={{ backgroundColor: "#9C6B3F", color: "#FFFFFF" }}
                   >
                     {me.initials}
                   </div>

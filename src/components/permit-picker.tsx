@@ -46,7 +46,7 @@ export function PermitPicker({
         </div>
         <div className="max-h-[420px] overflow-y-auto divide-y divide-obsidian/5">
           {filtered.length === 0 ? (
-            <div className="px-6 py-8 text-sm text-obsidian/50 italic text-center">
+            <div className="px-6 py-8 text-sm text-obsidian/50 text-center">
               No matching permits.
             </div>
           ) : (

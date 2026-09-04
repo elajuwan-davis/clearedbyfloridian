@@ -113,7 +113,7 @@ function AdminBlogIndex() {
             <div key={p.id} className="grid grid-cols-[1fr_140px_120px_120px_180px] items-center gap-4 border-b hairline px-4 py-3 last:border-0 hover:bg-secondary/30">
               <div className="min-w-0">
                 <Link to="/admin/blog/$id" params={{ id: p.id }} className="block truncate text-sm font-medium text-obsidian hover:text-accent">
-                  {p.title || <span className="italic text-obsidian/50">Untitled</span>}
+                  {p.title || <span className="text-obsidian/50">Untitled</span>}
                 </Link>
                 <div className="mt-0.5 truncate font-mono text-[10px] uppercase tracking-wider text-obsidian/45">
                   /{p.slug}

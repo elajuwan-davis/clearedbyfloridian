@@ -113,7 +113,7 @@ function NotaryRow({ r, onChanged }: { r: NotaryRequest; onChanged: () => Promis
           <div className="mt-1 font-mono text-[10px] uppercase tracking-[0.12em] text-obsidian/55">
             Submitted {r.createdAt.slice(0, 10)} by {r.clientName ?? r.createdBy}
           </div>
-          {r.notes && <div className="mt-2 text-xs text-obsidian/70 italic">"{r.notes}"</div>}
+          {r.notes && <div className="mt-2 text-xs text-obsidian/70 ">"{r.notes}"</div>}
         </div>
       </div>
 

@@ -162,7 +162,7 @@ function RoundCard({ row, project, internal }: { row: RevisionRound; project: Pr
           <div>
             <div className="font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/50">Revised Plans</div>
             {row.files.length === 0 ? (
-              <div className="mt-1 text-sm italic text-obsidian/45">No revised plans uploaded yet.</div>
+              <div className="mt-1 text-sm text-obsidian/45">No revised plans uploaded yet.</div>
             ) : (
               <ul className="mt-2 divide-y divide-obsidian/10 border border-obsidian/10 rounded-[3px]">
                 {row.files.map((f) => (

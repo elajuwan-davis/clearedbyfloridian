@@ -275,7 +275,7 @@ function Section({
             Section {eyebrow}
           </div>
           <h2 className="display-serif text-2xl md:text-3xl text-obsidian leading-tight">{title}</h2>
-          <p className="mt-1 text-sm text-obsidian/65 italic">{subtitle}</p>
+          <p className="mt-1 text-sm text-obsidian/65 ">{subtitle}</p>
         </div>
       </div>
       {children}
