@@ -12,6 +12,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import type { SignupAttemptsClient } from "@/lib/signup-rate-limit.server";
+import { crmProfilePatch } from "@/lib/crm-profile-patch";
 
 const SelfServeInput = z.object({
   name: z.string().min(1).max(200),
@@ -95,19 +96,13 @@ export const selfServeSignupFn = createServerFn({ method: "POST" })
     }
 
     // 3. Record the CRM answer on the profile ensure_profile_for_new_user() just created.
+    //    UPDATE, never upsert: a partial profile upsert nulls name/email/ID docs.
     //    A failure here must not sink an otherwise valid signup.
     const newUserId = created.user?.id ?? null;
     if (newUserId && data.crm) {
-      await (supabaseAdmin.from("profiles" as any) as any).upsert(
-        {
-          id: newUserId,
-          current_crm: data.crm,
-          current_crm_other: data.crm_other?.trim() || null,
-          crm_source: "signup_form",
-          crm_captured_at: new Date().toISOString(),
-        },
-        { onConflict: "id" },
-      );
+      await (supabaseAdmin.from("profiles" as any) as any)
+        .update(crmProfilePatch({ crm: data.crm, crm_other: data.crm_other, source: "signup_form" }))
+        .eq("id", newUserId);
     }
 
     return {
