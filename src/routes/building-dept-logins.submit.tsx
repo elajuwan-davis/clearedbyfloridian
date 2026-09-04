@@ -1,29 +1,31 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState, type DragEvent } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { PortalShell } from "@/components/portal-shell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ArrowLeft, Eye, EyeOff, Search, Check, Loader2 } from "lucide-react";
+import { ArrowLeft, Eye, EyeOff, Search, Check, Loader2, FileText, Upload, X } from "lucide-react";
 import { toast } from "sonner";
 import { friendlyServerError } from "@/lib/server-fn-error";
 import { MUNICIPALITIES as SHARED_MUNICIPALITIES } from "@/lib/municipalities";
 import { savePortalLogin } from "@/lib/portal-logins.functions";
+import { bulkUploadPortalLoginDocs, BULK_LOGIN_DOC_MAX_FILES } from "@/lib/bulk-portal-login-docs";
 import { useSession } from "@/lib/use-session";
 
 export const Route = createFileRoute("/building-dept-logins/submit")({
   head: () => ({
-    meta: [
-      { title: "Submit Login — Cleard" },
-      { name: "robots", content: "noindex" },
-    ],
+    meta: [{ title: "Submit Login — Cleard" }, { name: "robots", content: "noindex" }],
   }),
   component: SubmitLoginPage,
 });
 
 function slugifyCity(name: string): string {
-  return name.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+  return name
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
 }
 
 const MUNICIPALITIES = SHARED_MUNICIPALITIES.map((m) => m.name);
@@ -52,6 +54,8 @@ function SubmitLoginPage() {
   const [ePlan, setEPlan] = useState(false);
   const [derm, setDerm] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [docQueue, setDocQueue] = useState<File[]>([]);
+  const [docProgress, setDocProgress] = useState<{ done: number; total: number } | null>(null);
 
   const muniMeta = useMemo(
     () => SHARED_MUNICIPALITIES.find((m) => m.name === muni) ?? null,
@@ -98,12 +102,66 @@ function SubmitLoginPage() {
       });
 
       toast.success(`Login saved for ${muni}.`);
+
+      // Documents are optional and attach after the credentials are safely
+      // saved — a failed or skipped upload never blocks the login itself.
+      if (docQueue.length > 0) {
+        setDocProgress({ done: 0, total: docQueue.length });
+        try {
+          const result = await bulkUploadPortalLoginDocs(
+            {
+              municipalitySlug: slug,
+              municipality: muni.trim(),
+              tenantId: session.effectiveTenantId,
+            },
+            docQueue,
+            (done, total) => setDocProgress({ done, total }),
+          );
+          if (result.uploaded.length > 0) {
+            toast.success(
+              `Attached ${result.uploaded.length} document${result.uploaded.length === 1 ? "" : "s"}`,
+            );
+          }
+          if (result.failed.length > 0) {
+            toast.error(
+              `${result.failed.length} document${result.failed.length === 1 ? "" : "s"} failed to attach: ` +
+                result.failed.map((f) => `${f.filename} (${f.message})`).join(", "),
+            );
+          }
+        } catch (docErr) {
+          toast.error(
+            friendlyServerError(docErr, "Login saved, but the documents failed to attach"),
+          );
+        } finally {
+          setDocProgress(null);
+        }
+      }
+
       navigate({ to: "/building-dept-logins" });
     } catch (err) {
       toast.error(friendlyServerError(err, "Could not save this login"));
     } finally {
       setSubmitting(false);
     }
+  }
+
+  function addDocFiles(files: File[]) {
+    if (files.length === 0) return;
+    setDocQueue((prev) => {
+      const seen = new Set(prev.map((f) => `${f.name}:${f.size}`));
+      const merged = [...prev];
+      for (const f of files) {
+        const id = `${f.name}:${f.size}`;
+        if (seen.has(id)) continue;
+        seen.add(id);
+        merged.push(f);
+      }
+      if (merged.length > BULK_LOGIN_DOC_MAX_FILES) {
+        toast.error(`Up to ${BULK_LOGIN_DOC_MAX_FILES} files at a time`);
+        return merged.slice(0, BULK_LOGIN_DOC_MAX_FILES);
+      }
+      return merged;
+    });
   }
 
   return (
@@ -121,7 +179,7 @@ function SubmitLoginPage() {
           <h1 className="display-serif mt-3 text-4xl text-obsidian">Submit New Login</h1>
           <p className="mt-2 text-sm text-obsidian/60">
             Paste the portal link, your username and your password — Cleard encrypts the credentials
-            at rest. No documents needed.
+            at rest. Attaching related documents is optional.
           </p>
         </div>
 
@@ -136,13 +194,21 @@ function SubmitLoginPage() {
               />
             </div>
             <div className="relative">
-              <Label className="eyebrow text-obsidian/55">Municipality <span className="text-oxblood">*</span></Label>
+              <Label className="eyebrow text-obsidian/55">
+                Municipality <span className="text-oxblood">*</span>
+              </Label>
               <div className="relative mt-2">
                 <Search className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-obsidian/40" />
                 <input
                   value={muniOpen || !muni ? muniQuery : muni}
-                  onFocus={() => { setMuniOpen(true); setMuniQuery(""); }}
-                  onChange={(e) => { setMuniQuery(e.target.value); setMuniOpen(true); }}
+                  onFocus={() => {
+                    setMuniOpen(true);
+                    setMuniQuery("");
+                  }}
+                  onChange={(e) => {
+                    setMuniQuery(e.target.value);
+                    setMuniOpen(true);
+                  }}
                   onBlur={() => setTimeout(() => setMuniOpen(false), 120)}
                   placeholder="Search counties or cities…"
                   className="block w-full border border-obsidian/15 bg-white pl-9 pr-3 py-2 text-sm text-obsidian placeholder:text-obsidian/40 focus:border-obsidian/40 focus:outline-none rounded-[3px]"
@@ -153,7 +219,12 @@ function SubmitLoginPage() {
                       <li key={m}>
                         <button
                           type="button"
-                          onMouseDown={(e) => { e.preventDefault(); setMuni(m); setMuniQuery(""); setMuniOpen(false); }}
+                          onMouseDown={(e) => {
+                            e.preventDefault();
+                            setMuni(m);
+                            setMuniQuery("");
+                            setMuniOpen(false);
+                          }}
                           className="block w-full text-left px-3 py-2 text-sm text-obsidian hover:bg-paper-warm"
                         >
                           {m}
@@ -173,7 +244,11 @@ function SubmitLoginPage() {
                 className="mt-2 block w-full border border-obsidian/15 bg-white px-3 py-2 text-sm text-obsidian focus:border-obsidian/40 focus:outline-none rounded-[3px]"
               >
                 <option value="">Not sure / leave blank</option>
-                {REGISTRATIONS.map((r) => <option key={r} value={r}>{r}</option>)}
+                {REGISTRATIONS.map((r) => (
+                  <option key={r} value={r}>
+                    {r}
+                  </option>
+                ))}
               </select>
             </div>
 
@@ -195,7 +270,9 @@ function SubmitLoginPage() {
             </div>
 
             <div>
-              <Label className="eyebrow text-obsidian/55">Username <span className="text-oxblood">*</span></Label>
+              <Label className="eyebrow text-obsidian/55">
+                Username <span className="text-oxblood">*</span>
+              </Label>
               <Input
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
@@ -205,7 +282,9 @@ function SubmitLoginPage() {
               />
             </div>
             <div>
-              <Label className="eyebrow text-obsidian/55">Password <span className="text-oxblood">*</span></Label>
+              <Label className="eyebrow text-obsidian/55">
+                Password <span className="text-oxblood">*</span>
+              </Label>
               <div className="mt-2 flex items-center gap-1 border border-obsidian/15 bg-white rounded-[3px] focus-within:border-obsidian/40">
                 <input
                   type={showPw ? "text" : "password"}
@@ -235,11 +314,46 @@ function SubmitLoginPage() {
             </div>
           </div>
 
+          <div>
+            <Label className="eyebrow text-obsidian/55">Related Documents (optional)</Label>
+            <p className="mt-1 text-xs text-obsidian/55">
+              Drop in anything related to this login — registration letters, confirmation emails,
+              whatever you have. Each file is kept under its own original name. You can save this
+              login with no documents at all.
+            </p>
+            <DocStaging
+              queue={docQueue}
+              onAdd={addDocFiles}
+              onRemove={(i) => setDocQueue((q) => q.filter((_, j) => j !== i))}
+              busy={submitting}
+            />
+            {docProgress && (
+              <div className="mt-2">
+                <div className="h-1.5 bg-obsidian/10 rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-emerald-500 transition-all"
+                    style={{
+                      width: `${docProgress.total ? (docProgress.done / docProgress.total) * 100 : 0}%`,
+                    }}
+                  />
+                </div>
+                <div className="mt-1 font-mono text-[10px] text-obsidian/55">
+                  Attaching documents… {docProgress.done}/{docProgress.total}
+                </div>
+              </div>
+            )}
+          </div>
+
           <div className="flex items-center justify-end gap-3 pt-4 border-t border-obsidian/10">
             <Button asChild variant="outline" className="rounded-[3px]">
               <Link to="/building-dept-logins">Cancel</Link>
             </Button>
-            <Button type="submit" variant="dark" disabled={!canSubmit || submitting} className="rounded-[3px] gap-2">
+            <Button
+              type="submit"
+              variant="dark"
+              disabled={!canSubmit || submitting}
+              className="rounded-[3px] gap-2"
+            >
               {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
               {submitting ? "Saving…" : "Save Login"}
             </Button>
@@ -250,7 +364,15 @@ function SubmitLoginPage() {
   );
 }
 
-function Toggle({ on, onChange, label }: { on: boolean; onChange: (v: boolean) => void; label: string }) {
+function Toggle({
+  on,
+  onChange,
+  label,
+}: {
+  on: boolean;
+  onChange: (v: boolean) => void;
+  label: string;
+}) {
   return (
     <button
       type="button"
@@ -258,7 +380,9 @@ function Toggle({ on, onChange, label }: { on: boolean; onChange: (v: boolean) =
       className="inline-flex items-center gap-2 border px-3 py-2 text-sm rounded-[3px] transition-colors"
       style={{
         backgroundColor: on ? "color-mix(in oklab, var(--sky) 10%, transparent)" : "white",
-        borderColor: on ? "color-mix(in oklab, var(--sky) 40%, transparent)" : "color-mix(in oklab, var(--obsidian) 15%, transparent)",
+        borderColor: on
+          ? "color-mix(in oklab, var(--sky) 40%, transparent)"
+          : "color-mix(in oklab, var(--obsidian) 15%, transparent)",
         color: on ? "var(--sky)" : "var(--obsidian)",
       }}
     >
@@ -273,5 +397,96 @@ function Toggle({ on, onChange, label }: { on: boolean; onChange: (v: boolean) =
       </span>
       {label}
     </button>
+  );
+}
+
+/** Stages files to attach once the login saves — no upload happens here yet,
+ *  so picking (or not picking) documents never gates or delays the save. */
+function DocStaging({
+  queue,
+  onAdd,
+  onRemove,
+  busy,
+}: {
+  queue: File[];
+  onAdd: (files: File[]) => void;
+  onRemove: (index: number) => void;
+  busy: boolean;
+}) {
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [dragOver, setDragOver] = useState(false);
+
+  function handleDrop(e: DragEvent<HTMLDivElement>) {
+    e.preventDefault();
+    setDragOver(false);
+    onAdd(Array.from(e.dataTransfer.files ?? []));
+  }
+
+  return (
+    <div className="mt-3">
+      <div
+        onDragOver={(e) => {
+          e.preventDefault();
+          setDragOver(true);
+        }}
+        onDragLeave={() => setDragOver(false)}
+        onDrop={handleDrop}
+        onClick={() => inputRef.current?.click()}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") inputRef.current?.click();
+        }}
+        className={`cursor-pointer border-2 border-dashed rounded-[3px] px-4 py-5 text-center transition-colors ${
+          dragOver
+            ? "border-obsidian/50 bg-obsidian/[0.05]"
+            : "border-obsidian/20 hover:border-obsidian/40"
+        }`}
+      >
+        <Upload className="h-4 w-4 mx-auto text-obsidian/45" />
+        <div className="mt-2 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/60">
+          Drop files or click to choose — any number at once
+        </div>
+        <input
+          ref={inputRef}
+          type="file"
+          multiple
+          className="hidden"
+          onChange={(e) => {
+            onAdd(Array.from(e.target.files ?? []));
+            e.target.value = "";
+          }}
+        />
+      </div>
+
+      {queue.length > 0 && (
+        <ul className="mt-3 space-y-1 max-h-56 overflow-y-auto">
+          {queue.map((f, i) => (
+            <li
+              key={`${f.name}-${i}`}
+              className="flex items-center justify-between gap-2 bg-white border border-obsidian/10 rounded-[3px] px-2 py-1.5"
+            >
+              <div className="flex items-center gap-2 min-w-0">
+                <FileText className="h-3.5 w-3.5 shrink-0 text-obsidian/45" />
+                <span className="truncate text-[12px] text-obsidian">{f.name}</span>
+                <span className="shrink-0 font-mono text-[10px] text-obsidian/45">
+                  {(f.size / 1024).toFixed(0)} KB
+                </span>
+              </div>
+              {!busy && (
+                <button
+                  type="button"
+                  onClick={() => onRemove(i)}
+                  className="text-obsidian/40 hover:text-obsidian shrink-0"
+                  aria-label={`Remove ${f.name}`}
+                >
+                  <X className="h-3.5 w-3.5" />
+                </button>
+              )}
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
   );
 }
