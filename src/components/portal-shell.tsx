@@ -206,7 +206,7 @@ function RailFlyout({
         left: pos?.left ?? 62,
         maxHeight: "calc(100vh - 16px)",
         visibility: pos ? "visible" : "hidden",
-        backgroundColor: "var(--rail-bg)",
+        backgroundColor: "#FFFFFF",
         border: "1px solid var(--p-border)",
         boxShadow: "0 16px 40px rgba(0,0,0,0.12)",
       }}
@@ -346,8 +346,8 @@ function SidebarNav({
       >
         {isRail ? (
           <div
-            className="grid h-7 w-7 shrink-0 place-items-center text-[13px] font-bold"
-            style={{ background: "#9C6B3F", color: "#FFFFFF" }}
+            className="grid h-7 w-7 shrink-0 place-items-center rounded-lg text-[13px] font-bold"
+            style={{ background: "var(--copper)", color: "#FFFFFF" }}
           >
             C
           </div>
@@ -465,14 +465,8 @@ function SidebarNav({
                 key={group.key}
                 to={group.to as never}
                 onClick={onNavigate}
-                className="flex items-center gap-2 text-[13px]"
-                style={{
-                  padding: "8px 16px",
-                  borderRadius: 0,
-                  backgroundColor: groupActive ? "var(--rail-item-active-bg)" : "transparent",
-                  color: groupActive ? "var(--rail-fg)" : "var(--rail-muted)",
-                  fontWeight: groupActive ? 600 : 400,
-                }}
+                className="p-nav-item"
+                data-active={groupActive ? "true" : "false"}
               >
                 <GroupIcon className="h-4 w-4 shrink-0" strokeWidth={1.75} />
                 <span className="min-w-0 flex-1 truncate">{group.label}</span>
@@ -527,8 +521,8 @@ function SidebarNav({
           style={{ borderTop: "1px solid var(--p-border)" }}
         >
           <div
-            className={cn("flex gap-0.5 p-0.5", isRail ? "flex-col" : "items-stretch")}
-            style={{ backgroundColor: "var(--rail-item-active-bg)" }}
+            className={cn("flex gap-0.5 rounded-lg p-0.5", isRail ? "flex-col" : "items-stretch")}
+            style={{ backgroundColor: "var(--gray-bg-2)" }}
             role="group"
             aria-label="View mode"
           >
@@ -547,11 +541,11 @@ function SidebarNav({
                   title={`${opt.label} view`}
                   aria-pressed={active}
                   className={cn(
-                    "flex-1 truncate px-2 py-1 text-[11px] font-medium transition-colors",
+                    "flex-1 truncate rounded-md px-2 py-1 text-[11px] font-medium transition-colors",
                     isRail && "px-0 text-center",
                   )}
                   style={{
-                    backgroundColor: active ? "#9C6B3F" : "transparent",
+                    backgroundColor: active ? "var(--copper)" : "transparent",
                     color: active ? "#FFFFFF" : "var(--rail-muted)",
                   }}
                 >
@@ -573,7 +567,7 @@ function SidebarNav({
             to="/profile"
             onClick={onNavigate}
             className="grid h-8 w-8 shrink-0 place-items-center rounded-lg text-[11px] font-semibold text-white"
-            style={{ backgroundColor: "#9C6B3F" }}
+            style={{ backgroundColor: "var(--copper)" }}
             title={displayName}
           >
             {initials}
@@ -876,7 +870,7 @@ function PortalShellInner({ children }: { children: ReactNode }) {
                 <DropdownMenuTrigger className="flex h-8 items-center gap-1.5 rounded-lg px-1 outline-none hover:bg-[var(--rail-hover)]">
                   <div
                     className="grid h-7 w-7 place-items-center rounded-lg text-[11px] font-semibold"
-                    style={{ backgroundColor: "#9C6B3F", color: "#FFFFFF" }}
+                    style={{ backgroundColor: "var(--copper)", color: "#FFFFFF" }}
                   >
                     {me.initials}
                   </div>
@@ -1028,7 +1022,7 @@ function AdminTenantSwitcher() {
     <div className="hidden md:block ml-4">
       <DropdownMenu>
         <DropdownMenuTrigger
-          className="flex items-center gap-2 h-9 px-3 border rounded-[3px] hover:bg-secondary outline-none"
+          className="flex h-9 items-center gap-2 rounded-lg border px-3 outline-none hover:bg-secondary"
           style={{ borderColor: "var(--border)" }}
         >
           <Building2 className="h-3.5 w-3.5" strokeWidth={1.5} style={{ color: "var(--foreground)" }} />
@@ -1037,14 +1031,14 @@ function AdminTenantSwitcher() {
           </span>
           <ChevronDown className="h-3 w-3 opacity-60" strokeWidth={1.5} />
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="start" className="min-w-[260px] max-h-[380px] overflow-y-auto rounded-[3px] p-1">
+        <DropdownMenuContent align="start" className="min-w-[260px] max-h-[380px] overflow-y-auto rounded-lg p-1">
           <DropdownMenuLabel className="px-3 py-2 font-mono text-[9px] tracking-[0.2em] uppercase" style={{ color: "var(--muted-foreground)" }}>
             View as client
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuItem
             onSelect={() => setImpersonatedTenant(null)}
-            className="px-3 py-2 text-[13px] rounded-[2px] cursor-pointer flex items-center justify-between"
+            className="px-3 py-2 text-[13px] rounded-md cursor-pointer flex items-center justify-between"
             style={{ color: "var(--foreground)" }}
           >
             <span>All Clients (admin view)</span>
@@ -1059,7 +1053,7 @@ function AdminTenantSwitcher() {
             <DropdownMenuItem
               key={t.id}
               onSelect={() => setImpersonatedTenant({ id: t.id, name: t.name })}
-              className="px-3 py-2 text-[13px] rounded-[2px] cursor-pointer flex items-center justify-between gap-3"
+              className="px-3 py-2 text-[13px] rounded-md cursor-pointer flex items-center justify-between gap-3"
               style={{ color: "var(--foreground)" }}
             >
               <span className="truncate">{t.name}</span>

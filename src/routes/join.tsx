@@ -171,7 +171,7 @@ function JoinPage() {
               className="relative bg-white p-6 lg:p-8"
               style={{
                 border: `1px solid ${HAIRLINE}`,
-                boxShadow: "0 30px 80px -30px rgba(47, 79, 79,0.25)",
+                boxShadow: "0 30px 80px -30px rgba(0,0,0,0.25)",
               }}
             >
               <div className="flex items-center justify-between mb-6 pb-4" style={{ borderBottom: `1px solid ${HAIRLINE}` }}>

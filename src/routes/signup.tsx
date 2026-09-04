@@ -147,7 +147,7 @@ function SignupPage() {
             <div
               className="h-9 w-9 rounded-xl flex items-center justify-center text-white font-bold text-base"
               style={{
-                background: "linear-gradient(135deg, #9C6B3F 0%, #4E6B5C 100%)",
+                background: "linear-gradient(135deg, #9C6B3F 0%, #2E7D32 100%)",
                 fontFamily: "'Instrument Sans', sans-serif",
               }}
             >

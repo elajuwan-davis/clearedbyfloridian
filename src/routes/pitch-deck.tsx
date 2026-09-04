@@ -65,7 +65,7 @@ function Gate({ onPass }: { onPass: () => void }) {
         <h1 className="mt-4 text-2xl" style={{ color: OAT, fontWeight: 500 }}>
           Pitch deck
         </h1>
-        <p className="mt-2 text-sm" style={{ color: "rgba(250,243,230,0.7)" }}>
+        <p className="mt-2 text-sm" style={{ color: "rgba(255,255,255,0.7)" }}>
           Enter the passcode to view the deck.
         </p>
         <input
@@ -79,7 +79,7 @@ function Gate({ onPass }: { onPass: () => void }) {
           placeholder="Passcode"
           className="mt-6 w-full px-3 py-2.5 text-sm outline-none"
           style={{
-            border: "1px solid rgba(250,243,230,0.35)",
+            border: "1px solid rgba(255,255,255,0.35)",
             background: OAT,
             color: "#111110",
             caretColor: "#111110",

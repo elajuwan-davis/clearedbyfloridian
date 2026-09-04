@@ -24,12 +24,12 @@ export const Route = createFileRoute("/investor_/admin")({
   component: InvestorAdminPage,
 });
 
-const BG = "#2F4F4F";
-const SURFACE = "#2F4F4F";
+const BG = "#000000";
+const SURFACE = "#000000";
 const BORDER = "#3F5C5A";
 const TEAL = "#E6E6FA";
-const OFF = "#F3EAD9";
-const MUTED = "rgba(250, 243, 230, 0.62)";
+const OFF = "#F6F6F6";
+const MUTED = "rgba(255,255,255, 0.62)";
 const SANS = "'Instrument Sans', sans-serif";
 const MONO = "ui-monospace, Menlo, Monaco, monospace";
 const SESSION_KEY = "investor_admin_ok";
@@ -54,7 +54,7 @@ const inputStyle: React.CSSProperties = {
 
 const btnStyle: React.CSSProperties = {
   background: TEAL,
-  color: "#FAF3E6",
+  color: "#FFFFFF",
   borderRadius: 0,
 };
 
@@ -130,13 +130,13 @@ function PasswordCard({ onOk }: { onOk: (pw: string) => void }) {
           }}
           placeholder="Password"
           className="mt-5 w-full px-4 py-3 text-[14px] outline-none"
-          style={{ ...inputStyle, border: `1px solid ${bad ? "#8C3B3B" : BORDER}`, background: BG }}
+          style={{ ...inputStyle, border: `1px solid ${bad ? "#C0392B" : BORDER}`, background: BG }}
         />
         <button type="submit" className="mt-3 w-full px-4 py-3 text-[14px] font-semibold" style={btnStyle}>
           Enter →
         </button>
         {bad && (
-          <p className="mt-3 text-[12px]" style={{ color: "#D08585" }}>
+          <p className="mt-3 text-[12px]" style={{ color: "#C0392B" }}>
             Incorrect password.
           </p>
         )}
@@ -176,9 +176,9 @@ function Td({ children }: { children: React.ReactNode }) {
 }
 
 function codeStatus(c: Code) {
-  if (c.used) return { label: "Used", color: "#5C7370" };
+  if (c.used) return { label: "Used", color: "rgba(255,255,255,0.62)" };
   if (c.expires_at && new Date(c.expires_at).getTime() <= Date.now())
-    return { label: "Expired", color: "#8C3B3B" };
+    return { label: "Expired", color: "#C0392B" };
   return { label: "Active", color: TEAL };
 }
 
@@ -236,7 +236,7 @@ function AdminConsole({ password }: { password: string }) {
         </div>
         <h1 className="mt-4 text-[30px] font-extrabold tracking-[-0.03em]">Access Administration</h1>
         {error && (
-          <p className="mt-5 px-4 py-3 text-[13px]" style={{ border: `1px solid #8C3B3B`, color: "#D08585" }}>
+          <p className="mt-5 px-4 py-3 text-[13px]" style={{ border: `1px solid #C0392B`, color: "#C0392B" }}>
             {error}
           </p>
         )}

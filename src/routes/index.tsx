@@ -83,9 +83,7 @@ function HomePage() {
   return (
     <div style={{ background: WHITE, color: INK, fontFamily: SANS }}>
       <style>{`
-        .cl-home *, .cl-home *::before, .cl-home *::after { border-radius: 0 !important; }
         .cl-home .cl-dot { border-radius: 999px !important; }
-        .cl-home .cl-glass, .cl-home .cl-glass * { border-radius: 999px !important; }
         .cl-home .cl-phone { border-radius: 44px !important; }
         .cl-home .cl-phone-screen { border-radius: 34px !important; }
         .cl-home .cl-phone-notch { border-radius: 999px !important; }
@@ -242,7 +240,7 @@ function statusStyle(status: string) {
     case "Alert":
     case "Expired":
     case "Failed":
-      return { background: "rgba(220,60,60,0.1)", color: "#8C3B3B" };
+      return { background: "rgba(220,60,60,0.1)", color: "#C0392B" };
     case "Permit Issued":
     case "Active":
       return { background: "rgba(156,107,63,0.1)", color: "#7A5030" };
@@ -458,7 +456,7 @@ function MunicipalityTrack() {
           </div>
           <Link
             to="/contact"
-            className="cl-glass mt-10 inline-flex items-center gap-2 px-7 py-3 text-[14px] no-underline transition-transform duration-200 hover:scale-[1.03]"
+            className="p-btn p-btn-primary cl-glass mt-10 inline-flex items-center gap-2 no-underline"
             style={{
               backgroundImage: "var(--gradient-copper)",
               border: "1px solid color-mix(in oklab, var(--copper-deep) 70%, transparent)",
@@ -698,7 +696,7 @@ function MobileApp() {
                     <div className="text-[11px]" style={{ color: GRAY }}>Verified</div>
                   </div>
                   <div className="p-3" style={{ background: "#FFFFFF", border: `1px solid ${BORDER}` }}>
-                    <div className="text-[24px] font-bold" style={{ color: "#8C3B3B" }}>1</div>
+                    <div className="text-[24px] font-bold" style={{ color: "#C0392B" }}>1</div>
                     <div className="text-[11px]" style={{ color: GRAY }}>Alert</div>
                   </div>
                 </div>
@@ -800,7 +798,7 @@ function BottomCTA() {
           <Link
             to="/join"
             hash="request"
-            className="cl-glass inline-flex items-center gap-2 px-7 py-3 text-[14px] font-bold no-underline transition-transform duration-200 hover:scale-[1.03]"
+            className="p-btn p-btn-primary cl-glass inline-flex items-center gap-2 font-bold no-underline"
             style={{
               backgroundImage: "var(--gradient-copper)",
               border: "1px solid color-mix(in oklab, var(--copper-deep) 70%, transparent)",

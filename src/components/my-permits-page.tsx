@@ -1,15 +1,19 @@
 import { Link } from "@tanstack/react-router";
-import { Fragment, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { PortalShell } from "@/components/portal-shell";
 import {
-  ChevronDown,
-  ChevronRight,
   AlertTriangle,
-  Plus,
-  FileText,
-  RefreshCw,
-  Flag,
   ArrowUpRight,
+  Building2,
+  Calendar,
+  ChevronRight,
+  FileText,
+  Flag,
+  MapPin,
+  Plus,
+  RefreshCw,
+  Trash2,
+  UserRound,
 } from "lucide-react";
 import { isInternalUser } from "@/lib/is-internal-user";
 import { listEscalatedPermitIds } from "@/lib/staff-ops";
@@ -28,13 +32,14 @@ import {
   discardLocalPermitDrafts,
   type LocalPermitDraft,
 } from "@/lib/permit-drafts";
-import { PageShell, Panel, SearchInput, Segmented, EmptyState } from "@/components/ui-kit";
+import { PageShell, Panel, SearchInput, Segmented, EmptyState, KV } from "@/components/ui-kit";
 import {
   CDS,
   Kpi,
   KpiBar,
   Reveal,
-  SkeletonRows,
+  SidePanel,
+  SkeletonCards,
   StagePipeline,
   Tag,
   toneForStatus,
@@ -77,7 +82,30 @@ const STATUS_LABEL: Record<string, string> = {
   cancelled: "Cancelled",
 };
 
-type SortKey = "id" | "address" | "jurisdiction" | "type" | "stage" | "assigned" | "updated";
+type SortKey = "updated" | "address" | "jurisdiction" | "stage" | "assigned";
+
+const SORT_OPTIONS: Array<{ value: SortKey; label: string }> = [
+  { value: "updated", label: "Last updated" },
+  { value: "address", label: "Address" },
+  { value: "jurisdiction", label: "Jurisdiction" },
+  { value: "stage", label: "Stage" },
+  { value: "assigned", label: "Assigned to" },
+];
+
+/** What the contractor should do next, from real permit state only. */
+function nextAction(p: PermitRow, c: ReturnType<typeof permitCompleteness>, vendor: string | null) {
+  if (vendor) return { label: `Managed by ${vendor}`, tone: "neutral" as const };
+  if (p.status === "corrections_required") return { label: "Respond to corrections", tone: "danger" as const };
+  if (p.status === "on_hold") return { label: "Delayed — check with Cleard", tone: "danger" as const };
+  if (p.status === "cancelled") return { label: "Cancelled", tone: "neutral" as const };
+  if (c.missingFields.length > 0)
+    return { label: `${c.missingFields.length} field${c.missingFields.length === 1 ? "" : "s"} missing`, tone: "danger" as const };
+  if (c.missingDocs.length > 0)
+    return { label: `${c.missingDocs.length} document${c.missingDocs.length === 1 ? "" : "s"} to upload`, tone: "info" as const };
+  if (p.status === "permit_issued") return { label: "Permit issued", tone: "success" as const };
+  if (p.status === "approved") return { label: "Approved — awaiting issue", tone: "success" as const };
+  return { label: "Waiting on jurisdiction", tone: "info" as const };
+}
 
 export function MyPermitsPage() {
   const [permits, setPermits] = useState<PermitRow[]>([]);
@@ -92,11 +120,8 @@ export function MyPermitsPage() {
   const [escalatedIds, setEscalatedIds] = useState<Set<string>>(new Set());
   const [drafts, setDrafts] = useState<LocalPermitDraft[]>([]);
   const [stage, setStage] = useState<StageKey | null>(null);
-  const [expanded, setExpanded] = useState<string | null>(null);
-  const [sort, setSort] = useState<{ key: SortKey; dir: "asc" | "desc" }>({
-    key: "updated",
-    dir: "desc",
-  });
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [sortKey, setSortKey] = useState<SortKey>("updated");
   const internal = isInternalUser();
   const activeTenantId = useActiveTenantId();
 
@@ -202,14 +227,10 @@ export function MyPermitsPage() {
   const rows = useMemo(() => {
     const val = (p: PermitRow, key: SortKey) => {
       switch (key) {
-        case "id":
-          return p.permit_number ?? p.id;
         case "address":
           return p.job_address ?? "";
         case "jurisdiction":
           return p.municipality ?? p.county ?? "";
-        case "type":
-          return p.permit_type ?? "";
         case "stage":
           return STATUS_LABEL[p.status] ?? p.status;
         case "assigned":
@@ -218,11 +239,11 @@ export function MyPermitsPage() {
           return p.updated_at;
       }
     };
-    const dir = sort.dir === "asc" ? 1 : -1;
+    const dir = sortKey === "updated" ? -1 : 1;
     return [...staged].sort(
-      (a, b) => String(val(a, sort.key)).localeCompare(String(val(b, sort.key))) * dir,
+      (a, b) => String(val(a, sortKey)).localeCompare(String(val(b, sortKey))) * dir,
     );
-  }, [staged, sort]);
+  }, [staged, sortKey]);
 
   const counts = useMemo(
     () => ({
@@ -234,9 +255,10 @@ export function MyPermitsPage() {
     [filtered],
   );
 
-  function toggleSort(key: SortKey) {
-    setSort((s) => (s.key === key ? { key, dir: s.dir === "asc" ? "desc" : "asc" } : { key, dir: "asc" }));
-  }
+  const selected = useMemo(
+    () => permits.find((p) => p.id === selectedId) ?? null,
+    [permits, selectedId],
+  );
 
   const showDrafts = drafts.length > 0 && (stage === null || stage === "drafts");
 
@@ -244,7 +266,7 @@ export function MyPermitsPage() {
     <PortalShell>
       <PageShell
         crumbs={[{ label: "Workspace" }, { label: "Permits" }]}
-        title="Permits"
+        title="My Permits"
         meta={
           loading
             ? "Loading…"
@@ -252,10 +274,10 @@ export function MyPermitsPage() {
         }
         actions={
           <>
-            <span className="hidden text-[11.5px] text-muted-foreground lg:inline">
+            <span className="hidden text-[12px] text-muted-foreground lg:inline">
               {syncMsg ?? `Synced ${formatRelative(lastSync)}`}
             </span>
-            <button onClick={handleSync} disabled={syncing} className="p-btn p-btn-ghost">
+            <button onClick={handleSync} disabled={syncing} className="p-btn p-btn-secondary">
               <RefreshCw className={`h-3.5 w-3.5 ${syncing ? "animate-spin" : ""}`} strokeWidth={1.75} />
               {syncing ? "Syncing" : "Sync"}
             </button>
@@ -266,7 +288,7 @@ export function MyPermitsPage() {
         }
         toolbar={
           <>
-            <div className="p-inset min-w-0 flex-1 sm:max-w-sm">
+            <div className="min-w-0 flex-1 sm:max-w-sm">
               <SearchInput value={query} onChange={setQuery} placeholder="Search project, address, county" />
             </div>
             <Segmented
@@ -278,20 +300,37 @@ export function MyPermitsPage() {
                 { value: "vendor", label: "Vendor" },
               ]}
             />
-            <span className="ml-auto hidden text-[11.5px] text-muted-foreground sm:inline">
-              {rows.length} shown
-            </span>
+            <label className="ml-auto flex items-center gap-2 text-[12px] text-muted-foreground">
+              Sort
+              <select
+                value={sortKey}
+                onChange={(e) => setSortKey(e.target.value as SortKey)}
+                aria-label="Sort permits"
+                className="!h-8 !min-h-0 text-[13px]"
+              >
+                {SORT_OPTIONS.map((o) => (
+                  <option key={o.value} value={o.value}>
+                    {o.label}
+                  </option>
+                ))}
+              </select>
+            </label>
           </>
         }
       >
         <KpiBar>
           <Kpi label="Total permits" value={counts.total} />
-          <Kpi label="Active" value={counts.active} tone="teal" />
-          <Kpi label="Blocked" value={counts.blocked} tone={counts.blocked > 0 ? "red" : "gray"} />
-          <Kpi label="Issued" value={counts.issued} tone="blue" />
+          <Kpi label="Active" value={counts.active} tone="blue" />
+          <Kpi label="Needs attention" value={counts.blocked} tone={counts.blocked > 0 ? "red" : "gray"} />
+          <Kpi label="Issued" value={counts.issued} tone="teal" />
         </KpiBar>
 
-        <StagePipeline stages={stages} active={stage} onSelect={(k) => setStage(k as StageKey | null)} />
+        <StagePipeline
+          stages={stages}
+          active={stage}
+          onSelect={(k) => setStage(k as StageKey | null)}
+          hideEmpty
+        />
 
         {permits.length === 0 && drafts.length === 0 && !loading ? (
           <Panel padded={false}>
@@ -315,15 +354,12 @@ export function MyPermitsPage() {
             )}
           </Panel>
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-6">
             {showDrafts && (
               <Reveal>
-                <div style={{ background: CDS.white, border: `1px solid ${CDS.border}` }}>
-                  <div
-                    className="flex items-center gap-2"
-                    style={{ borderBottom: `1px solid ${CDS.border}`, padding: "10px 12px" }}
-                  >
-                    <span style={{ fontSize: 13, fontWeight: 700, color: CDS.black }}>Drafts</span>
+                <section>
+                  <header className="mb-2 flex items-center gap-2">
+                    <h2 className="text-[14px] font-semibold">Drafts</h2>
                     <Tag>{drafts.length} not submitted</Tag>
                     <button
                       type="button"
@@ -331,36 +367,29 @@ export function MyPermitsPage() {
                         discardLocalPermitDrafts();
                         setDrafts([]);
                       }}
-                      className="ml-auto"
-                      style={{ fontSize: 11, color: CDS.gray, background: "none", border: "none" }}
+                      className="p-btn p-btn-quiet p-btn-sm ml-auto"
                     >
-                      Discard all
+                      <Trash2 className="h-3.5 w-3.5" strokeWidth={1.75} /> Discard all
                     </button>
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3">
+                  </header>
+                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
                     {drafts.map((d, i) => (
                       <Link
                         key={i}
                         to="/portal/permits/new"
-                        className="cds-card-hover min-w-0"
-                        style={{
-                          borderRight: `1px solid ${CDS.border}`,
-                          borderBottom: `1px solid ${CDS.border}`,
-                          padding: "12px 14px",
-                        }}
+                        className="p-surface p-hover-plate block min-w-0 p-4"
+                        style={{ borderStyle: "dashed", borderColor: "rgba(0,0,0,0.18)" }}
                       >
-                        <div className="truncate" style={{ fontSize: 13, fontWeight: 600, color: CDS.black }}>
+                        <div className="truncate text-[14px] font-semibold">
                           {d.projectName || "Untitled draft"}
                         </div>
-                        <div className="truncate" style={{ fontSize: 11.5, color: CDS.gray, marginTop: 2 }}>
+                        <div className="mt-0.5 truncate text-[12px] text-muted-foreground">
                           {d.jobAddress || "Address not entered"}
                         </div>
-                        <div
-                          className="mt-2 flex items-center gap-2 truncate"
-                          style={{ fontSize: 11, color: CDS.grayLt }}
-                        >
-                          {d.permitType && <span className="truncate">{d.permitType}</span>}
-                          {d.municipality && <span className="truncate">· {d.municipality}</span>}
+                        <div className="mt-3 flex items-center gap-2 text-[12px] text-muted-foreground">
+                          <span className="truncate">
+                            {[d.permitType, d.municipality].filter(Boolean).join(" · ") || "Continue intake"}
+                          </span>
                           <span className="ml-auto shrink-0 tabular-nums">
                             {d.savedAt ? new Date(d.savedAt).toLocaleDateString() : ""}
                           </span>
@@ -368,162 +397,173 @@ export function MyPermitsPage() {
                       </Link>
                     ))}
                   </div>
-                </div>
+                </section>
               </Reveal>
             )}
 
             {stage !== "drafts" && (
-              <Reveal>
-                <div className="min-w-0 overflow-x-auto" style={{ background: CDS.white, border: `1px solid ${CDS.border}` }}>
-                  <table className="cds-table">
-                    <thead>
-                      <tr>
-                        <th style={{ width: 28 }} aria-label="Expand" />
-                        <SortTh label="ID" k="id" sort={sort} onSort={toggleSort} />
-                        <SortTh label="Address" k="address" sort={sort} onSort={toggleSort} />
-                        <SortTh label="Jurisdiction" k="jurisdiction" sort={sort} onSort={toggleSort} />
-                        <SortTh label="Type" k="type" sort={sort} onSort={toggleSort} />
-                        <SortTh label="Stage" k="stage" sort={sort} onSort={toggleSort} />
-                        <SortTh label="Assigned" k="assigned" sort={sort} onSort={toggleSort} />
-                        <SortTh label="Last updated" k="updated" sort={sort} onSort={toggleSort} />
-                        <th>Status</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {loading && rows.length === 0 && (
-                        <tr>
-                          <td colSpan={9}>
-                            <SkeletonRows rows={6} />
-                          </td>
-                        </tr>
-                      )}
-                      {!loading && rows.length === 0 && (
-                        <tr>
-                          <td colSpan={9} style={{ color: CDS.grayLt, fontSize: 12.5 }}>
-                            No permits in this stage.
-                          </td>
-                        </tr>
-                      )}
-                      {rows.map((p) => {
-                        const c = permitCompleteness(p);
-                        const vendor = getVendor(p.project_name);
-                        const isOpen = expanded === p.id;
-                        return (
-                          <Fragment key={p.id}>
-                            <tr>
-                              <td>
-                                <button
-                                  type="button"
-                                  aria-label={isOpen ? "Collapse detail" : "Expand detail"}
-                                  onClick={() => setExpanded(isOpen ? null : p.id)}
-                                  style={{ background: "none", border: "none", color: CDS.grayLt, padding: 0 }}
-                                >
-                                  {isOpen ? (
-                                    <ChevronDown className="h-3.5 w-3.5" strokeWidth={2} />
-                                  ) : (
-                                    <ChevronRight className="h-3.5 w-3.5" strokeWidth={2} />
-                                  )}
-                                </button>
-                              </td>
-                              <td className="cds-cell-id">{p.permit_number ?? p.id.slice(0, 8).toUpperCase()}</td>
-                              <td className="cds-cell-primary">
-                                <button
-                                  type="button"
-                                  onClick={() => setExpanded(isOpen ? null : p.id)}
-                                  className="max-w-[280px] truncate text-left"
-                                  style={{ background: "none", border: "none", color: CDS.black, fontWeight: 500 }}
-                                >
+              <section>
+                <header className="mb-2 flex items-baseline gap-2">
+                  <h2 className="text-[14px] font-semibold">
+                    {stage ? STAGES.find((s) => s.key === stage)?.label ?? "Permits" : "All permits"}
+                  </h2>
+                  <span className="text-[12px] text-muted-foreground">{rows.length} shown</span>
+                </header>
+
+                {loading && rows.length === 0 ? (
+                  <SkeletonCards count={6} />
+                ) : rows.length === 0 ? (
+                  <Panel padded={false}>
+                    <EmptyState
+                      icon={<FileText className="h-4 w-4" strokeWidth={1.75} />}
+                      title="Nothing in this stage"
+                      description="Try another stage or clear the search."
+                    />
+                  </Panel>
+                ) : (
+                  <ul className="grid grid-cols-1 gap-3">
+                    {rows.map((p, i) => {
+                      const c = permitCompleteness(p);
+                      const vendor = getVendor(p.project_name);
+                      const action = nextAction(p, c, vendor);
+                      const stageLabel = STATUS_LABEL[p.status] ?? p.status;
+                      const escalated = internal && escalatedIds.has(p.id);
+                      return (
+                        <Reveal key={p.id} as="li" delay={Math.min(i, 10) * 40}>
+                          <article
+                            className="p-surface p-hover-plate grid min-w-0 cursor-pointer grid-cols-1 gap-4 p-4 lg:grid-cols-[minmax(0,2.2fr)_minmax(0,1.6fr)_minmax(0,1.4fr)_auto] lg:items-center"
+                            style={escalated ? { borderColor: "rgba(192,57,43,0.35)" } : undefined}
+                            onClick={() => setSelectedId(p.id)}
+                            aria-selected={selectedId === p.id}
+                          >
+                            <div className="min-w-0">
+                              <div className="flex min-w-0 items-center gap-2">
+                                <span className="truncate text-[15px] font-semibold">
                                   {p.job_address || p.project_name}
-                                </button>
-                                <div className="max-w-[280px] truncate" style={{ fontSize: 11, color: CDS.grayLt }}>
-                                  {p.project_name}
+                                </span>
+                                {escalated && (
+                                  <Tag tone="danger">
+                                    <Flag className="h-2.5 w-2.5" /> Escalated
+                                  </Tag>
+                                )}
+                              </div>
+                              <div className="mt-0.5 flex min-w-0 flex-wrap items-center gap-x-2 text-[12px] text-muted-foreground">
+                                <span className="tabular-nums font-medium" style={{ color: CDS.copper }}>
+                                  {p.permit_number ?? p.id.slice(0, 8).toUpperCase()}
+                                </span>
+                                {p.job_address && p.project_name && (
+                                  <span className="truncate">{p.project_name}</span>
+                                )}
+                              </div>
+                            </div>
+
+                            <div className="grid min-w-0 grid-cols-2 gap-x-4 gap-y-1 text-[12.5px] lg:grid-cols-1">
+                              <span className="flex min-w-0 items-center gap-1.5 text-muted-foreground">
+                                <MapPin className="h-3.5 w-3.5 shrink-0" style={{ color: CDS.copper }} strokeWidth={1.75} />
+                                <span className="truncate">{p.municipality ?? p.county ?? "Jurisdiction TBD"}</span>
+                              </span>
+                              <span className="flex min-w-0 items-center gap-1.5 text-muted-foreground">
+                                <Building2 className="h-3.5 w-3.5 shrink-0" style={{ color: CDS.copper }} strokeWidth={1.75} />
+                                <span className="truncate">{p.permit_type ?? "Type TBD"}</span>
+                              </span>
+                              <span className="flex min-w-0 items-center gap-1.5 text-muted-foreground">
+                                <UserRound className="h-3.5 w-3.5 shrink-0" style={{ color: CDS.copper }} strokeWidth={1.75} />
+                                <span className="truncate">{vendor ?? "Cleard"}</span>
+                              </span>
+                              <span className="flex min-w-0 items-center gap-1.5 text-muted-foreground">
+                                <Calendar className="h-3.5 w-3.5 shrink-0" style={{ color: CDS.copper }} strokeWidth={1.75} />
+                                <span className="truncate tabular-nums">
+                                  Updated {new Date(p.updated_at).toLocaleDateString()}
+                                </span>
+                              </span>
+                            </div>
+
+                            <div className="min-w-0">
+                              <div className="flex items-center justify-between gap-2 text-[12px]">
+                                <span className="truncate font-medium" style={{ color: toneColor(action.tone) }}>
+                                  {action.label}
+                                </span>
+                                {!vendor && (
+                                  <span className="shrink-0 tabular-nums text-muted-foreground">{c.percent}%</span>
+                                )}
+                              </div>
+                              {!vendor && (
+                                <div
+                                  className="p-progress mt-1.5"
+                                  data-tone={c.percent === 100 ? "success" : action.tone === "danger" ? "danger" : undefined}
+                                  aria-label={`${c.done} of ${c.total} intake items complete`}
+                                >
+                                  <span style={{ width: `${c.percent}%` }} />
                                 </div>
-                              </td>
-                              <td>{p.municipality ?? p.county ?? "—"}</td>
-                              <td>{p.permit_type ?? "—"}</td>
-                              <td>
-                                <Tag tone={toneForStatus(STATUS_LABEL[p.status] ?? p.status)}>
-                                  {STATUS_LABEL[p.status] ?? p.status}
-                                </Tag>
-                              </td>
-                              <td>{vendor ?? "Cleard"}</td>
-                              <td className="tabular-nums">{new Date(p.updated_at).toLocaleDateString()}</td>
-                              <td>
-                                <div className="flex items-center gap-1.5">
-                                  {internal && escalatedIds.has(p.id) && (
-                                    <Tag tone="danger">
-                                      <Flag className="mr-1 inline h-2.5 w-2.5" /> Escalated
-                                    </Tag>
-                                  )}
-                                  {!vendor && c.missingFields.length > 0 && (
-                                    <Tag tone="danger">
-                                      <AlertTriangle className="mr-1 inline h-2.5 w-2.5" />
-                                      {c.missingFields.length}
-                                    </Tag>
-                                  )}
-                                  {!vendor && c.missingDocs.length > 0 && (
-                                    <Tag tone="neutral">
-                                      <FileText className="mr-1 inline h-2.5 w-2.5" />
-                                      {c.missingDocs.length}
-                                    </Tag>
-                                  )}
-                                  {c.percent === 100 && <Tag tone="success">Complete</Tag>}
-                                </div>
-                              </td>
-                            </tr>
-                            {isOpen && (
-                              <tr>
-                                <td colSpan={9} style={{ background: CDS.off, padding: 0 }}>
-                                  <PermitDetail
-                                    permit={p}
-                                    completeness={c}
-                                    vendor={vendor}
-                                    updating={updatingId === p.id}
-                                    onStatus={(s) => changeStatus(p.id, s)}
-                                  />
-                                </td>
-                              </tr>
-                            )}
-                          </Fragment>
-                        );
-                      })}
-                    </tbody>
-                  </table>
-                </div>
-              </Reveal>
+                              )}
+                            </div>
+
+                            <div className="flex items-center gap-3 lg:flex-col lg:items-end">
+                              <Tag tone={toneForStatus(stageLabel)}>{stageLabel}</Tag>
+                              <Link
+                                to="/portal/permits/$id"
+                                params={{ id: p.id }}
+                                onClick={(e) => e.stopPropagation()}
+                                className="p-btn p-btn-quiet p-btn-sm ml-auto lg:ml-0"
+                              >
+                                Open <ChevronRight className="h-3.5 w-3.5" strokeWidth={2} />
+                              </Link>
+                            </div>
+                          </article>
+                        </Reveal>
+                      );
+                    })}
+                  </ul>
+                )}
+              </section>
             )}
           </div>
         )}
       </PageShell>
+
+      <SidePanel
+        open={selected !== null}
+        onClose={() => setSelectedId(null)}
+        title={selected ? selected.job_address || selected.project_name : ""}
+        meta={
+          selected
+            ? `${selected.permit_number ?? selected.id.slice(0, 8).toUpperCase()} · ${STATUS_LABEL[selected.status] ?? selected.status}`
+            : undefined
+        }
+        width={440}
+        footer={
+          selected && (
+            <Link to="/portal/permits/$id" params={{ id: selected.id }} className="p-btn p-btn-primary">
+              Open permit <ArrowUpRight className="h-3.5 w-3.5" strokeWidth={1.75} />
+            </Link>
+          )
+        }
+      >
+        {selected && (
+          <PermitDetail
+            permit={selected}
+            completeness={permitCompleteness(selected)}
+            vendor={getVendor(selected.project_name)}
+            updating={updatingId === selected.id}
+            onStatus={(s) => changeStatus(selected.id, s)}
+          />
+        )}
+      </SidePanel>
     </PortalShell>
   );
 }
 
-function SortTh({
-  label,
-  k,
-  sort,
-  onSort,
-}: {
-  label: string;
-  k: SortKey;
-  sort: { key: SortKey; dir: "asc" | "desc" };
-  onSort: (k: SortKey) => void;
-}) {
-  const active = sort.key === k;
-  return (
-    <th
-      className="cds-sortable"
-      aria-sort={active ? (sort.dir === "asc" ? "ascending" : "descending") : "none"}
-      onClick={() => onSort(k)}
-      style={{ color: active ? CDS.black : undefined }}
-    >
-      {label}
-      <span style={{ marginLeft: 4, opacity: active ? 1 : 0.25 }}>
-        {active && sort.dir === "desc" ? "▾" : "▴"}
-      </span>
-    </th>
-  );
+function toneColor(tone: "danger" | "success" | "info" | "neutral") {
+  switch (tone) {
+    case "danger":
+      return CDS.red;
+    case "success":
+      return CDS.tealText;
+    case "info":
+      return CDS.copper;
+    default:
+      return CDS.gray;
+  }
 }
 
 function PermitDetail({
@@ -547,41 +587,76 @@ function PermitDetail({
   ].filter((t) => Boolean(t.at));
 
   return (
-    <div className="grid grid-cols-1 gap-px lg:grid-cols-3" style={{ background: CDS.border }}>
-      <div style={{ background: CDS.off, padding: 16 }}>
+    <div className="space-y-6">
+      <section className="grid grid-cols-2 gap-3">
+        <KV label="Jurisdiction">{permit.municipality ?? permit.county ?? "—"}</KV>
+        <KV label="Permit type">{permit.permit_type ?? "—"}</KV>
+        <KV label="Assigned to">{vendor ?? "Cleard"}</KV>
+        <KV label="Project">{permit.project_name || "—"}</KV>
+      </section>
+
+      {!vendor && (
+        <section>
+          <DetailHead>Intake completeness</DetailHead>
+          <div className="flex items-center gap-3">
+            <div className="p-progress" data-tone={completeness.percent === 100 ? "success" : undefined}>
+              <span style={{ width: `${completeness.percent}%` }} />
+            </div>
+            <span className="shrink-0 tabular-nums text-[12px] text-muted-foreground">
+              {completeness.done}/{completeness.total}
+            </span>
+          </div>
+          {completeness.missingFields.length > 0 && (
+            <ul className="mt-3 space-y-1">
+              {completeness.missingFields.map((f) => (
+                <li key={f.key} className="flex items-center gap-2 text-[12.5px]">
+                  <AlertTriangle className="h-3.5 w-3.5 shrink-0" style={{ color: CDS.red }} strokeWidth={1.75} />
+                  <span className="truncate">{f.label}</span>
+                </li>
+              ))}
+            </ul>
+          )}
+          {completeness.missingDocs.length > 0 && (
+            <ul className="mt-2 space-y-1">
+              {completeness.missingDocs.map((f) => (
+                <li key={f.key} className="flex items-center gap-2 text-[12.5px] text-muted-foreground">
+                  <FileText className="h-3.5 w-3.5 shrink-0" style={{ color: CDS.copper }} strokeWidth={1.75} />
+                  <span className="truncate">{f.label}</span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+      )}
+
+      <section>
         <DetailHead>Timeline</DetailHead>
-        <ul className="space-y-1.5">
+        <ol className="relative ml-1.5 space-y-3 border-l pl-4" style={{ borderColor: "rgba(0,0,0,0.10)" }}>
           {timeline.map((t) => (
-            <li key={t.label} className="flex items-baseline gap-2" style={{ fontSize: 12.5, color: CDS.gray }}>
-              <span style={{ width: 8, height: 8, background: CDS.teal, display: "inline-block" }} />
-              <span style={{ color: CDS.black, fontWeight: 500 }}>{t.label}</span>
-              <span className="ml-auto tabular-nums" style={{ fontSize: 11.5 }}>
+            <li key={t.label} className="relative flex items-baseline gap-2 text-[12.5px]">
+              <span
+                className="absolute -left-[21px] top-1 h-2.5 w-2.5 rounded-full border-2"
+                style={{ borderColor: CDS.copper, background: "#FFFFFF" }}
+              />
+              <span className="font-medium">{t.label}</span>
+              <span className="ml-auto tabular-nums text-muted-foreground">
                 {new Date(t.at as string).toLocaleDateString()}
               </span>
             </li>
           ))}
-        </ul>
-        <div className="mt-3 flex items-center gap-2">
-          <div className="h-1 min-w-0 flex-1" style={{ background: CDS.off2 }}>
-            <div style={{ height: "100%", width: `${completeness.percent}%`, background: CDS.teal }} />
-          </div>
-          <span className="tabular-nums" style={{ fontSize: 11, color: CDS.gray }}>
-            {completeness.done}/{completeness.total}
-          </span>
-        </div>
-      </div>
+        </ol>
+      </section>
 
-      <div style={{ background: CDS.off, padding: 16 }}>
+      <section>
         <DetailHead>Documents</DetailHead>
         {docs.length === 0 ? (
-          <p style={{ fontSize: 12.5, color: CDS.grayLt }}>No documents attached.</p>
+          <p className="text-[12.5px] text-muted-foreground">No documents attached.</p>
         ) : (
-          <ul className="space-y-1.5">
-            {docs.slice(0, 6).map((d) => (
-              <li key={d.key} className="flex min-w-0 items-center gap-2" style={{ fontSize: 12.5 }}>
-                <span className="min-w-0 flex-1 truncate" style={{ color: CDS.black }}>
-                  {d.label}
-                </span>
+          <ul className="p-divide p-surface">
+            {docs.map((d) => (
+              <li key={d.key} className="flex min-w-0 items-center gap-2 px-3 py-2 text-[12.5px]">
+                <FileText className="h-3.5 w-3.5 shrink-0 text-muted-foreground" strokeWidth={1.75} />
+                <span className="min-w-0 flex-1 truncate">{d.label}</span>
                 <Tag tone={toneForStatus(d.status === "uploaded" ? "verified" : d.status)}>
                   {d.status.replace("_", " ")}
                 </Tag>
@@ -589,54 +664,38 @@ function PermitDetail({
             ))}
           </ul>
         )}
-      </div>
+      </section>
 
-      <div style={{ background: CDS.off, padding: 16 }}>
-        <DetailHead>Notes & controls</DetailHead>
-        <p style={{ fontSize: 12.5, color: CDS.gray }}>
+      <section>
+        <DetailHead>Notes</DetailHead>
+        <p className="text-[12.5px] text-muted-foreground">
           {permit.additional_notes || permit.description || "No notes on this permit."}
         </p>
         {vendor && (
-          <p style={{ fontSize: 11.5, color: CDS.grayLt, marginTop: 6 }}>
-            Managed by {vendor} — record copy only.
-          </p>
+          <p className="mt-1.5 text-[12px] text-muted-foreground">Managed by {vendor} — record copy only.</p>
         )}
-        <div className="mt-3 flex flex-wrap items-center gap-2">
-          <select
-            value={permit.status}
-            disabled={updating}
-            onChange={(e) => onStatus(e.target.value as PermitStatus)}
-            aria-label="Change status"
-            style={{ fontSize: 13, padding: "8px 10px" }}
-          >
-            {STATUS_OPTIONS.map((s) => (
-              <option key={s.value} value={s.value}>
-                {s.label}
-              </option>
-            ))}
-          </select>
-          <Link to="/portal/permits/$id" params={{ id: permit.id }} className="p-btn p-btn-ghost">
-            Open permit <ArrowUpRight className="h-3.5 w-3.5" strokeWidth={1.75} />
-          </Link>
-        </div>
-      </div>
+      </section>
+
+      <section>
+        <DetailHead>Status</DetailHead>
+        <select
+          value={permit.status}
+          disabled={updating}
+          onChange={(e) => onStatus(e.target.value as PermitStatus)}
+          aria-label="Change status"
+          className="w-full"
+        >
+          {STATUS_OPTIONS.map((s) => (
+            <option key={s.value} value={s.value}>
+              {s.label}
+            </option>
+          ))}
+        </select>
+      </section>
     </div>
   );
 }
 
 function DetailHead({ children }: { children: React.ReactNode }) {
-  return (
-    <div
-      style={{
-        fontSize: 10,
-        fontWeight: 700,
-        letterSpacing: "0.08em",
-        textTransform: "uppercase",
-        color: CDS.grayLt,
-        marginBottom: 8,
-      }}
-    >
-      {children}
-    </div>
-  );
+  return <div className="p-eyebrow mb-2">{children}</div>;
 }

@@ -6,8 +6,8 @@
  * detail panel, skeletons and empty states. No data fetching, no business
  * logic, no routing decisions.
  *
- * Palette is fixed: teal #673147 · ink #2F4F4F · off-white #F3EAD9 ·
- * border #E0D3BC. Radius is always 0.
+ * Palette: White Sand #FFFFFF · Ink #2B1620 · True Black #000000 · Copper
+ * #9C6B3F (accent only). Radius is 8px. Type is Instrument Sans.
  */
 import {
   useEffect,
@@ -16,23 +16,27 @@ import {
   type CSSProperties,
   type ReactNode,
 } from "react";
-import { X } from "lucide-react";
+import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export const CDS = {
-  white: "#FAF3E6",
-  off: "#F3EAD9",
-  off2: "#EFE6D6",
-  black: "#2F4F4F",
-  gray: "#5C7370",
-  grayLt: "#8B9A97",
-  teal: "#673147",
-  tealDark: "#52243A",
-  tealText: "#4E6B5C",
-  border: "#E0D3BC",
-  red: "#8C3B3B",
-  blue: "#673147",
-  purple: "#7a5c8a",
+  white: "#FFFFFF",
+  off: "#F6F6F6",
+  off2: "#EFEFEF",
+  black: "#000000",
+  ink: "#2B1620",
+  gray: "rgba(0,0,0,0.62)",
+  grayLt: "rgba(0,0,0,0.45)",
+  copper: "#9C6B3F",
+  copperDark: "#7F562F",
+  copperSoft: "rgba(156,107,63,0.10)",
+  teal: "#9C6B3F",
+  tealDark: "#7F562F",
+  tealText: "#2E7D32",
+  border: "rgba(0,0,0,0.10)",
+  red: "#C0392B",
+  blue: "#9C6B3F",
+  purple: "#9C6B3F",
 } as const;
 
 /* ───────────────────────── Scroll reveal ───────────────────────── */
@@ -88,23 +92,23 @@ export function Reveal({
   );
 }
 
-/* ───────────────────────── KPI tiles ───────────────────────── */
+/* ───────────────────────── Stat strip ───────────────────────── */
 
 export type KpiTone = "ink" | "teal" | "red" | "blue" | "gray";
 
-const kpiColor: Record<KpiTone, string> = {
-  ink: CDS.black,
-  teal: CDS.tealText,
-  red: CDS.red,
-  blue: CDS.blue,
-  gray: CDS.gray,
+const kpiTone: Record<KpiTone, string> = {
+  ink: "neutral",
+  teal: "success",
+  red: "danger",
+  blue: "accent",
+  gray: "muted",
 };
 
-/** Top-of-page KPI row. 2 up on mobile, 4 up from md. */
+/** Top-of-page numbers: one quiet line, not a grid of boxes. */
 export function KpiBar({ children, className }: { children: ReactNode; className?: string }) {
   return (
     <Reveal className={cn("mb-4", className)}>
-      <div className="grid grid-cols-2 gap-2 md:grid-cols-4">{children}</div>
+      <div className="p-stat-strip">{children}</div>
     </Reveal>
   );
 }
@@ -127,23 +131,12 @@ export function Kpi({
     <Tag
       type={onClick ? "button" : undefined}
       onClick={onClick}
-      className={cn("min-w-0 text-left transition-colors", onClick && "hover:bg-[#F3EAD9]")}
-      style={{ background: CDS.white, border: `1px solid ${CDS.border}`, padding: "16px 20px" }}
+      className={cn("p-stat min-w-0 text-left", onClick && "cursor-pointer hover:opacity-80")}
+      data-tone={kpiTone[tone]}
+      title={typeof context === "string" ? context : undefined}
     >
-      <div
-        className="truncate"
-        style={{ fontSize: 24, fontWeight: 800, letterSpacing: "-0.03em", color: kpiColor[tone] }}
-      >
-        {value}
-      </div>
-      <div className="truncate" style={{ fontSize: 11, color: CDS.grayLt, marginTop: 2 }}>
-        {label}
-      </div>
-      {context && (
-        <div className="truncate" style={{ fontSize: 11, color: CDS.gray, marginTop: 4 }}>
-          {context}
-        </div>
-      )}
+      <span className="p-stat-value tabular-nums">{value}</span>
+      <span className="p-stat-label truncate">{label}</span>
     </Tag>
   );
 }
@@ -158,98 +151,53 @@ export type PipelineStage = {
   countColor?: string;
 };
 
+/** Status filter as a row of chips with counts. null = All. */
 export function StagePipeline({
   stages,
   active,
   onSelect,
+  hideEmpty = false,
 }: {
   stages: PipelineStage[];
   /** null = All */
   active: string | null;
   onSelect: (key: string | null) => void;
+  /** Hide stages with a zero count (the active one always shows). */
+  hideEmpty?: boolean;
 }) {
   const total = stages.reduce((s, st) => s + st.count, 0);
+  const visible = hideEmpty ? stages.filter((s) => s.count > 0 || s.key === active) : stages;
   return (
     <Reveal className="mb-4">
-      <div
-        className="flex min-w-0 overflow-x-auto"
-        style={{ border: `1px solid ${CDS.border}`, background: CDS.off }}
-        role="tablist"
-        aria-label="Permit stages"
-      >
-        <PipelineCell
-          label="All"
-          count={total}
-          selected={active === null}
+      <div className="p-filter-row" role="tablist" aria-label="Filter by stage">
+        <button
+          type="button"
+          role="tab"
+          aria-selected={active === null}
+          data-active={active === null}
+          className="p-filter-chip"
           onClick={() => onSelect(null)}
-        />
-        {stages.map((s) => (
-          <PipelineCell
+        >
+          All <span className="p-count">{total}</span>
+        </button>
+        {visible.map((s) => (
+          <button
             key={s.key}
-            label={s.label}
-            count={s.count}
-            countColor={s.countColor}
-            selected={active === s.key}
+            type="button"
+            role="tab"
+            aria-selected={active === s.key}
+            data-active={active === s.key}
+            data-tone={
+              s.countColor === CDS.red ? "danger" : s.countColor === CDS.tealText ? "success" : undefined
+            }
+            className="p-filter-chip"
             onClick={() => onSelect(active === s.key ? null : s.key)}
-          />
+          >
+            {s.label} <span className="p-count">{s.count}</span>
+          </button>
         ))}
       </div>
     </Reveal>
-  );
-}
-
-function PipelineCell({
-  label,
-  count,
-  countColor,
-  selected,
-  onClick,
-}: {
-  label: string;
-  count: number;
-  countColor?: string;
-  selected: boolean;
-  onClick: () => void;
-}) {
-  return (
-    <button
-      type="button"
-      role="tab"
-      aria-selected={selected}
-      onClick={onClick}
-      className="min-w-[104px] flex-1 text-left transition-colors hover:bg-[#EFE6D6]"
-      style={{
-        background: selected ? CDS.off2 : CDS.off,
-        borderRight: `1px solid ${CDS.border}`,
-        borderBottom: selected ? `3px solid ${CDS.teal}` : "3px solid transparent",
-        padding: "16px 20px",
-      }}
-    >
-      <div
-        className="truncate"
-        style={{
-          fontSize: 10,
-          fontWeight: 700,
-          letterSpacing: "0.08em",
-          textTransform: "uppercase",
-          color: CDS.grayLt,
-        }}
-      >
-        {label}
-      </div>
-      <div
-        className="tabular-nums"
-        style={{
-          fontSize: 28,
-          fontWeight: 800,
-          letterSpacing: "-0.04em",
-          color: countColor ?? CDS.black,
-          marginTop: 2,
-        }}
-      >
-        {count}
-      </div>
-    </button>
   );
 }
 
@@ -267,6 +215,10 @@ export function isoDay(d: Date) {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 }
 
+/**
+ * Compact date filter: a "‹ week ›" pager plus one chip per day that has
+ * inspections. No calendar grid — days with nothing scheduled don't render.
+ */
 export function WeekStrip({
   weekStart,
   counts,
@@ -287,93 +239,57 @@ export function WeekStrip({
     d.setDate(d.getDate() + i);
     return d;
   });
+  const weekEnd = days[6];
+  const fmt = (d: Date) => d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  const busy = days.filter((d) => (counts[isoDay(d)] ?? 0) > 0 || isoDay(d) === selected);
 
   return (
     <Reveal className="mb-4">
-      <div className="flex min-w-0 items-stretch" style={{ border: `1px solid ${CDS.border}` }}>
-        <StripArrow label="Previous week" onClick={() => onShift(-1)}>
-          ‹
-        </StripArrow>
-        <div className="grid min-w-0 flex-1 grid-cols-7">
-          {days.map((d) => {
+      <div className="flex flex-wrap items-center gap-2">
+        <div className="p-seg" aria-label="Week">
+          <button type="button" aria-label="Previous week" onClick={() => onShift(-1)}>
+            <ChevronLeft className="h-3.5 w-3.5" strokeWidth={2} />
+          </button>
+          <span className="px-2 text-[13px] font-medium tabular-nums" style={{ color: CDS.black }}>
+            {fmt(weekStart)} – {fmt(weekEnd)}
+          </span>
+          <button type="button" aria-label="Next week" onClick={() => onShift(1)}>
+            <ChevronRight className="h-3.5 w-3.5" strokeWidth={2} />
+          </button>
+        </div>
+        <div className="p-filter-row">
+          <button
+            type="button"
+            className="p-filter-chip"
+            data-active={selected === null}
+            onClick={() => onSelect(null)}
+          >
+            All days
+          </button>
+          {busy.map((d) => {
             const iso = isoDay(d);
             const n = counts[iso] ?? 0;
-            const isToday = iso === today;
-            const isSelected = selected === iso;
             return (
               <button
                 key={iso}
                 type="button"
-                onClick={() => onSelect(isSelected ? null : iso)}
-                className="min-w-0 px-2 py-3 text-center transition-colors"
-                style={{
-                  background: isToday ? CDS.black : isSelected ? CDS.off2 : CDS.white,
-                  color: isToday ? CDS.white : CDS.black,
-                  borderRight: `1px solid ${CDS.border}`,
-                  borderBottom: isSelected ? `3px solid ${CDS.teal}` : "3px solid transparent",
-                }}
+                className="p-filter-chip"
+                data-active={selected === iso}
+                onClick={() => onSelect(selected === iso ? null : iso)}
               >
-                <div style={{ fontSize: 20, fontWeight: 800, letterSpacing: "-0.03em" }}>
-                  {d.getDate()}
-                </div>
-                <div
-                  style={{
-                    fontSize: 10,
-                    textTransform: "uppercase",
-                    letterSpacing: "0.08em",
-                    color: isToday ? "rgba(255,255,255,0.65)" : CDS.grayLt,
-                    marginTop: 2,
-                  }}
-                >
-                  {d.toLocaleDateString("en-US", { weekday: "short" })}
-                </div>
-                <div style={{ marginTop: 6, minHeight: 16 }}>
-                  {n > 0 && (
-                    <span
-                      style={{
-                        background: CDS.teal,
-                        color: CDS.black,
-                        fontSize: 10,
-                        fontWeight: 700,
-                        padding: "1px 6px",
-                        display: "inline-block",
-                      }}
-                    >
-                      {n}
-                    </span>
-                  )}
-                </div>
+                {iso === today ? "Today" : d.toLocaleDateString("en-US", { weekday: "short", day: "numeric" })}
+                <span className="p-count">{n}</span>
               </button>
             );
           })}
+          {busy.length === 0 && (
+            <span className="self-center text-[12px]" style={{ color: CDS.grayLt }}>
+              Nothing scheduled this week
+            </span>
+          )}
         </div>
-        <StripArrow label="Next week" onClick={() => onShift(1)}>
-          ›
-        </StripArrow>
       </div>
     </Reveal>
-  );
-}
-
-function StripArrow({
-  children,
-  label,
-  onClick,
-}: {
-  children: ReactNode;
-  label: string;
-  onClick: () => void;
-}) {
-  return (
-    <button
-      type="button"
-      aria-label={label}
-      onClick={onClick}
-      className="shrink-0 px-3 transition-colors hover:bg-[#F3EAD9]"
-      style={{ background: CDS.white, color: CDS.gray, fontSize: 18, lineHeight: 1 }}
-    >
-      {children}
-    </button>
   );
 }
 
@@ -405,8 +321,9 @@ export function DropZone({
       }}
       className="text-center"
       style={{
-        border: `1.5px dashed ${over ? CDS.teal : CDS.border}`,
-        background: over ? "rgba(103, 49, 71,0.04)" : CDS.off,
+        border: `1.5px dashed ${over ? CDS.copper : "rgba(0,0,0,0.18)"}`,
+        borderRadius: 8,
+        background: over ? CDS.copperSoft : CDS.off,
         padding: 28,
       }}
     >
@@ -415,7 +332,7 @@ export function DropZone({
         <button
           type="button"
           onClick={() => inputRef.current?.click()}
-          style={{ color: CDS.black, fontWeight: 600, background: "none", border: "none" }}
+          style={{ color: CDS.copper, fontWeight: 600, background: "none", border: "none", textDecoration: "underline", textUnderlineOffset: 3 }}
         >
           browse
         </button>
@@ -503,7 +420,7 @@ export function SidePanel({
             type="button"
             aria-label="Close panel"
             onClick={onClose}
-            className="shrink-0 p-1 transition-colors hover:bg-[#F3EAD9]"
+            className="shrink-0 rounded-lg p-1.5 transition-colors hover:bg-[#F6F6F6]"
             style={{ color: CDS.gray }}
           >
             <X className="h-4 w-4" strokeWidth={1.75} />
@@ -558,7 +475,7 @@ export function SkeletonCards({ count = 6 }: { count?: number }) {
   return (
     <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
       {Array.from({ length: count }).map((_, i) => (
-        <div key={i} style={{ background: CDS.white, border: `1px solid ${CDS.border}`, padding: 20 }}>
+        <div key={i} style={{ background: CDS.white, border: `1px solid ${CDS.border}`, borderRadius: 8, padding: 20 }}>
           <Skeleton height={15} width="55%" />
           <div className="mt-2">
             <Skeleton height={11} width="38%" />
@@ -588,11 +505,11 @@ export function CdsEmpty({
   return (
     <div
       className="flex flex-col items-center justify-center text-center"
-      style={{ padding: "56px 24px", background: CDS.white, border: `1px solid ${CDS.border}` }}
+      style={{ padding: "56px 24px", background: CDS.white, border: `1px solid ${CDS.border}`, borderRadius: 8 }}
     >
       <div
         className="grid place-items-center"
-        style={{ width: 48, height: 48, background: CDS.off, border: `1px solid ${CDS.border}`, color: CDS.grayLt }}
+        style={{ width: 48, height: 48, background: CDS.copperSoft, borderRadius: 8, color: CDS.copper }}
       >
         {icon}
       </div>
@@ -609,12 +526,12 @@ export function CdsEmpty({
 
 export type TagTone = "success" | "danger" | "neutral" | "info" | "progress";
 
-const tagStyle: Record<TagTone, CSSProperties> = {
-  success: { background: "rgba(103, 49, 71,0.12)", color: CDS.tealText },
-  danger: { background: "rgba(220,60,60,0.1)", color: CDS.red },
-  neutral: { background: "rgba(0,0,0,0.06)", color: CDS.gray },
-  info: { background: "rgba(103, 49, 71,0.1)", color: CDS.blue },
-  progress: { background: "rgba(122, 92, 138,0.1)", color: CDS.purple },
+const tagClass: Record<TagTone, string> = {
+  success: "p-chip-success",
+  danger: "p-chip-danger",
+  neutral: "p-chip-neutral",
+  info: "p-chip-info",
+  progress: "p-chip-info",
 };
 
 export function Tag({
@@ -626,21 +543,7 @@ export function Tag({
   children: ReactNode;
   className?: string;
 }) {
-  return (
-    <span
-      className={cn("inline-block whitespace-nowrap", className)}
-      style={{
-        ...tagStyle[tone],
-        fontSize: 10,
-        fontWeight: 700,
-        letterSpacing: "0.06em",
-        textTransform: "uppercase",
-        padding: "3px 8px",
-      }}
-    >
-      {children}
-    </span>
-  );
+  return <span className={cn("p-chip", tagClass[tone], className)}>{children}</span>;
 }
 
 /** Status label → tag tone, following the locked badge palette. */
@@ -680,7 +583,8 @@ export function CdsCard({
         className={cn("cds-card-base h-full min-w-0", interactive && "cds-card-hover")}
         style={{
           background: CDS.white,
-          border: `1px solid ${alert ? "rgba(220,60,60,0.3)" : CDS.border}`,
+          border: `1px solid ${alert ? "rgba(192,57,43,0.35)" : CDS.border}`,
+          borderRadius: 8,
           padding: 20,
           cursor: onClick ? "pointer" : undefined,
           ...style,

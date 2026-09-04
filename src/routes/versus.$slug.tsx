@@ -43,10 +43,10 @@ function Yes() {
   return (
     <span
       className="inline-flex items-center justify-center h-5 w-5 rounded-full"
-      style={{ background: "color-mix(in oklab, var(--green, #4E6B5C) 18%, transparent)" }}
+      style={{ background: "color-mix(in oklab, var(--green, #2E7D32) 18%, transparent)" }}
       aria-label="Included"
     >
-      <Check className="h-3 w-3" style={{ color: "var(--green, #4E6B5C)" }} strokeWidth={3} />
+      <Check className="h-3 w-3" style={{ color: "var(--green, #2E7D32)" }} strokeWidth={3} />
     </span>
   );
 }
@@ -54,7 +54,7 @@ function Yes() {
 function No() {
   return (
     <span className="inline-flex items-center justify-center h-5 w-5" aria-label="Not included">
-      <X className="h-3.5 w-3.5" style={{ color: "#8C3B3B", opacity: 0.7 }} strokeWidth={2.5} />
+      <X className="h-3.5 w-3.5" style={{ color: "#C0392B", opacity: 0.7 }} strokeWidth={2.5} />
     </span>
   );
 }

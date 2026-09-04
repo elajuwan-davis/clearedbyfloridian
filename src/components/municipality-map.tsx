@@ -238,7 +238,7 @@ export function MunicipalityMapHero() {
   return (
     <section
       className="relative rounded-sm border overflow-hidden"
-      style={{ background: "#FFFFFF", borderColor: "rgba(47, 79, 79,0.15)" }}
+      style={{ background: "#FFFFFF", borderColor: "rgba(0,0,0,0.15)" }}
     >
       <div className="grid md:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)] gap-0">
         <div className="p-8 md:p-10 flex flex-col justify-center" style={{ background: OBSIDIAN, color: "#FFFFFF" }}>
@@ -277,7 +277,7 @@ export function MunicipalityMapHero() {
           <MunicipalityMap />
         </div>
       </div>
-      <div className="border-t px-6 py-4 flex flex-wrap gap-x-6 gap-y-2" style={{ borderColor: "rgba(47, 79, 79,0.12)" }}>
+      <div className="border-t px-6 py-4 flex flex-wrap gap-x-6 gap-y-2" style={{ borderColor: "rgba(0,0,0,0.12)" }}>
         {REGISTERED_MUNIS.map((m) => (
           <div key={m.name} className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full" style={{ background: OBSIDIAN }} />

@@ -2,8 +2,8 @@ import { useState } from "react";
 import { Copy, Link2, Loader2, X } from "lucide-react";
 import { createDeckInvite, listDeckInvites, revokeDeckInvite } from "@/lib/deck-invites.functions";
 
-const SLATE = "#2F4F4F";
-const OAT = "#FAF3E6";
+const SLATE = "#000000";
+const OAT = "#FFFFFF";
 
 type Invite = {
   id: string;
@@ -109,7 +109,7 @@ export function DeckSharePanel({ onClose }: { onClose: () => void }) {
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Admin password"
               className="flex-1 px-3 py-2.5 text-sm outline-none"
-              style={{ border: "1px solid rgba(47,79,79,0.35)", background: "#fff" }}
+              style={{ border: "1px solid rgba(0,0,0,0.35)", background: "#fff" }}
             />
             <button type="submit" disabled={busy} className="px-4 py-2.5 text-[13.5px]" style={{ background: SLATE, color: OAT, fontWeight: 600 }}>
               {busy ? "Checking…" : "Continue"}
@@ -130,7 +130,7 @@ export function DeckSharePanel({ onClose }: { onClose: () => void }) {
                 onChange={(e) => setLabel(e.target.value)}
                 placeholder="Who is this for? e.g. Jane Doe, Acme Ventures"
                 className="flex-1 px-3 py-2.5 text-sm outline-none"
-                style={{ border: "1px solid rgba(47,79,79,0.35)", background: "#fff" }}
+                style={{ border: "1px solid rgba(0,0,0,0.35)", background: "#fff" }}
               />
               <button
                 type="submit"
@@ -149,7 +149,7 @@ export function DeckSharePanel({ onClose }: { onClose: () => void }) {
                 const expired = new Date(inv.expires_at).getTime() <= Date.now();
                 const dead = expired || inv.revoked;
                 return (
-                  <div key={inv.id} className="p-3" style={{ border: "1px solid rgba(47,79,79,0.25)", opacity: dead ? 0.55 : 1 }}>
+                  <div key={inv.id} className="p-3" style={{ border: "1px solid rgba(0,0,0,0.25)", opacity: dead ? 0.55 : 1 }}>
                     <div className="flex items-center justify-between gap-3">
                       <div className="text-[13.5px]" style={{ fontWeight: 600 }}>
                         {inv.label}
@@ -163,19 +163,19 @@ export function DeckSharePanel({ onClose }: { onClose: () => void }) {
                         readOnly
                         value={linkFor(inv.token)}
                         className="min-w-[240px] flex-1 px-2 py-1.5 text-[12px]"
-                        style={{ border: "1px solid rgba(47,79,79,0.2)", background: "#fff" }}
+                        style={{ border: "1px solid rgba(0,0,0,0.2)", background: "#fff" }}
                       />
-                      <button type="button" onClick={() => copy(linkFor(inv.token))} className="inline-flex items-center gap-1 px-2 py-1.5 text-[12px]" style={{ border: "1px solid rgba(47,79,79,0.35)" }}>
+                      <button type="button" onClick={() => copy(linkFor(inv.token))} className="inline-flex items-center gap-1 px-2 py-1.5 text-[12px]" style={{ border: "1px solid rgba(0,0,0,0.35)" }}>
                         <Copy className="h-3.5 w-3.5" /> Link
                       </button>
-                      <span className="px-2 py-1.5 text-[12px] tracking-[0.18em]" style={{ background: "rgba(47,79,79,0.1)" }}>
+                      <span className="px-2 py-1.5 text-[12px] tracking-[0.18em]" style={{ background: "rgba(0,0,0,0.1)" }}>
                         {inv.passcode}
                       </span>
-                      <button type="button" onClick={() => copy(inv.passcode)} className="inline-flex items-center gap-1 px-2 py-1.5 text-[12px]" style={{ border: "1px solid rgba(47,79,79,0.35)" }}>
+                      <button type="button" onClick={() => copy(inv.passcode)} className="inline-flex items-center gap-1 px-2 py-1.5 text-[12px]" style={{ border: "1px solid rgba(0,0,0,0.35)" }}>
                         <Copy className="h-3.5 w-3.5" /> Code
                       </button>
                       {!dead && (
-                        <button type="button" onClick={() => void revoke(inv.id)} className="px-2 py-1.5 text-[12px]" style={{ border: "1px solid rgba(103,49,71,0.5)", color: "#673147" }}>
+                        <button type="button" onClick={() => void revoke(inv.id)} className="px-2 py-1.5 text-[12px]" style={{ border: "1px solid rgba(156,107,63,0.5)", color: "#9C6B3F" }}>
                           Revoke
                         </button>
                       )}
@@ -193,7 +193,7 @@ export function DeckSharePanel({ onClose }: { onClose: () => void }) {
         )}
 
         {error && (
-          <div className="mt-3 text-[12.5px]" style={{ color: "#673147" }}>
+          <div className="mt-3 text-[12.5px]" style={{ color: "#9C6B3F" }}>
             {error}
           </div>
         )}

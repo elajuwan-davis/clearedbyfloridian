@@ -1,44 +1,16 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { Menu, Sun, Moon } from "lucide-react";
+import { Menu } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 
 function LogoMark() {
   return (
     <div
       className="h-8 w-8 rounded-lg flex items-center justify-center text-white font-bold text-sm"
-      style={{ background: "linear-gradient(135deg, var(--brand, #9C6B3F), var(--green, #4E6B5C))" }}
+      style={{ background: "var(--copper)" }}
     >
       C
     </div>
-  );
-}
-
-function ThemeToggle() {
-  const [dark, setDark] = React.useState(
-    () => typeof document !== "undefined" && document.documentElement.classList.contains("dark"),
-  );
-  const toggle = () => {
-    const next = !dark;
-    setDark(next);
-    document.documentElement.classList.toggle("dark", next);
-    try {
-      localStorage.setItem("cleard-theme", next ? "dark" : "light");
-    } catch {
-      /* storage unavailable */
-    }
-  };
-  return (
-    <button
-      type="button"
-      onClick={toggle}
-      className="grid place-items-center h-8 w-8 rounded-md border transition-colors hover:bg-secondary"
-      style={{ borderColor: "var(--border)", color: "var(--muted-foreground)" }}
-      title={dark ? "Light mode" : "Dark mode"}
-      aria-label={dark ? "Light mode" : "Dark mode"}
-    >
-      {dark ? <Sun className="h-4 w-4" strokeWidth={1.5} /> : <Moon className="h-4 w-4" strokeWidth={1.5} />}
-    </button>
   );
 }
 
@@ -69,10 +41,9 @@ export function SiteHeader() {
               {l.label}
             </Link>
           ))}
-          <ThemeToggle />
           <Link
             to="/portal"
-            className="text-sm font-mono uppercase tracking-[0.18em] text-foreground border hairline px-3 py-1.5 hover:bg-secondary transition-colors"
+            className="p-btn p-btn-secondary p-btn-sm"
           >
             Client portal
           </Link>
@@ -106,7 +77,6 @@ export function SiteHeader() {
               </nav>
               <div className="p-4 border-t hairline space-y-3">
                 <div className="flex justify-center">
-                  <ThemeToggle />
                 </div>
                 <Link
                   to="/portal"

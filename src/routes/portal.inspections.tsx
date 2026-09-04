@@ -31,19 +31,15 @@ import {
   type PermitInspection,
   type InspectionType,
 } from "@/lib/inspections-api";
-import { PageShell, StatusChip, type MetricTone } from "@/components/ui-kit";
+import { PageShell, Segmented, StatusChip, type MetricTone } from "@/components/ui-kit";
 import {
   CDS,
   CdsCard,
   CdsEmpty,
-  Kpi,
-  KpiBar,
   Reveal,
   SkeletonCards,
   Tag,
-  WeekStrip,
   isoDay,
-  startOfWeek,
 } from "@/components/cds-kit";
 
 export const Route = createFileRoute("/portal/inspections")({
@@ -100,24 +96,28 @@ function InspectionsPage() {
     void refresh();
   }, [refresh]);
 
-  const [weekStart, setWeekStart] = useState(() => startOfWeek(new Date()));
-  const [selectedDay, setSelectedDay] = useState<string | null>(null);
+  type ResultFilter = "all" | "today" | "scheduled" | "passed" | "failed";
+  const [filter, setFilter] = useState<ResultFilter>("all");
 
   const dayOf = (i: PermitInspection) => i.scheduled_date || i.requested_date || "";
+  const isOpen = (r: PermitInspection) => r.result === "pending" || !r.result;
+  const isFailed = (r: PermitInspection) => r.result === "failed" || r.result === "reinspect";
 
-  const dayCounts = useMemo(() => {
-    const out: Record<string, number> = {};
-    for (const r of rows) {
-      const d = dayOf(r);
-      if (d) out[d] = (out[d] ?? 0) + 1;
+  const visible = useMemo(() => {
+    const today = isoDay(new Date());
+    switch (filter) {
+      case "today":
+        return rows.filter((r) => dayOf(r) === today);
+      case "scheduled":
+        return rows.filter(isOpen);
+      case "passed":
+        return rows.filter((r) => r.result === "passed");
+      case "failed":
+        return rows.filter(isFailed);
+      default:
+        return rows;
     }
-    return out;
-  }, [rows]);
-
-  const visible = useMemo(
-    () => (selectedDay ? rows.filter((r) => dayOf(r) === selectedDay) : rows),
-    [rows, selectedDay],
-  );
+  }, [rows, filter]);
 
   const { upcoming, past } = useMemo(() => {
     const up: PermitInspection[] = [];
@@ -133,16 +133,16 @@ function InspectionsPage() {
     const today = isoDay(new Date());
     return {
       today: rows.filter((r) => dayOf(r) === today).length,
-      scheduled: rows.filter((r) => r.result === "pending" || !r.result).length,
+      scheduled: rows.filter(isOpen).length,
       passed: rows.filter((r) => r.result === "passed").length,
-      failed: rows.filter((r) => r.result === "failed" || r.result === "reinspect").length,
+      failed: rows.filter(isFailed).length,
     };
   }, [rows]);
 
   const live = useMemo(() => {
     const today = isoDay(new Date());
-    return rows.find((r) => dayOf(r) === today && (r.result === "pending" || !r.result)) ?? null;
-  }, [rows]);
+    return visible.find((r) => dayOf(r) === today && (r.result === "pending" || !r.result)) ?? null;
+  }, [visible]);
 
   return (
     <>
@@ -156,26 +156,19 @@ function InspectionsPage() {
           </button>
         }
       >
-        <KpiBar>
-          <Kpi label="Today" value={stats.today} />
-          <Kpi label="Scheduled" value={stats.scheduled} tone="blue" />
-          <Kpi label="Passed" value={stats.passed} tone="teal" />
-          <Kpi label="Failed / reinspect" value={stats.failed} tone={stats.failed > 0 ? "red" : "gray"} />
-        </KpiBar>
-
-        <WeekStrip
-          weekStart={weekStart}
-          counts={dayCounts}
-          selected={selectedDay}
-          onSelect={setSelectedDay}
-          onShift={(weeks) =>
-            setWeekStart((w) => {
-              const next = new Date(w);
-              next.setDate(next.getDate() + weeks * 7);
-              return next;
-            })
-          }
-        />
+        <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
+          <Segmented<ResultFilter>
+            value={filter}
+            onChange={setFilter}
+            options={[
+              { value: "all", label: "All", count: rows.length },
+              { value: "today", label: "Today", count: stats.today },
+              { value: "scheduled", label: "Scheduled", count: stats.scheduled },
+              { value: "passed", label: "Passed", count: stats.passed },
+              { value: "failed", label: "Failed / reinspect", count: stats.failed },
+            ]}
+          />
+        </div>
 
         {live && <LiveInspectionCard inspection={live} />}
 
@@ -184,7 +177,7 @@ function InspectionsPage() {
         ) : (
           <div className="space-y-4">
             <InspectionGroup
-              title={selectedDay ? "Scheduled this day" : "Upcoming"}
+              title="Upcoming"
               empty="No upcoming inspections."
               rows={upcoming}
               isAdmin={session.isAdmin}
@@ -252,7 +245,7 @@ function LiveInspectionCard({ inspection }: { inspection: PermitInspection }) {
   const step = inspection.result === "passed" ? 3 : inspection.scheduled_date ? 1 : 0;
   return (
     <Reveal className="mb-4">
-      <div style={{ background: CDS.black, border: `1px solid ${CDS.black}`, padding: 20 }}>
+      <div style={{ background: CDS.ink, border: `1px solid ${CDS.ink}`, borderRadius: 8, padding: 20 }}>
         <div className="flex min-w-0 flex-wrap items-baseline gap-2">
           <span
             style={{
@@ -354,7 +347,7 @@ function InspectionGroup({
                 index={idx}
                 style={{
                   borderLeft: `3px solid ${accent}`,
-                  background: passed ? "rgba(103, 49, 71,0.06)" : CDS.white,
+                  background: passed ? "rgba(156,107,63,0.06)" : CDS.white,
                   padding: 16,
                 }}
               >

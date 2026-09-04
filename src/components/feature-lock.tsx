@@ -164,7 +164,7 @@ export function LockedFeatureButton({
         {label}
       </button>
       {open && (
-        <div className="absolute right-0 z-30 mt-2 w-80 rounded-[3px] border border-obsidian/15 bg-white p-4 shadow-[0_24px_60px_-24px_rgba(47,79,79,0.45)]">
+        <div className="absolute right-0 z-30 mt-2 w-80 rounded-[3px] border border-obsidian/15 bg-white p-4 shadow-[0_24px_60px_-24px_rgba(0,0,0,0.45)]">
           <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-obsidian/55">
             Locked
           </div>

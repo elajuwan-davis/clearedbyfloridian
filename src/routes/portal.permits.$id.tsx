@@ -314,7 +314,7 @@ function PermitDetailPage() {
   const c = permitCompleteness(row);
   const missingFieldKeys = new Set(c.missingFields.map((f) => f.key));
   const hiddenFieldSet = new Set(getHiddenFieldKeys(row));
-  const barColor = c.percent === 100 ? "#3f5749" : c.percent >= 60 ? "#2F4F4F" : c.percent >= 30 ? "#d97706" : "#8c3b3b";
+  const barColor = c.percent === 100 ? "#3f5749" : c.percent >= 60 ? "#000000" : c.percent >= 30 ? "#d97706" : "#8c3b3b";
   const inputBase = "block w-full border bg-white px-3 py-2 text-sm text-obsidian rounded-[3px] focus:outline-none";
   const isHidden = (k: string) => hiddenFieldSet.has(k);
   const inputCls = (k: string) => `${inputBase} ${isHidden(k) ? "border-obsidian/10 bg-obsidian/[0.03] text-obsidian/40 line-through" : missingFieldKeys.has(k) ? "border-red-500/60 focus:border-red-600" : "border-obsidian/15 focus:border-obsidian/40"}`;

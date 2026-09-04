@@ -50,7 +50,7 @@ export function MultiSelectCombobox({
         {values.map((v) => (
           <span
             key={v}
-            className="inline-flex items-center gap-1.5 rounded-[3px] bg-[#2F4F4F] px-2 py-1 text-[11px] font-medium text-white"
+            className="inline-flex items-center gap-1.5 rounded-[3px] bg-[#000000] px-2 py-1 text-[11px] font-medium text-white"
           >
             {v}
             <button
@@ -103,7 +103,7 @@ export function MultiSelectCombobox({
                 className="flex w-full items-start justify-between gap-2 px-3 py-2 text-left text-[13px] text-obsidian hover:bg-obsidian/[0.04]"
               >
                 <span>{o}</span>
-                {selected && <Check className="mt-0.5 h-3.5 w-3.5 text-[#2F4F4F]" />}
+                {selected && <Check className="mt-0.5 h-3.5 w-3.5 text-[#000000]" />}
               </button>
             );
           })}
