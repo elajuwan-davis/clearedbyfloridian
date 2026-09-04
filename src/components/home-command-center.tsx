@@ -28,7 +28,9 @@ const LIGHT = "rgba(43,22,32,0.38)";
 const PLUM = "#000000";
 const PLUM_LT = "#9C6B3F";
 const GREEN = "#000000";
-const GREEN_LT = "#9C6B3F";
+const GREEN_LT = "#2E7D32";
+const WARN_LT = "#B7791F";
+const INFO_LT = "#2563EB";
 const BORDER = "rgba(0,0,0,0.1)";
 const DARK = "#FFFFFF";
 const DARK_2 = "rgba(0,0,0,0.04)";
@@ -120,9 +122,9 @@ const CC_CHECKS = [
 ];
 
 function toneStyle(t: "review" | "ok" | "warn") {
-  if (t === "ok") return { background: "rgba(156,107,63,0.14)", color: "#9C6B3F" };
-  if (t === "warn") return { background: "rgba(156,107,63,0.10)", color: "#9C6B3F" };
-  return { background: "rgba(43,22,32,0.10)", color: "rgba(43,22,32,0.62)" };
+  if (t === "ok") return { background: "rgba(46,125,50,0.12)", color: "#2E7D32" };
+  if (t === "warn") return { background: "rgba(183,121,31,0.12)", color: "#B7791F" };
+  return { background: "rgba(37,99,235,0.10)", color: "#2563EB" };
 }
 
 export function LiveCommandCenter() {
