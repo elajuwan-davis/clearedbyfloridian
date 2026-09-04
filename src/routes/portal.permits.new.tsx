@@ -225,6 +225,13 @@ function NewPermitPage() {
   const [saveEngineerToContacts, setSaveEngineerToContacts] = useState(false);
   const [dispatch, setDispatch] = useState<DispatchResult | null>(null);
   const [dispatchConfirmed, setDispatchConfirmed] = useState(false);
+  // Guards against an overlapping, slower-to-resolve dispatch call (from a
+  // prior address) landing after a newer one and clobbering its data.
+  const dispatchSeqRef = useRef(0);
+  // Tracks the last values *we* auto-filled from dispatch, so a later dispatch
+  // result overwrites its own prior auto-fill but never a value the GC typed.
+  const autoFilledPcnRef = useRef("");
+  const autoFilledLegalDescriptionRef = useRef("");
   const [submittalPackage, setSubmittalPackage] = useState<SubmittalDocSnapshot[]>([]);
   const [scopeDrafting, setScopeDrafting] = useState(false);
   const [scopeDraft, setScopeDraft] = useState<ScopeDraft | null>(null);
@@ -675,21 +682,42 @@ function NewPermitPage() {
         .filter(Boolean)
         .join(", ");
     if (resolvedAddress) {
+      const seq = ++dispatchSeqRef.current;
       const result = await runDispatch({
         address: resolvedAddress,
         city: resolvedMuni || r.city || null,
         county: r.county,
       });
+      // A newer address resolution started (and possibly already finished)
+      // while this one was in flight — this response is stale, drop it.
+      if (seq !== dispatchSeqRef.current) return;
+
       setDispatch(result);
       setDispatchConfirmed(false);
-      // Tax roll data auto-fills the NOC's parcel fields. Owner name is left
-      // alone — the GC's typed owner (from the contract) is the source of
-      // truth, not the tax roll, which can lag a recent sale.
-      setForm((f) => ({
-        ...f,
-        pcn: result.parcel.parcel_id || f.pcn,
-        legalDescription: result.parcel.legal_description || f.legalDescription,
-      }));
+
+      // Tax roll data auto-fills the NOC's parcel fields — but only from a
+      // real lookup. Mock data (config missing, or the live calls failed)
+      // fabricates a plausible-looking parcel ID, which must never reach a
+      // filed legal document. Owner name is left alone regardless — the
+      // GC's typed owner (from the contract) is the source of truth, not
+      // the tax roll, which can lag a recent sale.
+      if (result.source === "live") {
+        const newPcn = result.parcel.parcel_id ?? "";
+        const newLegal = result.parcel.legal_description ?? "";
+        setForm((f) => ({
+          ...f,
+          // Overwrite only a value we auto-filled ourselves (or an empty
+          // field) — never a value the GC typed or corrected by hand.
+          pcn: f.pcn === "" || f.pcn === autoFilledPcnRef.current ? newPcn : f.pcn,
+          legalDescription:
+            f.legalDescription === "" ||
+            f.legalDescription === autoFilledLegalDescriptionRef.current
+              ? newLegal
+              : f.legalDescription,
+        }));
+        autoFilledPcnRef.current = newPcn;
+        autoFilledLegalDescriptionRef.current = newLegal;
+      }
     }
   }
 
