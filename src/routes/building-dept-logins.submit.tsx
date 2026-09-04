@@ -19,9 +19,9 @@ import { bulkUploadPortalLoginDocs, BULK_LOGIN_DOC_MAX_FILES } from "@/lib/bulk-
 import { useSession } from "@/lib/use-session";
 
 export const Route = createFileRoute("/building-dept-logins/submit")({
-  validateSearch: (search: Record<string, unknown>) => ({
-    edit: typeof search.edit === "string" ? search.edit : undefined,
-    owner: typeof search.owner === "string" ? search.owner : undefined,
+  validateSearch: (search: Record<string, unknown>): { edit?: string; owner?: string } => ({
+    ...(typeof search.edit === "string" ? { edit: search.edit } : {}),
+    ...(typeof search.owner === "string" ? { owner: search.owner } : {}),
   }),
   head: () => ({
     meta: [{ title: "Submit Login — Cleard" }, { name: "robots", content: "noindex" }],
