@@ -263,8 +263,8 @@ function HeroNav({ logoSlot, logoVisible }: { logoSlot: React.Ref<HTMLDivElement
             <img
               src={wordmarkCopper.url}
               alt="CLEARD"
-              className="h-7 w-auto object-contain transition-opacity duration-300"
-              style={{ opacity: logoVisible ? 1 : 0 }}
+              className="h-11 w-auto object-contain transition-opacity duration-300"
+              style={{ opacity: logoVisible ? 1 : 0, filter: "brightness(1.4) saturate(1.15) drop-shadow(0 1px 8px rgba(156,107,63,0.5))" }}
             />
           </div>
         </Link>

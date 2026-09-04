@@ -5,7 +5,14 @@ import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/s
 import wordmarkCopper from "@/assets/cleard-wordmark-copper.png.asset.json";
 
 function LogoMark() {
-  return <img src={wordmarkCopper.url} alt="CLEARD" className="h-7 w-auto object-contain" />;
+  return (
+    <img
+      src={wordmarkCopper.url}
+      alt="CLEARD"
+      className="h-11 w-auto object-contain"
+      style={{ filter: "brightness(1.4) saturate(1.15) drop-shadow(0 1px 8px rgba(156,107,63,0.5))" }}
+    />
+  );
 }
 
 const navLinks = [
@@ -52,7 +59,7 @@ export function SiteHeader() {
             <SheetTitle className="sr-only">Site navigation</SheetTitle>
             <div className="flex h-full flex-col">
               <div className="px-6 py-6 border-b hairline">
-                <img src={wordmarkCopper.url} alt="CLEARD" className="h-6 w-auto object-contain" />
+                <img src={wordmarkCopper.url} alt="CLEARD" className="h-9 w-auto object-contain" />
               </div>
               <nav className="flex-1 px-3 py-4">
                 {navLinks.map((l) => (
