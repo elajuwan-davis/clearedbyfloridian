@@ -355,7 +355,7 @@ export function VictoriaSection() {
           {/* bottom bar */}
           <div
             className="absolute inset-x-0 bottom-0 flex items-center justify-between gap-4 px-5 py-4 sm:px-7"
-            style={{ borderTop: "1px solid rgba(201,138,91,0.28)", background: "rgba(43,22,32,0.82)" }}
+            style={{ borderTop: "1px solid rgba(201,138,91,0.28)", background: "rgba(255,255,255,0.82)" }}
           >
             <span className="text-[13px]" style={{ color: "rgba(43,22,32,0.9)", fontFamily: SERIF }}>
               Victoria is watching your projects, 24/7.
@@ -437,7 +437,7 @@ function IntelCard({ card }: { card: Card }) {
     <div
       className="px-4 py-3.5"
       style={{
-        background: "rgba(43,22,32,0.86)",
+        background: "rgba(255,255,255,0.86)",
         border: "1px solid rgba(201,138,91,0.4)",
         backdropFilter: "blur(6px)",
         boxShadow: "0 18px 40px rgba(43,22,32,0.12)",
