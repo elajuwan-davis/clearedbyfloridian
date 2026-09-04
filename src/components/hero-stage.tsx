@@ -896,7 +896,7 @@ function PermitAreaChart() {
                 }}
               />
               {hover !== null && (
-                <circle cx={x(hover)} cy={y(s.points[hover])} r={2.6} fill={s.color} stroke="#241017" strokeWidth={1} />
+                <circle cx={x(hover)} cy={y(s.points[hover])} r={2.6} fill={s.color} stroke="#000000" strokeWidth={1} />
               )}
             </g>
           );
