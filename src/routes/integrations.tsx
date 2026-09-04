@@ -208,7 +208,7 @@ function PlatformRequestForm() {
             className="mt-5 max-w-lg"
             style={{
               fontFamily: SERIF,
-              color: OAT,
+              color: INK,
               fontWeight: 500,
               fontSize: "clamp(1.9rem, 4vw, 3rem)",
               lineHeight: 1.06,
@@ -224,7 +224,7 @@ function PlatformRequestForm() {
 
         {state === "sent" ? (
           <div className="self-center">
-            <p className="text-[17px]" style={{ fontFamily: SERIF, color: OAT }}>
+            <p className="text-[17px]" style={{ fontFamily: SERIF, color: INK }}>
               Thanks — we've logged {form.platform.trim() || "your platform"}.
             </p>
             <p className="mt-3 text-[13.5px]" style={{ color: "rgba(0,0,0,0.6)" }}>
@@ -237,7 +237,7 @@ function PlatformRequestForm() {
             {field("Email", "email", "email")}
             {field("Which platform do you use?", "platform")}
             {state === "error" && (
-              <div className="text-[12.5px]" style={{ color: "#e9b0b0" }}>
+              <div className="text-[12.5px]" style={{ color: "#C0392B" }}>
                 {error}
               </div>
             )}
