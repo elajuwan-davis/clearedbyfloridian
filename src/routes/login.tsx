@@ -158,7 +158,7 @@ function LoginPage() {
               className="font-semibold text-[20px]"
               style={{ fontFamily: "'Instrument Sans', sans-serif", color: "var(--copper)" }}
             >
-              CLEARED
+              CLEARD
             </span>
           </Link>
         </div>
@@ -203,7 +203,7 @@ function LoginPage() {
               className="font-semibold text-[17px]"
               style={{ fontFamily: "'Instrument Sans', sans-serif", color: "var(--copper)" }}
             >
-              CLEARED
+              CLEARD
             </span>
           </Link>
 

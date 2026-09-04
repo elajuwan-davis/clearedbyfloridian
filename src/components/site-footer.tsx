@@ -12,7 +12,7 @@ export function SiteFooter() {
             >
               C
             </div>
-            <span className="wordmark text-3xl">Cleard</span>
+            <span className="wordmark text-3xl">CLEARD</span>
           </div>
           <p className="mt-4 max-w-sm text-sm text-muted-foreground">
             Private-provider permitting for leading general contractors —

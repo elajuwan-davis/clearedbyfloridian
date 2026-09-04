@@ -714,7 +714,7 @@ function Laptop({ activeTab, children }: { activeTab: number; children: React.Re
       <div
         className="flex h-full max-h-[400px] w-full max-w-[720px] flex-col overflow-hidden"
         style={{
-          background: "#241017",
+          background: "#000000",
           border: "1px solid rgba(255,255,255,0.14)",
           borderRadius: 10,
           boxShadow: "0 40px 70px -40px rgba(43,22,32,0.55)",
@@ -726,7 +726,7 @@ function Laptop({ activeTab, children }: { activeTab: number; children: React.Re
           style={{ borderBottom: "1px solid rgba(255,255,255,0.12)" }}
         >
           <img src={cLogo.url} alt="" className="h-3.5 w-3.5 object-contain" />
-          <span style={{ fontFamily: SERIF, color: OAT, fontSize: 12.5, fontWeight: 600 }}>Cleard</span>
+          <span style={{ fontFamily: SERIF, color: OAT, fontSize: 12.5, fontWeight: 600 }}>CLEARD</span>
           <div className="ml-auto hidden gap-3.5 sm:flex">
             {TABS.map((t, i) => (
               <span
@@ -1218,12 +1218,12 @@ function ScenePortal() {
               <div
                 aria-hidden
                 className="pointer-events-none absolute inset-x-0 top-0 h-5"
-                style={{ background: "linear-gradient(to bottom, #241017, transparent)" }}
+                style={{ background: "linear-gradient(to bottom, #000000, transparent)" }}
               />
               <div
                 aria-hidden
                 className="pointer-events-none absolute inset-x-0 bottom-0 h-5"
-                style={{ background: "linear-gradient(to top, #241017, transparent)" }}
+                style={{ background: "linear-gradient(to top, #000000, transparent)" }}
               />
             </div>
           </div>

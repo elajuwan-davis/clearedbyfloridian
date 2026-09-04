@@ -276,7 +276,7 @@ function HeroNav({ logoSlot, logoVisible }: { logoSlot: React.Ref<HTMLDivElement
               letterSpacing: "0.02em",
             }}
           >
-            CLEARED
+            CLEARD
           </span>
         </Link>
 
