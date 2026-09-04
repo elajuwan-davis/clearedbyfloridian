@@ -91,6 +91,8 @@ import { QrCode, Wand2 } from "lucide-react";
 import { GenerateNTBODialog, GenerateOwnerAuthDialog } from "@/components/generate-form-dialogs";
 import { SendForSignatureDialog } from "@/components/send-for-signature-dialog";
 import { RequestNotaryDialog } from "@/components/request-notary-dialog";
+import { NotarizationTab } from "@/components/notarization-tab";
+
 import { GenerateLienWaiverDialog } from "@/components/generate-lien-waiver-dialog";
 import { LIEN_WAIVER_EVT, WAIVER_TYPE_LABEL, listWaivers, waiverBadge, type LienWaiver } from "@/lib/lien-waivers";
 
