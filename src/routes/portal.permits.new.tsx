@@ -51,6 +51,11 @@ import { VictoriaIntelligencePanel } from "@/components/victoria-intelligence-pa
 import { logPermitIntelligence } from "@/lib/intelligence";
 import { DispatchCard } from "@/components/dispatch-card";
 import { runDispatch, type DispatchResult } from "@/lib/dispatch";
+import { PermitPackageChecklist, type ChecklistDoc } from "@/components/permit-package-checklist";
+import { NOCLivePreview } from "@/components/noc-live-preview";
+import { NTBOLivePreview } from "@/components/ntbo-live-preview";
+import { buildNOCFields, buildNTBOFields } from "@/lib/noc-fields";
+import { generateNOC, generateNTBO, downloadPdf } from "@/lib/private-provider-forms";
 import { MunicipalityReadinessPanel } from "@/components/municipality-readiness-panel";
 import { VictoriaPermitAssistant } from "@/components/victoria-permit-assistant";
 import { useFirstLoginTourResume } from "@/components/first-login-tour";
@@ -220,6 +225,13 @@ function NewPermitPage() {
   const [saveEngineerToContacts, setSaveEngineerToContacts] = useState(false);
   const [dispatch, setDispatch] = useState<DispatchResult | null>(null);
   const [dispatchConfirmed, setDispatchConfirmed] = useState(false);
+  // Guards against an overlapping, slower-to-resolve dispatch call (from a
+  // prior address) landing after a newer one and clobbering its data.
+  const dispatchSeqRef = useRef(0);
+  // Tracks the last values *we* auto-filled from dispatch, so a later dispatch
+  // result overwrites its own prior auto-fill but never a value the GC typed.
+  const autoFilledPcnRef = useRef("");
+  const autoFilledLegalDescriptionRef = useRef("");
   const [submittalPackage, setSubmittalPackage] = useState<SubmittalDocSnapshot[]>([]);
   const [scopeDrafting, setScopeDrafting] = useState(false);
   const [scopeDraft, setScopeDraft] = useState<ScopeDraft | null>(null);
@@ -256,6 +268,14 @@ function NewPermitPage() {
     municipalityRegistered: "" as "" | "yes" | "no",
     ownerName: "",
     ownerEntity: "",
+    pcn: "",
+    legalDescription: "",
+    filerType: "gc" as "gc" | "owner_builder",
+    lenderName: "",
+    lenderAddress: "",
+    suretyBondAmount: "",
+    designeeName: "",
+    designeeAddress: "",
     signerPhone: "",
     signerEmail: "",
     additionalNotes: "",
@@ -421,6 +441,14 @@ function NewPermitPage() {
                 : "",
           ownerName: r.owner_name ?? "",
           ownerEntity: r.owner_entity ?? "",
+          pcn: r.pcn ?? "",
+          legalDescription: (ip.legal_description as string) ?? "",
+          filerType: ip.filer_type === "owner_builder" ? "owner_builder" : "gc",
+          lenderName: ((ip.lender as Record<string, string>)?.name as string) ?? "",
+          lenderAddress: ((ip.lender as Record<string, string>)?.address as string) ?? "",
+          suretyBondAmount: (ip.surety_bond_amount as string) ?? "",
+          designeeName: (ip.designee_name as string) ?? "",
+          designeeAddress: (ip.designee_address as string) ?? "",
           signerPhone: r.signer_phone ?? "",
           signerEmail: r.signer_email ?? "",
           additionalNotes: r.additional_notes ?? "",
@@ -654,13 +682,48 @@ function NewPermitPage() {
         .filter(Boolean)
         .join(", ");
     if (resolvedAddress) {
+      const seq = ++dispatchSeqRef.current;
       const result = await runDispatch({
         address: resolvedAddress,
         city: resolvedMuni || r.city || null,
         county: r.county,
       });
+      // A newer address resolution started (and possibly already finished)
+      // while this one was in flight — this response is stale, drop it.
+      if (seq !== dispatchSeqRef.current) return;
+
       setDispatch(result);
       setDispatchConfirmed(false);
+
+      // Tax roll data auto-fills the NOC's parcel fields — but only from a
+      // real lookup. Mock data (config missing, or the live calls failed)
+      // fabricates a plausible-looking parcel ID, which must never reach a
+      // filed legal document. Owner name is left alone regardless — the
+      // GC's typed owner (from the contract) is the source of truth, not
+      // the tax roll, which can lag a recent sale.
+      if (result.source === "live") {
+        const newPcn = result.parcel.parcel_id ?? "";
+        const newLegal = result.parcel.legal_description ?? "";
+        // Captured before the refs are updated below — the setForm updater
+        // can run after this synchronous block (React defers it), so reading
+        // the refs directly inside the updater would compare against the
+        // *new* auto-fill instead of the prior one, and a later live lookup
+        // would never overwrite the field it had previously auto-filled.
+        const prevAutoPcn = autoFilledPcnRef.current;
+        const prevAutoLegal = autoFilledLegalDescriptionRef.current;
+        setForm((f) => ({
+          ...f,
+          // Overwrite only a value we auto-filled ourselves (or an empty
+          // field) — never a value the GC typed or corrected by hand.
+          pcn: f.pcn === "" || f.pcn === prevAutoPcn ? newPcn : f.pcn,
+          legalDescription:
+            f.legalDescription === "" || f.legalDescription === prevAutoLegal
+              ? newLegal
+              : f.legalDescription,
+        }));
+        autoFilledPcnRef.current = newPcn;
+        autoFilledLegalDescriptionRef.current = newLegal;
+      }
     }
   }
 
@@ -730,6 +793,77 @@ function NewPermitPage() {
       ),
     [originalRow],
   );
+  // NTBO has no review doc entry (it's filed internally, not shown to the GC) —
+  // the permit existing at all means it already ran, on creation.
+  const hasNtbo = Boolean(originalRow);
+
+  const checklistItems: ChecklistDoc[] = useMemo(
+    () => [
+      {
+        key: "noc",
+        label: "Notice of Commencement",
+        description: "FL Statute §713.13 — recorded with the County Clerk before first inspection.",
+        status: hasNoc ? "generated" : "pending",
+        generatedNote: "Ready for signature",
+      },
+      {
+        key: "ntbo",
+        label: "Notice to Building Official",
+        description: "Use of Private Provider — FL Statute §553.791.",
+        status: hasNtbo ? "generated" : "pending",
+        generatedNote: "Filed with building official",
+      },
+    ],
+    [hasNoc, hasNtbo],
+  );
+
+  const nocFields = useMemo(
+    () =>
+      buildNOCFields({
+        propertyAddress: form.address,
+        parcelTaxId: form.pcn,
+        legalDescription: form.legalDescription,
+        filerType: form.filerType,
+        ownerName: [form.ownerName, form.ownerEntity].filter(Boolean).join(" — "),
+        ownerAddress: form.address,
+        contractorName: form.contractorCompany,
+        contractorAddress: form.companyAddress,
+        contractorLicense: form.licenseNumber,
+        contractorPhone: form.pocPhone || form.signerPhone,
+        ownerPhone: form.signerPhone,
+        lenderName: form.lenderName,
+        lenderAddress: form.lenderAddress,
+        suretyBondAmount: form.suretyBondAmount,
+        designeeName: form.designeeName || form.architectFirm || form.engineerFirm,
+        designeeAddress: form.designeeAddress,
+        improvementDescription:
+          form.scopes.join(", ") || form.description || "General construction improvements",
+      }),
+    [form],
+  );
+
+  const ntboFields = useMemo(
+    () => buildNTBOFields({ projectName: form.projectName, parcelTaxId: form.pcn }),
+    [form.projectName, form.pcn],
+  );
+
+  async function previewNOCPdf() {
+    try {
+      const bytes = await generateNOC(nocFields);
+      downloadPdf(bytes, `NOC_preview_${form.projectName || "permit"}.pdf`);
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Could not generate the NOC preview");
+    }
+  }
+
+  async function previewNTBOPdf() {
+    try {
+      const bytes = await generateNTBO(ntboFields);
+      downloadPdf(bytes, `NTBO_preview_${form.projectName || "permit"}.pdf`);
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Could not generate the NTBO preview");
+    }
+  }
 
   // Trades already added to this permit (edit mode) or being added right
   // now (new mode) — feeds the "Trades on this Job" panel and the reuse
@@ -968,6 +1102,15 @@ function NewPermitPage() {
       // Snapshot the compliance docs the GC chose to attach to this submittal.
       // Persist even an empty array so a later "cleared all" reflects on the permit.
       intake_payload.compliance_submittal = submittalPackage;
+      intake_payload.legal_description = form.legalDescription || null;
+      intake_payload.filer_type = form.filerType;
+      intake_payload.lender = {
+        name: form.lenderName || null,
+        address: form.lenderAddress || null,
+      };
+      intake_payload.surety_bond_amount = form.suretyBondAmount || null;
+      intake_payload.designee_name = form.designeeName || null;
+      intake_payload.designee_address = form.designeeAddress || null;
 
       const permitPatch = {
         project_name: form.projectName,
@@ -978,6 +1121,7 @@ function NewPermitPage() {
         additional_notes: form.additionalNotes || null,
         owner_name: form.ownerName || null,
         owner_entity: form.ownerEntity || null,
+        pcn: form.pcn || null,
         contractor_company: form.contractorCompany || null,
         contractor_qualifier: form.contractorQualifier || null,
         company_address: form.companyAddress || null,
@@ -1358,6 +1502,7 @@ function NewPermitPage() {
                 </p>
               )}
 
+              {form.scopes.length > 0 && <PermitPackageChecklist items={checklistItems} />}
 
               {/* Scope Narrative — the written description of the work itself.
                   Distinct from the per-trade sub capture below. */}
@@ -1938,6 +2083,22 @@ function NewPermitPage() {
                   value={form.ownerName}
                   onChange={(e) => update("ownerName", e.target.value)}
                 />
+                {dispatch?.parcel.owner_name &&
+                  dispatch.parcel.owner_name.trim().toLowerCase() !==
+                    form.ownerName.trim().toLowerCase() && (
+                    <p className="mt-1.5 text-[11px] text-obsidian/60 flex items-center gap-2 flex-wrap">
+                      Tax roll shows:{" "}
+                      <span className="font-medium">{dispatch.parcel.owner_name}</span> — does this
+                      match?
+                      <button
+                        type="button"
+                        onClick={() => update("ownerName", dispatch.parcel.owner_name || "")}
+                        className="font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian underline underline-offset-2"
+                      >
+                        Use this
+                      </button>
+                    </p>
+                  )}
               </div>
               <div>
                 <label className={labelCls}>Name of Trust / Corp / LLC</label>
@@ -1946,6 +2107,28 @@ function NewPermitPage() {
                   value={form.ownerEntity}
                   onChange={(e) => update("ownerEntity", e.target.value)}
                 />
+              </div>
+              <div className="grid gap-5 sm:grid-cols-2">
+                <div>
+                  <label className={labelCls}>Parcel Control Number (PCN)</label>
+                  <input
+                    className={inputCls + " font-mono"}
+                    value={form.pcn}
+                    onChange={(e) => update("pcn", e.target.value)}
+                    placeholder={dispatch?.parcel.parcel_id ? "" : "Not yet resolved from tax roll"}
+                  />
+                </div>
+                <div>
+                  <label className={labelCls}>Legal Description</label>
+                  <input
+                    className={inputCls}
+                    value={form.legalDescription}
+                    onChange={(e) => update("legalDescription", e.target.value)}
+                    placeholder={
+                      dispatch?.parcel.legal_description ? "" : "Not yet resolved from tax roll"
+                    }
+                  />
+                </div>
               </div>
               <div className="grid gap-5 sm:grid-cols-2">
                 <div>
@@ -1964,6 +2147,130 @@ function NewPermitPage() {
                     value={form.signerEmail}
                     onChange={(e) => update("signerEmail", e.target.value)}
                   />
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white border border-obsidian/10 rounded-[3px] p-6 sm:p-8 space-y-6">
+              <div>
+                <div className={sectionCls}>Notice of Commencement — Review</div>
+                <p className="mt-1 text-[12px] text-obsidian/60">
+                  Pre-filled from the information above. The right panel updates live; nothing here
+                  is final until you submit — Cleard generates the actual filed PDF from these same
+                  fields.
+                </p>
+              </div>
+
+              <div>
+                <label className={labelCls}>Who is filing this NOC?</label>
+                <div className="flex items-center gap-2">
+                  {(
+                    [
+                      { v: "gc", label: "Contractor of Record" },
+                      { v: "owner_builder", label: "Owner-Builder" },
+                    ] as const
+                  ).map((opt) => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => update("filerType", opt.v)}
+                      className={`px-4 py-1.5 rounded-[3px] text-[12px] border transition-colors ${
+                        form.filerType === opt.v
+                          ? "bg-obsidian text-white border-obsidian"
+                          : "bg-white text-obsidian/70 border-obsidian/20 hover:border-obsidian/40"
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                {form.filerType === "owner_builder" && (
+                  <p className="mt-1.5 text-[11px] text-amber-700">
+                    Owner acting as their own contractor — the Contractor section will read
+                    "Owner-Builder" instead of a licensed contractor.
+                  </p>
+                )}
+              </div>
+
+              <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] items-start">
+                <div className="space-y-5">
+                  <div className="grid gap-5 sm:grid-cols-2">
+                    <div>
+                      <label className={labelCls}>Lender Name</label>
+                      <input
+                        className={inputCls}
+                        value={form.lenderName}
+                        onChange={(e) => update("lenderName", e.target.value)}
+                        placeholder="If financed"
+                      />
+                    </div>
+                    <div>
+                      <label className={labelCls}>Lender Address</label>
+                      <input
+                        className={inputCls}
+                        value={form.lenderAddress}
+                        onChange={(e) => update("lenderAddress", e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <label className={labelCls}>Surety Bond Amount</label>
+                      <input
+                        className={inputCls}
+                        value={form.suretyBondAmount}
+                        onChange={(e) => update("suretyBondAmount", e.target.value)}
+                        placeholder="If bonded"
+                      />
+                    </div>
+                    <div>
+                      <label className={labelCls}>Designee to Receive Notices</label>
+                      <input
+                        className={inputCls}
+                        value={form.designeeName}
+                        onChange={(e) => update("designeeName", e.target.value)}
+                        placeholder={form.architectFirm || form.engineerFirm || "Defaults to owner"}
+                      />
+                    </div>
+                    <div>
+                      <label className={labelCls}>Designee Address</label>
+                      <input
+                        className={inputCls}
+                        value={form.designeeAddress}
+                        onChange={(e) => update("designeeAddress", e.target.value)}
+                      />
+                    </div>
+                  </div>
+                  <p className="text-[11px] text-obsidian/45 leading-relaxed">
+                    Property, owner, and contractor fields come from the sections above — edit them
+                    there and this preview updates to match.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={previewNOCPdf}
+                    className="inline-flex items-center gap-2 bg-obsidian text-white px-4 py-2 font-mono text-[10px] uppercase tracking-[0.14em] hover:bg-obsidian/90 rounded-[3px]"
+                  >
+                    Preview NOC PDF
+                  </button>
+                </div>
+                <div className="lg:sticky lg:top-4">
+                  <NOCLivePreview fields={nocFields} />
+                </div>
+              </div>
+
+              <div className="pt-2 border-t border-obsidian/10">
+                <div className={sectionCls}>Notice to Building Official — Preview</div>
+                <p className="mt-1 mb-4 text-[12px] text-obsidian/60">
+                  Filed with the building official under Cleard's private-provider identity — the GC
+                  does not sign this one, but here's exactly what goes out.
+                </p>
+                <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] items-start">
+                  <NTBOLivePreview fields={ntboFields} />
+                  <button
+                    type="button"
+                    onClick={previewNTBOPdf}
+                    className="inline-flex items-center gap-2 border border-obsidian/20 px-4 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/70 hover:border-obsidian/40 rounded-[3px]"
+                  >
+                    Preview NTBO PDF
+                  </button>
                 </div>
               </div>
             </div>

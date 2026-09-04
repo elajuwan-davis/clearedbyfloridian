@@ -93,6 +93,14 @@ export function DispatchCard({
           {data.parcel.owner_name && (
             <div className="text-xs text-obsidian/70">Owner: {data.parcel.owner_name}</div>
           )}
+          {data.parcel.legal_description && (
+            <div
+              className="text-xs text-obsidian/60 truncate"
+              title={data.parcel.legal_description}
+            >
+              Legal: {data.parcel.legal_description}
+            </div>
+          )}
         </Cell>
       </div>
 
