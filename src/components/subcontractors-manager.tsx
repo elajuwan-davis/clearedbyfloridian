@@ -21,22 +21,19 @@ import { MarketplacePanel } from "@/components/marketplace-panel";
 import { LockedFeatureButton } from "@/components/feature-lock";
 import { usePlanAccess } from "@/lib/plan-access";
 
-const dbprTone: Record<string, { label: string; cls: string }> = {
-  active: {
-    label: "Verified · Active",
-    cls: "bg-emerald-50 text-emerald-800 border-emerald-200",
-  },
-  expired: { label: "Expired", cls: "bg-red-50 text-red-800 border-red-200" },
-  inactive: { label: "Inactive", cls: "bg-red-50 text-red-800 border-red-200" },
-  not_found: { label: "Not Found", cls: "bg-amber-50 text-amber-800 border-amber-200" },
-  unknown: { label: "Unverified", cls: "bg-blue-50 text-blue-700 border-blue-200" },
+const dbprTone: Record<string, { label: string; tone: MetricTone }> = {
+  active: { label: "Verified · Active", tone: "success" },
+  expired: { label: "Expired", tone: "danger" },
+  inactive: { label: "Inactive", tone: "danger" },
+  not_found: { label: "Not Found", tone: "warning" },
+  unknown: { label: "Unverified", tone: "info" },
 };
 
-const coiTone: Record<ReturnType<typeof coiLifecycle>, { label: string; cls: string }> = {
-  active: { label: "Active", cls: "bg-emerald-50 text-emerald-800 border-emerald-200" },
-  expiring_soon: { label: "Expiring", cls: "bg-amber-50 text-amber-800 border-amber-200" },
-  expired: { label: "Expired", cls: "bg-red-50 text-red-800 border-red-200" },
-  missing: { label: "Missing", cls: "bg-amber-50 text-amber-800 border-amber-200" },
+const coiTone: Record<ReturnType<typeof coiLifecycle>, { label: string; tone: MetricTone }> = {
+  active: { label: "Active", tone: "success" },
+  expiring_soon: { label: "Expiring", tone: "warning" },
+  expired: { label: "Expired", tone: "danger" },
+  missing: { label: "Missing", tone: "warning" },
 };
 
 export function SubcontractorsManager() {
@@ -176,22 +173,18 @@ export function SubcontractorsManager() {
                 <div className="text-obsidian/70 text-[13px]">{s.trade || "—"}</div>
                 <div className="font-mono text-[12px] text-obsidian/70">{s.license_number || "—"}</div>
                 <div>
-                  <span className={`inline-block px-2 py-0.5 border rounded-[2px] font-mono text-[10px] uppercase tracking-[0.12em] ${coi.cls}`}>{coi.label}</span>
+                  <StatusChip tone={coi.tone}>{coi.label}</StatusChip>
                   {s.coi_expiration && <div className="mt-1 text-[10px] text-obsidian/50 font-mono">exp {s.coi_expiration}</div>}
                 </div>
                 <div>
                   {complete ? (
-                    <span className="inline-flex items-center gap-1 px-2 py-0.5 border rounded-[2px] font-mono text-[10px] uppercase tracking-[0.12em] bg-emerald-50 text-emerald-800 border-emerald-200">
-                      <CheckCircle2 className="h-3 w-3" /> Complete
-                    </span>
+                    <StatusChip tone="success">Complete</StatusChip>
                   ) : (
-                    <span className="inline-flex items-center gap-1 px-2 py-0.5 border rounded-[2px] font-mono text-[10px] uppercase tracking-[0.12em] bg-amber-50 text-amber-800 border-amber-200" title={missing.join(", ")}>
-                      <AlertTriangle className="h-3 w-3" /> {missing.length} missing
-                    </span>
+                    <StatusChip tone="warning" className="whitespace-nowrap" >{missing.length} missing</StatusChip>
                   )}
                 </div>
                 <div>
-                  <span className={`inline-block px-2 py-0.5 border rounded-[2px] font-mono text-[10px] uppercase tracking-[0.12em] ${dbpr.cls}`}>{dbpr.label}</span>
+                  <StatusChip tone={dbpr.tone}>{dbpr.label}</StatusChip>
                   {(s as any).dbpr_expiration && (
                     <div className="mt-1 text-[10px] text-obsidian/50 font-mono">exp {(s as any).dbpr_expiration}</div>
                   )}
@@ -280,7 +273,7 @@ export function SubcontractorsManager() {
                       <div className="truncate text-[12.5px] font-medium text-obsidian">{s.company_name}</div>
                       <div className="truncate text-[11px] text-obsidian/50">{s.trade || "—"} · Exp {s.coi_expiration || "—"}</div>
                     </div>
-                    <span className={`inline-block px-2 py-0.5 border rounded-[2px] font-mono text-[10px] uppercase tracking-[0.12em] ${coiTone[c].cls}`}>{coiTone[c].label}</span>
+                    <StatusChip tone={coiTone[c].tone}>{coiTone[c].label}</StatusChip>
                   </div>
                 );
               })}
