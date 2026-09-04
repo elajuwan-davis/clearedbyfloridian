@@ -1253,11 +1253,11 @@ function SceneArrow({
       className="inline-flex h-11 w-11 shrink-0 items-center justify-center text-[21px] leading-none transition-all duration-200 hover:scale-105 hover:brightness-110"
       style={{
         background: "#2B1620",
-        border: "1.5px solid rgba(156,107,63,0.75)",
+        border: "1.5px solid var(--copper)",
         color: "#FFFFFF",
         borderRadius: 999,
         cursor: "pointer",
-        boxShadow: "0 4px 16px rgba(103,49,71,0.35)",
+        boxShadow: "0 4px 16px rgba(43,22,32,0.35)",
       }}
     >
       {glyph}
@@ -1308,7 +1308,7 @@ export function HeroStage() {
           className="relative min-w-0 flex-1 overflow-hidden"
           style={{
             height: FRAME_H,
-            background: `radial-gradient(120% 90% at 50% 40%, ${PAPER} 0%, ${OAT} 62%, #F3E9D6 100%)`,
+            background: "#FFFFFF",
             border: `1px solid ${BORDER}`,
             borderRadius: 14,
             boxShadow: "0 40px 80px -60px rgba(43,22,32,0.45)",
