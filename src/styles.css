@@ -798,8 +798,12 @@ html:not(.dark) .portal-ui .flyout-link[data-active="true"] {
     font-feature-settings: "liga", "dlig", "swsh";
   }
   .display-serif em, .display-serif .italic {
-    font-style: italic;
-    font-weight: 300;
+    font-style: normal;
+    font-weight: 700;
+    background: linear-gradient(90deg, #9C6B3F 0%, #000000 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
   }
 }
 
@@ -843,8 +847,12 @@ html:not(.dark) .portal-ui .flyout-link[data-active="true"] {
 }
 .marketing-dark .md-serif em,
 .marketing-dark .md-serif .italic {
-  font-style: italic;
-  font-weight: 500;
+  font-style: normal;
+  font-weight: 700;
+  background: linear-gradient(90deg, #9C6B3F 0%, #000000 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .marketing-dark .md-eyebrow {
@@ -1940,8 +1948,12 @@ tbody tr:hover, .p-table tbody tr:hover { background: #FFFFFF; }
 }
 .marketing-dark .md-serif em,
 .marketing-dark h2 em, .cl-home h2 em {
-  font-style: italic;
-  color: #2B1620;
+  font-style: normal;
+  font-weight: 700;
+  background: linear-gradient(90deg, #9C6B3F 0%, #000000 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 .marketing-dark .md-eyebrow,
 .cl-home .cl-eyebrow {
@@ -2301,4 +2313,18 @@ html body .cl-public button:not([data-plain])::after { border-radius: 999px !imp
 .driver-popover.cleard-tour-popover .driver-popover-arrow-side-top,
 .driver-popover.cleard-tour-popover .driver-popover-arrow-side-bottom {
   border-color: var(--paper);
+}
+
+/* =========================================================
+   NO ITALICS — site-wide. Emphasis uses a copper→black gradient.
+   ========================================================= */
+em, i, .italic, [style*="italic"] { font-style: normal !important; }
+
+.copper-emph {
+  background: linear-gradient(90deg, #9C6B3F 0%, #000000 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-style: normal;
+  font-weight: 700;
 }
