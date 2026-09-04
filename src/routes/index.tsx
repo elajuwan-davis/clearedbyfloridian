@@ -64,17 +64,17 @@ export const Route = createFileRoute("/")({
 
 /* ------------------------------ DESIGN TOKENS ----------------------------- */
 
-const WHITE = "#FAF3E6";
-const OFF = "#F3EAD9";
-const OFF2 = "#EDE0C9";
-const INK = "#2F4F4F";
-const GRAY = "#7A5C68";
-const LIGHT = "#8B9A97";
-const TEAL = "#673147";
-const PLUM_LT = "#D9AFC1"; /* accent legible on dark slate surfaces */
-const GREEN = "#2F4F4F"; /* minor accent: numerals, eyebrows, small labels */
-const GREEN_LT = "#9CBEB2"; /* same accent, legible on dark plum */
-const BORDER = "#E0D3BC";
+const WHITE = "#FDFCF9";
+const OFF = "#F7F5F0";
+const OFF2 = "#EEECE8";
+const INK = "#2B1620";
+const GRAY = "rgba(43,22,32,0.55)";
+const LIGHT = "rgba(43,22,32,0.38)";
+const TEAL = "#2B1620";
+const PLUM_LT = "#C8956A"; /* light copper, legible on dark surfaces */
+const GREEN = "rgba(43,22,32,0.5)"; /* neutral muted ink for secondary labels */
+const GREEN_LT = "#D4A96A"; /* warm copper-lite on dark */
+const BORDER = "rgba(43,22,32,0.1)";
 const SANS = "'Fraunces', 'Iowan Old Style', Georgia, serif";
 
 /* --------------------------------- PAGE ---------------------------------- */
@@ -367,10 +367,8 @@ function CountyCoverage() {
   return (
     <section style={{ background: WHITE }}>
       <div className="mx-auto max-w-7xl px-5 pb-20 pt-20 lg:px-8 md:pb-24">
-        <div
-          className="mb-6 flex items-center gap-3 text-[10.5px] font-bold uppercase tracking-[0.22em]"
-          style={{ color: GREEN }}
-        >
+        <div className="copper-text mb-6 flex items-center gap-3 text-[10.5px] font-bold uppercase tracking-[0.22em]">
+
           <span className="copper-hairline inline-block h-px w-7" />
           Statewide coverage
         </div>
@@ -419,16 +417,15 @@ function CountyCoverage() {
 function MunicipalityTrack() {
   const CARD_BG = "#2F4F4F";
   const CARD_BORDER = "#3F5C5A";
-  const TEAL = "#673147";
   return (
     <section style={{ background: WHITE }}>
       <div className="mx-auto max-w-7xl px-5 lg:px-8 pb-24 md:pb-28">
-        <div className="mb-6 flex items-center gap-3 text-[10.5px] font-bold uppercase tracking-[0.22em]" style={{ color: GREEN }}>
+        <div className="copper-text mb-6 flex items-center gap-3 text-[10.5px] font-bold uppercase tracking-[0.22em]">
           <span className="copper-hairline inline-block h-px w-7" />
           For municipalities
         </div>
 
-        <div className="p-8 md:p-14" style={{ background: CARD_BG, borderLeft: `3px solid ${TEAL}` }}>
+        <div className="p-8 md:p-14" style={{ background: CARD_BG, borderLeft: "3px solid var(--copper)" }}>
           <div style={{ color: "#F3EAD9", fontSize: 32, fontWeight: 700, letterSpacing: "-0.03em" }}>
             CleardGov
           </div>
@@ -459,13 +456,14 @@ function MunicipalityTrack() {
             to="/contact"
             className="cl-glass mt-10 inline-flex items-center gap-2 px-7 py-3 text-[14px] no-underline transition-transform duration-200 hover:scale-[1.03]"
             style={{
-              background: "rgba(103,49,71,0.9)",
-              border: "1px solid rgba(217,175,193,0.35)",
+              backgroundImage: "var(--gradient-copper)",
+              border: "1px solid color-mix(in oklab, var(--copper-deep) 70%, transparent)",
               backdropFilter: "blur(12px) saturate(140%)",
               WebkitBackdropFilter: "blur(12px) saturate(140%)",
-              color: "#FAF3E6",
+              color: "#FFF8EC",
               fontWeight: 700,
-              boxShadow: "inset 0 1px 0 rgba(255,255,255,0.22), 0 18px 34px -20px rgba(0,0,0,0.5)",
+              boxShadow:
+                "inset 0 1px 0 rgba(255,255,255,0.45), 0 18px 34px -20px rgba(100,55,10,0.4)",
             }}
           >
             Talk to our team <ArrowUpRight className="h-4 w-4" strokeWidth={2} />
@@ -490,8 +488,8 @@ function VictoriaLayer() {
           </div>
           <div className="lg:col-span-7">
             <div className="flex items-center gap-2">
-              <Sparkles className="h-4 w-4" style={{ color: PLUM_LT }} strokeWidth={1.75} />
-              <span className="text-[10px] font-bold uppercase tracking-[0.22em]" style={{ color: GREEN_LT }}>
+              <Sparkles className="h-4 w-4" style={{ color: "#C8956A" }} strokeWidth={1.75} />
+              <span className="text-[10px] font-bold uppercase tracking-[0.22em]" style={{ color: "#D4A96A" }}>
                 Platform intelligence
               </span>
             </div>
@@ -519,7 +517,7 @@ function VictoriaLayer() {
             <div className="mt-6 flex flex-wrap gap-x-6 gap-y-2">
               {SERVICES.map((s) => (
                 <span key={s.title} className="flex items-center gap-2 text-[12px]" style={{ color: M.faint }}>
-                  <s.icon className="h-3.5 w-3.5" style={{ color: PLUM_LT }} strokeWidth={1.75} />
+                  <s.icon className="h-3.5 w-3.5" style={{ color: "#C8956A" }} strokeWidth={1.75} />
                   {s.title}
                 </span>
               ))}
@@ -652,7 +650,7 @@ function MobileApp() {
                 {ROWS.slice(0, 5).map((r) => (
                   <div key={r.id} className="px-4 py-3" style={{ borderBottom: `1px solid ${OFF2}` }}>
                     <div className="flex items-center justify-between gap-2">
-                      <span className="text-[11px] font-semibold" style={{ color: GREEN }}>{r.id}</span>
+                      <span className="text-[11px] font-semibold" style={{ color: "#9C6B3F" }}>{r.id}</span>
                       <Tag>{r.status}</Tag>
                     </div>
                     <div className="mt-1 text-[12.5px] truncate" style={{ color: INK }}>{r.addr}</div>
@@ -756,7 +754,7 @@ function MobileApp() {
 
         <div>
           <h2 style={{ fontSize: "clamp(2rem, 3.6vw, 2.875rem)", lineHeight: 1.08, letterSpacing: "-0.035em" }}>
-            <span style={{ color: GREEN, fontWeight: 600 }}>Your whole permit office </span>
+            <span style={{ color: "#9C6B3F", fontWeight: 600 }}>Your whole permit office </span>
             <span style={{ color: INK, fontWeight: 800 }}>in your pocket.</span>
           </h2>
           <div className="mt-10 space-y-7">
@@ -766,7 +764,7 @@ function MobileApp() {
               { icon: FolderOpen, t: "Documents on site", b: "Permits, plans, COIs and inspection reports — available at the job, not back at the office." },
             ].map((f) => (
               <div key={f.t} className="flex gap-4">
-                <f.icon className="h-5 w-5 mt-0.5 shrink-0" style={{ color: TEAL }} strokeWidth={1.75} />
+                <f.icon className="h-5 w-5 mt-0.5 shrink-0" style={{ color: "#9C6B3F" }} strokeWidth={1.75} />
                 <div>
                   <div className="text-[15.5px] font-bold" style={{ color: INK, letterSpacing: "-0.02em" }}>{f.t}</div>
                   <p className="mt-1.5 text-[14px] leading-relaxed" style={{ color: GRAY }}>{f.b}</p>
@@ -800,12 +798,13 @@ function BottomCTA() {
             hash="request"
             className="cl-glass inline-flex items-center gap-2 px-7 py-3 text-[14px] font-bold no-underline transition-transform duration-200 hover:scale-[1.03]"
             style={{
-              background: "rgba(103,49,71,0.9)",
-              border: "1px solid rgba(217,175,193,0.35)",
+              backgroundImage: "var(--gradient-copper)",
+              border: "1px solid color-mix(in oklab, var(--copper-deep) 70%, transparent)",
               backdropFilter: "blur(12px) saturate(140%)",
               WebkitBackdropFilter: "blur(12px) saturate(140%)",
-              color: WHITE,
-              boxShadow: "inset 0 1px 0 rgba(255,255,255,0.22), 0 18px 34px -20px rgba(0,0,0,0.6)",
+              color: "#FFF8EC",
+              boxShadow:
+                "inset 0 1px 0 rgba(255,255,255,0.45), 0 18px 34px -20px rgba(100,55,10,0.4)",
             }}
           >
             Get started <ArrowRight className="h-4 w-4" />
