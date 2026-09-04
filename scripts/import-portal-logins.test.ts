@@ -148,7 +148,7 @@ test("the summary table quotes no credential", () => {
   assert.match(table, /Plantation/);
 });
 
-test("the payload matches savePortalLogin's shape and round-trips through the app's crypto", () => {
+test("the import payload encrypts credentials the same way savePortalLogin does", () => {
   const [result] = classifyRows([row("Plantation", "vault-user", "vault-pass")]);
   const payload = upsertPayload(result.record!, { userId: "u1", tenantId: "t1" }, encryptSecret);
   assert.deepEqual(Object.keys(payload).sort(), [

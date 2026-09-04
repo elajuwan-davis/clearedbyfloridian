@@ -139,7 +139,7 @@ export async function resolveOwner(
   return { userId, tenantId: tenantIds[0] ?? null };
 }
 
-/** The row savePortalLogin() would have written, with both secrets already encrypted. */
+/** Full-row import payload (every metadata column). Credential-only saves omit unspecified columns. */
 export function upsertPayload(
   result: Required<Pick<RowResult, "record">>["record"],
   owner: { userId: string; tenantId: string | null },
