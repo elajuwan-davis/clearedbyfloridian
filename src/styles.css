@@ -681,16 +681,16 @@ tbody tr:last-child td { border-bottom: 0; }
 .p-nav-item {
   position: relative; display: flex; align-items: center; gap: 10px;
   height: 36px; margin: 0 8px; padding: 0 10px; border-radius: var(--radius);
-  font-size: 13px; font-weight: 500; color: var(--text-2); white-space: nowrap;
+  font-size: 13px; font-weight: 500; color: var(--rail-fg-2); white-space: nowrap;
   transition: background-color 140ms ease, color 140ms ease;
 }
-.p-nav-item:hover { background: var(--rail-hover); color: var(--black); }
-.p-nav-item[data-active="true"] { background: var(--copper-soft); color: var(--copper-hover); font-weight: 600; }
+.p-nav-item:hover { background: var(--rail-hover); color: var(--rail-fg); }
+.p-nav-item[data-active="true"] { background: var(--rail-item-active-bg); color: #FFFFFF; font-weight: 600; }
 .p-nav-item[data-active="true"]::before {
-  content: ""; position: absolute; left: -8px; top: 8px; bottom: 8px; width: 3px; border-radius: 999px; background: var(--copper);
+  content: ""; position: absolute; left: -8px; top: 8px; bottom: 8px; width: 3px; border-radius: 999px; background: var(--copper-light);
 }
 .p-nav-item svg { color: inherit; }
-.p-nav-group { padding: 16px 18px 6px; font-size: 10px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-3); white-space: nowrap; }
+.p-nav-group { padding: 16px 18px 6px; font-size: 10px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--rail-muted); white-space: nowrap; }
 
 /* Icon rail + flyouts */
 .rail-btn {
@@ -698,10 +698,11 @@ tbody tr:last-child td { border-bottom: 0; }
   border-radius: var(--radius); color: var(--rail-icon); background: transparent;
   transition: background-color 120ms ease, color 120ms ease;
 }
-.rail-btn:hover, .rail-btn:focus-visible, .rail-btn[data-open="true"] { background: var(--rail-hover); color: var(--black); outline: none; }
+.rail-btn:hover, .rail-btn:focus-visible, .rail-btn[data-open="true"] { background: var(--rail-hover); color: var(--rail-fg); outline: none; }
 .rail-btn[data-active="true"], .rail-btn[data-active="true"]:hover, .rail-btn[data-active="true"][data-open="true"] {
-  background: var(--copper-soft); color: var(--copper);
+  background: var(--rail-item-active-bg); color: var(--copper-light);
 }
+
 .flyout-link {
   display: flex; align-items: center; justify-content: space-between; gap: 12px;
   margin: 0 6px; padding: 8px 12px; border-radius: var(--radius);
