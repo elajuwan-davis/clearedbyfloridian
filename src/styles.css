@@ -103,7 +103,7 @@
   --sand:         var(--nl-oat-2);
   --ink:          var(--nl-slate);
   --obsidian:     var(--nl-slate);
-  --obsidian-deep:#233C3C;
+  --obsidian-deep:#2B1620;
   --sky:          var(--nl-plum);
   --paper-warm:   var(--nl-oat-2);
   --rule:         var(--nl-line);
@@ -876,7 +876,7 @@ html:not(.dark) .portal-ui .flyout-link[data-active="true"] {
   gap: 0.5rem;
   height: 48px;
   padding: 0 1.5rem;
-  background: #4E6B5C;
+  background: #2B1620;
   color: #FFFFFF;
   font-family: "Fraunces", "Iowan Old Style", Georgia, serif;
   font-size: 13px;
@@ -1359,19 +1359,19 @@ html:not(.dark) .portal-ui .flyout-link[data-active="true"] {
 .marketing-dark {
   --md-bg:        #FFFFFF;
   --md-surface:   #FFFFFF;
-  --md-surface-2: #EFE6D6;
-  --md-border:    #E0D3BC;
+  --md-surface-2: #FFFFFF;
+  --md-border:    rgba(0,0,0,0.10);
   --md-text:      #2B1620;
-  --md-muted:     #8B9A97;
+  --md-muted:     #6B6B6B;
   --md-brand:     #2B1620;
   --md-green:     #2B1620;
   --md-amber:     #9A7B2E;
   --md-obsidian:  #2B1620;
   --md-gold:      #2B1620;
-  --md-gold-soft: rgba(103, 49, 71, 0.12);
+  --md-gold-soft: rgba(43, 22, 32, 0.12);
   font-family: "Fraunces", "Iowan Old Style", Georgia, serif;
 }
-.marketing-dark { --md-muted: #5C7370; }
+.marketing-dark { --md-muted: #6B6B6B; }
 
 .marketing-dark,
 .marketing-dark *,
@@ -1915,7 +1915,7 @@ tbody tr:hover, .p-table tbody tr:hover { background: #FFFFFF; }
   --md-bg:        #FFFFFF;
   --md-surface:   #FFFFFF;
   --md-surface-2: #EDE0C9;
-  --md-border:    #E0D3BC;
+  --md-border:    rgba(0,0,0,0.10);
   --md-text:      #2B1620;
   --md-muted:     #7A5C68;
   --md-brand:     #2B1620;
