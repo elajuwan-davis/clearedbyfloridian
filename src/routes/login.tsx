@@ -160,7 +160,7 @@ function LoginPage() {
             </div>
             <span
               className="font-semibold text-[20px]"
-              style={{ fontFamily: "'Instrument Sans', sans-serif", color: "#000000" }}
+              style={{ fontFamily: "'Instrument Sans', sans-serif", color: "var(--copper)" }}
             >
               Cleard
             </span>
@@ -210,7 +210,7 @@ function LoginPage() {
             </div>
             <span
               className="font-semibold text-[17px]"
-              style={{ fontFamily: "'Instrument Sans', sans-serif", color: "var(--foreground)" }}
+              style={{ fontFamily: "'Instrument Sans', sans-serif", color: "var(--copper)" }}
             >
               Cleard
             </span>
