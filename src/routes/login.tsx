@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ArrowRight, Loader2 } from "lucide-react";
 import { isPermitsOnlyEmail, PERMITS_ONLY_HOME } from "@/lib/permits-only";
-import logoCopper from "@/assets/cleard-logo-copper.png.asset.json";
+import wordmarkCopper from "@/assets/cleard-wordmark-copper.png.asset.json";
 
 
 export const Route = createFileRoute("/login")({
@@ -152,14 +152,8 @@ function LoginPage() {
         />
 
         <div className="relative">
-          <Link to="/" className="flex items-center gap-3">
-            <img src={logoCopper.url} alt="Cleard" className="h-9 w-9 object-contain" />
-            <span
-              className="font-semibold text-[20px]"
-              style={{ fontFamily: "'Instrument Sans', sans-serif", color: "var(--copper)" }}
-            >
-              CLEARD
-            </span>
+          <Link to="/" className="flex items-center">
+            <img src={wordmarkCopper.url} alt="CLEARD" className="h-8 w-auto object-contain" />
           </Link>
         </div>
 
@@ -197,14 +191,8 @@ function LoginPage() {
       <main className="flex flex-col justify-center px-6 py-12 sm:px-12 lg:px-16">
         <div className="w-full max-w-sm mx-auto p-8" style={{ background: "#FFFFFF", border: "1px solid rgba(0,0,0,0.10)", boxShadow: "0 2px 14px rgba(0,0,0,0.06)" }}>
           {/* Mobile wordmark */}
-          <Link to="/" className="lg:hidden flex items-center gap-2.5 mb-10">
-            <img src={logoCopper.url} alt="Cleard" className="h-7 w-7 object-contain" />
-            <span
-              className="font-semibold text-[17px]"
-              style={{ fontFamily: "'Instrument Sans', sans-serif", color: "var(--copper)" }}
-            >
-              CLEARD
-            </span>
+          <Link to="/" className="lg:hidden flex items-center mb-10">
+            <img src={wordmarkCopper.url} alt="CLEARD" className="h-7 w-auto object-contain" />
           </Link>
 
           <div className="space-y-2 mb-8">
