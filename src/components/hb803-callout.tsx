@@ -15,11 +15,11 @@ export function Hb803Callout({ background = OAT }: { background?: string }) {
       <div className="mx-auto max-w-7xl px-5 py-16 md:py-24 lg:px-8">
         <div
           className="p-8 md:p-14"
-          style={{ background: INK, borderLeft: `3px solid ${BRONZE}` }}
+          style={{ background: "#FFFFFF", border: "1px solid rgba(0,0,0,0.08)", borderLeft: `3px solid ${BRONZE}` }}
         >
           <div
             className="flex items-center gap-3 text-[10.5px] font-bold uppercase"
-            style={{ letterSpacing: "0.22em", color: "rgba(255,255,255,0.7)", fontFamily: MONO }}
+            style={{ letterSpacing: "0.22em", color: "rgba(43,22,32,0.7)", fontFamily: MONO }}
           >
             <Landmark className="h-4 w-4" strokeWidth={1.75} />
             Florida HB 803 · Effective July 1, 2026
@@ -33,7 +33,7 @@ export function Hb803Callout({ background = OAT }: { background?: string }) {
               fontSize: "clamp(1.8rem, 3.4vw, 2.6rem)",
               lineHeight: 1.08,
               letterSpacing: "-0.035em",
-              color: OAT,
+              color: INK,
             }}
           >
             Using a private provider{" "}
@@ -44,7 +44,7 @@ export function Hb803Callout({ background = OAT }: { background?: string }) {
 
           <p
             className="mt-6 max-w-3xl text-[15.5px] leading-relaxed"
-            style={{ color: "rgba(255,255,255,0.78)" }}
+            style={{ color: "rgba(43,22,32,0.78)" }}
           >
             Under Florida House Bill 803, jurisdictions are required to reduce permit fees when a
             private provider is used — at least 25% when a private provider performs plan review or
@@ -60,7 +60,7 @@ export function Hb803Callout({ background = OAT }: { background?: string }) {
               <div
                 key={s.k}
                 className="p-6"
-                style={{ border: "1px solid rgba(255,255,255,0.18)" }}
+                style={{ border: "1px solid rgba(0,0,0,0.08)" }}
               >
                 <div
                   style={{
@@ -68,14 +68,14 @@ export function Hb803Callout({ background = OAT }: { background?: string }) {
                     fontWeight: 600,
                     fontSize: "1.9rem",
                     letterSpacing: "-0.03em",
-                    color: OAT,
+                    color: INK,
                   }}
                 >
                   {s.k}
                 </div>
                 <div
                   className="mt-2 text-[13.5px] leading-relaxed"
-                  style={{ color: "rgba(255,255,255,0.7)" }}
+                  style={{ color: "rgba(43,22,32,0.7)" }}
                 >
                   {s.v}
                 </div>
@@ -86,14 +86,14 @@ export function Hb803Callout({ background = OAT }: { background?: string }) {
           <Link
             to="/join"
             className="mt-10 inline-flex items-center px-6 py-3 text-[14px] no-underline"
-            style={{ backgroundImage: "var(--gradient-copper)", color: "#FFFFFF", fontWeight: 700 }}
+            style={{ backgroundImage: "var(--gradient-copper)", color: "#2B1620", fontWeight: 700 }}
           >
             Put the reduction to work →
           </Link>
 
           <p
             className="mt-6 max-w-3xl text-[12px] leading-relaxed"
-            style={{ color: "rgba(255,255,255,0.5)" }}
+            style={{ color: "rgba(43,22,32,0.5)" }}
           >
             Fee reductions apply to eligible permits and are administered by each jurisdiction. This
             is general information, not legal advice.
