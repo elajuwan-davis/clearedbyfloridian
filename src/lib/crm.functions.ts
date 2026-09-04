@@ -6,6 +6,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { crmProfilePatch } from "@/lib/crm-profile-patch";
 
 const SaveInput = z.object({
   crm: z.string().min(1).max(120),
@@ -31,16 +32,9 @@ export const saveMyCrmFn = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => SaveInput.parse(d))
   .handler(async ({ data, context }) => {
-    const { error } = await (context.supabase.from("profiles" as never) as any).upsert(
-      {
-        id: context.userId,
-        current_crm: data.crm,
-        current_crm_other: data.crm_other?.trim() || null,
-        crm_source: data.source,
-        crm_captured_at: new Date().toISOString(),
-      },
-      { onConflict: "id" },
-    );
+    const { error } = await (context.supabase.from("profiles" as never) as any)
+      .update(crmProfilePatch(data))
+      .eq("id", context.userId);
     if (error) throw new Error(error.message);
     return { ok: true };
   });
