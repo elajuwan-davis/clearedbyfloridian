@@ -64,16 +64,16 @@ export const Route = createFileRoute("/")({
 
 /* ------------------------------ DESIGN TOKENS ----------------------------- */
 
-const WHITE = "#FDFCF9";
-const OFF = "#F7F5F0";
-const OFF2 = "#EEECE8";
+const WHITE = "#FFFFFF";
+const OFF = "#F5F5F5";
+const OFF2 = "rgba(0,0,0,0.05)";
 const INK = "#2B1620";
 const GRAY = "rgba(43,22,32,0.55)";
 const LIGHT = "rgba(43,22,32,0.38)";
 const TEAL = "#2B1620";
-const PLUM_LT = "#C8956A"; /* light copper, legible on dark surfaces */
+const PLUM_LT = "var(--copper)"; /* light copper, legible on dark surfaces */
 const GREEN = "rgba(43,22,32,0.5)"; /* neutral muted ink for secondary labels */
-const GREEN_LT = "#D4A96A"; /* warm copper-lite on dark */
+const GREEN_LT = "rgba(255,255,255,0.72)"; /* warm copper-lite on dark */
 const BORDER = "rgba(43,22,32,0.1)";
 const SANS = "'Fraunces', 'Iowan Old Style', Georgia, serif";
 
@@ -233,7 +233,7 @@ function statusStyle(status: string) {
     case "Verified":
     case "Passed":
     case "Clear":
-      return { background: "rgba(103,49,71,0.12)", color: "#52243A" };
+      return { background: "rgba(43,22,32,0.08)", color: "#2B1620" };
     case "Corrections":
     case "Alert":
     case "Expired":
@@ -241,10 +241,10 @@ function statusStyle(status: string) {
       return { background: "rgba(220,60,60,0.1)", color: "#8C3B3B" };
     case "Permit Issued":
     case "Active":
-      return { background: "rgba(103, 49, 71,0.1)", color: "#673147" };
+      return { background: "rgba(156,107,63,0.1)", color: "#7A5030" };
     case "En Route":
     case "In Progress":
-      return { background: "rgba(122, 92, 138,0.1)", color: "#7a5c8a" };
+      return { background: "rgba(43,22,32,0.07)", color: "rgba(43,22,32,0.6)" };
     default:
       return { background: "rgba(0,0,0,0.06)", color: GRAY };
   }
@@ -415,8 +415,8 @@ function CountyCoverage() {
 }
 
 function MunicipalityTrack() {
-  const CARD_BG = "#2F4F4F";
-  const CARD_BORDER = "#3F5C5A";
+  const CARD_BG = "#2B1620";
+  const CARD_BORDER = "rgba(255,255,255,0.14)";
   return (
     <section style={{ background: WHITE }}>
       <div className="mx-auto max-w-7xl px-5 lg:px-8 pb-24 md:pb-28">
@@ -426,7 +426,7 @@ function MunicipalityTrack() {
         </div>
 
         <div className="p-8 md:p-14" style={{ background: CARD_BG, borderLeft: "3px solid var(--copper)" }}>
-          <div style={{ color: "#F3EAD9", fontSize: 32, fontWeight: 700, letterSpacing: "-0.03em" }}>
+          <div style={{ color: "#FFFFFF", fontSize: 32, fontWeight: 700, letterSpacing: "-0.03em" }}>
             CleardGov
           </div>
           <div className="mt-2 text-[17px] font-semibold" style={{ color: "#FFFFFF" }}>
@@ -446,7 +446,7 @@ function MunicipalityTrack() {
               <span
                 key={c}
                 className="px-4 py-2 text-[12.5px]"
-                style={{ border: `1px solid ${CARD_BORDER}`, color: "#F3EAD9" }}
+                style={{ border: `1px solid ${CARD_BORDER}`, color: "#FFFFFF" }}
               >
                 {c}
               </span>
@@ -488,8 +488,8 @@ function VictoriaLayer() {
           </div>
           <div className="lg:col-span-7">
             <div className="flex items-center gap-2">
-              <Sparkles className="h-4 w-4" style={{ color: "#C8956A" }} strokeWidth={1.75} />
-              <span className="text-[10px] font-bold uppercase tracking-[0.22em]" style={{ color: "#D4A96A" }}>
+              <Sparkles className="h-4 w-4" style={{ color: "var(--copper)" }} strokeWidth={1.75} />
+              <span className="text-[10px] font-bold uppercase tracking-[0.22em]" style={{ color: "rgba(255,255,255,0.65)" }}>
                 Platform intelligence
               </span>
             </div>
@@ -517,7 +517,7 @@ function VictoriaLayer() {
             <div className="mt-6 flex flex-wrap gap-x-6 gap-y-2">
               {SERVICES.map((s) => (
                 <span key={s.title} className="flex items-center gap-2 text-[12px]" style={{ color: M.faint }}>
-                  <s.icon className="h-3.5 w-3.5" style={{ color: "#C8956A" }} strokeWidth={1.75} />
+                  <s.icon className="h-3.5 w-3.5" style={{ color: "var(--copper)" }} strokeWidth={1.75} />
                   {s.title}
                 </span>
               ))}
@@ -754,7 +754,7 @@ function MobileApp() {
 
         <div>
           <h2 style={{ fontSize: "clamp(2rem, 3.6vw, 2.875rem)", lineHeight: 1.08, letterSpacing: "-0.035em" }}>
-            <span style={{ color: "#9C6B3F", fontWeight: 600 }}>Your whole permit office </span>
+            <span style={{ color: "var(--copper)", fontWeight: 600 }}>Your whole permit office </span>
             <span style={{ color: INK, fontWeight: 800 }}>in your pocket.</span>
           </h2>
           <div className="mt-10 space-y-7">
@@ -764,7 +764,7 @@ function MobileApp() {
               { icon: FolderOpen, t: "Documents on site", b: "Permits, plans, COIs and inspection reports — available at the job, not back at the office." },
             ].map((f) => (
               <div key={f.t} className="flex gap-4">
-                <f.icon className="h-5 w-5 mt-0.5 shrink-0" style={{ color: "#9C6B3F" }} strokeWidth={1.75} />
+                <f.icon className="h-5 w-5 mt-0.5 shrink-0" style={{ color: "var(--copper)" }} strokeWidth={1.75} />
                 <div>
                   <div className="text-[15.5px] font-bold" style={{ color: INK, letterSpacing: "-0.02em" }}>{f.t}</div>
                   <p className="mt-1.5 text-[14px] leading-relaxed" style={{ color: GRAY }}>{f.b}</p>
