@@ -291,7 +291,7 @@ export function findTimelinePermitType(slug: string): TimelinePermitType | undef
   return TIMELINE_PERMIT_TYPES.find((p) => p.slug === slug);
 }
 
-/** All 42 county × permit-type paths, for sitemap generation and internal linking. */
+/** Every county × permit-type path, for sitemap generation and internal linking. */
 export function allTimelinePaths(): string[] {
   return TIMELINE_COUNTIES.flatMap((c) =>
     TIMELINE_PERMIT_TYPES.map((p) => `/coverage/${c.slug}/${p.slug}`),
