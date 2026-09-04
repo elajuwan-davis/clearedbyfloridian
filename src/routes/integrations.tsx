@@ -42,16 +42,22 @@ import logoNetic from "@/assets/logo-netic.png.asset.json";
 import logoAvoca from "@/assets/logo-avoca.webp.asset.json";
 import logoPodium from "@/assets/logo-podium.jpg.asset.json";
 
-const PLATFORMS: Array<{ name: string; blurb: string; logo?: string }> = [
+const PLATFORMS: Array<{ name: string; blurb: string; logo?: string; brand?: string }> = [
   { name: "JobTread", logo: logoJobtread.url, blurb: "See your permit status right inside JobTread." },
   { name: "ServiceTitan", logo: logoServiceTitan.url, blurb: "Push a new job to Cleard and get the permit started automatically." },
   { name: "Procore", logo: logoProcore.url, blurb: "Keep drawings, submittals, and permit records on one timeline." },
+  {
+    name: "Buildertrend",
+    brand: "#0072CE",
+    blurb:
+      "Sync project timelines, pull permit status into job schedules, and keep your field team updated without manual entry.",
+  },
   { name: "Netic.ai", logo: logoNetic.url, blurb: "Route inbound jobs into permit intake without retyping the address." },
   { name: "Avoca.ai", logo: logoAvoca.url, blurb: "Let your call intake hand a permit-ready project straight to Cleard." },
   { name: "Podium.com", logo: logoPodium.url, blurb: "Trigger homeowner updates the moment a permit is issued." },
 ];
 
-function Monogram({ name, logo }: { name: string; logo?: string }) {
+function Monogram({ name, logo, brand }: { name: string; logo?: string; brand?: string }) {
   if (logo) {
     return (
       <div
@@ -64,6 +70,18 @@ function Monogram({ name, logo }: { name: string; logo?: string }) {
           loading="lazy"
           className="max-h-11 w-auto max-w-full object-contain"
         />
+      </div>
+    );
+  }
+  if (brand) {
+    return (
+      <div className="flex h-11 w-28 shrink-0 items-center justify-start" style={{ borderRadius: 0 }}>
+        <span
+          className="text-[17px] leading-none"
+          style={{ fontFamily: SERIF, color: brand, fontWeight: 700, letterSpacing: "-0.01em" }}
+        >
+          {name}
+        </span>
       </div>
     );
   }
@@ -88,6 +106,7 @@ function Monogram({ name, logo }: { name: string; logo?: string }) {
 }
 
 
+
 function IntegrationsPage() {
   return (
     <MarketingShell>
@@ -103,7 +122,7 @@ function IntegrationsPage() {
             {PLATFORMS.map((p) => (
               <div key={p.name} className="p-7" style={{ background: OAT }}>
                 <div className="flex items-start justify-between gap-4">
-                  <Monogram name={p.name} logo={p.logo} />
+                  <Monogram name={p.name} logo={p.logo} brand={p.brand} />
                   <span
                     className="px-2.5 py-1 text-[9.5px] uppercase"
                     style={{
