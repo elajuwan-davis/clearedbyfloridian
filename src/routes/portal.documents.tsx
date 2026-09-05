@@ -9,6 +9,7 @@ import { PageShell, SearchInput } from "@/components/ui-kit";
 import { BulkDocUpload } from "@/components/bulk-doc-upload";
 import { PermitPicker } from "@/components/permit-picker";
 import { CleardTitleBlock, isEngineeringDeliverable } from "@/components/cleard-title-block";
+import { ChangeOfProviderFormDialog } from "@/components/change-of-provider-form-dialog";
 
 import {
   CDS,
