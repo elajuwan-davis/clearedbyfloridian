@@ -64,7 +64,7 @@ export const MARKETING_SERVICES: MarketingService[] = [
       "Notice of Commencement, Notices to Owner, Lien Waivers, and statutory deadline tracking — generated, signed, and recorded without leaving the platform.",
     bullets: [
       "Notice of Commencement prep, signature, and recording",
-      "Notices to Owner and Notices to Owner",
+      "Notices to Owner",
       "Conditional and unconditional lien waivers",
       "Statutory deadline tracking with countdown alerts",
     ],

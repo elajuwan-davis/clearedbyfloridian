@@ -108,7 +108,7 @@ function StatusPill({ status }: { status: NoticeStatus }) {
   );
 }
 
-/** Preliminary notices & lien rights view (Admin › Protection). */
+/** Notices to Owner & lien rights view (Admin › Protection). */
 export function AdminProtectionView() {
   const [open, setOpen] = useState(false);
 

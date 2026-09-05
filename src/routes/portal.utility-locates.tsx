@@ -43,7 +43,7 @@ function UtilityLocatesPage() {
       <PageShell
         crumbs={[{ label: "Permits" }]}
         title="Utility Locates & Protection"
-        meta={tab === "locates" ? "811 dig safe requests" : "Preliminary notices & lien rights"}
+        meta={tab === "locates" ? "811 dig safe requests" : "Notices to Owner & lien rights"}
         toolbar={
           <div className="p-seg" role="tablist">
             {TABS.map((t) => (
