@@ -293,6 +293,19 @@ function DocumentsPage() {
       >
         {preview && (
           <div className="space-y-3">
+            {isEngineeringDeliverable(preview.label) && (
+              <CleardTitleBlock
+                projectName={preview.projectName}
+                projectAddress={preview.jobAddress}
+                documentType={preview.label}
+                documentDate={
+                  preview.uploaded_at ? new Date(preview.uploaded_at).toLocaleDateString() : ""
+                }
+                jobNo={preview.permitId}
+                className="mb-4"
+              />
+            )}
+
             <Field label="Status">
               <Tag tone={toneForStatus(preview.status === "uploaded" ? "verified" : preview.status)}>
                 {preview.status.replace("_", " ")}
