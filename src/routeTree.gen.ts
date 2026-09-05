@@ -64,7 +64,9 @@ import { Route as AdminReviewQueueRouteImport } from './routes/admin.review-queu
 import { Route as AdminUtilityLocatesRouteImport } from './routes/admin.utility-locates'
 import { Route as AdminWorkloadRouteImport } from './routes/admin.workload'
 import { Route as AdminContractorsRouteImport } from './routes/admin_.contractors'
+import { Route as ApiEngineerLetterRequestsRouteImport } from './routes/api/engineer-letter-requests'
 import { Route as ApiGeocodeCensusRouteImport } from './routes/api/geocode-census'
+import { Route as ApiLienReleasesRouteImport } from './routes/api/lien-releases'
 import { Route as ApiVerifyLicenseRouteImport } from './routes/api/verify-license'
 import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
 import { Route as BlogIndexRouteImport } from './routes/blog.index'
@@ -116,11 +118,17 @@ import { Route as VersusSlugRouteImport } from './routes/versus.$slug'
 import { Route as AdminBlogIndexRouteImport } from './routes/admin.blog.index'
 import { Route as AdminBlogIdRouteImport } from './routes/admin.blog.$id'
 import { Route as AdminBlogNewRouteImport } from './routes/admin.blog.new'
+import { Route as ApiAdminEngineerRequestsRouteImport } from './routes/api/admin.engineer-requests'
+import { Route as ApiEngineerLetterRequestsIdRouteImport } from './routes/api/engineer-letter-requests.$id'
+import { Route as ApiEngineerBidsRouteImport } from './routes/api/engineer.bids'
+import { Route as ApiEngineerRequestsRouteImport } from './routes/api/engineer.requests'
+import { Route as ApiLienReleasesIdRouteImport } from './routes/api/lien-releases.$id'
 import { Route as ApiPublicAccessRequestRouteImport } from './routes/api/public/access-request'
 import { Route as ApiPublicHoaReplyRouteImport } from './routes/api/public/hoa-reply'
 import { Route as ApiPublicIdUploadRouteImport } from './routes/api/public/id-upload'
 import { Route as ApiPublicSubIntakeUploadRouteImport } from './routes/api/public/sub-intake-upload'
 import { Route as ApiPublicVictoriaScanRouteImport } from './routes/api/public/victoria-scan'
+import { Route as ApiWebhooksBluenotaryRouteImport } from './routes/api/webhooks.bluenotary'
 import { Route as CoverageCountyIndexRouteImport } from './routes/coverage.$county.index'
 import { Route as CoverageCountyPermitTypeRouteImport } from './routes/coverage.$county.$permitType'
 import { Route as PortalBlogIndexRouteImport } from './routes/portal.blog.index'
@@ -142,6 +150,10 @@ import { Route as PortalSubcontractorsIndexRouteImport } from './routes/portal.s
 import { Route as PortalSubcontractorsNewRouteImport } from './routes/portal.subcontractors.new'
 import { Route as PortalSubmissionsIndexRouteImport } from './routes/portal.submissions.index'
 import { Route as PortalSubmissionsIdRouteImport } from './routes/portal.submissions.$id'
+import { Route as ApiEngineerRequestsIdRouteImport } from './routes/api/engineer.requests.$id'
+import { Route as ApiLienReleasesIdDownloadRouteImport } from './routes/api/lien-releases.$id.download'
+import { Route as ApiLienReleasesIdGeneratePdfRouteImport } from './routes/api/lien-releases.$id.generate-pdf'
+import { Route as ApiLienReleasesIdSendForNotarizationRouteImport } from './routes/api/lien-releases.$id.send-for-notarization'
 import { Route as ApiPublicEmailOutboxProcessRouteImport } from './routes/api/public/email-outbox.process'
 import { Route as ApiPublicHubspotDealWebhookRouteImport } from './routes/api/public/hubspot.deal-webhook'
 import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments/webhook'
@@ -151,6 +163,9 @@ import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/em
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 import { Route as PortalHoaSubmittalsTemplatesNewRouteImport } from './routes/portal.hoa-submittals.templates.new'
 import { Route as PortalPermitsIdBundleRouteImport } from './routes/portal.permits_.$id.bundle'
+import { Route as ApiAdminEngineerRequestsIdAssignRouteImport } from './routes/api/admin.engineer-requests.$id.assign'
+import { Route as ApiAdminEngineerRequestsIdCompleteRouteImport } from './routes/api/admin.engineer-requests.$id.complete'
+import { Route as ApiEngineerRequestsIdBidRouteImport } from './routes/api/engineer.requests.$id.bid'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -427,9 +442,20 @@ const AdminContractorsRoute = AdminContractorsRouteImport.update({
   path: '/admin/contractors',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiEngineerLetterRequestsRoute =
+  ApiEngineerLetterRequestsRouteImport.update({
+    id: '/api/engineer-letter-requests',
+    path: '/api/engineer-letter-requests',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiGeocodeCensusRoute = ApiGeocodeCensusRouteImport.update({
   id: '/api/geocode-census',
   path: '/api/geocode-census',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiLienReleasesRoute = ApiLienReleasesRouteImport.update({
+  id: '/api/lien-releases',
+  path: '/api/lien-releases',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiVerifyLicenseRoute = ApiVerifyLicenseRouteImport.update({
@@ -691,6 +717,33 @@ const AdminBlogNewRoute = AdminBlogNewRouteImport.update({
   path: '/admin/blog/new',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiAdminEngineerRequestsRoute =
+  ApiAdminEngineerRequestsRouteImport.update({
+    id: '/api/admin/engineer-requests',
+    path: '/api/admin/engineer-requests',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiEngineerLetterRequestsIdRoute =
+  ApiEngineerLetterRequestsIdRouteImport.update({
+    id: '/$id',
+    path: '/$id',
+    getParentRoute: () => ApiEngineerLetterRequestsRoute,
+  } as any)
+const ApiEngineerBidsRoute = ApiEngineerBidsRouteImport.update({
+  id: '/api/engineer/bids',
+  path: '/api/engineer/bids',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiEngineerRequestsRoute = ApiEngineerRequestsRouteImport.update({
+  id: '/api/engineer/requests',
+  path: '/api/engineer/requests',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiLienReleasesIdRoute = ApiLienReleasesIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => ApiLienReleasesRoute,
+} as any)
 const ApiPublicAccessRequestRoute = ApiPublicAccessRequestRouteImport.update({
   id: '/api/public/access-request',
   path: '/api/public/access-request',
@@ -715,6 +768,11 @@ const ApiPublicSubIntakeUploadRoute =
 const ApiPublicVictoriaScanRoute = ApiPublicVictoriaScanRouteImport.update({
   id: '/api/public/victoria-scan',
   path: '/api/public/victoria-scan',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiWebhooksBluenotaryRoute = ApiWebhooksBluenotaryRouteImport.update({
+  id: '/api/webhooks/bluenotary',
+  path: '/api/webhooks/bluenotary',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CoverageCountyIndexRoute = CoverageCountyIndexRouteImport.update({
@@ -829,6 +887,29 @@ const PortalSubmissionsIdRoute = PortalSubmissionsIdRouteImport.update({
   path: '/$id',
   getParentRoute: () => PortalSubmissionsRoute,
 } as any)
+const ApiEngineerRequestsIdRoute = ApiEngineerRequestsIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => ApiEngineerRequestsRoute,
+} as any)
+const ApiLienReleasesIdDownloadRoute =
+  ApiLienReleasesIdDownloadRouteImport.update({
+    id: '/download',
+    path: '/download',
+    getParentRoute: () => ApiLienReleasesIdRoute,
+  } as any)
+const ApiLienReleasesIdGeneratePdfRoute =
+  ApiLienReleasesIdGeneratePdfRouteImport.update({
+    id: '/generate-pdf',
+    path: '/generate-pdf',
+    getParentRoute: () => ApiLienReleasesIdRoute,
+  } as any)
+const ApiLienReleasesIdSendForNotarizationRoute =
+  ApiLienReleasesIdSendForNotarizationRouteImport.update({
+    id: '/send-for-notarization',
+    path: '/send-for-notarization',
+    getParentRoute: () => ApiLienReleasesIdRoute,
+  } as any)
 const ApiPublicEmailOutboxProcessRoute =
   ApiPublicEmailOutboxProcessRouteImport.update({
     id: '/api/public/email-outbox/process',
@@ -879,6 +960,24 @@ const PortalPermitsIdBundleRoute = PortalPermitsIdBundleRouteImport.update({
   path: '/permits/$id/bundle',
   getParentRoute: () => PortalRoute,
 } as any)
+const ApiAdminEngineerRequestsIdAssignRoute =
+  ApiAdminEngineerRequestsIdAssignRouteImport.update({
+    id: '/$id/assign',
+    path: '/$id/assign',
+    getParentRoute: () => ApiAdminEngineerRequestsRoute,
+  } as any)
+const ApiAdminEngineerRequestsIdCompleteRoute =
+  ApiAdminEngineerRequestsIdCompleteRouteImport.update({
+    id: '/$id/complete',
+    path: '/$id/complete',
+    getParentRoute: () => ApiAdminEngineerRequestsRoute,
+  } as any)
+const ApiEngineerRequestsIdBidRoute =
+  ApiEngineerRequestsIdBidRouteImport.update({
+    id: '/bid',
+    path: '/bid',
+    getParentRoute: () => ApiEngineerRequestsIdRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -935,7 +1034,9 @@ export interface FileRoutesByFullPath {
   '/admin/utility-locates': typeof AdminUtilityLocatesRoute
   '/admin/workload': typeof AdminWorkloadRoute
   '/admin/contractors': typeof AdminContractorsRoute
+  '/api/engineer-letter-requests': typeof ApiEngineerLetterRequestsRouteWithChildren
   '/api/geocode-census': typeof ApiGeocodeCensusRoute
+  '/api/lien-releases': typeof ApiLienReleasesRouteWithChildren
   '/api/verify-license': typeof ApiVerifyLicenseRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/blog/$slug': typeof BlogSlugRoute
@@ -987,11 +1088,17 @@ export interface FileRoutesByFullPath {
   '/versus/': typeof VersusIndexRoute
   '/admin/blog/$id': typeof AdminBlogIdRoute
   '/admin/blog/new': typeof AdminBlogNewRoute
+  '/api/admin/engineer-requests': typeof ApiAdminEngineerRequestsRouteWithChildren
+  '/api/engineer-letter-requests/$id': typeof ApiEngineerLetterRequestsIdRoute
+  '/api/engineer/bids': typeof ApiEngineerBidsRoute
+  '/api/engineer/requests': typeof ApiEngineerRequestsRouteWithChildren
+  '/api/lien-releases/$id': typeof ApiLienReleasesIdRouteWithChildren
   '/api/public/access-request': typeof ApiPublicAccessRequestRoute
   '/api/public/hoa-reply': typeof ApiPublicHoaReplyRoute
   '/api/public/id-upload': typeof ApiPublicIdUploadRoute
   '/api/public/sub-intake-upload': typeof ApiPublicSubIntakeUploadRoute
   '/api/public/victoria-scan': typeof ApiPublicVictoriaScanRoute
+  '/api/webhooks/bluenotary': typeof ApiWebhooksBluenotaryRoute
   '/coverage/$county/$permitType': typeof CoverageCountyPermitTypeRoute
   '/portal/blog/$id': typeof PortalBlogIdRoute
   '/portal/blog/new': typeof PortalBlogNewRoute
@@ -1014,6 +1121,10 @@ export interface FileRoutesByFullPath {
   '/portal/permits/': typeof PortalPermitsIndexRoute
   '/portal/subcontractors/': typeof PortalSubcontractorsIndexRoute
   '/portal/submissions/': typeof PortalSubmissionsIndexRoute
+  '/api/engineer/requests/$id': typeof ApiEngineerRequestsIdRouteWithChildren
+  '/api/lien-releases/$id/download': typeof ApiLienReleasesIdDownloadRoute
+  '/api/lien-releases/$id/generate-pdf': typeof ApiLienReleasesIdGeneratePdfRoute
+  '/api/lien-releases/$id/send-for-notarization': typeof ApiLienReleasesIdSendForNotarizationRoute
   '/api/public/email-outbox/process': typeof ApiPublicEmailOutboxProcessRoute
   '/api/public/hubspot/deal-webhook': typeof ApiPublicHubspotDealWebhookRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
@@ -1023,6 +1134,9 @@ export interface FileRoutesByFullPath {
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
   '/portal/hoa-submittals/templates/new': typeof PortalHoaSubmittalsTemplatesNewRoute
   '/portal/permits/$id/bundle': typeof PortalPermitsIdBundleRoute
+  '/api/admin/engineer-requests/$id/assign': typeof ApiAdminEngineerRequestsIdAssignRoute
+  '/api/admin/engineer-requests/$id/complete': typeof ApiAdminEngineerRequestsIdCompleteRoute
+  '/api/engineer/requests/$id/bid': typeof ApiEngineerRequestsIdBidRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -1077,7 +1191,9 @@ export interface FileRoutesByTo {
   '/admin/utility-locates': typeof AdminUtilityLocatesRoute
   '/admin/workload': typeof AdminWorkloadRoute
   '/admin/contractors': typeof AdminContractorsRoute
+  '/api/engineer-letter-requests': typeof ApiEngineerLetterRequestsRouteWithChildren
   '/api/geocode-census': typeof ApiGeocodeCensusRoute
+  '/api/lien-releases': typeof ApiLienReleasesRouteWithChildren
   '/api/verify-license': typeof ApiVerifyLicenseRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/blog/$slug': typeof BlogSlugRoute
@@ -1127,11 +1243,17 @@ export interface FileRoutesByTo {
   '/versus': typeof VersusIndexRoute
   '/admin/blog/$id': typeof AdminBlogIdRoute
   '/admin/blog/new': typeof AdminBlogNewRoute
+  '/api/admin/engineer-requests': typeof ApiAdminEngineerRequestsRouteWithChildren
+  '/api/engineer-letter-requests/$id': typeof ApiEngineerLetterRequestsIdRoute
+  '/api/engineer/bids': typeof ApiEngineerBidsRoute
+  '/api/engineer/requests': typeof ApiEngineerRequestsRouteWithChildren
+  '/api/lien-releases/$id': typeof ApiLienReleasesIdRouteWithChildren
   '/api/public/access-request': typeof ApiPublicAccessRequestRoute
   '/api/public/hoa-reply': typeof ApiPublicHoaReplyRoute
   '/api/public/id-upload': typeof ApiPublicIdUploadRoute
   '/api/public/sub-intake-upload': typeof ApiPublicSubIntakeUploadRoute
   '/api/public/victoria-scan': typeof ApiPublicVictoriaScanRoute
+  '/api/webhooks/bluenotary': typeof ApiWebhooksBluenotaryRoute
   '/coverage/$county/$permitType': typeof CoverageCountyPermitTypeRoute
   '/portal/blog/$id': typeof PortalBlogIdRoute
   '/portal/blog/new': typeof PortalBlogNewRoute
@@ -1154,6 +1276,10 @@ export interface FileRoutesByTo {
   '/portal/permits': typeof PortalPermitsIndexRoute
   '/portal/subcontractors': typeof PortalSubcontractorsIndexRoute
   '/portal/submissions': typeof PortalSubmissionsIndexRoute
+  '/api/engineer/requests/$id': typeof ApiEngineerRequestsIdRouteWithChildren
+  '/api/lien-releases/$id/download': typeof ApiLienReleasesIdDownloadRoute
+  '/api/lien-releases/$id/generate-pdf': typeof ApiLienReleasesIdGeneratePdfRoute
+  '/api/lien-releases/$id/send-for-notarization': typeof ApiLienReleasesIdSendForNotarizationRoute
   '/api/public/email-outbox/process': typeof ApiPublicEmailOutboxProcessRoute
   '/api/public/hubspot/deal-webhook': typeof ApiPublicHubspotDealWebhookRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
@@ -1163,6 +1289,9 @@ export interface FileRoutesByTo {
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
   '/portal/hoa-submittals/templates/new': typeof PortalHoaSubmittalsTemplatesNewRoute
   '/portal/permits/$id/bundle': typeof PortalPermitsIdBundleRoute
+  '/api/admin/engineer-requests/$id/assign': typeof ApiAdminEngineerRequestsIdAssignRoute
+  '/api/admin/engineer-requests/$id/complete': typeof ApiAdminEngineerRequestsIdCompleteRoute
+  '/api/engineer/requests/$id/bid': typeof ApiEngineerRequestsIdBidRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -1220,7 +1349,9 @@ export interface FileRoutesById {
   '/admin/utility-locates': typeof AdminUtilityLocatesRoute
   '/admin/workload': typeof AdminWorkloadRoute
   '/admin_/contractors': typeof AdminContractorsRoute
+  '/api/engineer-letter-requests': typeof ApiEngineerLetterRequestsRouteWithChildren
   '/api/geocode-census': typeof ApiGeocodeCensusRoute
+  '/api/lien-releases': typeof ApiLienReleasesRouteWithChildren
   '/api/verify-license': typeof ApiVerifyLicenseRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/blog/$slug': typeof BlogSlugRoute
@@ -1272,11 +1403,17 @@ export interface FileRoutesById {
   '/versus/': typeof VersusIndexRoute
   '/admin/blog/$id': typeof AdminBlogIdRoute
   '/admin/blog/new': typeof AdminBlogNewRoute
+  '/api/admin/engineer-requests': typeof ApiAdminEngineerRequestsRouteWithChildren
+  '/api/engineer-letter-requests/$id': typeof ApiEngineerLetterRequestsIdRoute
+  '/api/engineer/bids': typeof ApiEngineerBidsRoute
+  '/api/engineer/requests': typeof ApiEngineerRequestsRouteWithChildren
+  '/api/lien-releases/$id': typeof ApiLienReleasesIdRouteWithChildren
   '/api/public/access-request': typeof ApiPublicAccessRequestRoute
   '/api/public/hoa-reply': typeof ApiPublicHoaReplyRoute
   '/api/public/id-upload': typeof ApiPublicIdUploadRoute
   '/api/public/sub-intake-upload': typeof ApiPublicSubIntakeUploadRoute
   '/api/public/victoria-scan': typeof ApiPublicVictoriaScanRoute
+  '/api/webhooks/bluenotary': typeof ApiWebhooksBluenotaryRoute
   '/coverage/$county/$permitType': typeof CoverageCountyPermitTypeRoute
   '/portal/blog/$id': typeof PortalBlogIdRoute
   '/portal/blog/new': typeof PortalBlogNewRoute
@@ -1299,6 +1436,10 @@ export interface FileRoutesById {
   '/portal/permits/': typeof PortalPermitsIndexRoute
   '/portal/subcontractors/': typeof PortalSubcontractorsIndexRoute
   '/portal/submissions/': typeof PortalSubmissionsIndexRoute
+  '/api/engineer/requests/$id': typeof ApiEngineerRequestsIdRouteWithChildren
+  '/api/lien-releases/$id/download': typeof ApiLienReleasesIdDownloadRoute
+  '/api/lien-releases/$id/generate-pdf': typeof ApiLienReleasesIdGeneratePdfRoute
+  '/api/lien-releases/$id/send-for-notarization': typeof ApiLienReleasesIdSendForNotarizationRoute
   '/api/public/email-outbox/process': typeof ApiPublicEmailOutboxProcessRoute
   '/api/public/hubspot/deal-webhook': typeof ApiPublicHubspotDealWebhookRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
@@ -1308,6 +1449,9 @@ export interface FileRoutesById {
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
   '/portal/hoa-submittals/templates/new': typeof PortalHoaSubmittalsTemplatesNewRoute
   '/portal/permits_/$id/bundle': typeof PortalPermitsIdBundleRoute
+  '/api/admin/engineer-requests/$id/assign': typeof ApiAdminEngineerRequestsIdAssignRoute
+  '/api/admin/engineer-requests/$id/complete': typeof ApiAdminEngineerRequestsIdCompleteRoute
+  '/api/engineer/requests/$id/bid': typeof ApiEngineerRequestsIdBidRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -1366,7 +1510,9 @@ export interface FileRouteTypes {
     | '/admin/utility-locates'
     | '/admin/workload'
     | '/admin/contractors'
+    | '/api/engineer-letter-requests'
     | '/api/geocode-census'
+    | '/api/lien-releases'
     | '/api/verify-license'
     | '/auth/callback'
     | '/blog/$slug'
@@ -1418,11 +1564,17 @@ export interface FileRouteTypes {
     | '/versus/'
     | '/admin/blog/$id'
     | '/admin/blog/new'
+    | '/api/admin/engineer-requests'
+    | '/api/engineer-letter-requests/$id'
+    | '/api/engineer/bids'
+    | '/api/engineer/requests'
+    | '/api/lien-releases/$id'
     | '/api/public/access-request'
     | '/api/public/hoa-reply'
     | '/api/public/id-upload'
     | '/api/public/sub-intake-upload'
     | '/api/public/victoria-scan'
+    | '/api/webhooks/bluenotary'
     | '/coverage/$county/$permitType'
     | '/portal/blog/$id'
     | '/portal/blog/new'
@@ -1445,6 +1597,10 @@ export interface FileRouteTypes {
     | '/portal/permits/'
     | '/portal/subcontractors/'
     | '/portal/submissions/'
+    | '/api/engineer/requests/$id'
+    | '/api/lien-releases/$id/download'
+    | '/api/lien-releases/$id/generate-pdf'
+    | '/api/lien-releases/$id/send-for-notarization'
     | '/api/public/email-outbox/process'
     | '/api/public/hubspot/deal-webhook'
     | '/api/public/payments/webhook'
@@ -1454,6 +1610,9 @@ export interface FileRouteTypes {
     | '/lovable/email/queue/process'
     | '/portal/hoa-submittals/templates/new'
     | '/portal/permits/$id/bundle'
+    | '/api/admin/engineer-requests/$id/assign'
+    | '/api/admin/engineer-requests/$id/complete'
+    | '/api/engineer/requests/$id/bid'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -1508,7 +1667,9 @@ export interface FileRouteTypes {
     | '/admin/utility-locates'
     | '/admin/workload'
     | '/admin/contractors'
+    | '/api/engineer-letter-requests'
     | '/api/geocode-census'
+    | '/api/lien-releases'
     | '/api/verify-license'
     | '/auth/callback'
     | '/blog/$slug'
@@ -1558,11 +1719,17 @@ export interface FileRouteTypes {
     | '/versus'
     | '/admin/blog/$id'
     | '/admin/blog/new'
+    | '/api/admin/engineer-requests'
+    | '/api/engineer-letter-requests/$id'
+    | '/api/engineer/bids'
+    | '/api/engineer/requests'
+    | '/api/lien-releases/$id'
     | '/api/public/access-request'
     | '/api/public/hoa-reply'
     | '/api/public/id-upload'
     | '/api/public/sub-intake-upload'
     | '/api/public/victoria-scan'
+    | '/api/webhooks/bluenotary'
     | '/coverage/$county/$permitType'
     | '/portal/blog/$id'
     | '/portal/blog/new'
@@ -1585,6 +1752,10 @@ export interface FileRouteTypes {
     | '/portal/permits'
     | '/portal/subcontractors'
     | '/portal/submissions'
+    | '/api/engineer/requests/$id'
+    | '/api/lien-releases/$id/download'
+    | '/api/lien-releases/$id/generate-pdf'
+    | '/api/lien-releases/$id/send-for-notarization'
     | '/api/public/email-outbox/process'
     | '/api/public/hubspot/deal-webhook'
     | '/api/public/payments/webhook'
@@ -1594,6 +1765,9 @@ export interface FileRouteTypes {
     | '/lovable/email/queue/process'
     | '/portal/hoa-submittals/templates/new'
     | '/portal/permits/$id/bundle'
+    | '/api/admin/engineer-requests/$id/assign'
+    | '/api/admin/engineer-requests/$id/complete'
+    | '/api/engineer/requests/$id/bid'
   id:
     | '__root__'
     | '/'
@@ -1650,7 +1824,9 @@ export interface FileRouteTypes {
     | '/admin/utility-locates'
     | '/admin/workload'
     | '/admin_/contractors'
+    | '/api/engineer-letter-requests'
     | '/api/geocode-census'
+    | '/api/lien-releases'
     | '/api/verify-license'
     | '/auth/callback'
     | '/blog/$slug'
@@ -1702,11 +1878,17 @@ export interface FileRouteTypes {
     | '/versus/'
     | '/admin/blog/$id'
     | '/admin/blog/new'
+    | '/api/admin/engineer-requests'
+    | '/api/engineer-letter-requests/$id'
+    | '/api/engineer/bids'
+    | '/api/engineer/requests'
+    | '/api/lien-releases/$id'
     | '/api/public/access-request'
     | '/api/public/hoa-reply'
     | '/api/public/id-upload'
     | '/api/public/sub-intake-upload'
     | '/api/public/victoria-scan'
+    | '/api/webhooks/bluenotary'
     | '/coverage/$county/$permitType'
     | '/portal/blog/$id'
     | '/portal/blog/new'
@@ -1729,6 +1911,10 @@ export interface FileRouteTypes {
     | '/portal/permits/'
     | '/portal/subcontractors/'
     | '/portal/submissions/'
+    | '/api/engineer/requests/$id'
+    | '/api/lien-releases/$id/download'
+    | '/api/lien-releases/$id/generate-pdf'
+    | '/api/lien-releases/$id/send-for-notarization'
     | '/api/public/email-outbox/process'
     | '/api/public/hubspot/deal-webhook'
     | '/api/public/payments/webhook'
@@ -1738,6 +1924,9 @@ export interface FileRouteTypes {
     | '/lovable/email/queue/process'
     | '/portal/hoa-submittals/templates/new'
     | '/portal/permits_/$id/bundle'
+    | '/api/admin/engineer-requests/$id/assign'
+    | '/api/admin/engineer-requests/$id/complete'
+    | '/api/engineer/requests/$id/bid'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -1795,7 +1984,9 @@ export interface RootRouteChildren {
   AdminUtilityLocatesRoute: typeof AdminUtilityLocatesRoute
   AdminWorkloadRoute: typeof AdminWorkloadRoute
   AdminContractorsRoute: typeof AdminContractorsRoute
+  ApiEngineerLetterRequestsRoute: typeof ApiEngineerLetterRequestsRouteWithChildren
   ApiGeocodeCensusRoute: typeof ApiGeocodeCensusRoute
+  ApiLienReleasesRoute: typeof ApiLienReleasesRouteWithChildren
   ApiVerifyLicenseRoute: typeof ApiVerifyLicenseRoute
   AuthCallbackRoute: typeof AuthCallbackRoute
   BlogSlugRoute: typeof BlogSlugRoute
@@ -1819,11 +2010,15 @@ export interface RootRouteChildren {
   VersusIndexRoute: typeof VersusIndexRoute
   AdminBlogIdRoute: typeof AdminBlogIdRoute
   AdminBlogNewRoute: typeof AdminBlogNewRoute
+  ApiAdminEngineerRequestsRoute: typeof ApiAdminEngineerRequestsRouteWithChildren
+  ApiEngineerBidsRoute: typeof ApiEngineerBidsRoute
+  ApiEngineerRequestsRoute: typeof ApiEngineerRequestsRouteWithChildren
   ApiPublicAccessRequestRoute: typeof ApiPublicAccessRequestRoute
   ApiPublicHoaReplyRoute: typeof ApiPublicHoaReplyRoute
   ApiPublicIdUploadRoute: typeof ApiPublicIdUploadRoute
   ApiPublicSubIntakeUploadRoute: typeof ApiPublicSubIntakeUploadRoute
   ApiPublicVictoriaScanRoute: typeof ApiPublicVictoriaScanRoute
+  ApiWebhooksBluenotaryRoute: typeof ApiWebhooksBluenotaryRoute
   CoverageCountyPermitTypeRoute: typeof CoverageCountyPermitTypeRoute
   AdminBlogIndexRoute: typeof AdminBlogIndexRoute
   CoverageCountyIndexRoute: typeof CoverageCountyIndexRoute
@@ -2223,11 +2418,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminContractorsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/engineer-letter-requests': {
+      id: '/api/engineer-letter-requests'
+      path: '/api/engineer-letter-requests'
+      fullPath: '/api/engineer-letter-requests'
+      preLoaderRoute: typeof ApiEngineerLetterRequestsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/geocode-census': {
       id: '/api/geocode-census'
       path: '/api/geocode-census'
       fullPath: '/api/geocode-census'
       preLoaderRoute: typeof ApiGeocodeCensusRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/lien-releases': {
+      id: '/api/lien-releases'
+      path: '/api/lien-releases'
+      fullPath: '/api/lien-releases'
+      preLoaderRoute: typeof ApiLienReleasesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/verify-license': {
@@ -2587,6 +2796,41 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminBlogNewRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/admin/engineer-requests': {
+      id: '/api/admin/engineer-requests'
+      path: '/api/admin/engineer-requests'
+      fullPath: '/api/admin/engineer-requests'
+      preLoaderRoute: typeof ApiAdminEngineerRequestsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/engineer-letter-requests/$id': {
+      id: '/api/engineer-letter-requests/$id'
+      path: '/$id'
+      fullPath: '/api/engineer-letter-requests/$id'
+      preLoaderRoute: typeof ApiEngineerLetterRequestsIdRouteImport
+      parentRoute: typeof ApiEngineerLetterRequestsRoute
+    }
+    '/api/engineer/bids': {
+      id: '/api/engineer/bids'
+      path: '/api/engineer/bids'
+      fullPath: '/api/engineer/bids'
+      preLoaderRoute: typeof ApiEngineerBidsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/engineer/requests': {
+      id: '/api/engineer/requests'
+      path: '/api/engineer/requests'
+      fullPath: '/api/engineer/requests'
+      preLoaderRoute: typeof ApiEngineerRequestsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/lien-releases/$id': {
+      id: '/api/lien-releases/$id'
+      path: '/$id'
+      fullPath: '/api/lien-releases/$id'
+      preLoaderRoute: typeof ApiLienReleasesIdRouteImport
+      parentRoute: typeof ApiLienReleasesRoute
+    }
     '/api/public/access-request': {
       id: '/api/public/access-request'
       path: '/api/public/access-request'
@@ -2620,6 +2864,13 @@ declare module '@tanstack/react-router' {
       path: '/api/public/victoria-scan'
       fullPath: '/api/public/victoria-scan'
       preLoaderRoute: typeof ApiPublicVictoriaScanRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/webhooks/bluenotary': {
+      id: '/api/webhooks/bluenotary'
+      path: '/api/webhooks/bluenotary'
+      fullPath: '/api/webhooks/bluenotary'
+      preLoaderRoute: typeof ApiWebhooksBluenotaryRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/coverage/$county/': {
@@ -2769,6 +3020,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PortalSubmissionsIdRouteImport
       parentRoute: typeof PortalSubmissionsRoute
     }
+    '/api/engineer/requests/$id': {
+      id: '/api/engineer/requests/$id'
+      path: '/$id'
+      fullPath: '/api/engineer/requests/$id'
+      preLoaderRoute: typeof ApiEngineerRequestsIdRouteImport
+      parentRoute: typeof ApiEngineerRequestsRoute
+    }
+    '/api/lien-releases/$id/download': {
+      id: '/api/lien-releases/$id/download'
+      path: '/download'
+      fullPath: '/api/lien-releases/$id/download'
+      preLoaderRoute: typeof ApiLienReleasesIdDownloadRouteImport
+      parentRoute: typeof ApiLienReleasesIdRoute
+    }
+    '/api/lien-releases/$id/generate-pdf': {
+      id: '/api/lien-releases/$id/generate-pdf'
+      path: '/generate-pdf'
+      fullPath: '/api/lien-releases/$id/generate-pdf'
+      preLoaderRoute: typeof ApiLienReleasesIdGeneratePdfRouteImport
+      parentRoute: typeof ApiLienReleasesIdRoute
+    }
+    '/api/lien-releases/$id/send-for-notarization': {
+      id: '/api/lien-releases/$id/send-for-notarization'
+      path: '/send-for-notarization'
+      fullPath: '/api/lien-releases/$id/send-for-notarization'
+      preLoaderRoute: typeof ApiLienReleasesIdSendForNotarizationRouteImport
+      parentRoute: typeof ApiLienReleasesIdRoute
+    }
     '/api/public/email-outbox/process': {
       id: '/api/public/email-outbox/process'
       path: '/api/public/email-outbox/process'
@@ -2831,6 +3110,27 @@ declare module '@tanstack/react-router' {
       fullPath: '/portal/permits/$id/bundle'
       preLoaderRoute: typeof PortalPermitsIdBundleRouteImport
       parentRoute: typeof PortalRoute
+    }
+    '/api/admin/engineer-requests/$id/assign': {
+      id: '/api/admin/engineer-requests/$id/assign'
+      path: '/$id/assign'
+      fullPath: '/api/admin/engineer-requests/$id/assign'
+      preLoaderRoute: typeof ApiAdminEngineerRequestsIdAssignRouteImport
+      parentRoute: typeof ApiAdminEngineerRequestsRoute
+    }
+    '/api/admin/engineer-requests/$id/complete': {
+      id: '/api/admin/engineer-requests/$id/complete'
+      path: '/$id/complete'
+      fullPath: '/api/admin/engineer-requests/$id/complete'
+      preLoaderRoute: typeof ApiAdminEngineerRequestsIdCompleteRouteImport
+      parentRoute: typeof ApiAdminEngineerRequestsRoute
+    }
+    '/api/engineer/requests/$id/bid': {
+      id: '/api/engineer/requests/$id/bid'
+      path: '/bid'
+      fullPath: '/api/engineer/requests/$id/bid'
+      preLoaderRoute: typeof ApiEngineerRequestsIdBidRouteImport
+      parentRoute: typeof ApiEngineerRequestsIdRoute
     }
   }
 }
@@ -2969,6 +3269,90 @@ const PortalRouteChildren: PortalRouteChildren = {
 const PortalRouteWithChildren =
   PortalRoute._addFileChildren(PortalRouteChildren)
 
+interface ApiEngineerLetterRequestsRouteChildren {
+  ApiEngineerLetterRequestsIdRoute: typeof ApiEngineerLetterRequestsIdRoute
+}
+
+const ApiEngineerLetterRequestsRouteChildren: ApiEngineerLetterRequestsRouteChildren =
+  {
+    ApiEngineerLetterRequestsIdRoute: ApiEngineerLetterRequestsIdRoute,
+  }
+
+const ApiEngineerLetterRequestsRouteWithChildren =
+  ApiEngineerLetterRequestsRoute._addFileChildren(
+    ApiEngineerLetterRequestsRouteChildren,
+  )
+
+interface ApiLienReleasesIdRouteChildren {
+  ApiLienReleasesIdDownloadRoute: typeof ApiLienReleasesIdDownloadRoute
+  ApiLienReleasesIdGeneratePdfRoute: typeof ApiLienReleasesIdGeneratePdfRoute
+  ApiLienReleasesIdSendForNotarizationRoute: typeof ApiLienReleasesIdSendForNotarizationRoute
+}
+
+const ApiLienReleasesIdRouteChildren: ApiLienReleasesIdRouteChildren = {
+  ApiLienReleasesIdDownloadRoute: ApiLienReleasesIdDownloadRoute,
+  ApiLienReleasesIdGeneratePdfRoute: ApiLienReleasesIdGeneratePdfRoute,
+  ApiLienReleasesIdSendForNotarizationRoute:
+    ApiLienReleasesIdSendForNotarizationRoute,
+}
+
+const ApiLienReleasesIdRouteWithChildren =
+  ApiLienReleasesIdRoute._addFileChildren(ApiLienReleasesIdRouteChildren)
+
+interface ApiLienReleasesRouteChildren {
+  ApiLienReleasesIdRoute: typeof ApiLienReleasesIdRouteWithChildren
+}
+
+const ApiLienReleasesRouteChildren: ApiLienReleasesRouteChildren = {
+  ApiLienReleasesIdRoute: ApiLienReleasesIdRouteWithChildren,
+}
+
+const ApiLienReleasesRouteWithChildren = ApiLienReleasesRoute._addFileChildren(
+  ApiLienReleasesRouteChildren,
+)
+
+interface ApiAdminEngineerRequestsRouteChildren {
+  ApiAdminEngineerRequestsIdAssignRoute: typeof ApiAdminEngineerRequestsIdAssignRoute
+  ApiAdminEngineerRequestsIdCompleteRoute: typeof ApiAdminEngineerRequestsIdCompleteRoute
+}
+
+const ApiAdminEngineerRequestsRouteChildren: ApiAdminEngineerRequestsRouteChildren =
+  {
+    ApiAdminEngineerRequestsIdAssignRoute:
+      ApiAdminEngineerRequestsIdAssignRoute,
+    ApiAdminEngineerRequestsIdCompleteRoute:
+      ApiAdminEngineerRequestsIdCompleteRoute,
+  }
+
+const ApiAdminEngineerRequestsRouteWithChildren =
+  ApiAdminEngineerRequestsRoute._addFileChildren(
+    ApiAdminEngineerRequestsRouteChildren,
+  )
+
+interface ApiEngineerRequestsIdRouteChildren {
+  ApiEngineerRequestsIdBidRoute: typeof ApiEngineerRequestsIdBidRoute
+}
+
+const ApiEngineerRequestsIdRouteChildren: ApiEngineerRequestsIdRouteChildren = {
+  ApiEngineerRequestsIdBidRoute: ApiEngineerRequestsIdBidRoute,
+}
+
+const ApiEngineerRequestsIdRouteWithChildren =
+  ApiEngineerRequestsIdRoute._addFileChildren(
+    ApiEngineerRequestsIdRouteChildren,
+  )
+
+interface ApiEngineerRequestsRouteChildren {
+  ApiEngineerRequestsIdRoute: typeof ApiEngineerRequestsIdRouteWithChildren
+}
+
+const ApiEngineerRequestsRouteChildren: ApiEngineerRequestsRouteChildren = {
+  ApiEngineerRequestsIdRoute: ApiEngineerRequestsIdRouteWithChildren,
+}
+
+const ApiEngineerRequestsRouteWithChildren =
+  ApiEngineerRequestsRoute._addFileChildren(ApiEngineerRequestsRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   R411Route: R411Route,
@@ -3024,7 +3408,9 @@ const rootRouteChildren: RootRouteChildren = {
   AdminUtilityLocatesRoute: AdminUtilityLocatesRoute,
   AdminWorkloadRoute: AdminWorkloadRoute,
   AdminContractorsRoute: AdminContractorsRoute,
+  ApiEngineerLetterRequestsRoute: ApiEngineerLetterRequestsRouteWithChildren,
   ApiGeocodeCensusRoute: ApiGeocodeCensusRoute,
+  ApiLienReleasesRoute: ApiLienReleasesRouteWithChildren,
   ApiVerifyLicenseRoute: ApiVerifyLicenseRoute,
   AuthCallbackRoute: AuthCallbackRoute,
   BlogSlugRoute: BlogSlugRoute,
@@ -3048,11 +3434,15 @@ const rootRouteChildren: RootRouteChildren = {
   VersusIndexRoute: VersusIndexRoute,
   AdminBlogIdRoute: AdminBlogIdRoute,
   AdminBlogNewRoute: AdminBlogNewRoute,
+  ApiAdminEngineerRequestsRoute: ApiAdminEngineerRequestsRouteWithChildren,
+  ApiEngineerBidsRoute: ApiEngineerBidsRoute,
+  ApiEngineerRequestsRoute: ApiEngineerRequestsRouteWithChildren,
   ApiPublicAccessRequestRoute: ApiPublicAccessRequestRoute,
   ApiPublicHoaReplyRoute: ApiPublicHoaReplyRoute,
   ApiPublicIdUploadRoute: ApiPublicIdUploadRoute,
   ApiPublicSubIntakeUploadRoute: ApiPublicSubIntakeUploadRoute,
   ApiPublicVictoriaScanRoute: ApiPublicVictoriaScanRoute,
+  ApiWebhooksBluenotaryRoute: ApiWebhooksBluenotaryRoute,
   CoverageCountyPermitTypeRoute: CoverageCountyPermitTypeRoute,
   AdminBlogIndexRoute: AdminBlogIndexRoute,
   CoverageCountyIndexRoute: CoverageCountyIndexRoute,
