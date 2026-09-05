@@ -178,6 +178,11 @@ function LienDocumentsPage() {
   );
 }
 
+function fmtContractAmount(cents: number | undefined): string {
+  if (!cents || cents <= 0) return "";
+  return `$${Math.round(cents / 100).toLocaleString("en-US")}`;
+}
+
 function GenerateDialog({
   open,
   onOpenChange,
@@ -185,30 +190,56 @@ function GenerateDialog({
   open: boolean;
   onOpenChange: (v: boolean) => void;
 }) {
-  const claimantDefault = getLienSettings().claimant.companyName;
+  const session = useSession();
+  const claimantDefault =
+    getLienSettings().claimant.companyName || session.tenantName || "";
+  const projects = PROJECTS;
+  const firstProject = projects[0];
+
+  const [projectId, setProjectId] = useState(firstProject?.id ?? "");
   const [type, setType] = useState<LienDocType>(LIEN_DOC_TYPES[0]!);
-  const [projectName, setProjectName] = useState("");
-  const [projectAddress, setProjectAddress] = useState("");
+  const [projectName, setProjectName] = useState(firstProject?.name ?? "");
+  const [projectAddress, setProjectAddress] = useState(
+    firstProject ? fullAddress(firstProject) : "",
+  );
   const [claimant, setClaimant] = useState(claimantDefault);
-  const [ownerOrGc, setOwnerOrGc] = useState("");
-  const [amount, setAmount] = useState("");
+  const [ownerOrGc, setOwnerOrGc] = useState(firstProject?.client ?? "");
+  const [amount, setAmount] = useState(fmtContractAmount(firstProject?.value_cents));
   const [throughDate, setThroughDate] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [created, setCreated] = useState<LienDoc | null>(null);
 
   const isWaiver = type.startsWith("Lien Waiver");
 
+  /** Fill every field from a project record; blanks stay blank (placeholders show). */
+  function applyProject(p: Project | undefined) {
+    setProjectName(p?.name ?? "");
+    setProjectAddress(p ? fullAddress(p) : "");
+    setOwnerOrGc(p?.client ?? "");
+    setAmount(fmtContractAmount(p?.value_cents));
+  }
+
+  // Pre-populate on every open so the user never sees blank fields.
+  useEffect(() => {
+    if (!open) return;
+    const p = projects.find((x) => x.id === projectId) ?? firstProject;
+    if (p && p.id !== projectId) setProjectId(p.id);
+    applyProject(p);
+    setClaimant(getLienSettings().claimant.companyName || session.tenantName || "");
+    setError(null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, session.tenantName]);
+
   function reset() {
     setType(LIEN_DOC_TYPES[0]!);
-    setProjectName("");
-    setProjectAddress("");
+    setProjectId(firstProject?.id ?? "");
+    applyProject(firstProject);
     setClaimant(claimantDefault);
-    setOwnerOrGc("");
-    setAmount("");
     setThroughDate("");
     setError(null);
     setCreated(null);
   }
+
 
   function submit() {
     if (!projectName.trim() || !projectAddress.trim()) {
