@@ -522,12 +522,12 @@ export function CoiCheckMock() {
 export function LienDocsMock() {
   const docs: [string, string][] = [
     ["NOC — 14 Pelican Bay Ln", "RECORDED"],
-    ["Preliminary Notice — 901 Harbour Ct", "SIGNED"],
+    ["Notice to Owner — 901 Harbour Ct", "SIGNED"],
     ["Conditional Waiver — 2840 SW 48th", "DRAFT"],
     ["Final Waiver — 7720 NW 2nd Ave", "SIGNED"],
   ];
   const deadlines: [string, string, string][] = [
-    ["Preliminary Notice", "5612 SE Coconut Ter", "4 days"],
+    ["Notice to Owner", "5612 SE Coconut Ter", "4 days"],
     ["Claim of Lien", "318 Beachway Dr", "19 days"],
     ["Action on Lien", "2840 SW 48th Ct", "88 days"],
   ];

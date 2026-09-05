@@ -205,10 +205,10 @@ export const services = [
     code: "05",
     title: "Lien Rights",
     summary:
-      "Notice of Commencement, Preliminary Notices, Lien Waivers, and statutory deadline tracking — generated, signed, and recorded without leaving the platform.",
+      "Notice of Commencement, Notices to Owner, Lien Waivers, and statutory deadline tracking — generated, signed, and recorded without leaving the platform.",
     bullets: [
       "Notice of Commencement prep, signature, and recording",
-      "Preliminary Notices and Notices to Owner",
+      "Notices to Owner",
       "Conditional and unconditional lien waivers",
       "Statutory deadline tracking with countdown alerts",
     ],

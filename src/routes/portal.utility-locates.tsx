@@ -12,13 +12,13 @@ export const Route = createFileRoute("/portal/utility-locates")({
       {
         name: "description",
         content:
-          "811 dig safe locate requests plus preliminary notices and lien rights across your active projects.",
+          "811 dig safe locate requests plus notices to owner and lien rights across your active projects.",
       },
       { property: "og:title", content: "Utility Locates & Protection — Cleard" },
       {
         property: "og:description",
         content:
-          "811 dig safe locate requests plus preliminary notices and lien rights across your active projects.",
+          "811 dig safe locate requests plus notices to owner and lien rights across your active projects.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -43,7 +43,7 @@ function UtilityLocatesPage() {
       <PageShell
         crumbs={[{ label: "Permits" }]}
         title="Utility Locates & Protection"
-        meta={tab === "locates" ? "811 dig safe requests" : "Preliminary notices & lien rights"}
+        meta={tab === "locates" ? "811 dig safe requests" : "Notices to Owner & lien rights"}
         toolbar={
           <div className="p-seg" role="tablist">
             {TABS.map((t) => (

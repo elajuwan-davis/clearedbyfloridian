@@ -35,7 +35,7 @@ const SERVICES = [
   {
     icon: Scale,
     name: "Lien Rights Management",
-    body: "Preliminary notices, lien deadlines, and waivers tracked per project. Never miss a filing window on a multi-phase job.",
+    body: "Notices to Owner, lien deadlines, and waivers tracked per project. Never miss a filing window on a multi-phase job.",
   },
   {
     icon: ShieldCheck,

@@ -357,7 +357,7 @@ const SERVICES = [
   {
     icon: Scale,
     title: "Lien Rights",
-    body: "Notice of Commencement, Preliminary Notices, Lien Waivers, and statutory deadline tracking — generated, signed, and recorded without leaving the platform.",
+    body: "Notice of Commencement, Notices to Owner, Lien Waivers, and statutory deadline tracking — generated, signed, and recorded without leaving the platform.",
     tag: "Statutory deadlines",
   },
 ];
