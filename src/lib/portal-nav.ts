@@ -90,12 +90,12 @@ export const navSections: NavSection[] = [
   { key: "inspections", label: "Inspections", icon: CalendarDays, to: "/portal/inspections" },
   {
     key: "documents",
-    label: "Compliance",
+    label: "Documents",
     icon: FolderOpen,
     to: "/portal/documents",
     items: [
       { to: "/portal/documents", label: "All Documents" },
-      { to: "/portal/lien-rights/documents", label: "Statutory Documents" },
+      { to: "/portal/compliance", label: "Compliance" },
       { to: "/portal/contacts", label: "Contacts" },
     ],
   },

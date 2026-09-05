@@ -56,9 +56,10 @@ export const tabGroups: TabGroup[] = [
   },
   {
     key: "documents",
-    label: "Compliance",
+    label: "Documents",
     tabs: [
       { label: "All Documents", to: "/portal/documents" },
+      { label: "Compliance", to: "/portal/compliance" },
       { label: "Payment Authorization", to: "/forms/payment-authorization" },
       { label: "Billing", to: "/portal/billing" },
       { label: "Legal", to: "/legal" },
@@ -105,6 +106,7 @@ export const tabGroups: TabGroup[] = [
     label: "Admin",
     tabs: [
       { label: "Invite Pipeline", to: "/admin/invites" },
+      { label: "Compliance Queue", to: "/admin/compliance" },
       { label: "Feature Access Requests", to: "/admin/feature-requests" },
       { label: "Staff Workload", to: "/admin/workload" },
       { label: "Audit Trail", to: "/admin/audit" },
