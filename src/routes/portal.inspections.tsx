@@ -550,19 +550,8 @@ function RequestInspectionDialog({
           notes: notes.trim() || null,
           request_method: "live",
         });
-      } else if (method === "engineer" && letter) {
-        setPhotoProgress({ done: 0, total: 1 });
-        const result = await uploadInspectionPhotos(permit.id, [letter], (done, total) =>
-          setPhotoProgress({ done, total }),
-        );
-        if (result.uploaded.length === 0) {
-          throw new Error(
-            result.failed[0]?.message
-              ? `The engineer's letter could not be uploaded (${result.failed[0].message}).`
-              : "The engineer's letter could not be uploaded — please try again.",
-          );
-        }
-        const detail = `Engineer's letter — ${engineerName.trim()} (License ${engineerLicense.trim()})`;
+      } else if (method === "engineer") {
+        const detail = `Engineer's letter requested — covered inspections: ${coveredInspections.join(", ")}`;
         await createInspection({
           permit_id: permit.id,
           tenant_id: permit.tenant_id,
@@ -570,7 +559,6 @@ function RequestInspectionDialog({
           requested_date: new Date().toISOString().slice(0, 10),
           notes: [detail, notes.trim()].filter(Boolean).join("\n\n"),
           request_method: "engineer",
-          photos: result.uploaded,
         });
       } else {
         setPhotoProgress({ done: 0, total: photoQueue.length });
