@@ -471,6 +471,19 @@ function MethodOption({
   );
 }
 
+/** Inspections an engineer's letter can certify when work was covered early. */
+const COVERED_INSPECTION_OPTIONS = [
+  "Foundation",
+  "Framing / Rough",
+  "Rough Plumbing",
+  "Rough Electrical",
+  "Rough Mechanical",
+  "Insulation",
+  "Fire Blocking",
+  "Sheathing",
+  "Final",
+];
+
 function RequestInspectionDialog({
   permit,
   onClose,
