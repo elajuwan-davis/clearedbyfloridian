@@ -533,15 +533,9 @@ function RequestInspectionDialog({
       toast.error("Add at least one photo");
       return;
     }
-    if (method === "engineer") {
-      if (!engineerName.trim() || !engineerLicense.trim()) {
-        toast.error("Engineer's name and license number are required");
-        return;
-      }
-      if (!letter) {
-        toast.error("Attach the engineer's letter (PDF)");
-        return;
-      }
+    if (method === "engineer" && coveredInspections.length === 0) {
+      toast.error("Select at least one covered inspection");
+      return;
     }
     setSaving(true);
     try {
