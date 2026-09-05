@@ -870,7 +870,7 @@ function RequestInspectionDialog({
             {method === "engineer"
               ? saving
                 ? "Submitting…"
-                : "Submit Engineer's Letter"
+                : "Request Engineer's Letter"
               : saving && method === "photos"
                 ? "Uploading…"
                 : "Submit request"}
