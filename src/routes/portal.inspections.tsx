@@ -535,6 +535,16 @@ function RequestInspectionDialog({
       toast.error("Add at least one photo");
       return;
     }
+    if (method === "engineer") {
+      if (!engineerName.trim() || !engineerLicense.trim()) {
+        toast.error("Engineer's name and license number are required");
+        return;
+      }
+      if (!letter) {
+        toast.error("Attach the engineer's letter (PDF)");
+        return;
+      }
+    }
     setSaving(true);
     try {
       if (method === "live") {
