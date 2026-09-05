@@ -471,6 +471,19 @@ function MethodOption({
   );
 }
 
+/** Inspections an engineer's letter can certify when work was covered early. */
+const COVERED_INSPECTION_OPTIONS = [
+  "Foundation",
+  "Framing / Rough",
+  "Rough Plumbing",
+  "Rough Electrical",
+  "Rough Mechanical",
+  "Insulation",
+  "Fire Blocking",
+  "Sheathing",
+  "Final",
+];
+
 function RequestInspectionDialog({
   permit,
   onClose,
@@ -490,10 +503,7 @@ function RequestInspectionDialog({
   const [photoProgress, setPhotoProgress] = useState<{ done: number; total: number } | null>(null);
   const [dragOver, setDragOver] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [engineerName, setEngineerName] = useState("");
-  const [engineerLicense, setEngineerLicense] = useState("");
-  const [letter, setLetter] = useState<File | null>(null);
-  const letterInputRef = useRef<HTMLInputElement>(null);
+  const [coveredInspections, setCoveredInspections] = useState<string[]>([]);
 
   // Local thumbnails for the staged photos — released whenever the queue changes.
   const previews = useMemo(() => photoQueue.map((f) => URL.createObjectURL(f)), [photoQueue]);
@@ -536,15 +546,9 @@ function RequestInspectionDialog({
       toast.error("Add at least one photo");
       return;
     }
-    if (method === "engineer") {
-      if (!engineerName.trim() || !engineerLicense.trim()) {
-        toast.error("Engineer's name and license number are required");
-        return;
-      }
-      if (!letter) {
-        toast.error("Attach the engineer's letter (PDF)");
-        return;
-      }
+    if (method === "engineer" && coveredInspections.length === 0) {
+      toast.error("Select at least one covered inspection");
+      return;
     }
     setSaving(true);
     try {
@@ -559,19 +563,8 @@ function RequestInspectionDialog({
           notes: notes.trim() || null,
           request_method: "live",
         });
-      } else if (method === "engineer" && letter) {
-        setPhotoProgress({ done: 0, total: 1 });
-        const result = await uploadInspectionPhotos(permit.id, [letter], (done, total) =>
-          setPhotoProgress({ done, total }),
-        );
-        if (result.uploaded.length === 0) {
-          throw new Error(
-            result.failed[0]?.message
-              ? `The engineer's letter could not be uploaded (${result.failed[0].message}).`
-              : "The engineer's letter could not be uploaded — please try again.",
-          );
-        }
-        const detail = `Engineer's letter — ${engineerName.trim()} (License ${engineerLicense.trim()})`;
+      } else if (method === "engineer") {
+        const detail = `Engineer's letter requested — covered inspections: ${coveredInspections.join(", ")}`;
         await createInspection({
           permit_id: permit.id,
           tenant_id: permit.tenant_id,
@@ -579,7 +572,6 @@ function RequestInspectionDialog({
           requested_date: new Date().toISOString().slice(0, 10),
           notes: [detail, notes.trim()].filter(Boolean).join("\n\n"),
           request_method: "engineer",
-          photos: result.uploaded,
         });
       } else {
         setPhotoProgress({ done: 0, total: photoQueue.length });
@@ -606,7 +598,7 @@ function RequestInspectionDialog({
         });
       }
       toast.success(
-        method === "engineer" ? "Engineer's letter submitted" : "Inspection requested",
+        method === "engineer" ? "Engineer's letter requested" : "Inspection requested",
       );
       await onCreated();
     } catch (err) {
@@ -681,80 +673,53 @@ function RequestInspectionDialog({
           </div>
 
           {method === "engineer" ? (
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <Label className="font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/55">
-                    Engineer's name
-                  </Label>
-                  <Input
-                    required
-                    value={engineerName}
-                    onChange={(e) => setEngineerName(e.target.value)}
-                    className="mt-1.5 rounded-[3px]"
-                    placeholder="Jane Doe, P.E."
-                  />
-                </div>
-                <div>
-                  <Label className="font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/55">
-                    Engineer's license number
-                  </Label>
-                  <Input
-                    required
-                    value={engineerLicense}
-                    onChange={(e) => setEngineerLicense(e.target.value)}
-                    className="mt-1.5 rounded-[3px]"
-                    placeholder="PE 12345"
-                  />
-                </div>
-              </div>
-              <div>
+            <div>
+              <div className="flex items-center justify-between gap-3">
                 <Label className="font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/55">
-                  Upload engineer's letter (PDF)
+                  Which inspections need to be covered?
                 </Label>
-                <div
-                  onClick={() => letterInputRef.current?.click()}
-                  role="button"
-                  tabIndex={0}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" || e.key === " ") letterInputRef.current?.click();
-                  }}
-                  className="mt-1.5 cursor-pointer border-2 border-dashed border-obsidian/20 hover:border-obsidian/40 rounded-[3px] px-4 py-5 text-center transition-colors"
+                <button
+                  type="button"
+                  onClick={() =>
+                    setCoveredInspections((prev) =>
+                      prev.length === COVERED_INSPECTION_OPTIONS.length
+                        ? []
+                        : [...COVERED_INSPECTION_OPTIONS],
+                    )
+                  }
+                  className="font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/55 hover:text-obsidian"
                 >
-                  <Upload className="h-4 w-4 mx-auto text-obsidian/45" />
-                  <div className="mt-2 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/60">
-                    {letter ? letter.name : "Choose a PDF"}
-                  </div>
-                  <input
-                    ref={letterInputRef}
-                    type="file"
-                    accept="application/pdf,.pdf"
-                    className="hidden"
-                    onChange={(e) => {
-                      const f = e.target.files?.[0] ?? null;
-                      e.target.value = "";
-                      if (!f) return;
-                      if (f.type !== "application/pdf" && !/\.pdf$/i.test(f.name)) {
-                        toast.error("The engineer's letter must be a PDF");
-                        return;
-                      }
-                      setLetter(f);
-                    }}
-                  />
-                </div>
-                {letter && !saving && (
-                  <button
-                    type="button"
-                    onClick={() => setLetter(null)}
-                    className="mt-2 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/55 hover:text-obsidian"
-                  >
-                    Remove file
-                  </button>
-                )}
+                  {coveredInspections.length === COVERED_INSPECTION_OPTIONS.length
+                    ? "Clear all"
+                    : "Select all"}
+                </button>
               </div>
-              {photoProgress && (
-                <div className="font-mono text-[10px] text-obsidian/55">Uploading letter…</div>
-              )}
+              <div className="mt-1.5 grid grid-cols-2 gap-1.5 rounded-[3px] border border-obsidian/15 p-2">
+                {COVERED_INSPECTION_OPTIONS.map((opt) => {
+                  const checked = coveredInspections.includes(opt);
+                  return (
+                    <label
+                      key={opt}
+                      className="flex items-center gap-2 rounded-[3px] px-2 py-1.5 text-sm text-obsidian hover:bg-obsidian/[0.04] cursor-pointer"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={checked}
+                        onChange={() =>
+                          setCoveredInspections((prev) =>
+                            checked ? prev.filter((v) => v !== opt) : [...prev, opt],
+                          )
+                        }
+                        className="h-3.5 w-3.5 accent-[#9C6B3F]"
+                      />
+                      {opt}
+                    </label>
+                  );
+                })}
+              </div>
+              <p className="mt-1.5 text-[11px] text-obsidian/50">
+                Cleared assigns the licensed engineer — just tell us what was covered.
+              </p>
             </div>
           ) : method === "live" ? (
             <div className="grid grid-cols-2 gap-3">
@@ -905,7 +870,7 @@ function RequestInspectionDialog({
             {method === "engineer"
               ? saving
                 ? "Submitting…"
-                : "Submit Engineer's Letter"
+                : "Request Engineer's Letter"
               : saving && method === "photos"
                 ? "Uploading…"
                 : "Submit request"}
