@@ -37,7 +37,7 @@ export const tabGroups: TabGroup[] = [
   },
   {
     key: "lien-rights",
-    label: "Lien Rights",
+    label: "Compliance",
     tabs: [
       { label: "Documents", to: "/portal/lien-rights/documents" },
       { label: "Deadlines", to: "/portal/lien-rights/deadlines" },
@@ -56,7 +56,7 @@ export const tabGroups: TabGroup[] = [
   },
   {
     key: "documents",
-    label: "Documents",
+    label: "Compliance",
     tabs: [
       { label: "All Documents", to: "/portal/documents" },
       { label: "Payment Authorization", to: "/forms/payment-authorization" },

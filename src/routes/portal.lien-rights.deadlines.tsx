@@ -39,7 +39,7 @@ function LienDeadlinesPage() {
   const rows = [...LIEN_DEADLINES].sort((a, b) => a.deadline.localeCompare(b.deadline));
 
   return (
-    <PageShell title="Lien Rights" meta={`${rows.length} tracked milestones`}>
+    <PageShell title="Compliance" meta={`${rows.length} tracked milestones`}>
       <div
         className="mb-4 flex items-start gap-2.5 border px-4 py-3 text-[12px] leading-relaxed"
         style={{ borderColor: "var(--p-border)", backgroundColor: "var(--p-bg)" }}
