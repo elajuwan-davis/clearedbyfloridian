@@ -16,7 +16,8 @@ export const Route = createFileRoute("/api/engineer-letter-requests/$id")({
             throw new auth.ApiError(404, "Request not found");
           }
 
-          return Response.json({ request: row });
+          const [withPhotos] = await market.withSignedPhotos([row]);
+          return Response.json({ request: withPhotos });
         } catch (err) {
           return auth.errorResponse(err);
         }

@@ -149,6 +149,63 @@ BEGIN
   END IF;
 END $$;
 
+-- Private bucket for inspection photos on engineer's letter requests.
+-- Path convention: {tenant_id}/{anything}. The API only accepts object paths in
+-- this bucket, so a contractor cannot point an engineer's browser at a host
+-- they control (that would leak the engineer's IP and defeat blind routing).
+INSERT INTO storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+VALUES ('engineer-letter-photos', 'engineer-letter-photos', false, 26214400,
+        ARRAY['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'application/pdf'])
+ON CONFLICT (id) DO UPDATE SET public = false;
+
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_policies WHERE schemaname = 'storage'
+      AND tablename = 'objects' AND policyname = 'engineer_letter_photos_select'
+  ) THEN
+    CREATE POLICY "engineer_letter_photos_select" ON storage.objects
+      FOR SELECT TO authenticated
+      USING (
+        bucket_id = 'engineer-letter-photos'
+        AND (
+          public.is_admin()
+          OR (storage.foldername(name))[1] = public.current_tenant_id()::text
+        )
+      );
+  END IF;
+
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_policies WHERE schemaname = 'storage'
+      AND tablename = 'objects' AND policyname = 'engineer_letter_photos_insert'
+  ) THEN
+    CREATE POLICY "engineer_letter_photos_insert" ON storage.objects
+      FOR INSERT TO authenticated
+      WITH CHECK (
+        bucket_id = 'engineer-letter-photos'
+        AND (
+          public.is_admin()
+          OR (storage.foldername(name))[1] = public.current_tenant_id()::text
+        )
+      );
+  END IF;
+
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_policies WHERE schemaname = 'storage'
+      AND tablename = 'objects' AND policyname = 'engineer_letter_photos_delete'
+  ) THEN
+    CREATE POLICY "engineer_letter_photos_delete" ON storage.objects
+      FOR DELETE TO authenticated
+      USING (
+        bucket_id = 'engineer-letter-photos'
+        AND (
+          public.is_admin()
+          OR (storage.foldername(name))[1] = public.current_tenant_id()::text
+        )
+      );
+  END IF;
+END $$;
+
 -- ---------------------------------------------------------------------------
 -- ENGINEER'S LETTER MARKETPLACE
 -- ---------------------------------------------------------------------------

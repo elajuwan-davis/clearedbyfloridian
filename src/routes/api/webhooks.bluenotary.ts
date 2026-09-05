@@ -5,8 +5,18 @@
 // (or send the same value in an `x-bluenotary-secret` header). Requests are
 // rejected when the secret is missing or wrong: without that check anyone could
 // mark a lien release notarized.
+//
+// The query fallback exists only because BlueNotary's webhook settings are not
+// reachable yet, and a URL secret can end up in proxy and access logs. Both the
+// header name and the fallback are env-driven, so once BlueNotary confirms which
+// header it can send, the swap is config only:
+//   BLUENOTARY_WEBHOOK_SECRET_HEADER=<their-header>
+//   BLUENOTARY_WEBHOOK_ALLOW_QUERY_TOKEN=false
 import { createFileRoute } from "@tanstack/react-router";
 import type { LienReleaseDocument } from "@/lib/lien-release-documents.server";
+
+const DEFAULT_SECRET_HEADER = "x-bluenotary-secret";
+const DEFAULT_QUERY_PARAM = "token";
 
 function authorized(request: Request): boolean {
   const secret = process.env.BLUENOTARY_WEBHOOK_SECRET;
@@ -14,9 +24,14 @@ function authorized(request: Request): boolean {
     console.error("[bluenotary-webhook] BLUENOTARY_WEBHOOK_SECRET not set — rejecting request");
     return false;
   }
-  const provided =
-    request.headers.get("x-bluenotary-secret") ?? new URL(request.url).searchParams.get("token");
-  return provided === secret;
+
+  const header = process.env.BLUENOTARY_WEBHOOK_SECRET_HEADER?.trim() || DEFAULT_SECRET_HEADER;
+  const fromHeader = request.headers.get(header);
+  if (fromHeader !== null) return fromHeader === secret;
+
+  if (process.env.BLUENOTARY_WEBHOOK_ALLOW_QUERY_TOKEN === "false") return false;
+  const param = process.env.BLUENOTARY_WEBHOOK_QUERY_PARAM?.trim() || DEFAULT_QUERY_PARAM;
+  return new URL(request.url).searchParams.get(param) === secret;
 }
 
 export const Route = createFileRoute("/api/webhooks/bluenotary")({

@@ -2,6 +2,8 @@
 // Admin brokers the marketplace, so this view is deliberately unredacted.
 import { createFileRoute } from "@tanstack/react-router";
 
+import type { EngineerLetterRequest } from "@/lib/engineer-marketplace.server";
+
 type BidRow = { request_id: string } & Record<string, unknown>;
 
 export const Route = createFileRoute("/api/admin/engineer-requests")({
@@ -42,10 +44,15 @@ export const Route = createFileRoute("/api/admin/engineer-requests")({
             byRequest.set(bid.request_id, list);
           }
 
+          const market = await import("@/lib/engineer-marketplace.server");
+          const signed = await market.withSignedPhotos(
+            (requests ?? []) as unknown as EngineerLetterRequest[],
+          );
+
           return Response.json({
-            requests: (requests ?? []).map((r) => ({
-              ...(r as Record<string, unknown>),
-              bids: byRequest.get((r as { id: string }).id) ?? [],
+            requests: signed.map((r) => ({
+              ...r,
+              bids: byRequest.get(r.id) ?? [],
             })),
           });
         } catch (err) {

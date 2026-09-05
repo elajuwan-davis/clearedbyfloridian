@@ -3,8 +3,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
 
+// `path` is an object path in the private `engineer-letter-photos` bucket; a
+// Storage URL on our own project is accepted and reduced to its path. External
+// URLs are refused — see normalizePhotoPath().
 const PhotoSchema = z.object({
-  url: z.string().url(),
+  path: z.string().trim().min(1).max(1000).optional(),
+  url: z.string().trim().min(1).max(2000).optional(),
   caption: z.string().trim().max(300).optional().default(""),
 });
 
@@ -31,14 +35,27 @@ export const Route = createFileRoute("/api/engineer-letter-requests")({
           const projects = await import("@/lib/api-projects.server");
           const project = await projects.loadOwnProject(input.project_id, caller);
 
+          const market = await import("@/lib/engineer-marketplace.server");
+          const tenantId = project.tenant_id ?? caller.tenantId;
+          const photos = input.inspection_photos.map((photo) => {
+            const source = photo.path ?? photo.url;
+            if (!source) {
+              throw new auth.ApiError(422, "inspection_photos: path is required");
+            }
+            return {
+              path: market.normalizePhotoPath(source, tenantId),
+              caption: photo.caption,
+            };
+          });
+
           const { data, error } = await auth
             .adminDb()
             .from("engineer_letter_requests")
             .insert({
               project_id: project.id,
-              tenant_id: project.tenant_id ?? caller.tenantId,
+              tenant_id: tenantId,
               requested_inspections: input.requested_inspections,
-              inspection_photos: input.inspection_photos,
+              inspection_photos: photos,
               scope_description: input.scope_description,
               status: "open",
               created_by: caller.userId,
@@ -47,7 +64,8 @@ export const Route = createFileRoute("/api/engineer-letter-requests")({
             .single();
           if (error) throw new auth.ApiError(500, error.message);
 
-          return Response.json({ request: data }, { status: 201 });
+          const [withPhotos] = await market.withSignedPhotos([data]);
+          return Response.json({ request: withPhotos }, { status: 201 });
         } catch (err) {
           return auth.errorResponse(err);
         }
@@ -64,7 +82,8 @@ export const Route = createFileRoute("/api/engineer-letter-requests")({
             .eq("tenant_id", caller.tenantId)
             .order("created_at", { ascending: false });
           if (error) throw new auth.ApiError(500, error.message);
-          return Response.json({ requests: data ?? [] });
+          const market = await import("@/lib/engineer-marketplace.server");
+          return Response.json({ requests: await market.withSignedPhotos(data ?? []) });
         } catch (err) {
           return auth.errorResponse(err);
         }

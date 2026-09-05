@@ -9,7 +9,99 @@ import { adminDb, ApiError } from "@/lib/api-auth.server";
 
 export type RequestStatus = "open" | "assigned" | "in_review" | "complete" | "cancelled";
 
-export type InspectionPhoto = { url: string; caption: string };
+/** Photos are stored as object paths in a private bucket, never as caller
+ *  supplied URLs: an arbitrary host would see the engineer's IP the moment the
+ *  photo rendered, which is exactly the link blind routing is meant to cut.
+ *  Readers get a short-lived signed `url` alongside the stored path. */
+export const PHOTO_BUCKET = "engineer-letter-photos";
+const PHOTO_URL_TTL_SECONDS = 60 * 60;
+
+export type InspectionPhoto = { path: string; caption: string; url?: string };
+
+type PhotoHost = { host: string };
+
+function supabaseHosts(): PhotoHost[] {
+  const raw = [process.env.SUPABASE_URL, process.env.VITE_SUPABASE_URL];
+  const hosts: PhotoHost[] = [];
+  for (const value of raw) {
+    if (!value) continue;
+    try {
+      hosts.push({ host: new URL(value).host.toLowerCase() });
+    } catch {
+      // Ignore a malformed env value; a path-only submission still works.
+    }
+  }
+  return hosts;
+}
+
+/** Accept either a bare object path or a Storage URL on our own Supabase
+ *  project, and return the bare path. Anything else is rejected. */
+export function normalizePhotoPath(input: string, tenantId: string): string {
+  let path = input.trim();
+
+  if (/^[a-z][a-z0-9+.-]*:/i.test(path)) {
+    let url: URL;
+    try {
+      url = new URL(path);
+    } catch {
+      throw new ApiError(422, "inspection_photos: not a Supabase Storage path");
+    }
+    if (
+      url.protocol !== "https:" ||
+      !supabaseHosts().some((h) => h.host === url.host.toLowerCase())
+    ) {
+      throw new ApiError(
+        422,
+        "inspection_photos: only objects in the private engineer-letter-photos bucket are accepted",
+      );
+    }
+    const match = /\/storage\/v1\/object\/(?:public|sign|authenticated)\/(.+)$/.exec(url.pathname);
+    if (!match) throw new ApiError(422, "inspection_photos: not a Supabase Storage object URL");
+    path = decodeURIComponent(match[1]);
+  }
+
+  path = path.replace(/^\/+/, "");
+  if (path.startsWith(`${PHOTO_BUCKET}/`)) path = path.slice(PHOTO_BUCKET.length + 1);
+
+  if (!path || path.includes(".."))
+    throw new ApiError(422, "inspection_photos: invalid object path");
+  // Tenant prefix keeps one contractor from referencing another's upload.
+  if (!path.startsWith(`${tenantId}/`)) {
+    throw new ApiError(422, `inspection_photos: path must live under ${tenantId}/`);
+  }
+  return path;
+}
+
+/** Attach signed URLs for the stored photo paths. */
+export async function signPhotos(photos: InspectionPhoto[]): Promise<InspectionPhoto[]> {
+  const paths = photos.map((photo) => photo.path).filter(Boolean);
+  if (paths.length === 0) return photos;
+
+  const { data, error } = await adminDb()
+    .storage.from(PHOTO_BUCKET)
+    .createSignedUrls(paths, PHOTO_URL_TTL_SECONDS);
+  if (error) {
+    console.error("[engineer-marketplace] could not sign inspection photos", error.message);
+    return photos;
+  }
+
+  const signed = new Map<string, string>();
+  for (const entry of data ?? []) {
+    if (entry.path && entry.signedUrl) signed.set(entry.path, entry.signedUrl);
+  }
+  return photos.map((photo) => ({ ...photo, url: signed.get(photo.path) }));
+}
+
+export async function withSignedPhotos<T extends { inspection_photos: InspectionPhoto[] }>(
+  rows: T[],
+): Promise<T[]> {
+  return Promise.all(
+    rows.map(async (row) => ({
+      ...row,
+      inspection_photos: await signPhotos(row.inspection_photos ?? []),
+    })),
+  );
+}
 
 export type EngineerLetterRequest = {
   id: string;
@@ -55,7 +147,7 @@ export async function blindRequests(
 
   const { data, error } = await query;
   if (error) throw new ApiError(500, error.message);
-  return (data ?? []) as unknown as BlindRequest[];
+  return withSignedPhotos((data ?? []) as unknown as BlindRequest[]);
 }
 
 export async function blindRequest(engineerId: string, requestId: string): Promise<BlindRequest> {
