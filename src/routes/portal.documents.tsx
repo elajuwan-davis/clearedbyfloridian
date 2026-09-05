@@ -191,6 +191,38 @@ function DocumentsPage() {
         </div>
       </Reveal>
 
+      <Reveal className="mb-4">
+        <div style={{ background: CDS.white, border: `1px solid ${CDS.border}`, padding: 12 }}>
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <div
+                style={{
+                  fontSize: 10,
+                  fontWeight: 700,
+                  letterSpacing: "0.08em",
+                  textTransform: "uppercase",
+                  color: CDS.grayLt,
+                }}
+              >
+                Statutory forms
+              </div>
+              <div style={{ fontSize: 12.5, color: CDS.gray, marginTop: 2 }}>
+                Notice of Change of Private Provider — complete, download, or request recording with
+                the municipality.
+              </div>
+            </div>
+            <button type="button" className="p-btn p-btn-primary" onClick={() => setCopOpen(true)}>
+              <FileText className="h-3.5 w-3.5" strokeWidth={1.75} />
+              Notice of Change of Private Provider
+            </button>
+          </div>
+        </div>
+      </Reveal>
+
+      <ChangeOfProviderFormDialog open={copOpen} onOpenChange={setCopOpen} permits={permits} />
+
+
+
       {pickerOpen && (
         <PermitPicker
           permits={permits}
