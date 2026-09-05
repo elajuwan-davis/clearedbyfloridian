@@ -16,8 +16,12 @@ export type InspectionType =
 
 export type InspectionResult = "pending" | "passed" | "failed" | "reinspect" | "cancelled";
 
-/** "live" = an inspector visits the site. "photos" = reviewed from uploaded jobsite photos. */
-export type InspectionRequestMethod = "live" | "photos";
+/**
+ * "live" = an inspector visits the site. "photos" = reviewed from uploaded
+ * jobsite photos. "engineer" = work was covered before inspection, so a
+ * licensed engineer's letter certifies it instead.
+ */
+export type InspectionRequestMethod = "live" | "photos" | "engineer";
 
 export type InspectionPhoto = {
   path: string;
