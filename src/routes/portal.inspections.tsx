@@ -585,7 +585,7 @@ function RequestInspectionDialog({
         });
       }
       toast.success(
-        method === "engineer" ? "Engineer's letter submitted" : "Inspection requested",
+        method === "engineer" ? "Engineer's letter requested" : "Inspection requested",
       );
       await onCreated();
     } catch (err) {
