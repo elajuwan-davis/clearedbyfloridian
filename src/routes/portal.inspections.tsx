@@ -489,6 +489,10 @@ function RequestInspectionDialog({
   const [photoProgress, setPhotoProgress] = useState<{ done: number; total: number } | null>(null);
   const [dragOver, setDragOver] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [engineerName, setEngineerName] = useState("");
+  const [engineerLicense, setEngineerLicense] = useState("");
+  const [letter, setLetter] = useState<File | null>(null);
+  const letterInputRef = useRef<HTMLInputElement>(null);
 
   // Local thumbnails for the staged photos — released whenever the queue changes.
   const previews = useMemo(() => photoQueue.map((f) => URL.createObjectURL(f)), [photoQueue]);
