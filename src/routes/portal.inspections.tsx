@@ -558,6 +558,28 @@ function RequestInspectionDialog({
           notes: notes.trim() || null,
           request_method: "live",
         });
+      } else if (method === "engineer" && letter) {
+        setPhotoProgress({ done: 0, total: 1 });
+        const result = await uploadInspectionPhotos(permit.id, [letter], (done, total) =>
+          setPhotoProgress({ done, total }),
+        );
+        if (result.uploaded.length === 0) {
+          throw new Error(
+            result.failed[0]?.message
+              ? `The engineer's letter could not be uploaded (${result.failed[0].message}).`
+              : "The engineer's letter could not be uploaded — please try again.",
+          );
+        }
+        const detail = `Engineer's letter — ${engineerName.trim()} (License ${engineerLicense.trim()})`;
+        await createInspection({
+          permit_id: permit.id,
+          tenant_id: permit.tenant_id,
+          inspection_type: type,
+          requested_date: new Date().toISOString().slice(0, 10),
+          notes: [detail, notes.trim()].filter(Boolean).join("\n\n"),
+          request_method: "engineer",
+          photos: result.uploaded,
+        });
       } else {
         setPhotoProgress({ done: 0, total: photoQueue.length });
         const result = await uploadInspectionPhotos(permit.id, photoQueue, (done, total) =>
@@ -582,7 +604,9 @@ function RequestInspectionDialog({
           photos: result.uploaded,
         });
       }
-      toast.success("Inspection requested");
+      toast.success(
+        method === "engineer" ? "Engineer's letter submitted" : "Inspection requested",
+      );
       await onCreated();
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Failed to request inspection");
