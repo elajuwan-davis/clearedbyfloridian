@@ -12,6 +12,7 @@ import {
   Camera,
   Share2,
   Upload,
+  Stamp,
 } from "lucide-react";
 import { PermitPicker } from "@/components/permit-picker";
 import { Button } from "@/components/ui/button";
@@ -901,7 +902,13 @@ function RequestInspectionDialog({
             ) : (
               <Plus className="h-4 w-4 mr-2" />
             )}
-            {saving && method === "photos" ? "Uploading…" : "Submit request"}
+            {method === "engineer"
+              ? saving
+                ? "Submitting…"
+                : "Submit Engineer's Letter"
+              : saving && method === "photos"
+                ? "Uploading…"
+                : "Submit request"}
           </Button>
         </div>
       </form>
@@ -1074,7 +1081,11 @@ function ReportDialog({
             <div className="flex justify-between gap-4">
               <dt className="text-obsidian/55">Method</dt>
               <dd className="text-obsidian text-right">
-                {inspection.request_method === "photos" ? "Uploaded photos" : "Live site visit"}
+                {inspection.request_method === "photos"
+                  ? "Uploaded photos"
+                  : inspection.request_method === "engineer"
+                    ? "Engineer's letter"
+                    : "Live site visit"}
               </dd>
             </div>
           </dl>
