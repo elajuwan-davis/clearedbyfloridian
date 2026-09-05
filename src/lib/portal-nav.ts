@@ -90,12 +90,12 @@ export const navSections: NavSection[] = [
   { key: "inspections", label: "Inspections", icon: CalendarDays, to: "/portal/inspections" },
   {
     key: "documents",
-    label: "Documents",
+    label: "Compliance",
     icon: FolderOpen,
     to: "/portal/documents",
     items: [
       { to: "/portal/documents", label: "All Documents" },
-      { to: "/portal/lien-rights/documents", label: "Lien Rights" },
+      { to: "/portal/lien-rights/documents", label: "Statutory Documents" },
       { to: "/portal/contacts", label: "Contacts" },
     ],
   },
@@ -181,7 +181,7 @@ export const CLIENT_NAV_SECTIONS: NavSection[] = [
   },
   {
     key: "documents",
-    label: "Documents",
+    label: "Compliance",
     icon: FolderOpen,
     to: "/portal/documents",
   },
@@ -202,12 +202,12 @@ export const ADMIN_NAV_SECTIONS: NavSection[] = [
   { key: "inspections", label: "Inspections", icon: CalendarDays, to: "/portal/inspections" },
   {
     key: "documents",
-    label: "Documents",
+    label: "Compliance",
     icon: FolderOpen,
     to: "/portal/documents",
     items: [
       { to: "/portal/documents", label: "All Documents" },
-      { to: "/portal/lien-rights/documents", label: "Lien Rights" },
+      { to: "/portal/lien-rights/documents", label: "Statutory Documents" },
       { to: "/portal/contacts", label: "Contacts" },
     ],
   },
