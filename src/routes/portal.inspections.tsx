@@ -654,7 +654,7 @@ function RequestInspectionDialog({
             <Label className="font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/55">
               How should this be inspected?
             </Label>
-            <div className="mt-1.5 grid grid-cols-2 gap-2">
+            <div className="mt-1.5 grid grid-cols-2 sm:grid-cols-3 gap-2">
               <MethodOption
                 active={method === "live"}
                 icon={<CalendarDays className="h-4 w-4" />}
@@ -669,10 +669,93 @@ function RequestInspectionDialog({
                 description="Reviewed from jobsite photos"
                 onClick={() => setMethod("photos")}
               />
+              <MethodOption
+                active={method === "engineer"}
+                icon={<Stamp className="h-4 w-4" />}
+                title="Engineer's Letter"
+                description="Work was covered before inspection"
+                onClick={() => setMethod("engineer")}
+              />
             </div>
           </div>
 
-          {method === "live" ? (
+          {method === "engineer" ? (
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <Label className="font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/55">
+                    Engineer's name
+                  </Label>
+                  <Input
+                    required
+                    value={engineerName}
+                    onChange={(e) => setEngineerName(e.target.value)}
+                    className="mt-1.5 rounded-[3px]"
+                    placeholder="Jane Doe, P.E."
+                  />
+                </div>
+                <div>
+                  <Label className="font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/55">
+                    Engineer's license number
+                  </Label>
+                  <Input
+                    required
+                    value={engineerLicense}
+                    onChange={(e) => setEngineerLicense(e.target.value)}
+                    className="mt-1.5 rounded-[3px]"
+                    placeholder="PE 12345"
+                  />
+                </div>
+              </div>
+              <div>
+                <Label className="font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/55">
+                  Upload engineer's letter (PDF)
+                </Label>
+                <div
+                  onClick={() => letterInputRef.current?.click()}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") letterInputRef.current?.click();
+                  }}
+                  className="mt-1.5 cursor-pointer border-2 border-dashed border-obsidian/20 hover:border-obsidian/40 rounded-[3px] px-4 py-5 text-center transition-colors"
+                >
+                  <Upload className="h-4 w-4 mx-auto text-obsidian/45" />
+                  <div className="mt-2 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/60">
+                    {letter ? letter.name : "Choose a PDF"}
+                  </div>
+                  <input
+                    ref={letterInputRef}
+                    type="file"
+                    accept="application/pdf,.pdf"
+                    className="hidden"
+                    onChange={(e) => {
+                      const f = e.target.files?.[0] ?? null;
+                      e.target.value = "";
+                      if (!f) return;
+                      if (f.type !== "application/pdf" && !/\.pdf$/i.test(f.name)) {
+                        toast.error("The engineer's letter must be a PDF");
+                        return;
+                      }
+                      setLetter(f);
+                    }}
+                  />
+                </div>
+                {letter && !saving && (
+                  <button
+                    type="button"
+                    onClick={() => setLetter(null)}
+                    className="mt-2 font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/55 hover:text-obsidian"
+                  >
+                    Remove file
+                  </button>
+                )}
+              </div>
+              {photoProgress && (
+                <div className="font-mono text-[10px] text-obsidian/55">Uploading letter…</div>
+              )}
+            </div>
+          ) : method === "live" ? (
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <Label className="font-mono text-[10px] uppercase tracking-[0.14em] text-obsidian/55">
