@@ -18,7 +18,7 @@ import {
 export const Route = createFileRoute("/portal/lien-rights/settings")({
   head: () => ({
     meta: [
-      { title: "Lien Rights Settings — Cleard" },
+      { title: "Compliance Settings — Cleard" },
       {
         name: "description",
         content: "Manage your claimant profile and e-signature connection for lien documents.",
@@ -65,7 +65,7 @@ function LienSettingsPage() {
   }
 
   return (
-    <PageShell title="Lien Rights" meta="Settings">
+    <PageShell title="Compliance" meta="Settings">
       <div className="grid gap-4 lg:grid-cols-2">
         <Panel title="Claimant Profile">
           <div className="space-y-3 p-4">

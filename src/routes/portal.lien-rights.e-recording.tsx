@@ -53,7 +53,7 @@ function ERecordingPage() {
 
   return (
     <PageShell
-      title="Lien Rights"
+      title="Compliance"
       meta={`${requests.length} e-recording request${requests.length === 1 ? "" : "s"}`}
       actions={
         <Button size="sm" className="rounded-none" onClick={() => setOpen(true)}>

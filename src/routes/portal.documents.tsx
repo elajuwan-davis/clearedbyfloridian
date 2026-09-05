@@ -26,7 +26,7 @@ import {
 export const Route = createFileRoute("/portal/documents")({
   head: () => ({
     meta: [
-      { title: "Documents — Cleard" },
+      { title: "Compliance — Cleard" },
       {
         name: "description",
         content: "Every plan set, survey, approval and compliance document across your permits.",
@@ -132,8 +132,8 @@ function DocumentsPage() {
 
   return (
     <PageShell
-      crumbs={[{ label: "Workspace" }, { label: "Documents" }]}
-      title="Documents"
+      crumbs={[{ label: "Workspace" }, { label: "Compliance" }]}
+      title="Compliance"
       meta={loading ? "Loading…" : `${docs.length} across ${permits.length} permits`}
       toolbar={
         <SearchInput

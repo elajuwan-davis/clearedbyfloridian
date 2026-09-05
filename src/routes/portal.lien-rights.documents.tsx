@@ -65,7 +65,7 @@ function LienDocumentsPage() {
 
   return (
     <PageShell
-      title="Lien Rights"
+      title="Compliance"
       meta={`${docs.length} document${docs.length === 1 ? "" : "s"}`}
       actions={
         <Button size="sm" className="rounded-none" onClick={() => setGenOpen(true)}>
