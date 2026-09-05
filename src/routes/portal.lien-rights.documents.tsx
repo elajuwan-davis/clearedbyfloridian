@@ -1,6 +1,6 @@
 import { PlanGate } from "@/components/feature-lock";
 import { createFileRoute } from "@tanstack/react-router";
-import { useState, useSyncExternalStore } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import { FileText, Plus, PenLine, Eye, CheckCircle2 } from "lucide-react";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -26,6 +26,8 @@ import {
   type LienDocStatus,
   type LienDocType,
 } from "@/lib/lien-rights-store";
+import { PROJECTS, fullAddress, type Project } from "@/lib/projects-data";
+import { useSession } from "@/lib/use-session";
 
 export const Route = createFileRoute("/portal/lien-rights/documents")({
   head: () => ({
@@ -325,6 +327,27 @@ function GenerateDialog({
                 </Select>
               </Field>
 
+              <Field label="Project">
+                <Select
+                  value={projectId}
+                  onValueChange={(v) => {
+                    setProjectId(v);
+                    applyProject(projects.find((p) => p.id === v));
+                  }}
+                >
+                  <SelectTrigger className="rounded-none">
+                    <SelectValue placeholder="Select a project" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {projects.map((p) => (
+                      <SelectItem key={p.id} value={p.id}>
+                        {p.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </Field>
+
               <Field label="Project name">
                 <Input
                   className="rounded-none"
@@ -339,6 +362,7 @@ function GenerateDialog({
                   className="rounded-none"
                   value={claimant}
                   onChange={(e) => setClaimant(e.target.value)}
+                  placeholder="Not on file — add your company name"
                 />
               </Field>
 
@@ -347,7 +371,7 @@ function GenerateDialog({
                   className="rounded-none"
                   value={ownerOrGc}
                   onChange={(e) => setOwnerOrGc(e.target.value)}
-                  placeholder="Owner or general contractor"
+                  placeholder="Not on file — add owner or general contractor"
                 />
               </Field>
 
@@ -356,7 +380,7 @@ function GenerateDialog({
                   className="rounded-none"
                   value={projectAddress}
                   onChange={(e) => setProjectAddress(e.target.value)}
-                  placeholder="Street, city, FL ZIP"
+                  placeholder="Not on file — add street, city, FL ZIP"
                 />
               </Field>
 
