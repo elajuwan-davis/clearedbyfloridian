@@ -74,7 +74,7 @@ function LienDocumentsPage() {
       {docs.length === 0 ? (
         <EmptyState
           title="No lien documents yet"
-          description="Generate a Notice of Commencement, preliminary notice, or lien waiver to get started."
+          description="Generate a Notice of Commencement, notice to owner, or lien waiver to get started."
           icon={<FileText className="h-4 w-4" />}
           action={
             <Button size="sm" className="rounded-none" onClick={() => setGenOpen(true)}>

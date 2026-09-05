@@ -8,7 +8,7 @@
 
 export type LienDocType =
   | "Notice of Commencement (NOC)"
-  | "Preliminary Notice"
+  | "Notice to Owner"
   | "Lien Waiver — Conditional on Progress Payment"
   | "Lien Waiver — Conditional on Final Payment"
   | "Lien Waiver — Unconditional on Progress Payment"
@@ -16,7 +16,7 @@ export type LienDocType =
 
 export const LIEN_DOC_TYPES: LienDocType[] = [
   "Notice of Commencement (NOC)",
-  "Preliminary Notice",
+  "Notice to Owner",
   "Lien Waiver — Conditional on Progress Payment",
   "Lien Waiver — Conditional on Final Payment",
   "Lien Waiver — Unconditional on Progress Payment",
@@ -200,7 +200,7 @@ export function deadlineStatus(row: LienDeadline): DeadlineStatus {
 
 export const MILESTONE_RULE: Record<string, string> = {
   "NOC Recording": "Must be recorded before the first inspection",
-  "Preliminary Notice": "Serve within 45 days of first furnishing",
+  "Notice to Owner": "Serve within 45 days of first furnishing",
   "Claim of Lien": "Serve within 90 days of last furnishing",
   "Action on Lien": "File within 1 year of the claim of lien",
 };

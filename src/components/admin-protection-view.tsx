@@ -23,7 +23,7 @@ import { FilePlus2 } from "lucide-react";
 import { toast } from "sonner";
 
 const NOTICE_TYPES = [
-  "Preliminary Notice",
+  "Notice to Owner",
   "Mechanic's Lien",
   "Lien Release",
   "Bond Claim",
@@ -52,7 +52,7 @@ const MOCK_ROWS: NoticeRow[] = [
   {
     id: "n1",
     project: "Whitmore Residence",
-    type: "Preliminary Notice",
+    type: "Notice to Owner",
     filed: "2026-07-09",
     deadline: "2026-08-28",
     status: "filed",
@@ -115,7 +115,7 @@ export function AdminProtectionView() {
   return (
     <>
       <p className="max-w-2xl text-sm leading-relaxed text-obsidian/65">
-        Protect your right to payment on every project. File preliminary notices and mechanic's
+        Protect your right to payment on every project. File notices to owner and mechanic's
         liens directly from your project record.
       </p>
 
