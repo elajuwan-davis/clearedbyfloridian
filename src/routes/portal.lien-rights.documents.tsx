@@ -1,6 +1,6 @@
 import { PlanGate } from "@/components/feature-lock";
 import { createFileRoute } from "@tanstack/react-router";
-import { useState, useSyncExternalStore } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import { FileText, Plus, PenLine, Eye, CheckCircle2 } from "lucide-react";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -26,6 +26,8 @@ import {
   type LienDocStatus,
   type LienDocType,
 } from "@/lib/lien-rights-store";
+import { PROJECTS, fullAddress, type Project } from "@/lib/projects-data";
+import { useSession } from "@/lib/use-session";
 
 export const Route = createFileRoute("/portal/lien-rights/documents")({
   head: () => ({
@@ -178,6 +180,11 @@ function LienDocumentsPage() {
   );
 }
 
+function fmtContractAmount(cents: number | undefined): string {
+  if (!cents || cents <= 0) return "";
+  return `$${Math.round(cents / 100).toLocaleString("en-US")}`;
+}
+
 function GenerateDialog({
   open,
   onOpenChange,
@@ -185,30 +192,56 @@ function GenerateDialog({
   open: boolean;
   onOpenChange: (v: boolean) => void;
 }) {
-  const claimantDefault = getLienSettings().claimant.companyName;
+  const session = useSession();
+  const claimantDefault =
+    getLienSettings().claimant.companyName || session.tenantName || "";
+  const projects = PROJECTS;
+  const firstProject = projects[0];
+
+  const [projectId, setProjectId] = useState(firstProject?.id ?? "");
   const [type, setType] = useState<LienDocType>(LIEN_DOC_TYPES[0]!);
-  const [projectName, setProjectName] = useState("");
-  const [projectAddress, setProjectAddress] = useState("");
+  const [projectName, setProjectName] = useState(firstProject?.name ?? "");
+  const [projectAddress, setProjectAddress] = useState(
+    firstProject ? fullAddress(firstProject) : "",
+  );
   const [claimant, setClaimant] = useState(claimantDefault);
-  const [ownerOrGc, setOwnerOrGc] = useState("");
-  const [amount, setAmount] = useState("");
+  const [ownerOrGc, setOwnerOrGc] = useState(firstProject?.client ?? "");
+  const [amount, setAmount] = useState(fmtContractAmount(firstProject?.value_cents));
   const [throughDate, setThroughDate] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [created, setCreated] = useState<LienDoc | null>(null);
 
   const isWaiver = type.startsWith("Lien Waiver");
 
+  /** Fill every field from a project record; blanks stay blank (placeholders show). */
+  function applyProject(p: Project | undefined) {
+    setProjectName(p?.name ?? "");
+    setProjectAddress(p ? fullAddress(p) : "");
+    setOwnerOrGc(p?.client ?? "");
+    setAmount(fmtContractAmount(p?.value_cents));
+  }
+
+  // Pre-populate on every open so the user never sees blank fields.
+  useEffect(() => {
+    if (!open) return;
+    const p = projects.find((x) => x.id === projectId) ?? firstProject;
+    if (p && p.id !== projectId) setProjectId(p.id);
+    applyProject(p);
+    setClaimant(getLienSettings().claimant.companyName || session.tenantName || "");
+    setError(null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, session.tenantName]);
+
   function reset() {
     setType(LIEN_DOC_TYPES[0]!);
-    setProjectName("");
-    setProjectAddress("");
+    setProjectId(firstProject?.id ?? "");
+    applyProject(firstProject);
     setClaimant(claimantDefault);
-    setOwnerOrGc("");
-    setAmount("");
     setThroughDate("");
     setError(null);
     setCreated(null);
   }
+
 
   function submit() {
     if (!projectName.trim() || !projectAddress.trim()) {
@@ -294,6 +327,27 @@ function GenerateDialog({
                 </Select>
               </Field>
 
+              <Field label="Project">
+                <Select
+                  value={projectId}
+                  onValueChange={(v) => {
+                    setProjectId(v);
+                    applyProject(projects.find((p) => p.id === v));
+                  }}
+                >
+                  <SelectTrigger className="rounded-none">
+                    <SelectValue placeholder="Select a project" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {projects.map((p) => (
+                      <SelectItem key={p.id} value={p.id}>
+                        {p.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </Field>
+
               <Field label="Project name">
                 <Input
                   className="rounded-none"
@@ -308,6 +362,7 @@ function GenerateDialog({
                   className="rounded-none"
                   value={claimant}
                   onChange={(e) => setClaimant(e.target.value)}
+                  placeholder="Not on file — add your company name"
                 />
               </Field>
 
@@ -316,7 +371,7 @@ function GenerateDialog({
                   className="rounded-none"
                   value={ownerOrGc}
                   onChange={(e) => setOwnerOrGc(e.target.value)}
-                  placeholder="Owner or general contractor"
+                  placeholder="Not on file — add owner or general contractor"
                 />
               </Field>
 
@@ -325,7 +380,7 @@ function GenerateDialog({
                   className="rounded-none"
                   value={projectAddress}
                   onChange={(e) => setProjectAddress(e.target.value)}
-                  placeholder="Street, city, FL ZIP"
+                  placeholder="Not on file — add street, city, FL ZIP"
                 />
               </Field>
 
