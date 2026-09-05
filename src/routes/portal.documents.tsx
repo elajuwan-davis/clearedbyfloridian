@@ -8,6 +8,8 @@ import { getPermitFileUrl } from "@/lib/permit-storage";
 import { PageShell, SearchInput } from "@/components/ui-kit";
 import { BulkDocUpload } from "@/components/bulk-doc-upload";
 import { PermitPicker } from "@/components/permit-picker";
+import { CleardTitleBlock, isEngineeringDeliverable } from "@/components/cleard-title-block";
+
 import {
   CDS,
   CdsEmpty,
@@ -293,6 +295,19 @@ function DocumentsPage() {
       >
         {preview && (
           <div className="space-y-3">
+            {isEngineeringDeliverable(preview.label) && (
+              <CleardTitleBlock
+                projectName={preview.projectName}
+                projectAddress={preview.jobAddress}
+                documentType={preview.label}
+                documentDate={
+                  preview.uploaded_at ? new Date(preview.uploaded_at).toLocaleDateString() : ""
+                }
+                jobNo={preview.permitId}
+                className="mb-4"
+              />
+            )}
+
             <Field label="Status">
               <Tag tone={toneForStatus(preview.status === "uploaded" ? "verified" : preview.status)}>
                 {preview.status.replace("_", " ")}
