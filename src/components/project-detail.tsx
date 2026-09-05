@@ -92,6 +92,7 @@ import { GenerateNTBODialog, GenerateOwnerAuthDialog } from "@/components/genera
 import { SendForSignatureDialog } from "@/components/send-for-signature-dialog";
 import { RequestNotaryDialog } from "@/components/request-notary-dialog";
 import { NotarizationTab } from "@/components/notarization-tab";
+import { LienReleasesTab } from "@/components/lien-releases-tab";
 
 import { GenerateLienWaiverDialog } from "@/components/generate-lien-waiver-dialog";
 import { LIEN_WAIVER_EVT, WAIVER_TYPE_LABEL, listWaivers, waiverBadge, type LienWaiver } from "@/lib/lien-waivers";
@@ -231,6 +232,7 @@ export function ProjectDetail({ project }: { project: Project }) {
             <TabTrigger value="documents" icon={<FileText className="h-3.5 w-3.5" />} label="Documents" />
             <TabTrigger value="hoa" icon={<FileSignature className="h-3.5 w-3.5" />} label="HOA Submittal" />
             <TabTrigger value="notarization" icon={<Stamp className="h-3.5 w-3.5" />} label="Notarization" />
+            <TabTrigger value="lien-releases" icon={<FileSignature className="h-3.5 w-3.5" />} label="Lien Releases" />
 
             <TabTrigger value="subs" icon={<Users className="h-3.5 w-3.5" />} label="Subcontractors" />
             <TabTrigger value="compliance" icon={<ShieldCheck className="h-3.5 w-3.5" />} label="Compliance" />
@@ -255,6 +257,16 @@ export function ProjectDetail({ project }: { project: Project }) {
           <TabsContent value="hoa" className="mt-6"><HoaSubmittalTab project={project} /></TabsContent>
           <TabsContent value="notarization" className="mt-6">
             <NotarizationTab projectId={project.id} projectName={project.name} />
+          </TabsContent>
+
+          <TabsContent value="lien-releases" className="mt-6">
+            <LienReleasesTab
+              projectId={project.id}
+              projectName={project.name}
+              claimantName="Flōridian LLC"
+              ownerName={project.client}
+              projectAddress={fullAddress(project)}
+            />
           </TabsContent>
 
           <TabsContent value="subs" className="mt-6"><SubsTab project={project} /></TabsContent>
