@@ -9,13 +9,16 @@ export const Route = createFileRoute("/api/lien-releases/$id/generate-pdf")({
       POST: async ({ request, params }) => {
         const auth = await import("@/lib/api-auth.server");
         try {
-          const caller = await auth.requireCaller(request);
+          const caller = await auth.requireLienReleaseCaller(request);
           const id = auth.requireUuid(params.id);
 
           const store = await import("@/lib/lien-release-documents.server");
           const release = await store.loadRelease(id);
           store.assertReleaseAccess(release, caller);
-          if (release.status !== "draft" && release.status !== "pending_notarization") {
+          // Draft only: a pending release has already been handed to the notary,
+          // and overwriting the stored object would notarize different content
+          // than what was submitted.
+          if (release.status !== "draft") {
             throw new auth.ApiError(409, `Cannot regenerate a ${release.status} release`);
           }
 

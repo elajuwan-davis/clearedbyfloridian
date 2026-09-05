@@ -6,6 +6,39 @@
 
 const SESSIONS_URL = "https://app.bluenotary.us/api/integrationsv2/sessions";
 
+/** Hosts whose documents we are willing to fetch server-side. A webhook body
+ *  is attacker-controlled input, so an arbitrary URL here would turn the
+ *  handler into an SSRF probe against internal services. */
+const DOCUMENT_HOSTS = ["bluenotary.us", "bluenotary.com", "amazonaws.com"];
+
+export function isFetchableDocumentUrl(url: string): boolean {
+  let parsed: URL;
+  try {
+    parsed = new URL(url);
+  } catch {
+    return false;
+  }
+  if (parsed.protocol !== "https:") return false;
+  const host = parsed.hostname.toLowerCase();
+  return DOCUMENT_HOSTS.some((allowed) => host === allowed || host.endsWith(`.${allowed}`));
+}
+
+/** Exact statuses that mean the session finished. Matched exactly on purpose:
+ *  a substring test also accepts "incomplete" and "unsigned". */
+const COMPLETED_STATUSES = new Set([
+  "complete",
+  "completed",
+  "notarized",
+  "finished",
+  "signed",
+  "session.completed",
+  "session_completed",
+]);
+
+export function isCompletedStatus(status: string | null): boolean {
+  return status !== null && COMPLETED_STATUSES.has(status.trim().toLowerCase());
+}
+
 export type BlueNotarySigner = {
   first_name: string;
   last_name: string;

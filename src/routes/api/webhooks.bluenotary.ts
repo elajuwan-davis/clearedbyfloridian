@@ -19,8 +19,6 @@ function authorized(request: Request): boolean {
   return provided === secret;
 }
 
-const COMPLETED = /complete|notarized|finished|signed/i;
-
 export const Route = createFileRoute("/api/webhooks/bluenotary")({
   server: {
     handlers: {
@@ -52,31 +50,44 @@ export const Route = createFileRoute("/api/webhooks/bluenotary")({
             return Response.json({ ok: true, matched: false });
           }
 
-          if (!COMPLETED.test(event.status ?? "")) {
+          if (!bluenotary.isCompletedStatus(event.status)) {
             return Response.json({ ok: true, matched: true, status: release.status });
+          }
+
+          const providerUrl = event.signedDocumentUrl ?? release.signed_document_url;
+          if (!providerUrl || !bluenotary.isFetchableDocumentUrl(providerUrl)) {
+            // A "complete" event with no usable document would leave a release
+            // marked notarized with nothing to download. Stay pending and let
+            // BlueNotary retry.
+            console.error(
+              "[bluenotary-webhook] completion without a usable signed document",
+              release.id,
+            );
+            return Response.json(
+              { ok: false, matched: true, error: "No usable signed document URL" },
+              { status: 422 },
+            );
           }
 
           // Mirror the notarized PDF into our own bucket so the download link
           // does not depend on BlueNotary's URL lifetime.
-          let signedDocumentUrl = event.signedDocumentUrl;
-          if (event.signedDocumentUrl) {
-            try {
-              const fetched = await fetch(event.signedDocumentUrl);
-              if (fetched.ok) {
-                const bytes = new Uint8Array(await fetched.arrayBuffer());
-                signedDocumentUrl = await store.uploadPdf(
-                  store.storagePath(release, "notarized"),
-                  bytes,
-                );
-              }
-            } catch (err) {
-              console.error("[bluenotary-webhook] could not mirror notarized document", err);
+          let signedDocumentUrl = providerUrl;
+          try {
+            const fetched = await fetch(providerUrl);
+            if (fetched.ok) {
+              const bytes = new Uint8Array(await fetched.arrayBuffer());
+              signedDocumentUrl = await store.uploadPdf(
+                store.storagePath(release, "notarized"),
+                bytes,
+              );
             }
+          } catch (err) {
+            console.error("[bluenotary-webhook] could not mirror notarized document", err);
           }
 
           const updated = await store.updateRelease(release.id, {
             status: "notarized",
-            signed_document_url: signedDocumentUrl ?? release.signed_document_url,
+            signed_document_url: signedDocumentUrl,
           });
 
           return Response.json({ ok: true, matched: true, status: updated.status });

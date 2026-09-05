@@ -8,7 +8,7 @@ export const Route = createFileRoute("/api/lien-releases/$id/send-for-notarizati
       POST: async ({ request, params }) => {
         const auth = await import("@/lib/api-auth.server");
         try {
-          const caller = await auth.requireCaller(request);
+          const caller = await auth.requireLienReleaseCaller(request);
           const id = auth.requireUuid(params.id);
 
           const store = await import("@/lib/lien-release-documents.server");
@@ -19,6 +19,16 @@ export const Route = createFileRoute("/api/lien-releases/$id/send-for-notarizati
           }
           if (release.status === "notarized" || release.status === "complete") {
             throw new auth.ApiError(409, "Release is already notarized");
+          }
+          // Idempotent: a second call must not open a rival session, because the
+          // webhook can only match the one id we keep.
+          if (release.status === "pending_notarization" && release.bluenotary_session_id) {
+            return Response.json({
+              release,
+              bluenotary_session_id: release.bluenotary_session_id,
+              signer_url: null,
+              reused: true,
+            });
           }
 
           const projects = await import("@/lib/api-projects.server");

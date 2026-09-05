@@ -25,7 +25,7 @@ export const Route = createFileRoute("/api/lien-releases")({
       POST: async ({ request }) => {
         const auth = await import("@/lib/api-auth.server");
         try {
-          const caller = await auth.requireTenant(request);
+          const caller = await auth.requireLienReleaseTenant(request);
           const parsed = CreateSchema.safeParse(await auth.readJson(request));
           if (!parsed.success) {
             return Response.json({ error: parsed.error.flatten() }, { status: 400 });
@@ -69,7 +69,7 @@ export const Route = createFileRoute("/api/lien-releases")({
       GET: async ({ request }) => {
         const auth = await import("@/lib/api-auth.server");
         try {
-          const caller = await auth.requireCaller(request);
+          const caller = await auth.requireLienReleaseCaller(request);
           const projectId = new URL(request.url).searchParams.get("project_id");
           if (!projectId) throw new auth.ApiError(400, "project_id is required");
           auth.requireUuid(projectId, "project_id");

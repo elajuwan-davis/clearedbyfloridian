@@ -77,6 +77,34 @@ export async function requireTenant(request: Request): Promise<Caller & { tenant
   return caller as Caller & { tenantId: string };
 }
 
+/** Lien rights is a plan-gated feature (`lien_rights` in plan-access.ts), so the
+ *  REST surface has to gate it too — otherwise a trial tenant reaches the whole
+ *  workflow around the locked UI. Fails open like the client read: a plan we
+ *  cannot resolve never locks a paying contractor out. Admins are never gated. */
+export async function requireLienReleaseCaller(request: Request): Promise<Caller> {
+  const caller = await requireCaller(request);
+  if (caller.isAdmin || !caller.tenantId) return caller;
+
+  const { data, error } = await adminDb()
+    .from("tenants")
+    .select("plan")
+    .eq("id", caller.tenantId)
+    .maybeSingle<{ plan?: unknown }>();
+  if (error || !data) return caller;
+  if (data.plan === "trial") {
+    throw new ApiError(403, "Lien rights is not included in the trial plan");
+  }
+  return caller;
+}
+
+export async function requireLienReleaseTenant(
+  request: Request,
+): Promise<Caller & { tenantId: string }> {
+  const caller = await requireLienReleaseCaller(request);
+  if (!caller.tenantId) throw new ApiError(403, "No tenant for this account");
+  return caller as Caller & { tenantId: string };
+}
+
 export async function requireAdmin(request: Request): Promise<Caller> {
   const caller = await requireCaller(request);
   if (!caller.isAdmin) throw new ApiError(403, "Admin only");

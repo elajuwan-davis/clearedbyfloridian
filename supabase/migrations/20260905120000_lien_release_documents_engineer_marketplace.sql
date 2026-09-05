@@ -229,7 +229,7 @@ ALTER TABLE public.engineer_bids ENABLE ROW LEVEL SECURITY;
 
 DO $$
 BEGIN
-  -- engineer_profiles: an engineer sees/edits only their own row; admins see all.
+  -- engineer_profiles: an engineer reads only their own row; admins see all.
   IF NOT EXISTS (
     SELECT 1 FROM pg_policies WHERE schemaname = 'public'
       AND tablename = 'engineer_profiles' AND policyname = 'engineer_profiles_select'
@@ -239,14 +239,17 @@ BEGIN
       USING (public.is_admin() OR user_id = auth.uid());
   END IF;
 
+  -- Writes are admin-only: is_active, license_number and license_state decide
+  -- marketplace eligibility, so a suspended engineer must not be able to edit
+  -- their own row back into service.
   IF NOT EXISTS (
     SELECT 1 FROM pg_policies WHERE schemaname = 'public'
       AND tablename = 'engineer_profiles' AND policyname = 'engineer_profiles_update'
   ) THEN
     CREATE POLICY "engineer_profiles_update" ON public.engineer_profiles
       FOR UPDATE TO authenticated
-      USING (public.is_admin() OR user_id = auth.uid())
-      WITH CHECK (public.is_admin() OR user_id = auth.uid());
+      USING (public.is_admin())
+      WITH CHECK (public.is_admin());
   END IF;
 
   IF NOT EXISTS (
@@ -319,7 +322,7 @@ BEGIN
   END IF;
 END $$;
 
-GRANT SELECT, UPDATE ON public.engineer_profiles TO authenticated;
+GRANT SELECT ON public.engineer_profiles TO authenticated;
 GRANT SELECT, INSERT, UPDATE ON public.engineer_letter_requests TO authenticated;
 GRANT SELECT, INSERT, UPDATE ON public.engineer_bids TO authenticated;
 GRANT ALL ON public.engineer_profiles TO service_role;
@@ -352,3 +355,65 @@ $$;
 
 REVOKE ALL ON FUNCTION public.engineer_blind_requests(uuid) FROM PUBLIC, anon;
 GRANT EXECUTE ON FUNCTION public.engineer_blind_requests(uuid) TO authenticated;
+
+-- Assignment in one transaction: the request, the winning bid and the losing
+-- bids must move together, or a mid-way failure leaves an assigned request
+-- whose bids still say 'submitted'. Admin is enforced by the API route; this
+-- runs as service_role only.
+CREATE OR REPLACE FUNCTION public.assign_engineer_letter_request(
+  _request_id uuid,
+  _engineer_id uuid,
+  _bid_id uuid DEFAULT NULL,
+  _admin_notes text DEFAULT NULL
+)
+RETURNS public.engineer_letter_requests
+LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = public
+AS $$
+DECLARE
+  _req public.engineer_letter_requests;
+BEGIN
+  SELECT * INTO _req FROM public.engineer_letter_requests
+    WHERE id = _request_id FOR UPDATE;
+  IF NOT FOUND THEN
+    RAISE EXCEPTION 'request_not_found';
+  END IF;
+  IF _req.status IN ('complete', 'cancelled') THEN
+    RAISE EXCEPTION 'request_status_%', _req.status;
+  END IF;
+
+  IF NOT EXISTS (
+    SELECT 1 FROM public.engineer_profiles WHERE id = _engineer_id AND is_active
+  ) THEN
+    RAISE EXCEPTION 'engineer_unavailable';
+  END IF;
+
+  -- A bid id that belongs to a different engineer or request would otherwise
+  -- accept one engineer's price while assigning another.
+  IF _bid_id IS NOT NULL AND NOT EXISTS (
+    SELECT 1 FROM public.engineer_bids
+    WHERE id = _bid_id AND request_id = _request_id AND engineer_id = _engineer_id
+  ) THEN
+    RAISE EXCEPTION 'bid_mismatch';
+  END IF;
+
+  UPDATE public.engineer_bids SET status = 'rejected'
+    WHERE request_id = _request_id AND status = 'submitted' AND engineer_id <> _engineer_id;
+
+  UPDATE public.engineer_bids SET status = 'accepted'
+    WHERE request_id = _request_id AND engineer_id = _engineer_id
+      AND (_bid_id IS NULL OR id = _bid_id);
+
+  UPDATE public.engineer_letter_requests
+     SET assigned_engineer_id = _engineer_id,
+         status = 'assigned',
+         admin_notes = COALESCE(_admin_notes, admin_notes)
+   WHERE id = _request_id
+   RETURNING * INTO _req;
+
+  RETURN _req;
+END $$;
+
+REVOKE ALL ON FUNCTION public.assign_engineer_letter_request(uuid, uuid, uuid, text)
+  FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.assign_engineer_letter_request(uuid, uuid, uuid, text)
+  TO service_role;

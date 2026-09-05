@@ -7,7 +7,7 @@ export const Route = createFileRoute("/api/lien-releases/$id")({
       GET: async ({ request, params }) => {
         const auth = await import("@/lib/api-auth.server");
         try {
-          const caller = await auth.requireCaller(request);
+          const caller = await auth.requireLienReleaseCaller(request);
           const id = auth.requireUuid(params.id);
           const store = await import("@/lib/lien-release-documents.server");
           const release = await store.loadRelease(id);
